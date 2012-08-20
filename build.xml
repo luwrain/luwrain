@@ -1,0 +1,29 @@
+<project name="luwrain" default="jar" basedir=".">
+  <path id="classpath">
+    <pathelement location="."/>
+    <fileset dir="lib">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+  <target name="clean">
+    <delete dir="build"/>
+    <delete dir="jar"/>
+  </target>
+  <target name="compile">
+    <mkdir dir="build"/>
+    <javac srcdir="java" destdir="build">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+  <target name="jar" depends="compile">
+    <mkdir dir="jar"/>
+    <jar jarfile="jar/luwrain.jar">
+      <manifest>
+        <attribute name="Main-Class" value="com.marigostra.luwrain.LuwrainApp"/>
+      </manifest>
+      <fileset dir="./build">
+        <include name="**/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+</project>
