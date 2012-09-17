@@ -19,7 +19,18 @@ package com.marigostra.luwrain.core;
 public class Langs
 {
     public static final int SPACE = 1;
-    public static final int END_OF_LINE = 2;
+    public static final int TAB = 2;
+    public static final int END_OF_LINE = 3;
+    public static final int EMPTY_LINE = 4;
+    public static final int THE_FIRST_LINE = 5;
+    public static final int THE_LAST_LINE = 6;
+    public static final int AREA_BEGIN = 7;
+    public static final int AREA_END = 8;
+
+    public static final int NO_REQUESTED_ACTION = 100;
+    public static final int NO_ACTIVE_AREA = 101;
+    public static final int APPLICATION_INTERNAL_ERROR = 102;
+    public static final int APPLICATION_CLOSE_ERROR_HAS_POPUP = 103;
 
     private static Language currentLang = new com.marigostra.luwrain.langs.ru.Language();
 

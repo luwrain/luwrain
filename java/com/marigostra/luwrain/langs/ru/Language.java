@@ -29,6 +29,12 @@ public class Language implements com.marigostra.luwrain.core.Language
     {
 	if (id.equals("system-application"))
 	    return new SystemAppStringConstructor();
+	if (id.equals("news-reader"))
+	    return new NewsReaderStringConstructor();
+	if (id.equals("mail-reader"))
+	    return new MailReaderStringConstructor();
+	if (id.equals("commander"))
+	    return new CommanderStringConstructor();
 	return null;
     }
 }

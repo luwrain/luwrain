@@ -20,23 +20,27 @@ import com.marigostra.luwrain.core.*;
 
 public class SystemApp implements Application
 {
-    private Object instance = null;
     private SystemAppStringConstructor stringConstructor = null;
-    private MainMenuArea mainMenu = null;
+
+    public SystemApp()
+    {
+	Object o = Langs.requestStringConstructor("system-application");
+	stringConstructor = (SystemAppStringConstructor)o;
+    }
 
     public boolean onLaunch(Object instance)
     {
-	Object o = Langs.requestStringConstructor("system-application");
-	if (o == null)
-	    return false;
-	stringConstructor = (SystemAppStringConstructor)o;
-	mainMenu = new MainMenuArea(stringConstructor);
-	this.instance = instance;
+	//Actually never called;
 	return true;
     }
 
     public AreaLayout getAreasToShow()
     {
-	return new AreaLayout(mainMenu);
+	return null;
+    }
+
+    public MainMenuArea createMainMenuArea()
+    {
+	return new MainMenuArea(stringConstructor);
     }
 }

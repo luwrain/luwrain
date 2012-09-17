@@ -17,6 +17,7 @@
 package com.marigostra.luwrain.app.news;
 
 import com.marigostra.luwrain.core.*;
+import com.marigostra.luwrain.core.events.*;
 
 public class GroupArea extends SimpleArea
 {
@@ -25,10 +26,9 @@ public class GroupArea extends SimpleArea
 
     public GroupArea(NewsReaderActions actions, NewsReaderStringConstructor stringConstructor)
     {
-	super("FIXME:groups");
+	super(stringConstructor.groupAreaName());
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
-	setContent(prepareText());
     }
 
     public void onUserKeyboardEvent(KeyboardEvent event)
@@ -38,16 +38,19 @@ public class GroupArea extends SimpleArea
 	    actions.gotoArticles();
 	    return;
 	}
+	if (event.isCommand() && event.getCommand() == KeyboardEvent.ENTER)
+	{
+	    actions.openGroup(getHotPointY());
+	    return;
+	}
     }
 
-    private String[] prepareText()
+    public void onEnvironmentEvent(EnvironmentEvent event)
     {
-	String res[] = new String[3];
-	for(int i = 0;i < 3;i++)
+	if (event.getCode() == EnvironmentEvent.CLOSE)
 	{
-	    res[i] = new String("Group ");
-	    res[i] += (i + 1);
+	    actions.closeNewsReader();
+	    return;
 	}
-	return res;
     }
 }

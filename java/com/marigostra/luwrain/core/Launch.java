@@ -16,24 +16,20 @@
 
 package com.marigostra.luwrain.core;
 
-import jcurses.system.*;
+import com.marigostra.luwrain.comm.*;
 
 public class Launch
 {
     public static String[] commandLine;
+    private static Interaction interaction;
 
     public static void go(String[] args)
     {
 	commandLine = args;
+	interaction = new com.marigostra.luwrain.interaction.AwtInteraction();
 	init();
-	Environment.run(args);
+	Environment.run(interaction, args);
 	exit();
-    }
-
-    public static void exit()
-    {
-	shutdown();
-	System.exit(0);
     }
 
     private static void init()
@@ -41,20 +37,39 @@ public class Launch
 	SpeechBackEndVoiceMan backend = new SpeechBackEndVoiceMan();
 	backend.connect("localhost", 5511);
 	Speech.setBackEnd(backend);
-	Toolkit.init();
+	PimStorage.type = PimStorage.STORAGE_SQL;//FIXME:
+	PimStorage.driver = "com.mysql.jdbc.Driver";
+	PimStorage.url = "jdbc:mysql://localhost/luwrain?characterEncoding=utf-8";
+	PimStorage.login = "root";
+	PimStorage.passwd = "";
+	try {
+	    PimStorage.connect();
+	}
+	catch (Exception e)
+	{
+	    //FIXME:
+	}
 	try {
 	    com.marigostra.luwrain.comm.DBus.connect();
 	}
 	catch(org.freedesktop.dbus.exceptions.DBusException e)
 	{
 	    e.printStackTrace();
-	    //FIXME:
 	}
+	interaction.init();
     }
 
     private static void shutdown()
     {
+	interaction.close();
 	com.marigostra.luwrain.comm.DBus.shutdown();
-	Toolkit.shutdown();
+
+    }
+
+
+    public static void exit()
+    {
+	shutdown();
+	System.exit(0);
     }
 }

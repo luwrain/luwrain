@@ -21,4 +21,6 @@ public interface NewsReaderActions
     void gotoGroups();
     void gotoArticles();
     void gotoView();
+    void openGroup(int index);
+    void closeNewsReader();
 }

@@ -18,6 +18,9 @@ package com.marigostra.luwrain.core;
 
 public class Speech
 {
+    public static final int PITCH_NORMAL = 50;
+    public static final int PITCH_HIGH = 80;
+
     static private SpeechBackEnd backend = null;
 
     static public void setBackEnd(SpeechBackEnd b)
@@ -27,7 +30,14 @@ public class Speech
 
     public static void say(String text)
     {
-	if (backend != null)
+	say(text, PITCH_NORMAL);
+    }
+
+    public static void say(String text, int pitch)
+    {
+	if (backend == null)
+	    return;
+	backend.setPitch(pitch);
 	    backend.say(text);
     }
 
@@ -36,7 +46,11 @@ public class Speech
 	if (backend == null)
 	    return;
 	if (letter == ' ')
-	    backend.say(Langs.staticValue(Langs.SPACE));
-	backend.sayLetter(letter);
+	{
+	    say(Langs.staticValue(Langs.SPACE), PITCH_HIGH);
+	    return;
+	}
+	backend.setPitch(PITCH_NORMAL);
+	    backend.sayLetter(letter);
     }
 }

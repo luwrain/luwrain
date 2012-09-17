@@ -14,40 +14,43 @@
    General Public License for more details.
 */
 
-package com.marigostra.luwrain.app.news;
+package com.marigostra.luwrain.app.mail;
 
 import com.marigostra.luwrain.core.*;
+import com.marigostra.luwrain.core.events.*;
 
-public class ArticleArea extends SimpleArea
+public class GroupArea extends SimpleArea
 {
-    private NewsReaderStringConstructor stringConstructor;
-    private NewsReaderActions actions;
+    private MailReaderStringConstructor stringConstructor;
+    private MailReaderActions actions;
 
-    public ArticleArea(NewsReaderActions actions, NewsReaderStringConstructor stringConstructor)
+    public GroupArea(MailReaderActions actions, MailReaderStringConstructor stringConstructor)
     {
-	super("FIXME:articles");
+	super(stringConstructor.groupAreaName());
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
-	setContent(prepareText());
     }
 
     public void onUserKeyboardEvent(KeyboardEvent event)
     {
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB)
+	if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB && !event.isModified())
 	{
-	    actions.gotoView();
+	    actions.gotoSummary();
+	    return;
+	}
+	if (event.isCommand() && event.getCommand() == KeyboardEvent.ENTER && !event.isModified())
+	{
+	    //	    actions.openGroup(getHotPointY());
 	    return;
 	}
     }
 
-    private String[] prepareText()
+    public void onEnvironmentEvent(EnvironmentEvent event)
     {
-	String res[] = new String[3];
-	for(int i = 0;i < 3;i++)
+	if (event.getCode() == EnvironmentEvent.CLOSE)
 	{
-	    res[i] = new String("Article ");
-	    res[i] += (i + 1);
+	    actions.closeMailReader();
+	    return;
 	}
-	return res;
     }
 }

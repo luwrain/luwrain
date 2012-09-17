@@ -16,48 +16,111 @@
 
 package com.marigostra.luwrain.app.news;
 
+import java.net.URL;
+import java.sql.SQLException;
 import com.marigostra.luwrain.core.*;
+import com.marigostra.luwrain.network.FeedReader;
+import com.marigostra.luwrain.pim.NewsArticle;
+import com.marigostra.luwrain.pim.*;
 
 public class NewsReaderApp implements Application, NewsReaderActions
 {
     private Object instance = null;
     private NewsReaderStringConstructor stringConstructor = null;
-    private GroupArea groups;
-    private ArticleArea articles;
-    private ViewArea view;
+    private GroupArea groupArea;
+    private SummaryArea summaryArea;
+    private ViewArea viewArea;
+    private NewsStoring newsStoring;
+    private StoredNewsGroup[] newsGroups;
 
     public boolean onLaunch(Object instance)
     {
-	/*
-	Object o = Langs.requestStringConstructor("system-application");
+	Object o = Langs.requestStringConstructor("news-reader");
 	if (o == null)
 	    return false;
-	stringConstructor = (SystemAppStringConstructor)o;
-	*/
-	groups = new GroupArea(this, stringConstructor);
-	articles = new ArticleArea(this, stringConstructor);
-	view = new ViewArea(this, stringConstructor);
+	stringConstructor = (NewsReaderStringConstructor)o;
+	groupArea = new GroupArea(this, stringConstructor);
+	summaryArea = new SummaryArea(this, stringConstructor);
+	viewArea = new ViewArea(this, stringConstructor);
+	newsStoring = PimManager.createNewsStoring();
+	fillGroup();
 	this.instance = instance;
 	return true;
     }
 
     public AreaLayout getAreasToShow()
     {
-	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groups, articles, view);
+	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, viewArea);
+    }
+
+    public void openGroup(int index)
+    {
+	if (newsGroups == null || index >= newsGroups.length)
+	    return;
+	StoredNewsArticle articles[];
+	try {
+	    articles = newsStoring.loadNewsArticlesInGroupWithoutRead(newsGroups[index]);
+	    if (articles == null || articles.length < 1)
+		articles = newsStoring.loadNewsArticlesInGroup(newsGroups[index]);
+	}
+	catch (Exception e)
+	{
+	    //FIXME:Logging;
+	    Dispatcher.message("FIXME:load error");
+	    summaryArea.setArticles(null);
+	    return;
+	}
+    summaryArea.setArticles(articles);
+    gotoArticles();
     }
 
     public void gotoGroups()
     {
-	Environment.dispatcher().setActiveArea(instance, groups);
+	Dispatcher.setActiveArea(instance, groupArea);
     }
 
     public void gotoArticles()
     {
-	Environment.dispatcher().setActiveArea(instance, articles);
+	Dispatcher.setActiveArea(instance, summaryArea);
     }
 
     public void gotoView()
     {
-	Environment.dispatcher().setActiveArea(instance, view);
+	Dispatcher.setActiveArea(instance, viewArea);
+    }
+
+    private void 	fillGroup()
+    {
+	if (newsStoring == null)
+	{
+	    String content[] = new String[2];
+	    content[0] = new String("FIXME:no connection");
+	    content[1] = new String();
+	    groupArea.setContent(content);
+	    return;
+	}
+	try {
+	    newsGroups = newsStoring.loadNewsGroups();
+	    String content[] = new String[newsGroups.length + 1];
+	    for(int i = 0;i < newsGroups.length;i++)
+		content[i] = newsGroups[i].getName();
+	    content[newsGroups.length] = new String();
+	    groupArea.setContent(content);
+	    return;
+	}
+	catch(Exception e)
+	{
+	    //FIXME:logging;
+	    String content[] = new String[2];
+	    content[0] = new String("FIXME:fetching error") + e.getMessage();
+	    content[1] = new String();
+	    groupArea.setContent(content);
+	    return;
+	}
+    }
+
+    public void closeNewsReader()
+    {
+	Dispatcher.closeApplication(instance);
     }
 }

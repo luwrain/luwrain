@@ -1,0 +1,10 @@
+
+dbus-java
+URL: http://freedesktop.org/wiki/Software/DBusBindings
+
+javamail
+URL: http://java.sun.com/products/javamail/
+
+libmatthew-java             
+URL: http://matthew.ath.cx/projects/java/
+Required by: dbus-java

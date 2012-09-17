@@ -76,6 +76,15 @@ public class SpeechBackEndVoiceMan implements SpeechBackEnd
 	output.flush();
     }
 
+    public void setPitch(int value)
+    {
+	if (output == null)
+	    return;
+	String s = "P:" + value;
+	output.println(s);
+	output.flush();
+    }
+
     public void silence()
     {
 	if (output == null)
@@ -83,4 +92,5 @@ public class SpeechBackEndVoiceMan implements SpeechBackEnd
 	output.println("S:");
 	output.flush();
     }
+
 }

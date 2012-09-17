@@ -16,6 +16,8 @@
 
 package com.marigostra.luwrain.core;
 
+import com.marigostra.luwrain.core.events.*;
+
 public interface Area
 {
     //May never return 0, empty area means one empty line;
@@ -23,7 +25,16 @@ public interface Area
     String getLine(int index);
     int getHotPointX();
     int getHotPointY();
-    void newHotPointRequest(int x, int y);
-    void onKeyboardEvent(KeyboardEvent keyboardEvent);
+    //Never announce new hot point position;
+    //    void newHotPointRequest(int x, int y);
+    void onKeyboardEvent(KeyboardEvent event);
+    void onEnvironmentEvent(EnvironmentEvent event);
     String getName();
+
+    /* For future including:
+     * void describe(int describeWhat) (General area purpose, area parameters, the object under hot point);
+     * void describeAtPoint(int x, int y);
+     * Command[] getCommands();
+     */
+
 }

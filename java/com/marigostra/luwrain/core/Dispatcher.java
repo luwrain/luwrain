@@ -16,11 +16,45 @@
 
 package com.marigostra.luwrain.core;
 
-public interface Dispatcher
+public class Dispatcher
 {
-    void launchApplication(Application app);
-    void setActiveArea(Object instance, Area area);
-    void onAreaNewHotPoint(Area area, int x, int y);
-    void onNewAreaContent(Area area);
-    void quit();
+    static public void launchApplication(Application app)
+    {
+	Environment.launchApplication(app);
+    }
+
+static public     void closeApplication(Object instance)
+    {
+	Environment.closeApplication(instance);
+    }
+
+    static public void setActiveArea(Object instance, Area area)
+    {
+	Environment.setActiveArea(instance, area);
+    }
+
+    static public void onAreaNewHotPoint(Area area)
+    {
+	Environment.onAreaNewHotPoint(area);
+    }
+
+    static public void onAreaNewContent(Area area)
+    {
+	Environment.onAreaNewContent(area);
+    }
+
+    static public void onNewAreaName(Area area)
+    {
+	//FIXME:
+    }
+
+    static public void quit()
+    {
+	Environment.quit();
+    }
+
+    static public void message(String text)
+    {
+	Environment.message(text);
+    }
 }

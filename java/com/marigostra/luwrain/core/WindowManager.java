@@ -16,23 +16,24 @@
 
 package com.marigostra.luwrain.core;
 
-class WindowTreeNode
+import java.util.concurrent.atomic.AtomicBoolean;
+import com.marigostra.luwrain.core.events.*;
+
+interface HiddenArea
+{
+    boolean onHiddenAreaNewContent(Area area);
+    Area getHiddenArea();
+}
+
+abstract class WindowTreeNode
 {
     public static final int AREA = 0;
     public static final int COMPOSITE = 1;
+    public static final int POPUP = 2;
 
     public Application app = null;
-    private int type;
 
-    public WindowTreeNode(int type)
-    {
-	this.type = type;
-    }
-
-    public int getType()
-    {
-	return type;
-    }
+    abstract public int getType();
 }
 
 class CompositeWindowTreeNode extends WindowTreeNode
@@ -44,28 +45,86 @@ class CompositeWindowTreeNode extends WindowTreeNode
     public WindowTreeNode node1 = null;
     public WindowTreeNode node2 = null;
 
-    public CompositeWindowTreeNode()
+    public int getType()
     {
-	super(COMPOSITE);
+	return COMPOSITE;
     }
 }
 
 class AreaWindowTreeNode extends WindowTreeNode
 {
 public Area area = null;
+    public HiddenArea hiddenArea = null;
 
-    public AreaWindowTreeNode()
+    public int getType()
     {
-	super(AREA);
+	return AREA;
+    }
+}
+
+class PopupWindowTreeNode extends AreaWindowTreeNode
+{
+    public WindowTreeNode node = null;
+    public int place = 0;
+
+    public int getType()
+    {
+	return POPUP;
+    }
+}
+
+class TextReviewMode extends NavigateArea implements HiddenArea
+{
+    private Area hiddenArea = null;
+
+    public int getLineCount()
+    {
+	if (hiddenArea == null)
+	    return 1;
+	return hiddenArea.getLineCount();
+    }
+
+    public String getLine(int index)
+    {
+	if (hiddenArea == null)
+	    return new String();
+	return hiddenArea.getLine(index);
+    }
+
+    public void onEnvironmentEvent(EnvironmentEvent event)
+    {
+	//FIXME:
+    }
+
+    public String getName()
+    {
+	if (hiddenArea == null)
+	    return "FIXME";
+	return hiddenArea.getName();///FIXME:Additional info;
+    }
+
+    public boolean onHiddenAreaNewContent(Area area)
+    {
+	return false;
+    }
+
+    public Area getHiddenArea()
+    {
+	return null;
     }
 }
 
 public class WindowManager
 {
+    public static final int POPUP_LEFT = 0;
+    public static final int POPUP_TOP = 1;
+    public static final int POPUP_RIGHT = 2;
+    public static final int POPUP_BOTTOM = 3;
+
     private WindowTreeNode windows = null;
     private AreaWindowTreeNode active = null;
 
-    public void takeNewLayout(Application app, AreaLayout layout)
+    public void takeCompleteNewLayout(Application app, AreaLayout layout, boolean blockingMode, Area popupArea, int popupPlace)
     {
 	switch (layout.getType())
 	{
@@ -77,8 +136,6 @@ public class WindowManager
 	    node.area = layout.getArea1();
 	    windows = node;
 	    active = node;
-	    onSetActiveArea(node);
-	    //FIXME:redraw;
 	    break;
 	case AreaLayout.LEFT_TOP_BOTTOM:
 	    if (layout.getArea1() == null || layout.getArea2() == null || layout.getArea3() == null)
@@ -101,50 +158,553 @@ public class WindowManager
 	    composite2.node2 = node3;
 	    windows = composite1;
 	    active = node1;
-	    onSetActiveArea(node1);
-	    //FIXME:redraw;
 	    break;
 	    //FIXME:case LEFT_RIGHT_BOTTOM;
 	}
+	if (popupArea == null)
+	{
+	    onSetActiveArea();
+	    //FIXME:redraw;
+	    return;
+	}
+	PopupWindowTreeNode popupNode = new PopupWindowTreeNode();
+	popupNode.area = popupArea;
+	popupNode.node = windows;
+	popupNode.place = popupPlace;
+	windows = popupNode;
+	active = popupNode;
+	onSetActiveArea();
     }
 
-    public void setActiveArea(Application app, Area area)
+    public void replaceApplication(Application oldApp, Application newApp, AreaLayout layout, boolean blockingMode, Area desiredActiveArea)
     {
-	setActiveAreaImpl(windows, app, area);
+	if (oldApp == null || newApp == null || layout == null)
+	    return;
+	if (hasAreaNonPopupOfApp(newApp))
+	    return;
+	WindowTreeNode res;
+	AreaWindowTreeNode newActive;
+	switch (layout.getType())
+	{
+	case AreaLayout.SINGLE:
+	    if (layout.getArea1() == null)
+		return;
+	    AreaWindowTreeNode node = new AreaWindowTreeNode();
+	    node.app = newApp;
+	    node.area = layout.getArea1();
+	    res = node;
+	    //Ignoring desiredActiveArea, no choice;
+	    newActive = node;
+	    break;
+	case AreaLayout.LEFT_TOP_BOTTOM:
+	    if (layout.getArea1() == null ||
+		layout.getArea2() == null ||
+		layout.getArea3() == null)
+		return;
+	    AreaWindowTreeNode node1 = new AreaWindowTreeNode(), node2 = new AreaWindowTreeNode(), node3 = new AreaWindowTreeNode();
+	    node1.app = newApp;
+	    node1.area = layout.getArea1();
+	    node2.app = newApp;
+	    node2.area = layout.getArea2();
+	    node3.app = newApp;
+	    node3.area = layout.getArea3();
+	    CompositeWindowTreeNode composite1 = new CompositeWindowTreeNode(), composite2 = new CompositeWindowTreeNode();
+	    composite1.app = newApp;
+	    composite1.direction = CompositeWindowTreeNode.VERTICAL;
+	    composite1.node1 = node1;
+	    composite1.node2 = composite2;
+	    composite2.app = newApp;
+	    composite2.direction = CompositeWindowTreeNode.HORIZONTAL;
+	    composite2.node1 = node2;
+	    composite2.node2 = node3;
+	    res = composite1;
+		newActive = node1;
+	    if (desiredActiveArea != null)
+	    {
+		if (desiredActiveArea == node1.area)
+		    newActive = node1; else
+		    if (desiredActiveArea == node2.area)
+			newActive = node2; else
+			if (desiredActiveArea == node3.area)
+			    newActive = node3;
+	    }
+	    break;
+	    //FIXME:case LEFT_RIGHT_BOTTOM;
+	default:
+	    return;
+	}
+	windows = replaceNonPopupNodeByAppImpl(windows, oldApp, res, new AtomicBoolean(true));
+	if (active != null && active.app == oldApp)
+	{
+	    active = newActive;
+	    onSetActiveArea();
+	}
     }
 
-    public void onKeyboardEvent(KeyboardEvent event)
+    public boolean hasNonPopupArea(Area area)
+    {
+	return hasNonPopupAreaImpl(windows, area);
+    }
+
+    public boolean hasAreaNonPopupOfApp(Application app)
+    {
+	return hasAreaNonPopupOfAppImpl(windows, app);
+    }
+
+    public void gotoNextArea()
+    {
+	AreaWindowTreeNode areaNodes[] = allAreaNodes();
+	if (areaNodes == null || areaNodes.length == 0)
+	{
+	    active = null;
+	    return;
+	}
+	int index = 0;
+	for(index = 0;index < areaNodes.length;index++)
+	    if (active == areaNodes[index])
+		break;
+	if (index >= areaNodes.length)
+	{
+	    active = areaNodes[0];
+	    onSetActiveArea();
+	    return;
+	}
+	index++;
+	if (index >= areaNodes.length)
+	    index = 0;
+	if (active != areaNodes[index])
+	{
+	    active = areaNodes[index];
+	    onSetActiveArea();
+	}
+    }
+
+    //If one of the areas to remove is active, none of the remaining areas becomes active, otherwise active area is left unchanged; 
+    public void closeAreasByApp(Application app)
+    {
+	fixNodeApplicationAssociations(windows);
+	windows = closeNonPopupNodesByAppImpl(windows, app);
+	if (active.app == app)
+	    active = null;
+    }
+
+    public void setActiveAreaNonPopup(Application app, Area area)
+    {
+	setActiveAreaNonPopupImpl(windows, app, area);
+    }
+
+    public void setActiveFirstNonPopup()
+    {
+	AreaWindowTreeNode areaNodes[] = allAreaNodes();
+	if (areaNodes == null || areaNodes.length < 1)
+	{
+	    active = null;
+	    return;
+	}
+	int index = 0;
+	while(index < areaNodes.length && areaNodes[index].getType() == WindowTreeNode.POPUP)
+	    index++;
+	if (index >= areaNodes.length)
+	{
+	    active = null;
+	    return;
+	}
+	active = areaNodes[index];
+	onSetActiveArea();
+    }
+
+    public boolean hasNonPopup()
+    {
+	if (windows == null)
+	    return false;
+	if (windows.getType() != WindowTreeNode.POPUP)
+	    return true;
+	PopupWindowTreeNode popupNode = (PopupWindowTreeNode)windows;
+	return popupNode.node != null;
+    }
+
+    public Application getNonPopupActiveAreaApp()
+    {
+	if (active == null || active.getType() != WindowTreeNode.AREA)
+	    return null;
+	return active.app;
+    }
+
+    public Area getNonPopupActiveArea()
+    {
+	if (active == null || active.getType() != WindowTreeNode.AREA)
+	    return null;
+	return active.area;
+    }
+
+    //Popup area;
+
+    public void openPopupArea(Area popupArea, int popupPlace)
+    {
+	if (windows != null && windows.getType() == WindowTreeNode.POPUP)
+	{
+	    PopupWindowTreeNode node = (PopupWindowTreeNode)windows;
+	    node.area = popupArea;
+	    node.place = popupPlace;
+	    active = node;
+	    onSetActiveArea();
+	    return;
+	}
+	PopupWindowTreeNode popupNode = new PopupWindowTreeNode();
+	popupNode.area = popupArea;
+	popupNode.node = windows;
+	popupNode.place = popupPlace;
+	windows = popupNode;
+	active = popupNode;
+	onSetActiveArea();
+	//FIXME:redraw;
+    }
+
+    public boolean hasPopupArea()
+    {
+	if (windows == null)
+	    return false;
+	return windows.getType() == WindowTreeNode.POPUP;
+    }
+
+    public boolean isPopupAreaActive()
     {
 	if (active == null)
-	    return;
-	active.area.onKeyboardEvent(event);
+	    return false;
+	return active.getType() == WindowTreeNode.POPUP;
     }
 
-    private boolean setActiveAreaImpl(WindowTreeNode node, Application app, Area area)
+    public Area getPopupArea()
+    {
+	if (windows == null)
+	    return null;
+	if (windows.getType() != WindowTreeNode.POPUP)
+	    return null;
+	PopupWindowTreeNode popupNode = (PopupWindowTreeNode)windows;
+	return popupNode.area;
+    }
+
+    public void setActivePopupArea()
+    {
+	if (windows == null || windows.getType() != WindowTreeNode.POPUP)
+	    return;
+	active = (PopupWindowTreeNode)windows;
+	onSetActiveArea();
+    }
+
+    //If popup area was active there is no active area after operation;
+    public void closePopupArea()
+    {
+	if (windows == null || windows.getType() != WindowTreeNode.POPUP)
+	    return;
+	PopupWindowTreeNode popupNode = (PopupWindowTreeNode)windows;
+	windows = popupNode.node;
+	if (active == popupNode)
+	    active = null;
+    }
+
+    //Events processing;
+
+    public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	if (active == null)
+	    return false;
+	try {
+	    active.area.onKeyboardEvent(event);
+	} 
+	catch(Exception e)//FIXME:
+	{
+	    Environment.message(Langs.staticValue(Langs.APPLICATION_INTERNAL_ERROR));
+	}
+	return true;
+    }
+
+    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	if (active == null)
+	    return false;
+	try {
+	    active.area.onEnvironmentEvent(event);
+	} 
+	catch(Exception e)//FIXME:
+	{
+	    Environment.message(Langs.staticValue(Langs.APPLICATION_INTERNAL_ERROR));
+	}
+	return true;
+    }
+
+    public void onAreaNewHotPoint(Area area)
+    {
+	//No matter is popup area or not;
+	//FIXME:
+    }
+
+    public void onAreaNewContent(Area area)
+    {
+	//No matter is popup area or not;
+	//FIXME:
+    }
+
+    //Auxiliary method;
+
+    private boolean setActiveAreaNonPopupImpl(WindowTreeNode node, Application app, Area area)
     {
 	if (node == null)
 	    return false;
 	if (node.getType() == WindowTreeNode.AREA)
 	{
 	    AreaWindowTreeNode areaNode = (AreaWindowTreeNode)node;
-	    if (areaNode.app != app || areaNode.area != area)
+	    if (areaNode.app != app)
 		return false;
-	    active = areaNode;
-	    onSetActiveArea(areaNode);
-	    return true;
+	    if (areaNode.hiddenArea != null && areaNode.hiddenArea.getHiddenArea() == area)
+	    {
+		active = areaNode;
+		onSetActiveArea();
+		return true;
+	    }
+	    if (areaNode.area == area)
+	    {
+		active = areaNode;
+		onSetActiveArea();
+		return true;
+	    }
+	    return false;
+	}
+	if (node.getType() == WindowTreeNode.POPUP)
+	{
+	    PopupWindowTreeNode popupNode = (PopupWindowTreeNode)node;
+	    return setActiveAreaNonPopupImpl(popupNode.node, app, area);
 	}
 	if (node.getType() != WindowTreeNode.COMPOSITE)
 	    return false;
 	CompositeWindowTreeNode compositeNode = (CompositeWindowTreeNode)node;
-	if (setActiveAreaImpl(compositeNode.node1, app, area))
+	if (setActiveAreaNonPopupImpl(compositeNode.node1, app, area))
 	    return true;
-	if (setActiveAreaImpl(compositeNode.node2, app, area))
+	if (setActiveAreaNonPopupImpl(compositeNode.node2, app, area))
 	    return true;
 	return false;
     }
 
-    private void onSetActiveArea(AreaWindowTreeNode areaNode)
+    private void fixNodeApplicationAssociations(WindowTreeNode node)
     {
-	Speech.say(areaNode.area.getName());
+	if (node == null)
+	    return;
+	if (node.getType() == WindowTreeNode.COMPOSITE)
+	{
+	    CompositeWindowTreeNode composite = (CompositeWindowTreeNode)node;
+	    if (composite.node1 == null && composite.node2 == null)//Normally never happens;
+		return;
+	    fixNodeApplicationAssociations(composite.node1);
+	    fixNodeApplicationAssociations(composite.node2);
+	    /*
+	     * It could be a good idea in case when one of the nodes is null remove
+	     * intermediate node and link parent node to the second not null node
+	     * directly but actually this method should be called in conjunction with
+	     * closing nodes by application and required cleaning gets done
+	     * automatically.
+	     */
+	    if (composite.node1 == null)
+	    {
+		composite.app = composite.node2.app;
+		return;
+	    }
+	    if (composite.node2 == null)
+	    {
+		composite.app = composite.node1.app;
+		return;
+	    }
+	    if (composite.node1.app == composite.node2.app)//Including the case they are both have null value;
+		composite.app = composite.node1.app; else
+		composite.app = null;
+	    return;
+	}
+	if (node.getType() == WindowTreeNode.POPUP)
+	{
+	    PopupWindowTreeNode popup = (PopupWindowTreeNode)node;
+	    fixNodeApplicationAssociations(popup.node);
+	    return;
+	}
+	//No actions for area node;
     }
+
+    private WindowTreeNode closeNonPopupNodesByAppImpl(WindowTreeNode node , Application app)
+    {
+	if (node == null)
+	    return null;
+	if (node.getType() == WindowTreeNode.AREA)
+	{
+	    AreaWindowTreeNode areaNode = (AreaWindowTreeNode)node;
+	    if (areaNode.app == app)
+		return null;
+	    return node;
+	}
+	if (node.getType() == WindowTreeNode.COMPOSITE)
+	{
+	    CompositeWindowTreeNode composite = (CompositeWindowTreeNode)node;
+	    if (composite.app != null)
+	    {
+		if (composite.app == app)
+		    return null;
+		return node;
+	    }
+	    composite.node1 = closeNonPopupNodesByAppImpl(composite.node1, app);
+	    composite.node2 = closeNonPopupNodesByAppImpl(composite.node2, app);
+	    if (composite.node1 == null && composite.node2 == null)//Should not happen;
+		return null;
+	    if (composite.node1 == null)
+		return composite.node2;
+	    if (composite.node2 == null)
+		return composite.node1;
+	    return composite;
+	}
+	if (node.getType() == WindowTreeNode.POPUP)
+	{
+	    PopupWindowTreeNode popup = (PopupWindowTreeNode)node;
+	    popup.node = closeNonPopupNodesByAppImpl(popup.node, app);
+	    return popup;
+	}
+	return null;
+    }
+
+    private AreaWindowTreeNode[] allAreaNodes()
+    {
+	return allAreaNodesImpl(windows);
+    }
+
+    private AreaWindowTreeNode[] allAreaNodesImpl(WindowTreeNode node)
+    {
+	if (node == null)
+	    return null;
+	if (node.getType() == WindowTreeNode.AREA)
+	{
+	    AreaWindowTreeNode nodes[] = new AreaWindowTreeNode[1];
+	    nodes[0] = (AreaWindowTreeNode)node;
+	    return nodes;
+	}
+	if (node.getType() == WindowTreeNode.COMPOSITE)
+	{
+	    CompositeWindowTreeNode composite = (CompositeWindowTreeNode)node;
+	    AreaWindowTreeNode nodes1[] = allAreaNodesImpl(composite.node1);
+	    AreaWindowTreeNode nodes2[] = allAreaNodesImpl(composite.node2);
+	    final int len1 = nodes1 != null?nodes1.length:0;
+	    final int len2 = nodes2 != null?nodes2.length:0;
+	    int pos = 0;
+	    AreaWindowTreeNode res[] = new AreaWindowTreeNode[len1 + len2];
+	    if (nodes1 != null)
+		for(int i = 0;i < nodes1.length;i++)
+		    res[pos++] = nodes1[i];
+	    if (nodes2 != null)
+		for(int i = 0;i < nodes2.length;i++)
+		    res[pos++] = nodes2[i];
+	    return res;
+	}
+	if (node.getType() == WindowTreeNode.POPUP)
+	{
+	    PopupWindowTreeNode popup = (PopupWindowTreeNode)node;
+	    AreaWindowTreeNode nodes[] = allAreaNodesImpl(popup.node);
+	    if (nodes == null)
+	    {
+		AreaWindowTreeNode res[] = new AreaWindowTreeNode[1];
+		res[0] = popup;
+		return res;
+	    }
+	    AreaWindowTreeNode res[] = new AreaWindowTreeNode[nodes.length + 1]; 
+	    for(int i = 0;i < nodes.length;i++)
+		res[i] = nodes[i];
+	    res[res.length - 1] = popup;
+	    return res;
+	}
+	//Normally never happens;
+	return null;
+    }
+
+    private WindowTreeNode replaceNonPopupNodeByAppImpl(WindowTreeNode node, Application oldApp, WindowTreeNode replaceByNode, AtomicBoolean shouldContinue)
+    {
+	if (node == null)
+	    return null;
+	if (node.getType() == WindowTreeNode.AREA)
+	{
+	    if (node.app == oldApp)
+	    {
+		shouldContinue.set(false);
+		return replaceByNode;
+	    }
+	    return node;
+	}
+	if (node.getType() == WindowTreeNode.COMPOSITE)
+	{
+	    if (node.app == oldApp)
+	    {
+		shouldContinue.set(false);
+		return replaceByNode;
+	    }
+	    CompositeWindowTreeNode compositeNode = (CompositeWindowTreeNode)node;
+	    compositeNode.node1 = replaceNonPopupNodeByAppImpl(compositeNode.node1, oldApp, replaceByNode, shouldContinue);
+	    if (!shouldContinue.get())
+		return compositeNode;
+	    compositeNode.node2 = replaceNonPopupNodeByAppImpl(compositeNode.node2, oldApp, replaceByNode, shouldContinue);
+	    return compositeNode;
+	}
+	if (node.getType() == WindowTreeNode.POPUP)
+	{
+	    PopupWindowTreeNode popupNode = (PopupWindowTreeNode)node;
+	    popupNode.node = replaceNonPopupNodeByAppImpl(popupNode.node, oldApp, replaceByNode, shouldContinue);
+	    return popupNode;
+	}
+	return node;//Normally never happens;
+    }
+
+    private boolean hasAreaNonPopupOfAppImpl(WindowTreeNode node, Application app)
+    {
+	if (node == null)
+	    return false;
+	if (node.getType() == WindowTreeNode.AREA)
+	    return node.app == app;
+	if (node.getType() == WindowTreeNode.COMPOSITE)
+	{
+	    CompositeWindowTreeNode compositeNode = (CompositeWindowTreeNode)node;
+	    if (hasAreaNonPopupOfAppImpl(compositeNode.node1, app))
+	    return true;
+	    return 	    hasAreaNonPopupOfAppImpl(compositeNode.node2, app);
+	}
+	if (node.getType() == WindowTreeNode.POPUP)
+	{
+	    PopupWindowTreeNode popupNode = (PopupWindowTreeNode)node;
+	    return hasAreaNonPopupOfAppImpl(popupNode.node, app);
+	}
+	return false;
+    }
+
+    private boolean hasNonPopupAreaImpl(WindowTreeNode node, Area area)
+    {
+	if (node == null)
+	    return false;
+	if (node.getType() == WindowTreeNode.AREA)
+	{
+	    AreaWindowTreeNode areaNode = (AreaWindowTreeNode)node;
+	    return areaNode.area == area;//FIXME:Hidden area processing;
+	}
+	if (node.getType() == WindowTreeNode.COMPOSITE)
+	{
+	    CompositeWindowTreeNode compositeNode = (CompositeWindowTreeNode)node;
+	    if (hasNonPopupAreaImpl(compositeNode.node1, area))
+	    return true;
+	    return 	    hasNonPopupAreaImpl(compositeNode.node2, area);
+	}
+	if (node.getType() == WindowTreeNode.POPUP)
+	{
+	    PopupWindowTreeNode popupNode = (PopupWindowTreeNode)node;
+	    return hasNonPopupAreaImpl(popupNode.node, area);
+	}
+	return false;
+    }
+
+    private void onSetActiveArea()
+    {
+	if (active == null || active.area == null)
+	    return;
+	Speech.say(active.area.getName());
+    }
+
+    //Drawing methods;
 }

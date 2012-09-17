@@ -16,37 +16,10 @@
 
 package com.marigostra.luwrain.core;
 
-public class KeyboardEvent extends Event
+public interface Interaction
 {
-    public static final int ENTER = 10;
-    public static final int ESCAPE = 27;
-    public static final int TAB = 9;
-
-    public static final int ARROW_DOWN = 258;
-    public static final int ARROW_UP = 259;
-    public static final int ARROW_LEFT = 260;
-    public static final int ARROW_RIGHT = 261;
-
-    private int code;
-
-    public KeyboardEvent(int code)
-    {
-	super(KEYBOARD_EVENT);
-	this.code = code;
-    }
-
-    public int getRawCode()
-    {
-	return code;
-    }
-
-    public boolean isCommand()
-    {
-	return true;
-    }
-
-    public int getCommand()
-    {
-	return code;
-    }
+    void init();
+    void startInputEventsAcception();
+    void stopInputEventsAccepting();
+    void close();
 }

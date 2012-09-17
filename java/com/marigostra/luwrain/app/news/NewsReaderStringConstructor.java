@@ -19,6 +19,8 @@ package com.marigostra.luwrain.app.news;
 public interface NewsReaderStringConstructor
 {
     String groupAreaName();
-    String articleAreaName();
+    String summaryAreaName();
     String viewAreaName();
+    String readPrefix();
+    String markedPrefix();
 }

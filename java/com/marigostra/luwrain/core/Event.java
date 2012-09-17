@@ -19,10 +19,11 @@ package com.marigostra.luwrain.core;
 public class Event
 {
     public static final int KEYBOARD_EVENT = 1;
+    public static final int ENVIRONMENT_EVENT = 2;
 
     private int type;
 
-    Event(int type)
+    public Event(int type)
     {
 	this.type = type;
     }

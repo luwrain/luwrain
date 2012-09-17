@@ -16,6 +16,8 @@
 
 package com.marigostra.luwrain.core;
 
+import com.marigostra.luwrain.core.events.*;
+
 public class SimpleArea extends NavigateArea
 {
     private String name = "";
@@ -38,24 +40,16 @@ public class SimpleArea extends NavigateArea
 
     public int getLineCount()
     {
-	if (content == null)
-	    return 1;
-	if (content.length < 1)
+	if (content == null || content.length < 1)
 	    return 1;
 	return content.length;
     }
 
     public String getLine(int index)
     {
-	if (content == null && index == 0)
+	if (content == null || content.length < 1)
 	    return new String();
-	if (content.length < 1 && index == 0)
-	    return new String();
-	if (content == null)
-	    return null;
-	if (index >= content.length)
-	    return null;
-	if (content[index] == null)
+	if (index >= content.length || content[index] == null)
 	    return new String();
 	return content[index];
     }
@@ -63,6 +57,95 @@ public class SimpleArea extends NavigateArea
     public void setContent(String[] content)
     {
 	this.content = content;
+	Dispatcher.onAreaNewContent(this);
+	fixHotPoint();
+    }
+
+    public void setLine(int index, String line)
+    {
+	if (content == null || content.length < 1)
+	{
+	    if (index != 0)
+		return;
+	    content = new String[1];
+	    content[0] = line;
+	    return;
+	}
+	if (index >= content.length)
+	    return;
+	content[index] = line;
+    }
+
+    public void addLine(String line)
+    {
+	if (content == null || content.length < 1)
+	{
+	    content = new String[1];
+	    content[0] = line;
+	    Dispatcher.onAreaNewContent(this);
+	    fixHotPoint();
+	    return;
+	}
+	String[] newContent = new String[content.length + 1];
+	for(int i = 0;i < content.length;i++)
+	    newContent[i] = content[i];
+	newContent[newContent.length - 1] = line;
+	content = newContent;
+	Dispatcher.onAreaNewContent(this);
+	fixHotPoint();
+    }
+
+    public void insertLine(int index, String line)
+    {
+	if (content == null || content.length < 1)
+	{
+	    if (index != 0)
+		return;
+	    content = new String[1];
+	    content[0] = line;
+	    Dispatcher.onAreaNewContent(this);
+	    fixHotPoint();
+	    return;
+	}
+	if (index > content.length)
+	    return;
+	String[] newContent = new String[content.length + 1];
+	for(int i = 0;i < index;i++)
+	    newContent[i] = content[i];
+	newContent[index] = line;
+	for(int i = index;i < content.length;i++)
+	    newContent[i + 1] = content[i];
+	content = newContent;
+	Dispatcher.onAreaNewContent(this);
+	fixHotPoint();
+    }
+
+    public void removeLine(int index)
+    {
+	if (content == null || content.length < 1)
+	    return;
+	if (index >= content.length)
+	    return;
+	String[] newContent = new String[content.length - 1];
+	for(int i = 0;i < index;i++)
+	    newContent[i] = content[i];
+	for(int i = index + 1;i < content.length;i++)
+	    newContent[i - 1] = content[i];
+	content = newContent;
+	Dispatcher.onAreaNewContent(this);
+	fixHotPoint();
+    }
+
+    public void clear()
+    {
+	content = null;
+	Dispatcher.onAreaNewContent(this);
+	fixHotPoint();
+    }
+
+    public void onEnvironmentEvent(EnvironmentEvent event)
+    {
+	//Nothing here;
     }
 
     public String getName()
@@ -75,5 +158,6 @@ public class SimpleArea extends NavigateArea
 public void setName(String name)
 {
     this.name = name;
+    Dispatcher.onNewAreaName(this);
 }
 }

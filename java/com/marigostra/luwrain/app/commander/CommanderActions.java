@@ -14,14 +14,12 @@
    General Public License for more details.
 */
 
-package com.marigostra.luwrain.core;
+package com.marigostra.luwrain.app.commander;
 
-public class InitialEventLoopStopCondition implements EventLoopStopCondition
+public interface CommanderActions
 {
-    static public boolean shouldContinue = true;
-
-    public boolean continueEventLoop()
-    {
-	return shouldContinue;
-    }
+    void gotoLeftPanel();
+    void gotoRightPanel();
+    void gotoTasks();
+    void closeCommander();
 }

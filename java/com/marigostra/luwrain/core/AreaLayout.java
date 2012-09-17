@@ -71,4 +71,19 @@ public class AreaLayout
     {
 	return area3;
     }
+
+    public boolean hasArea(Area area)
+    {
+	switch(layoutType)
+	{
+	case SINGLE:
+	    return area1 == area;
+	case LEFT_TOP_BOTTOM:
+	    return area1 == area || area2 == area || area3 == area;
+	case LEFT_RIGHT_BOTTOM:
+	    return area1 == area || area2 == area || area3 == area;
+	default:
+	    return false;
+	}
+    }
 }

@@ -14,32 +14,22 @@
    General Public License for more details.
 */
 
-package com.marigostra.luwrain.core;
+package com.marigostra.luwrain.pim;
 
-public class DispatcherImpl implements Dispatcher
+import java.sql.*;
+import com.marigostra.luwrain.comm.PimStorage;
+
+public class PimManager
 {
-    public void launchApplication(Application app)
+    public static NewsStoring createNewsStoring()
     {
-	Environment.launchApplication(app);
-    }
-
-    public void setActiveArea(Object instance, Area area)
-    {
-	Environment.setActiveArea(instance, area);
-    }
-
-    public void onAreaNewHotPoint(Area area, int x, int y)
-    {
-	Environment.onAreaNewHotPoint(area, x, y);
-    }
-
-    public void onNewAreaContent(Area area)
-    {
-	Environment.onNewAreaContent(area);
-    }
-
-    public void quit()
-    {
-	Environment.quit();
+	if (PimStorage.type == PimStorage.STORAGE_SQL)
+	{
+	    Connection con = PimStorage.sqlConnection();
+	    if (con == null)
+		return null;
+	    return new NewsStoringSql(con);
+	}
+	return null;
     }
 }

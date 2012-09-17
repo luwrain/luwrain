@@ -17,6 +17,7 @@
 package com.marigostra.luwrain.app.news;
 
 import com.marigostra.luwrain.core.*;
+import com.marigostra.luwrain.core.events.*;
 
 public class ViewArea extends SimpleArea
 {
@@ -25,7 +26,7 @@ public class ViewArea extends SimpleArea
 
     public ViewArea(NewsReaderActions actions, NewsReaderStringConstructor stringConstructor)
     {
-	super("FIXME:view");
+	super(stringConstructor.viewAreaName());
 	this.actions =  actions;
 	this.stringConstructor = stringConstructor;
 	setContent(prepareText());

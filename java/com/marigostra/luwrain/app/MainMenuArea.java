@@ -17,12 +17,13 @@
 package com.marigostra.luwrain.app;
 
 import com.marigostra.luwrain.core.*;
+import com.marigostra.luwrain.core.events.*;
 
 interface MainMenuItem 
 {
     String getText();
     boolean hasAction();
-    void onAction();
+    String getAction();
 }
 
 class EmptyMainMenuItem implements MainMenuItem
@@ -37,8 +38,9 @@ class EmptyMainMenuItem implements MainMenuItem
 	return false;
     }
 
-    public void onAction()
+    public String getAction()
     {
+	return "";
     }
 }
 
@@ -61,8 +63,9 @@ class TimeMainMenuItem implements MainMenuItem
 	return false;
     }
 
-    public void onAction()
+    public String getAction()
     {
+	return "";
     }
 }
 
@@ -85,31 +88,97 @@ class DayMainMenuItem implements MainMenuItem
 	return false;
     }
 
-    public void onAction()
+    public String getAction()
     {
+	return "";
     }
 }
 
-class MainMenuArea extends SimpleArea
+class ActionMainMenuItem implements MainMenuItem
 {
+    private String action = null;
+    private String title = null;
+
+    public ActionMainMenuItem(String action, String title)
+    {
+	this.action = action;
+	this.title = title;
+    }
+
+    public String getText()
+    {
+	return title;
+    }
+
+    public boolean hasAction()
+    {
+	return true;
+    }
+
+    public String getAction()
+    {
+	return action;
+    }
+}
+
+public class MainMenuArea extends SimpleArea implements EventLoopStopCondition
+{
+    private boolean shouldContinue = true; 
     private SystemAppStringConstructor stringConstructor;
     private MainMenuItem items[];
+    private String selectedAction = "";
+    private boolean cancelled = true;
 
     public MainMenuArea(SystemAppStringConstructor stringConstructor)
     {
 	super(stringConstructor.mainMenuTitle());
 	this.stringConstructor = stringConstructor;
-	items = new MainMenuItem[3];
+	items = new MainMenuItem[8];
 	items[0] = new TimeMainMenuItem(stringConstructor);
 	items[1] = new DayMainMenuItem(stringConstructor);
 	items[2] = new EmptyMainMenuItem();
+	items[3] = new ActionMainMenuItem("commander", "Обзор файлов и папок");
+	items[4] = new ActionMainMenuItem("mail", "Электронная почта");
+	items[5] = new ActionMainMenuItem("news", "Новости");
+	items[6] = new ActionMainMenuItem("notepad", "Блокнот");
+	items[7] = new EmptyMainMenuItem();
 	setContent(prepareText());
+    }
+
+    public boolean continueEventLoop()
+    {
+	return shouldContinue;
+    }
+
+    public void cancel()
+    {
+	cancelled = true;
+	shouldContinue = false;
+    }
+
+    public String getSelectedAction()
+    {
+	return selectedAction;
+    }
+
+    public boolean wasCancelled()
+    {
+	return cancelled;
     }
 
     public void onUserKeyboardEvent(KeyboardEvent event)
     {
 	if (event.isCommand() && event.getCommand() == KeyboardEvent.ENTER)
 	    run(getHotPointY());
+    }
+
+    public void onEnvironmentEvent(EnvironmentEvent event)
+    {
+	if (event.getCode() == EnvironmentEvent.CANCEL || event.getCode() == EnvironmentEvent.CLOSE)
+	{
+	    cancel();
+	    return;
+	}
     }
 
     private String[] prepareText()
@@ -122,14 +191,14 @@ class MainMenuArea extends SimpleArea
 
     private void run(int index)
     {
-	Application app = new com.marigostra.luwrain.app.news.NewsReaderApp();
-	Environment.dispatcher().launchApplication(app);
-	/*FIXME:
+	if (items == null)
+	    return;
 	if (index >= items.length)
 	    return;
 	if (!items[index].hasAction())
 	    return;
-	Speech.say("Сейчас попробуем новости");
-	*/
+	selectedAction = items[index].getAction();
+	cancelled = false;
+	shouldContinue = false;
     }
 }

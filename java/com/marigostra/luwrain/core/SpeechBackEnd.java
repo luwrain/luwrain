@@ -21,4 +21,5 @@ public interface SpeechBackEnd
     void say(String text);
     void sayLetter(char letter);
     void silence();
+    void setPitch(int value);
 }

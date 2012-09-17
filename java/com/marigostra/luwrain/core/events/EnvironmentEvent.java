@@ -14,20 +14,26 @@
    General Public License for more details.
 */
 
-package com.marigostra.luwrain.core;
+package com.marigostra.luwrain.core.events;
 
-import jcurses.system.*;
+import com.marigostra.luwrain.core.*;
 
-public class EventSourceKeyboard implements Runnable
+public class EnvironmentEvent extends Event
 {
-    public void run()
+    public static final int OK = 0;
+    public static final int CANCEL = 1;
+    public static final int CLOSE = 2;
+
+    private int code;
+
+    public EnvironmentEvent(int code)
     {
-	while(true)
-	{
-	    InputChar inputChar = Toolkit.readCharacter();
-	    if (inputChar == null)
-		continue;
-	    Environment.enqueueEvent(new KeyboardEvent(inputChar.getCode()));
-	}
+	super(ENVIRONMENT_EVENT);
+	this.code = code;
+    }
+
+    public int getCode()
+    {
+	return code;
     }
 }
