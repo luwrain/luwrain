@@ -9,7 +9,7 @@
     <delete dir="build"/>
     <delete dir="jar"/>
   </target>
-  <target name="compile">
+  <target name="compile" depends="clean">
     <mkdir dir="build"/>
     <javac srcdir="java" destdir="build">
       <classpath refid="classpath"/>
@@ -19,7 +19,7 @@
     <mkdir dir="jar"/>
     <jar jarfile="jar/luwrain.jar">
       <manifest>
-        <attribute name="Main-Class" value="com.marigostra.luwrain.LuwrainApp"/>
+        <attribute name="Main-Class" value="org.luwrain.LuwrainApp"/>
       </manifest>
       <fileset dir="./build">
         <include name="**/*.class"/>

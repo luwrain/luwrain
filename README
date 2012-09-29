@@ -1,0 +1,55 @@
+
+  The Luwrain project
+  README file
+
+   What is Luwrain?
+  ------------------
+
+With accessible environment Luwrain blind and visual impaired
+persons get one more way to be involved in the incredible world of
+information technologies.  Luwrain doesn't take a lot of time to study
+and aims to be useful on laptops as well as on usual desktop
+computers.  You can treat our new idea as one more solution for
+everybody who needs reliable and accessible companion for various
+types of work.  The product is designed as new platform for creating
+speech-enabled applications with set of standard tools for easy web
+access, mail and news reading , etc.
+
+Luwrain is a linux-based system with special type of user interface
+constructed on Java technologies.  In contrast with widely popular
+screen reading solutions for graphical desktops which actually were
+designed for control basically by mouse and other pointing devices,
+Luwrain follows special conception offering representation of every
+working object from scratch in text form.  That means in Luwrain user
+will always spend significantly less time than in an adapted GUI.  We
+have created our environment for people with active style of life who
+appreciate time economy getting their job done.
+
+In Luwrain Java user space gathers together a number of system
+services taken for providing flexible core and good level of
+compatibility.  Information exchanging between them is performed
+mostly through D-Bus activity.  It brings to a user information about
+network structure from Network Manager and transmits commands to
+speech server purposed for Text-To-Speech engines manipulating.
+Personal user data can be stored in OpenLDAP or in any choice of SQL
+server which has proper JDBC interface.  For low-vision users Luwrain
+opens full-screen window with all corresponding textual data written
+in contrast colours.  That window is drawn by X.org server using
+special window manager created as a part of Luwrain project.
+
+Luwrain is a completely Free Software project, no fee is implied, no
+restrictions of using and distribution are present, except of cases
+explicitly violating the terms of GNU Public License ver. 3 as it was
+published by Free Software Foundation.  However, money donations are
+still required to help us present our product wider over the world and
+introduce it to related social and distribution organizations.  The
+team of developers hopes Luwrain can increase the integration of
+disabled persons into social life.
+
+   See additional resources:
+  ---------------------------
+
+* The official website: http://luwrain.org/
+* The set of git repositories: http://github.com/luwrain/
+
+Some further project information you can find inside of doc/ directory.

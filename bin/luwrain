@@ -1,0 +1,14 @@
+#!/bin/sh -e
+#
+# Invokes accessible environment Luwrain with Java virtual machine
+# Michael Pozhidaev <msp@altlinux.org>
+
+LOGFILE=/tmp/.luwrain.log
+LIBDIR=/usr/lib/luwrain
+LIBSFILE="$LIBDIR/libs"
+CLASSPATH="$(while read l; do echo -n ":$LIBDIR/$l"; done < "$LIBSFILE")"
+JARFILE=luwrain.jar
+CLASSPATH="$CLASSPATH:$LIBDIR/$JARFILE"
+MAINCLASS=org.luwrain.LuwrainApp
+
+exec java -cp "$CLASSPATH" -Djava.library.path="$LIBDIR" "$MAINCLASS" "$@" &> "$LOGFILE"
