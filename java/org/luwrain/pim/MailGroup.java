@@ -14,22 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.comm;
+package org.luwrain.pim;
 
-import org.freedesktop.dbus.*;
-import org.freedesktop.dbus.exceptions.*;
-
-public class DBus
+public class MailGroup
 {
-    static public DBusConnection con;
-
-    static public void connect() throws DBusException
-    {
-con = DBusConnection.getConnection(DBusConnection.SYSTEM);
-    }
-
-    static public void shutdown()
-    {
-	con.disconnect();
-    }
+    public String name = new String();
+    public String groupType = new String();
+    public int orderIndex = 0;
+    public int expireAfterDays = 0;
+    public String extInfo = new String();
 }

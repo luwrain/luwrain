@@ -141,6 +141,7 @@ public class SimpleLinePopup implements Area, EventLoopStopCondition
 	{
 	    shouldContinue = false;
 	    cancelled = false;
+	    return true;
 	}
 
 	if (pos < prefix.length() + 1)

@@ -14,16 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.mail;
+package org.luwrain.app.fetch;
 
-import javax.mail.Message;
-
-public interface MailGroup
+public interface FetchActions
 {
-    String getName();
-    boolean hasChildFolders();
-    MailGroup[] getChildGroups();
-    //null means retrieving error, zero lenth means no messages;
-    Message[] getMessages();
-    MailGroup getParentGroup();
+    void closeFetchApp();
 }

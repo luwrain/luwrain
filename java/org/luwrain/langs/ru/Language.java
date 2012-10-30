@@ -39,6 +39,8 @@ public class Language implements org.luwrain.core.Language
 	    return new CommanderStringConstructor();
 	if (id.equals("notepad"))
 	    return new NotepadStringConstructor();
+	if (id.equals("fetch"))
+	    return new FetchStringConstructor();
 	return null;
     }
 }

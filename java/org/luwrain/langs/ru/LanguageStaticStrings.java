@@ -42,6 +42,10 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Начало текста";
 	case Langs.AREA_END:
 	    return "Конец текста";
+	case Langs.TREE_AREA_BEGIN:
+	    return "Начало просмотра дерева";
+	case Langs.TREE_AREA_END:
+	    return "Конец просмотра дерева";
 
 	case Langs.NO_REQUESTED_ACTION:
 	    return "Выбранное Вами действие недоступно в системе";

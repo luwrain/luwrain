@@ -16,6 +16,9 @@
 
 package org.luwrain.app.message;
 
+//TODO:Enter moves the cursor to next field;
+//FIXME:Proper name;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 

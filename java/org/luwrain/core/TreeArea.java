@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+//TODO:Refresh operations;
+
 import org.luwrain.core.events.*;
 import java.util.*;
 
@@ -93,7 +95,16 @@ public class TreeArea implements Area
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (!event.isCommand() || event.isModified())
+	//Space;
+	if (!event.isCommand() && event.getCharacter() == ' ' == !event.isModified())
+	{
+	    if (hotPointY >= items.length)
+		return false;
+	    TreeAreaItem item = items[hotPointY];
+	    onClick(item.node.obj);
+	    return true;
+	}
+	if (!event.isCommand() || event.withAlt() || event.withShift())
 	    return false;
 	if (items == null || items.length < 1)
 	{
@@ -103,7 +114,7 @@ public class TreeArea implements Area
 	final int cmd = event.getCommand();
 
 	//Enter;
-	if (cmd == KeyboardEvent.ENTER)
+	if (cmd == KeyboardEvent.ENTER && !event.isModified())
 	{
 	    if (hotPointY >= items.length)
 		return false;
@@ -133,39 +144,122 @@ public class TreeArea implements Area
 	}
 
 	//Down;
-	if (cmd == KeyboardEvent.ARROW_DOWN)
+	if (cmd == KeyboardEvent.ARROW_DOWN && !event.isModified())
 	{
 	    if (hotPointY  >= items.length)
 	    {
-		Speech.say("FIXME", Speech.PITCH_HIGH);
+		Speech.say(Langs.staticValue(Langs.TREE_AREA_END), Speech.PITCH_HIGH);
 		return true;
 	    }
 	    hotPointY++;
-	    if (hotPointY == items.length)
+	    if (hotPointY >= items.length)
 	    {
 		hotPointX = 0;
 		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
 	    } else
 	    {
-		hotPointX = 0;
-		Speech.say(constructLineForSpeech(items[hotPointY]));
+		TreeAreaItem item = items[hotPointY];
+		hotPointX = (item.level + 1) * 2;
+		Speech.say(constructLineForSpeech(item));
 	    }
 	    Dispatcher.onAreaNewHotPoint(this );
 	    return true;
 	}
 
 	//Up;
-	if (cmd == KeyboardEvent.ARROW_UP)
+	if (cmd == KeyboardEvent.ARROW_UP && !event.isModified())
 	{
 	    if (hotPointY  <= 0)
 	    {
-		Speech.say("FIXME", Speech.PITCH_HIGH);
+		Speech.say(Langs.staticValue(Langs.TREE_AREA_BEGIN), Speech.PITCH_HIGH);
 		return true;
 	    }
 	    hotPointY--;
-	    hotPointX = 0;
-	    Speech.say(constructLineForSpeech(items[hotPointY]));
+	    TreeAreaItem item = items[hotPointY];
+	    hotPointX = (item.level + 1) * 2;
+	    Speech.say(constructLineForSpeech(item));
 	    Dispatcher.onAreaNewHotPoint(this );
+	    return true;
+	}
+
+	//Control + down;
+	if (cmd == KeyboardEvent.ARROW_DOWN && event.withControl())//FIXME:only;
+	{
+	    if (hotPointY  >= items.length)
+	    {
+		Speech.say(Langs.staticValue(Langs.TREE_AREA_END), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    hotPointY++;
+	    if (hotPointY >= items.length)
+	    {
+		hotPointX = 0;
+		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	    } else
+	    {
+		TreeAreaItem item = items[hotPointY];
+		hotPointX = (item.level + 1) * 2;
+		Speech.say(item.title);
+	    }
+	    Dispatcher.onAreaNewHotPoint(this );
+	    return true;
+	}
+
+	//Control + Up;
+	if (cmd == KeyboardEvent.ARROW_UP && event.withControl())
+	{
+	    if (hotPointY  <= 0)
+	    {
+		Speech.say(Langs.staticValue(Langs.TREE_AREA_BEGIN), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    hotPointY--;
+	    TreeAreaItem item = items[hotPointY];
+	    hotPointX = (item.level + 1) * 2;
+	    Speech.say(item.title);
+	    Dispatcher.onAreaNewHotPoint(this );
+	    return true;
+	}
+
+	//Right;
+	if (cmd == KeyboardEvent.ARROW_RIGHT && !event.isModified())
+	{
+	    if (hotPointY >= items.length)
+		return false;
+	    TreeAreaItem item = items[hotPointY];
+	    final int bound = (item.level + 1) * 2;
+	    if (hotPointX >= item.title.length() + bound)
+	    {
+		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    if (hotPointX < bound)
+		hotPointX = bound; else
+		hotPointX++;
+	    if (hotPointX >= item.title.length() + bound)
+		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH); else
+		Speech.sayLetter(item.title.charAt(hotPointX - bound));
+	    Dispatcher.onAreaNewHotPoint(this);
+	    return true;
+	}
+
+	//Left;
+	if (cmd == KeyboardEvent.ARROW_LEFT && !event.isModified())
+	{
+	    if (hotPointY >= items.length)
+		return false;
+	    TreeAreaItem item = items[hotPointY];
+	    final int bound = (item.level + 1) * 2;
+	    if (hotPointX <= bound)
+	    {
+		Speech.say(Langs.staticValue(Langs.BEGIN_OF_LINE), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    if (hotPointX >= item.title.length() + bound)
+		hotPointX = item.title.length() + bound - 1; else
+		hotPointX--;
+	    Speech.sayLetter(item.title.charAt(hotPointX - bound));
+	    Dispatcher.onAreaNewHotPoint(this);
 	    return true;
 	}
 

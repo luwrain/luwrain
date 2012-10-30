@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+//TODO:Proper active area specification at taking new layout;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.luwrain.core.events.*;
 import org.luwrain.mmedia.EnvironmentSounds;

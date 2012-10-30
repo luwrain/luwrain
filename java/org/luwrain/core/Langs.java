@@ -27,6 +27,8 @@ public class Langs
     public static final int THE_LAST_LINE = 7;
     public static final int AREA_BEGIN = 8;
     public static final int AREA_END = 9;
+    public static final int TREE_AREA_BEGIN = 10;
+    public static final int TREE_AREA_END = 11;
 
     public static final int NO_REQUESTED_ACTION = 100;
     public static final int NO_ACTIVE_AREA = 101;

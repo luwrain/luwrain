@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-import org.luwrain.comm.*;
+import org.luwrain.pim.PimManager;
 import org.luwrain.mmedia.EnvironmentSounds;
 
 public class Launch
@@ -41,20 +41,13 @@ public class Launch
 	EnvironmentSounds.setSoundFile(EnvironmentSounds.MAIN_MENU, "/home/luwrain/media/sounds/main-menu.wav");
 	EnvironmentSounds.setSoundFile(EnvironmentSounds.MAIN_MENU_ITEM, "/home/luwrain/media/sounds/main-menu-item.wav");
 	EnvironmentSounds.setSoundFile(EnvironmentSounds.EVENT_NOT_PROCESSED, "/home/luwrain/media/sounds/beep1.wav");
-	PimStorage.type = PimStorage.STORAGE_SQL;//FIXME:
-	PimStorage.driver = "com.mysql.jdbc.Driver";
-	PimStorage.url = "jdbc:mysql://localhost/luwrain?characterEncoding=utf-8";
-	PimStorage.login = "root";
-	PimStorage.passwd = "";
+	PimManager.type = PimManager.STORAGE_SQL;//FIXME:
+	PimManager.driver = "com.mysql.jdbc.Driver";
+	PimManager.url = "jdbc:mysql://localhost/luwrain?characterEncoding=utf-8";
+	PimManager.login = "root";
+	PimManager.passwd = "";
 	try {
-	    PimStorage.connect();
-	}
-	catch (Exception e)
-	{
-	    //FIXME:
-	}
-	try {
-	    org.luwrain.comm.DBus.connect();
+	    org.luwrain.dbus.DBus.connect();
 	}
 	catch(org.freedesktop.dbus.exceptions.DBusException e)
 	{
@@ -66,7 +59,7 @@ public class Launch
     private static void shutdown()
     {
 	interaction.close();
-	org.luwrain.comm.DBus.shutdown();
+	org.luwrain.dbus.DBus.shutdown();
 
     }
 

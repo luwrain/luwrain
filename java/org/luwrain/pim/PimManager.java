@@ -17,19 +17,57 @@
 package org.luwrain.pim;
 
 import java.sql.*;
-import org.luwrain.comm.PimStorage;
 
 public class PimManager
 {
+    public static final int STORAGE_SQL = 1;
+    public static final int STORAGE_LDAP = 2;
+
+    public static int type = STORAGE_SQL;
+
+    public static String login = new String();
+    public static String passwd = new String();
+    public static String driver = new String();
+    public static String url = new String();
+
+    private static UserDatabase database;
+
     public static NewsStoring createNewsStoring()
     {
-	if (PimStorage.type == PimStorage.STORAGE_SQL)
+	if (type == STORAGE_SQL)
 	{
-	    Connection con = PimStorage.sqlConnection();
+	    ensureDatabaseReady();
+	    if (database == null)
+		return null;
+	    Connection con = database.getDefaultConnection();
 	    if (con == null)
 		return null;
 	    return new NewsStoringSql(con);
 	}
+	//FIXME:LDAP;
 	return null;
+    }
+
+    public static MailStoring createMailStoring()
+    {
+	if (type == STORAGE_SQL)
+	{
+	    ensureDatabaseReady();
+	    if (database == null)
+		return null;
+	    Connection con = database.getDefaultConnection();
+	    if (con == null)
+		return null;
+	    return new MailStoringSql(con);
+	}
+	//FIXME:LDAP;
+	return null;
+    }
+
+    private static void ensureDatabaseReady()
+    {
+	if (database != null)
+	    return;
+	database = new UserDatabase(driver, url, login, passwd);
     }
 }

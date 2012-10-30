@@ -18,12 +18,44 @@ package org.luwrain.app.mail;
 
 import javax.mail.Message;
 
-public interface MailGroup
+public class EmptyMailGroup implements MailGroup
 {
-    String getName();
-    boolean hasChildFolders();
-    MailGroup[] getChildGroups();
-    //null means retrieving error, zero lenth means no messages;
-    Message[] getMessages();
-    MailGroup getParentGroup();
+    private MailGroup parent;
+    private String name;
+
+    public EmptyMailGroup(MailGroup parent, String name)
+    {
+	this.parent = parent;
+	this.name = name;
+    }
+
+    public String getName()
+    {
+	return name;
+    }
+
+    public boolean hasChildFolders()
+    {
+	return false;
+    }
+
+    public MailGroup[] getChildGroups()
+    {
+	return null;
+    }
+
+    public Message[] getMessages()
+    {
+	return new Message[0];
+    }
+
+    public MailGroup getParentGroup()
+    {
+	return parent;
+    }
+
+    public String toString()
+    {
+	return getName();
+    }
 }

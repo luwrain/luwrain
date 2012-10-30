@@ -14,24 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.comm;
+package org.luwrain.app.fetch;
 
-import java.sql.*;
-
-public class UserDatabase
+public interface FetchStringConstructor
 {
-    private Connection userDb = null;
-
-    public void connect(String driver, String url, String login, String passwd) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException
-    {
-	if (userDb != null)
-	    return;
-	Class.forName (driver).newInstance ();
-userDb = DriverManager.getConnection (url, login, passwd);
-    }
-
-    public Connection connection()
-    {
-	return userDb;
-    }
+    String readingMailFromAccount(String accountName);
+    String connecting(String host);
+    String readingMailInFolder(String folder);
+    String readingMessage(int msgNum, int totalCount);
+    String noMail();
 }

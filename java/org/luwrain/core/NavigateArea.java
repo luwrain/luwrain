@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+//TODO:Tab shift respecting on up-down movements;
+
 import org.luwrain.core.events.*;
 
 public abstract class NavigateArea implements Area

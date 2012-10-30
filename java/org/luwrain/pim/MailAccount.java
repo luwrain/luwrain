@@ -14,16 +14,16 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.mail;
+package org.luwrain.pim;
 
-import javax.mail.Message;
-
-public interface MailGroup
+public class MailAccount
 {
-    String getName();
-    boolean hasChildFolders();
-    MailGroup[] getChildGroups();
-    //null means retrieving error, zero lenth means no messages;
-    Message[] getMessages();
-    MailGroup getParentGroup();
+    public String name = new String();
+    public String protocol = new String();
+    public String host = new String();
+    public int port = 110;
+    public String file = new String();
+    public String login = new String();
+    public String passwd = new String();
+    public String extInfo = new String();
 }

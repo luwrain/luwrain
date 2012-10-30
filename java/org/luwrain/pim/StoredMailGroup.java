@@ -14,16 +14,20 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.mail;
+package org.luwrain.pim;
 
-import javax.mail.Message;
+import java.sql.SQLException;
 
-public interface MailGroup
+public interface StoredMailGroup
 {
     String getName();
-    boolean hasChildFolders();
-    MailGroup[] getChildGroups();
-    //null means retrieving error, zero lenth means no messages;
-    Message[] getMessages();
-    MailGroup getParentGroup();
+    void setName(String name) throws SQLException;
+    String getGroupType();
+    void setGroupType(String value) throws SQLException;
+    int getOrderIndex();
+    void setOrderIndex(int index) throws SQLException;
+    int getExpireAfterDays();
+    void setExpireAfterDays(int count) throws SQLException;
+    String getExtInfo();
+    void setExtInfo(String value) throws SQLException;
 }

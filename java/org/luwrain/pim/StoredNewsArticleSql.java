@@ -16,8 +16,7 @@
 
 package org.luwrain.pim;
 
-import java.
-util.*;
+import java.util.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;

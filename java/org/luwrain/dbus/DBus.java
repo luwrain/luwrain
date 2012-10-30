@@ -14,16 +14,22 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.mail;
+package org.luwrain.dbus;
 
-import javax.mail.Message;
+import org.freedesktop.dbus.*;
+import org.freedesktop.dbus.exceptions.*;
 
-public interface MailGroup
+public class DBus
 {
-    String getName();
-    boolean hasChildFolders();
-    MailGroup[] getChildGroups();
-    //null means retrieving error, zero lenth means no messages;
-    Message[] getMessages();
-    MailGroup getParentGroup();
+    static public DBusConnection con;
+
+    static public void connect() throws DBusException
+    {
+con = DBusConnection.getConnection(DBusConnection.SYSTEM);
+    }
+
+    static public void shutdown()
+    {
+	con.disconnect();
+    }
 }

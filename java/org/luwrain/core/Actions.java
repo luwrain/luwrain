@@ -228,6 +228,19 @@ public class Actions
 		}
 	    });
 
+	//Fetch;
+	add(new Action() {
+		public String getName()
+		{
+		    return "fetch";
+		}
+		public void onAction()
+		{
+		    Application app = new org.luwrain.app.fetch.FetchApp();
+		    Dispatcher.launchApplication(app);
+		}
+	    });
+
 	//Message;
 	add(new Action() {
 		public String getName()

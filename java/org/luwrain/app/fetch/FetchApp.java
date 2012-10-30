@@ -18,51 +18,30 @@ package org.luwrain.app.fetch;
 
 import org.luwrain.core.*;
 
-public class FetchApp
+public class FetchApp implements Application, FetchActions
 {
-    /*
+    FetchStringConstructor stringConstructor;
+    private Object instance;
+    private FetchArea fetchArea;
 
-    private void fetchArticles(StoredNewsGroup newsGroup)
+    public boolean onLaunch(Object instance)
     {
-	String[] urls;
-	try {
-	    urls = newsStoring.loadNewsGroupSources(newsGroup);
-	    if (urls == null)
-		return;
-	}
-	catch (SQLException e)
-	{
-	    Speech.say(e.getMessage());//FIXME:
-	    return;
-	}
-	for(int i = 0;i < urls.length;i++)
-	{
-	    NewsArticle articles[];
-	    try {
-		articles = FeedReader.readFeed(new java.net.URL(urls[i]));
-	    }
-	    catch (Exception e)
-	    {
-		Speech.say(e.getMessage());//FIXME:
-		return;
-	    }
-	    int count = 0;
-	    try {
-		for(int k = 0;k < articles.length;k++)
-		{
-		    if (newsStoring.countArticlesByUriInGroup(newsGroup, articles[k].uri) > 0)
-			continue;
-		    newsStoring.saveNewsArticle(newsGroup, articles[k]);
-		    count++;
-		}
-	    }
-	    catch(SQLException e)
-	    {
-		Speech.say(e.getMessage());
-		return;
-	    }
-	    Speech.say("Saved " + count + " articles");
-	}
+	Object o = Langs.requestStringConstructor("fetch");
+	if (o == null)
+	    return false;
+	stringConstructor = (FetchStringConstructor)o;
+	fetchArea = new FetchArea(this, stringConstructor);
+	this.instance = instance;
+	return true;
     }
-    */
+
+    public AreaLayout getAreasToShow()
+    {
+	return new AreaLayout(fetchArea);
+    }
+
+    public void closeFetchApp()
+    {
+	Dispatcher.closeApplication(instance);
+    }
 }

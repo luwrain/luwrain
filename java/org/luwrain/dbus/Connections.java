@@ -14,9 +14,8 @@
    General Public License for more details.
 */
 
-package org.luwrain.network;
+package org.luwrain.dbus;
 
-import org.luwrain.comm.*;
 import org.freedesktop.dbus.exceptions.*;
 import org.freedesktop.*;
 import java.util.*;
@@ -25,7 +24,7 @@ public class Connections
 {
     static public String[] getDevices() throws DBusException
     {
-	NetworkManager nm = (NetworkManager)org.luwrain.comm.DBus.con.getRemoteObject("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager", NetworkManager.class);
+	NetworkManager nm = (NetworkManager)org.luwrain.dbus.DBus.con.getRemoteObject("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager", NetworkManager.class);
 	List<org.freedesktop.dbus.DBusInterface> d = nm.GetDevices();
 	String[] res = new String[d.size()];
 	Iterator it = d.iterator();

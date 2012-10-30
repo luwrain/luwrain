@@ -20,9 +20,10 @@ import java.io.*;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-
+import org.luwrain.pim.StoredMailGroup;
+import org.luwrain.pim.MailStoring;
+import org.luwrain.pim.PimManager;
 import org.luwrain.core.*;
-//FIXME:import org.luwrain.pim.*;
 
 public class MailReaderApp implements Application, MailReaderActions
 {
@@ -33,7 +34,7 @@ public class MailReaderApp implements Application, MailReaderActions
     private GroupArea groupArea;
     private SummaryArea summaryArea;
     private MessageArea messageArea;
-    //FIXME:    private MailStoring MailStoring;
+    MailStoring mailStoring;
 
     private Session session;
     private MailGroup topLevelGroups[]; 
@@ -51,25 +52,34 @@ public class MailReaderApp implements Application, MailReaderActions
 
     private void fillTopLevelGroups()
     {
-	/*FIXME:
-	LocalDirectory dir = new LocalDirectory(session, new java.io.File("/tmp/mail"));
-	dir.update();
-	topLevelGroups = new MailGroup[1];
-	topLevelGroups[0] = dir;
-	*/
-
 	rootGroup = new RootMailGroup(stringConstructor);
-	RemoteAccount account = new RemoteAccount(session, rootGroup);
-	try {
-	account.open();
-	topLevelGroups = new MailGroup[1];
-	topLevelGroups[0] = account;
-	}
-	catch (Exception e)
+	Vector<MailGroup> groups = new Vector<MailGroup>();
+	if (mailStoring != null)
 	{
-	    e.printStackTrace();
-	topLevelGroups = new MailGroup[0];
-	}
+	    StoredMailGroup storedRoot;
+	    StoredMailGroup[] children;
+	    try {
+		storedRoot = mailStoring.loadRootGroup();
+		children = mailStoring.loadChildGroups(storedRoot);
+	    }
+	    catch(Exception e)
+	    {
+		storedRoot = null;
+children = null;
+		//FIXME:Log report;
+		groups.add(new EmptyMailGroup(rootGroup, "(Ошибка доставки групп)"));
+	    }
+	    if (storedRoot != null && children != null)
+		for(int i = 0;i < children.length;i++)
+		    groups.add(new LocalGroup(rootGroup, mailStoring, children[i]));
+	} else
+	    groups.add(new EmptyMailGroup(rootGroup, "(Нет соединения с базой данных)"));//FIXME:
+	//FIXME:Online groups;
+	topLevelGroups = new MailGroup[groups.size()];
+	Iterator<MailGroup> it = groups.iterator();
+	int k = 0;
+	while(it.hasNext())
+	    topLevelGroups[k++] = it.next();
 	rootGroup.setChildGroups(topLevelGroups);
     }
 
@@ -79,12 +89,16 @@ public class MailReaderApp implements Application, MailReaderActions
 	if (o == null)
 	    return false;
 	stringConstructor = (MailReaderStringConstructor)o;
+	mailStoring = PimManager.createMailStoring();
+	if (mailStoring == null)
+	{
+	    //FIXME:
+	}
 	initSession();
 	fillTopLevelGroups();
 	groupArea = new GroupArea(this, stringConstructor, new MailGroupTreeModel(rootGroup));
 	summaryArea = new SummaryArea(this, stringConstructor);
 	messageArea = new MessageArea(this, stringConstructor);
-	//FIXME:	mailStoring = PimManager.createMailStoring();
 	this.instance = instance;
 	return true;
     }
