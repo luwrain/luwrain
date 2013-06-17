@@ -1,5 +1,5 @@
 /*
-   Copyright 2012 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2013 Michael Pozhidaev <msp@altlinux.org>
 
    This file is part of the Luwrain.
 
