@@ -134,8 +134,8 @@ Application systemApp)
     TileManager getWindows()
     {
 	TileManager windows = new TileManager();
-	windows.createHorizontally(applications.getVisibleApps());
-	Application[] visibleApps = (Application[])windows.getObjects();
+	Application[] visibleApps = applications.getVisibleApps();
+	windows.createHorizontally(visibleApps);
 	for(int i = 0;i < visibleApps.length;i++)
 	    windows.replace(visibleApps[i], constructWindowLayoutOfApp(visibleApps[i]));
 	if (hasProperPopup())

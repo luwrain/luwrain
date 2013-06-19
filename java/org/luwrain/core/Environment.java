@@ -207,7 +207,7 @@ public class Environment
     static void goIntoPopup(Application app,
 			    Area area,
 			    int popupPlace,
-			    PopupEventLoopStopCondition stopCondition)
+			    EventLoopStopCondition stopCondition)
     {
 	if (app == null ||
 	    area == null ||
@@ -218,7 +218,7 @@ public class Environment
 	    popupPlace != PopupRegistry.LEFT &&
 	    popupPlace != PopupRegistry.RIGHT)
 	    return;
-	popups.addNewPopup(app, area, popupPlace, stopCondition);
+	popups.addNewPopup(app, area, popupPlace, new PopupEventLoopStopCondition(stopCondition));
 	if (screenContentManager.setPopupAreaActive())
 	{
 	    screenContentManager.introduceActiveArea();
@@ -253,7 +253,7 @@ FIXME:
 	*/
 	MainMenuArea mainMenuArea = systemApp.createMainMenuArea();
 EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU);
-//FIXME:	goIntoPopup(systemApp, mainMenuArea, WindowManager.POPUP_LEFT, mainMenuArea);
+goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea);
 	if (mainMenuArea.wasCancelled())
 	    return;
 	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_ITEM);
