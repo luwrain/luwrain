@@ -72,6 +72,11 @@ public class AreaLayout
 	return area3;
     }
 
+    public Area getDefaultArea()
+    {
+	return area1;
+    }
+
     public boolean hasArea(Area area)
     {
 	switch(layoutType)

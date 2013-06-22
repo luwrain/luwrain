@@ -97,7 +97,18 @@ Application systemApp)
     public void introduceActiveArea()
     {
 	//Popups only if not stopCondition;
-	//FIXME:
+	if (activePopup)
+	{
+	    if (hasProperPopup())
+	    {
+		Speech.say(popups.getAreaOfLastPopup().getName());
+		return;
+	    }
+	    activePopup = false;
+	}
+	Area activeArea = applications.getActiveAreaOfActiveApp();
+	if (activeArea != null)
+	    Speech.say(activeArea.getName());
     }
 
     public void activateNextArea()

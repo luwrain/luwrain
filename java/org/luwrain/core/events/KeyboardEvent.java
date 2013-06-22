@@ -16,8 +16,6 @@
 
 package org.luwrain.core.events;
 
-//TODO:implement equals() method;
-//TODO:Implement *only() methods for modification checking;
 //TODO:Rename Command -> Action;
 
 import org.luwrain.core.*;
@@ -62,9 +60,9 @@ public class KeyboardEvent extends Event
     public static final int LEFT_ALT = 62;
     public static final int RIGHT_ALT = 63;
 
-    private int cmdCode;
-    private char nonCmdChar;
-    private boolean cmd;
+    private boolean cmd = false;
+    private int cmdCode = 0;
+    private char nonCmdChar = 0;
 
     private boolean shiftPressed = false;
     private boolean controlPressed = false;
@@ -87,6 +85,31 @@ public class KeyboardEvent extends Event
 	this.controlPressed = controlPressed;
 	this.leftAltPressed = leftAltPressed;
 	this.rightAltPressed = rightAltPressed;
+    }
+
+    public KeyboardEvent(boolean cmd,
+			 int cmdCode,
+			 char nonCmdChar)
+    {
+	super(KEYBOARD_EVENT);
+	this.cmd = cmd;
+	this.cmdCode = cmdCode;
+	this.nonCmdChar = nonCmdChar;
+	shiftPressed = false;
+	controlPressed = false;
+	leftAltPressed = false;
+	rightAltPressed = false;
+    }
+
+    public boolean equals(KeyboardEvent event)
+    {
+	return (cmd == event.cmd &&
+		((cmd && cmdCode == event.cmdCode) ||
+		 (!cmd && 		nonCmdChar == event.nonCmdChar)) &&
+		shiftPressed == event.shiftPressed &&
+		controlPressed == event.controlPressed &&
+		leftAltPressed == event.leftAltPressed &&
+		rightAltPressed == event.rightAltPressed);
     }
 
     public boolean isCommand()
@@ -114,9 +137,19 @@ public class KeyboardEvent extends Event
 	return shiftPressed;
     }
 
+    public boolean withShiftOnly()
+    {
+	return shiftPressed && !controlPressed && !leftAltPressed && !rightAltPressed;
+    }
+
     public boolean withControl()
     {
 	return controlPressed;
+    }
+
+    public boolean withControlOnly()
+    {
+	return controlPressed && !shiftPressed && !leftAltPressed && !rightAltPressed;
     }
 
     public boolean withAlt()
@@ -124,13 +157,28 @@ public class KeyboardEvent extends Event
 	return leftAltPressed || rightAltPressed;
     }
 
+    public boolean withAltOnly()
+    {
+	return (leftAltPressed || rightAltPressed) && !shiftPressed && !controlPressed;
+    }
+
     public boolean withLeftAlt()
     {
 	return leftAltPressed;
     }
 
+    public boolean withLeftAltOnly()
+    {
+	return leftAltPressed && !rightAltPressed && !shiftPressed && !controlPressed;
+    }
+
     public boolean withRightAlt()
     {
 	return rightAltPressed;
+    }
+
+    public boolean withRightAltOnly()
+    {
+	return rightAltPressed && !leftAltPressed && !shiftPressed && !controlPressed;
     }
 }

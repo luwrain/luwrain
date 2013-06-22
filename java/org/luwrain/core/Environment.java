@@ -33,6 +33,7 @@ public class Environment
     private static PopupRegistry popups = new PopupRegistry();
     private static ScreenContentManager screenContentManager;
     private static WindowManager windowManager;
+    private static GlobalKeys globalKeys = new GlobalKeys();
 
     //Start/stop;
 
@@ -82,7 +83,19 @@ public class Environment
 	    message(Langs.staticValue(Langs.UNEXPECTED_ERROR_AT_APP_LAUNCH));
 	    return;
 	}
-	applications.registerAppSingleVisible(app);
+	AreaLayout layout = app.getAreasToShow();
+	if (layout == null)
+	{
+	    instanceManager.releaseInstance(o);
+	    return;
+	}
+	Area activeArea = layout.getDefaultArea();
+	if (activeArea == null)
+	{
+	    instanceManager.releaseInstance(o);
+	    return;
+	}
+	applications.registerAppSingleVisible(app, activeArea);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	screenContentManager.introduceActiveArea();
@@ -150,14 +163,13 @@ public class Environment
 
     static private void processKeyboardEvent(KeyboardEvent event)
     {
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB && event.withLeftAlt() && !event.withControl() && !event.withShift())
-	{
-	    //FIXME:	    switchNextApplication();
+	if (event == null)
 	    return;
-	}
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB && !event.withAlt() && event.withControl() && !event.withShift())
+	String actionName = globalKeys.getActionName(event);
+	if (actionName != null)
 	{
-	    switchNextArea();
+	    if (!actions.run(actionName))
+		message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
 	    return;
 	}
 	if (event.isCommand())
@@ -169,27 +181,12 @@ public class Environment
 		code == KeyboardEvent.RIGHT_ALT)
 		return;
 	}
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.ESCAPE)//FIXME:Just for debugging;
-		{
-		    quit();
-		    return;
-		}
-	if (!event.isCommand() && event.getCharacter() == 'x' && event.withLeftAlt())//FIXME:withLeftAltOnly;
+	if (!event.isCommand() && event.getCharacter() == 'x' && event.withLeftAltOnly())
 	{
-	    runAction();
+	    runActionPopup();
 	    return;
 	}
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.WINDOWS)
-		{
-		    mainMenu();
-		    return;
-		}
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.F4)
-	{
-	    enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CLOSE));
-	    return;
-	}
-	if (!screenContentManager.onKeyboardEvent(event))
+	if (!screenContentManager.onKeyboardEvent(event))//FIXME:Exception;
 	{
 	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
 	    Speech.say(Langs.staticValue(Langs.NO_ACTIVE_AREA));//FIXME:Marked intonation;
@@ -248,7 +245,7 @@ public class Environment
 		continue;
 	    }
 	    mainMenuArea.cancel();
-FIXME:
+	    FIXME:
 	}
 	*/
 	MainMenuArea mainMenuArea = systemApp.createMainMenuArea();
@@ -261,10 +258,10 @@ goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea);
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
     }
 
-    public static void runAction()
+    public static void runActionPopup()
     {
 	org.luwrain.core.popups.SimpleLinePopup popup = new org.luwrain.core.popups.SimpleLinePopup(new Object(), "Выполнить команду", "Выполнить команду:", "");
-	//FIXME:	goIntoPopup(systemApp, popup, WindowManager.POPUP_BOTTOM, popup);
+	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup);
 	if (popup.wasCancelled())
 	    return;
 	if (!actions.run(popup.getText().trim()))

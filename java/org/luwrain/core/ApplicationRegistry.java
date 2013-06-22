@@ -25,11 +25,6 @@ class ApplicationRegistry
 	public Application app;
 	public Area activeArea;
 
-	public Wrapper(Application app)
-	{
-	    this.app = app;
-	}
-
 	public Wrapper(Application app, Area activeArea)
 	{
 	    this.app = app;
@@ -88,7 +83,7 @@ class ApplicationRegistry
 	return getVisibleWrapper(activeAppIndex).app;
     }
 
-    public void registerAppSingleVisible(Application app)
+    public void registerAppSingleVisible(Application app, Area activeArea)
     {
 	ensureConsistent();
 	if (app == null)
@@ -96,7 +91,7 @@ class ApplicationRegistry
 	int index = findAppInWrappers(app);
 	if (index == -1)
 	{
-	    wrappers.add(new Wrapper(app));
+	    wrappers.add(new Wrapper(app, activeArea));
 	    index = wrappers.size() - 1;
 	}
 	visible = new int[1];
@@ -107,6 +102,8 @@ class ApplicationRegistry
     public void releaseApp(Application app)
     {
 	ensureConsistent();
+	if (app == null)
+	    return;
 	final int index = findAppInWrappers(app);
 	if (index == -1)
 	    return;
@@ -138,8 +135,9 @@ class ApplicationRegistry
 		    count++;
 	    if (count == visible.length)
 	    {
-		visible = new int[0];
-		activeAppIndex = -1;
+		visible = new int[1];
+		visible[0] = wrappers.size() - 1;
+		activeAppIndex = 0;
 		return;
 	    }
 	    int[] v = new int[visible.length - count];
@@ -172,6 +170,8 @@ class ApplicationRegistry
     public boolean switchNextInvisible()
     {
 	ensureConsistent();
+	if (activeAppIndex == -1)
+	    return false;
 	final int current = visible[activeAppIndex];
 	for(int i = current + 1;i < wrappers.size();i++)
 	{
