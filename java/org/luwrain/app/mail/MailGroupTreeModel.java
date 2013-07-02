@@ -17,6 +17,7 @@
 package org.luwrain.app.mail;
 
 import org.luwrain.core.*;
+import org.luwrain.controls.*;
 
 public class MailGroupTreeModel implements TreeModel
 {

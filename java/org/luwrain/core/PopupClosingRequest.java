@@ -14,12 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls;
+package org.luwrain.core;
 
-public interface TreeModel
+public interface PopupClosingRequest
 {
-    Object getRoot();
-    int getChildCount(Object parent);
-    Object getChild(Object parent, int index);
-    boolean isLeaf(Object node);
+    boolean onOk();
+    boolean onCancel();
 }

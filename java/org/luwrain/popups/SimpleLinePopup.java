@@ -14,21 +14,21 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.popups;
+package org.luwrain.popups;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 
-public class SimpleLinePopup implements Area, EventLoopStopCondition
+public class SimpleLinePopup implements Area, PopupClosingRequest
 {
+    public PopupClosing closing = new PopupClosing(this);
     private SingleLineEdit edit;
     private Object instance;
     private String name;
     private String prefix;
     private String text;
     private int pos;
-    private boolean shouldContinue = true;
-    private boolean cancelled = true;
 
     public SimpleLinePopup(Object instance,
 			    String name,
@@ -43,11 +43,6 @@ public class SimpleLinePopup implements Area, EventLoopStopCondition
 	this.text = text;
 	this.pos = prefix.length() + text.length() + 1;
 	createEdit();
-    }
-
-    public boolean showe()
-    {
-	return false;//FIXME:
     }
 
     public int getLineCount()
@@ -74,6 +69,8 @@ public class SimpleLinePopup implements Area, EventLoopStopCondition
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (closing.onKeyboardEvent(event))
+	    return true;
 	if (event.isCommand() && !event.isModified())
 	{
 	    final int cmd = event.getCommand();
@@ -139,8 +136,7 @@ public class SimpleLinePopup implements Area, EventLoopStopCondition
 
 	if (event.isCommand() && event.getCommand() == KeyboardEvent.ENTER && !event.isModified())
 	{
-	    shouldContinue = false;
-	    cancelled = false;
+	    closing.doOk();
 	    return true;
 	}
 
@@ -151,19 +147,7 @@ public class SimpleLinePopup implements Area, EventLoopStopCondition
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.OK)
-	{
-	    shouldContinue = false;
-	    cancelled = false;
-	    return true;
-	}
-	if (event.getCode() == EnvironmentEvent.CLOSE || event.getCode() == EnvironmentEvent.CANCEL)
-	{
-	    shouldContinue = false;
-	    cancelled = true;
-	    return true;
-	}
-	return false;
+	return closing.onEnvironmentEvent(event);
     }
 
     public String getName()
@@ -203,18 +187,18 @@ public class SimpleLinePopup implements Area, EventLoopStopCondition
 	    });
     }
 
-public     boolean continueEventLoop()
-    {
-	return shouldContinue;
-    }
-
     public String getText()
     {
 	return text;
     }
 
-    public boolean wasCancelled()
+    public boolean onOk()
     {
-	return cancelled;
+	return true;
+    }
+
+    public boolean onCancel()
+    {
+	return true;
     }
 }

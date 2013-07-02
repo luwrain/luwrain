@@ -18,6 +18,7 @@ package org.luwrain.app.mail;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 
 public class GroupArea extends TreeArea
 {

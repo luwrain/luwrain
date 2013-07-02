@@ -18,6 +18,7 @@ package org.luwrain.app.notepad;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 
 class NotepadArea extends EditArea
 {

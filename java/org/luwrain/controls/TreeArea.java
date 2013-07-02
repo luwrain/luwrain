@@ -14,10 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.controls;
 
 //TODO:Refresh operations;
 
+import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import java.util.*;
 

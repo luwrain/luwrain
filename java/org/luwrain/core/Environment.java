@@ -122,6 +122,11 @@ public class Environment
 
     public static void switchNextApp()
     {
+	if (screenContentManager.isPopupAreaActive())
+	{
+	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);//FIXME:Probably not well suited sound; 
+	    return;
+	}
 	applications.switchNextInvisible();
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
@@ -260,9 +265,9 @@ goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea);
 
     public static void runActionPopup()
     {
-	org.luwrain.core.popups.SimpleLinePopup popup = new org.luwrain.core.popups.SimpleLinePopup(new Object(), "Выполнить команду", "Выполнить команду:", "");
-	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup);
-	if (popup.wasCancelled())
+	org.luwrain.popups.SimpleLinePopup popup = new org.luwrain.popups.SimpleLinePopup(new Object(), "Выполнить команду", "Выполнить команду:", "");
+	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup.closing);
+	if (popup.closing.cancelled())
 	    return;
 	if (!actions.run(popup.getText().trim()))
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));

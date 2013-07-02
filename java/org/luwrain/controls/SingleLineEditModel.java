@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.controls;
 
 public interface SingleLineEditModel
 {

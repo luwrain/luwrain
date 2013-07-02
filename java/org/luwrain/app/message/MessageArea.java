@@ -21,6 +21,7 @@ package org.luwrain.app.message;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 
 class MessageAreaHeaderItem
 {
