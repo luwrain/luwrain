@@ -25,6 +25,7 @@ import org.luwrain.mmedia.EnvironmentSounds;
 public class Environment
 {
     private static String[] cmdLineArgs = null;
+    private static Interaction interaction;
     private static EventQueue eventQueue = new EventQueue();
     private static Actions actions = new Actions();
     private static org.luwrain.app.system.SystemApp systemApp = new org.luwrain.app.system.SystemApp();
@@ -37,13 +38,14 @@ public class Environment
 
     //Start/stop;
 
-    static public void  run(Interaction interaction, String[] args)
+    static public void  run(Interaction intr, String[] args)
     {
 	cmdLineArgs = args;
+	interaction = intr;
 	actions.fillWithStandartActions();
 	screenContentManager = new ScreenContentManager(applications, popups, systemApp);
-	windowManager = new WindowManager(screenContentManager);
-	interaction.startInputEventsAcception();
+	windowManager = new WindowManager(interaction, screenContentManager);
+	interaction.startInputEventsAccepting();
 		eventLoop(new InitialEventLoopStopCondition());
 		interaction.stopInputEventsAccepting();
 		Launch.exit();

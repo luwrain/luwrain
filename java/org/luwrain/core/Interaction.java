@@ -18,8 +18,19 @@ package org.luwrain.core;
 
 public interface Interaction
 {
-    void init();
-    void startInputEventsAcception();
-    void stopInputEventsAccepting();
+    void init(int wndLeft,
+	      int wndTop,
+	      int wndRight,
+	      int wndBottom);
+
     void close();
+    void startInputEventsAccepting();
+    void stopInputEventsAccepting();
+    void setDesirableFontSize(int size);
+    int getFontSize();
+    int getWidthInCharacters();
+    int getHeightInCharacters();
+    void startDrawSession();
+    void drawText(int x, int y, String text);
+    void endDrawSession();
 }

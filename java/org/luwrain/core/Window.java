@@ -18,16 +18,50 @@ package org.luwrain.core;
 
 public class Window
 {
-    Application app;
-    Area area;
-    boolean popup = false;
+    public Application app;
+    public Area area;
+    public boolean popup = false;
+    public int popupPlace;
+    public int x = 0;
+    public int y = 0;
+    public int width = 0;
+    public int height = 0;
+    public int scrolledVert = 0;
+    public int scrolledHoriz = 0;
 
     public Window(Application app,
-		  Area area,
-		  boolean popup)
+		  Area area)
     {
 	this.app = app;
 	this.area = area;
-	this.popup = popup;
+	this.popup = false;
+    }
+
+    public Window(Application app,
+		  Area area,
+		  int popupPlace)
+    {
+	this.app = app;
+	this.area = area;
+	this.popup = true;
+	this.popupPlace = popupPlace;
+    }
+
+    public void markInvisible()
+    {
+	x = 0;
+	y = 0;
+	width = 0;
+	height = 0;
+    }
+
+    public boolean isVisible()
+    {
+	return x >= 0 && y >= 0 && width > 0 && height > 0;
+    }
+
+    public boolean valid()
+    {
+	return isVisible();
     }
 }

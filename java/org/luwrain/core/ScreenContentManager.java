@@ -178,7 +178,7 @@ Application systemApp)
 
     private Window createPopupWindow()
     {
-	Window popupWindow = new Window(popups.getAppOfLastPopup(), popups.getAreaOfLastPopup(), true);
+	Window popupWindow = new Window(popups.getAppOfLastPopup(), popups.getAreaOfLastPopup(), popups.getPositionOfLastPopup());
 	return popupWindow;
     }
 
@@ -191,19 +191,19 @@ Application systemApp)
 	switch(layout.getType())
 	{
 	case AreaLayout.SINGLE:
-	    tiles.createSingle(new Window(app, layout.getArea1(), false));
+	    tiles.createSingle(new Window(app, layout.getArea1()));
 	    break;
 	    //FIXME:LEFT_RIGHT;
 	    //FIXME:TOP_BOTTOM;
 	case AreaLayout.LEFT_TOP_BOTTOM:
-	    tiles.createLeftTopBottom(new Window(app, layout.getArea1(), false),
-				      new Window(app, layout.getArea2(), false),
-				      new Window(app, layout.getArea3(), false));
+	    tiles.createLeftTopBottom(new Window(app, layout.getArea1()),
+				      new Window(app, layout.getArea2()),
+				      new Window(app, layout.getArea3()));
 	    break;
 	case AreaLayout.LEFT_RIGHT_BOTTOM:
-	    tiles.createLeftRightBottom(new Window(app, layout.getArea1(), false),
-					new Window(app, layout.getArea2(), false),
-					new Window(app, layout.getArea3(), false));
+	    tiles.createLeftRightBottom(new Window(app, layout.getArea1()),
+					new Window(app, layout.getArea2()),
+					new Window(app, layout.getArea3()));
 	    break;
 	}
 	return tiles;

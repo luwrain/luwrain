@@ -22,13 +22,13 @@ import org.luwrain.core.events.KeyboardEvent;
 
 public class AwtInteraction implements org.luwrain.core.Interaction
 {
-    private Frame frame;
+    private MainFrame frame;
+    private int currentFontSize = 24;
     private boolean acceptingInputEvents = false;
     private boolean leftAltPressed = false;
     private boolean rightAltPressed = false;
     private boolean controlPressed = false;
     private boolean shiftPressed = false;
-
 
     private void onKeyPress(KeyEvent event)
     {
@@ -184,10 +184,14 @@ public class AwtInteraction implements org.luwrain.core.Interaction
 	org.luwrain.core.Environment.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
     }
 
-    public void init()
+    public void init(int wndLeft,
+		     int wndTop,
+		     int wndRight,
+		     int wndBottom)
     {
-	frame = new Frame("Java AWT Frame");
-	frame.setSize(400,400);
+	frame = new org.luwrain.interaction.MainFrame("Luwrain", createFont(currentFontSize));
+	frame.setSize(wndRight - wndLeft, wndBottom - wndTop);
+	frame.initTable();
 	frame.setFocusTraversalKeysEnabled(false);
 	frame.addKeyListener(new KeyListener() {
 		public void              keyPressed(KeyEvent event)
@@ -206,7 +210,34 @@ public class AwtInteraction implements org.luwrain.core.Interaction
 	frame.setVisible(true);                                                    
     }
 
-    public void startInputEventsAcception()
+    public void close()
+    {
+	//FIXME:
+    }
+
+    public void setDesirableFontSize(int fontSize)
+    {
+	currentFontSize = fontSize;
+	frame.font = createFont(currentFontSize);
+	frame.initTable();
+    }
+
+    public int getFontSize()
+    {
+	return currentFontSize;
+    }
+
+    public int getWidthInCharacters()
+    {
+	return frame.getTableWidth();
+    }
+
+    public int getHeightInCharacters()
+    {
+	return frame.getTableHeight();
+    }
+
+    public void startInputEventsAccepting()
     {
 	acceptingInputEvents = true;
     }
@@ -216,7 +247,25 @@ public class AwtInteraction implements org.luwrain.core.Interaction
 	acceptingInputEvents = false;
     }
 
-    public void close()
+    public void startDrawSession()
     {
+	//Nothing here at least now;
+    }
+
+    public void drawText(int x, int y, String text)
+    {
+	if (text == null)
+	    return;
+	frame.putString(x, y, text);
+    }
+
+    public void endDrawSession()
+    {
+	frame.paint(frame.getGraphics());
+    }
+
+    private Font createFont(int desirableFontSize)
+    {
+	return new Font("Courier", Font.PLAIN, desirableFontSize);
     }
 }

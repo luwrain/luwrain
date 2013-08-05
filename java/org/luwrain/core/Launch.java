@@ -53,7 +53,7 @@ public class Launch
 	{
 	    e.printStackTrace();
 	}
-	interaction.init();
+	interaction.init(0, 0, 800, 600);
     }
 
     private static void shutdown()
