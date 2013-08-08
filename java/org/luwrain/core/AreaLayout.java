@@ -19,8 +19,10 @@ package org.luwrain.core;
 public class AreaLayout
 {
     public static final int SINGLE = 0;
-    public static final int LEFT_TOP_BOTTOM = 1;
-    public static final int LEFT_RIGHT_BOTTOM = 2;
+    public static final int LEFT_RIGHT = 1;
+    public static final int TOP_BOTTOM = 2;
+    public static final int LEFT_TOP_BOTTOM = 3;
+    public static final int LEFT_RIGHT_BOTTOM = 4;
 
     private int layoutType = SINGLE;
     private Area area1 = null;

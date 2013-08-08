@@ -149,10 +149,12 @@ Application systemApp)
 	windows.createHorizontally(visibleApps);
 	for(int i = 0;i < visibleApps.length;i++)
 	    windows.replace(visibleApps[i], constructWindowLayoutOfApp(visibleApps[i]));
+	System.out.println("" + visibleApps.length + " visible application");
 	if (hasProperPopup())
 	{
-	    Window popupWindow = createPopupWindow();
-	    switch(popups.getPositionOfLastPopup())
+	    System.out.println("Has popup");
+	    Window popupWindow = new Window(popups.getAppOfLastPopup(), popups.getAreaOfLastPopup(), popups.getPositionOfLastPopup());
+	    switch(popupWindow.popupPlace)
 	    {
 	    case PopupRegistry.BOTTOM:
 		windows.addBottom(popupWindow);
@@ -176,12 +178,6 @@ Application systemApp)
 	return popups.hasPopups() && (applications.isVisibleApp(popups.getAppOfLastPopup()) || popups.getAppOfLastPopup() == systemApp);
     }
 
-    private Window createPopupWindow()
-    {
-	Window popupWindow = new Window(popups.getAppOfLastPopup(), popups.getAreaOfLastPopup(), popups.getPositionOfLastPopup());
-	return popupWindow;
-    }
-
     private TileManager constructWindowLayoutOfApp(Application app)
     {
 	if (app == null)
@@ -193,8 +189,14 @@ Application systemApp)
 	case AreaLayout.SINGLE:
 	    tiles.createSingle(new Window(app, layout.getArea1()));
 	    break;
-	    //FIXME:LEFT_RIGHT;
-	    //FIXME:TOP_BOTTOM;
+	case AreaLayout.LEFT_RIGHT:
+	    tiles.createLeftRight(new Window(app, layout.getArea1()),
+				  new Window(app, layout.getArea2()));
+	    break;
+	case AreaLayout.TOP_BOTTOM:
+	    tiles.createTopBottom(new Window(app, layout.getArea1()),
+				  new Window(app, layout.getArea2()));
+	    break;
 	case AreaLayout.LEFT_TOP_BOTTOM:
 	    tiles.createLeftTopBottom(new Window(app, layout.getArea1()),
 				      new Window(app, layout.getArea2()),

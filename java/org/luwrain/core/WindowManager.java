@@ -18,9 +18,9 @@ package org.luwrain.core;
 
 public class WindowManager 
 {
-    private static int MIN_RANGE_HORIZONTAL = 5;
-    private static int MIN_RANGE_VERTICAL = 2;
-    private static int MAX_TOP_BOTTOM_POPUP_HEIGHT = 7;
+    private static final int MIN_RANGE_HORIZONTAL = 5;
+    private static final int MIN_RANGE_VERTICAL = 2;
+    private static final int MAX_TOP_BOTTOM_POPUP_HEIGHT = 7;
 
     private Interaction interaction;
     private ScreenContentManager screenContentManager;
@@ -42,29 +42,9 @@ public class WindowManager
 	for(int i = 0;i < objs.length;i++)
 	{
 	    Window win = (Window)objs[i];
-	    if (win == null)
+	    if (win == null || win.area == null)
 		continue;
-	    Area area = win.area;
-	    if (area == null)
-		continue;
-	    if (win.scrolledVert >= area.getLineCount())
-		continue;
-final int count = area.getLineCount() - win.scrolledVert;
-	    for(int k = 0;k < count;k++)
-	    {
-		String line = area.getLine(k + win.scrolledVert);
-		if (line == null || line.isEmpty())
-		    continue;
-		if (win.scrolledHoriz > 0)
-		{
-		    if (line.length() >= win.scrolledHoriz)
-			continue;
-		    line = line.substring(win.scrolledHoriz);
-		}
-		if (line.length() > win.width)
-		    line = line.substring(0, win.width);
-		interaction.drawText(win.x, win.y + k, line);
-	    }
+	    drawWindow(win);
 	}
 	interaction.endDrawSession();
     }
@@ -73,6 +53,7 @@ final int count = area.getLineCount() - win.scrolledVert;
 			       int screenHeight,
 			       TileManager windows)
     {
+	System.out.println("Calculating windows geom for screen " + screenWidth + "x" + screenHeight);
 	windows.countLeaves();
 	calculateGeomImpl(windows, windows.getRoot(), 0, 1, screenWidth - 1, screenHeight - 2);//One line at top and one line at bottom are reserved for notifications and messages;
     }
@@ -97,9 +78,14 @@ final int count = area.getLineCount() - win.scrolledVert;
 	    Window win = (Window)windows.getLeafObject(obj);
 	    if (win == null)
 		return;
+	    if (win.popup)
+	    {
+		calculateGeomWithPopup(windows, win, null, left, top, right, bottom);
+		return;
+	    }
 	    win.x = left;
 	    win.y = top;
-	    win.width = right - top + 1;
+	    win.width = right - left + 1;
 	    win.height = bottom - top + 1;
 	    calculateScrolling(win);
 	    return;
@@ -110,7 +96,7 @@ final int count = area.getLineCount() - win.scrolledVert;
 	    Window win = (Window)windows.getLeafObject(obj1);
 	    if (win.popup)
 	    {
-		calculateGeomWithPopup(windows, obj, win, obj2, left, top, right, bottom);
+		calculateGeomWithPopup(windows, win, obj2, left, top, right, bottom);
 		return;
 	    }
 	}
@@ -119,7 +105,7 @@ final int count = area.getLineCount() - win.scrolledVert;
 	    Window win = (Window)windows.getLeafObject(obj2);
 	    if (win.popup)
 	    {
-		calculateGeomWithPopup(windows, obj, win, obj1, left, top, right, bottom);
+		calculateGeomWithPopup(windows, win, obj1, left, top, right, bottom);
 		return;
 	    }
 	}
@@ -134,6 +120,7 @@ final int count = area.getLineCount() - win.scrolledVert;
 	    calculateGeomImpl(windows, obj1, left, top, right, bottom);
 	    return;
 	}
+	System.out.println("" + leafCount1 + " and " + leafCount2 + " leaves");
 	if (windows.getDirection(obj) == TileManager.VERTICAL)
 	{
 	    int range = bottom - top;//One row is reserved for divider;
@@ -165,7 +152,7 @@ final int count = area.getLineCount() - win.scrolledVert;
 	    final int spaceLeft = range - (range1 + range2);
 	    range1 += (spaceLeft / 2);
 	    //No need to fix range2 value, it is never used below;
-	    calculateGeomImpl(windows, obj1, left, top, right + range1 - 1, bottom);
+	    calculateGeomImpl(windows, obj1, left, top, left + range1 - 1, bottom);
 	    calculateGeomImpl(windows, obj2, left + range1 + 1, top, right, bottom);
 	    //Here may be a splitter at left + range1 column;
 	    return;
@@ -173,7 +160,6 @@ final int count = area.getLineCount() - win.scrolledVert;
     }
 
     void calculateGeomWithPopup(TileManager windows,
-				Object node,
 				Window win,
 				Object anotherNode,
 				int left,
@@ -181,9 +167,12 @@ final int count = area.getLineCount() - win.scrolledVert;
 				int right,
 				int bottom)
     {
+	System.out.println("Processing popup");
 	if (win == null || !win.popup || win.area == null)
 	{
-	    calculateGeomImpl(windows, anotherNode, left, top, right, bottom);
+	    if (anotherNode != null)
+		calculateGeomImpl(windows, anotherNode, left, top, right, bottom);
+	    return;
 	}
 	Area area = win.area;
 	int preferableHeight = area.getLineCount();
@@ -200,6 +189,7 @@ final int count = area.getLineCount() - win.scrolledVert;
 	if (preferableWidth < MIN_RANGE_HORIZONTAL)
 	    preferableWidth = MIN_RANGE_HORIZONTAL;
 	preferableHeight++;//For title bar;
+	System.out.println("Popup with preferable size " + preferableWidth + "x" + preferableHeight);
 	if (preferableHeight < 2)
 	    preferableHeight = 2;
 	int maxHeight = (bottom - top + 1) - MIN_RANGE_VERTICAL - 1;//1 is for splitter;
@@ -248,8 +238,8 @@ final int count = area.getLineCount() - win.scrolledVert;
 	    anotherBottom = bottom;
 	    break;
 	case PopupRegistry.BOTTOM:
-	    win.x = bottom - popupHeight + 1;
 	    win.x = left;
+	    win.y = bottom - popupHeight + 1;
 	    win.width = right - left + 1;
 	    win.height = popupHeight;
 	    anotherLeft = left;
@@ -259,11 +249,13 @@ final int count = area.getLineCount() - win.scrolledVert;
 	    break;
 	default:
 	    win.markInvisible();
-	    calculateGeomImpl(windows, anotherNode, left, top, right, bottom);
+	    if (anotherNode != null)
+		calculateGeomImpl(windows, anotherNode, left, top, right, bottom);
 	    return;
 	};
 	calculateScrolling(win);
-	calculateGeomImpl(windows, anotherNode, anotherLeft, anotherTop, anotherRight, anotherBottom);
+	if (anotherNode != null)
+	    calculateGeomImpl(windows, anotherNode, anotherLeft, anotherTop, anotherRight, anotherBottom);
     }
 
     private void calculateScrolling(Window win)
@@ -288,5 +280,35 @@ final int count = area.getLineCount() - win.scrolledVert;
 	}
 	markWindowsInvisible(windows, windows.getBranch1(obj));
 	markWindowsInvisible(windows, windows.getBranch2(obj));
+    }
+
+    private void drawWindow(Window win)
+    {
+	if (win == null || win.area == null)
+	    return;
+	System.out.println("Window (" + win.x + "," + win.y + "," + win.width + "," + win.height + ")");
+	Area area = win.area;
+	if (win.scrolledVert < 0 || win.scrolledVert >= area.getLineCount())
+	    return;
+	if (win.width < MIN_RANGE_HORIZONTAL || win.height < MIN_RANGE_VERTICAL)
+	    return;
+	String name = area.getName();
+	if (name != null && !name.isEmpty())
+	    interaction.drawText(win.x, win.y, name.length() <= win.width?name:name.substring(0, win.width - 1));
+	int count = area.getLineCount() - win.scrolledVert;
+	if (count > win.height - 1)
+	    count = win.height - 1;
+	for(int k = 0;k < count;k++)
+	    interaction.drawText(win.x, win.y + k + 1, getProperLinePart(win, area.getLine(k + win.scrolledVert)));
+    }
+
+    private String getProperLinePart(Window win, String line)
+    {
+	if (win == null || line == null || line.isEmpty())
+	    return "";
+	if (win.scrolledHoriz >= line.length())
+	    return "";
+	String l = win.scrolledHoriz == 0?line:line.substring(win.scrolledHoriz);
+	return l.length() <= win.width?l:l.substring(0, win.width - 1);
     }
 }

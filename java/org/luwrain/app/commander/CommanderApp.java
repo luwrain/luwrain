@@ -41,7 +41,7 @@ public class CommanderApp implements Application, CommanderActions
 
     public AreaLayout getAreasToShow()
     {
-	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, leftPanel, rightPanel, tasks);//FIXME:Temporary layout type!!!
+	return new AreaLayout(AreaLayout.LEFT_RIGHT_BOTTOM, leftPanel, rightPanel, tasks);
     }
 
     public void gotoLeftPanel()

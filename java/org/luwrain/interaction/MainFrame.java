@@ -35,8 +35,23 @@ public class MainFrame extends Frame
     public void paint(Graphics g)
     {
 	super.paint(g);
-	g.setFont(font);
-	g.drawString("Luwrain", 400, 300);
+	Image image = createImage(getSize().width, getSize().height);
+	Graphics ig = image.getGraphics();
+	ig.setColor(new Color(0, 0, 0));
+	ig.fillRect(0, 0, getSize().width - 1, getSize().height - 1);
+	ig.setFont(font);
+	ig.setColor(new Color(255, 255, 255));
+	if (table == null)
+	    return;
+	int fontHeight = getFontHeight();
+	char[] chars = new char[tableWidth];
+	for(int i = 0;i < tableHeight;i++)
+	{
+	    for(int j = 0;j < tableWidth;j++)
+		chars[j] = table[j][i];
+	    ig.drawString(new String(chars), 0, i * fontHeight);
+	}
+	g.drawImage(image, 0, 0, new Color(1, 1, 1), this);
     }
 
     public void putString(int x, int y, String text)

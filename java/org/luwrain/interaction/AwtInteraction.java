@@ -23,7 +23,7 @@ import org.luwrain.core.events.KeyboardEvent;
 public class AwtInteraction implements org.luwrain.core.Interaction
 {
     private MainFrame frame;
-    private int currentFontSize = 24;
+    private int currentFontSize = 14;
     private boolean acceptingInputEvents = false;
     private boolean leftAltPressed = false;
     private boolean rightAltPressed = false;
@@ -186,12 +186,11 @@ public class AwtInteraction implements org.luwrain.core.Interaction
 
     public void init(int wndLeft,
 		     int wndTop,
-		     int wndRight,
-		     int wndBottom)
+		     int wndWidth,
+		     int wndHeight)
     {
 	frame = new org.luwrain.interaction.MainFrame("Luwrain", createFont(currentFontSize));
-	frame.setSize(wndRight - wndLeft, wndBottom - wndTop);
-	frame.initTable();
+	frame.setSize(wndWidth, wndHeight);
 	frame.setFocusTraversalKeysEnabled(false);
 	frame.addKeyListener(new KeyListener() {
 		public void              keyPressed(KeyEvent event)
@@ -208,6 +207,7 @@ public class AwtInteraction implements org.luwrain.core.Interaction
 		}
 	    });
 	frame.setVisible(true);                                                    
+	frame.initTable();
     }
 
     public void close()
@@ -249,6 +249,10 @@ public class AwtInteraction implements org.luwrain.core.Interaction
 
     public void startDrawSession()
     {
+	for(int i = 0;i < frame.getTableWidth();i++)
+	for(int j = 0;j < frame.getTableHeight();j++)
+	    frame.putString(i, j, " ");
+
 	//Nothing here at least now;
     }
 
@@ -256,11 +260,13 @@ public class AwtInteraction implements org.luwrain.core.Interaction
     {
 	if (text == null)
 	    return;
+	//	System.out.println("" + x + "," + y + ":" + text);
 	frame.putString(x, y, text);
     }
 
     public void endDrawSession()
     {
+	System.out.println("Ending draw session");
 	frame.paint(frame.getGraphics());
     }
 
