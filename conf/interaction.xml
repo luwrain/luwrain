@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<registry>
+  <regdir  name="/org/luwrain/interaction">
+    <regvalue name="back-end" type="string">awt</regvalue>
+    <regvalue name="initial-font-size" type="int">14</regvalue>
+    <regvalue name="window-x" type="int">0</regvalue>
+    <regvalue name="window-y" type="int">0</regvalue>
+    <regvalue name="window-width" type="int">800</regvalue>
+    <regvalue name="window-height" type="int">600</regvalue>
+    <regvalue name="margin-left" type="int">16</regvalue>
+    <regvalue name="margin-top" type="int">16</regvalue>
+    <regvalue name="margin-right" type="int">16</regvalue>
+    <regvalue name="margin-bottom" type="int">16</regvalue>
+    <regvalue name="font-color-red" type="int">255</regvalue>
+    <regvalue name="font-color-green" type="int">255</regvalue>
+    <regvalue name="font-color-blue" type="int">255</regvalue>
+    <regvalue name="background-color-red" type="int">0</regvalue>
+    <regvalue name="background-color-green" type="int">0</regvalue>
+<regvalue name="background-color-blue" type="int">0</regvalue>
+    <regvalue name="splitter-color-red" type="int">128</regvalue>
+    <regvalue name="splitter-color-green" type="int">128</regvalue>
+    <regvalue name="splitter-color-blue" type="int">128</regvalue>
+  </regdir>
+</registry>

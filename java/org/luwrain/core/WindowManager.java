@@ -53,7 +53,6 @@ public class WindowManager
 			       int screenHeight,
 			       TileManager windows)
     {
-	System.out.println("Calculating windows geom for screen " + screenWidth + "x" + screenHeight);
 	windows.countLeaves();
 	calculateGeomImpl(windows, windows.getRoot(), 0, 1, screenWidth - 1, screenHeight - 2);//One line at top and one line at bottom are reserved for notifications and messages;
     }
@@ -120,7 +119,6 @@ public class WindowManager
 	    calculateGeomImpl(windows, obj1, left, top, right, bottom);
 	    return;
 	}
-	System.out.println("" + leafCount1 + " and " + leafCount2 + " leaves");
 	if (windows.getDirection(obj) == TileManager.VERTICAL)
 	{
 	    int range = bottom - top;//One row is reserved for divider;
@@ -167,7 +165,6 @@ public class WindowManager
 				int right,
 				int bottom)
     {
-	System.out.println("Processing popup");
 	if (win == null || !win.popup || win.area == null)
 	{
 	    if (anotherNode != null)
@@ -189,7 +186,6 @@ public class WindowManager
 	if (preferableWidth < MIN_RANGE_HORIZONTAL)
 	    preferableWidth = MIN_RANGE_HORIZONTAL;
 	preferableHeight++;//For title bar;
-	System.out.println("Popup with preferable size " + preferableWidth + "x" + preferableHeight);
 	if (preferableHeight < 2)
 	    preferableHeight = 2;
 	int maxHeight = (bottom - top + 1) - MIN_RANGE_VERTICAL - 1;//1 is for splitter;

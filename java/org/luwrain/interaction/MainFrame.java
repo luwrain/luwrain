@@ -18,18 +18,22 @@ package org.luwrain.interaction;
 
 import java.awt.*;
 import java.awt.event.*;
+import org.luwrain.core.Log;
 
 public class MainFrame extends Frame
 {
-    public Font font;
+    private static final int MIN_TABLE_WIDTH = 32;
+    private static final int MIN_TABLE_HEIGHT = 16;
+
+    private Font font;
+    private int marginLeft = 0, marginTop = 0, marginRight = 0, marginBottom = 0;
     private int tableWidth = 0;
     private int tableHeight = 0;
     private char[][] table;
 
-    public MainFrame(String title, Font font)
+    public MainFrame(String title)
     {
 	super(title);
-	this.font = font;
     }
 
     public void paint(Graphics g)
@@ -66,18 +70,37 @@ public class MainFrame extends Frame
 	    table[x + i][y] = text.charAt(i) != '\0'?text.charAt(i):' ';
     }
 
-    public void initTable()
+    public boolean initTable()
     {
-	final int width = getSize().width / getFontWidth();
-	final int height = getSize().height / getFontHeight();
-	tableWidth = width >= 32?width:32;
-	tableHeight = height >= 16?height:16;
+	int width = getSize().width;
+	int height = getSize().height;
+	if (width < marginLeft + marginRight)
+	{
+	    Log.error("awt", "table initialization failure: left + right margins are greater than window width (" + marginLeft + "+" + marginRight + "<" + width + ")");
+	    return false;
+	}
+	if (height < marginTop + marginBottom)
+	{
+	    Log.error("awt", "table initialization failure: top + bottom margins are greater than window height (" + marginTop + "+" + marginBottom + "<" + height + ")");
+	    return false;
+	}
+	width -= (marginLeft + marginRight);
+	height -= (marginTop + marginBottom);
+width /= getFontWidth();
+height /= getFontHeight();
+	if (width < MIN_TABLE_WIDTH || height < MIN_TABLE_HEIGHT)
+	{
+	    Log.error("awt", "too small table for initialization:" + width + "x" + height);
+	    return false;
+	}
 	table = new char[tableWidth][];
 	for(int i = 0;i < tableWidth;i++)
 	    table[i] = new char[tableHeight];
 	for(int i = 0;i < tableWidth;i++)
 	    for(int j = 0;j < tableHeight;j++)
 		table[i][j] = ' ';
+	    Log.info("awt", "table is initialized with size " + width + "x" + height);
+	return true;
     }
 
     public int getTableWidth()
@@ -101,4 +124,20 @@ return m.stringWidth("a");
 	FontMetrics m = getGraphics().getFontMetrics(font);
 	return m.getHeight();
 	}
+
+    public void setFont(Font font)
+    {
+	this.font = font;
+    }
+
+    public void setMargin(int marginLeft,
+			  int marginTop,
+			  int marginRight,
+int marginBottom)
+    {
+	this.marginLeft = marginLeft;
+	this.marginTop = marginTop;
+	this.marginRight = marginRight;
+	this.marginBottom = marginBottom;
+    }
 }

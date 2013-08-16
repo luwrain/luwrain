@@ -149,7 +149,6 @@ Application systemApp)
 	windows.createHorizontally(visibleApps);
 	for(int i = 0;i < visibleApps.length;i++)
 	    windows.replace(visibleApps[i], constructWindowLayoutOfApp(visibleApps[i]));
-	System.out.println("" + visibleApps.length + " visible application");
 	if (hasProperPopup())
 	{
 	    System.out.println("Has popup");

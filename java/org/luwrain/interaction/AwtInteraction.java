@@ -19,9 +19,14 @@ package org.luwrain.interaction;
 import java.awt.*;
 import java.awt.event.*;
 import org.luwrain.core.events.KeyboardEvent;
+import org.luwrain.core.Interaction;
+import org.luwrain.core.InteractionParams;
+import org.luwrain.core.Log;
 
-public class AwtInteraction implements org.luwrain.core.Interaction
+public class AwtInteraction implements Interaction
 {
+    private static final String FRAME_TITLE = "Luwrain";
+
     private MainFrame frame;
     private int currentFontSize = 14;
     private boolean acceptingInputEvents = false;
@@ -184,13 +189,17 @@ public class AwtInteraction implements org.luwrain.core.Interaction
 	org.luwrain.core.Environment.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
     }
 
-    public void init(int wndLeft,
-		     int wndTop,
-		     int wndWidth,
-		     int wndHeight)
+    public boolean init(InteractionParams params)
     {
-	frame = new org.luwrain.interaction.MainFrame("Luwrain", createFont(currentFontSize));
-	frame.setSize(wndWidth, wndHeight);
+	if (params == null)
+	    return false;
+	currentFontSize = params.initialFontSize;
+	Log.info("awt", "creating window " + params.wndWidth + "x" + params.wndHeight + " at position (" + params.wndLeft + "," + params.wndTop + ")");
+	Log.info("awt", "initial font size is " + params.initialFontSize);
+	frame = new org.luwrain.interaction.MainFrame(FRAME_TITLE);
+	frame.setFont(createFont(currentFontSize));
+	frame.setMargin(params.marginLeft, params.marginTop, params.marginRight, params.marginBottom);
+	frame.setSize(params.wndWidth, params.wndHeight);
 	frame.setFocusTraversalKeysEnabled(false);
 	frame.addKeyListener(new KeyListener() {
 		public void              keyPressed(KeyEvent event)
@@ -207,7 +216,12 @@ public class AwtInteraction implements org.luwrain.core.Interaction
 		}
 	    });
 	frame.setVisible(true);                                                    
-	frame.initTable();
+	if (!frame.initTable())
+	{
+	    Log.fatal("awt", "error occurred on table initialization");
+	    return false;
+	}
+	return true;
     }
 
     public void close()
@@ -218,7 +232,7 @@ public class AwtInteraction implements org.luwrain.core.Interaction
     public void setDesirableFontSize(int fontSize)
     {
 	currentFontSize = fontSize;
-	frame.font = createFont(currentFontSize);
+	frame.setFont(createFont(currentFontSize));
 	frame.initTable();
     }
 
