@@ -267,15 +267,13 @@ goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea);
 
     public static void runActionPopup()
     {
-	org.luwrain.popups.SimpleLinePopup popup = new org.luwrain.popups.SimpleLinePopup(new Object(), "Выполнить команду", "Выполнить команду:", "");
+	org.luwrain.popups.SimpleLinePopup popup = new org.luwrain.popups.SimpleLinePopup(new Object(), "Выполнить команду", "команда:", "");
 	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup.closing);
 	if (popup.closing.cancelled())
 	    return;
 	if (!actions.run(popup.getText().trim()))
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
     }
-
-    //API;
 
     static public void setActiveArea(Object instance, Area area)
     {
@@ -292,18 +290,18 @@ goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea);
 
     static public void onAreaNewHotPoint(Area area)
     {
-	windowManager.redraw();//FIXME:Area may be inactive;
+	if (area != null && area == screenContentManager.getActiveArea())
+	    windowManager.redrawArea(area);
     }
 
     static public void onAreaNewContent(Area area)
     {
-	windowManager.redraw();//FIXME:Area may be inactive;
+	windowManager.redrawArea(area);
     }
 
     static public void onAreaNewName(Area area)
     {
-	windowManager.redraw();//FIXME:Area may be inactive;
-	screenContentManager.introduceActiveArea();
+	windowManager.redrawArea(area);
     }
 
     static public void message(String text)

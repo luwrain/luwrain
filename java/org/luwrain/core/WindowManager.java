@@ -24,6 +24,7 @@ public class WindowManager
 
     private Interaction interaction;
     private ScreenContentManager screenContentManager;
+    private Object[] visibleObjs = null;
 
     public WindowManager(Interaction interaction, ScreenContentManager screenContentManager)
     {
@@ -37,11 +38,11 @@ public class WindowManager
 	if (windows == null)
 	    return;
 	calculateGeom(interaction.getWidthInCharacters(), interaction.getHeightInCharacters(), windows);
-	Object[] objs = windows.getObjects();
+visibleObjs = windows.getObjects();
 	interaction.startDrawSession();
-	for(int i = 0;i < objs.length;i++)
+	for(int i = 0;i < visibleObjs.length;i++)
 	{
-	    Window win = (Window)objs[i];
+	    Window win = (Window)visibleObjs[i];
 	    if (win == null || win.area == null)
 		continue;
 	    drawWindow(win);
@@ -49,10 +50,31 @@ public class WindowManager
 	interaction.endDrawSession();
     }
 
+    public void redrawArea(Area area)
+    {
+	if (visibleObjs == null || visibleObjs.length == 0)
+	{
+	    redraw();
+	    return;
+	}
+	for(int i = 0;i < visibleObjs.length;i++)
+	{
+	    Window win = (Window)visibleObjs[i];
+	    if (win != null || win.area == null && win.area == area)
+	    {
+		interaction.startDrawSession();
+		drawWindow(win);
+		interaction.endDrawSession();
+		return;
+	    }
+	}
+    }
+
     private void calculateGeom(int screenWidth,
 			       int screenHeight,
 			       TileManager windows)
     {
+	Log.debug("screen", "calculating geom for screen " + screenWidth + "x" + screenHeight);
 	windows.countLeaves();
 	calculateGeomImpl(windows, windows.getRoot(), 0, 1, screenWidth - 1, screenHeight - 2);//One line at top and one line at bottom are reserved for notifications and messages;
     }
@@ -282,20 +304,28 @@ public class WindowManager
     {
 	if (win == null || win.area == null)
 	    return;
-	System.out.println("Window (" + win.x + "," + win.y + "," + win.width + "," + win.height + ")");
 	Area area = win.area;
 	if (win.scrolledVert < 0 || win.scrolledVert >= area.getLineCount())
 	    return;
+	Log.debug("screen", "drawing window:" + win.width + "x" + win.height);
 	if (win.width < MIN_RANGE_HORIZONTAL || win.height < MIN_RANGE_VERTICAL)
 	    return;
 	String name = area.getName();
 	if (name != null && !name.isEmpty())
-	    interaction.drawText(win.x, win.y, name.length() <= win.width?name:name.substring(0, win.width - 1));
+	    interaction.drawText(win.x, win.y, name.length() <= win.width?name:name.substring(0, win.width));
 	int count = area.getLineCount() - win.scrolledVert;
 	if (count > win.height - 1)
 	    count = win.height - 1;
 	for(int k = 0;k < count;k++)
 	    interaction.drawText(win.x, win.y + k + 1, getProperLinePart(win, area.getLine(k + win.scrolledVert)));
+	if (area == screenContentManager.getActiveArea())
+	{
+	    final int hotPointX = area.getHotPointX() - win.scrolledHoriz;
+	    final int hotPointY = area.getHotPointY() - win.scrolledVert;
+	    if (hotPointX >= 0 && hotPointX <win.width &&
+		hotPointY >= 0 && hotPointY < (win.height - 1))
+		interaction.setHotPoint(hotPointX + win.x, hotPointY + win.y + 1);
+	}
     }
 
     private String getProperLinePart(Window win, String line)
@@ -305,6 +335,6 @@ public class WindowManager
 	if (win.scrolledHoriz >= line.length())
 	    return "";
 	String l = win.scrolledHoriz == 0?line:line.substring(win.scrolledHoriz);
-	return l.length() <= win.width?l:l.substring(0, win.width - 1);
+	return l.length() <= win.width?l:l.substring(0, win.width );
     }
 }

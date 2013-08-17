@@ -28,6 +28,7 @@ public class AwtInteraction implements Interaction
     private static final String FRAME_TITLE = "Luwrain";
 
     private MainFrame frame;
+    private boolean drawingInProgress = false;
     private int currentFontSize = 14;
     private boolean acceptingInputEvents = false;
     private boolean leftAltPressed = false;
@@ -198,6 +199,7 @@ public class AwtInteraction implements Interaction
 	Log.info("awt", "initial font size is " + params.initialFontSize);
 	frame = new org.luwrain.interaction.MainFrame(FRAME_TITLE);
 	frame.setFont(createFont(currentFontSize));
+	frame.setColors(params.fontColor, params.bkgColor, params.splitterColor);
 	frame.setMargin(params.marginLeft, params.marginTop, params.marginRight, params.marginBottom);
 	frame.setSize(params.wndWidth, params.wndHeight);
 	frame.setFocusTraversalKeysEnabled(false);
@@ -229,11 +231,16 @@ public class AwtInteraction implements Interaction
 	//FIXME:
     }
 
-    public void setDesirableFontSize(int fontSize)
+    public boolean setDesirableFontSize(int fontSize)
     {
-	currentFontSize = fontSize;
+	frame.setFont(createFont(fontSize));
+	if (frame.initTable())
+	{
+	    currentFontSize = fontSize;
+	    return true;
+	}
 	frame.setFont(createFont(currentFontSize));
-	frame.initTable();
+	return false;
     }
 
     public int getFontSize()
@@ -263,24 +270,32 @@ public class AwtInteraction implements Interaction
 
     public void startDrawSession()
     {
+	//	Log.debug("awt", "starting draw session");
+	drawingInProgress = true;
 	for(int i = 0;i < frame.getTableWidth();i++)
 	for(int j = 0;j < frame.getTableHeight();j++)
 	    frame.putString(i, j, " ");
-
-	//Nothing here at least now;
     }
 
     public void drawText(int x, int y, String text)
     {
 	if (text == null)
 	    return;
-	//	System.out.println("" + x + "," + y + ":" + text);
+	//	Log.debug("awt", "text:" + x + "," + y + ":" + text);
 	frame.putString(x, y, text);
     }
 
     public void endDrawSession()
     {
-	System.out.println("Ending draw session");
+	//	Log.debug("awt", "ending draw session");
+	drawingInProgress = false;
+	frame.paint(frame.getGraphics());
+    }
+
+    public void setHotPoint(int x, int y)
+    {
+	frame.setHotPoint(x, y);
+	if (!drawingInProgress)
 	frame.paint(frame.getGraphics());
     }
 

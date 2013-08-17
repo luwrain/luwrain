@@ -25,7 +25,7 @@ public class Window
     public int x = 0;
     public int y = 0;
     public int width = 0;
-    public int height = 0;
+    public int height = 0;//With title bar;
     public int scrolledVert = 0;
     public int scrolledHoriz = 0;
 

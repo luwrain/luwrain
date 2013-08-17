@@ -111,6 +111,17 @@ Application systemApp)
 	    Speech.say(activeArea.getName());
     }
 
+    public Area getActiveArea()
+    {
+	if (activePopup)
+	{
+	    if (hasProperPopup())
+		return popups.getAreaOfLastPopup();
+	    activePopup = false;
+	}
+return applications.getActiveAreaOfActiveApp();
+    }
+
     public void activateNextArea()
     {
 	if (activePopup)
@@ -151,7 +162,6 @@ Application systemApp)
 	    windows.replace(visibleApps[i], constructWindowLayoutOfApp(visibleApps[i]));
 	if (hasProperPopup())
 	{
-	    System.out.println("Has popup");
 	    Window popupWindow = new Window(popups.getAppOfLastPopup(), popups.getAreaOfLastPopup(), popups.getPositionOfLastPopup());
 	    switch(popupWindow.popupPlace)
 	    {

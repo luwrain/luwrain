@@ -22,11 +22,12 @@ public interface Interaction
     void close();
     void startInputEventsAccepting();
     void stopInputEventsAccepting();
-    void setDesirableFontSize(int size);
+    boolean setDesirableFontSize(int size);
     int getFontSize();
     int getWidthInCharacters();
     int getHeightInCharacters();
     void startDrawSession();
     void drawText(int x, int y, String text);
     void endDrawSession();
+    void setHotPoint(int x, int y);
 }
