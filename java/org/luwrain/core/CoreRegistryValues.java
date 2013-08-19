@@ -20,6 +20,7 @@ public class CoreRegistryValues
 {
     //Interaction;
     public static final String INTERACTION_BACKEND = "/org/luwrain/interaction/back-end";
+    public static final String INTERACTION_FONT_NAME = "/org/luwrain/interaction/font-name";
     public static final String INTERACTION_INITIAL_FONT_SIZE = "/org/luwrain/interaction/initial-font-size";
     public static final String INTERACTION_WND_X = "/org/luwrain/interaction/window-x";
     public static final String INTERACTION_WND_Y = "/org/luwrain/interaction/window-y";

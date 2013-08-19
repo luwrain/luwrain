@@ -29,6 +29,7 @@ public class AwtInteraction implements Interaction
 
     private MainFrame frame;
     private boolean drawingInProgress = false;
+    private String fontName = java.awt.Font.MONOSPACED;
     private int currentFontSize = 14;
     private boolean acceptingInputEvents = false;
     private boolean leftAltPressed = false;
@@ -194,11 +195,13 @@ public class AwtInteraction implements Interaction
     {
 	if (params == null)
 	    return false;
+	if (params.fontName != null && !params.fontName.trim().isEmpty())
+	    fontName = params.fontName;
 	currentFontSize = params.initialFontSize;
 	Log.info("awt", "creating window " + params.wndWidth + "x" + params.wndHeight + " at position (" + params.wndLeft + "," + params.wndTop + ")");
 	Log.info("awt", "initial font size is " + params.initialFontSize);
 	frame = new org.luwrain.interaction.MainFrame(FRAME_TITLE);
-	frame.setFont(createFont(currentFontSize));
+	frame.setInteractionFont(createFont(currentFontSize));
 	frame.setColors(params.fontColor, params.bkgColor, params.splitterColor);
 	frame.setMargin(params.marginLeft, params.marginTop, params.marginRight, params.marginBottom);
 	frame.setSize(params.wndWidth, params.wndHeight);
@@ -270,11 +273,7 @@ public class AwtInteraction implements Interaction
 
     public void startDrawSession()
     {
-	//	Log.debug("awt", "starting draw session");
 	drawingInProgress = true;
-	for(int i = 0;i < frame.getTableWidth();i++)
-	for(int j = 0;j < frame.getTableHeight();j++)
-	    frame.putString(i, j, " ");
     }
 
     public void drawText(int x, int y, String text)
@@ -285,9 +284,16 @@ public class AwtInteraction implements Interaction
 	frame.putString(x, y, text);
     }
 
+    public void clearRect(int left,
+			  int top,
+			  int right,
+			  int bottom)
+    {
+	frame.clearRect(left, top, right, bottom);
+    }
+
     public void endDrawSession()
     {
-	//	Log.debug("awt", "ending draw session");
 	drawingInProgress = false;
 	frame.paint(frame.getGraphics());
     }
@@ -301,6 +307,8 @@ public class AwtInteraction implements Interaction
 
     private Font createFont(int desirableFontSize)
     {
-	return new Font("Courier", Font.PLAIN, desirableFontSize);
+	Font f = new Font(fontName, Font.PLAIN, desirableFontSize);
+	//Font f = new Font("Dejavu Sans Mono", Font.PLAIN, desirableFontSize);
+return f;
     }
 }

@@ -2,6 +2,7 @@
 <registry>
   <regdir  name="/org/luwrain/interaction">
     <regvalue name="back-end" type="string">awt</regvalue>
+    <regvalue name="font-name" type="string">Monospaced</regvalue>
     <regvalue name="initial-font-size" type="int">14</regvalue>
     <regvalue name="window-x" type="int">0</regvalue>
     <regvalue name="window-y" type="int">0</regvalue>

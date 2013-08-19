@@ -16,11 +16,14 @@
 
 package org.luwrain.core;
 
+import java.util.Vector;
 import org.luwrain.pim.PimManager;
 import org.luwrain.mmedia.EnvironmentSounds;
 
 public class Launch
 {
+    private static final String  PREFIX_CONF_LIST = "--conf-list=";
+
     public static String[] commandLine;
     private static Interaction interaction = new org.luwrain.interaction.AwtInteraction();
     private static Registry registry = new Registry();
@@ -28,6 +31,9 @@ public class Launch
     public static void go(String[] args)
     {
 	commandLine = args;
+	//	Log.debug("init", "command line has " + commandLine.length + " options");
+	//	for(int i = 0;i < commandLine.length;i++)
+	//	    Log.debug("init", "option " + (i + 1) + ":" + commandLine[i]);
 	if (init())
 	    Environment.run(interaction, args);
 	exit();
@@ -52,8 +58,13 @@ public class Launch
 
     private static boolean initRegistry()
     {
+	Vector<String> confList = getConfList();
 	try {
-	    registry.readFile("/home/luwrain/git/luwrain.git/conf/interaction.xml");//FIXME:
+	    for(int i = 0;i < confList.size();i++)
+	    {
+		Log.debug("init", "reading configuration file:" + confList.get(i));
+		registry.readFile(confList.get(i));
+	    }
 	}
 	catch(Exception e)
 	{
@@ -115,7 +126,6 @@ public class Launch
     {
 	InteractionParams params = new InteractionParams();
 	String backend = "awt";
-
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_BACKEND) == Registry.STRING)
 	    backend = registry.getString(CoreRegistryValues.INTERACTION_BACKEND); else
 	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_BACKEND + "\' or it has incorrect type, using default value");
@@ -124,7 +134,14 @@ public class Launch
 	    Log.fatal("init", "unknown interaction back-end \'" + backend + "\', only \'awt\' back-end is currently supported");
 	    return false;
 	}
-
+	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_FONT_NAME) == Registry.STRING)
+	{
+	    String value = registry.getString(CoreRegistryValues.INTERACTION_FONT_NAME);
+	    if (!value.trim().isEmpty())
+		params.fontName = value; else
+		Log.warning("init", "registry value \'" + CoreRegistryValues.INTERACTION_FONT_NAME + "\' is empty, using default value \'" + params.fontName + "\'");
+	}else
+	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_FONT_NAME + "\' or it has incorrect type, using default value \'" + params.fontName + "\'");
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_INITIAL_FONT_SIZE) == Registry.INTEGER)
 	    params.initialFontSize = registry.getInteger(CoreRegistryValues.INTERACTION_INITIAL_FONT_SIZE); else
 	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_INITIAL_FONT_SIZE + "\' or it has incorrect type, using default value");
@@ -203,6 +220,7 @@ public class Launch
 	params.fontColor = new java.awt.Color(fontRed, fontGreen, fontBlue);
 	params.bkgColor = new java.awt.Color(bkgRed, bkgGreen, bkgBlue);
 	params.splitterColor = new java.awt.Color(splitterRed, splitterGreen, splitterBlue);
+	//FIXME:Adjust color values to be inside of range between 0 and 255;
 	return interaction.init(params);
     }
 
@@ -216,5 +234,33 @@ public class Launch
     {
 	shutdown();
 	System.exit(0);
+    }
+
+    static private Vector<String> getConfList()
+    {
+	Vector<String> res = new Vector<String>();
+	for(int i = 0;i < commandLine.length;i++)
+	{
+	    if (!commandLine[i].startsWith(PREFIX_CONF_LIST))
+		continue;
+	    String rest = commandLine[i].substring(PREFIX_CONF_LIST.length());
+	    String s = "";
+	    for(int k = 0;k < rest.length();k++)
+	    {
+		if (rest.charAt(k) != ':')
+		{
+		    s += rest.charAt(k);
+		    continue;
+		}
+		s = s.trim();
+		if (!s.isEmpty())
+		    res.add(s);
+		s = "";
+	    }
+	    s = s.trim();
+	    if (!s.isEmpty())
+		res.add(s);
+	}
+	return res;
     }
 }

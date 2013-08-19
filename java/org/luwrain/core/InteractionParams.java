@@ -32,4 +32,5 @@ public class InteractionParams
     public Color bkgColor = new Color(0, 0, 0);
     public Color splitterColor = new Color(128, 128, 128);
     public int initialFontSize = 14;
+    public String fontName = java.awt.Font.MONOSPACED;
 }

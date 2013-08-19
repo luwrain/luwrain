@@ -31,7 +31,7 @@ public class MainFrame extends Frame
 
     private Font font;
     private int marginLeft = 0, marginTop = 0, marginRight = 0, marginBottom = 0;
-    private int hotPointX = 0, hotPointY = 0;
+    private int hotPointX = -1, hotPointY = -1;
     private Color fontColor = new Color(255, 255, 255);
     private Color bkgColor = new Color(0, 0, 0);
     private Color splitterColor = new Color(128, 128, 128);
@@ -65,12 +65,13 @@ public class MainFrame extends Frame
 	{
 	    for(int j = 0;j < tableWidth;j++)
 		chars[j] = table[j][i];
+	    //	    Log.debug("awt", "drawing line " + i + ":" + (new String(chars)));
 	    ig.drawString(new String(chars), 
 			  marginLeft, (i * fontHeight) + baseLine + marginTop);
 	}
-	if (hotPointX < tableWidth && hotPointY < tableHeight)
+	if (hotPointX >= 0 && hotPointY >= 0 &&
+	    hotPointX < tableWidth && hotPointY < tableHeight)
 	{
-	    //	    Log.debug("awt", "drawing hot point (" + hotPointX + "," + hotPointY + ") with font cell " + fontWidth + "x" + fontHeight);
 	    ig.fillRect((hotPointX * fontWidth) + marginLeft,
 			(hotPointY * fontHeight) + marginTop, 
 			fontWidth, fontHeight);
@@ -98,10 +99,33 @@ public class MainFrame extends Frame
 	    table[x + i][y] = text.charAt(i) != '\0'?text.charAt(i):' ';
     }
 
+    public void clearRect(int left,
+			  int top,
+			  int right,
+			  int bottom)
+    {
+	if (table == null || tableWidth <= 0 || tableHeight <= 0)
+	    return;
+	final int l = left >= 0?left:0;
+	final int t = top >= 0?top:0;
+	final int r = right < tableWidth?right:(tableWidth - 1);
+	final int b = bottom < tableHeight?bottom:(tableHeight - 1);
+	if (l > r || t > b)
+	    return;
+	for(int i = l;i <= r;i++)
+	    for(int j = t;j <= b;j++)
+		table[i][j] = ' ';
+    }
+
     public void setHotPoint(int x, int y)
     {
+	//	Log.debug("awt", "new hot point: (" + x + "," + y + ")");
 	if (x < 0 || y < 0)
+	{
+	    hotPointX = -1;
+	    hotPointY = -1;
 	    return;
+	}
 	hotPointX = x;
 	hotPointY = y;
     }
@@ -153,19 +177,40 @@ height /= getFontHeight();
 
     public int getFontWidth()
     {
+	if (font == null)
+	{
+	    Log.error("awt", "trying to calculate font width but font is not created");
+	    return 0;
+	}
 	FontMetrics m = getGraphics().getFontMetrics(font);
-return m.stringWidth("a");
+	final int aWidth = m.stringWidth("A");
+	final int spaceWidth = m.stringWidth(" ");
+	final int oneWidth = m.stringWidth("1");
+	//	Log.debug("awt", "\'A\' character has width " + aWidth);
+	//	Log.debug("awt", "\' \' character has width " + spaceWidth);
+	//	Log.debug("awt", "\'1\' character has width " + oneWidth);
+	if (aWidth != spaceWidth || spaceWidth != oneWidth)
+	    Log.warning("awt", "characters \'A\', \' \' and \'1\' have different width: " + aWidth + "," + spaceWidth + " and " + oneWidth);
+	return aWidth;
     }
 
 	public int getFontHeight()
 	{
+	if (font == null)
+	{
+	    Log.error("awt", "trying to calculate font height but font is not created");
+	    return 0;
+	}
+
 	FontMetrics m = getGraphics().getFontMetrics(font);
 	return m.getHeight();
 	}
 
-    public void setFont(Font font)
+    public void setInteractionFont(Font font)
     {
 	this.font = font;
+Log.info("awt", "actual family of the  chosen font:" + this.font.getFamily());
+Log.info("awt", "actual size of the chosen font:" + this.font.getSize());
     }
 
     public void setMargin(int marginLeft,

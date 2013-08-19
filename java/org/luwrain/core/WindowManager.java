@@ -40,6 +40,8 @@ public class WindowManager
 	calculateGeom(interaction.getWidthInCharacters(), interaction.getHeightInCharacters(), windows);
 visibleObjs = windows.getObjects();
 	interaction.startDrawSession();
+	interaction.clearRect(0, 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 2);
+	interaction.setHotPoint(-1, -1);
 	for(int i = 0;i < visibleObjs.length;i++)
 	{
 	    Window win = (Window)visibleObjs[i];
@@ -63,6 +65,7 @@ visibleObjs = windows.getObjects();
 	    if (win != null || win.area == null && win.area == area)
 	    {
 		interaction.startDrawSession();
+		interaction.clearRect(win.x, win.y, win.x + win.width - 1, win.y + win.height - 1);
 		drawWindow(win);
 		interaction.endDrawSession();
 		return;
@@ -74,7 +77,6 @@ visibleObjs = windows.getObjects();
 			       int screenHeight,
 			       TileManager windows)
     {
-	Log.debug("screen", "calculating geom for screen " + screenWidth + "x" + screenHeight);
 	windows.countLeaves();
 	calculateGeomImpl(windows, windows.getRoot(), 0, 1, screenWidth - 1, screenHeight - 2);//One line at top and one line at bottom are reserved for notifications and messages;
     }
@@ -307,7 +309,7 @@ visibleObjs = windows.getObjects();
 	Area area = win.area;
 	if (win.scrolledVert < 0 || win.scrolledVert >= area.getLineCount())
 	    return;
-	Log.debug("screen", "drawing window:" + win.width + "x" + win.height);
+	//	Log.debug("screen", "drawing window:" + win.width + "x" + win.height);
 	if (win.width < MIN_RANGE_HORIZONTAL || win.height < MIN_RANGE_VERTICAL)
 	    return;
 	String name = area.getName();

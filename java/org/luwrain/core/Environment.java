@@ -306,7 +306,13 @@ goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea);
 
     static public void message(String text)
     {
+	if (text == null || text.trim().isEmpty())
+	    return;
 	//FIXME:Message class for message collecting;
 	Speech.say(text);
+	interaction.startDrawSession();
+	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
+	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text);
+	interaction.endDrawSession();
     }
 }
