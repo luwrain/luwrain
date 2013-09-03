@@ -39,8 +39,8 @@ public class SystemApp implements Application
 	return null;
     }
 
-    public MainMenuArea createMainMenuArea()
+    public MainMenuArea createMainMenuArea(String[] items)
     {
-	return new MainMenuArea(stringConstructor);
+	return new MainMenuArea(stringConstructor, items);
     }
 }

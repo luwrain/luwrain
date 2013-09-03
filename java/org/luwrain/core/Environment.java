@@ -46,6 +46,7 @@ public class Environment
 	screenContentManager = new ScreenContentManager(applications, popups, systemApp);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	interaction.startInputEventsAccepting();
+	    EnvironmentSounds.play(EnvironmentSounds.STARTUP);
 		eventLoop(new InitialEventLoopStopCondition());
 		interaction.stopInputEventsAccepting();
 		Launch.exit();
@@ -151,24 +152,21 @@ public class Environment
 	    Event event = eventQueue.takeEvent();
 	    if (event == null)
 		continue;
-	    if (event.type() == Event.KEYBOARD_EVENT)
+	    switch (event.type())
 	    {
-		processKeyboardEvent((KeyboardEvent)event);
-		continue;
-	    }
-	    if (event.type() == Event.ENVIRONMENT_EVENT)
-	    {
-		if (!screenContentManager.onEnvironmentEvent((EnvironmentEvent)event))
-		{
-		    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
-		    Speech.say(Langs.staticValue(Langs.NO_ACTIVE_AREA));//FIXME:Marked intonation;
-		}
-		continue;
+	    case Event.KEYBOARD_EVENT:
+		onKeyboardEvent((KeyboardEvent)event);
+		break;
+	    case Event.ENVIRONMENT_EVENT:
+		onEnvironmentEvent((EnvironmentEvent)event);
+		break;
+	    default:
+		Log.warning("environment", "got the event of an unknown type:" + event.type());
 	    }
 	}
     }
 
-    static private void processKeyboardEvent(KeyboardEvent event)
+    static private void onKeyboardEvent(KeyboardEvent event)
     {
 	if (event == null)
 	    return;
@@ -176,7 +174,7 @@ public class Environment
 	if (actionName != null)
 	{
 	    if (!actions.run(actionName))
-		message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
+		message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));//FIXME:sound;
 	    return;
 	}
 	if (event.isCommand())
@@ -188,17 +186,61 @@ public class Environment
 		code == KeyboardEvent.RIGHT_ALT)
 		return;
 	}
-	if (!event.isCommand() && event.getCharacter() == 'x' && event.withLeftAltOnly())
+	if (!event.isCommand() &&
+	    event.getCharacter() == 'x' &&
+	    event.withLeftAltOnly())
 	{
 	    runActionPopup();
 	    return;
 	}
-	if (!screenContentManager.onKeyboardEvent(event))//FIXME:Exception;
+	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
+	try {
+	    res = screenContentManager.onKeyboardEvent(event);
+	}
+	catch (Throwable e)
 	{
+	    Log.error("environment", "keyboard event throws an exception:" + e.getMessage());
+	    e.printStackTrace();
 	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
-	    Speech.say(Langs.staticValue(Langs.NO_ACTIVE_AREA));//FIXME:Marked intonation;
-	} else 
-	    windowManager.redraw();
+	    return;
+	}
+	switch(res)
+	{
+	case ScreenContentManager.EVENT_NOT_PROCESSED:
+	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
+	    break;
+	case ScreenContentManager.NO_APPLICATIONS:
+	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
+	    message("Воспользуйтесь главным меню для начала работы");//FIXME:
+	    break;
+	}
+    }
+
+    static public void onEnvironmentEvent(EnvironmentEvent event)
+    {
+	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
+	try {
+	    res = screenContentManager.onEnvironmentEvent(event);
+	}
+	catch (Throwable e)
+	{
+	    Log.error("environment", "environment event throws an exception:" + e.getMessage());
+	    e.printStackTrace();
+	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
+	    return;
+	}
+	switch(res)
+	{
+	case ScreenContentManager.EVENT_NOT_PROCESSED:
+	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
+	    break;
+	case ScreenContentManager.NO_APPLICATIONS:
+	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
+	    message("Воспользуйтесь главным меню для начала работы");//FIXME:
+	    break;
+	}
+	//	    windowManager.redraw();
+
     }
 
     static public void enqueueEvent(Event e)
@@ -236,33 +278,6 @@ public class Environment
 	    screenContentManager.introduceActiveArea();
 	    windowManager.redraw();
 	}
-    }
-
-    public static void mainMenu()
-    {
-	/*
-	for(int i = 0;i < popups.size();i++)
-	{
-	    MainMenuArea mainMenuArea;
-	    try {
-		mainMenuArea = (MainMenuArea)popups.elementAt(i).area;//It looks like a hack but there is nothing dangerous and everything works as we want;
-	    }
-	    catch (ClassCastException e)
-	    {
-		continue;
-	    }
-	    mainMenuArea.cancel();
-	    FIXME:
-	}
-	*/
-	MainMenuArea mainMenuArea = systemApp.createMainMenuArea();
-EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU);
-goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea);
-	if (mainMenuArea.wasCancelled())
-	    return;
-	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_ITEM);
-	if (!actions.run(mainMenuArea.getSelectedAction()))
-	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
     }
 
     public static void runActionPopup()
@@ -304,6 +319,14 @@ goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea);
 	windowManager.redrawArea(area);
     }
 
+    //May return -1;
+    static public int getAreaVisibleHeight(Area area)
+    {
+	if (area == null)
+	    return -1;
+	return windowManager.getAreaVisibleHeight(area);
+    }
+
     static public void message(String text)
     {
 	if (text == null || text.trim().isEmpty())
@@ -314,5 +337,43 @@ goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea);
 	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
 	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text);
 	interaction.endDrawSession();
+    }
+
+    public static void mainMenu()
+    {
+	//FIXME:No double opening;
+	MainMenuArea mainMenuArea = systemApp.createMainMenuArea(getMainMenuItems());
+	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU);
+	goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea.closing);
+	if (mainMenuArea.closing.cancelled())
+	    return;
+	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_ITEM);
+	if (!actions.run(mainMenuArea.getSelectedActionName()))
+	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
+    }
+
+    static private String[] getMainMenuItems()
+    {
+	if (Registry.typeOf(CoreRegistryValues.MAIN_MENU_CONTENT) != Registry.STRING)
+	{
+	    Log.error("environment", "registry has no value \'" + CoreRegistryValues.MAIN_MENU_CONTENT + "\' needed for proper main menu appearance");
+	    return new String[0];
+	}
+	final String content = Registry.string(CoreRegistryValues.MAIN_MENU_CONTENT);
+	ArrayList<String> a = new ArrayList<String>();
+	String s = "";
+	if (content.trim().isEmpty())
+	    return new String[0];
+	for(int i = 0;i < content.length();i++)
+	{
+	    if (content.charAt(i) == ':')
+	    {
+		a.add(s.trim());
+		s = "";
+	    } else
+		s += content.charAt(i);
+	}
+	a.add(s.trim());
+	return a.toArray(new String[a.size()]);
     }
 }

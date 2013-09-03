@@ -14,29 +14,16 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+package org.luwrain.interaction;
 
-public class DayMainMenuItem implements MainMenuItem
+public class OnScreenLine
 {
-    private SystemAppStringConstructor stringConstructor = null;
+    public int pos1 = 0;
+    public int pos2 = 0;
 
-    public DayMainMenuItem(SystemAppStringConstructor stringConstructor)
+    public OnScreenLine(int pos1, int pos2)
     {
-	this.stringConstructor = stringConstructor;
-    }
-
-    public String getText()
-    {
-	return stringConstructor.currentDay();
-    }
-
-    public boolean hasAction()
-    {
-	return false;
-    }
-
-    public String getAction()
-    {
-	return "";
+	this.pos1 = pos1;
+	this.pos2 = pos2;
     }
 }

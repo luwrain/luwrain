@@ -48,6 +48,12 @@ static public     void closeApplication(Object instance)
 	Environment.onAreaNewName(area);
     }
 
+    //May return -1 if area is not shown on the screen;
+    static public int getAreaVisibleHeight(Area area)
+    {
+	return Environment.getAreaVisibleHeight(area);
+    }
+
     static public void quit()
     {
 	Environment.quit();

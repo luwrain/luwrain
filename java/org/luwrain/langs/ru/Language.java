@@ -28,7 +28,7 @@ public class Language implements org.luwrain.core.Language
     public Object requestStringConstructor(String id)
     {
 	if (id.equals("system-application"))
-	    return new SystemAppStringConstructor();
+	    return new SystemAppStringConstructor(this);
 	if (id.equals("news-reader"))
 	    return new NewsReaderStringConstructor();
 	if (id.equals("mail-reader"))
@@ -42,5 +42,46 @@ public class Language implements org.luwrain.core.Language
 	if (id.equals("fetch"))
 	    return new FetchStringConstructor();
 	return null;
+    }
+
+    public String getActionTitle(String actionName)
+    {
+	if (actionName == null)
+	    return null;
+	if (actionName.trim().equals("main-menu"))
+	    return "Главное меню";
+	if (actionName.trim().equals("quit"))
+	    return "Завершить работу";
+	if (actionName.trim().equals("ok"))
+	    return "OK";
+	if (actionName.trim().equals("cancel"))
+	    return "Отмена";
+	if (actionName.trim().equals("close"))
+	    return "Закрыть";
+	if (actionName.trim().equals("save"))
+	    return "Сохранить";
+	if (actionName.trim().equals("refresh"))
+	    return "Обновить";
+	if (actionName.trim().equals("describe"))
+	    return "Описать";
+	if (actionName.trim().equals("help"))
+	    return "Помощь";
+	if (actionName.trim().equals("switch-next-app"))
+	    return "Перейти к следующему приложению";
+	if (actionName.trim().equals("switch-next-area"))
+	    return "Перейти к следующему окну";
+	if (actionName.trim().equals("notepad"))
+	    return "Блокнот";
+	if (actionName.trim().equals("commander"))
+	    return "Обзор файлов и папок";
+	if (actionName.trim().equals("news"))
+	    return "Новости";
+	if (actionName.trim().equals("mail"))
+	    return "Почта";
+	if (actionName.trim().equals("fetch"))
+	    return "Доставка сообщений и новостей";
+	if (actionName.trim().equals("message"))
+	    return "Новое сообщение";
+	return "";
     }
 }

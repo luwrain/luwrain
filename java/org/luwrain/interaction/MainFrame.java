@@ -39,6 +39,8 @@ public class MainFrame extends Frame
     private int tableWidth = 0;
     private int tableHeight = 0;
     private char[][] table;
+    private OnScreenLineTracker[] vertLines;
+    private OnScreenLineTracker[] horizLines;
 
     public MainFrame(String title)
     {
@@ -65,13 +67,65 @@ public class MainFrame extends Frame
 	{
 	    for(int j = 0;j < tableWidth;j++)
 		chars[j] = table[j][i];
-	    //	    Log.debug("awt", "drawing line " + i + ":" + (new String(chars)));
 	    ig.drawString(new String(chars), 
 			  marginLeft, (i * fontHeight) + baseLine + marginTop);
 	}
+
+	ig.setColor(splitterColor);
+	//Vertical lines;
+	if (vertLines != null)
+	    for(int i = 0;i < vertLines.length;i++)
+		if (vertLines[i] != null)
+		{
+		    OnScreenLine[] lines = vertLines[i].getLines();
+		    for(int k = 0;k < lines.length;k++)
+		    {
+			Log.debug("awt", "vertical line (" + lines[k].pos1 + "->" + lines[k].pos2 + " at column " + i);
+			/*
+			ig.drawLine(marginLeft + (i * fontWidth) + (fontWidth / 2),
+				    marginTop + (lines[k].pos1 * fontHeight),
+				    marginLeft + (i * fontWidth) + (fontWidth / 2),
+				    marginTop + ((lines[k].pos2 + 1) * fontHeight));
+			*/
+
+			ig.fillRect(marginLeft + (i * fontWidth) + (fontWidth / 2) - (fontWidth / 6),
+				    marginTop + (lines[k].pos1 * fontHeight),
+				    (fontWidth / 3),
+				    (lines[k].pos2 - lines[k].pos1 + 1) * fontHeight);
+
+		    }
+		}
+
+	//Horizontal lines;
+	if (horizLines != null)
+	    for(int i = 0;i < horizLines.length;i++)
+		if (horizLines[i] != null)
+		{
+		    OnScreenLine[] lines = horizLines[i].getLines();
+		    for(int k = 0;k < lines.length;k++)
+		    {
+			Log.debug("awt", "horizontal line (" + lines[k].pos1 + "->" + lines[k].pos2 + " at row " + i);
+			/*
+			ig.drawLine(marginLeft + (lines[k].pos1 * fontWidth),
+				    marginTop + (i * fontHeight) + (fontHeight / 2),
+				    marginLeft + ((lines[k].pos2 + 1) * fontWidth),
+				    marginTop + (i * fontHeight) + (fontHeight / 2));
+			*/
+
+			ig.fillRect(marginLeft + (lines[k].pos1 * fontWidth),
+				    marginTop + (i * fontHeight) + (fontHeight / 2) - (fontWidth / 6),
+				    (lines[k].pos2 - lines[k].pos1 + 1) * fontWidth,
+				    fontWidth / 3);
+
+
+		    }
+		}
+
+	//Hot point;
 	if (hotPointX >= 0 && hotPointY >= 0 &&
 	    hotPointX < tableWidth && hotPointY < tableHeight)
 	{
+	    ig.setColor(fontColor);
 	    ig.fillRect((hotPointX * fontWidth) + marginLeft,
 			(hotPointY * fontHeight) + marginTop, 
 			fontWidth, fontHeight);
@@ -84,7 +138,8 @@ public class MainFrame extends Frame
 	}
 
 
-	g.drawImage(image, 0, 0, new Color(1, 1, 1), this);
+
+	g.drawImage(image, 0, 0, new Color(0, 0, 0), this);
     }
 
     public void putString(int x, int y, String text)
@@ -115,6 +170,12 @@ public class MainFrame extends Frame
 	for(int i = l;i <= r;i++)
 	    for(int j = t;j <= b;j++)
 		table[i][j] = ' ';
+	if (vertLines != null)
+	    for(int i = l;i <= r;i++)
+		vertLines[i].uncover(t, b);
+	if (horizLines != null)
+	    for(int i = t;i <= b;i++)
+		horizLines[i].uncover(l, r);
     }
 
     public void setHotPoint(int x, int y)
@@ -161,6 +222,12 @@ height /= getFontHeight();
 	for(int i = 0;i < tableWidth;i++)
 	    for(int j = 0;j < tableHeight;j++)
 		table[i][j] = ' ';
+	vertLines = new OnScreenLineTracker[tableWidth];
+	for(int i = 0;i < tableWidth;i++)
+	    vertLines[i] = new OnScreenLineTracker();
+	horizLines = new OnScreenLineTracker[tableHeight];
+	for(int i = 0;i < tableHeight;i++)
+	    horizLines[i] = new OnScreenLineTracker();
 	    Log.info("awt", "table is initialized with size " + width + "x" + height);
 	return true;
     }
@@ -234,5 +301,35 @@ Log.info("awt", "actual size of the chosen font:" + this.font.getSize());
 	this.fontColor = fontColor;
 	this.bkgColor = bkgColor;
 	this.splitterColor = splitterColor;
+    }
+
+    public void drawVerticalLine(int top,
+				 int bottom,
+				 int x)
+    {
+	if (vertLines == null)
+	    return;
+	if (x >= vertLines.length)
+	{
+	    Log.warning("awt", "unable to draw vertical line at column " + x + ", max vertical line is allowed at " + (vertLines.length - 1));
+	    return;
+	}
+	if (vertLines[x] != null)
+	    vertLines[x].cover(top, bottom);
+    }
+
+    public void drawHorizontalLine(int left,
+				   int right,
+				   int y)
+    {
+	if (horizLines == null)
+	    return;
+	if (y >= horizLines.length)
+	{
+	    Log.warning("awt", "unable to draw horizontal line at row " + y + ", max horizontal line is allowed at " + (horizLines.length - 1));
+	    return;
+	}
+	if (horizLines[y] != null)
+	    horizLines[y].cover(left, right);
     }
 }

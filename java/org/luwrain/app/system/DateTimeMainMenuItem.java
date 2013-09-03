@@ -14,28 +14,37 @@
    General Public License for more details.
 */
 
+//FIXME:Automatic updating;
+
 package org.luwrain.app.system;
 
-public class TimeMainMenuItem implements MainMenuItem
+public class DateTimeMainMenuItem implements MainMenuItem
 {
     private SystemAppStringConstructor stringConstructor = null;
+    private String value;
 
-    public TimeMainMenuItem(SystemAppStringConstructor stringConstructor)
+    public DateTimeMainMenuItem(SystemAppStringConstructor stringConstructor)
     {
 	this.stringConstructor = stringConstructor;
+	value = stringConstructor.currentDateTime();
     }
 
     public String getText()
     {
-	return stringConstructor.currentTime();
+	return value;
     }
 
-    public boolean hasAction()
+    public boolean isEmpty()
     {
 	return false;
     }
 
-    public String getAction()
+    public boolean isAction()
+    {
+	return false;
+    }
+
+    public String getActionName()
     {
 	return "";
     }

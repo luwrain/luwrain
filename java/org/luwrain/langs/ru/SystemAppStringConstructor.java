@@ -20,33 +20,52 @@ import java.util.*;
 
 public class SystemAppStringConstructor implements org.luwrain.app.system.SystemAppStringConstructor
 {
+    private Language lang;
+
+    public SystemAppStringConstructor(Language lang)
+    {
+	this.lang = lang;
+    }
+
     public String mainMenuTitle()
     {
 	return "Главное меню";
     }
 
-    public String currentTime()
+    public String actionTitle(String action)
+    {
+	return action != null?lang.getActionTitle(action):"";
+    }
+
+    public String currentDateTime()
     {
 	Calendar c = new GregorianCalendar();
-	String value = new String("Текущее время ");
+	String value = "";
 	value += withZeroes(c.get(Calendar.HOUR_OF_DAY), 2);
 	value += ":";
 	value += withZeroes(c.get(Calendar.MINUTE), 2);
-	return value;
-    }
+	value += ", ";
 
-    public String currentDay()
-    {
-	Calendar c = new GregorianCalendar();
-	String value = new String("");
 	value += dayOfWeek(c.get(Calendar.DAY_OF_WEEK));
 	value += ",";
 	value += c.get(Calendar.DAY_OF_MONTH);
 	value += " ";
 	value += month(c.get(Calendar.MONTH));
-
 	return value;
     }
+
+    public String mainMenuNoItemsAbove()
+    {
+	return "Начало главного меню";
+    }
+
+    public String mainMenuNoItemsBelow()
+    {
+	return "Конец главного меню";
+    }
+
+
+
 
     private String dayOfWeek(int index)
     {

@@ -17,9 +17,14 @@
 package org.luwrain.core;
 
 import org.luwrain.core.events.*;
+import org.luwrain.mmedia.*;
 
 public class ScreenContentManager
 {
+    public static final int NO_APPLICATIONS = 0;
+    public static final int EVENT_NOT_PROCESSED = 1;
+    public static final int EVENT_PROCESSED = 2;
+
     private ApplicationRegistry applications;
     private PopupRegistry popups;
     private Application systemApp;
@@ -34,32 +39,32 @@ Application systemApp)
 	this.systemApp = systemApp;
     }
 
-    public  boolean onKeyboardEvent(KeyboardEvent event)
+    public  int onKeyboardEvent(KeyboardEvent event)
     {
 	if (activePopup)
 	{
 	    if (hasProperPopup())
-		return popups.getAreaOfLastPopup().onKeyboardEvent(event);
+		return popups.getAreaOfLastPopup().onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
 	    activePopup = false;
 	}
 	Area activeArea = applications.getActiveAreaOfActiveApp();
 	if (activeArea != null)
-	    return activeArea.onKeyboardEvent(event);
-	return false;
+	    return activeArea.onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
+	return NO_APPLICATIONS;
     }
 
-    public  boolean onEnvironmentEvent(EnvironmentEvent event)
+    public  int onEnvironmentEvent(EnvironmentEvent event)
     {
 	if (activePopup)
 	{
 	    if (hasProperPopup())
-		return popups.getAreaOfLastPopup().onEnvironmentEvent(event);
+		return popups.getAreaOfLastPopup().onEnvironmentEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
 	    activePopup = false;
 	}
 	Area activeArea = applications.getActiveAreaOfActiveApp();
 	if (activeArea != null)
-	    return activeArea.onEnvironmentEvent(event);
-	return false;
+	    return activeArea.onEnvironmentEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
+	return NO_APPLICATIONS;
     }
 
     public boolean setPopupAreaActive()
@@ -96,7 +101,9 @@ Application systemApp)
 
     public void introduceActiveArea()
     {
-	//Popups only if not stopCondition;
+	//FIXME:Popups only if not stopCondition;
+	//FIXME:Introduce area environment event;
+
 	if (activePopup)
 	{
 	    if (hasProperPopup())
@@ -108,7 +115,11 @@ Application systemApp)
 	}
 	Area activeArea = applications.getActiveAreaOfActiveApp();
 	if (activeArea != null)
-	    Speech.say(activeArea.getName());
+	    Speech.say(activeArea.getName()); else
+	{
+	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
+	    Speech.say("Запущенных приложений нет");//FIXME:
+	}
     }
 
     public Area getActiveArea()

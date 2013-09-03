@@ -37,17 +37,16 @@ public class WindowManager
 	TileManager windows = screenContentManager.getWindows();
 	if (windows == null)
 	    return;
-	calculateGeom(interaction.getWidthInCharacters(), interaction.getHeightInCharacters(), windows);
-visibleObjs = windows.getObjects();
 	interaction.startDrawSession();
 	interaction.clearRect(0, 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 2);
 	interaction.setHotPoint(-1, -1);
+	calculateGeom(interaction.getWidthInCharacters(), interaction.getHeightInCharacters(), windows);
+	visibleObjs = windows.getObjects();
 	for(int i = 0;i < visibleObjs.length;i++)
 	{
 	    Window win = (Window)visibleObjs[i];
-	    if (win == null || win.area == null)
-		continue;
-	    drawWindow(win);
+	    if (win != null && win.area != null)
+		drawWindow(win);
 	}
 	interaction.endDrawSession();
     }
@@ -62,7 +61,9 @@ visibleObjs = windows.getObjects();
 	for(int i = 0;i < visibleObjs.length;i++)
 	{
 	    Window win = (Window)visibleObjs[i];
-	    if (win != null || win.area == null && win.area == area)
+	    if (win != null &&
+		win.area != null &&
+		win.area == area)
 	    {
 		interaction.startDrawSession();
 		interaction.clearRect(win.x, win.y, win.x + win.width - 1, win.y + win.height - 1);
@@ -71,6 +72,22 @@ visibleObjs = windows.getObjects();
 		return;
 	    }
 	}
+    }
+
+    public int getAreaVisibleHeight(Area area)
+    {
+	if (visibleObjs == null || visibleObjs.length == 0)
+	    return -1;
+	for(int i = 0;i < visibleObjs.length;i++)
+	{
+	    Window win = (Window)visibleObjs[i];
+	    if (win == null || win.area == null || win.area != area)
+		continue;
+	    if (win.height <= 1)
+		return 0;
+	    return win.height - 1;
+	}
+	return -1;
     }
 
     private void calculateGeom(int screenWidth,
@@ -110,7 +127,6 @@ visibleObjs = windows.getObjects();
 	    win.y = top;
 	    win.width = right - left + 1;
 	    win.height = bottom - top + 1;
-	    calculateScrolling(win);
 	    return;
 	}
 	Object obj1 = windows.getBranch1(obj), obj2 = windows.getBranch2(obj);
@@ -158,7 +174,7 @@ visibleObjs = windows.getObjects();
 	    //No need to fix range2 value, it is never used below;
 	    calculateGeomImpl(windows, obj1, left, top, right, top + range1 - 1);
 	    calculateGeomImpl(windows, obj2, left, top + range1 + 1, right, bottom);
-	    //Here may be a splitter at top + range1 row;
+	    interaction.drawHorizontalLine(left, right, top + range1);
 	    return;
 	}
 	if (windows.getDirection(obj) == TileManager.HORIZONTAL)
@@ -176,7 +192,7 @@ visibleObjs = windows.getObjects();
 	    //No need to fix range2 value, it is never used below;
 	    calculateGeomImpl(windows, obj1, left, top, left + range1 - 1, bottom);
 	    calculateGeomImpl(windows, obj2, left + range1 + 1, top, right, bottom);
-	    //Here may be a splitter at left + range1 column;
+	    interaction.drawVerticalLine(top, bottom, left + range1);
 	    return;
 	}
     }
@@ -198,7 +214,8 @@ visibleObjs = windows.getObjects();
 	Area area = win.area;
 	int preferableHeight = area.getLineCount();
 	int preferableWidth = 0;
-	for(int i = 0;i < preferableHeight;i++)
+	final int linesNumberToCheckLen = preferableHeight < interaction.getHeightInCharacters()?preferableHeight:interaction.getHeightInCharacters();
+	for(int i = 0;i < linesNumberToCheckLen;i++)//FIXME:It is better to check lines around the hot point;
 	{
 	    String line = win.area.getLine(i);
 	    if (line == null)
@@ -231,21 +248,23 @@ visibleObjs = windows.getObjects();
 	    win.x = left;
 	    win.y = top;
 	    win.width = popupWidth;
-	    win.height = bottom - top - 1;
+	    win.height = bottom - top + 1;
 	    anotherLeft = left + popupWidth + 1;
 	    anotherTop = top;
 	    anotherRight = right;
 	    anotherBottom = bottom;
+	    interaction.drawVerticalLine(top, bottom, left + popupWidth);
 	    break;
 	case PopupRegistry.TOP:
 	    win.x = left;
 	    win.y = top;
-	    win.width = right - left - 1;
+	    win.width = right - left + 1;
 	    win.height = popupHeight;
 	    anotherLeft = left;
 	    anotherTop = top + popupHeight + 1;
 	    anotherRight = right;
 	    anotherBottom = bottom;
+	    interaction.drawHorizontalLine(left, right, top + popupHeight);
 	    break;
 	case PopupRegistry.RIGHT:
 	    win.x = right - popupWidth + 1;
@@ -256,6 +275,7 @@ visibleObjs = windows.getObjects();
 	    anotherTop = top;
 	    anotherRight = right - popupWidth - 1;
 	    anotherBottom = bottom;
+	    interaction.drawVerticalLine(top, bottom, right - popupHeight);
 	    break;
 	case PopupRegistry.BOTTOM:
 	    win.x = left;
@@ -266,6 +286,7 @@ visibleObjs = windows.getObjects();
 	    anotherTop = top;
 	    anotherRight = right;
 	    anotherBottom = bottom - popupHeight - 1;
+	    interaction.drawHorizontalLine(left, right, bottom - popupHeight);
 	    break;
 	default:
 	    win.markInvisible();
@@ -273,7 +294,6 @@ visibleObjs = windows.getObjects();
 		calculateGeomImpl(windows, anotherNode, left, top, right, bottom);
 	    return;
 	};
-	calculateScrolling(win);
 	if (anotherNode != null)
 	    calculateGeomImpl(windows, anotherNode, anotherLeft, anotherTop, anotherRight, anotherBottom);
     }
@@ -306,11 +326,11 @@ visibleObjs = windows.getObjects();
     {
 	if (win == null || win.area == null)
 	    return;
+	if (win.width < MIN_RANGE_HORIZONTAL || win.height < MIN_RANGE_VERTICAL)
+	    return;
+	calculateScrolling(win);
 	Area area = win.area;
 	if (win.scrolledVert < 0 || win.scrolledVert >= area.getLineCount())
-	    return;
-	//	Log.debug("screen", "drawing window:" + win.width + "x" + win.height);
-	if (win.width < MIN_RANGE_HORIZONTAL || win.height < MIN_RANGE_VERTICAL)
 	    return;
 	String name = area.getName();
 	if (name != null && !name.isEmpty())

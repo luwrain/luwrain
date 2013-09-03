@@ -18,95 +18,217 @@ package org.luwrain.app.system;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.mmedia.EnvironmentSounds;
 
-public class MainMenuArea extends SimpleArea implements EventLoopStopCondition
+public class MainMenuArea  implements Area, PopupClosingRequest
 {
-    private boolean shouldContinue = true; 
+    public PopupClosing closing = new PopupClosing(this);
     private SystemAppStringConstructor stringConstructor;
     private MainMenuItem items[];
-    private String selectedAction = "";
-    private boolean cancelled = true;
+    private String selectedActionName = "";
+    private int hotPointX = 0;
+    private int hotPointY = 0;
 
-    public MainMenuArea(SystemAppStringConstructor stringConstructor)
+    public MainMenuArea(SystemAppStringConstructor stringConstructor, String[] content)
     {
-	super(stringConstructor.mainMenuTitle());
 	this.stringConstructor = stringConstructor;
-	items = new MainMenuItem[9];
-	items[0] = new TimeMainMenuItem(stringConstructor);
-	items[1] = new DayMainMenuItem(stringConstructor);
-	items[2] = new EmptyMainMenuItem();
-	items[3] = new ActionMainMenuItem("commander", "Обзор файлов и папок");
-	items[4] = new ActionMainMenuItem("mail", "Электронная почта");
-	items[5] = new ActionMainMenuItem("news", "Новости");
-	items[6] = new ActionMainMenuItem("notepad", "Блокнот");
-	items[7] = new ActionMainMenuItem("message", "Сообщение");
-	items[8] = new EmptyMainMenuItem();
-	setContent(prepareText());
+	items = new MainMenuItem[content.length];
+	for(int i = 0;i < content.length;i++)
+	    items[i] = constructItem(content[i]);
+	hotPointY = 0;
+	while(hotPointY < items.length && !items[hotPointY].isAction())
+	    hotPointY++;
+	if (hotPointY >= items.length)
+	    hotPointY = 0;
     }
 
-    public boolean continueEventLoop()
+    public String getSelectedActionName()
     {
-	return shouldContinue;
-    }
-
-    public void cancel()
-    {
-	cancelled = true;
-	shouldContinue = false;
-    }
-
-    public String getSelectedAction()
-    {
-	return selectedAction;
-    }
-
-    public boolean wasCancelled()
-    {
-	return cancelled;
+	return selectedActionName;
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (super.onKeyboardEvent(event))
+	if (closing.onKeyboardEvent(event))
 	    return true;
+	if (items == null)
+	    return false;
 
-	//Enter;
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.ENTER && !event.isModified())
+	if (event.isCommand() &&
+	    event.getCommand() == KeyboardEvent.ENTER &&
+	    !event.isModified())
 	{
-	    run(getHotPointY());
+	    closing.doOk();
 	    return true;
 	}
+
+	if (event.isCommand() &&
+	    event.getCommand() == KeyboardEvent.ARROW_DOWN &&
+	    !event.isModified())
+	{
+	    if (hotPointY >= items.length)
+	    {
+		Speech.say(stringConstructor.mainMenuNoItemsBelow(), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    hotPointY++;
+	    hotPointX = 0;
+	    Dispatcher.onAreaNewHotPoint(this);
+	    introduceLine(hotPointY);
+	    return true;
+	}
+
+	if (event.isCommand() &&
+	    event.getCommand() == KeyboardEvent.ARROW_UP &&
+	    !event.isModified())
+	{
+	    if (hotPointY <= 0)
+	    {
+		Speech.say(stringConstructor.mainMenuNoItemsAbove(), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    hotPointY--;
+	    hotPointX = 0;
+	    Dispatcher.onAreaNewHotPoint(this);
+	    introduceLine(hotPointY);
+	    return true;
+	}
+
+	if (event.isCommand() &&
+	    event.getCommand() == KeyboardEvent.ARROW_RIGHT &&
+	    !event.isModified())
+	{
+	    if (hotPointY < 0 ||
+		hotPointY >= items.length ||
+		items[hotPointY] == null ||
+		items[hotPointY].getText().trim().isEmpty())
+	    {
+		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    final String line = items[hotPointY].getText();
+	    if (hotPointX >= line.length())
+	    {
+		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    hotPointX++;
+	    Dispatcher.onAreaNewHotPoint(this);
+	    if (hotPointX >= line.length())
+		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH); else
+		Speech.sayLetter(line.charAt(hotPointX));
+	    return true;
+	}
+
+	if (event.isCommand() &&
+	    event.getCommand() == KeyboardEvent.ARROW_LEFT &&
+	    !event.isModified())
+	{
+	    if (hotPointY < 0 ||
+		hotPointY >= items.length ||
+		items[hotPointY] == null ||
+		items[hotPointY].getText().trim().isEmpty())
+	    {
+		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    final String line = items[hotPointY].getText();
+	    if (hotPointX <= 0)
+	    {
+		Speech.say(Langs.staticValue(Langs.BEGIN_OF_LINE), Speech.PITCH_HIGH);
+		return true;
+	    }
+	    hotPointX--;
+	    Dispatcher.onAreaNewHotPoint(this);
+	    if (hotPointX < line.length())
+		Speech.sayLetter(line.charAt(hotPointX));
+	    return true;
+	}
+
+	//FIXME:home-end;
+	//FIXME:page up-page down;
+
 	return false;
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.CANCEL || event.getCode() == EnvironmentEvent.CLOSE)
-	{
-	    cancel();
-	    return true;
-	}
-	return false;
+	//FIXME:Introduce;
+	return closing.onEnvironmentEvent(event);
     }
 
-    private String[] prepareText()
+    public int getLineCount()
     {
-	String res[] = new String[items.length];
-	for(int i = 0;i < items.length;i++)
-	    res[i] = new String(items[i].getText());
-	return res;
+	if (items == null || items.length <= 0)
+	    return 1;
+	return items.length + 1;
     }
 
-    private void run(int index)
+    public String getLine(int index)
+    {
+	if (items == null || 
+	    index >= items.length ||
+	    items[index] == null)
+	    return "";
+	return items[index].getText();
+    }
+
+    public String getName()
+    {
+	return stringConstructor.mainMenuTitle();
+    }
+
+    public int getHotPointX()
+    {
+	return hotPointX >= 0?hotPointX:0;
+    }
+
+    public int getHotPointY()
+    {
+	return hotPointY >= 0?hotPointY:0;
+    }
+
+    private void introduceLine(int index)
     {
 	if (items == null)
 	    return;
-	if (index >= items.length)
+	if (hotPointY >= items.length || 
+	    items[hotPointY] == null ||
+	    items[hotPointY].getText().trim().isEmpty())
+	{
+	    EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_EMPTY_LINE);
 	    return;
-	if (!items[index].hasAction())
-	    return;
-	selectedAction = items[index].getAction();
-	cancelled = false;
-	shouldContinue = false;
+	}
+	Speech.say(items[hotPointY].getText());
+    }
+
+    private MainMenuItem constructItem(String name)
+    {
+	if (name == null || name.trim().isEmpty())
+	    return new EmptyMainMenuItem();
+	if (name.equals("date-time"))
+	    return new DateTimeMainMenuItem(stringConstructor);
+	String title = stringConstructor.actionTitle(name);
+	if (title.trim().isEmpty())
+	    return new EmptyMainMenuItem();
+	return new ActionMainMenuItem(name, title);
+    }
+
+    public boolean onOk()
+    {
+	if (items == null)
+	    return false;
+	if (hotPointY >= items.length || !items[hotPointY].isAction())
+	{
+	    Dispatcher.message("Необходимо выбрать допустимый пункт меню");//FIXME:
+	    return false;
+	}
+	selectedActionName = items[hotPointY].getActionName();
+	return true;
+    }
+
+    public boolean onCancel()
+    {
+	return true;
     }
 }

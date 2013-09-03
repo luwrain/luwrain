@@ -31,4 +31,6 @@ public interface Interaction
     void drawText(int x, int y, String text);
     void endDrawSession();
     void setHotPoint(int x, int y);
+    void drawVerticalLine(int top, int bottom, int x);
+    void drawHorizontalLine(int left, int right, int y);
 }

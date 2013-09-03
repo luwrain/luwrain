@@ -19,6 +19,7 @@ package org.luwrain.app.system;
 public interface MainMenuItem 
 {
     String getText();
-    boolean hasAction();
-    String getAction();
+    boolean isEmpty();
+    boolean isAction();
+    String getActionName();
 }

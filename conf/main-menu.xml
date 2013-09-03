@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<registry>
+  <regdir  name="/org/luwrain/main-menu">
+    <regvalue name="content" type="string">:date-time::commander:mail:message:news:notepad::quit</regvalue>
+  </regdir>
+</registry>

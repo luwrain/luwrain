@@ -93,7 +93,10 @@ public class Launch
 	//FIXME:
 	EnvironmentSounds.setSoundFile(EnvironmentSounds.MAIN_MENU, "/home/luwrain/media/sounds/main-menu.wav");
 	EnvironmentSounds.setSoundFile(EnvironmentSounds.MAIN_MENU_ITEM, "/home/luwrain/media/sounds/main-menu-item.wav");
+	EnvironmentSounds.setSoundFile(EnvironmentSounds.MAIN_MENU_EMPTY_LINE, "/home/luwrain/media/sounds/main-menu-empty-line.wav");
 	EnvironmentSounds.setSoundFile(EnvironmentSounds.EVENT_NOT_PROCESSED, "/home/luwrain/media/sounds/beep1.wav");
+	EnvironmentSounds.setSoundFile(EnvironmentSounds.NO_APPLICATIONS, "/home/luwrain/media/sounds/beep2.wav");
+	EnvironmentSounds.setSoundFile(EnvironmentSounds.STARTUP, "/home/luwrain/media/sounds/startup.wav");
 	return true;
     }
 

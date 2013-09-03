@@ -20,15 +20,20 @@ public class EmptyMainMenuItem implements MainMenuItem
 {
     public String getText()
     {
-	return new String();
+	return "";
     }
 
-    public boolean hasAction()
+    public boolean isEmpty()
+    {
+	return true;
+    }
+
+    public boolean isAction()
     {
 	return false;
     }
 
-    public String getAction()
+    public String getActionName()
     {
 	return "";
     }

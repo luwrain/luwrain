@@ -55,4 +55,11 @@ public static     Object requestStringConstructor(String id)
 	    return null;
 	return currentLang.requestStringConstructor(id);
     }
+
+    public static String getActionTitle(String actionName)
+    {
+	if (currentLang == null)
+	    return null;
+	return currentLang.getActionTitle(actionName);
+    }
 }

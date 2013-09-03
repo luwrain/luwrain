@@ -17,26 +17,51 @@
 package org.luwrain.app.commander;
 
 import java.io.*;
+import org.luwrain.core.*;
 
 public class DirItem
 {
-    public int state;
-    public File file;//May be null, it means an empty item;
+    public static final int REGULAR = 0;
+    public static final int DIRECTORY = 1;
 
-    public DirItem()
-    {
-    }
+    public boolean selected = false;
+    private int fileType = REGULAR;
+    private File file;
 
     public DirItem(File file)
     {
-	state = 0;//FIXME:constant;
+	if (file == null)
+	    return;
 	this.file = file;
+	selected = false;
+	this.fileType = file.isDirectory()?DIRECTORY:REGULAR;
     }
 
-    public String getName()
+    public int getType()
+    {
+	return fileType;
+    }
+
+    public File getFileObject()
+    {
+	return file;
+    }
+
+    public String getScreenTitle()
     {
 	if (file == null)
-	    return new String();
+	    return "";
+	String value = file.getName();
+	if (fileType == DIRECTORY)
+	    value = "[" + value + "]";
+	return selected?("*" + value):(" " + value);
+    }
+
+    public String getFileName()
+    {
+	if (file == null)
+	    return "";
 	return file.getName();
     }
+
 }

@@ -18,6 +18,14 @@ package org.luwrain.core;
 
 public class CoreRegistryValues
 {
+    //Instance;
+    public static final String INSTANCE_USER_HOME_DIR = "/org/luwrain/instance/user-home-dir";
+    public static final String INSTANCE_DATA_DIR = "/org/luwrain/instance/data-dir";
+
+    //Main menu;
+    public static final String MAIN_MENU_CONTENT = "/org/luwrain/main-menu/content";
+
+
     //Interaction;
     public static final String INTERACTION_BACKEND = "/org/luwrain/interaction/back-end";
     public static final String INTERACTION_FONT_NAME = "/org/luwrain/interaction/font-name";

@@ -20,4 +20,5 @@ public interface Language
 {
     LanguageStaticStrings getStaticStrings();
     Object requestStringConstructor(String id);
+    String getActionTitle(String actionName);
 }

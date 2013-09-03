@@ -19,6 +19,8 @@ package org.luwrain.app.system;
 public interface SystemAppStringConstructor
 {
     String mainMenuTitle();
-    String currentTime();
-    String currentDay();
+    String actionTitle(String actionName);
+    String currentDateTime();
+    String mainMenuNoItemsAbove();
+    String mainMenuNoItemsBelow();
 }

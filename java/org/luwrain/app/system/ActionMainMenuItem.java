@@ -18,8 +18,8 @@ package org.luwrain.app.system;
 
 public class ActionMainMenuItem implements MainMenuItem
 {
-    private String action = null;
-    private String title = null;
+    private String action;
+    private String title;
 
     public ActionMainMenuItem(String action, String title)
     {
@@ -32,12 +32,17 @@ public class ActionMainMenuItem implements MainMenuItem
 	return title;
     }
 
-    public boolean hasAction()
+    public boolean isEmpty()
+    {
+	return false;
+    }
+
+    public boolean isAction()
     {
 	return true;
     }
 
-    public String getAction()
+    public String getActionName()
     {
 	return action;
     }

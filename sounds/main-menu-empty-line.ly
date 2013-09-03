@@ -16,7 +16,7 @@
 
 melody = {
   \tempo 4 = 140
-  <des'' ges''>8 \mf  \sustainOn <des' ges'>8 \pp \sustainOff
+  <ges' bes'>8 \mf  \sustainOn <des'' ges''>8 \pp \sustainOff
 }
 
 \score {
