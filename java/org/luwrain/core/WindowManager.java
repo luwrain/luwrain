@@ -38,7 +38,7 @@ public class WindowManager
 	if (windows == null)
 	    return;
 	interaction.startDrawSession();
-	interaction.clearRect(0, 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 2);
+	interaction.clearRect(0, 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);//FIXME:interaction.getHeightInCharacters() - 2;
 	interaction.setHotPoint(-1, -1);
 	calculateGeom(interaction.getWidthInCharacters(), interaction.getHeightInCharacters(), windows);
 	visibleObjs = windows.getObjects();
@@ -328,6 +328,7 @@ public class WindowManager
 	    return;
 	if (win.width < MIN_RANGE_HORIZONTAL || win.height < MIN_RANGE_VERTICAL)
 	    return;
+	//	Log.debug("screen", "window (" + win.x + "," + win.y + ")-(" + (win.x + win.width - 1) + "," + (win.y + win.height - 1) + ")");
 	calculateScrolling(win);
 	Area area = win.area;
 	if (win.scrolledVert < 0 || win.scrolledVert >= area.getLineCount())

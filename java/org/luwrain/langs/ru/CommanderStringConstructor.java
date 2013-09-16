@@ -17,9 +17,17 @@
 package org.luwrain.langs.ru;
 
 import java.util.*;
+import org.luwrain.core.Langs;
+import org.luwrain.app.commander.DirItem;
+import org.luwrain.app.commander.PanelArea;
 
 public class CommanderStringConstructor implements org.luwrain.app.commander.CommanderStringConstructor
 {
+    public String appName()
+    {
+	return "Обзор файлов и папок";
+    }
+
     public String leftPanelName(String path)
     {
 	return "Левая панель " + path;
@@ -28,6 +36,11 @@ public class CommanderStringConstructor implements org.luwrain.app.commander.Com
     public String rightPanelName(String path)
     {
 	return "Правая панель " + path;
+    }
+
+    public String tasksAreaName()
+    {
+	return "Действия";
     }
 
     public String noItemsAbove()
@@ -48,5 +61,28 @@ public class CommanderStringConstructor implements org.luwrain.app.commander.Com
     public String rootDirectory()
     {
 	return "Корневой каталог";
+    }
+
+    public String dirItemIntroduction(DirItem item, boolean brief)
+    {
+	if (item == null)
+	    return "";
+	String text = item.getFileName();
+	if (text.isEmpty())
+	    return Langs.staticValue(Langs.EMPTY_LINE);
+	if (text.equals(PanelArea.PARENT_DIR))
+	    return "На уровень вверх";
+	if (!brief)
+	{
+	    if (item.getType() == DirItem.DIRECTORY)
+	    {
+		if (item.isSelected())
+		    text = "Выделенный каталог " + text; else
+		    text = "Каталог " + text;
+	    } else
+		if (item.selected)
+		    text = "Выделенный файл " + text;
+	}
+	return text;
     }
 }

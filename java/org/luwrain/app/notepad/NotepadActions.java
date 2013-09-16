@@ -19,4 +19,5 @@ package org.luwrain.app.notepad;
 public interface NotepadActions
 {
     void closeNotepad();
+    void save();
 }

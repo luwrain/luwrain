@@ -47,6 +47,11 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	case Langs.TREE_AREA_END:
 	    return "Конец просмотра дерева";
 
+	case Langs.LIST_AREA_BEGIN:
+	    return "Начало списка";
+	case Langs.LIST_AREA_END:
+	    return "Конец списка";
+
 	case Langs.NO_REQUESTED_ACTION:
 	    return "Выбранное Вами действие недоступно в системе";
 	case Langs.NO_ACTIVE_AREA:
@@ -59,6 +64,14 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Недостаточно памяти для запуска приложения";
 	case Langs.UNEXPECTED_ERROR_AT_APP_LAUNCH:
 	    return "Запуск прерван из-за внутренней ошибки приложения";
+	case Langs.START_WORK_FROM_MAIN_MENU:
+	    return "Начните работу с главного меню";
+	case Langs.NO_LAUNCHED_APPS:
+	    return "Все приложения закрыты";
+	case Langs.LIST_NO_ITEMS:
+	    return "Элементы в списке отсутствуют";
+	case Langs.FONT_SIZE:
+	    return "Размер шрифта:";
 	default:
 	    return "#Неизвестный идентификатор строки?#";
 	}

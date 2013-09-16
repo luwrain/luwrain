@@ -29,7 +29,7 @@ public class ViewArea extends SimpleArea
 	super(stringConstructor.viewAreaName());
 	this.actions =  actions;
 	this.stringConstructor = stringConstructor;
-	setContent(prepareText());
+	//	setContent(prepareText());
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -59,11 +59,16 @@ public class ViewArea extends SimpleArea
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.CLOSE)
+	switch(event.getCode())
 	{
+	case EnvironmentEvent.CLOSE:
 	    actions.closeNewsReader();
 	    return true;
+	case EnvironmentEvent.INTRODUCE:
+	    Speech.say(stringConstructor.appName() + " " + stringConstructor.viewAreaName());
+	    return true;
+	default:
+	    return false;
 	}
-	return false;
     }
 }

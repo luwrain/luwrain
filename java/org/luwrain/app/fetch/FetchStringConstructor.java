@@ -18,6 +18,14 @@ package org.luwrain.app.fetch;
 
 public interface FetchStringConstructor
 {
+    String appName();
+    String noNewsGroupsData();
+    String newsFetchingCompleted();
+    String newsFetchingError();
+    String newsGroupFetched(String name, int fresh, int total);
+    String pressEnterToStart();
+    String processAlreadyRunning();
+    String processNotFinished();
     String readingMailFromAccount(String accountName);
     String connecting(String host);
     String readingMailInFolder(String folder);

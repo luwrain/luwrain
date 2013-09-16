@@ -176,6 +176,30 @@ public class Actions
 		}
 	    });
 
+	//Increase font size;
+	add(new Action() {
+		public String getName()
+		{
+		    return "increase-font-size";
+		}
+		public void onAction()
+		{
+		    Environment.increaseFontSize();
+		}
+	    });
+
+	//Decrease font size;
+	add(new Action() {
+		public String getName()
+		{
+		    return "decrease-font-size";
+		}
+		public void onAction()
+		{
+		    Environment.decreaseFontSize();
+		}
+	    });
+
 	//Notepad;
 	add(new Action() {
 		public String getName()
@@ -250,6 +274,19 @@ public class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.message.MessageApp();
+		    Dispatcher.launchApplication(app);
+		}
+	    });
+
+	//Preview;
+	add(new Action() {
+		public String getName()
+		{
+		    return "preview";
+		}
+		public void onAction()
+		{
+		    Application app = new org.luwrain.app.preview.PreviewApp();
 		    Dispatcher.launchApplication(app);
 		}
 	    });

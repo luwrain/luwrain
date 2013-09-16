@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+//TODO:Thread safety;
+
 public class Log
 {
     public static void debug(String component, String message)

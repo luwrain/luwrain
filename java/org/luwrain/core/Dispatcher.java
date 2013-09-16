@@ -18,6 +18,11 @@ package org.luwrain.core;
 
 public class Dispatcher
 {
+    static public void enqueueEvent(Event e)
+    {
+	Environment.enqueueEvent(e);
+    }
+
     static public void launchApplication(Application app)
     {
 	Environment.launchApplication(app);
@@ -28,21 +33,26 @@ static public     void closeApplication(Object instance)
 	Environment.closeApplication(instance);
     }
 
+
+    //Not for popup areas, only standard areas of applications;
     static public void setActiveArea(Object instance, Area area)
     {
 	Environment.setActiveArea(instance, area);
     }
 
+    //Never produces any speech output automatically;
     static public void onAreaNewHotPoint(Area area)
     {
 	Environment.onAreaNewHotPoint(area);
     }
 
+    //Never produces any speech output automatically;
     static public void onAreaNewContent(Area area)
     {
 	Environment.onAreaNewContent(area);
     }
 
+    //Never produces any speech output automatically;
     static public void onAreaNewName(Area area)
     {
 	Environment.onAreaNewName(area);
@@ -62,5 +72,10 @@ static public     void closeApplication(Object instance)
     static public void message(String text)
     {
 	Environment.message(text);
+    }
+
+    static public void open(String[] fileNames)
+    {
+	Environment.openFileNames(fileNames);
     }
 }

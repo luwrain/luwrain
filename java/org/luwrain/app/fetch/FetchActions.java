@@ -18,5 +18,6 @@ package org.luwrain.app.fetch;
 
 public interface FetchActions
 {
+    void launchFetching();
     void closeFetchApp();
 }

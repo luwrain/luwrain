@@ -18,15 +18,18 @@ package org.luwrain.app.news;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 
-public class GroupArea extends SimpleArea
+public class GroupArea extends ListArea
 {
     private NewsReaderStringConstructor stringConstructor;
     private NewsReaderActions actions;
 
-    public GroupArea(NewsReaderActions actions, NewsReaderStringConstructor stringConstructor)
+    public GroupArea(NewsReaderActions actions,
+		     NewsReaderStringConstructor stringConstructor,
+		     GroupModel model)
     {
-	super(stringConstructor.groupAreaName());
+	super(model);
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
     }
@@ -37,28 +40,45 @@ public class GroupArea extends SimpleArea
 	    return true;
 
 	//Tab;
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB && !event.isModified())
+	if (event.isCommand() &&
+	    event.getCommand() == KeyboardEvent.TAB &&
+	    !event.isModified())
 	{
 	    actions.gotoArticles();
 	    return true;
 	}
 
 	//Enter;
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.ENTER && !event.isModified())
+	if (event.isCommand() &&
+	    event.getCommand() == KeyboardEvent.ENTER &&
+	    !event.isModified())
 	{
-	    actions.openGroup(getHotPointY());
+	    Log.debug("news", "" + getSelectedIndex());
+	    if (getSelectedIndex() >= 0)
+		actions.openGroup(getSelectedIndex());
 	    return true;
 	}
+
 	return false;
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.CLOSE)
+	switch(event.getCode())
 	{
+	case EnvironmentEvent.CLOSE:
 	    actions.closeNewsReader();
 	    return true;
+	case EnvironmentEvent.INTRODUCE:
+	    Speech.say(stringConstructor.appName() + " " + stringConstructor.groupAreaName());
+	    return true;
+	default:
+	    return false;
 	}
-	return false;
+    }
+
+    public String getName()
+    {
+	return stringConstructor.groupAreaName();
     }
 }

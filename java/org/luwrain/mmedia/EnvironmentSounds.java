@@ -23,7 +23,7 @@ public class EnvironmentSounds
     public static final int EVENT_NOT_PROCESSED = 0;
     public static final int NO_APPLICATIONS = 1;
     public static final int STARTUP = 2;
-    public static final int SHUTDOWN = 2;
+    public static final int SHUTDOWN = 3;
     public static final int MAIN_MENU = 4;
     public static final int MAIN_MENU_ITEM = 5;
     public static final int MAIN_MENU_EMPTY_LINE = 6;

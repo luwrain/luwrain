@@ -27,6 +27,8 @@ public class EnvironmentEvent extends Event
     public static final int REFRESH = 4;
     public static final int DESCRIBE = 5;
     public static final int HELP = 6;
+    public static final int INTRODUCE = 7;
+    public static final int THREAD_SYNC = 8;
     //TODO:DESCRIBE_AT_POINT;
 
 

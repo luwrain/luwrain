@@ -29,6 +29,9 @@ public class Langs
     public static final int AREA_END = 9;
     public static final int TREE_AREA_BEGIN = 10;
     public static final int TREE_AREA_END = 11;
+    public static final int LIST_AREA_BEGIN = 12;
+    public static final int LIST_AREA_END = 13;
+    public static final int FONT_SIZE = 14;
 
     public static final int NO_REQUESTED_ACTION = 100;
     public static final int NO_ACTIVE_AREA = 101;
@@ -36,6 +39,10 @@ public class Langs
     public static final int APPLICATION_CLOSE_ERROR_HAS_POPUP = 103;
     public static final int INSUFFICIENT_MEMORY_FOR_APP_LAUNCH = 104;
     public static final int UNEXPECTED_ERROR_AT_APP_LAUNCH = 105;
+    public static final int START_WORK_FROM_MAIN_MENU = 106;
+    public static final int NO_LAUNCHED_APPS = 107;
+    public static final int LIST_NO_ITEMS = 108;
+
 
     private static Language currentLang = new org.luwrain.langs.ru.Language();
 

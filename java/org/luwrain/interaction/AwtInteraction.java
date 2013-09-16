@@ -25,6 +25,7 @@ import org.luwrain.core.Log;
 
 public class AwtInteraction implements Interaction
 {
+    private static final int MIN_FONT_SIZE = 4;
     private static final String FRAME_TITLE = "Luwrain";
 
     private MainFrame frame;
@@ -236,13 +237,15 @@ public class AwtInteraction implements Interaction
 
     public boolean setDesirableFontSize(int fontSize)
     {
-	frame.setFont(createFont(fontSize));
+	if (fontSize < MIN_FONT_SIZE)
+	    return false;
+	frame.setInteractionFont(createFont(fontSize));
 	if (frame.initTable())
 	{
 	    currentFontSize = fontSize;
 	    return true;
 	}
-	frame.setFont(createFont(currentFontSize));
+	frame.setInteractionFont(createFont(currentFontSize));
 	return false;
     }
 

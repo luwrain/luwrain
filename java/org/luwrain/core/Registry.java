@@ -91,6 +91,33 @@ public class Registry
 	return value.strValue;
     }
 
+    public void setString(String path, String str)
+    {
+	if (path == null || str == null)
+	    return;
+	String dirPath = getDirectoryPath(path);
+	String valueName = getValueName(path);
+	Value value = findValue(dirPath, valueName);
+	if (value != null)
+	{
+	    value.type = STRING;
+	    value.strValue = str;
+	    return;
+	}
+	Directory dir = findDirectory(dirPath);
+	if (dir == null)
+	{
+	    dir = new Directory();
+	    dir.path = dirPath;
+	    directories.add(dir);
+	}
+	value = new Value();
+	value.name = valueName;
+	value.type = STRING;
+	value.strValue = str;
+	dir.values.add(value);
+    }
+
     public boolean getBool(String path)
     {
 	Value value = findValue(getDirectoryPath(path), getValueName(path));

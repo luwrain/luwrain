@@ -25,6 +25,8 @@ public class CoreRegistryValues
     //Main menu;
     public static final String MAIN_MENU_CONTENT = "/org/luwrain/main-menu/content";
 
+    //Sounds;
+    public static final String SOUNDS = "/org/luwrain/sounds";
 
     //Interaction;
     public static final String INTERACTION_BACKEND = "/org/luwrain/interaction/back-end";

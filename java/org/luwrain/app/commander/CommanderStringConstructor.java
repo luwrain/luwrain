@@ -18,10 +18,13 @@ package org.luwrain.app.commander;
 
 public interface CommanderStringConstructor
 {
+    String appName();
     String leftPanelName(String path);
     String rightPanelName(String path);
+    String tasksAreaName();
     String noItemsAbove();
     String noItemsBelow();
     String inaccessibleDirectoryContent();
     String rootDirectory();
+    String dirItemIntroduction(DirItem item, boolean brief);
 }

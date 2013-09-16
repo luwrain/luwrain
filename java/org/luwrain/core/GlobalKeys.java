@@ -43,7 +43,12 @@ public class GlobalKeys
 	addMapping(new KeyboardEvent(true, KeyboardEvent.ESCAPE, ' '), "cancel");
 	addMapping(new KeyboardEvent(false, 0, 'c', false, true, false, false), "ok");
 	addMapping(new KeyboardEvent(false, 0, 'q', false, true, false, false), "quit");
+	addMapping(new KeyboardEvent(true, KeyboardEvent.F2, ' '), "save");
+	addMapping(new KeyboardEvent(true, KeyboardEvent.F3, ' '), "open");
 	addMapping(new KeyboardEvent(true, KeyboardEvent.F4, ' '), "close");
+
+	addMapping(new KeyboardEvent(false, 0, '=', false, false, true, false), "increase-font-size");
+	addMapping(new KeyboardEvent(false, 0, '-', false, false, true, false), "decrease-font-size");
     }
 
     public String getActionName(KeyboardEvent event )

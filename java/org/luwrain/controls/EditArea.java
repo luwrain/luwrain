@@ -21,7 +21,7 @@ import org.luwrain.core.events.*;
 
 public class EditArea extends SimpleArea
 {
-    private MultilinedEdit edit = null;
+    private MultilinedEdit edit;
     private boolean modified = false;
 
     public EditArea()

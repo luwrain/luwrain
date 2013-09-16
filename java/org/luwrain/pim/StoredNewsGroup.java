@@ -16,16 +16,16 @@
 
 package org.luwrain.pim;
 
-import java.sql.SQLException;
-
 public interface StoredNewsGroup
 {
     String getName();
-    void setName(String name) throws SQLException;
+    void setName(String name) throws Exception;
+    String[] getUrls();
+    void setUrls(String[] urls) throws Exception;
     boolean hasMediaContent();
-    void setHasMediaContent(boolean value) throws SQLException;
+    void setHasMediaContent(boolean value) throws Exception;
     int getOrderIndex();
-    void setOrderIndex(int index) throws SQLException;
+    void setOrderIndex(int index) throws Exception;
     int getExpireAfterDays();
-    void setExpireAfterDays(int count) throws SQLException;
+    void setExpireAfterDays(int count) throws Exception;
 }

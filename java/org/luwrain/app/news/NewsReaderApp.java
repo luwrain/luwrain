@@ -27,23 +27,29 @@ public class NewsReaderApp implements Application, NewsReaderActions
 {
     private Object instance = null;
     private NewsReaderStringConstructor stringConstructor = null;
+    private GroupModel groupModel;
     private GroupArea groupArea;
     private SummaryArea summaryArea;
     private ViewArea viewArea;
     private NewsStoring newsStoring;
-    private StoredNewsGroup[] newsGroups;
+    private StoredNewsGroup[] groups;
 
     public boolean onLaunch(Object instance)
     {
 	Object o = Langs.requestStringConstructor("news-reader");
 	if (o == null)
+	{
+	    Log.error("news", "no string constructor for news reader");
 	    return false;
+	}
 	stringConstructor = (NewsReaderStringConstructor)o;
-	groupArea = new GroupArea(this, stringConstructor);
+	groupModel = new GroupModel();
+	groupArea = new GroupArea(this, stringConstructor, groupModel);
 	summaryArea = new SummaryArea(this, stringConstructor);
 	viewArea = new ViewArea(this, stringConstructor);
 	newsStoring = PimManager.createNewsStoring();
-	fillGroup();
+	//FIXME:if (newsStoring == null)
+	fillGroups();
 	this.instance = instance;
 	return true;
     }
@@ -53,25 +59,9 @@ public class NewsReaderApp implements Application, NewsReaderActions
 	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, viewArea);
     }
 
-    public void openGroup(int index)
+    public void closeNewsReader()
     {
-	if (newsGroups == null || index >= newsGroups.length)
-	    return;
-	StoredNewsArticle articles[];
-	try {
-	    articles = newsStoring.loadNewsArticlesInGroupWithoutRead(newsGroups[index]);
-	    if (articles == null || articles.length < 1)
-		articles = newsStoring.loadNewsArticlesInGroup(newsGroups[index]);
-	}
-	catch (Exception e)
-	{
-	    //FIXME:Logging;
-	    Dispatcher.message("FIXME:load error");
-	    summaryArea.show(null);
-	    return;
-	}
-    summaryArea.show(articles);
-    gotoArticles();
+	Dispatcher.closeApplication(instance);
     }
 
     public void gotoGroups()
@@ -89,38 +79,61 @@ public class NewsReaderApp implements Application, NewsReaderActions
 	Dispatcher.setActiveArea(instance, viewArea);
     }
 
-    private void 	fillGroup()
+    private boolean 	fillGroups()
     {
 	if (newsStoring == null)
 	{
-	    String content[] = new String[2];
-	    content[0] = new String("FIXME:no connection");
-	    content[1] = new String();
-	    groupArea.setContent(content);
-	    return;
+	    Log.error("news", "No news storing object");
+	    groups = null;
+	    groupModel.setItems(new StoredNewsGroup[0]);
+	    Dispatcher.onAreaNewContent(groupArea);
+	    Dispatcher.onAreaNewHotPoint(groupArea);
+	    return false;
 	}
 	try {
-	    newsGroups = newsStoring.loadNewsGroups();
-	    String content[] = new String[newsGroups.length + 1];
-	    for(int i = 0;i < newsGroups.length;i++)
-		content[i] = newsGroups[i].getName();
-	    content[newsGroups.length] = new String();
-	    groupArea.setContent(content);
-	    return;
+	    groups = newsStoring.loadNewsGroups();
+	    groupModel.setItems(groups);
+	    Dispatcher.onAreaNewContent(groupArea);
+	    Dispatcher.onAreaNewHotPoint(groupArea);
+	    return true;
 	}
 	catch(Exception e)
 	{
-	    //FIXME:logging;
-	    String content[] = new String[2];
-	    content[0] = new String("FIXME:fetching error") + e.getMessage();
-	    content[1] = new String();
-	    groupArea.setContent(content);
-	    return;
+	    e.printStackTrace();
+	    Log.error("news", "could not construct list of groups:" + e.getMessage());
+	    groups = null;
+	    groupModel.setItems(new StoredNewsGroup[0]);
+	    Dispatcher.onAreaNewContent(groupArea);
+	    Dispatcher.onAreaNewHotPoint(groupArea);
+	    return false;
 	}
     }
 
-    public void closeNewsReader()
+    public void openGroup(int index)
     {
-	Dispatcher.closeApplication(instance);
+	if (groups == null || 
+index < 0 ||
+	    index >= groups.length)
+	{
+	    Log.warning("news", "trying to open non-existing group with index " + index + " or groups list is not prepared");
+	    return;
+	}
+	Dispatcher.message("go");
+	StoredNewsArticle articles[];
+	try {
+	    articles = newsStoring.loadNewsArticlesInGroupWithoutRead(groups[index]);
+	    if (articles == null || articles.length < 1)
+		articles = newsStoring.loadNewsArticlesInGroup(groups[index]);
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	    Log.error("news", "could not get list of articles in group:" + groups[index].getName());
+	    Dispatcher.message(stringConstructor.errorReadingArticles());
+	    summaryArea.show(null);
+	    return;
+	}
+    summaryArea.show(articles);
+    gotoArticles();
     }
 }

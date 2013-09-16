@@ -17,12 +17,15 @@
 package org.luwrain.core;
 
 import java.util.Vector;
+import java.io.File;
 import org.luwrain.pim.PimManager;
 import org.luwrain.mmedia.EnvironmentSounds;
 
 public class Launch
 {
     private static final String  PREFIX_CONF_LIST = "--conf-list=";
+    private static final String  PREFIX_DATA_DIR = "--data-dir=";
+    private static final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
 
     public static String[] commandLine;
     private static Interaction interaction = new org.luwrain.interaction.AwtInteraction();
@@ -71,6 +74,24 @@ public class Launch
 	    Log.fatal("init", "an error occurred while reading registry data:" + e.getMessage());
 	    return false;
 	}
+
+	for(int i = 0;i < commandLine.length;i++)
+	{
+	    if (commandLine[i].startsWith(PREFIX_DATA_DIR))
+	    {
+		String rest = commandLine[i].substring(PREFIX_DATA_DIR.length());
+		registry.setString(CoreRegistryValues.INSTANCE_DATA_DIR, rest);
+		Log.info("init", "data directory path is set to " + rest);
+		continue;
+	    }
+	    if (commandLine[i].startsWith(PREFIX_USER_HOME_DIR))
+	    {
+		String rest = commandLine[i].substring(PREFIX_USER_HOME_DIR.length());
+		registry.setString(CoreRegistryValues.INSTANCE_USER_HOME_DIR, rest);
+		Log.info("init", "user home directory path is set to " + rest);
+		continue;
+	    }
+	}
 	if (!Registry.setInstance(registry))
 	{
 	    Log.fatal("init", "registry instance installation failed, is it second attempt to launch Luwrain?");
@@ -90,24 +111,46 @@ public class Launch
 
     private static boolean initEnvironmentSounds()
     {
-	//FIXME:
-	EnvironmentSounds.setSoundFile(EnvironmentSounds.MAIN_MENU, "/home/luwrain/media/sounds/main-menu.wav");
-	EnvironmentSounds.setSoundFile(EnvironmentSounds.MAIN_MENU_ITEM, "/home/luwrain/media/sounds/main-menu-item.wav");
-	EnvironmentSounds.setSoundFile(EnvironmentSounds.MAIN_MENU_EMPTY_LINE, "/home/luwrain/media/sounds/main-menu-empty-line.wav");
-	EnvironmentSounds.setSoundFile(EnvironmentSounds.EVENT_NOT_PROCESSED, "/home/luwrain/media/sounds/beep1.wav");
-	EnvironmentSounds.setSoundFile(EnvironmentSounds.NO_APPLICATIONS, "/home/luwrain/media/sounds/beep2.wav");
-	EnvironmentSounds.setSoundFile(EnvironmentSounds.STARTUP, "/home/luwrain/media/sounds/startup.wav");
+	if (Registry.typeOf(CoreRegistryValues.INSTANCE_DATA_DIR) != Registry.STRING)
+	{
+	    Log.error("init", "initialization of environment sounds is impossible, no proper registry value for " + CoreRegistryValues.INSTANCE_DATA_DIR);
+	    return true;
+	}
+	File dataDir = new File(Registry.string(CoreRegistryValues.INSTANCE_DATA_DIR));
+	setSoundFileName(dataDir, "event-not-processed", EnvironmentSounds.EVENT_NOT_PROCESSED);
+	setSoundFileName(dataDir, "no-applications", EnvironmentSounds.NO_APPLICATIONS);
+	setSoundFileName(dataDir, "startup", EnvironmentSounds.STARTUP);
+	setSoundFileName(dataDir, "shutdown", EnvironmentSounds.SHUTDOWN);
+	setSoundFileName(dataDir, "main-menu", EnvironmentSounds.MAIN_MENU);
+	setSoundFileName(dataDir, "main-menu-item", EnvironmentSounds.MAIN_MENU_ITEM);
+	setSoundFileName(dataDir, "main-menu-empty-line", EnvironmentSounds.MAIN_MENU_EMPTY_LINE);
 	return true;
+    }
+
+    static private void setSoundFileName(File dataDir,
+				  String valueName,
+				  int soundId)
+    {
+	String v = CoreRegistryValues.SOUNDS + "/" + valueName;
+	if (Registry.typeOf(v) != Registry.STRING)
+	{
+	    Log.warning("init", "registry has no value for sound file by path " + v);
+	    return;
+	}
+	File f = new File(dataDir, Registry.string(v));
+	if (!f.exists() || f.isDirectory())
+	{
+	    Log.error("init", "sound file " + f.getAbsolutePath() + " does not exist or is a directory");
+	    return;
+	}
+	EnvironmentSounds.setSoundFile(soundId, f.getAbsolutePath());
     }
 
     private static boolean initPim()
     {
-	//FIXME:
-	PimManager.type = PimManager.STORAGE_SQL;//FIXME:
-	PimManager.driver = "com.mysql.jdbc.Driver";
-	PimManager.url = "jdbc:mysql://localhost/luwrain?characterEncoding=utf-8";
-	PimManager.login = "root";
-	PimManager.passwd = "";
+	//FIXME:From registry;
+	if (!PimManager.newsConnectJdbc("jdbc:mysql://localhost/luwrain?characterEncoding=utf-8", "com.mysql.jdbc.Driver", "root", ""))
+	    Log.warning("init", "news jdbc link init failed, news reading services remain inaccessible");
 	return true;
     }
 

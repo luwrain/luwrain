@@ -16,6 +16,7 @@
 
 package org.luwrain.app.notepad;
 
+import java.io.File;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
@@ -24,26 +25,62 @@ class NotepadArea extends EditArea
 {
     private NotepadActions actions;
     private NotepadStringConstructor stringConstructor;
+    private String fileName;
 
-    public NotepadArea(NotepadActions actions, NotepadStringConstructor stringConstructor, String name)
+    public NotepadArea(NotepadActions actions,
+		       NotepadStringConstructor stringConstructor,
+		       String fileName)
     {
-	super(name);
+	super(fileName);
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
+	this.fileName = fileName;
+    }
+
+    public String getFileName()
+    {
+	return fileName != null?fileName:"";
+    }
+
+    public void setFileName(String fileName)
+    {
+	this.fileName = fileName;
+	Dispatcher.onAreaNewName(this);
     }
 
     public void onChange()
     {
-
+	//FIXME:
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.CLOSE)
+	switch(event.getCode())
 	{
+	case EnvironmentEvent.CLOSE:
 	    actions.closeNotepad();
 	    return true;
+	case EnvironmentEvent.INTRODUCE:
+	    if (fileName != null && !fileName.trim().isEmpty())
+	    {
+		File f = new File(fileName);
+		Speech.say(stringConstructor.introduction() + " " + f.getName()); 
+	    } else
+		Speech.say(stringConstructor.appName());
+	    return true;
+	case EnvironmentEvent.SAVE:
+	    actions.save();
+	    return true;
+	default:
+	    return false;
 	}
-	return false;
     }
+
+	public String getName()
+	{
+	    if (fileName == null || fileName.trim().isEmpty())
+		return stringConstructor.appName();
+	    File f = new File(fileName);
+	    return f.getName();
+	}
 }

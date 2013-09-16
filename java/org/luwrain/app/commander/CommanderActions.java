@@ -22,4 +22,5 @@ public interface CommanderActions
     void gotoRightPanel();
     void gotoTasks();
     void closeCommander();
+    void openFiles(String[] fileNames);
 }

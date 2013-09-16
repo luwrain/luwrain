@@ -64,4 +64,8 @@ public class DirItem
 	return file.getName();
     }
 
+    public boolean isSelected()
+    {
+	return selected;
+    }
 }

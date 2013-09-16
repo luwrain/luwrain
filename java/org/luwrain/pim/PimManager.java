@@ -16,58 +16,50 @@
 
 package org.luwrain.pim;
 
+//FIXME:No longer static;
+
 import java.sql.*;
+import org.luwrain.core.Log;
 
 public class PimManager
 {
-    public static final int STORAGE_SQL = 1;
-    public static final int STORAGE_LDAP = 2;
+    private static Link newsLink;
 
-    public static int type = STORAGE_SQL;
-
-    public static String login = new String();
-    public static String passwd = new String();
-    public static String driver = new String();
-    public static String url = new String();
-
-    private static UserDatabase database;
+    public static boolean newsConnectJdbc(String url,
+					  String driver,
+					  String login,
+					  String passwd)
+    {
+	Link l = new Link();
+	l.type = Link.STORAGE_JDBC;
+	l.url = url;
+	l.driver = driver;
+	l.login = login;
+	l.passwd = passwd;
+	try {
+	    l.jdbcConnect();
+	}
+	catch(Exception e)
+	{
+	    e.printStackTrace();
+	    Log.error("pim", "news jdbc link failed:" + e.getMessage());
+	    return false;
+	}
+	newsLink = l;
+	return true;
+    }
 
     public static NewsStoring createNewsStoring()
     {
-	if (type == STORAGE_SQL)
-	{
-	    ensureDatabaseReady();
-	    if (database == null)
-		return null;
-	    Connection con = database.getDefaultConnection();
-	    if (con == null)
-		return null;
-	    return new NewsStoringSql(con);
-	}
-	//FIXME:LDAP;
+	if (newsLink == null)
+	    return null;
+	if (newsLink.type == Link.STORAGE_JDBC)
+	    return newsLink.jdbcCon != null?new NewsStoringSql(newsLink.jdbcCon):null;
 	return null;
     }
 
     public static MailStoring createMailStoring()
     {
-	if (type == STORAGE_SQL)
-	{
-	    ensureDatabaseReady();
-	    if (database == null)
-		return null;
-	    Connection con = database.getDefaultConnection();
-	    if (con == null)
-		return null;
-	    return new MailStoringSql(con);
-	}
-	//FIXME:LDAP;
 	return null;
-    }
-
-    private static void ensureDatabaseReady()
-    {
-	if (database != null)
-	    return;
-	database = new UserDatabase(driver, url, login, passwd);
     }
 }

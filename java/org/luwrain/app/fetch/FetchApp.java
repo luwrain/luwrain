@@ -20,15 +20,19 @@ import org.luwrain.core.*;
 
 public class FetchApp implements Application, FetchActions
 {
-    FetchStringConstructor stringConstructor;
     private Object instance;
+    FetchStringConstructor stringConstructor;
     private FetchArea fetchArea;
+    private FetchThread fetchThread ;
 
     public boolean onLaunch(Object instance)
     {
 	Object o = Langs.requestStringConstructor("fetch");
 	if (o == null)
+	{
+	    Log.error("fetch", "no string constructor for fetch application");
 	    return false;
+	}
 	stringConstructor = (FetchStringConstructor)o;
 	fetchArea = new FetchArea(this, stringConstructor);
 	this.instance = instance;
@@ -42,6 +46,24 @@ public class FetchApp implements Application, FetchActions
 
     public void closeFetchApp()
     {
+	if (fetchThread != null && !fetchThread.done)
+	{
+	    Dispatcher.message(stringConstructor.processNotFinished());
+	    return;
+	}
 	Dispatcher.closeApplication(instance);
+    }
+
+    public void launchFetching()
+    {
+	if (fetchThread != null && !fetchThread.done)
+	{
+	    Dispatcher.message(stringConstructor.processAlreadyRunning());
+	    return;
+	}
+	fetchArea.clear();
+	fetchThread = new FetchThread(stringConstructor, fetchArea);
+	Thread t = new Thread(fetchThread);
+	t.start();
     }
 }

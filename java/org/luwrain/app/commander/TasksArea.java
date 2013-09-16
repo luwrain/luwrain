@@ -74,16 +74,21 @@ public class TasksArea implements Area
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.CLOSE)
+	switch(event.getCode())
 	{
+	case EnvironmentEvent.CLOSE:
 	    actions.closeCommander();
 	    return true;
+	case EnvironmentEvent.INTRODUCE:
+	    Speech.say(stringConstructor.appName() + " " + getName());
+	    return true;
+	default:
+	    return false;
 	}
-	return false;
     }
 
     public String getName()
     {
-	return "FIXME";
+	return stringConstructor.tasksAreaName();
     }
 }

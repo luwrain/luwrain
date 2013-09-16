@@ -16,14 +16,11 @@
 
 package org.luwrain.pim;
 
-import java.sql.SQLException;
-
 public interface NewsStoring
 {
-    StoredNewsGroup[] loadNewsGroups() throws SQLException;
-    String[] loadNewsGroupSources(StoredNewsGroup group) throws SQLException;
-    void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws SQLException;
-    StoredNewsArticle[] loadNewsArticlesInGroup(StoredNewsGroup newsGroup) throws SQLException;
-    StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws SQLException;
-    int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws SQLException;
+    StoredNewsGroup[] loadNewsGroups() throws Exception;
+    void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws Exception;
+    StoredNewsArticle[] loadNewsArticlesInGroup(StoredNewsGroup newsGroup) throws Exception;
+    StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws Exception;
+    int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws Exception;
 }

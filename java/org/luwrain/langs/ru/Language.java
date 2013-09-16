@@ -41,6 +41,8 @@ public class Language implements org.luwrain.core.Language
 	    return new NotepadStringConstructor();
 	if (id.equals("fetch"))
 	    return new FetchStringConstructor();
+	if (id.equals("preview"))
+	    return new PreviewStringConstructor();
 	return null;
     }
 
@@ -82,6 +84,8 @@ public class Language implements org.luwrain.core.Language
 	    return "Доставка сообщений и новостей";
 	if (actionName.trim().equals("message"))
 	    return "Новое сообщение";
+	if (actionName.trim().equals("preview"))
+	    return "Просмотр документов";
 	return "";
     }
 }

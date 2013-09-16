@@ -20,6 +20,11 @@ import java.util.*;
 
 public class NewsReaderStringConstructor implements org.luwrain.app.news.NewsReaderStringConstructor
 {
+    public String appName()
+    {
+	return "Чтение новостей";
+    }
+
     public String groupAreaName()
     {
 	return "Список групп новостей";
@@ -33,6 +38,11 @@ public class NewsReaderStringConstructor implements org.luwrain.app.news.NewsRea
     public String viewAreaName()
     {
 	return "Просмотр новости";
+    }
+
+public     String errorReadingArticles()
+    {
+	return "Произошла ошибка доставки новостных статей.";
     }
 
     public String readPrefix()

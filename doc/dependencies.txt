@@ -1,3 +1,6 @@
+POI
+URL: http://apache-mirror.rbc.ru/pub/apache/poi/release/bin/poi-bin-3.9-20121203.tar.gz
+
 jdom
 URL: https://github.com/hunterhacker/jdom/
 

@@ -18,6 +18,7 @@ package org.luwrain.app.message;
 
 public interface MessageStringConstructor
 {
+    String appName();
     String to();
     String cc();
     String subject();

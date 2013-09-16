@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+//TODO:Popups without known applications;
+
 import org.luwrain.core.events.*;
 import org.luwrain.mmedia.*;
 
@@ -97,29 +99,6 @@ Application systemApp)
     {
 	if (!hasProperPopup())
 	    activePopup = false;
-    }
-
-    public void introduceActiveArea()
-    {
-	//FIXME:Popups only if not stopCondition;
-	//FIXME:Introduce area environment event;
-
-	if (activePopup)
-	{
-	    if (hasProperPopup())
-	    {
-		Speech.say(popups.getAreaOfLastPopup().getName());
-		return;
-	    }
-	    activePopup = false;
-	}
-	Area activeArea = applications.getActiveAreaOfActiveApp();
-	if (activeArea != null)
-	    Speech.say(activeArea.getName()); else
-	{
-	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
-	    Speech.say("Запущенных приложений нет");//FIXME:
-	}
     }
 
     public Area getActiveArea()

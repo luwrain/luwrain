@@ -35,6 +35,9 @@ public class Environment
     private static ScreenContentManager screenContentManager;
     private static WindowManager windowManager;
     private static GlobalKeys globalKeys = new GlobalKeys();
+    private static AppWrapperRegistry appWrappers = new AppWrapperRegistry();
+    private static FileTypes fileTypes = new FileTypes(appWrappers);
+    private static boolean needForIntroduction = false;
 
     //Start/stop;
 
@@ -43,6 +46,7 @@ public class Environment
 	cmdLineArgs = args;
 	interaction = intr;
 	actions.fillWithStandartActions();
+	appWrappers.fillWithStandardWrappers();
 	screenContentManager = new ScreenContentManager(applications, popups, systemApp);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	interaction.startInputEventsAccepting();
@@ -101,7 +105,7 @@ public class Environment
 	applications.registerAppSingleVisible(app, activeArea);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
-	screenContentManager.introduceActiveArea();
+	introduceActiveArea();
     }
 
     static public void closeApplication(Object instance)
@@ -120,7 +124,7 @@ public class Environment
 	instanceManager.releaseInstance(instance);
 	screenContentManager.updatePopupState();//Actually not needed but for consistency;
 	windowManager.redraw();
-	screenContentManager.introduceActiveArea();
+	introduceActiveArea();
     }
 
     public static void switchNextApp()
@@ -133,14 +137,14 @@ public class Environment
 	applications.switchNextInvisible();
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
-	screenContentManager.introduceActiveArea();
+	introduceActiveArea();
     }
 
     public static void switchNextArea()
     {
 	screenContentManager.activateNextArea();
 	windowManager.redraw();
-	screenContentManager.introduceActiveArea();
+	introduceActiveArea();
     }
 
     //Events;
@@ -163,7 +167,11 @@ public class Environment
 	    default:
 		Log.warning("environment", "got the event of an unknown type:" + event.type());
 	    }
-	}
+	    if (needForIntroduction && stopCondition.continueEventLoop())
+		introduceActiveArea();
+	    needForIntroduction = false;
+
+		}
     }
 
     static private void onKeyboardEvent(KeyboardEvent event)
@@ -211,7 +219,7 @@ public class Environment
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
 	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
-	    message("Воспользуйтесь главным меню для начала работы");//FIXME:
+	    message(Langs.staticValue(Langs.START_WORK_FROM_MAIN_MENU));
 	    break;
 	}
     }
@@ -220,7 +228,14 @@ public class Environment
     {
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
-	    res = screenContentManager.onEnvironmentEvent(event);
+	    if (event.getCode() == EnvironmentEvent.THREAD_SYNC)
+	    {
+		ThreadSyncEvent threadSync = (ThreadSyncEvent)event;
+		if (threadSync.getDestArea() != null)
+		    res = threadSync.getDestArea().onEnvironmentEvent(event)?ScreenContentManager.EVENT_PROCESSED:ScreenContentManager.EVENT_NOT_PROCESSED; else
+		    res = ScreenContentManager.EVENT_NOT_PROCESSED;
+	    } else
+		res = screenContentManager.onEnvironmentEvent(event);
 	}
 	catch (Throwable e)
 	{
@@ -236,11 +251,9 @@ public class Environment
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
 	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
-	    message("Воспользуйтесь главным меню для начала работы");//FIXME:
+	    message(Langs.staticValue(Langs.START_WORK_FROM_MAIN_MENU));
 	    break;
 	}
-	//	    windowManager.redraw();
-
     }
 
     static public void enqueueEvent(Event e)
@@ -267,17 +280,14 @@ public class Environment
 	popups.addNewPopup(app, area, popupPlace, new PopupEventLoopStopCondition(stopCondition));
 	if (screenContentManager.setPopupAreaActive())
 	{
-	    screenContentManager.introduceActiveArea();
+	    introduceActiveArea();
 	    windowManager.redraw();
 	}
 	eventLoop(new PopupEventLoopStopCondition(stopCondition));
 	popups.removeLastPopup();
 	screenContentManager.updatePopupState();
-	if (!popups.hasPopups() || !popups.isLastPopupDiscontinued())
-	{
-	    screenContentManager.introduceActiveArea();
-	    windowManager.redraw();
-	}
+	needForIntroduction = true;
+	windowManager.redraw();
     }
 
     public static void runActionPopup()
@@ -299,7 +309,7 @@ public class Environment
 	    return;//FIXME:Log message;
 	applications.setActiveAreaOfApp(app, area);
 	if (applications.isActiveApp(app) && !screenContentManager.isPopupAreaActive())
-	    screenContentManager.introduceActiveArea();
+	    introduceActiveAreaNoEvent();
 	windowManager.redraw();
     }
 
@@ -331,6 +341,7 @@ public class Environment
     {
 	if (text == null || text.trim().isEmpty())
 	    return;
+	needForIntroduction = false;
 	//FIXME:Message class for message collecting;
 	Speech.say(text);
 	interaction.startDrawSession();
@@ -375,5 +386,53 @@ public class Environment
 	}
 	a.add(s.trim());
 	return a.toArray(new String[a.size()]);
+    }
+
+    static public void introduceActiveArea()
+    {
+	needForIntroduction = false;
+	Area activeArea = screenContentManager.getActiveArea();
+	if (activeArea == null)
+	{
+	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
+	    Speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
+	    return;
+	}
+	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
+	    return;
+	Speech.say(activeArea.getName());
+    }
+
+    static public void introduceActiveAreaNoEvent()
+    {
+	needForIntroduction = false;
+	Area activeArea = screenContentManager.getActiveArea();
+	if (activeArea == null)
+	{
+	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
+	    Speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
+	    return;
+	}
+	Speech.say(activeArea.getName());
+    }
+
+
+    static public void increaseFontSize()
+    {
+	interaction.setDesirableFontSize(interaction.getFontSize() * 2); 
+	windowManager.redraw();
+	message(Langs.staticValue(Langs.FONT_SIZE) + " " + interaction.getFontSize());
+    }
+
+    static public void decreaseFontSize()
+    {
+	interaction.setDesirableFontSize(interaction.getFontSize() / 2); 
+	windowManager.redraw();
+	message(Langs.staticValue(Langs.FONT_SIZE) + " " + interaction.getFontSize());
+    }
+
+    static public void openFileNames(String[] fileNames)
+    {
+	fileTypes.openFileNames(fileNames);
     }
 }

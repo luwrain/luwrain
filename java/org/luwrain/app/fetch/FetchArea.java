@@ -16,6 +16,8 @@
 
 package org.luwrain.app.fetch;
 
+//TODO:Proper empty line below;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.pim.StoredMailAccount;
@@ -34,67 +36,49 @@ public class FetchArea extends SimpleArea
 	super("Fetch area");//FIXME:
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
+	addLine(stringConstructor.pressEnterToStart());
+	addLine("");
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.ENTER && !event.isModified())
+	if (super.onKeyboardEvent(event ))
+	    return true;
+
+	if (event.isCommand() &&
+	    event.getCommand() == KeyboardEvent.ENTER &&
+	    !event.isModified())
 	{
-	    launchFetching();
+	    actions.launchFetching();
 	    return true;
 	}
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.ESCAPE && !event.isModified())
-	{
-	    actions.closeFetchApp();
-	    return true;
-	}
-	return super.onKeyboardEvent(event);
+
+	return false;
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.CLOSE)
+	if (event.getCode() == EnvironmentEvent.THREAD_SYNC)
 	{
-	    actions.closeFetchApp();
+	    MessageLineEvent messageLineEvent = (MessageLineEvent)event;
+	    addLine(messageLineEvent.message);
 	    return true;
 	}
-	return false;
+	switch (event.getCode())
+	{
+	case EnvironmentEvent.CLOSE:
+	    actions.closeFetchApp();
+	    return true;
+	case EnvironmentEvent.INTRODUCE:
+	    Speech.say(stringConstructor.appName());
+	    return true;
+	default:
+	    return false;
+	}
     }
 
-    private void launchFetching()
+    public String getName()
     {
-	//FIXME:
-	MailStoring mailStoring = PimManager.createMailStoring();
-	if (mailStoring == null)
-	{
-	    addLine("FIXME:No database connection");
-	    return;
-	}
-	final SimpleArea a = this;
-	Properties p = new Properties();
-	Session session = Session.getInstance(p, null);
-	MailFetching mailFetching = new MailFetching(session, new FetchProgressListener(){
-		SimpleArea thisArea = a;
-		public void onProgressLine(String line)
-		{
-		    thisArea.addLine(line);
-		    Speech.say(line);
-		}
-	    }, stringConstructor, false, mailStoring);
-	try {
-	    StoredMailAccount accounts[] = mailStoring.loadMailAccounts();
-	    for(int i = 0;i < accounts.length;i++)
-	    {
-		if (!accounts[i].getProtocol().equals("pop3"))
-		    continue;
-		addLine(stringConstructor.readingMailFromAccount(accounts[i].getName()));
-		mailFetching.fetchPop3(new URLName("pop3", accounts[i].getHost(), accounts[i].getPort(), accounts[i].getFile(), accounts[i].getLogin(), accounts[i].getPasswd()));
-	    }
-	}
-	catch(Exception e)
-	{
-	    addLine("Error: " + e.getMessage());
-	    e.printStackTrace();
-	}
+	return stringConstructor.appName();
     }
 }

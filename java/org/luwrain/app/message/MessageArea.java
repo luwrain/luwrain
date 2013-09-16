@@ -17,7 +17,6 @@
 package org.luwrain.app.message;
 
 //TODO:Enter moves the cursor to next field;
-//FIXME:Proper name;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -127,13 +126,23 @@ public class MessageArea extends SimpleArea
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.CLOSE)
+	switch(event.getCode())
 	{
+	case EnvironmentEvent.CLOSE:
 	    actions.closeMessage();
 	    return true;
+	case EnvironmentEvent.INTRODUCE:
+	    Speech.say(stringConstructor.appName());
+	    return true;
+	default:
+	    return false;
 	}
-	return false;
     }
+
+    public String getName()
+    {
+	return stringConstructor.appName();
+    } 
 
     private void createTextEdit()
     {

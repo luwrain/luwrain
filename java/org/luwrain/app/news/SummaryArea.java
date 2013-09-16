@@ -240,12 +240,17 @@ public class SummaryArea implements Area
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	//FIXME:refresh;
-	if (event.getCode() == EnvironmentEvent.CLOSE)
+	switch(event.getCode())
 	{
+	case EnvironmentEvent.CLOSE:
 	    actions.closeNewsReader();
 	    return true;
+	case EnvironmentEvent.INTRODUCE:
+	    Speech.say(stringConstructor.appName() + " " + stringConstructor.summaryAreaName());
+	    return true;
+	default:
+	    return false;
 	}
-	return false;
     }
 
     public String getName()

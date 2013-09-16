@@ -18,5 +18,10 @@ package org.luwrain.app.notepad;
 
 public interface NotepadStringConstructor
 {
+    String appName();
+    String introduction();
     String newFileName();
+    String errorOpeningFile();
+    String errorSavingFile();
+    String fileIsSaved();
 }

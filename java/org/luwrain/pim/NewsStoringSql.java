@@ -19,7 +19,7 @@ package org.luwrain.pim;
 import java.sql.*;
 import java.util.*;
 
-public class NewsStoringSql implements NewsStoring
+public class NewsStoringSql extends NewsStoringRegistry
 {
     private Connection con = null;
 
@@ -28,53 +28,9 @@ public class NewsStoringSql implements NewsStoring
 	this.con = con;
     }
 
-    public StoredNewsGroup[] loadNewsGroups() throws SQLException
-    {
-	Statement st = con.createStatement();
-	ResultSet rs = st.executeQuery("SELECT id,name,has_media_content,order_index,expire_after_days FROM news_group;");
-	Vector<StoredNewsGroupSql> groups = new Vector <StoredNewsGroupSql>();
-	while(rs.next())
-	{
-	    StoredNewsGroupSql g = new StoredNewsGroupSql(con);
-	    g.id = rs.getLong(1);
-	    g.name = rs.getString(2);
-	    g.hasMediaContent = rs.getBoolean(3);
-	    g.orderIndex = rs.getInt(4);
-	    g.expireAfterDays = rs.getInt(5);
-	    groups.add(g);
-	}
-	//FIXME:
-	StoredNewsGroup res[] = new StoredNewsGroup[groups.size()];
-	Iterator<StoredNewsGroupSql > it = groups.iterator();
-	int k = 0;
-	while(it.hasNext())
-	    res[k++] = it.next();
-	return res;
-    }
-
-public     String[] loadNewsGroupSources(StoredNewsGroup group) throws SQLException
-    {
-	if (group == null)
-	    return null;
-	StoredNewsGroupSql g = (StoredNewsGroupSql)group;
-	PreparedStatement st = con.prepareStatement("SELECT url FROM news_source WHERE news_group_id=?;");
-	st.setLong(1, g.id);
-	ResultSet rs = st.executeQuery();
-	Vector<String> values = new Vector<String>();
-	while(rs.next())
-	    values.add(rs.getString(1).trim());
-	//FIXME:
-	String[] res = new String[values.size()];
-	Iterator<String> it = values.iterator();
-	int k = 0;
-	while(it.hasNext())
-	    res[k++] = it.next();
-	return res;
-    }
-
     public void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws SQLException
     {
-	StoredNewsGroupSql g = (StoredNewsGroupSql)newsGroup;
+	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
 	PreparedStatement st = con.prepareStatement("INSERT INTO news_article (news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
 	st.setLong(1, g.id);
 	st.setInt(2, NewsArticle.NEW);
@@ -95,7 +51,7 @@ public     String[] loadNewsGroupSources(StoredNewsGroup group) throws SQLExcept
 
     public     StoredNewsArticle[] loadNewsArticlesInGroup(StoredNewsGroup newsGroup) throws SQLException
     {
-	StoredNewsGroupSql g = (StoredNewsGroupSql)newsGroup;
+	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
 	PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content FROM news_article WHERE news_group_id = ?;");
 	st.setLong(1, g.id);
 	ResultSet rs = st.executeQuery();
@@ -130,7 +86,7 @@ public     String[] loadNewsGroupSources(StoredNewsGroup group) throws SQLExcept
 
     public     StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws SQLException
     {
-	StoredNewsGroupSql g = (StoredNewsGroupSql)newsGroup;
+	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
 	PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content FROM news_article WHERE news_group_id = ? AND state <> 1;");
 	st.setLong(1, g.id);
 	ResultSet rs = st.executeQuery();
@@ -165,7 +121,7 @@ public     String[] loadNewsGroupSources(StoredNewsGroup group) throws SQLExcept
 
     public int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws SQLException
     {
-	StoredNewsGroupSql g = (StoredNewsGroupSql)newsGroup;
+	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
 	PreparedStatement st = con.prepareStatement("SELECT count(*) FROM news_article WHERE news_group_id = ? AND uri = ?;");
 	st.setLong(1, g.id);
 	st.setString(2, uri);

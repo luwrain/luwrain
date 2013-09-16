@@ -26,8 +26,8 @@ import org.luwrain.core.Log;
 
 public class MainFrame extends Frame
 {
-    private static final int MIN_TABLE_WIDTH = 32;
-    private static final int MIN_TABLE_HEIGHT = 16;
+    private static final int MIN_TABLE_WIDTH = 16;
+    private static final int MIN_TABLE_HEIGHT = 8;
 
     private Font font;
     private int marginLeft = 0, marginTop = 0, marginRight = 0, marginBottom = 0;
@@ -80,19 +80,10 @@ public class MainFrame extends Frame
 		    OnScreenLine[] lines = vertLines[i].getLines();
 		    for(int k = 0;k < lines.length;k++)
 		    {
-			Log.debug("awt", "vertical line (" + lines[k].pos1 + "->" + lines[k].pos2 + " at column " + i);
-			/*
-			ig.drawLine(marginLeft + (i * fontWidth) + (fontWidth / 2),
-				    marginTop + (lines[k].pos1 * fontHeight),
-				    marginLeft + (i * fontWidth) + (fontWidth / 2),
-				    marginTop + ((lines[k].pos2 + 1) * fontHeight));
-			*/
-
 			ig.fillRect(marginLeft + (i * fontWidth) + (fontWidth / 2) - (fontWidth / 6),
 				    marginTop + (lines[k].pos1 * fontHeight),
 				    (fontWidth / 3),
 				    (lines[k].pos2 - lines[k].pos1 + 1) * fontHeight);
-
 		    }
 		}
 
@@ -104,20 +95,10 @@ public class MainFrame extends Frame
 		    OnScreenLine[] lines = horizLines[i].getLines();
 		    for(int k = 0;k < lines.length;k++)
 		    {
-			Log.debug("awt", "horizontal line (" + lines[k].pos1 + "->" + lines[k].pos2 + " at row " + i);
-			/*
-			ig.drawLine(marginLeft + (lines[k].pos1 * fontWidth),
-				    marginTop + (i * fontHeight) + (fontHeight / 2),
-				    marginLeft + ((lines[k].pos2 + 1) * fontWidth),
-				    marginTop + (i * fontHeight) + (fontHeight / 2));
-			*/
-
 			ig.fillRect(marginLeft + (lines[k].pos1 * fontWidth),
 				    marginTop + (i * fontHeight) + (fontHeight / 2) - (fontWidth / 6),
 				    (lines[k].pos2 - lines[k].pos1 + 1) * fontWidth,
 				    fontWidth / 3);
-
-
 		    }
 		}
 

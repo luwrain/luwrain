@@ -61,6 +61,11 @@ public class SimpleArea extends NavigateArea
 	fixHotPoint();
     }
 
+    public String[] getContent()
+    {
+	return content;
+    }
+
     public void setLine(int index, String line)
     {
 	if (content == null || content.length < 1)

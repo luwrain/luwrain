@@ -20,6 +20,11 @@ import java.util.*;
 
 public class MessageStringConstructor implements org.luwrain.app.message.MessageStringConstructor
 {
+    public String appName()
+    {
+	return "Новое сообщение";
+    }
+
     public String to()
     {
 	return "Кому:";

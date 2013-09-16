@@ -25,12 +25,12 @@ collect_xml()
     fi
 }
 
-CLASS_PATH=":$(collect_jars "$LUWRAIN_DIR/lib")"
-CLASS_PATH="$CLASS_PATH:$(collect_jars "$LUWRAIN_DIR/jar")"
-CLASS_PATH="$CLASS_PATH:$(collect_jars "$USER_APPS_DIR")"
+CLASS_PATH=":$(collect_jars "$LUWRAIN_DIR/lib/.")"
+CLASS_PATH="$CLASS_PATH:$(collect_jars "$LUWRAIN_DIR/jar/.")"
+CLASS_PATH="$CLASS_PATH:$(collect_jars "$USER_APPS_DIR/.")"
 
-CONF_LIST="$(collect_xml "$LUWRAIN_CONF_DIR")"
-CONF_LIST="$CONF_LIST:$(collect_xml "$USER_CONF_DIR")"
+CONF_LIST="$(collect_xml "$LUWRAIN_CONF_DIR/.")"
+CONF_LIST="$CONF_LIST:$(collect_xml "$USER_CONF_DIR/.")"
 
 exec java \
 -cp "$CLASS_PATH" \

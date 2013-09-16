@@ -16,28 +16,31 @@
 
 package org.luwrain.pim;
 
-import java.sql.*;
-
-public class StoredNewsGroupSql implements StoredNewsGroup
+public class StoredNewsGroupRegistry implements StoredNewsGroup
 {
-    private Connection con = null;
-    public long id = 0;
+    public int id = 0;
     public String name = new String();
+    public String[] urls = new String[0];
     public boolean hasMediaContent = false;
     public int orderIndex = 0;
     public int expireAfterDays = 30;
-
-    public StoredNewsGroupSql(Connection con)
-    {
-	this.con = con;
-    }
 
     public String getName()
     {
 	return name;
     }
 
-    public void setName(String name) throws SQLException
+    public void setName(String name) throws Exception
+    {
+	//FIXME:
+    }
+
+    public String[] getUrls()
+    {
+	return urls;
+    }
+
+    public void setUrls(String[] urls) throws Exception
     {
 	//FIXME:
     }
@@ -47,7 +50,7 @@ public class StoredNewsGroupSql implements StoredNewsGroup
 	return hasMediaContent;
     }
 
-    public void setHasMediaContent(boolean value) throws SQLException
+    public void setHasMediaContent(boolean value) throws Exception
     {
 	//FIXME:
     }
@@ -57,7 +60,7 @@ public class StoredNewsGroupSql implements StoredNewsGroup
 	return orderIndex;
     }
 
-    public void setOrderIndex(int index) throws SQLException
+    public void setOrderIndex(int index) throws Exception
     {
 	//FIXME:
     }
@@ -67,8 +70,13 @@ public class StoredNewsGroupSql implements StoredNewsGroup
 	return expireAfterDays;
     }
 
-    public void setExpireAfterDays(int count) throws SQLException
+    public void setExpireAfterDays(int count) throws Exception
     {
 	//FIXME:
+    }
+
+    public String toString()
+    {
+	return getName();
     }
 }

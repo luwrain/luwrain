@@ -18,9 +18,11 @@ package org.luwrain.app.news;
 
 public interface NewsReaderStringConstructor
 {
+    String appName();
     String groupAreaName();
     String summaryAreaName();
     String viewAreaName();
+    String errorReadingArticles();
     String readPrefix();
     String markedPrefix();
     String noSummaryItems();

@@ -63,4 +63,11 @@ public class CommanderApp implements Application, CommanderActions
     {
 	Dispatcher.closeApplication(instance);
     }
+
+    public void openFiles(String[] fileNames)
+    {
+	Log.debug("commander", "need to open " + fileNames.length + " files");
+	if (fileNames != null && fileNames.length > 0)
+	    Dispatcher.open(fileNames);
+    }
 }

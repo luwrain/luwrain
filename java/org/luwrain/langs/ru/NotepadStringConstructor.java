@@ -20,8 +20,33 @@ import java.util.*;
 
 public class NotepadStringConstructor implements org.luwrain.app.notepad.NotepadStringConstructor
 {
+    public String appName()
+    {
+	return "Блокнот";
+    }
+
+    public String introduction()
+    {
+	return "Редактирование";
+    }
+
     public String newFileName()
     {
 	return "Новый файл.txt";
+    }
+
+    public String errorOpeningFile()
+    {
+	return "Невозможно открыть файл для редактирования";
+    }
+
+    public String errorSavingFile()
+    {
+	return "Произошла ошибка, файл не сохранён";
+    }
+
+    public String fileIsSaved()
+    {
+	return "Файл успешно записан!";
     }
 }

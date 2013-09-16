@@ -18,6 +18,46 @@ package org.luwrain.langs.ru;
 
 public class FetchStringConstructor implements org.luwrain.app.fetch.FetchStringConstructor
 {
+    public String appName()
+    {
+	return "Доставка почты и новостей";
+    }
+
+    public String noNewsGroupsData()
+    {
+	return "Отсутствует информация о новостных группах!";
+    }
+
+    public String newsFetchingCompleted()
+    {
+	return "Доставка новостей завершена!";
+    }
+
+    public String newsFetchingError()
+    {
+	return "Произошла ошибка доставки новостей!";
+    }
+
+    public String newsGroupFetched(String name, int fresh, int total)
+    {
+	return "Группа " + name + " содержит " + fresh + " новых статей из " + total;
+    }
+
+    public String pressEnterToStart()
+{
+    return "Нажмите ENTER для начала работы!";
+	}
+
+    public String processAlreadyRunning()
+    {
+	return "Доставка уже запущена";
+    }
+
+    public String processNotFinished()
+    {
+	return "Доставка ещё не завершена";
+    }
+
     public String readingMailFromAccount(String accountName)
     {
 	return "Чтение электронной почты с учётной записи \"" + accountName + "\"";
