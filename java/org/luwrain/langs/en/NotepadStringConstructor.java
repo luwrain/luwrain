@@ -14,38 +14,39 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+package org.luwrain.langs.en;
 
-import org.luwrain.core.*;
+import java.util.*;
 
-public class SystemApp implements Application
+public class NotepadStringConstructor implements org.luwrain.app.notepad.NotepadStringConstructor
 {
-    private SystemAppStringConstructor stringConstructor = null;
-
-    public SystemApp()
+    public String appName()
     {
-	Object o = Langs.requestStringConstructor("system-application");
-	stringConstructor = (SystemAppStringConstructor)o;
+	return "Notepad";
     }
 
-    public boolean onLaunch(Object instance)
+    public String introduction()
     {
-	//Actually never called;
-	return true;
+	return "Editing";
     }
 
-    public AreaLayout getAreasToShow()
+    public String newFileName()
     {
-	return null;
+	return "New file.txt";
     }
 
-    public MainMenuArea createMainMenuArea(String[] items)
+    public String errorOpeningFile()
     {
-	return new MainMenuArea(stringConstructor, items);
+	return "An error occurred while opening file to edit";
     }
 
-    public SystemAppStringConstructor stringConstructor()
+    public String errorSavingFile()
     {
-	return stringConstructor;
+	return "An error occurred while saving the file";
+    }
+
+    public String fileIsSaved()
+    {
+	return "File was successfully saved!";
     }
 }

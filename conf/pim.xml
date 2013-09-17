@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<registry>
+  <regdir name="/org/luwrain/pim/news">
+    <regvalue name="type" type="string">jdbc</regvalue>
+    <regvalue name="url" type="string">jdbc:mysql://localhost/luwrain?characterEncoding=utf-8</regvalue>
+    <regvalue name="driver" type="string">com.mysql.jdbc.Driver</regvalue>
+    <regvalue name="login" type="string">root</regvalue>
+    <regvalue name="passwd" type="string"></regvalue>
+  </regdir>
+</registry>

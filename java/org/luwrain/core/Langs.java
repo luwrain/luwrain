@@ -44,7 +44,13 @@ public class Langs
     public static final int LIST_NO_ITEMS = 108;
 
 
-    private static Language currentLang = new org.luwrain.langs.ru.Language();
+    private static Language currentLang = new org.luwrain.langs.en.Language();
+
+    public static void setCurrentLang(Language lang)
+    {
+	if (lang != null)
+	currentLang = lang;
+    }
 
     public static String staticValue(int id)
     {

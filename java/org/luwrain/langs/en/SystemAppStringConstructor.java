@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.langs.ru;
+package org.luwrain.langs.en;
 
 import java.util.*;
 
@@ -29,17 +29,17 @@ public class SystemAppStringConstructor implements org.luwrain.app.system.System
 
     public String mainMenuTitle()
     {
-	return "Главное меню";
+	return "Main menu";
     }
 
     public String runActionTitle()
     {
-	return "Выполнить команду";
+	return "Run command:";
     }
 
     public String runAction()
     {
-	return "Команда:";
+	return "Command:";
     }
 
 
@@ -56,46 +56,42 @@ public class SystemAppStringConstructor implements org.luwrain.app.system.System
 	value += ":";
 	value += withZeroes(c.get(Calendar.MINUTE), 2);
 	value += ", ";
-
 	value += dayOfWeek(c.get(Calendar.DAY_OF_WEEK));
 	value += ",";
-	value += c.get(Calendar.DAY_OF_MONTH);
-	value += " ";
 	value += month(c.get(Calendar.MONTH));
+	value += " ";
+	value += c.get(Calendar.DAY_OF_MONTH);
 	return value;
     }
 
     public String mainMenuNoItemsAbove()
     {
-	return "Начало главного меню";
+	return "Beginning of main menu";
     }
 
     public String mainMenuNoItemsBelow()
     {
-	return "Конец главного меню";
+	return "End of main menu";
     }
-
-
-
 
     private String dayOfWeek(int index)
     {
 	switch(index)
 	{
 	case 1:
-	    return "Воскресенье";
+	    return "Sunday";
 	case 2:
-	    return "Понедельник";
+	    return "Monday";
 	case 3:
-	    return "Вторник";
+	    return "Tuesday";
 	case 4:
-	    return "Среда";
+	    return "Wednesday";
 	case 5:
-	    return "Четверг";
+	    return "Thursday";
 	case 6:
-	    return "Пятница";
+	    return "Friday";
 	case 7:
-	    return "Суббота";
+	    return "Saturday";
 	}
 	return null;
     }
@@ -105,29 +101,29 @@ public class SystemAppStringConstructor implements org.luwrain.app.system.System
 	switch(index)
 	{
 	case 0:
-	    return "января";
+	    return "January";
 	case 1:
-	    return "февраля";
+	    return "February";
 	case 2:
-	    return "марта";
+	    return "March";
 	case 3:
-	    return "апреля";
+	    return "April";
 	case 4:
-	    return "мая";
+	    return "May";
 	case 5:
-	    return "июня";
+	    return "June";
 	case 6:
-	    return "июля";
+	    return "July";
 	case 7:
-	    return "августа";
+	    return "August";
 	case 8:
-	    return "сентября";
+	    return "September";
 	case 9:
-	    return "октября";
+	    return "October";
 	case 10:
-	    return "ноября";
+	    return "November";
 	case 11:
-	    return "декабря";
+	    return "December";
 	}
 	return null;
     }

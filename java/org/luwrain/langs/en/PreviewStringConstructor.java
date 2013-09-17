@@ -14,15 +14,17 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+package org.luwrain.langs.en;
 
-public interface SystemAppStringConstructor
+public class PreviewStringConstructor implements org.luwrain.app.preview.StringConstructor
 {
-    String mainMenuTitle();
-    String runActionTitle();
-    String runAction();
-    String actionTitle(String actionName);
-    String currentDateTime();
-    String mainMenuNoItemsAbove();
-    String mainMenuNoItemsBelow();
+    public String appName()
+    {
+	return "Preview";
+    }
+
+    public String errorOpeningFile()
+    {
+	return "File to preview is inaccessible or corrupted";
+    }
 }

@@ -14,38 +14,34 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+package org.luwrain.langs.en;
 
-import org.luwrain.core.*;
+import java.util.*;
 
-public class SystemApp implements Application
+public class MessageStringConstructor implements org.luwrain.app.message.MessageStringConstructor
 {
-    private SystemAppStringConstructor stringConstructor = null;
-
-    public SystemApp()
+    public String appName()
     {
-	Object o = Langs.requestStringConstructor("system-application");
-	stringConstructor = (SystemAppStringConstructor)o;
+	return "New message";
     }
 
-    public boolean onLaunch(Object instance)
+    public String to()
     {
-	//Actually never called;
-	return true;
+	return "To:";
     }
 
-    public AreaLayout getAreasToShow()
+    public String cc()
     {
-	return null;
+	return "CC:";
     }
 
-    public MainMenuArea createMainMenuArea(String[] items)
+    public String subject()
     {
-	return new MainMenuArea(stringConstructor, items);
+	return "Subject:";
     }
 
-    public SystemAppStringConstructor stringConstructor()
+    public String messageText()
     {
-	return stringConstructor;
+	return "Message text:";
     }
 }

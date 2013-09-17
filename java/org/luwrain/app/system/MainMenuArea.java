@@ -196,6 +196,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 	    items[hotPointY] == null ||
 	    items[hotPointY].getText().trim().isEmpty())
 	{
+	    Speech.silence();
 	    EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_EMPTY_LINE);
 	    return;
 	}

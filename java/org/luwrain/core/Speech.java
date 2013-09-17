@@ -28,6 +28,13 @@ public class Speech
 	backend = b;
     }
 
+    public static void silence()
+    {
+	if (backend == null)
+	    return;
+	backend.silence();
+    }
+
     public static void say(String text)
     {
 	say(text, PITCH_NORMAL);

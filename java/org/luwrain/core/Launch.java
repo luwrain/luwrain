@@ -46,6 +46,8 @@ public class Launch
     {
 	if (!initRegistry())
 	    return false;
+	if (!initLanguages())
+	    return false;
 	if (!initSpeech())
 	    return false;
 	if (!initPim())
@@ -57,6 +59,24 @@ public class Launch
 	if (!initEnvironmentSounds())
 	    return false;
 	return true;
+    }
+
+    private static boolean initLanguages()
+    {
+	if (Registry.typeOf(CoreRegistryValues.LANGS_CURRENT) != Registry.STRING)
+	{
+	    Log.warning("init", "No value " + CoreRegistryValues.LANGS_CURRENT + ", using English language as a default");
+	    return true;
+	}
+	final String lang = Registry.string(CoreRegistryValues.LANGS_CURRENT);
+    if (lang.equals("ru"))
+    {
+	Log.info("init", "using Russian language for user interface");
+	Langs.setCurrentLang(new org.luwrain.langs.ru.Language());
+	return true;
+    }
+    Log.warning("init", "unknown language \'" + lang + "\', using English as a default");
+    return true;
     }
 
     private static boolean initRegistry()
@@ -148,8 +168,45 @@ public class Launch
 
     private static boolean initPim()
     {
-	//FIXME:From registry;
-	if (!PimManager.newsConnectJdbc("jdbc:mysql://localhost/luwrain?characterEncoding=utf-8", "com.mysql.jdbc.Driver", "root", ""))
+	//Mail;
+	//FIXME:
+	//News;
+	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_TYPE) != Registry.STRING)
+	{
+	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_TYPE + " needed for news storing, news service will be inaccessible");
+	    return true;
+	}
+	final String type = Registry.string(CoreRegistryValues.PIM_NEWS_TYPE);
+	if (!type.equals("jdbc"))
+	{
+	    Log.warning("init", "only jdbc pim type for news is supported, news service will be inaccessible");
+	    return true;
+	}
+	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_URL) != Registry.STRING)
+	{
+	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_URL + " needed for news storing, news service will be inaccessible");
+	    return true;
+	}
+	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_DRIVER) != Registry.STRING)
+	{
+	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_DRIVER + " needed for news storing, news service will be inaccessible");
+	    return true;
+	}
+	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_LOGIN) != Registry.STRING)
+	{
+	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_LOGIN + " needed for news storing, news service will be inaccessible");
+	    return true;
+	}
+	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_PASSWD) != Registry.STRING)
+	{
+	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_PASSWD + " needed for news storing, news service will be inaccessible");
+	    return true;
+	}
+	final String url = Registry.string(CoreRegistryValues.PIM_NEWS_URL);
+	final String driver = Registry.string(CoreRegistryValues.PIM_NEWS_DRIVER);
+	final String login = Registry.string(CoreRegistryValues.PIM_NEWS_LOGIN);
+	final String passwd = Registry.string(CoreRegistryValues.PIM_NEWS_PASSWD);
+	if (!PimManager.newsConnectJdbc(url, driver, login, passwd))
 	    Log.warning("init", "news jdbc link init failed, news reading services remain inaccessible");
 	return true;
     }
@@ -157,6 +214,7 @@ public class Launch
     private static boolean initDBus()
     {
 	//FIXME:
+	/*
 	try {
 	    org.luwrain.dbus.DBus.connect();
 	}
@@ -165,6 +223,7 @@ public class Launch
 	    Log.fatal("init", "DBus initialization fault:" + e.getMessage());
 	    return false;
 	}
+	*/
 	return true;
     }
 
@@ -273,7 +332,7 @@ public class Launch
     private static void shutdown()
     {
 	interaction.close();
-	org.luwrain.dbus.DBus.shutdown();
+	//FIXME:	org.luwrain.dbus.DBus.shutdown();
     }
 
     public static void exit()

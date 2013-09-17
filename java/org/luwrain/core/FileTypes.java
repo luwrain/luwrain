@@ -50,7 +50,7 @@ public class FileTypes
 
 	if (ext.equals("avi") || ext.equals("AVI"))
 	{
-	    run("/usr/bin/mplayer -fs \'" + fileNames[0] + "\'");
+	    run("/usr/bin/mplayer -fs -slave -quiet \'" + fileNames[0] + "\'");
 	    return;
 	}
 

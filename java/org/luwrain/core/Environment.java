@@ -292,7 +292,7 @@ public class Environment
 
     public static void runActionPopup()
     {
-	org.luwrain.popups.SimpleLinePopup popup = new org.luwrain.popups.SimpleLinePopup(new Object(), "Выполнить команду", "команда:", "");
+	org.luwrain.popups.SimpleLinePopup popup = new org.luwrain.popups.SimpleLinePopup(new Object(), systemApp.stringConstructor().runActionTitle(), systemApp.stringConstructor().runAction(), "");
 	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup.closing);
 	if (popup.closing.cancelled())
 	    return;
