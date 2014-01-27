@@ -18,6 +18,7 @@ package org.luwrain.core;
 
 import java.util.Vector;
 import java.io.File;
+import org.luwrain.core.registry.Registry;
 import org.luwrain.pim.PimManager;
 import org.luwrain.mmedia.EnvironmentSounds;
 
@@ -29,7 +30,7 @@ public class Launch
 
     public static String[] commandLine;
     private static Interaction interaction = new org.luwrain.interaction.AwtInteraction();
-    private static Registry registry = new Registry();
+    private static Registry registry;
 
     public static void go(String[] args)
     {
@@ -63,12 +64,12 @@ public class Launch
 
     private static boolean initLanguages()
     {
-	if (Registry.typeOf(CoreRegistryValues.LANGS_CURRENT) != Registry.STRING)
+	if (registry.getTypeOf(CoreRegistryValues.LANGS_CURRENT) != Registry.STRING)
 	{
 	    Log.warning("init", "No value " + CoreRegistryValues.LANGS_CURRENT + ", using English language as a default");
 	    return true;
 	}
-	final String lang = Registry.string(CoreRegistryValues.LANGS_CURRENT);
+	final String lang = registry.getString(CoreRegistryValues.LANGS_CURRENT);
     if (lang.equals("ru"))
     {
 	Log.info("init", "using Russian language for user interface");
@@ -86,7 +87,7 @@ public class Launch
 	    for(int i = 0;i < confList.size();i++)
 	    {
 		Log.debug("init", "reading configuration file:" + confList.get(i));
-		registry.readFile(confList.get(i));
+		//FIXME:		registry.readFile(confList.get(i));
 	    }
 	}
 	catch(Exception e)
@@ -112,11 +113,13 @@ public class Launch
 		continue;
 	    }
 	}
+	/*FIXME:
 	if (!Registry.setInstance(registry))
 	{
 	    Log.fatal("init", "registry instance installation failed, is it second attempt to launch Luwrain?");
 	    return false;
 	}
+	*/
 	return true;
     }
 
@@ -131,12 +134,12 @@ public class Launch
 
     private static boolean initEnvironmentSounds()
     {
-	if (Registry.typeOf(CoreRegistryValues.INSTANCE_DATA_DIR) != Registry.STRING)
+	if (registry.getTypeOf(CoreRegistryValues.INSTANCE_DATA_DIR) != Registry.STRING)
 	{
 	    Log.error("init", "initialization of environment sounds is impossible, no proper registry value for " + CoreRegistryValues.INSTANCE_DATA_DIR);
 	    return true;
 	}
-	File dataDir = new File(Registry.string(CoreRegistryValues.INSTANCE_DATA_DIR));
+	File dataDir = new File(registry.getString(CoreRegistryValues.INSTANCE_DATA_DIR));
 	setSoundFileName(dataDir, "event-not-processed", EnvironmentSounds.EVENT_NOT_PROCESSED);
 	setSoundFileName(dataDir, "no-applications", EnvironmentSounds.NO_APPLICATIONS);
 	setSoundFileName(dataDir, "startup", EnvironmentSounds.STARTUP);
@@ -152,12 +155,12 @@ public class Launch
 				  int soundId)
     {
 	String v = CoreRegistryValues.SOUNDS + "/" + valueName;
-	if (Registry.typeOf(v) != Registry.STRING)
+	if (registry.getTypeOf(v) != Registry.STRING)
 	{
 	    Log.warning("init", "registry has no value for sound file by path " + v);
 	    return;
 	}
-	File f = new File(dataDir, Registry.string(v));
+	File f = new File(dataDir, registry.getString(v));
 	if (!f.exists() || f.isDirectory())
 	{
 	    Log.error("init", "sound file " + f.getAbsolutePath() + " does not exist or is a directory");
@@ -171,41 +174,41 @@ public class Launch
 	//Mail;
 	//FIXME:
 	//News;
-	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_TYPE) != Registry.STRING)
+	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_TYPE) != Registry.STRING)
 	{
 	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_TYPE + " needed for news storing, news service will be inaccessible");
 	    return true;
 	}
-	final String type = Registry.string(CoreRegistryValues.PIM_NEWS_TYPE);
+	final String type = registry.getString(CoreRegistryValues.PIM_NEWS_TYPE);
 	if (!type.equals("jdbc"))
 	{
 	    Log.warning("init", "only jdbc pim type for news is supported, news service will be inaccessible");
 	    return true;
 	}
-	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_URL) != Registry.STRING)
+	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_URL) != Registry.STRING)
 	{
 	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_URL + " needed for news storing, news service will be inaccessible");
 	    return true;
 	}
-	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_DRIVER) != Registry.STRING)
+	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_DRIVER) != Registry.STRING)
 	{
 	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_DRIVER + " needed for news storing, news service will be inaccessible");
 	    return true;
 	}
-	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_LOGIN) != Registry.STRING)
+	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_LOGIN) != Registry.STRING)
 	{
 	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_LOGIN + " needed for news storing, news service will be inaccessible");
 	    return true;
 	}
-	if (Registry.typeOf(CoreRegistryValues.PIM_NEWS_PASSWD) != Registry.STRING)
+	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_PASSWD) != Registry.STRING)
 	{
 	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_PASSWD + " needed for news storing, news service will be inaccessible");
 	    return true;
 	}
-	final String url = Registry.string(CoreRegistryValues.PIM_NEWS_URL);
-	final String driver = Registry.string(CoreRegistryValues.PIM_NEWS_DRIVER);
-	final String login = Registry.string(CoreRegistryValues.PIM_NEWS_LOGIN);
-	final String passwd = Registry.string(CoreRegistryValues.PIM_NEWS_PASSWD);
+	final String url = registry.getString(CoreRegistryValues.PIM_NEWS_URL);
+	final String driver = registry.getString(CoreRegistryValues.PIM_NEWS_DRIVER);
+	final String login = registry.getString(CoreRegistryValues.PIM_NEWS_LOGIN);
+	final String passwd = registry.getString(CoreRegistryValues.PIM_NEWS_PASSWD);
 	if (!PimManager.newsConnectJdbc(url, driver, login, passwd))
 	    Log.warning("init", "news jdbc link init failed, news reading services remain inaccessible");
 	return true;

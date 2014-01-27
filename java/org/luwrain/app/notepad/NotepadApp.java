@@ -21,6 +21,7 @@ import java.nio.file.*;
 import java.nio.charset.*;
 import java.util.*;
 import org.luwrain.core.*;
+import org.luwrain.core.registry.Registry;
 
 public class NotepadApp implements Application, NotepadActions
 {
@@ -63,9 +64,10 @@ public class NotepadApp implements Application, NotepadActions
 	    }
 	} else
 	{
-	    if (Registry.typeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING)
+	    Registry registry = Dispatcher.getRegistry();
+	    if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING)
 	    {
-		File dir = new File(Registry.string(CoreRegistryValues.INSTANCE_USER_HOME_DIR));
+		File dir = new File(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR));
 		File f = new File(dir, stringConstructor.newFileName());
 		area.setFileName(f.getAbsolutePath());
 	    } else

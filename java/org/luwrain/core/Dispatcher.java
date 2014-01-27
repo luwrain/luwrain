@@ -78,4 +78,10 @@ static public     void closeApplication(Object instance)
     {
 	Environment.openFileNames(fileNames);
     }
+
+    static public org.luwrain.core.registry.Registry getRegistry()
+    {
+	//FIXME:
+	return null;
+    }
 }

@@ -24,6 +24,7 @@ import java.io.*;
 import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.core.registry.Registry;
 
 public class PanelArea implements Area
 {
@@ -49,12 +50,13 @@ public class PanelArea implements Area
 	this.stringConstructor = stringConstructor;
 	this.actions = actions;
 	this.side = side;
-	if (Registry.typeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) != Registry.STRING)
+	Registry registry = Dispatcher.getRegistry();
+	if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) != Registry.STRING)
 	{
 	    Log.warning("commander", "registry hasn\'t value with user home directory");
 	openByPath(ROOT_DIR);
 	} else
-	    openByPath(Registry.string(CoreRegistryValues.INSTANCE_USER_HOME_DIR));
+	    openByPath(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR));
     }
 
     public int getLineCount()

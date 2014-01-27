@@ -18,13 +18,16 @@ package org.luwrain.pim;
 
 import java.util.*;
 import org.luwrain.core.*;
+import org.luwrain.core.registry.Registry;
 
 public abstract class NewsStoringRegistry implements NewsStoring
 {
+    private Registry registry;//FIXME:;
+
     public StoredNewsGroup[] loadNewsGroups() throws Exception
     {
 	//FIXME:Should be completely rewritten;
-	String[] names = splitNames("");
+	String[] names = splitNames("cnews:lenta-ru:forbs:rt:reuters:shanghai-daily:scmp:gulf-news:addthingsd");
 	if (names == null || names.length < 1)
 	    return new StoredNewsGroupRegistry[0];
 	StoredNewsGroupRegistry[] groups = new StoredNewsGroupRegistry[names.length];
@@ -33,13 +36,13 @@ public abstract class NewsStoringRegistry implements NewsStoring
 	    StoredNewsGroupRegistry g = new StoredNewsGroupRegistry();
 	    groups[i] = g;
 	    g.id = i;
-	    if (Registry.typeOf("/org/luwrain/news/groups/" + names[i] + "/title") == Registry.STRING)
-		g.name = Registry.string("/org/luwrain/news/groups/" + names[i] + "/title");
+	    if (registry.getTypeOf("/org/luwrain/news/groups/" + names[i] + "/title") == Registry.STRING)
+		g.name = registry.getString("/org/luwrain/news/groups/" + names[i] + "/title");
 	    ArrayList<String> urls = new ArrayList<String>();
 	    int k = 1;
-	    while(Registry.typeOf("/org/luwrain/news/groups/" + names[i] + "/url" + k) == Registry.STRING)
+	    while(registry.getTypeOf("/org/luwrain/news/groups/" + names[i] + "/url" + k) == Registry.STRING)
 	    {
-		urls.add(Registry.string("/org/luwrain/news/groups/" + names[i] + "/url" + k));
+		urls.add(registry.getString("/org/luwrain/news/groups/" + names[i] + "/url" + k));
 		k++;
 	    }
 g.urls = urls.toArray(new String[urls.size()]);

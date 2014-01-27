@@ -18,6 +18,7 @@ package org.luwrain.core;
 
 import java.util.concurrent.*;
 import java.util.*;
+import org.luwrain.core.registry.Registry;
 import org.luwrain.app.system.MainMenuArea;
 import org.luwrain.core.events.*;
 import org.luwrain.mmedia.EnvironmentSounds;
@@ -38,6 +39,7 @@ public class Environment
     private static AppWrapperRegistry appWrappers = new AppWrapperRegistry();
     private static FileTypes fileTypes = new FileTypes(appWrappers);
     private static boolean needForIntroduction = false;
+    private static Registry registry;
 
     //Start/stop;
 
@@ -365,12 +367,12 @@ public class Environment
 
     static private String[] getMainMenuItems()
     {
-	if (Registry.typeOf(CoreRegistryValues.MAIN_MENU_CONTENT) != Registry.STRING)
+	if (registry.getTypeOf(CoreRegistryValues.MAIN_MENU_CONTENT) != Registry.STRING)
 	{
 	    Log.error("environment", "registry has no value \'" + CoreRegistryValues.MAIN_MENU_CONTENT + "\' needed for proper main menu appearance");
 	    return new String[0];
 	}
-	final String content = Registry.string(CoreRegistryValues.MAIN_MENU_CONTENT);
+	final String content = registry.getString(CoreRegistryValues.MAIN_MENU_CONTENT);
 	ArrayList<String> a = new ArrayList<String>();
 	String s = "";
 	if (content.trim().isEmpty())
