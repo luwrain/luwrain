@@ -22,7 +22,7 @@ import org.luwrain.core.registry.Registry;
 import org.luwrain.pim.PimManager;
 import org.luwrain.mmedia.EnvironmentSounds;
 
-public class Launch
+public class Init
 {
     private static final String  PREFIX_CONF_LIST = "--conf-list=";
     private static final String  PREFIX_DATA_DIR = "--data-dir=";
@@ -370,5 +370,10 @@ public class Launch
 		res.add(s);
 	}
 	return res;
+    }
+
+    public static void main(String[] args)
+    {                    
+	go(args);
     }
 }

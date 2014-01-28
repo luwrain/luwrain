@@ -55,7 +55,7 @@ public class Environment
 	    EnvironmentSounds.play(EnvironmentSounds.STARTUP);
 		eventLoop(new InitialEventLoopStopCondition());
 		interaction.stopInputEventsAccepting();
-		Launch.exit();
+		Init.exit();
     }
 
     static public void quit()
