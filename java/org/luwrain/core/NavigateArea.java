@@ -52,7 +52,7 @@ public abstract class NavigateArea implements Area
 		}
 		hotPointX = 0;
 		hotPointY = 0;
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 		Speech.say(areaBeginMessage, Speech.PITCH_HIGH);
 		return true;
 	    }
@@ -76,7 +76,7 @@ public abstract class NavigateArea implements Area
 		hotPointY = getLineCount() - 1;
 		if (hotPointY < 0)//Incorrect getLineCount() behaviour;
 		    hotPointY = 0;
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 		    Speech.say(areaEndMessage, Speech.PITCH_HIGH);
 		    return true;
 	    }
@@ -99,7 +99,7 @@ public abstract class NavigateArea implements Area
 	    //FIXME:hotPointX = proper new position respecting tab sequences;
 	    if (hotPointX > line.length())
 		hotPointX = line.length();
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -120,7 +120,7 @@ public abstract class NavigateArea implements Area
 	    //FIXME:hotPointX = proper position respecting tab sequences;
 	    if (hotPointX > line.length())
 		hotPointX = line.length();
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -140,7 +140,7 @@ public abstract class NavigateArea implements Area
 		hotPointX = 0;
 	    } else
 		hotPointX++;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    String line = getLine(hotPointY);
 	    if (line == null)
 		line = new String();
@@ -172,7 +172,7 @@ public abstract class NavigateArea implements Area
 		hotPointX = line.length();
 	    } else
 		hotPointX--;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    String line = getLine(hotPointY);
 	    if (line == null)
 		line = new String();
@@ -197,7 +197,7 @@ public abstract class NavigateArea implements Area
 	    if (hotPointX > 0)
 	    {
 		hotPointX = 0;
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 	    } 
 	    Speech.sayLetter(line.charAt(0));
 	    return true;
@@ -218,7 +218,7 @@ public abstract class NavigateArea implements Area
 	    if (hotPointX < line.length())
 	    {
 		hotPointX = line.length();
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 	    } 
 	    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
 	    return true;
@@ -254,7 +254,7 @@ public abstract class NavigateArea implements Area
 	    return;
 	hotPointX = newX;
 	hotPointY = newY;
-	Dispatcher.onAreaNewHotPoint(this);
+	Luwrain.onAreaNewHotPoint(this);
     }
 
 public int getHotPointX()

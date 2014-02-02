@@ -57,12 +57,12 @@ public class AppWrapperRegistry
 		{
 		    if (args == null || args.length < 1)
 		    {
-			Dispatcher.launchApplication(new org.luwrain.app.preview.PreviewApp());
+			Luwrain.launchApplication(new org.luwrain.app.preview.PreviewApp());
 			return;
 		    }
 		    for(int i = 0;i < args.length;i++)
 			if (args[i] != null)
-			    Dispatcher.launchApplication(new org.luwrain.app.preview.PreviewApp(args[i]));
+			    Luwrain.launchApplication(new org.luwrain.app.preview.PreviewApp(args[i]));
 		}
 	    });
 
@@ -76,12 +76,12 @@ public class AppWrapperRegistry
 		{
 		    if (args == null || args.length < 1)
 		    {
-			Dispatcher.launchApplication(new org.luwrain.app.notepad.NotepadApp());
+			Luwrain.launchApplication(new org.luwrain.app.notepad.NotepadApp());
 			return;
 		    }
 		    for(int i = 0;i < args.length;i++)
 			if (args[i] != null)
-			    Dispatcher.launchApplication(new org.luwrain.app.notepad.NotepadApp(args[i]));
+			    Luwrain.launchApplication(new org.luwrain.app.notepad.NotepadApp(args[i]));
 		}
 	    });
 

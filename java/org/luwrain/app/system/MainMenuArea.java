@@ -73,7 +73,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 	    }
 	    hotPointY++;
 	    hotPointX = 0;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -89,7 +89,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 	    }
 	    hotPointY--;
 	    hotPointX = 0;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -113,7 +113,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 		return true;
 	    }
 	    hotPointX++;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    if (hotPointX >= line.length())
 		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH); else
 		Speech.sayLetter(line.charAt(hotPointX));
@@ -139,7 +139,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 		return true;
 	    }
 	    hotPointX--;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    if (hotPointX < line.length())
 		Speech.sayLetter(line.charAt(hotPointX));
 	    return true;
@@ -221,7 +221,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 	    return false;
 	if (hotPointY >= items.length || !items[hotPointY].isAction())
 	{
-	    Dispatcher.message("Необходимо выбрать допустимый пункт меню");//FIXME:
+	    Luwrain.message("Необходимо выбрать допустимый пункт меню");//FIXME:
 	    return false;
 	}
 	selectedActionName = items[hotPointY].getActionName();

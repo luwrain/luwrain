@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-public class Dispatcher
+public class Luwrain
 {
     static private Environment environment;
 

@@ -47,6 +47,6 @@ public class MessageApp implements Application, MessageActions
 
     public void closeMessage()
     {
-	Dispatcher.closeApplication(instance);
+	Luwrain.closeApplication(instance);
     }
 }

@@ -63,7 +63,7 @@ hotPointY < 0 ||
 	hotPointX = 0;
 	if (introduce)
 	    introduceLine(hotPointY);
-	Dispatcher.onAreaNewHotPoint(this);
+	Luwrain.onAreaNewHotPoint(this);
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -86,7 +86,7 @@ hotPointY < 0 ||
 	    }
 	    hotPointY++;
 	    hotPointX = 0;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -102,7 +102,7 @@ hotPointY < 0 ||
 	    }
 	    hotPointY--;
 	    hotPointX = 0;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -127,7 +127,7 @@ hotPointY < 0 ||
 		return true;
 	    }
 	    hotPointX++;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    if (hotPointX >= line.length())
 		Speech.say(endOfLine, Speech.PITCH_HIGH); else
 		Speech.sayLetter(line.charAt(hotPointX));
@@ -154,7 +154,7 @@ hotPointY < 0 ||
 		return true;
 	    }
 	    hotPointX--;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    if (hotPointX < line.length())
 		Speech.sayLetter(line.charAt(hotPointX));
 	    return true;

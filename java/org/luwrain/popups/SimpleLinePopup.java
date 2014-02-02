@@ -84,7 +84,7 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
 		    return true;
 		}
 		pos--;
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 		if (pos < prefix.length())
 		    Speech.sayLetter(prefix.charAt(pos)); else
 		    if (pos == prefix.length())
@@ -102,7 +102,7 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
 		    return true;
 		}
 		pos++;
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 		if (pos < prefix.length())
 		    Speech.sayLetter(prefix.charAt(pos)); else
 		    if (pos == prefix.length())
@@ -120,7 +120,7 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
 		if (prefix.isEmpty())
 		    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
 		    Speech.sayLetter(prefix.charAt(0));
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 		return true;
 	    }
 
@@ -129,7 +129,7 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
 	    {
 		pos = prefix.length() + text.length() + 1;
 		Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 		return true;
 	    }
 	}
@@ -167,7 +167,7 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
 		public void setLine(String text)
 		{
 		    area.text = text;
-		    Dispatcher.onAreaNewContent(area);
+		    Luwrain.onAreaNewContent(area);
 		}
 		public int getHotPointX()
 		{
@@ -178,7 +178,7 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
 		public void setHotPointX(int value)
 		{
 		    area.pos = area.prefix.length() + value + 1;
-		    Dispatcher.onAreaNewHotPoint(area);
+		    Luwrain.onAreaNewHotPoint(area);
 		}
 		public String getTabSeq()
 		{

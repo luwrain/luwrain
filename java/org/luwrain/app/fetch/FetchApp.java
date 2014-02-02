@@ -48,17 +48,17 @@ public class FetchApp implements Application, FetchActions
     {
 	if (fetchThread != null && !fetchThread.done)
 	{
-	    Dispatcher.message(stringConstructor.processNotFinished());
+	    Luwrain.message(stringConstructor.processNotFinished());
 	    return;
 	}
-	Dispatcher.closeApplication(instance);
+	Luwrain.closeApplication(instance);
     }
 
     public void launchFetching()
     {
 	if (fetchThread != null && !fetchThread.done)
 	{
-	    Dispatcher.message(stringConstructor.processAlreadyRunning());
+	    Luwrain.message(stringConstructor.processAlreadyRunning());
 	    return;
 	}
 	fetchArea.clear();

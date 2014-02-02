@@ -115,21 +115,21 @@ children = null;
 
     public void gotoGroups()
     {
-	Dispatcher.setActiveArea(instance, groupArea);
+	Luwrain.setActiveArea(instance, groupArea);
     }
 
     public void gotoSummary()
     {
-	Dispatcher.setActiveArea(instance, summaryArea);
+	Luwrain.setActiveArea(instance, summaryArea);
     }
 
     public void gotoMessage()
     {
-	Dispatcher.setActiveArea(instance, messageArea);
+	Luwrain.setActiveArea(instance, messageArea);
     }
 
     public void closeMailReader()
     {
-	Dispatcher.closeApplication(instance);
+	Luwrain.closeApplication(instance);
     }
 }

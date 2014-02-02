@@ -43,7 +43,7 @@ public class Init
 	if (init())
 	{
 	    Environment environment = new Environment(cmdLine, registry, interaction);
-	    if (!Dispatcher.setEnvironmentObject(environment))
+	    if (!Luwrain.setEnvironmentObject(environment))
 		Log.fatal("init", "there is another environment object chosen as a default, probably there is another launch Luwrain instance"); else
 		environment.run();
 	}

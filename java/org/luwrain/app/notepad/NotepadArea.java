@@ -45,7 +45,7 @@ class NotepadArea extends EditArea
     public void setFileName(String fileName)
     {
 	this.fileName = fileName;
-	Dispatcher.onAreaNewName(this);
+	Luwrain.onAreaNewName(this);
     }
 
     public void onChange()

@@ -57,7 +57,7 @@ public class SimpleArea extends NavigateArea
     public void setContent(String[] content)
     {
 	this.content = content;
-	Dispatcher.onAreaNewContent(this);
+	Luwrain.onAreaNewContent(this);
 	fixHotPoint();
     }
 
@@ -87,7 +87,7 @@ public class SimpleArea extends NavigateArea
 	{
 	    content = new String[1];
 	    content[0] = line;
-	    Dispatcher.onAreaNewContent(this);
+	    Luwrain.onAreaNewContent(this);
 	    fixHotPoint();
 	    return;
 	}
@@ -96,7 +96,7 @@ public class SimpleArea extends NavigateArea
 	    newContent[i] = content[i];
 	newContent[newContent.length - 1] = line;
 	content = newContent;
-	Dispatcher.onAreaNewContent(this);
+	Luwrain.onAreaNewContent(this);
 	fixHotPoint();
     }
 
@@ -108,7 +108,7 @@ public class SimpleArea extends NavigateArea
 		return;
 	    content = new String[1];
 	    content[0] = line;
-	    Dispatcher.onAreaNewContent(this);
+	    Luwrain.onAreaNewContent(this);
 	    fixHotPoint();
 	    return;
 	}
@@ -121,7 +121,7 @@ public class SimpleArea extends NavigateArea
 	for(int i = index;i < content.length;i++)
 	    newContent[i + 1] = content[i];
 	content = newContent;
-	Dispatcher.onAreaNewContent(this);
+	Luwrain.onAreaNewContent(this);
 	fixHotPoint();
     }
 
@@ -137,14 +137,14 @@ public class SimpleArea extends NavigateArea
 	for(int i = index + 1;i < content.length;i++)
 	    newContent[i - 1] = content[i];
 	content = newContent;
-	Dispatcher.onAreaNewContent(this);
+	Luwrain.onAreaNewContent(this);
 	fixHotPoint();
     }
 
     public void clear()
     {
 	content = null;
-	Dispatcher.onAreaNewContent(this);
+	Luwrain.onAreaNewContent(this);
 	fixHotPoint();
     }
 
@@ -164,6 +164,6 @@ public class SimpleArea extends NavigateArea
 public void setName(String name)
 {
     this.name = name;
-    Dispatcher.onAreaNewName(this);
+    Luwrain.onAreaNewName(this);
 }
 }

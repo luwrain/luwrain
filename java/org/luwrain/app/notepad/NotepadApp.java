@@ -59,12 +59,12 @@ public class NotepadApp implements Application, NotepadActions
 	    {
 		e.printStackTrace();
 		Log.error("notepad", arg + ":" + e.getMessage());
-		Dispatcher.message(stringConstructor.errorOpeningFile());
+		Luwrain.message(stringConstructor.errorOpeningFile());
 		return false;
 	    }
 	} else
 	{
-	    Registry registry = Dispatcher.getRegistry();
+	    Registry registry = Luwrain.getRegistry();
 	    if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING)
 	    {
 		File dir = new File(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR));
@@ -89,13 +89,13 @@ public class NotepadApp implements Application, NotepadActions
 	try {
 	    if (area.getContent() != null)
 		writeTextFile(fileName, area.getContent());
-	    Dispatcher.message(stringConstructor.fileIsSaved());
+	    Luwrain.message(stringConstructor.fileIsSaved());
 	}
 	catch(IOException e)
 	{
 	    e.printStackTrace();
 	    Log.error("notepad", fileName + ":" + e.getMessage());
-	    Dispatcher.message(stringConstructor.errorSavingFile());
+	    Luwrain.message(stringConstructor.errorSavingFile());
 	}
     }
 
@@ -106,7 +106,7 @@ public class NotepadApp implements Application, NotepadActions
 
     public void closeNotepad()
     {
-	Dispatcher.closeApplication(instance);
+	Luwrain.closeApplication(instance);
     }
 
     private String[] readTextFile(String fileName) throws IOException

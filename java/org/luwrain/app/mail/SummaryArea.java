@@ -54,9 +54,9 @@ public class SummaryArea implements Area
 	    items = null;
 	    hotPointX = 0;
 	    hotPointY = 0;
-	    Dispatcher.onAreaNewContent(this);
-	    Dispatcher.onAreaNewHotPoint(this);
-	    Dispatcher.onAreaNewName(this);
+	    Luwrain.onAreaNewContent(this);
+	    Luwrain.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewName(this);
 	    return;
 	}
 	Vector<SummaryItem> v = new Vector<SummaryItem>();
@@ -103,9 +103,9 @@ public class SummaryArea implements Area
 	    items[k++] = it.next();
 	hotPointX = 0;//FIXME:
 	hotPointY = 0;
-	Dispatcher.onAreaNewContent(this);
-	Dispatcher.onAreaNewHotPoint(this);
-	Dispatcher.onAreaNewName(this);
+	Luwrain.onAreaNewContent(this);
+	Luwrain.onAreaNewHotPoint(this);
+	Luwrain.onAreaNewName(this);
     }
 
     private void introduceItem(int index)
@@ -179,7 +179,7 @@ public class SummaryArea implements Area
 		hotPointX = 0;
 		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
 	    }
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -196,7 +196,7 @@ public class SummaryArea implements Area
 		hotPointX = 0; else
 		hotPointX = 2;
 	    introduceItem(hotPointY);
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 

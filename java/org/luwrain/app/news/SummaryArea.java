@@ -41,15 +41,15 @@ public class SummaryArea implements Area
 	    this.articles = null;
 	    hotPointX = 0;
 	    hotPointY = 0;
-	    Dispatcher.onAreaNewContent(this);
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewContent(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return;
 	}
 	this.articles = articles;
 	hotPointX = 2;
 	hotPointY = 0;
-	Dispatcher.onAreaNewContent(this);
-	Dispatcher.onAreaNewHotPoint(this);
+	Luwrain.onAreaNewContent(this);
+	Luwrain.onAreaNewHotPoint(this);
     }
 
     public int getLineCount()
@@ -117,10 +117,10 @@ public class SummaryArea implements Area
 	    catch (Exception e)
 	    {
 		//FIXME:Logging;
-		Dispatcher.message("FIXME:Error updating");
+		Luwrain.message("FIXME:Error updating");
 		return true;
 	    }
-	    Dispatcher.onAreaNewContent(this);
+	    Luwrain.onAreaNewContent(this);
 	    return true;
 	}
 
@@ -137,12 +137,12 @@ public class SummaryArea implements Area
 	    {
 		hotPointX = 0;
 		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 		return true;
 	    }
 	    Speech.say(constructLineForSpeech(articles[hotPointY]));
 	    hotPointX = 2;
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -157,7 +157,7 @@ public class SummaryArea implements Area
 	    hotPointY--;
 	    hotPointX = 2;
 	    Speech.say(constructLineForSpeech(articles[hotPointY]));
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -174,12 +174,12 @@ public class SummaryArea implements Area
 	    {
 		hotPointX = 0;
 		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 		return true;
 	    }
 	    Speech.say(constructLine(articles[hotPointY]));
 	    hotPointX = 2;
-		Dispatcher.onAreaNewHotPoint(this);
+		Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -194,7 +194,7 @@ public class SummaryArea implements Area
 	    hotPointY--;
 	    hotPointX = 2;
 	    Speech.say(constructLine(articles[hotPointY]));
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -211,7 +211,7 @@ public class SummaryArea implements Area
 	    if (hotPointX - 2 >= line.length())
 		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH); else
 		Speech.sayLetter(line.charAt(hotPointX - 2));
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -228,7 +228,7 @@ public class SummaryArea implements Area
 	    hotPointX--;
 	    String line = constructLine(articles[hotPointY]);
 	    Speech.sayLetter(line.charAt(hotPointX - 2));
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 

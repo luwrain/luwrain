@@ -46,28 +46,28 @@ public class CommanderApp implements Application, CommanderActions
 
     public void gotoLeftPanel()
     {
-	Dispatcher.setActiveArea(instance, leftPanel);
+	Luwrain.setActiveArea(instance, leftPanel);
     }
 
     public void gotoRightPanel()
     {
-	Dispatcher.setActiveArea(instance, rightPanel);
+	Luwrain.setActiveArea(instance, rightPanel);
     }
 
     public void gotoTasks()
     {
-	Dispatcher.setActiveArea(instance, tasks);
+	Luwrain.setActiveArea(instance, tasks);
     }
 
     public void closeCommander()
     {
-	Dispatcher.closeApplication(instance);
+	Luwrain.closeApplication(instance);
     }
 
     public void openFiles(String[] fileNames)
     {
 	Log.debug("commander", "need to open " + fileNames.length + " files");
 	if (fileNames != null && fileNames.length > 0)
-	    Dispatcher.open(fileNames);
+	    Luwrain.open(fileNames);
     }
 }

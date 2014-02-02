@@ -130,7 +130,7 @@ public class TreeArea implements Area
 		fillChildren(item.node);
 		items = expandNode(root, 0);
 		Speech.say("Раскрыто", Speech.PITCH_HIGH);
-		Dispatcher.onAreaNewContent(this);
+		Luwrain.onAreaNewContent(this);
 		return true;
 	    }
 	    if (item.type == TreeAreaItem.OPENED)
@@ -138,7 +138,7 @@ public class TreeArea implements Area
 		item.node.children = null;
 		items = expandNode(root, 0);
 		Speech.say("Свёрнуто", Speech.PITCH_HIGH);
-		Dispatcher.onAreaNewContent(this);
+		Luwrain.onAreaNewContent(this);
 		return true;
 	    }
 	    return false;
@@ -163,7 +163,7 @@ public class TreeArea implements Area
 		hotPointX = (item.level + 1) * 2;
 		Speech.say(constructLineForSpeech(item));
 	    }
-	    Dispatcher.onAreaNewHotPoint(this );
+	    Luwrain.onAreaNewHotPoint(this );
 	    return true;
 	}
 
@@ -179,7 +179,7 @@ public class TreeArea implements Area
 	    TreeAreaItem item = items[hotPointY];
 	    hotPointX = (item.level + 1) * 2;
 	    Speech.say(constructLineForSpeech(item));
-	    Dispatcher.onAreaNewHotPoint(this );
+	    Luwrain.onAreaNewHotPoint(this );
 	    return true;
 	}
 
@@ -202,7 +202,7 @@ public class TreeArea implements Area
 		hotPointX = (item.level + 1) * 2;
 		Speech.say(item.title);
 	    }
-	    Dispatcher.onAreaNewHotPoint(this );
+	    Luwrain.onAreaNewHotPoint(this );
 	    return true;
 	}
 
@@ -218,7 +218,7 @@ public class TreeArea implements Area
 	    TreeAreaItem item = items[hotPointY];
 	    hotPointX = (item.level + 1) * 2;
 	    Speech.say(item.title);
-	    Dispatcher.onAreaNewHotPoint(this );
+	    Luwrain.onAreaNewHotPoint(this );
 	    return true;
 	}
 
@@ -240,7 +240,7 @@ public class TreeArea implements Area
 	    if (hotPointX >= item.title.length() + bound)
 		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH); else
 		Speech.sayLetter(item.title.charAt(hotPointX - bound));
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -260,7 +260,7 @@ public class TreeArea implements Area
 		hotPointX = item.title.length() + bound - 1; else
 		hotPointX--;
 	    Speech.sayLetter(item.title.charAt(hotPointX - bound));
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 

@@ -50,7 +50,7 @@ public class PanelArea implements Area
 	this.stringConstructor = stringConstructor;
 	this.actions = actions;
 	this.side = side;
-	Registry registry = Dispatcher.getRegistry();
+	Registry registry = Luwrain.getRegistry();
 	if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) != Registry.STRING)
 	{
 	    Log.warning("commander", "registry hasn\'t value with user home directory");
@@ -145,7 +145,7 @@ public class PanelArea implements Area
 	    }
 	    hotPointX = 2;
 	    hotPointY++;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    introduceItem(hotPointY, event.withControl());
 	    return true;
 	}
@@ -162,7 +162,7 @@ public class PanelArea implements Area
 	    }
 	    hotPointX = 2;
 	    hotPointY--;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    introduceItem(hotPointY, event.withControl());
 	    return true;
 	}
@@ -191,7 +191,7 @@ public class PanelArea implements Area
 	    hotPointX++;
 	    if (hotPointX < 2)
 		hotPointX = 2;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    if (hotPointX < name.length() + 2)
 	    Speech.sayLetter(name.charAt(hotPointX - 2)); else
 		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
@@ -223,7 +223,7 @@ public class PanelArea implements Area
 	    hotPointX--;
 	    if (hotPointX > name.length()  + 2)
 		hotPointX = name.length() + 2;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    Speech.sayLetter(name.charAt(hotPointX - 2));
 	    return true;
 	}
@@ -233,7 +233,7 @@ public class PanelArea implements Area
 	    event.getCommand() == KeyboardEvent.PAGE_DOWN &&
 	    !event.withAlt() && !event.withShift())
 	{
-	    final int visibleHeight = Dispatcher.getAreaVisibleHeight(this);
+	    final int visibleHeight = Luwrain.getAreaVisibleHeight(this);
 	    if (visibleHeight < 1)
 	    {
 		Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page down key");
@@ -246,7 +246,7 @@ public class PanelArea implements Area
 	    if (hotPointY < items.size())
 	    hotPointX = 2; else
 		hotPointX = 0;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -255,7 +255,7 @@ public class PanelArea implements Area
 	    event.getCommand() == KeyboardEvent.PAGE_UP &&
 	    !event.withAlt() && !event.withShift())
 	{
-	    final int visibleHeight = Dispatcher.getAreaVisibleHeight(this);
+	    final int visibleHeight = Luwrain.getAreaVisibleHeight(this);
 	    if (visibleHeight < 1)
 	    {
 		Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page up key");
@@ -268,7 +268,7 @@ public class PanelArea implements Area
 	    if (hotPointY < items.size())
 	    hotPointX = 2; else
 		hotPointX = 0;
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -289,7 +289,7 @@ public class PanelArea implements Area
 		    Speech.sayLetter(items.get(hotPointY).getFileName().charAt(hotPointX - 2));
 	    } else
 		introduceItem(hotPointY, false);
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -315,7 +315,7 @@ public class PanelArea implements Area
 		    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
 		}
 	    }
-	    Dispatcher.onAreaNewHotPoint(this);
+	    Luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 
@@ -444,9 +444,9 @@ case EnvironmentEvent.INTRODUCE:
 	    if (hotPointY >= items.size())
 		hotPointY = 0;
 	}
-	Dispatcher.onAreaNewContent(this);
-	Dispatcher.onAreaNewHotPoint(this);
-	Dispatcher.onAreaNewName(this);
+	Luwrain.onAreaNewContent(this);
+	Luwrain.onAreaNewHotPoint(this);
+	Luwrain.onAreaNewName(this);
     }
 
     static private Vector<DirItem> constructDirItems(File f)

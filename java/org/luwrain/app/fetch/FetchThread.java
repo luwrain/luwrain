@@ -122,6 +122,6 @@ public class FetchThread implements Runnable
     private void message(String text)
     {
 	if (text != null && !text.trim().isEmpty())
-	    Dispatcher.enqueueEvent(new MessageLineEvent(messageArea, text));
+	    Luwrain.enqueueEvent(new MessageLineEvent(messageArea, text));
     }
 }

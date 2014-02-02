@@ -47,7 +47,7 @@ public class PreviewApp implements Application, PreviewActions
 	if (arg != null)
 	    if (!handleToPreview(arg))
 	    {
-		Dispatcher.message(stringConstructor.errorOpeningFile());
+		Luwrain.message(stringConstructor.errorOpeningFile());
 		return false;
 	    }
 	this.instance = instance;
@@ -77,6 +77,6 @@ public class PreviewApp implements Application, PreviewActions
 
     public void closePreview()
     {
-	Dispatcher.closeApplication(instance);
+	Luwrain.closeApplication(instance);
     }
 }

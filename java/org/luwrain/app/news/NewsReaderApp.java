@@ -61,22 +61,22 @@ public class NewsReaderApp implements Application, NewsReaderActions
 
     public void closeNewsReader()
     {
-	Dispatcher.closeApplication(instance);
+	Luwrain.closeApplication(instance);
     }
 
     public void gotoGroups()
     {
-	Dispatcher.setActiveArea(instance, groupArea);
+	Luwrain.setActiveArea(instance, groupArea);
     }
 
     public void gotoArticles()
     {
-	Dispatcher.setActiveArea(instance, summaryArea);
+	Luwrain.setActiveArea(instance, summaryArea);
     }
 
     public void gotoView()
     {
-	Dispatcher.setActiveArea(instance, viewArea);
+	Luwrain.setActiveArea(instance, viewArea);
     }
 
     private boolean 	fillGroups()
@@ -86,15 +86,15 @@ public class NewsReaderApp implements Application, NewsReaderActions
 	    Log.error("news", "No news storing object");
 	    groups = null;
 	    groupModel.setItems(new StoredNewsGroup[0]);
-	    Dispatcher.onAreaNewContent(groupArea);
-	    Dispatcher.onAreaNewHotPoint(groupArea);
+	    Luwrain.onAreaNewContent(groupArea);
+	    Luwrain.onAreaNewHotPoint(groupArea);
 	    return false;
 	}
 	try {
 	    groups = newsStoring.loadNewsGroups();
 	    groupModel.setItems(groups);
-	    Dispatcher.onAreaNewContent(groupArea);
-	    Dispatcher.onAreaNewHotPoint(groupArea);
+	    Luwrain.onAreaNewContent(groupArea);
+	    Luwrain.onAreaNewHotPoint(groupArea);
 	    return true;
 	}
 	catch(Exception e)
@@ -103,8 +103,8 @@ public class NewsReaderApp implements Application, NewsReaderActions
 	    Log.error("news", "could not construct list of groups:" + e.getMessage());
 	    groups = null;
 	    groupModel.setItems(new StoredNewsGroup[0]);
-	    Dispatcher.onAreaNewContent(groupArea);
-	    Dispatcher.onAreaNewHotPoint(groupArea);
+	    Luwrain.onAreaNewContent(groupArea);
+	    Luwrain.onAreaNewHotPoint(groupArea);
 	    return false;
 	}
     }
@@ -118,7 +118,7 @@ index < 0 ||
 	    Log.warning("news", "trying to open non-existing group with index " + index + " or groups list is not prepared");
 	    return;
 	}
-	Dispatcher.message("go");
+	Luwrain.message("go");
 	StoredNewsArticle articles[];
 	try {
 	    articles = newsStoring.loadNewsArticlesInGroupWithoutRead(groups[index]);
@@ -129,7 +129,7 @@ index < 0 ||
 	{
 	    e.printStackTrace();
 	    Log.error("news", "could not get list of articles in group:" + groups[index].getName());
-	    Dispatcher.message(stringConstructor.errorReadingArticles());
+	    Luwrain.message(stringConstructor.errorReadingArticles());
 	    summaryArea.show(null);
 	    return;
 	}

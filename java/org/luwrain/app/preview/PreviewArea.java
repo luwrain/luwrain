@@ -40,8 +40,8 @@ public class PreviewArea extends NavigateArea
 	    return;
 	this.filter = filter;
 	setHotPoint(0, 0);
-	Dispatcher.onAreaNewContent(this);
-	Dispatcher.onAreaNewName(this);
+	Luwrain.onAreaNewContent(this);
+	Luwrain.onAreaNewName(this);
     }
 
     public int getLineCount()
