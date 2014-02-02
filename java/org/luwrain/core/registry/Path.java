@@ -144,4 +144,16 @@ public class Path
 	    return false;
 	return isDir()?isValidAbsoluteDir():isValidAbsoluteValue();
     }
+
+    public String toString()
+    {
+	String res = absolute?"/":"";
+	if (dirItems != null)
+	    for(String s: dirItems)
+		if (s != null)
+		    res += s + "/";
+	if (valueName != null)
+	    res += valueName;
+	return res;
+    }
 }

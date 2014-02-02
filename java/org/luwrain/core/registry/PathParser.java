@@ -16,50 +16,59 @@
 
 package org.luwrain.core.registry;
 
+import java.util.*;
+
 public class PathParser
 {
     public static Path parse(String str)
     {
-	//FIXME:
-	return null;
+	if (str == null || str.isEmpty())
+	    return null;
+	ArrayList<String> items = new ArrayList<String>();
+	String current = "";
+	for(int i = 0;i < str.length();++i)
+	{
+	    final char c = str.charAt(i);
+	    if (c == '/')
+	    {
+		if (!current.isEmpty())
+		{
+		    items.add(current);
+		    current = "";
+		}
+		continue;
+	    }
+	    current += c;
+	}
+	if (items.isEmpty() && current.isEmpty())
+	    return null;
+	return new Path(str.charAt(0) == '/', items.toArray(new String[items.size()]), current);
     }
 
-    public static Path parseAsDir(String str)
+    public static Path parseAsDirectory(String str)
     {
-	//FIXME:
-	return null;
-}
-
-    //FIXME:Maybe it is a good idea to remove any slash doubling;
-/*
-    private String getDirectoryPath(String path)
-    {
-	if (path == null)
-	    return new String();
-	String res = path.trim();
-	if (res.isEmpty() || res.equals("/"))
-	    return "/";
-	int ending = res.length() - 1;
-	while (ending > 0 && res.charAt(ending) != '/')
-	    ending--;
-	if (ending < 1)
-	    return "/";
-	return res.substring(0, ending);
+	if (str == null || str.isEmpty())
+	    return null;
+	ArrayList<String> items = new ArrayList<String>();
+	String current = "";
+	for(int i = 0;i < str.length();++i)
+	{
+	    final char c = str.charAt(i);
+	    if (c == '/')
+	    {
+		if (!current.isEmpty())
+		{
+		    items.add(current);
+		    current = "";
+		}
+		continue;
+	    }
+	    current += c;
+	}
+	if (!current.isEmpty())
+	    items.add(current);
+	if (items.isEmpty())
+	    return null;
+	return new Path(str.charAt(0) == '/', items.toArray(new String[items.size()]), "");
     }
-
-    private String getValueName(String path)
-    {
-	if (path == null)
-	    return new String();
-	String res = path.trim();
-	if (res.isEmpty() || res.equals("/"))
-	    return new String();
-	int ending = res.length() - 1;
-	while (ending > 0 && res.charAt(ending) != '/')
-	    ending--;
-	if (res.charAt(ending) == '/')
-	    return res.substring(ending + 1, res.length());
-	return res.substring(ending, res.length());
-    }
-*/
 }

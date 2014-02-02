@@ -24,16 +24,20 @@ import org.luwrain.core.Log;
 
 public class XmlReader
 {
-    private Directory root;
+    private String fileName;
+    private XmlReaderOutput output;
 
-    public XmlReader(Directory root)
+    public XmlReader(String fileName, XmlReaderOutput output)
     {
-	this.root = root;
+	this.fileName = fileName;
+	this.output = output;
     }
 
-    public void readFile(String fileName)  throws SAXException, IOException, ParserConfigurationException 
+    public void readFile()  throws SAXException, IOException, ParserConfigurationException 
     {
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+	if (fileName == null || fileName.trim().isEmpty())
+	    return;
+	BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
 	try {
 	    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 	    Document document = builder.parse(new InputSource(in));
@@ -45,16 +49,16 @@ public class XmlReader
 		    continue;
 		Element current = (Element)node;
 		if (current.getTagName().equals("regdir"))
-		    processRegDir(fileName, current); else
-		    Log.warning("registry", "parsing " + fileName + ":unknown tag:" + current.getTagName());
+		    onRegDir(current); else
+		    warning("unknown tag:" + current.getTagName());
 	    }
 	}
 	finally {
-	    in.close();;
+	    in.close();
 	}
     }
 
-    private void processRegDir(String fileName, Element e) throws IOException
+    private void onRegDir(Element e) throws IOException
     {
 	if (e == null)
 	    return;
@@ -62,14 +66,14 @@ public class XmlReader
 		Node n = nameMap.getNamedItem("name");
 		if (n == null)
 		{
-		    Log.error("registry", "parsing " + fileName + ":the tag \'regdir\' has no name, skipping");
+		    error("the tag \'regdir\' has no name, skipping");
 		    return;
 		}
 		final String dirPath = n.getTextContent();
-		Directory dir = getDirectory(fileName, dirPath);
+		Directory dir = output.findDirectoryForXmlReader(dirPath);
 		if (dir == null)
 		{
-		    Log.error("registry", "parsing " + fileName + ":the ambiguous directory name '" + n.getTextContent() + "\'");
+		    error("directory may not have path \'" + dirPath + "\'");
 		    return;
 		}
 		NodeList nodes = e.getChildNodes();
@@ -86,80 +90,62 @@ public class XmlReader
 		Node typeNode = attr.getNamedItem("type");
 		if (nameNode == null)
 		{
-		    Log.error("registry", "parsing " + fileName + ":the value in directory \'" + dirPath + "\' has no name");
+		    error("there is the value in directory \'" + dirPath + "\' without a name");
 		    continue;
 		}
 		if (typeNode == null)
 		{
-		    Log.error("registry", "parsing " + fileName + ":value in directory \'" + dirPath + "\' has no name");
+		    error("the value \'" + nameNode.getTextContent() + "\' in directory \'" + dirPath + "\' has no type");
 		    continue;
 		}
-		processRegValue(fileName, dir, dirPath,
+		onRegValue(dir, dirPath,
 				nameNode.getTextContent().trim(), typeNode.getTextContent().trim(), current.getTextContent().trim());
 	    } else
-		Log.warning("registry", "parsing " + fileName + ":unknown tag:" + current.getTagName());
+		warning("unknown tag:" + current.getTagName());
 	}
     }
 
-    private void 		processRegValue(String fileName,
-						Directory dir, 
+    private void 		onRegValue(Directory dir, 
 						String dirPath,
 						String name,
 						String type,
 						String value)
     {
-	if (fileName == null || dir == null ||
+	if (dir == null || dirPath == null ||
 	    name == null || type == null || value == null)
 	    return;
-	if (name.isEmpty())
+	if (name.trim().isEmpty())
 	{
-		Log.error("registry", "parsing " + fileName + ":directory \'" + dirPath + "\' has a value with an empty name");
+		error("directory \'" + dirPath + "\' has a value with an empty name");
 		return;
 	}
 	if (type.isEmpty())
 	{
-		Log.error("registry", "parsing " + fileName + ":directory \'" + dirPath + "\' has a value with an empty type");
-		return;
-	}
-	if (type.equals("string"))
-	{
-	    Value v = dir.getValue(name);
-	    //FIXME:Warning if was not string;
-	    v.type = Registry.STRING;
-	    v.strValue = value;
+	    error("directory \'" + dirPath + "\' has a value with an empty type");
 	    return;
 	}
-	if (type.equals("bool"))
-	{
-	    boolean res = false;
-	    if (value.equals("TRUE") || value.equals("True") || value.equals("true"))
-		res = true; else 
-		if (value.equals("FALSE") || value.equals("False") || value.equals("false"))
-		    res = false; else
+	int typeCode;
+	if (type.trim().equals("string"))
+	    typeCode = Registry.STRING; else
+	    if (type.trim().equals("int"))
+		typeCode = Registry.INTEGER; else
+		if (type.trim().equals("bool"))
+		    typeCode = Registry.BOOLEAN; else
 		{
-		    Log.error("registry", "parsing " + fileName + ":directory \'" + dirPath + "\' has boolean option \'" + name + "\' with an invalid value \'" + value + "\'");
+		    error("value \'" + name + "\' in directory \'" + dirPath + "\' has unknown type \'" + type + "\'");
 		    return;
 		}
-	    Value v = dir.getValue(name);
-	    v.type = Registry.BOOLEAN;
-	    //FIXME:Warning if was not boolean;
-	    v.boolValue = res;
-	    return;
-	}
-	if (type.equals("int"))
-	{
-	    int res = Integer.parseInt(value);
-	    Value v = dir.getValue(name);
-	    //FIXME:Warning if was not integer;
-	    v.type = Registry.INTEGER;
-	    v.intValue = res;
-	    return;
-	}
+	if (!output.onNewXmlValue(dir, name, typeCode, value))
+	    error("the string \'" + value + "\' for value \'" + name + "\' in directory \'" + dirPath + "\' of type \'" + type + "\' has been rejected");
     }
 
-    private Directory getDirectory(String fileName, String pathStr)
+    private void error(String msg)
     {
-	//FIXME:
-	return null;
+	Log.error("registry", "parsing " + fileName + ":" + msg);
+    }
+
+    private void warning(String msg)
+    {
+	Log.warning("registry", "parsing " + fileName + ":" + msg);
     }
 }

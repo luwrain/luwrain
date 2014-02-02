@@ -19,30 +19,42 @@ package org.luwrain.core.registry;
 import  org.luwrain.core.Log;
 import java.sql.SQLException;
 
-public class Registry
+public class Registry implements XmlReaderOutput
 {
     public static final int INVALID = 0;
     public static final int INTEGER = 1;
     public static final int STRING = 2;
     public static final int BOOLEAN = 3;
 
-    private Directory root;
+    private Directory root = new Directory("");
     private VariableStorage storage;
 
-    public boolean init(String[] confFiles, java.sql.Connection jdbcCon)
+    public boolean initWithConfFiles(String[] confFiles)
     {
-	if (confFiles == null || jdbcCon == null)
-	{
-	    Log.error("registry", "invalid parameters for initialization procedure");
+	if (confFiles == null)
 	    return false;
-	}
-	for(int i = 0;i < confFiles.length;++i)
-	    if (confFiles[i] == null || confFiles[i].isEmpty())
-	    {
-		Log.error("registry", "an empty configuration file name  for initialization procedure");
-		return false;
+	for(String s: confFiles)
+	{
+	    if (s == null || s.isEmpty())
+		continue;
+	    Log.debug("init", "reading configuration file:" + s);
+	    try {
+		XmlReader reader = new XmlReader(s, this);
+		reader.readFile();
 	    }
-	//FIXME:init static;
+	    catch(Exception e)
+	    {
+		Log.error("registry", "error while the config reading:" + e.getMessage());
+	    return false;
+	    }
+	}
+	return true;
+    }
+
+    public boolean initWithJdbc(java.sql.Connection jdbcCon)
+    {
+	if (jdbcCon == null)
+	    return false;
 	this.storage = new VariableStorage(jdbcCon);
 	return true;
     }
@@ -82,16 +94,113 @@ public class Registry
 	return false;
     }
 
+    public boolean setStaticString(String pathStr, String value)
+    {
+	if (pathStr == null || pathStr.isEmpty() || value == null)
+	    return false;
+	Path path = PathParser.parse(pathStr);
+	if (path == null || !path.isValidAbsoluteValue())
+	    return false;
+	Directory dir = ensureStaticDirectoryExists(path);
+	if (dir == null)
+	    return false;
+	Value v = new Value();
+	v.name = path.getValueName();
+	v.type = STRING;
+	v.strValue = value;
+	dir.setValue(v);
+	return true;
+    }
+
     public boolean setInteger(String pathStr, int value)
     {
 	//FIXME:
 	return false;
     }
 
+    public boolean setStaticInteger(String pathStr, int value)
+    {
+	if (pathStr == null || pathStr.isEmpty())
+	    return false;
+	Path path = PathParser.parse(pathStr);
+	if (path == null || !path.isValidAbsoluteValue())
+	    return false;
+	Directory dir = ensureStaticDirectoryExists(path);
+	if (dir == null)
+	    return false;
+	Value v = new Value();
+	v.name = path.getValueName();
+	v.type = INTEGER;
+	v.intValue = value;
+	dir.setValue(v);
+	return true;
+    }
+
     public boolean setBoolean(String pathStr, boolean value)
     {
 	//FIXME:
 	return false;
+    }
+
+    public boolean setStaticBoolean(String pathStr, boolean value)
+    {
+	if (pathStr == null || pathStr.isEmpty())
+	    return false;
+	Path path = PathParser.parse(pathStr);
+	if (path == null || !path.isValidAbsoluteValue())
+	    return false;
+	Directory dir = ensureStaticDirectoryExists(path);
+	if (dir == null)
+	    return false;
+	Value v = new Value();
+	v.name = path.getValueName();
+	v.type = BOOLEAN;
+	v.boolValue = value;
+	dir.setValue(v);
+	return true;
+    }
+
+    public Directory findDirectoryForXmlReader(String pathStr)
+    {
+	if (pathStr == null || pathStr.isEmpty())
+	    return null;
+	Path path = PathParser.parseAsDirectory(pathStr);
+	if (path == null)
+	return null;
+	return ensureStaticDirectoryExists(path);
+    }
+
+    public boolean onNewXmlValue(Directory dir,
+			      String valueName,
+			      int type,
+			      String valueStr)
+    {
+	if (valueName == null || valueName.trim().isEmpty() ||
+	    dir == null || valueStr == null)
+	    return false;
+	Value value = new Value();
+	value.type = type;
+	value.name = valueName;
+	switch(type)
+	{
+	case STRING:
+	    value.strValue = valueStr;
+	    break;
+	case BOOLEAN:
+	    if (valueStr.equals("TRUE") || valueStr.equals("True") || valueStr.equals("true"))
+		value.boolValue = true; else 
+		if (valueStr.equals("FALSE") || valueStr.equals("False") || valueStr.equals("false"))
+		    value.boolValue = false; else
+		    return false;
+	    break;
+	case INTEGER:
+	    value.intValue = Integer.parseInt(valueStr);//FIXME:Error handling;
+	    break;
+	default:
+	    return false;
+	}
+	dir.setValue(value);
+	return true;
     }
 
     private Value findStaticValue(Path path)
@@ -134,9 +243,31 @@ public class Registry
 
     private Value findValue(String pathStr)
     {
-	if (pathStr == null || pathStr.trim().isEmpty())
+	if (pathStr == null || pathStr.isEmpty())
 	    return null;
 	Path path = PathParser.parse(pathStr);
 	return findValue(path);
+    }
+
+    private Directory ensureStaticDirectoryExists(Path path)
+    {
+	if (path == null || !path.isAbsolute())
+	    return null;
+	Directory dir = root;
+	if (dir == null)
+	    dir = root = new Directory("");
+	for(String s: path.getDirItems())
+	{
+	    if (s.trim().isEmpty())
+		continue;
+	    Directory d = dir.getSubdir(s);
+	    if (d == null)
+	    {
+		d = new Directory(s);
+		dir.addSubdir(d);
+	    }
+	    dir = d;
+	}
+	return dir;
     }
 }

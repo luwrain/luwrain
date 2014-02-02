@@ -22,6 +22,12 @@ public class CoreRegistryValues
     public static final String INSTANCE_USER_HOME_DIR = "/org/luwrain/instance/user-home-dir";
     public static final String INSTANCE_DATA_DIR = "/org/luwrain/instance/data-dir";
 
+    //Registry;
+    public static final String REGISTRY_JDBC_URL = "/org/luwrain/registry/jdbc/url";
+    public static final String REGISTRY_JDBC_DRIVER = "/org/luwrain/registry/jdbc/driver";
+    public static final String REGISTRY_JDBC_LOGIN = "/org/luwrain/registry/jdbc/login";
+    public static final String REGISTRY_JDBC_PASSWD = "/org/luwrain/registry/jdbc/passwd";
+
     //Main menu;
     public static final String MAIN_MENU_CONTENT = "/org/luwrain/main-menu/content";
 

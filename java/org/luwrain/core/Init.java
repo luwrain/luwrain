@@ -16,8 +16,9 @@
 
 package org.luwrain.core;
 
-import java.util.Vector;
-import java.io.File;
+import java.util.*;
+import java.io.*;
+import java.sql.*;
 import org.luwrain.core.registry.Registry;
 import org.luwrain.pim.PimManager;
 import org.luwrain.mmedia.EnvironmentSounds;
@@ -28,16 +29,17 @@ public class Init
     private static final String  PREFIX_DATA_DIR = "--data-dir=";
     private static final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
 
-    public static String[] commandLine;
+    public static String[] cmdLine;
     private static Interaction interaction = new org.luwrain.interaction.AwtInteraction();
     private static Registry registry;
+    private static Connection jdbcConRegistry, jdbcConMail, jdbcConNews;
 
     public static void go(String[] args)
     {
-	commandLine = args;
-	//	Log.debug("init", "command line has " + commandLine.length + " options");
-	//	for(int i = 0;i < commandLine.length;i++)
-	//	    Log.debug("init", "option " + (i + 1) + ":" + commandLine[i]);
+	cmdLine = args;
+	Log.debug("init", "command line has " + cmdLine.length + " arguments:");
+	for(String s: cmdLine)
+	    Log.debug("init", s);
 	if (init())
 	    Environment.run(interaction, args);
 	exit();
@@ -45,21 +47,119 @@ public class Init
 
     private static boolean init()
     {
-	if (!initRegistry())
+	if (!initRegistryFirstStage())
 	    return false;
+	if (!initJdbcForRegistry())
+	    Log.warning("init", "jdbc initialization failed, registry access are restricted");
+	if (!initRegistrySecondStage())
+	    Log.warning("init", "second stage of registry initialization failed, registry data is incomplete");
 	if (!initLanguages())
 	    return false;
 	if (!initSpeech())
 	    return false;
 	if (!initPim())
-	    return false;
+	    Log.warning("init", "PIM initialization failed");
 	if (!initDBus())
-	    return false;
+	    Log.warning("init", "D-Bus connection initialization failed, some system services will be disabled");
 	if (!initInteraction())
 	    return false;
 	if (!initEnvironmentSounds())
 	    return false;
 	return true;
+    }
+
+    private static boolean initRegistryFirstStage()
+    {
+	registry = new Registry();
+	if (!registry.initWithConfFiles(getConfList()))
+	{
+	    Log.fatal("init", "Stopping initialization due to configuration file error");
+	    return false;
+	}
+	for(String s: cmdLine)
+	{
+	    if (s == null)
+		continue;
+	    if (s.startsWith(PREFIX_DATA_DIR))
+	    {
+		String rest = s.substring(PREFIX_DATA_DIR.length());
+		registry.setStaticString(CoreRegistryValues.INSTANCE_DATA_DIR, rest);
+		Log.info("init", "data directory path is set to " + rest);
+		continue;
+	    }
+	    if (s.startsWith(PREFIX_USER_HOME_DIR))
+	    {
+		String rest = s.substring(PREFIX_USER_HOME_DIR.length());
+		registry.setStaticString(CoreRegistryValues.INSTANCE_USER_HOME_DIR, rest);
+		Log.info("init", "user home directory path is set to " + rest);
+		continue;
+	    }
+	}
+	return true;
+    }
+
+    private static boolean initJdbcForRegistry()
+    {
+	if (registry.getTypeOf(CoreRegistryValues.REGISTRY_JDBC_URL) != Registry.STRING)
+	{
+	    Log.error("init", "no registry value \'" + CoreRegistryValues.REGISTRY_JDBC_URL + "\' needed for proper registry work");
+	    return false;
+	}
+	if (registry.getTypeOf(CoreRegistryValues.REGISTRY_JDBC_DRIVER) != Registry.STRING)
+	{
+	    Log.error("init", "no registry value \'" + CoreRegistryValues.REGISTRY_JDBC_DRIVER + "\' needed for proper registry work");
+	    return false;
+	}
+	if (registry.getTypeOf(CoreRegistryValues.REGISTRY_JDBC_LOGIN) != Registry.STRING)
+	{
+	    Log.error("init", "no registry value \'" + CoreRegistryValues.REGISTRY_JDBC_LOGIN + "\' needed for proper registry work");
+	    return false;
+	}
+	if (registry.getTypeOf(CoreRegistryValues.REGISTRY_JDBC_PASSWD) != Registry.STRING)
+	{
+	    Log.error("init", "no registry value \'" + CoreRegistryValues.REGISTRY_JDBC_PASSWD + "\' needed for proper registry work");
+	    return false;
+	}
+	final String url = registry.getString(CoreRegistryValues.REGISTRY_JDBC_URL);
+	final String driver = registry.getString(CoreRegistryValues.REGISTRY_JDBC_DRIVER);
+	final String login = registry.getString(CoreRegistryValues.REGISTRY_JDBC_LOGIN);
+	final String passwd = registry.getString(CoreRegistryValues.REGISTRY_JDBC_PASSWD);
+	if (url.trim().isEmpty())
+	{
+	    Log.error("init", "the registry value at " + CoreRegistryValues.REGISTRY_JDBC_URL + " is empty");
+	    return false;
+	}
+	if (login.trim().isEmpty())
+	{
+	    Log.error("init", "the registry value at " + CoreRegistryValues.REGISTRY_JDBC_LOGIN + " is empty");
+	    return false;
+	}
+	Log.debug("init", "ready to establish the jdbc connection for registry ");
+	Log.debug("init", "driver: " + driver);
+	Log.debug("init", "URL: " + url);
+	Log.debug("init", "login: " + login);
+	Log.debug("init", "passwd: " + passwd.length() + " characters");
+	try {
+	    Class.forName (driver).newInstance ();
+	    jdbcConRegistry = DriverManager.getConnection (url, login, passwd);
+	}
+	catch(Exception e)
+	{
+	    Log.error("init", "jdbc connection problem:" + e.getMessage());
+	    return false;
+	}
+	Log.debug("init", "jdbc connection for registry is obtained");
+	return true;
+    }
+
+    private static boolean initRegistrySecondStage()
+    {
+	if (jdbcConRegistry == null)
+	{
+	    Log.error("init", "skipping second stage registry initialization (no jdbc connection)");
+	    return false;
+	}
+	return registry.initWithJdbc(jdbcConRegistry);
     }
 
     private static boolean initLanguages()
@@ -72,55 +172,12 @@ public class Init
 	final String lang = registry.getString(CoreRegistryValues.LANGS_CURRENT);
     if (lang.equals("ru"))
     {
-	Log.info("init", "using Russian language for user interface");
+	Log.info("init", "using Russian language in user interface");
 	Langs.setCurrentLang(new org.luwrain.langs.ru.Language());
 	return true;
     }
     Log.warning("init", "unknown language \'" + lang + "\', using English as a default");
     return true;
-    }
-
-    private static boolean initRegistry()
-    {
-	Vector<String> confList = getConfList();
-	try {
-	    for(int i = 0;i < confList.size();i++)
-	    {
-		Log.debug("init", "reading configuration file:" + confList.get(i));
-		//FIXME:		registry.readFile(confList.get(i));
-	    }
-	}
-	catch(Exception e)
-	{
-	    Log.fatal("init", "an error occurred while reading registry data:" + e.getMessage());
-	    return false;
-	}
-
-	for(int i = 0;i < commandLine.length;i++)
-	{
-	    if (commandLine[i].startsWith(PREFIX_DATA_DIR))
-	    {
-		String rest = commandLine[i].substring(PREFIX_DATA_DIR.length());
-		registry.setString(CoreRegistryValues.INSTANCE_DATA_DIR, rest);
-		Log.info("init", "data directory path is set to " + rest);
-		continue;
-	    }
-	    if (commandLine[i].startsWith(PREFIX_USER_HOME_DIR))
-	    {
-		String rest = commandLine[i].substring(PREFIX_USER_HOME_DIR.length());
-		registry.setString(CoreRegistryValues.INSTANCE_USER_HOME_DIR, rest);
-		Log.info("init", "user home directory path is set to " + rest);
-		continue;
-	    }
-	}
-	/*FIXME:
-	if (!Registry.setInstance(registry))
-	{
-	    Log.fatal("init", "registry instance installation failed, is it second attempt to launch Luwrain?");
-	    return false;
-	}
-	*/
-	return true;
     }
 
     private static boolean initSpeech()
@@ -344,32 +401,32 @@ public class Init
 	System.exit(0);
     }
 
-    static private Vector<String> getConfList()
+    static private String[] getConfList()
     {
-	Vector<String> res = new Vector<String>();
-	for(int i = 0;i < commandLine.length;i++)
+	ArrayList<String> res = new ArrayList<String>();
+	for(String s: cmdLine)
 	{
-	    if (!commandLine[i].startsWith(PREFIX_CONF_LIST))
+	    if (s == null || !s.startsWith(PREFIX_CONF_LIST))
 		continue;
-	    String rest = commandLine[i].substring(PREFIX_CONF_LIST.length());
-	    String s = "";
+	    String rest = s.substring(PREFIX_CONF_LIST.length());
+	    String ss = "";
 	    for(int k = 0;k < rest.length();k++)
 	    {
 		if (rest.charAt(k) != ':')
 		{
-		    s += rest.charAt(k);
+		    ss += rest.charAt(k);
 		    continue;
 		}
-		s = s.trim();
-		if (!s.isEmpty())
-		    res.add(s);
-		s = "";
+		ss = ss.trim();
+		if (!ss.isEmpty())
+		    res.add(ss);
+		ss = "";
 	    }
-	    s = s.trim();
-	    if (!s.isEmpty())
-		res.add(s);
+	    ss = ss.trim();
+	    if (!ss.isEmpty())
+		res.add(ss);
 	}
-	return res;
+	return res.toArray(new String[res.size()]);
     }
 
     public static void main(String[] args)
