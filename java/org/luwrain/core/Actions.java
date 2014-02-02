@@ -19,22 +19,21 @@ package org.luwrain.core;
 import java.util.*;
 import org.luwrain.core.events.*;
 
-public class Actions
+class Actions
 {
     private Vector<Action> actions = new Vector<Action>();
 
     public void add(Action action)
     {
-	actions.add(action);
+	if (action != null && action.getName() != null && !action .getName().trim().isEmpty())
+	    actions.add(action);
     }
 
     public boolean run(String actionName)
     {
-	Iterator<Action> it = actions.iterator();
-	while(it.hasNext())
+	for(Action act: actions)
 	{
-	    Action act = it.next();
-	    if (!act.getName().equals(actionName))
+	    if (!act.getName().trim().equals(actionName.trim()))
 		continue;
 	    act.onAction();
 	    return true;
@@ -42,161 +41,177 @@ public class Actions
 	return false;
     }
 
-    public void fillWithStandartActions()
+    public void fillWithStandardActions(Environment env)
     {
+	if (env == null)
+	    return;
+	final Environment environment = env;
 	//Main menu;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "main-menu";
 		}
 		public void onAction()
 		{
-		    Environment.mainMenu();
+		    e.mainMenu();
 		}
 	    });
 
 	//Quit;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "quit";
 		}
 		public void onAction()
 		{
-		    Environment.quit();
+		    e.quit();
 		}
 	    });
 
 	//OK;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "ok";
 		}
 		public void onAction()
 		{
-		    Environment.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.OK));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.OK));
 		}
 	    });
 
 	//Cancel;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "cancel";
 		}
 		public void onAction()
 		{
-		    Environment.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CANCEL));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CANCEL));
 		}
 	    });
 
 	//Close;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "close";
 		}
 		public void onAction()
 		{
-		    Environment.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CLOSE));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CLOSE));
 		}
 	    });
 
 	//Save;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "save";
 		}
 		public void onAction()
 		{
-		    Environment.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.SAVE));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.SAVE));
 		}
 	    });
 
 	//Refresh;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "refresh";
 		}
 		public void onAction()
 		{
-		    Environment.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REFRESH));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REFRESH));
 		}
 	    });
 
 	//Describe;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "describe";
 		}
 		public void onAction()
 		{
-		    Environment.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.DESCRIBE));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.DESCRIBE));
 		}
 	    });
 
 	//Help;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "help";
 		}
 		public void onAction()
 		{
-		    Environment.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.HELP));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.HELP));
 		}
 	    });
 
 	//Switch to next App;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "switch-next-app";
 		}
 		public void onAction()
 		{
-		    Environment.switchNextApp();
+		    e.switchNextApp();
 		}
 	    });
 
 	//Switch to next area;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "switch-next-area";
 		}
 		public void onAction()
 		{
-		    Environment.switchNextArea();
+		    e.switchNextArea();
 		}
 	    });
 
 	//Increase font size;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "increase-font-size";
 		}
 		public void onAction()
 		{
-		    Environment.increaseFontSize();
+		    e.increaseFontSize();
 		}
 	    });
 
 	//Decrease font size;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "decrease-font-size";
 		}
 		public void onAction()
 		{
-		    Environment.decreaseFontSize();
+		    e.decreaseFontSize();
 		}
 	    });
 

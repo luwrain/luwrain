@@ -25,40 +25,50 @@ import org.luwrain.mmedia.EnvironmentSounds;
 
 public class Environment
 {
-    private static String[] cmdLineArgs = null;
-    private static Interaction interaction;
-    private static EventQueue eventQueue = new EventQueue();
-    private static Actions actions = new Actions();
-    private static org.luwrain.app.system.SystemApp systemApp = new org.luwrain.app.system.SystemApp();
-    private static InstanceManager instanceManager = new InstanceManager();
-    private static ApplicationRegistry applications = new ApplicationRegistry();
-    private static PopupRegistry popups = new PopupRegistry();
-    private static ScreenContentManager screenContentManager;
-    private static WindowManager windowManager;
-    private static GlobalKeys globalKeys = new GlobalKeys();
-    private static AppWrapperRegistry appWrappers = new AppWrapperRegistry();
-    private static FileTypes fileTypes = new FileTypes(appWrappers);
-    private static boolean needForIntroduction = false;
-    private static Registry registry;
+    private String[] cmdLine;
+    private Registry registry;
+    private Interaction interaction;
+    private EventQueue eventQueue = new EventQueue();
+    private InstanceManager instanceManager = new InstanceManager();
+    private ApplicationRegistry applications = new ApplicationRegistry();
+    private PopupRegistry popups = new PopupRegistry();
+    private ScreenContentManager screenContentManager;
+    private WindowManager windowManager;
+    private GlobalKeys globalKeys = new GlobalKeys();
+    private Actions actions = new Actions();
+    private AppWrapperRegistry appWrappers = new AppWrapperRegistry();
+    private org.luwrain.app.system.SystemApp systemApp = new org.luwrain.app.system.SystemApp();
 
-    //Start/stop;
+    private FileTypes fileTypes = new FileTypes(appWrappers);
+    private boolean needForIntroduction = false;
 
-    static public void  run(Interaction intr, String[] args)
+    public Environment(String[] cmdLine,
+		       Registry registry,
+		       Interaction interaction)
     {
-	cmdLineArgs = args;
-	interaction = intr;
-	actions.fillWithStandartActions();
-	appWrappers.fillWithStandardWrappers();
-	screenContentManager = new ScreenContentManager(applications, popups, systemApp);
-	windowManager = new WindowManager(interaction, screenContentManager);
-	interaction.startInputEventsAccepting();
-	    EnvironmentSounds.play(EnvironmentSounds.STARTUP);
-		eventLoop(new InitialEventLoopStopCondition());
-		interaction.stopInputEventsAccepting();
-		Init.exit();
+	this.cmdLine = cmdLine;
+	this.registry = registry;
+	this.interaction = interaction;
     }
 
-    static public void quit()
+    public void  run()
+    {
+	if (screenContentManager != null || windowManager != null)
+	{
+	    Log.fatal("environment", "the environment is tried to launch twice but that is prohibited");
+	    return;
+	}
+	screenContentManager = new ScreenContentManager(applications, popups, systemApp);
+	windowManager = new WindowManager(interaction, screenContentManager);
+	actions.fillWithStandardActions(this);
+	appWrappers.fillWithStandardWrappers();
+	interaction.startInputEventsAccepting();
+	EnvironmentSounds.play(EnvironmentSounds.STARTUP);//FIXME:
+		eventLoop(new InitialEventLoopStopCondition());
+		interaction.stopInputEventsAccepting();
+    }
+
+    public void quit()
     {
 	InitialEventLoopStopCondition.shouldContinue = false;
     }
@@ -66,7 +76,7 @@ public class Environment
     //Application management;
 
     //Always full screen;
-    static public void launchApplication(Application app)
+    public void launchApplication(Application app)
     {
 	if (app == null)
 	    return;
@@ -110,7 +120,7 @@ public class Environment
 	introduceActiveArea();
     }
 
-    static public void closeApplication(Object instance)
+    public void closeApplication(Object instance)
     {
 	if (instance == null)
 	    return;
@@ -129,7 +139,7 @@ public class Environment
 	introduceActiveArea();
     }
 
-    public static void switchNextApp()
+    public void switchNextApp()
     {
 	if (screenContentManager.isPopupAreaActive())
 	{
@@ -142,7 +152,7 @@ public class Environment
 	introduceActiveArea();
     }
 
-    public static void switchNextArea()
+    public void switchNextArea()
     {
 	screenContentManager.activateNextArea();
 	windowManager.redraw();
@@ -151,7 +161,7 @@ public class Environment
 
     //Events;
 
-    static public void eventLoop(EventLoopStopCondition stopCondition)
+    public void eventLoop(EventLoopStopCondition stopCondition)
     {
 	while(stopCondition.continueEventLoop())
 	{
@@ -172,11 +182,10 @@ public class Environment
 	    if (needForIntroduction && stopCondition.continueEventLoop())
 		introduceActiveArea();
 	    needForIntroduction = false;
-
 		}
     }
 
-    static private void onKeyboardEvent(KeyboardEvent event)
+    private void onKeyboardEvent(KeyboardEvent event)
     {
 	if (event == null)
 	    return;
@@ -226,7 +235,7 @@ public class Environment
 	}
     }
 
-    static public void onEnvironmentEvent(EnvironmentEvent event)
+    public void onEnvironmentEvent(EnvironmentEvent event)
     {
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
@@ -258,14 +267,14 @@ public class Environment
 	}
     }
 
-    static public void enqueueEvent(Event e)
+    public void enqueueEvent(Event e)
     {
 	eventQueue.putEvent(e);
     }
 
-    //Popup area processing;
+    //Popups;
 
-    static void goIntoPopup(Application app,
+    public void goIntoPopup(Application app,
 			    Area area,
 			    int popupPlace,
 			    EventLoopStopCondition stopCondition)
@@ -292,7 +301,7 @@ public class Environment
 	windowManager.redraw();
     }
 
-    public static void runActionPopup()
+    public void runActionPopup()
     {
 	org.luwrain.popups.SimpleLinePopup popup = new org.luwrain.popups.SimpleLinePopup(new Object(), systemApp.stringConstructor().runActionTitle(), systemApp.stringConstructor().runAction(), "");
 	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup.closing);
@@ -302,7 +311,7 @@ public class Environment
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
     }
 
-    static public void setActiveArea(Object instance, Area area)
+    public void setActiveArea(Object instance, Area area)
     {
 	if (instance == null || area == null)
 	    return;
@@ -315,31 +324,31 @@ public class Environment
 	windowManager.redraw();
     }
 
-    static public void onAreaNewHotPoint(Area area)
+    public void onAreaNewHotPoint(Area area)
     {
 	if (area != null && area == screenContentManager.getActiveArea())
 	    windowManager.redrawArea(area);
     }
 
-    static public void onAreaNewContent(Area area)
+    public void onAreaNewContent(Area area)
     {
 	windowManager.redrawArea(area);
     }
 
-    static public void onAreaNewName(Area area)
+    public void onAreaNewName(Area area)
     {
 	windowManager.redrawArea(area);
     }
 
     //May return -1;
-    static public int getAreaVisibleHeight(Area area)
+    public int getAreaVisibleHeight(Area area)
     {
 	if (area == null)
 	    return -1;
 	return windowManager.getAreaVisibleHeight(area);
     }
 
-    static public void message(String text)
+    public void message(String text)
     {
 	if (text == null || text.trim().isEmpty())
 	    return;
@@ -352,7 +361,7 @@ public class Environment
 	interaction.endDrawSession();
     }
 
-    public static void mainMenu()
+    public void mainMenu()
     {
 	//FIXME:No double opening;
 	MainMenuArea mainMenuArea = systemApp.createMainMenuArea(getMainMenuItems());
@@ -365,7 +374,7 @@ public class Environment
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
     }
 
-    static private String[] getMainMenuItems()
+    private String[] getMainMenuItems()
     {
 	if (registry.getTypeOf(CoreRegistryValues.MAIN_MENU_CONTENT) != Registry.STRING)
 	{
@@ -390,7 +399,7 @@ public class Environment
 	return a.toArray(new String[a.size()]);
     }
 
-    static public void introduceActiveArea()
+    public void introduceActiveArea()
     {
 	needForIntroduction = false;
 	Area activeArea = screenContentManager.getActiveArea();
@@ -405,7 +414,7 @@ public class Environment
 	Speech.say(activeArea.getName());
     }
 
-    static public void introduceActiveAreaNoEvent()
+    public void introduceActiveAreaNoEvent()
     {
 	needForIntroduction = false;
 	Area activeArea = screenContentManager.getActiveArea();
@@ -418,23 +427,27 @@ public class Environment
 	Speech.say(activeArea.getName());
     }
 
-
-    static public void increaseFontSize()
+    public void increaseFontSize()
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() * 2); 
 	windowManager.redraw();
 	message(Langs.staticValue(Langs.FONT_SIZE) + " " + interaction.getFontSize());
     }
 
-    static public void decreaseFontSize()
+    public void decreaseFontSize()
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() / 2); 
 	windowManager.redraw();
 	message(Langs.staticValue(Langs.FONT_SIZE) + " " + interaction.getFontSize());
     }
 
-    static public void openFileNames(String[] fileNames)
+    public void openFileNames(String[] fileNames)
     {
 	fileTypes.openFileNames(fileNames);
+    }
+
+    public Registry  getRegistry()
+    {
+	return registry;
     }
 }

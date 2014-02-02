@@ -29,23 +29,28 @@ public class Init
     private static final String  PREFIX_DATA_DIR = "--data-dir=";
     private static final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
 
-    public static String[] cmdLine;
-    private static Interaction interaction = new org.luwrain.interaction.AwtInteraction();
-    private static Registry registry;
-    private static Connection jdbcConRegistry, jdbcConMail, jdbcConNews;
+    private String[] cmdLine;
+    private Interaction interaction = new org.luwrain.interaction.AwtInteraction();
+    private Registry registry;
+    private Connection jdbcConRegistry, jdbcConMail, jdbcConNews;
 
-    public static void go(String[] args)
+    public void go(String[] args)
     {
-	cmdLine = args;
+	this.cmdLine = args;
 	Log.debug("init", "command line has " + cmdLine.length + " arguments:");
 	for(String s: cmdLine)
 	    Log.debug("init", s);
 	if (init())
-	    Environment.run(interaction, args);
+	{
+	    Environment environment = new Environment(cmdLine, registry, interaction);
+	    if (!Dispatcher.setEnvironmentObject(environment))
+		Log.fatal("init", "there is another environment object chosen as a default, probably there is another launch Luwrain instance"); else
+		environment.run();
+	}
 	exit();
     }
 
-    private static boolean init()
+    private boolean init()
     {
 	if (!initRegistryFirstStage())
 	    return false;
@@ -68,7 +73,7 @@ public class Init
 	return true;
     }
 
-    private static boolean initRegistryFirstStage()
+    private boolean initRegistryFirstStage()
     {
 	registry = new Registry();
 	if (!registry.initWithConfFiles(getConfList()))
@@ -98,7 +103,7 @@ public class Init
 	return true;
     }
 
-    private static boolean initJdbcForRegistry()
+    private boolean initJdbcForRegistry()
     {
 	if (registry.getTypeOf(CoreRegistryValues.REGISTRY_JDBC_URL) != Registry.STRING)
 	{
@@ -152,7 +157,7 @@ public class Init
 	return true;
     }
 
-    private static boolean initRegistrySecondStage()
+    private boolean initRegistrySecondStage()
     {
 	if (jdbcConRegistry == null)
 	{
@@ -162,7 +167,7 @@ public class Init
 	return registry.initWithJdbc(jdbcConRegistry);
     }
 
-    private static boolean initLanguages()
+    private boolean initLanguages()
     {
 	if (registry.getTypeOf(CoreRegistryValues.LANGS_CURRENT) != Registry.STRING)
 	{
@@ -180,7 +185,7 @@ public class Init
     return true;
     }
 
-    private static boolean initSpeech()
+    private boolean initSpeech()
     {
 	//FIXME:
 	SpeechBackEndVoiceMan backend = new SpeechBackEndVoiceMan();
@@ -189,7 +194,7 @@ public class Init
 	return true;
     }
 
-    private static boolean initEnvironmentSounds()
+    private boolean initEnvironmentSounds()
     {
 	if (registry.getTypeOf(CoreRegistryValues.INSTANCE_DATA_DIR) != Registry.STRING)
 	{
@@ -207,7 +212,7 @@ public class Init
 	return true;
     }
 
-    static private void setSoundFileName(File dataDir,
+    private void setSoundFileName(File dataDir,
 				  String valueName,
 				  int soundId)
     {
@@ -226,7 +231,7 @@ public class Init
 	EnvironmentSounds.setSoundFile(soundId, f.getAbsolutePath());
     }
 
-    private static boolean initPim()
+    private boolean initPim()
     {
 	//Mail;
 	//FIXME:
@@ -271,7 +276,7 @@ public class Init
 	return true;
     }
 
-    private static boolean initDBus()
+    private boolean initDBus()
     {
 	//FIXME:
 	/*
@@ -287,7 +292,7 @@ public class Init
 	return true;
     }
 
-    private static boolean initInteraction()
+    private boolean initInteraction()
     {
 	InteractionParams params = new InteractionParams();
 	String backend = "awt";
@@ -389,19 +394,19 @@ public class Init
 	return interaction.init(params);
     }
 
-    private static void shutdown()
+    private void shutdown()
     {
 	interaction.close();
 	//FIXME:	org.luwrain.dbus.DBus.shutdown();
     }
 
-    public static void exit()
+    public void exit()
     {
 	shutdown();
 	System.exit(0);
     }
 
-    static private String[] getConfList()
+    private String[] getConfList()
     {
 	ArrayList<String> res = new ArrayList<String>();
 	for(String s: cmdLine)
@@ -431,6 +436,7 @@ public class Init
 
     public static void main(String[] args)
     {                    
-	go(args);
+	Init init = new Init();
+	init.go(args);
     }
 }

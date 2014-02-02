@@ -137,7 +137,7 @@ public class AwtInteraction implements Interaction
 	default:
 	    return;
 	}
-	org.luwrain.core.Environment.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
+	org.luwrain.core.Dispatcher.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
     }
 
     private void onKeyRelease(KeyEvent event)
@@ -186,10 +186,10 @@ public class AwtInteraction implements Interaction
 	    code = KeyboardEvent.TAB;
 	    break;
 	default:
-	    org.luwrain.core.Environment.enqueueEvent(new KeyboardEvent(false, 0, event.getKeyChar(), shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
+	    org.luwrain.core.Dispatcher.enqueueEvent(new KeyboardEvent(false, 0, event.getKeyChar(), shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
 	    return;
 	}
-	org.luwrain.core.Environment.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
+	org.luwrain.core.Dispatcher.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
     }
 
     public boolean init(InteractionParams params)
