@@ -43,6 +43,8 @@ public class Language implements org.luwrain.core.Language
 	    return new FetchStringConstructor();
 	if (id.equals("preview"))
 	    return new PreviewStringConstructor();
+	if (id.equals("control"))
+	    return new ControlStringConstructor();
 	return null;
     }
 
@@ -86,6 +88,8 @@ public class Language implements org.luwrain.core.Language
 	    return "New message";
 	if (actionName.trim().equals("preview"))
 	    return "Documents preview";
+	if (actionName.trim().equals("control"))
+	    return "Control panel";
 	return "";
     }
 }

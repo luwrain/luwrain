@@ -305,5 +305,18 @@ class Actions
 		    Luwrain.launchApplication(app);
 		}
 	    });
+
+	//control;
+	add(new Action() {
+		public String getName()
+		{
+		    return "control";
+		}
+		public void onAction()
+		{
+		    Application app = new org.luwrain.app.control.ControlApp();
+		    Luwrain.launchApplication(app);
+		}
+	    });
     }
 }
