@@ -47,7 +47,7 @@ public class NewsReaderApp implements Application, NewsReaderActions
 	groupArea = new GroupArea(this, stringConstructor, groupModel);
 	summaryArea = new SummaryArea(this, stringConstructor);
 	viewArea = new ViewArea(this, stringConstructor);
-	newsStoring = PimManager.createNewsStoring();
+	newsStoring = Luwrain.getPimManager().getNewsStoring();
 	//FIXME:if (newsStoring == null)
 	fillGroups();
 	this.instance = instance;

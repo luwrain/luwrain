@@ -89,7 +89,7 @@ children = null;
 	if (o == null)
 	    return false;
 	stringConstructor = (MailReaderStringConstructor)o;
-	mailStoring = PimManager.createMailStoring();
+	mailStoring = Luwrain.getPimManager().getMailStoring();
 	if (mailStoring == null)
 	{
 	    //FIXME:

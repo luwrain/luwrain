@@ -16,14 +16,22 @@
 
 package org.luwrain.pim;
 
-public class StoredNewsGroupRegistry implements StoredNewsGroup
+import org.luwrain.core.registry.Registry;
+
+class StoredNewsGroupRegistry implements StoredNewsGroup
 {
-    public int id = 0;
-    public String name = new String();
+    public Registry registry;
+    public int id;
+    public String name = "";
     public String[] urls = new String[0];
-    public boolean hasMediaContent = false;
+    public String mediaContentType = "";
     public int orderIndex = 0;
     public int expireAfterDays = 30;
+
+    public StoredNewsGroupRegistry(Registry registry)
+    {
+	this.registry = registry;
+    }
 
     public String getName()
     {
@@ -32,27 +40,46 @@ public class StoredNewsGroupRegistry implements StoredNewsGroup
 
     public void setName(String name) throws Exception
     {
-	//FIXME:
+	ensureValid();
+	if (name == null || name.trim().isEmpty())
+	    throw new ValidityException("Trying to set empty name of the news group");
+	RegistryUpdateWrapper.setString(registry, NewsStoringRegistry.GROUPS_PATH + id + "/title", name);
+	this.name = name;
     }
 
     public String[] getUrls()
     {
-	return urls;
+	return urls != null?urls:new String[0];
     }
 
     public void setUrls(String[] urls) throws Exception
     {
-	//FIXME:
+	ensureValid();
+	if (urls == null)
+	    throw new ValidityException("Trying to set to null the list of URLs of the news group \'" + name + "\' (id=" + id + ")");
+	String[] oldValues = registry.getValues(NewsStoringRegistry.GROUPS_PATH + id);
+	if (oldValues != null)
+	    for(String s: oldValues)
+		if (s.indexOf("url") == 0)
+		    RegistryUpdateWrapper.deleteValue(registry, NewsStoringRegistry.GROUPS_PATH + id + "/" + s);
+	for(int i = 0;i < urls.length;++i)
+	    if (!urls[i].trim().isEmpty())
+		RegistryUpdateWrapper.setString(registry, NewsStoringRegistry.GROUPS_PATH + id + "/url" + i, urls[i]);
+	this.urls = urls;
     }
 
-    public boolean hasMediaContent()
+    public String getMediaContentType()
     {
-	return hasMediaContent;
+	return mediaContentType != null?mediaContentType:"";
     }
 
-    public void setHasMediaContent(boolean value) throws Exception
+    public void setMediaContentType(String value) throws Exception
     {
-	//FIXME:
+	ensureValid();
+	if (value == null)
+	    throw new ValidityException("Trying to set null value to media content type of the news group \'" + name + "\' (id=" + id + ")");
+	RegistryUpdateWrapper.setString(registry, NewsStoringRegistry.GROUPS_PATH + id + "/media-content-type", value);
+	this.mediaContentType = value;
     }
 
     public int getOrderIndex()
@@ -62,7 +89,9 @@ public class StoredNewsGroupRegistry implements StoredNewsGroup
 
     public void setOrderIndex(int index) throws Exception
     {
-	//FIXME:
+	ensureValid();
+	RegistryUpdateWrapper.setInteger(registry, NewsStoringRegistry.GROUPS_PATH + id + "/order-index", index);
+	this.orderIndex = index;
     }
 
     public int getExpireAfterDays()
@@ -72,11 +101,19 @@ public class StoredNewsGroupRegistry implements StoredNewsGroup
 
     public void setExpireAfterDays(int count) throws Exception
     {
-	//FIXME:
+	ensureValid();
+	RegistryUpdateWrapper.setInteger(registry, NewsStoringRegistry.GROUPS_PATH + id + "/expire-days", count);
+	this.expireAfterDays = count;
     }
 
     public String toString()
     {
 	return getName();
+    }
+
+    private void ensureValid() throws ValidityException
+    {
+	if (id < 0)
+	    throw new ValidityException("Trying to change state of a news group which is not associated with the storage");
     }
 }

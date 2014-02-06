@@ -20,54 +20,86 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.registry.Registry;
 
-public abstract class NewsStoringRegistry implements NewsStoring
+abstract class NewsStoringRegistry implements NewsStoring
 {
-    private Registry registry;//FIXME:;
+    public final static String GROUPS_PATH = "/org/luwrain/news/groups/";
+
+    private Registry registry;
+
+    public NewsStoringRegistry(Registry registry)
+    {
+	this.registry = registry;
+    }
 
     public StoredNewsGroup[] loadNewsGroups() throws Exception
     {
-	//FIXME:Should be completely rewritten;
-	String[] names = splitNames("cnews:lenta-ru:forbs:rt:reuters:shanghai-daily:scmp:gulf-news:addthingsd");
-	if (names == null || names.length < 1)
-	    return new StoredNewsGroupRegistry[0];
-	StoredNewsGroupRegistry[] groups = new StoredNewsGroupRegistry[names.length];
-	for(int i = 0;i < names.length;i++)
+	String[] groupsNames = registry.getDirectories(GROUPS_PATH);
+	if (groupsNames == null || groupsNames.length == 0)
+	    return new StoredNewsGroup[0];
+	ArrayList<StoredNewsGroup> groups = new ArrayList<StoredNewsGroup>();
+	for(String s: groupsNames)
 	{
-	    StoredNewsGroupRegistry g = new StoredNewsGroupRegistry();
-	    groups[i] = g;
-	    g.id = i;
-	    if (registry.getTypeOf("/org/luwrain/news/groups/" + names[i] + "/title") == Registry.STRING)
-		g.name = registry.getString("/org/luwrain/news/groups/" + names[i] + "/title");
-	    ArrayList<String> urls = new ArrayList<String>();
-	    int k = 1;
-	    while(registry.getTypeOf("/org/luwrain/news/groups/" + names[i] + "/url" + k) == Registry.STRING)
-	    {
-		urls.add(registry.getString("/org/luwrain/news/groups/" + names[i] + "/url" + k));
-		k++;
-	    }
-g.urls = urls.toArray(new String[urls.size()]);
+	    StoredNewsGroupRegistry g = readNewsGroup(s);
+	    if (g != null)
+		groups.add(g);
 	}
-	return groups;
+	return groups.toArray(new StoredNewsGroup[groups.size()]);
     }
 
-    private static String[] splitNames(String names)
+    private StoredNewsGroupRegistry readNewsGroup(String name)
     {
-	ArrayList<String> a = new ArrayList<String>();
-	String s = "";
-	for(int i = 0;i < names.length();i++)
-	{
-	    if (names.charAt(i) == ':')
-	    {
-		s = s.trim();
-		if (!s.isEmpty())
-		    a.add(s);
-		s = "";;
-	    } else
-		s += names.charAt(i);
+	if (name == null || name.isEmpty())
+	    return null;
+	StoredNewsGroupRegistry g = new StoredNewsGroupRegistry(registry);
+	try {
+	    g.id = Integer.parseInt(name.trim());
 	}
-	s = s.trim();
-	if (!s.isEmpty())
-	    a.add(s);
-	return a.toArray(new String[a.size()]);
+	catch(NumberFormatException e)
+	{
+	    Log.warning("pim", "registry directory \'" + GROUPS_PATH + "\' contains illegal subdirectory \'" + name + "\'");
+	    return null;
+	}
+	final String path = GROUPS_PATH + name;
+	if (registry.getTypeOf(path + "/title") != Registry.STRING)
+	{
+	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'title\'");
+	    return null;
+	}
+	if (registry.getTypeOf(path + "/expire-days") != Registry.INTEGER)
+	{
+	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'expire-days\'");
+	    return null;
+	}
+	if (registry.getTypeOf(path + "/order-index") != Registry.INTEGER)
+	{
+	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'order-index\'");
+	    return null;
+	}
+	if (registry.getTypeOf(path + "/media-content-type") != Registry.STRING)
+	{
+	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'sort-media-content-type\'");
+	    return null;
+	}
+	g.name = registry.getString(path + "/title");
+	g.expireAfterDays = registry.getInteger(path + "expire-days");
+	g.orderIndex = registry.getInteger(path + "order-index");
+	g.mediaContentType = registry.getString(path + "media-content-type");
+	String[] values = registry.getValues(path);
+	if (values == null)
+	    return null;
+	ArrayList<String> urls = new ArrayList<String>();
+	for(String s: values)
+	{
+	    if (s == null || s.indexOf("url") < 0)
+		continue;
+	    if (registry.getTypeOf(path + "/" + s) != Registry.STRING)
+	    {
+		Log.warning("pim", "registry directory \'" + path + "\' has incorrect value \'" + s + "\'");
+		return null;
+	    }
+	    urls.add(registry.getString(path + "/" + s));
+	}
+	g.urls = urls.toArray(new String[urls.size()]);
+	return g;
     }
 }

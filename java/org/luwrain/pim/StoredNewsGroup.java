@@ -22,8 +22,8 @@ public interface StoredNewsGroup
     void setName(String name) throws Exception;
     String[] getUrls();
     void setUrls(String[] urls) throws Exception;
-    boolean hasMediaContent();
-    void setHasMediaContent(boolean value) throws Exception;
+    String getMediaContentType();
+    void setMediaContentType(String value) throws Exception;
     int getOrderIndex();
     void setOrderIndex(int index) throws Exception;
     int getExpireAfterDays();

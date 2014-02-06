@@ -20,6 +20,7 @@ import java.util.concurrent.*;
 import java.util.*;
 import org.luwrain.core.registry.Registry;
 import org.luwrain.app.system.MainMenuArea;
+import org.luwrain.pim.PimManager;
 import org.luwrain.core.events.*;
 import org.luwrain.mmedia.EnvironmentSounds;
 
@@ -34,6 +35,7 @@ public class Environment
     private PopupRegistry popups = new PopupRegistry();
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
+    private PimManager pimManager;
     private GlobalKeys globalKeys = new GlobalKeys();
     private Actions actions = new Actions();
     private AppWrapperRegistry appWrappers = new AppWrapperRegistry();
@@ -44,11 +46,13 @@ public class Environment
 
     public Environment(String[] cmdLine,
 		       Registry registry,
-		       Interaction interaction)
+		       Interaction interaction,
+		       PimManager pimManager)
     {
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	this.interaction = interaction;
+	this.pimManager = pimManager;
     }
 
     public void  run()
@@ -449,5 +453,10 @@ public class Environment
     public Registry  getRegistry()
     {
 	return registry;
+    }
+
+    public PimManager getPimManager()
+    {
+	return pimManager;
     }
 }

@@ -16,24 +16,10 @@
 
 package org.luwrain.pim;
 
-import java.sql.*;
-
-public class Link
+public class RegistryUpdateException extends Exception
 {
-    public static final int STORAGE_JDBC = 1;
-    public static final int STORAGE_LDAP = 2;
-
-    public int type = STORAGE_JDBC;
-    public String url;
-    public String login;
-    public String passwd;
-    public String driver;
-    public Connection jdbcCon;
-
-    public Connection jdbcConnect() throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException
+    public RegistryUpdateException(String message)
     {
-	Class.forName (driver).newInstance ();
-	jdbcCon = DriverManager.getConnection (url, login, passwd);
-	return jdbcCon;
+	super(message);
     }
 }

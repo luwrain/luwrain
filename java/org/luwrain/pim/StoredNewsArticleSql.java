@@ -21,7 +21,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 
-public class StoredNewsArticleSql implements StoredNewsArticle
+class StoredNewsArticleSql implements StoredNewsArticle
 {
     Connection con = null;
     public long id = 0;

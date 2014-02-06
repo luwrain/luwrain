@@ -122,6 +122,13 @@ static public     void closeApplication(Object instance)
 	return environment.getRegistry();
     }
 
+    public static org.luwrain.pim.PimManager getPimManager()
+    {
+	if (!checkEnvironmentInstance())
+	    return null;
+	return environment.getPimManager();
+    }
+
 static private boolean checkEnvironmentInstance()
     {
 	if (environment != null)

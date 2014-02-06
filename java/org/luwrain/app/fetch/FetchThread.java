@@ -45,7 +45,7 @@ public class FetchThread implements Runnable
     private void fetchNews()
     {
 	try {
-	    NewsStoring newsStoring = PimManager.createNewsStoring();//FIXME:In independent connection;
+	    NewsStoring newsStoring = Luwrain.getPimManager().getNewsStoring();//FIXME:In independent connection;
 	    if (newsStoring == null)
 	    {
 		Log.error("fetch", "No news storing object");

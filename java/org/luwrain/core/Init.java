@@ -30,9 +30,10 @@ public class Init
     private static final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
 
     private String[] cmdLine;
-    private Interaction interaction = new org.luwrain.interaction.AwtInteraction();
     private Registry registry;
-    private Connection jdbcConRegistry, jdbcConMail, jdbcConNews;
+    private Interaction interaction = new org.luwrain.interaction.AwtInteraction();
+    private PimManager pimManager;
+    private Connection jdbcConRegistry;
 
     public void go(String[] args)
     {
@@ -42,7 +43,7 @@ public class Init
 	    Log.debug("init", s);
 	if (init())
 	{
-	    Environment environment = new Environment(cmdLine, registry, interaction);
+	    Environment environment = new Environment(cmdLine, registry, interaction, pimManager);
 	    if (!Luwrain.setEnvironmentObject(environment))
 		Log.fatal("init", "there is another environment object chosen as a default, probably there is another launch Luwrain instance"); else
 		environment.run();
@@ -63,7 +64,7 @@ public class Init
 	if (!initSpeech())
 	    return false;
 	if (!initPim())
-	    Log.warning("init", "PIM initialization failed");
+	    Log.warning("init", "PIM initialization failed or incomplete");
 	if (!initDBus())
 	    Log.warning("init", "D-Bus connection initialization failed, some system services will be disabled");
 	if (!initInteraction())
@@ -233,47 +234,8 @@ public class Init
 
     private boolean initPim()
     {
-	//Mail;
-	//FIXME:
-	//News;
-	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_TYPE) != Registry.STRING)
-	{
-	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_TYPE + " needed for news storing, news service will be inaccessible");
-	    return true;
-	}
-	final String type = registry.getString(CoreRegistryValues.PIM_NEWS_TYPE);
-	if (!type.equals("jdbc"))
-	{
-	    Log.warning("init", "only jdbc pim type for news is supported, news service will be inaccessible");
-	    return true;
-	}
-	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_URL) != Registry.STRING)
-	{
-	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_URL + " needed for news storing, news service will be inaccessible");
-	    return true;
-	}
-	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_DRIVER) != Registry.STRING)
-	{
-	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_DRIVER + " needed for news storing, news service will be inaccessible");
-	    return true;
-	}
-	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_LOGIN) != Registry.STRING)
-	{
-	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_LOGIN + " needed for news storing, news service will be inaccessible");
-	    return true;
-	}
-	if (registry.getTypeOf(CoreRegistryValues.PIM_NEWS_PASSWD) != Registry.STRING)
-	{
-	    Log.warning("init", "No value " + CoreRegistryValues.PIM_NEWS_PASSWD + " needed for news storing, news service will be inaccessible");
-	    return true;
-	}
-	final String url = registry.getString(CoreRegistryValues.PIM_NEWS_URL);
-	final String driver = registry.getString(CoreRegistryValues.PIM_NEWS_DRIVER);
-	final String login = registry.getString(CoreRegistryValues.PIM_NEWS_LOGIN);
-	final String passwd = registry.getString(CoreRegistryValues.PIM_NEWS_PASSWD);
-	if (!PimManager.newsConnectJdbc(url, driver, login, passwd))
-	    Log.warning("init", "news jdbc link init failed, news reading services remain inaccessible");
-	return true;
+	pimManager = new PimManager(registry);
+	return pimManager.initDefaultConnections();
     }
 
     private boolean initDBus()

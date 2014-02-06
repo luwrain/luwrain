@@ -18,9 +18,9 @@ package org.luwrain.pim;
 
 public class NewsGroup
 {
-    public String name = new String();
+    public String name ="";
     public String[] urls = new String[0];
-    public boolean hasMediaContent = false;
+    public String mediaContentType = "";
     public int orderIndex = 0;
     public int expireAfterDays = 30;
 }

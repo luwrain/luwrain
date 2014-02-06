@@ -59,6 +59,18 @@ public class Registry implements XmlReaderOutput
 	return true;
     }
 
+    public String[] getDirectories(String path)
+    {
+	//FIXME:
+	return new String[0];
+    }
+
+    public String[] getValues(String path)
+    {
+	//FIXME:
+	return new String[0];
+    }
+
     public boolean hasValue(String pathStr)
     {
 	return getTypeOf(pathStr) != INVALID;
@@ -82,7 +94,7 @@ public class Registry implements XmlReaderOutput
 	return (value != null && value.type == STRING)?value.strValue:"";
     }
 
-    public boolean getBool(String pathStr)
+    public boolean getBoolean(String pathStr)
     {
 	Value value = findValue(pathStr);
 	return (value != null && value.type == BOOLEAN)?value.boolValue:false;
@@ -158,6 +170,18 @@ public class Registry implements XmlReaderOutput
 	v.boolValue = value;
 	dir.setValue(v);
 	return true;
+    }
+
+    public boolean deleteValue(String path)
+    {
+	//FIXME:
+	return false;
+    }
+
+    public boolean deleteDir(String path)
+    {
+	//FIXME:
+	return false;
     }
 
     public Directory findDirectoryForXmlReader(String pathStr)

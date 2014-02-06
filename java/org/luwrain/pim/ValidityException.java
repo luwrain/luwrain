@@ -16,34 +16,10 @@
 
 package org.luwrain.pim;
 
-//FIXME:No longer static;
-
-import java.sql.*;
-import org.luwrain.core.Log;
-import org.luwrain.core.registry.Registry;
-
-public class PimManager
+public class ValidityException extends Exception
 {
-    private Registry registry;
-    private Connection newsJdbcCon, mailJdbcCon;
-
-    public PimManager(Registry registry)
+    public ValidityException(String message)
     {
-	this.registry = registry;
-    }
-
-    public boolean initDefaultConnections()
-    {
-	return false;
-    }
-
-    public NewsStoring getNewsStoring()
-    {
-	return newsJdbcCon != null?new NewsStoringSql(registry, newsJdbcCon):null;
-    }
-
-    public MailStoring getMailStoring()
-    {
-	return null;
+	super(message);
     }
 }

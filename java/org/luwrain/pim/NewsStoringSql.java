@@ -18,13 +18,15 @@ package org.luwrain.pim;
 
 import java.sql.*;
 import java.util.*;
+import org.luwrain.core.registry.Registry;
 
-public class NewsStoringSql extends NewsStoringRegistry
+class NewsStoringSql extends NewsStoringRegistry
 {
-    private Connection con = null;
+    private Connection con;
 
-    public NewsStoringSql(Connection con)
+    public NewsStoringSql(Registry registry, Connection con)
     {
+	super(registry);
 	this.con = con;
     }
 
