@@ -109,7 +109,7 @@ public class Path
 	for(int i = 0;i < dirItems.length;++i)
 	    if (dirItems[i] == null || dirItems[i].trim().isEmpty())
 		return false;
-	return valueName == null || valueName.trim().isEmpty();
+	return valueName == null || valueName.isEmpty();
     }
 
     public boolean isValidAbsoluteDir()

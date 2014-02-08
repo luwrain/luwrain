@@ -14,29 +14,29 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.app.registry;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 
-public class ControlApp implements Application, ControlActions
+public class RegistryApp implements Application, RegistryActions
 {
     private Object instance;
     private StringConstructor stringConstructor;
-    private ControlGroupsModel groupsModel;
-    private TreeArea groupsArea;
+    private RegistryDirsModel dirsModel;
+    private TreeArea dirsArea;
 
     public boolean onLaunch(Object instance)
     {
 	if (instance == null)
 	    return false;
-	Object str = Langs.requestStringConstructor("control");
+	Object str = Langs.requestStringConstructor("registry");
 	if (str == null)
 	    return false;
 	stringConstructor = (StringConstructor)str;
 	this.instance = instance;
-	groupsModel = new ControlGroupsModel(this, stringConstructor);
+	dirsModel = new RegistryDirsModel(this, stringConstructor);
 	createAreas();
 	return true;
     }
@@ -44,26 +44,19 @@ public class ControlApp implements Application, ControlActions
     public AreaLayout getAreasToShow()
     {
 	//	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);
-	return new AreaLayout(groupsArea);
+	return new AreaLayout(dirsArea);
     }
 
-    public void gotoGroups()
+    public void gotoDirs()
     {
     }
 
-    public void gotoOptions()
+    public void gotoValues()
     {
     }
 
-    public void openGroup(Object obj)
+    public void openDir(RegistryDir dir)
     {
-	if (obj != null)//FIXME:
-	Luwrain.message(obj.toString());
-    }
-
-    public void refreshGroups(Object preferableSelected)
-    {
-	//FIXME:
     }
 
     public void close()
@@ -73,9 +66,9 @@ public class ControlApp implements Application, ControlActions
 
     private void createAreas()
     {
-	final ControlActions a = this;
-	groupsArea = new TreeArea(groupsModel, stringConstructor.groupsAreaName()) {
-		private ControlActions actions = a;
+	final RegistryActions a = this;
+	dirsArea = new TreeArea(dirsModel, stringConstructor.dirsAreaName()) {
+		private RegistryActions actions = a;
 		public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (super.onKeyboardEvent(event))
@@ -84,16 +77,14 @@ public class ControlApp implements Application, ControlActions
 		    if (event.isCommand() && event.getCommand() == KeyboardEvent.INSERT &&
 			!event.isModified())
 		    {
-			ControlGroupsModel model = (ControlGroupsModel)getModel();
-			model.insertItem();//FIXME:what selected
+			//FIXME:
 			return true;
 		    }
-
 		    //Tab;
 		    if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB &&
 			!event.isModified())
 		    {
-			actions.gotoOptions();
+			actions.gotoValues();
 			return true;
 		    }
 		    return false;
@@ -110,8 +101,7 @@ public class ControlApp implements Application, ControlActions
 		}
 		public void onClick(Object obj)
 		{
-		    if (obj != null)
-			actions.openGroup(obj);
+		    //FIXME:
 		}
 	    };
     }

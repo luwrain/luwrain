@@ -67,7 +67,7 @@ public class PathParser
 	}
 	if (!current.isEmpty())
 	    items.add(current);
-	if (items.isEmpty())
+	if (items.isEmpty() && str.charAt(0) != '/')
 	    return null;
 	return new Path(str.charAt(0) == '/', items.toArray(new String[items.size()]), "");
     }

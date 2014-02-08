@@ -14,13 +14,24 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.langs.ru;
 
-interface  ControlActions
+import java.util.*;
+
+public class RegistryStringConstructor implements org.luwrain.app.registry.StringConstructor
 {
-    void gotoGroups();
-    void gotoOptions();
-    void openGroup(Object obj);
-    void refreshGroups(Object preferableSelected);
-    void close();
+    public String dirsAreaName()
+    {
+	return "Дерево каталогов";
+    }
+
+    public String valuesAreaName()
+    {
+	return "Список параметров";
+    }
+
+    public String rootItemTitle()
+    {
+	return "Реестр Luwrain";
+    }
 }

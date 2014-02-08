@@ -50,6 +50,17 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Beginning of list";
 	case Langs.LIST_AREA_END:
 	    return "End of list";
+	case Langs.EMPTY_TREE:
+	    return "Empty tree";
+	case Langs.EMPTY_TREE_ITEM:
+	    return "Empty tree item";
+	case Langs.TREE_EXPANDED:
+	    return "Expended";
+	case Langs.TREE_COLLAPSED:
+	    return "Collapsed";
+	case Langs.TREE_LEVEL:
+	    return "УLevel";
+
 	case Langs.NO_REQUESTED_ACTION:
 	    return "The entered action is unknown in the system";
 	case Langs.NO_ACTIVE_AREA:

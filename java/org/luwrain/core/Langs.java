@@ -32,6 +32,11 @@ public class Langs
     public static final int LIST_AREA_BEGIN = 12;
     public static final int LIST_AREA_END = 13;
     public static final int FONT_SIZE = 14;
+    public static final int EMPTY_TREE = 15;
+    public static final int EMPTY_TREE_ITEM = 16;
+    public static final int TREE_EXPANDED = 17;
+    public static final int TREE_COLLAPSED = 18;
+    public static final int TREE_LEVEL = 19;
 
     public static final int NO_REQUESTED_ACTION = 100;
     public static final int NO_ACTIVE_AREA = 101;

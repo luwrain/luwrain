@@ -56,13 +56,6 @@ public class CoreRegistryValues
     public static final String INTERACTION_SPLITTER_GREEN = "/org/luwrain/interaction/splitter-color-green";
     public static final String INTERACTION_SPLITTER_BLUE = "/org/luwrain/interaction/splitter-color-blue";
 
-    //PIM;
-    public static final String PIM_NEWS_TYPE = "/org/luwrain/pim/news/type";
-    public static final String PIM_NEWS_URL = "/org/luwrain/pim/news/url";
-    public static final String PIM_NEWS_DRIVER = "/org/luwrain/pim/news/driver";
-    public static final String PIM_NEWS_LOGIN = "/org/luwrain/pim/news/login";
-    public static final String PIM_NEWS_PASSWD = "/org/luwrain/pim/news/passwd";
-
     //Langs;
     public static final String LANGS_CURRENT = "/org/luwrain/langs/current";
 };

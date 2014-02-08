@@ -16,8 +16,9 @@
 
 package org.luwrain.core.registry;
 
-import  org.luwrain.core.Log;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import  org.luwrain.core.Log;
 
 public class Registry implements XmlReaderOutput
 {
@@ -59,10 +60,36 @@ public class Registry implements XmlReaderOutput
 	return true;
     }
 
-    public String[] getDirectories(String path)
+    public String[] getDirectories(String pathStr)
     {
-	//FIXME:
-	return new String[0];
+	if (pathStr == null || pathStr.isEmpty())
+	    return new String[0];
+	Path path = PathParser.parseAsDirectory(pathStr);
+	if (path == null)
+	    return new String[0];
+	ArrayList<String> res = new ArrayList<String>();
+	Directory s = findStaticDirectory(path);
+	if(s != null && s.subdirs != null) 
+	    for(Directory d: s.subdirs)
+		if (d != null && d.name != null && !d.name.isEmpty())
+		    res.add(d.name);
+	if (storage != null)
+	{
+	    VariableDirectory[] v;
+	    try {
+		v = storage.getSubdirs(path);
+		if (v != null)
+		    for(VariableDirectory d: v)
+			if (d != null && d.name != null && !d.name.isEmpty())
+			    res.add(d.name);
+	    }
+	    catch(SQLException e)
+	    {
+		Log.error("registry", "problem getting subdirs for " + path.toString() + ":" + e.getMessage());
+		e.printStackTrace();
+	    }
+	}
+	return res.toArray(new String[res.size()]);
     }
 
     public String[] getValues(String path)
@@ -290,6 +317,25 @@ public class Registry implements XmlReaderOutput
 		d = new Directory(s);
 		dir.addSubdir(d);
 	    }
+	    dir = d;
+	}
+	return dir;
+    }
+
+    private Directory findStaticDirectory(Path path)
+    {
+	if (path == null || !path.isValidAbsoluteDir())
+	    return null;
+	Directory dir = root;
+	if (dir == null)
+	    return null;
+	for(String s: path.getDirItems())
+	{
+	    if (s.trim().isEmpty())
+		continue;
+	    Directory d = dir.getSubdir(s);
+	    if (d == null)
+		return null;
 	    dir = d;
 	}
 	return dir;

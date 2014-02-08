@@ -46,11 +46,20 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Начало просмотра дерева";
 	case Langs.TREE_AREA_END:
 	    return "Конец просмотра дерева";
-
 	case Langs.LIST_AREA_BEGIN:
 	    return "Начало списка";
 	case Langs.LIST_AREA_END:
 	    return "Конец списка";
+	case Langs.EMPTY_TREE:
+	    return "Пустое дерево";
+	case Langs.EMPTY_TREE_ITEM:
+	    return "Пустой элемент дерева";
+	case Langs.TREE_EXPANDED:
+	    return "Раскрыто";
+	case Langs.TREE_COLLAPSED:
+	    return "Свёрнуто";
+	case Langs.TREE_LEVEL:
+	    return "Уровень";
 
 	case Langs.NO_REQUESTED_ACTION:
 	    return "Выбранное Вами действие недоступно в системе";

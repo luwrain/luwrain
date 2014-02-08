@@ -14,13 +14,12 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.app.registry;
 
-interface  ControlActions
+interface  RegistryActions
 {
-    void gotoGroups();
-    void gotoOptions();
-    void openGroup(Object obj);
-    void refreshGroups(Object preferableSelected);
+    void gotoDirs();
+    void gotoValues();
+    void openDir(RegistryDir dir);
     void close();
 }

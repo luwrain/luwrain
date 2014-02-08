@@ -14,13 +14,12 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.controls;
 
-interface  ControlActions
+public interface HotPointInfo
 {
-    void gotoGroups();
-    void gotoOptions();
-    void openGroup(Object obj);
-    void refreshGroups(Object preferableSelected);
-    void close();
+    int getHotPointX();
+    void setHotPointX(int value);
+    int getHotPointY();
+    void setHotPointY(int value);
 }

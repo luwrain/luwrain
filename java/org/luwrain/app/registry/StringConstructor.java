@@ -14,13 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.app.registry;
 
-interface  ControlActions
+public interface StringConstructor
 {
-    void gotoGroups();
-    void gotoOptions();
-    void openGroup(Object obj);
-    void refreshGroups(Object preferableSelected);
-    void close();
+    String dirsAreaName();
+    String valuesAreaName();
+    String rootItemTitle();
 }

@@ -30,7 +30,7 @@ public class GroupArea extends TreeArea
 		     MailReaderStringConstructor stringConstructor,
 		     MailGroupTreeModel treeModel)
     {
-	super(stringConstructor.groupAreaName(), treeModel);
+	super(treeModel, stringConstructor.groupAreaName());
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
 	this.treeModel = treeModel;

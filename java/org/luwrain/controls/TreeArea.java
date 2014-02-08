@@ -16,54 +16,85 @@
 
 package org.luwrain.controls;
 
-//TODO:Refresh operations;
-
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import java.util.*;
 
 class TreeAreaNode
 {
-    public Object obj = null;
-    public TreeAreaNode children[] = null;//If children is null but node is not leaf it means closed node without any info about content;
-    public TreeAreaNode parent = null;
+    public Object obj;
     boolean leaf = true;
+    public TreeAreaNode children[];//If children is null but node is not leaf it means closed node without any info about content;
+    public TreeAreaNode parent;
 
+
+    //Actually it is still unclear is it really good idea 
+    // to request title dynamically each time;
     public String title()
     {
-	if (obj == null)
-	    return "";
-	return obj.toString();
+	return obj != null?obj.toString():"";
     }
+
+    public void makeLeaf()
+    {
+	children = null;
+	leaf = true;
+    } 
 }
 
-class TreeAreaItem
+class VisibleTreeItem
 {
     public static final int LEAF = 0;
     public static final int CLOSED = 1;
     public static final int OPENED = 2;
 
     public int type = LEAF;
-    public String title;
+    public String title = "";
     public int level = 0;
     public TreeAreaNode node;
 }
 
 public class TreeArea implements Area
 {
-    private String name;
-    private TreeModel model = null;
-    private TreeAreaNode root = null;
-    private TreeAreaItem items[] = null;
+    private ControlEnvironment environment;
+    private TreeModel model;
+    private String name = "";
+    private TreeAreaNode root;
+    private VisibleTreeItem[] items;
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public TreeArea(String name, TreeModel model)
+    private String beginOfLine = "";
+    private String endOfLine = "";
+    private String treeAreaBegin = "";
+    private String treeAreaEnd = "";
+    private String emptyTree = "";
+    private String emptyItem = "";
+    private String emptyLine = "";
+    private String expanded = "";
+    private String collapsed = "";
+    private String level = "";
+
+    public TreeArea(TreeModel model, String name)
     {
-	this.name = name;
+	this.environment = new DefaultControlEnvironment();
 	this.model = model;
-	root = constructNode(model.getRoot());
-	items = expandNode(root, 0);
+	this.name = name;
+	root = constructNode(model.getRoot(), null, true);//true means expand children;
+	items = generateAllVisibleItems();
+	initStringConstants();
+    }
+
+    public TreeArea(ControlEnvironment environment,
+		    TreeModel model,
+		    String name)
+    {
+	this.environment = environment;
+	this.model = model;
+	this.name = name;
+	root = constructNode(model.getRoot(), null, true);//true means expand children;
+	items = generateAllVisibleItems();
+	initStringConstants();
     }
 
     public int getLineCount()
@@ -76,322 +107,453 @@ public class TreeArea implements Area
     public String getLine(int index)
     {
 	if (items == null || items.length < 1 || index >= items.length)
-	    return new String();
+	    return "";
 	return constructLineForScreen(items[index]);
     }
 
     public int getHotPointX()
     {
-	if (hotPointX < 0)
-	    return 0;
-	return hotPointX;
+	return hotPointX >= 0?hotPointX:0;
     }
 
     public int getHotPointY()
     {
-	if (hotPointY < 0)
-	    return 0;
-	return hotPointY;
+	return hotPointY >= 0?hotPointY:0;
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	//Space;
-	if (!event.isCommand() && event.getCharacter() == ' ' == !event.isModified())
+	if (!event.isCommand())
 	{
-	    if (hotPointY >= items.length)
-		return false;
-	    TreeAreaItem item = items[hotPointY];
-	    onClick(item.node.obj);
-	    return true;
-	}
-	if (!event.isCommand() || event.withAlt() || event.withShift())
+	    if (event.getCharacter() == ' ')
+		return onKeySpace(event);
 	    return false;
+	}
 	if (items == null || items.length < 1)
 	{
-	    Speech.say("FIXME", Speech.PITCH_HIGH);
+	    environment.say(emptyTree, Speech.PITCH_HIGH);
 	    return true;
 	}
-	final int cmd = event.getCommand();
-
-	//Enter;
-	if (cmd == KeyboardEvent.ENTER && !event.isModified())
+	switch (event.getCommand())
 	{
-	    if (hotPointY >= items.length)
-		return false;
-	    TreeAreaItem item = items[hotPointY];
-	    if (item.type == TreeAreaItem.LEAF)
-	    {
-		onClick(item.node.obj);
-		return true;
-	    }
-	    if (item.type == TreeAreaItem.CLOSED)
-	    {
-		fillChildren(item.node);
-		items = expandNode(root, 0);
-		Speech.say("Раскрыто", Speech.PITCH_HIGH);
-		Luwrain.onAreaNewContent(this);
-		return true;
-	    }
-	    if (item.type == TreeAreaItem.OPENED)
-	    {
-		item.node.children = null;
-		items = expandNode(root, 0);
-		Speech.say("Свёрнуто", Speech.PITCH_HIGH);
-		Luwrain.onAreaNewContent(this);
-		return true;
-	    }
-	    return false;
+	case KeyboardEvent.ENTER:
+	    return onKeyEnter(event);
+	case KeyboardEvent.ARROW_DOWN:
+	    return onKeyDown(event, false);
+	case KeyboardEvent.ARROW_UP:
+	    return onKeyUp(event, false);
+	case KeyboardEvent.ARROW_RIGHT:
+	    return onKeyRight(event);
+	case KeyboardEvent.ARROW_LEFT:
+	    return onKeyLeft(event);
 	}
-
-	//Down;
-	if (cmd == KeyboardEvent.ARROW_DOWN && !event.isModified())
-	{
-	    if (hotPointY  >= items.length)
-	    {
-		Speech.say(Langs.staticValue(Langs.TREE_AREA_END), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointY++;
-	    if (hotPointY >= items.length)
-	    {
-		hotPointX = 0;
-		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-	    } else
-	    {
-		TreeAreaItem item = items[hotPointY];
-		hotPointX = (item.level + 1) * 2;
-		Speech.say(constructLineForSpeech(item));
-	    }
-	    Luwrain.onAreaNewHotPoint(this );
-	    return true;
-	}
-
-	//Up;
-	if (cmd == KeyboardEvent.ARROW_UP && !event.isModified())
-	{
-	    if (hotPointY  <= 0)
-	    {
-		Speech.say(Langs.staticValue(Langs.TREE_AREA_BEGIN), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointY--;
-	    TreeAreaItem item = items[hotPointY];
-	    hotPointX = (item.level + 1) * 2;
-	    Speech.say(constructLineForSpeech(item));
-	    Luwrain.onAreaNewHotPoint(this );
-	    return true;
-	}
-
-	//Control + down;
-	if (cmd == KeyboardEvent.ARROW_DOWN && event.withControl())//FIXME:only;
-	{
-	    if (hotPointY  >= items.length)
-	    {
-		Speech.say(Langs.staticValue(Langs.TREE_AREA_END), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointY++;
-	    if (hotPointY >= items.length)
-	    {
-		hotPointX = 0;
-		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-	    } else
-	    {
-		TreeAreaItem item = items[hotPointY];
-		hotPointX = (item.level + 1) * 2;
-		Speech.say(item.title);
-	    }
-	    Luwrain.onAreaNewHotPoint(this );
-	    return true;
-	}
-
-	//Control + Up;
-	if (cmd == KeyboardEvent.ARROW_UP && event.withControl())
-	{
-	    if (hotPointY  <= 0)
-	    {
-		Speech.say(Langs.staticValue(Langs.TREE_AREA_BEGIN), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointY--;
-	    TreeAreaItem item = items[hotPointY];
-	    hotPointX = (item.level + 1) * 2;
-	    Speech.say(item.title);
-	    Luwrain.onAreaNewHotPoint(this );
-	    return true;
-	}
-
-	//Right;
-	if (cmd == KeyboardEvent.ARROW_RIGHT && !event.isModified())
-	{
-	    if (hotPointY >= items.length)
-		return false;
-	    TreeAreaItem item = items[hotPointY];
-	    final int bound = (item.level + 1) * 2;
-	    if (hotPointX >= item.title.length() + bound)
-	    {
-		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    if (hotPointX < bound)
-		hotPointX = bound; else
-		hotPointX++;
-	    if (hotPointX >= item.title.length() + bound)
-		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH); else
-		Speech.sayLetter(item.title.charAt(hotPointX - bound));
-	    Luwrain.onAreaNewHotPoint(this);
-	    return true;
-	}
-
-	//Left;
-	if (cmd == KeyboardEvent.ARROW_LEFT && !event.isModified())
-	{
-	    if (hotPointY >= items.length)
-		return false;
-	    TreeAreaItem item = items[hotPointY];
-	    final int bound = (item.level + 1) * 2;
-	    if (hotPointX <= bound)
-	    {
-		Speech.say(Langs.staticValue(Langs.BEGIN_OF_LINE), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    if (hotPointX >= item.title.length() + bound)
-		hotPointX = item.title.length() + bound - 1; else
-		hotPointX--;
-	    Speech.sayLetter(item.title.charAt(hotPointX - bound));
-	    Luwrain.onAreaNewHotPoint(this);
-	    return true;
-	}
-
 	return false;
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	//FIXME:refresh;
+	if (event.getCode() == EnvironmentEvent.REFRESH)
+	{
+	    refresh();
+	    return true;
+	}
 	return false;
     }
 
     public String getName()
     {
-	if (name == null)
-	    return new String();
-	return name;
+	return name != null?name:"";
     }
 
-    //Changes only leaf and children fields;
-    private void fillChildren(TreeAreaNode node)
+    public TreeModel getModel()
     {
-	if (node == null)
-	    return;
-	if (node.obj == null ||
-	    node.leaf ||
-	    model.isLeaf(node.obj))
-	{
-	    node.children = null;
-	    node.leaf = true;
-	    return;
-	}
-	int count = model.getChildCount(node.obj);
-	if (count < 1)
-	{
-	    node.children = null;
-	    node.leaf = true;
-	    return;
-	}
-	node.leaf = false;
-	node.children = new TreeAreaNode[count];
-	for(int i = 0;i < count;i++)
-	{
-	    node.children[i] = new TreeAreaNode();
-	    node.children[i].obj = model.getChild(node.obj, i);
-	    if (node.children[i].obj == null)
-	    {
-		node.children = null;
-		node.leaf = true;
-		return;
-	    }
-	    node.children[i].leaf = model.isLeaf(node.children[i].obj);
-	    node.children[i].parent = node;
-	    node.children[i].children = null;
-	    System.out.println("Got " + node.children[i].title());
-	}
+	return model;
     }
 
-    private TreeAreaNode constructNode(Object obj)
+    public void refresh()
     {
-	if (obj == null)
+	Object oldSelected = getObjectUnderHotPoint();
+	if (root.obj != model.getRoot())
+	    root = constructNode(model.getRoot(), null, true); else//true means expand children;
+	    refreshNode(root);
+	items = generateAllVisibleItems();
+	environment.onAreaNewContent(this);
+	if (oldSelected != null)
+	{
+	    if (!selectObject(oldSelected))
+		selectFirstItem();
+	} else
+	    selectEmptyLastLine();
+    }
+
+    public Object getObjectUnderHotPoint()
+    {
+	if (items == null || hotPointY < 0 || hotPointX >= items.length)
 	    return null;
-	TreeAreaNode node = new TreeAreaNode();
-	node.obj = obj;
-	node.parent = null;
-	node.leaf = model.isLeaf(obj);
-	if (!node.leaf)
-	fillChildren(node);
-	return node;
+	return items[hotPointY].node.obj;
     }
 
-    TreeAreaItem[] expandNode(TreeAreaNode node, int level)
+    public boolean selectObject(Object obj)
     {
-	if (node == null)
-	    return null;
-	TreeAreaItem itself = new TreeAreaItem();
-	itself.node = node;
-	itself.title = node.title();
-	itself.level = level;
-	if (node.leaf || node.children == null)
-	{
-	    itself.type = node.leaf?TreeAreaItem.LEAF:TreeAreaItem.CLOSED;
-	    TreeAreaItem res[] = new TreeAreaItem[1];
-	    res[0] = itself;
-	    return res;
-	}
-	itself.type = TreeAreaItem.OPENED;
-	Vector<TreeAreaItem> items = new Vector<TreeAreaItem>();
-	items.add(itself);
-	for(int i = 0;i < node.children.length;i++)
-	{
-	    TreeAreaItem c[] = expandNode(node.children[i], level + 1);
-	    if (c == null)
-		continue;
-	    for(int k = 0;k < c.length;k++)
-		items.add(c[k]);
-	}
-	TreeAreaItem res[] = new TreeAreaItem[items.size()];
-	Iterator<TreeAreaItem> it = items.iterator();
-	int k = 0;
-	while(it.hasNext())
-	    res[k++] = it.next();
-	return res;
+	if (items == null || items.length == 0)
+	    return false;
+	int k;
+	for(k = 0;k < items.length;++k)
+	    if (items[k].node.obj == obj)
+		break;
+	if (k >= items.length)
+	    return false;
+	hotPointY = k;
+	hotPointX = getInitialHotPointX(hotPointY);
+	environment.onAreaNewHotPoint(this);
+	return true;
     }
 
-    private String constructLineForSpeech(TreeAreaItem item)
+    public void selectEmptyLastLine()
     {
-	if (item == null || item.title == null)
-	    return new String();
-	String res = item.title;
-	switch (item.type)
-	{
-	case TreeAreaItem.OPENED:
-	    res = "Раскрыто " + res;//FIXME:
-	    break;
-	case TreeAreaItem.CLOSED:
-	    res = "Свёрнуто " + res;
-	    break;
-	}
-	return res + " уровень " + (item.level + 1);
+	if (items == null || items.length < 1)
+	    hotPointY = 0; else
+	    hotPointY = items.length;
+	hotPointX = 0;
+	environment.onAreaNewHotPoint(this);
     }
 
-    private String constructLineForScreen(TreeAreaItem item)
+    public void selectFirstItem()
     {
-	if (item == null || item.title == null)
-	    return new String();
-	return item.title;
+	hotPointY = 0;
+	hotPointX = getInitialHotPointX(0);
+	environment.onAreaNewHotPoint(this);
     }
 
     public void onClick(Object obj)
     {
 	//Nothing here;
+    }
+
+    //Changes only 'leaf' and 'children' fields;
+    private void fillChildrenForNonLeaf(TreeAreaNode node)
+    {
+	if (node == null || node.obj == null)
+	    return;
+	if (node.leaf || model.isLeaf(node.obj))
+	{
+	    node.makeLeaf();
+	    return;
+	}
+	final int count = model.getChildCount(node.obj);
+	if (count < 1)
+	{
+	    node.makeLeaf();
+	    return;
+	}
+	node.leaf = false;
+	node.children = new TreeAreaNode[count];
+	for(int i = 0;i < count;++i)
+	{
+	    TreeAreaNode n = new TreeAreaNode();
+	    node.children[i] = n;
+	    n.obj = model.getChild(node.obj, i);
+	    if (n.obj == null)
+	    {
+		node.makeLeaf();
+		return;
+	    }
+	    n.leaf = model.isLeaf(n.obj);
+	    n.children = null;
+	    n.parent = node;
+	}
+    }
+
+    private TreeAreaNode constructNode(Object obj, TreeAreaNode parent, boolean fillChildren)
+    {
+	if (obj == null)
+	    return null;
+	TreeAreaNode node = new TreeAreaNode();
+	node.obj = obj;
+	node.parent = parent;
+	node.leaf = model.isLeaf(obj);
+	if (fillChildren && !node.leaf)
+	fillChildrenForNonLeaf(node);
+	return node;
+    }
+
+    private void refreshNode(TreeAreaNode node)
+    {
+	if (node == null || node.obj == null)
+	    return;
+	if (node.leaf)
+	{
+	    node.leaf = model.isLeaf(node.obj);
+	    return;
+	}
+	//Was not a leaf;
+	if (model.isLeaf(node.obj))
+	{
+	    node.makeLeaf();
+	    return;
+	}
+	//Was and remains a non leaf;
+	if (node.children == null)
+	    return;
+	final int newCount = model.getChildCount(node.obj);
+	if (newCount == 0)
+	{
+	    node.makeLeaf();
+	    return;
+	}
+	TreeAreaNode[] newNodes = new TreeAreaNode[newCount];
+	for(int i = 0;i < newCount;++i)
+	{
+	    Object newObj = model.getChild(node.obj, i);
+	    if (newObj == null)
+	    {
+		node.makeLeaf();
+		return;
+	    }
+	    int k;
+	    for(k = 0;k < node.children.length;++k)
+		if (node.children[k].obj == newObj)
+		    break;
+	    if (k < node.children.length)
+		newNodes[i] = node.children[k]; else
+		newNodes[i] = constructNode(newObj, node, false);
+	}
+	node.children = newNodes;
+	for(TreeAreaNode n: node.children)
+	    refreshNode(n);
+    }
+
+    private VisibleTreeItem[] generateVisibleItems(TreeAreaNode node, int level)
+    {
+	if (node == null)
+	    return null;
+	VisibleTreeItem itself = new VisibleTreeItem();
+	itself.node = node;
+	itself.title = node.title();
+	itself.level = level;
+	if (node.leaf || node.children == null)
+	{
+	    itself.type = node.leaf?VisibleTreeItem.LEAF:VisibleTreeItem.CLOSED;
+	    VisibleTreeItem res[] = new VisibleTreeItem[1];
+	    res[0] = itself;
+	    return res;
+	}
+	itself.type = VisibleTreeItem.OPENED;
+	ArrayList<VisibleTreeItem> items = new ArrayList<VisibleTreeItem>();
+	items.add(itself);
+    	for(int i = 0;i < node.children.length;i++)
+	{
+	    VisibleTreeItem c[] = generateVisibleItems(node.children[i], level + 1);
+	    if (c == null)
+		continue;
+	    for(VisibleTreeItem v: c)
+		items.add(v);
+	}
+	VisibleTreeItem res[] = new VisibleTreeItem[items.size()];
+	int k = 0;
+	for(VisibleTreeItem i: items)
+	    res[k++] = i;
+	return res;
+    }
+
+    private VisibleTreeItem[] generateAllVisibleItems()
+    {
+	if (root == null)
+	    return null;
+	return generateVisibleItems(root, 0);
+    }
+
+    private String constructLineForSpeech(VisibleTreeItem item, boolean briefIntroduction)
+    {
+	if (item == null)
+	    return emptyItem;
+	String res = (item.title != null && !item.title.trim().isEmpty())?item.title.trim():emptyItem;
+	if (briefIntroduction)
+	    return res;
+	switch (item.type)
+	{
+	case VisibleTreeItem.OPENED:
+	    res = expanded + " " + res;
+	    break;
+	case VisibleTreeItem.CLOSED:
+	    res = collapsed + " " + res;
+	    break;
+	}
+	return res + " " + level + " " + (item.level + 1);
+    }
+
+    private String constructLineForScreen(VisibleTreeItem item)
+    {
+	if (item == null)
+	    return "";
+	String res = "";
+	for(int i = 0;i < item.level;++i)
+	    res += "  ";
+	switch(item.type)
+	{
+	case VisibleTreeItem.OPENED:
+	    res += " -";
+	    break;
+	case VisibleTreeItem.CLOSED:
+	    res += " +";
+	    break;
+	default:
+	    res += "  ";
+	}
+	return res + (item.title != null?item.title:"");
+    }
+
+    private boolean onKeySpace(KeyboardEvent event)
+    {
+	if (event.isModified() || items == null)
+	    return false;
+	if (hotPointY >= items.length)
+	    return false;
+	VisibleTreeItem item = items[hotPointY];
+	if (item.node.obj != null)
+	    onClick(item.node.obj);
+	return true;
+    }
+
+    private boolean onKeyEnter(KeyboardEvent event)
+    {
+	if (event.isModified() || items == null || hotPointY >= items.length)
+	    return false;
+	VisibleTreeItem item = items[hotPointY];
+	if (item.type == VisibleTreeItem.LEAF)
+	{
+	    onClick(item.node.obj);
+	    return true;
+	}
+	if (item.type == VisibleTreeItem.CLOSED)
+	{
+	    fillChildrenForNonLeaf(item.node);
+	    items = generateAllVisibleItems();
+		environment.say(expanded, Speech.PITCH_HIGH);
+		environment.onAreaNewContent(this);
+		return true;
+	}
+	    if (item.type == VisibleTreeItem.OPENED)
+	    {
+		item.node.children = null;
+		items = generateAllVisibleItems();
+		environment.say(collapsed, Speech.PITCH_HIGH);
+		environment.onAreaNewContent(this);
+		return true;
+	    }
+	    return false;
+    }
+
+    private boolean onKeyDown(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (event.isModified() || items == null)
+	    return false;
+	if (hotPointY  >= items.length)
+	{
+	    environment.say(treeAreaEnd, Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointY++;
+	if (hotPointY >= items.length)
+	{
+	    hotPointX = 0;
+	    environment.say(emptyLine, Speech.PITCH_HIGH);
+	} else
+	{
+	    hotPointX = getInitialHotPointX(hotPointY);
+	    environment.say(constructLineForSpeech(items[hotPointY], briefIntroduction));
+	}
+	environment.onAreaNewHotPoint(this );
+	return true;
+    }
+
+    private boolean onKeyUp(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (event.isModified() || items == null)
+	    return false;
+	if (hotPointY  <= 0)
+	{
+	    environment.say(treeAreaBegin, Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointY--;
+	hotPointX = getInitialHotPointX(hotPointY);
+	environment.say(constructLineForSpeech(items[hotPointY], briefIntroduction));
+	environment.onAreaNewHotPoint(this );
+	return true;
+    }
+
+    private boolean onKeyRight(KeyboardEvent event)
+    {
+	if (event.isModified() ||
+	    items == null || hotPointY >= items.length)
+	    return false;
+	final String value = items[hotPointY].title;
+	final int offset = getInitialHotPointX(hotPointY);
+	if (value.isEmpty())
+	{
+	    environment.say(emptyItem, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointX >= value.length() + offset)
+	{
+	    environment.say(endOfLine, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointX < offset)
+	    hotPointX = offset; else
+	    hotPointX++;
+	if (hotPointX >= value.length() + offset)
+	    environment.say(endOfLine, Speech.PITCH_HIGH); else
+	    environment.sayLetter(value.charAt(hotPointX - offset));
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+private boolean onKeyLeft(KeyboardEvent event)
+{
+	if (event.isModified() ||
+	    items == null || hotPointY >= items.length)
+	    return false;
+	final String value = items[hotPointY].title;
+	final int offset = getInitialHotPointX(hotPointY);
+	if (value.isEmpty())
+	{
+	    environment.say(emptyItem, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointX <= offset)
+	{
+	    environment.say(beginOfLine, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointX >= value.length() + offset)
+	    hotPointX = value.length() + offset - 1; else
+	    hotPointX--;
+	environment.sayLetter(value.charAt(hotPointX - offset));
+	environment.onAreaNewHotPoint(this);
+	return true;
+}
+
+    private int getInitialHotPointX(int index)
+    {
+	if (items == null ||  index >= items.length)
+	    return 0;
+	return (items[index].level * 2) + 2;
+    }
+
+    private void initStringConstants()
+    {
+	beginOfLine = Langs.staticValue(Langs.BEGIN_OF_LINE);
+	endOfLine = Langs.staticValue(Langs.END_OF_LINE);
+	treeAreaBegin = Langs.staticValue(Langs.TREE_AREA_BEGIN);
+	treeAreaEnd = Langs.staticValue(Langs.TREE_AREA_END);
+	emptyTree = Langs.staticValue(Langs.EMPTY_TREE);
+	emptyItem = Langs.staticValue(Langs.EMPTY_TREE_ITEM);
+	emptyLine = Langs.staticValue(Langs.EMPTY_LINE);
+	expanded  = Langs.staticValue(Langs.TREE_EXPANDED);
+	collapsed = Langs.staticValue(Langs.TREE_COLLAPSED);
+	level = Langs.staticValue(Langs.TREE_LEVEL);
     }
 }

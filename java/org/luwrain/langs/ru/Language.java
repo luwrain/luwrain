@@ -45,6 +45,8 @@ public class Language implements org.luwrain.core.Language
 	    return new PreviewStringConstructor();
 	if (id.equals("control"))
 	    return new ControlStringConstructor();
+	if (id.equals("registry"))
+	    return new RegistryStringConstructor();
 	return null;
     }
 

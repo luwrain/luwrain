@@ -14,13 +14,32 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.core;
 
-interface  ControlActions
+public class DefaultControlEnvironment implements ControlEnvironment
 {
-    void gotoGroups();
-    void gotoOptions();
-    void openGroup(Object obj);
-    void refreshGroups(Object preferableSelected);
-    void close();
+    public void say(String text, int pitch)
+    {
+	Speech.say(text, pitch);
+    }
+
+    public void say(String text)
+    {
+	Speech.say(text);
+    }
+
+    public void sayLetter(char letter)
+    {
+	Speech.sayLetter(letter);
+    }
+
+    public void onAreaNewContent(Area area)
+    {
+	Luwrain.onAreaNewContent(area);
+    }
+
+    public void onAreaNewHotPoint(Area area)
+    {
+	Luwrain.onAreaNewHotPoint(area);
+    }
 }

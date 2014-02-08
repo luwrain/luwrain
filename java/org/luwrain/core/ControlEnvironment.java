@@ -14,13 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.core;
 
-interface  ControlActions
+public interface ControlEnvironment
 {
-    void gotoGroups();
-    void gotoOptions();
-    void openGroup(Object obj);
-    void refreshGroups(Object preferableSelected);
-    void close();
+    void say(String text, int pitch);
+    void say(String text);
+    void sayLetter(char letter);
+    void onAreaNewContent(Area area);
+    void onAreaNewHotPoint(Area area);
 }

@@ -14,13 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.controls;
 
-interface  ControlActions
+public interface EmbeddedEditLines
 {
-    void gotoGroups();
-    void gotoOptions();
-    void openGroup(Object obj);
-    void refreshGroups(Object preferableSelected);
-    void close();
+    String getEmbeddedEditLine(int editPosX, int editPosY);
+    void setEmbeddedEditLine(int editPosX, int editPosY, String value);
 }

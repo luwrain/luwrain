@@ -36,12 +36,12 @@ public class VariableStorage
 	{
 	    if (!path.isValidAbsoluteDir())
 		return false;
-return followPathToDir(path) != null;
+	    return followPathToDir(path) != null;
 	} else
 	{
 	    if (path.isValidAbsoluteValue())
 		return false;
-return followPathToValue(path) != null;
+	    return followPathToValue(path) != null;
 	}
     }
 
