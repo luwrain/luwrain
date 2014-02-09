@@ -46,9 +46,9 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Begin of tree";
 	case Langs.TREE_AREA_END:
 	    return "End of tree";
-	case Langs.LIST_AREA_BEGIN:
+	case Langs.BEGIN_OF_LIST:
 	    return "Beginning of list";
-	case Langs.LIST_AREA_END:
+	case Langs.END_OF_LIST:
 	    return "End of list";
 	case Langs.EMPTY_TREE:
 	    return "Empty tree";

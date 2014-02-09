@@ -18,6 +18,7 @@ package org.luwrain.controls;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.KeyboardEvent;
+import org.luwrain.core.events.EnvironmentEvent;
 
 public class SingleLineEdit
 {
@@ -130,5 +131,10 @@ public class SingleLineEdit
 	} else
 	    Speech.sayLetter(event.getCharacter());
 	return true;
+    }
+
+    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	return false;
     }
 }

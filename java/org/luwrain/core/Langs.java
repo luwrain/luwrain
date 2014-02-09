@@ -29,8 +29,8 @@ public class Langs
     public static final int AREA_END = 9;
     public static final int TREE_AREA_BEGIN = 10;
     public static final int TREE_AREA_END = 11;
-    public static final int LIST_AREA_BEGIN = 12;
-    public static final int LIST_AREA_END = 13;
+    public static final int BEGIN_OF_LIST = 12;
+    public static final int END_OF_LIST = 13;
     public static final int FONT_SIZE = 14;
     public static final int EMPTY_TREE = 15;
     public static final int EMPTY_TREE_ITEM = 16;

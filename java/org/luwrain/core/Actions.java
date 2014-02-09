@@ -41,6 +41,18 @@ class Actions
 	return false;
     }
 
+    public String[] getActionsName()
+    {
+	if (actions == null)
+	    return new String[0];
+	Vector<String> res = new Vector<String>();
+	for(Action a: actions)
+	    res.add(a.getName());
+	String[] str = res.toArray(new String[res.size()]);
+	Arrays.sort(str);
+	return str;
+    }
+
     public void fillWithStandardActions(Environment env)
     {
 	if (env == null)

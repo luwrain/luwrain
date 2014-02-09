@@ -23,8 +23,8 @@ import org.luwrain.core.events.*;
 
 public abstract class ListArea  implements Area
 {
-    private String noItemsAbove = Langs.staticValue(Langs.LIST_AREA_BEGIN);
-    private String noItemsBelow = Langs.staticValue(Langs.LIST_AREA_END);
+    private String noItemsAbove = Langs.staticValue(Langs.BEGIN_OF_LIST);
+    private String noItemsBelow = Langs.staticValue(Langs.END_OF_LIST);
     private String emptyLine = Langs.staticValue(Langs.EMPTY_LINE);
     private String beginOfLine = Langs.staticValue(Langs.BEGIN_OF_LINE);
     private String endOfLine = Langs.staticValue(Langs.END_OF_LINE);

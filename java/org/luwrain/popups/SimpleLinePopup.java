@@ -14,16 +14,18 @@
    General Public License for more details.
 */
 
+//FIXME:ControlEnvironment interface support;
+
 package org.luwrain.popups;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 
-public class SimpleLinePopup implements Area, PopupClosingRequest
+public class SimpleLinePopup implements Area, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
 {
     public PopupClosing closing = new PopupClosing(this);
-    private SingleLineEdit edit;
+    private EmbeddedSingleLineEdit edit;
     private Object instance;
     private String name;
     private String prefix;
@@ -36,13 +38,11 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
 			    String text)
     {
 	this.instance = instance;
-	this.name = name;
-	this.prefix = prefix;
-	if (this.prefix == null || this.prefix.isEmpty())
-	    this.prefix = "???:";
-	this.text = text;
-	this.pos = prefix.length() + text.length() + 1;
-	createEdit();
+	this.name = name != null?name:"";
+	this.prefix = prefix != null?prefix:"";
+	this.text = text != null?text:"";
+	this.pos = prefix.length() + text.length();
+	this.edit = new EmbeddedSingleLineEdit(this, this, prefix.length(), 0);
     }
 
     public int getLineCount()
@@ -52,9 +52,7 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
 
     public String getLine(int index)
     {
-	if (index != 0)
-	    return new String();
-	return prefix + " " + text;
+	return index == 0?(prefix + text):"";
     }
 
     public int getHotPointX()
@@ -71,78 +69,53 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
     {
 	if (closing.onKeyboardEvent(event))
 	    return true;
-	if (event.isCommand() && !event.isModified())
+	if (edit.isPosCovered(pos, 0) && edit.onKeyboardEvent(event))
+	    return true;
+	if (!event.isCommand() || event.isModified())
+	    return false;
+	final String line = prefix + text;
+	switch (event.getCommand())
 	{
-	    final int cmd = event.getCommand();
-
-	    //Left;
-	    if (cmd == KeyboardEvent.ARROW_LEFT)
+	case KeyboardEvent.ARROW_LEFT:
+	    if (pos == 0)
 	    {
-		if (pos == 0)
-		{
-		    Speech.say(Langs.staticValue(Langs.AREA_BEGIN), Speech.PITCH_HIGH);
-		    return true;
-		}
-		pos--;
-		Luwrain.onAreaNewHotPoint(this);
-		if (pos < prefix.length())
-		    Speech.sayLetter(prefix.charAt(pos)); else
-		    if (pos == prefix.length())
-			Speech.sayLetter(' '); else
-			Speech.sayLetter(text.charAt(pos - prefix.length() - 1));
+		Speech.say(Langs.staticValue(Langs.AREA_BEGIN), Speech.PITCH_HIGH);
 		return true;
 	    }
-
-	    //Right;
-	    if (cmd == KeyboardEvent.ARROW_RIGHT)
+	    pos--;
+	    if (pos < line.length())
+		Speech.sayLetter(line.charAt(pos)); else
+		Speech.sayLetter(' ');
+	    Luwrain.onAreaNewHotPoint(this);
+	    return true;
+	case KeyboardEvent.ARROW_RIGHT:
+	    if (pos >= line.length())
 	    {
-		if (pos >= prefix.length() + text.length() + 1)
-		{
-		    Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
-		    return true;
-		}
-		pos++;
-		Luwrain.onAreaNewHotPoint(this);
-		if (pos < prefix.length())
-		    Speech.sayLetter(prefix.charAt(pos)); else
-		    if (pos == prefix.length())
-			Speech.sayLetter(' '); else
-			if (pos == prefix.length() + text.length() + 1)
-			    Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH); else
-			    Speech.sayLetter(text.charAt(pos - prefix.length() - 1));
-		return true;
-	    }
-
-	    //Home;
-	    if (cmd == KeyboardEvent.HOME)
-	    {
-		pos = 0;
-		if (prefix.isEmpty())
-		    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
-		    Speech.sayLetter(prefix.charAt(0));
-		Luwrain.onAreaNewHotPoint(this);
-		return true;
-	    }
-
-	    //End;
-	    if (cmd == KeyboardEvent.END)
-	    {
-		pos = prefix.length() + text.length() + 1;
 		Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
-		Luwrain.onAreaNewHotPoint(this);
 		return true;
 	    }
-	}
-
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.ENTER && !event.isModified())
-	{
+	    pos++;
+	    if (pos < line.length())
+		Speech.sayLetter(line.charAt(pos)); else
+		Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
+	    Luwrain.onAreaNewHotPoint(this);
+	    return true;
+	case KeyboardEvent.HOME:
+	    pos = prefix.length();
+	    if (pos >= line.length())
+		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
+		Speech.sayLetter(prefix.charAt(pos));
+	    return true;
+	case KeyboardEvent.END:
+	    pos = line.length();
+	    Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
+	    Luwrain.onAreaNewHotPoint(this);
+	    return true;
+	case KeyboardEvent.ENTER:
 	    closing.doOk();
 	    return true;
 	}
-
-	if (pos < prefix.length() + 1)
-	    return false;
-	return edit.onKeyboardEvent(event);
+	return false;
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
@@ -155,41 +128,33 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
 	return name;
     }
 
-    private void createEdit()
-    {
-	final SimpleLinePopup thisArea = this;
-	edit = new SingleLineEdit(new SingleLineEditModel(){
-		private SimpleLinePopup area = thisArea;
-		public String getLine()
-		{
-		    return area.text;
-		}
-		public void setLine(String text)
-		{
-		    area.text = text;
-		    Luwrain.onAreaNewContent(area);
-		}
-		public int getHotPointX()
-		{
-		    if (area.pos < area.prefix.length() + 1)
-			return 0;
-		    return area.pos - area.prefix.length() - 1;
-		}
-		public void setHotPointX(int value)
-		{
-		    area.pos = area.prefix.length() + value + 1;
-		    Luwrain.onAreaNewHotPoint(area);
-		}
-		public String getTabSeq()
-		{
-		    return "\t";//FIXME:
-		}
-	    });
-    }
-
     public String getText()
     {
 	return text;
+    }
+
+    public String getEmbeddedEditLine(int editPosX, int editPosY)
+    {
+	return text;
+    }
+
+    public void setEmbeddedEditLine(int editPosX, int editPosY, String value)
+    {
+	text = value != null?value:"";
+	Luwrain.onAreaNewContent(this);
+    }
+
+    public void setHotPointX(int value)
+    {
+	if (value < 0)
+	    return;
+	pos = value;
+	Luwrain.onAreaNewHotPoint(this);
+    }
+
+    public void setHotPointY(int value)
+    {
+	//Nothing here;
     }
 
     public boolean onOk()
@@ -200,5 +165,40 @@ public class SimpleLinePopup implements Area, PopupClosingRequest
     public boolean onCancel()
     {
 	return true;
+    }
+
+    protected String getTextBeforeHotPoint()
+    {
+	if (text == null)
+	    return "";
+	final int offset = pos - prefix.length();
+	if (offset < 0)
+	    return "";
+	if (offset >= text.length())
+	    return text;
+	return text.substring(0, offset);
+    }
+
+    protected String getTextAfterHotPoint()
+    {
+	if (text == null)
+	    return "";
+	final int offset = pos - prefix.length();
+	if (offset < 0)
+	    return text;
+	if (offset >= text.length())
+	    return "";
+	return text.substring(offset);
+    }
+
+    //Speaks nothing;
+    protected void setText(String beforeHotPoint, String afterHotPoint)
+    {
+	if (beforeHotPoint == null || afterHotPoint == null)
+	    return;
+	text = beforeHotPoint + afterHotPoint;
+	pos = prefix.length() + beforeHotPoint.length();
+	Luwrain.onAreaNewContent(this);
+	Luwrain.onAreaNewHotPoint(this);
     }
 }

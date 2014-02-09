@@ -16,6 +16,8 @@
 
 package org.luwrain.controls;
 
+import org.luwrain.core.events.*;
+
 public class EmbeddedSingleLineEdit implements SingleLineEditModel
 {
     private EmbeddedEditLines lines;
@@ -45,6 +47,17 @@ public class EmbeddedSingleLineEdit implements SingleLineEditModel
     {
 	return posY == y && x >= posX;
     }
+
+    public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	return edit.onKeyboardEvent(event);
+    }
+
+    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	return edit.onEnvironmentEvent(event);
+    }
+
 
     public String getLine()
     {
