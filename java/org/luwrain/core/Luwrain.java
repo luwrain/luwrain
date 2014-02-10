@@ -115,6 +115,16 @@ static public     void closeApplication(Object instance)
 	environment.openFileNames(fileNames);
     }
 
+    static public void popup(Object instance,
+			     Area area,
+			     EventLoopStopCondition stopCondition)
+    {
+	if (!checkEnvironmentInstance())
+	    return;
+	environment.popup(instance, area, stopCondition);
+    }
+
+
     static public org.luwrain.core.registry.Registry getRegistry()
     {
 	if (!checkEnvironmentInstance())

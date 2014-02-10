@@ -124,6 +124,28 @@ public class Registry implements XmlReaderOutput
 	return res.toArray(new String[res.size()]);
     }
 
+    public boolean hasDirectory(String pathStr)
+    {
+	if (pathStr == null || pathStr.isEmpty())
+	    return false;
+	Path path = PathParser.parseAsDirectory(pathStr);
+	if (path == null || !path.isValidAbsoluteDir())
+	    return false;
+	if (findStaticDirectory(path) != null)
+	    return true;
+	if (storage == null)
+	    return false;
+	try {
+	return storage.dirExists(path);
+	}
+	catch(SQLException e)
+	{
+	    Log.error("registry", "jdbc problem while checking if the directory \'" + path.toString() + "\' exists:" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
+    }
+
     public boolean hasValue(String pathStr)
     {
 	return getTypeOf(pathStr) != INVALID;
@@ -223,6 +245,27 @@ public class Registry implements XmlReaderOutput
 	v.boolValue = value;
 	dir.setValue(v);
 	return true;
+    }
+
+    public boolean addDirectory(String pathStr)
+    {
+	if (storage == null)
+	    return false;
+	if (pathStr == null || pathStr.isEmpty() ||
+	    hasDirectory(pathStr))
+	    return false;
+	Path path = PathParser.parseAsDirectory(pathStr);
+	if (path == null || !path.isValidAbsoluteDir())
+	    return false;
+	try {
+	    return storage.addDirectory(path);
+	}
+	catch(SQLException e)
+	{
+	    Log.error("registry", "jdbc problem on inserted new directory \'" + path.toString() + "\':" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
     }
 
     public boolean deleteValue(String path)

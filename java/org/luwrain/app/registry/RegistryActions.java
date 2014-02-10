@@ -20,6 +20,8 @@ interface  RegistryActions
 {
     void gotoDirs();
     void gotoValues();
+    void refresh();
     void openDir(RegistryDir dir);
+    void insertDir(RegistryDir parent);
     void close();
 }

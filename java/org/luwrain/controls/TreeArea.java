@@ -189,7 +189,7 @@ public class TreeArea implements Area
 
     public Object getObjectUnderHotPoint()
     {
-	if (items == null || hotPointY < 0 || hotPointX >= items.length)
+	if (items == null || hotPointY < 0 || hotPointY >= items.length)
 	    return null;
 	return items[hotPointY].node.obj;
     }

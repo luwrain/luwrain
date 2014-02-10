@@ -89,6 +89,11 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	Luwrain.onAreaNewHotPoint(this);
     }
 
+    public void refresh()
+    {
+	//FIXME:
+    }
+
     public int getLineCount()
     {
 	return items != null?items.length + 1:1;

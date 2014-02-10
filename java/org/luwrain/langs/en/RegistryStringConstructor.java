@@ -59,4 +59,24 @@ public class RegistryStringConstructor implements org.luwrain.app.registry.Strin
     {
 	return "No";
     }
+
+    public String newDirectoryTitle()
+    {
+	return "New registry directory";
+    }
+
+    public String newDirectoryPrefix(String parentName)
+    {
+	return "Name of the subdirectory for \"" + parentName + "\":";
+    }
+
+    public String directoryNameMayNotBeEmpty()
+    {
+	return "Registry directory name may not be empty";
+    }
+
+    public String directoryInsertionRejected(String parentName, String dirName)
+    {
+	return "Insertion of the registry directory with name \"" + dirName + "\" rejected";
+    }
 }

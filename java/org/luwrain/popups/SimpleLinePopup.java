@@ -15,6 +15,7 @@
 */
 
 //FIXME:ControlEnvironment interface support;
+//FIXME:Improper behaviour on backspace;
 
 package org.luwrain.popups;
 

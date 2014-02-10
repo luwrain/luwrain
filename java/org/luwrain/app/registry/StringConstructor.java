@@ -26,4 +26,8 @@ public interface StringConstructor
     String introduceBooleanValue(String name, boolean value);
     String yes();
     String no();
+    String newDirectoryTitle();
+    String newDirectoryPrefix(String parentName);
+    String directoryNameMayNotBeEmpty();
+    String directoryInsertionRejected(String parentName, String dirName);
 }

@@ -59,4 +59,24 @@ public class RegistryStringConstructor implements org.luwrain.app.registry.Strin
     {
 	return "Нет";
     }
+
+    public String newDirectoryTitle()
+    {
+	return "Новый каталог реестра";
+    }
+
+    public String newDirectoryPrefix(String parentName)
+    {
+	return "Имя нового каталога в \"" + parentName + "\":";
+    }
+
+    public String directoryNameMayNotBeEmpty()
+    {
+	return "Имя каталога реестра не может быть пустым";
+    }
+
+    public String directoryInsertionRejected(String parentName, String dirName)
+    {
+	return "В создании каталога реестра с именем \"" + dirName + "\" отказано";
+    }
 }

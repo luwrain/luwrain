@@ -462,4 +462,19 @@ public class Environment
     {
 	return pimManager;
     }
+
+    public void popup(Object instance,
+		      Area area,
+		      EventLoopStopCondition stopCondition)
+    {
+	if (instance == null || area == null || stopCondition == null)
+	    return;
+	Application app = instanceManager.getAppByInstance(instance);
+	if (app == null)
+	{
+	    Log.warning("environment", "somebody tries to launch a popup with fake application instance");
+	    return;
+	}
+	goIntoPopup(app, area, PopupRegistry.BOTTOM, stopCondition);
+    }
 }

@@ -28,6 +28,14 @@ public class VariableStorage
 	this.con = con;
     }
 
+    public boolean dirExists(Path path) throws SQLException
+    {
+	if (path == null || !path.isValidAbsoluteDir())
+	    return false;
+	return followPathToDir(path) != null;
+    }
+
+
     public boolean exists(Path path) throws SQLException
     {
 	if (path == null)
@@ -77,7 +85,7 @@ public class VariableStorage
 	}
     }
 
-    public boolean addDir(Path path) throws SQLException
+    public boolean addDirectory(Path path) throws SQLException
     {
 	if (path == null || !path.isValidAbsoluteDir() || path.isRootDir())
 	    return false;
@@ -144,6 +152,7 @@ public class VariableStorage
 	return VariableValue.selectAllInDir(con, dir.id);
     }
 
+    //Just looks for, creates nothing;  
     private VariableDirectory followPathToDir(Path path) throws SQLException
     {
 	if (path == null || !path.isAbsolute())

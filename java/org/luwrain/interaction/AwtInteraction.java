@@ -310,7 +310,7 @@ public class AwtInteraction implements Interaction
 
     public void drawVerticalLine(int top, int bottom, int x)
     {
-	Log.debug("awt", "have vertical line (" + top + "->" + bottom + ") at " + x);
+	//	Log.debug("awt", "have vertical line (" + top + "->" + bottom + ") at " + x);
 	if (top > bottom)
 	{
 	    Log.warning("awt", "very odd vertical line: the top is greater than the bottom, " + top + ">" + bottom);
@@ -321,7 +321,7 @@ public class AwtInteraction implements Interaction
 
     public void drawHorizontalLine(int left, int right, int y)
     {
-	Log.debug("awt", "have horizontal line (" + left + "->" + right + ") at " + y);
+	//	Log.debug("awt", "have horizontal line (" + left + "->" + right + ") at " + y);
 	if (left > right)
 	{
 	    Log.warning("awt", "very odd horizontal line: the left is greater than the right, " + left + ">" + right);

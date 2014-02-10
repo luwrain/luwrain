@@ -18,7 +18,9 @@ package org.luwrain.app.registry;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.core.registry.Registry;
 import org.luwrain.controls.*;
+import org.luwrain.popups.SimpleLinePopup;
 
 public class RegistryApp implements Application, RegistryActions
 {
@@ -27,6 +29,7 @@ public class RegistryApp implements Application, RegistryActions
     private RegistryDirsModel dirsModel;
     private TreeArea dirsArea;
     private ValuesArea valuesArea;
+    private Registry registry = Luwrain.getRegistry();
 
     public boolean onLaunch(Object instance)
     {
@@ -58,12 +61,41 @@ public class RegistryApp implements Application, RegistryActions
 	Luwrain.setActiveArea(instance, valuesArea);
     }
 
+    public void refresh()
+    {
+	dirsArea.refresh();//FIXME:Comparator;
+	valuesArea.refresh();
+    }
+
     public void openDir(RegistryDir dir)
     {
 	if (dir == null)
 	    return;
 	    valuesArea.open(dir);
 	    Luwrain.setActiveArea(instance, valuesArea);
+    }
+
+    public void insertDir(RegistryDir parent)
+    {
+	SimpleLinePopup popup = new SimpleLinePopup(instance, stringConstructor.newDirectoryTitle(), stringConstructor.newDirectoryPrefix(parent.toString()), "");
+	Luwrain.popup(instance, popup, popup.closing);
+	if (popup.closing.cancelled())
+	    return;
+	if (popup.getText().trim().isEmpty())
+	{
+	    Luwrain.message(stringConstructor.directoryNameMayNotBeEmpty());
+	    return;
+	}
+	if (popup.getText().indexOf("/") >= 0)
+	{
+	    Luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.getText()));
+	    return;
+	}
+	if (!registry.addDirectory(parent.getPath() + "/" + popup.getText()))
+	{
+	    Luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.getText()));
+	    return;
+	}
     }
 
     public void close()
@@ -80,11 +112,22 @@ public class RegistryApp implements Application, RegistryActions
 		{
 		    if (super.onKeyboardEvent(event))
 			return true;
-		    //Insert;
-		    if (event.isCommand() && event.getCommand() == KeyboardEvent.INSERT &&
-			!event.isModified())
+		    if (event.isCommand() && !event.isModified() &&
+			event.getCommand() == KeyboardEvent.INSERT)
 		    {
-			//FIXME:
+			Object obj = getObjectUnderHotPoint();
+			if (obj == null)
+			    return false;
+			RegistryDir dir;
+			try {
+			    dir = (RegistryDir)obj;
+			}
+			catch (ClassCastException e)
+			{
+			    Log.warning("registry-app", "tree returned the object of type different than expected (RegistryDir):" + e.getMessage());
+			    return true;
+			}
+			actions.insertDir(dir);
 			return true;
 		    }
 		    //Tab;
@@ -102,6 +145,9 @@ public class RegistryApp implements Application, RegistryActions
 		    {
 		    case EnvironmentEvent.CLOSE:
 			actions.close();
+			return true;
+		    case EnvironmentEvent.REFRESH:
+			actions.refresh();
 			return true;
 		    }
 		    return false;
@@ -123,6 +169,6 @@ public class RegistryApp implements Application, RegistryActions
 		    actions.openDir(dir);
 		}
 	    };
-	valuesArea = new ValuesArea(Luwrain.getRegistry(), this, stringConstructor);
+	valuesArea = new ValuesArea(registry, this, stringConstructor);
     }
 }
