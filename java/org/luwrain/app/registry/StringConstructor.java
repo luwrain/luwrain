@@ -21,4 +21,9 @@ public interface StringConstructor
     String dirsAreaName();
     String valuesAreaName();
     String rootItemTitle();
+    String introduceStringValue(String name, String value);
+    String introduceIntegerValue(String name, String value);
+    String introduceBooleanValue(String name, boolean value);
+    String yes();
+    String no();
 }

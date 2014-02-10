@@ -34,4 +34,29 @@ public class RegistryStringConstructor implements org.luwrain.app.registry.Strin
     {
 	return "Реестр Luwrain";
     }
+
+    public String introduceStringValue(String name, String value)
+    {
+	return "Строковый параметр " + name + " равен " + value;
+    }
+
+    public String introduceIntegerValue(String name, String value)
+    {
+	return "Целочисленный параметр " + name + " равен " + value;
+    }
+
+    public String introduceBooleanValue(String name, boolean value)
+    {
+	return "Булевый параметр " + name + " равен " + (value?"да":"нет");
+    }
+
+    public String yes()
+    {
+	return "Да";
+    }
+
+    public String no()
+    {
+	return "Нет";
+    }
 }

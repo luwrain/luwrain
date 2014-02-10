@@ -65,7 +65,7 @@ public class Registry implements XmlReaderOutput
 	if (pathStr == null || pathStr.isEmpty())
 	    return new String[0];
 	Path path = PathParser.parseAsDirectory(pathStr);
-	if (path == null)
+	if (path == null || !path.isValidAbsoluteDir())
 	    return new String[0];
 	ArrayList<String> res = new ArrayList<String>();
 	Directory s = findStaticDirectory(path);
@@ -92,10 +92,36 @@ public class Registry implements XmlReaderOutput
 	return res.toArray(new String[res.size()]);
     }
 
-    public String[] getValues(String path)
+    public String[] getValues(String pathStr)
     {
-	//FIXME:
-	return new String[0];
+	if (pathStr == null || pathStr.isEmpty())
+	    return new String[0];
+	Path path = PathParser.parseAsDirectory(pathStr);
+	if (path == null || !path.isValidAbsoluteDir())
+	    return new String[0];
+	ArrayList<String> res = new ArrayList<String>();
+	Directory s = findStaticDirectory(path);
+	if(s != null && s.values != null) 
+	    for(Value i: s.values)
+		if (i != null && i.name != null && !i.name.isEmpty())
+		    res.add(i.name);
+	if (storage != null)
+	{
+	    VariableValue[] v;
+	    try {
+		v = storage.getValues(path);
+		if (v != null)
+		    for(VariableValue i: v)
+			if (i != null && i.name != null && !i.name.isEmpty())
+			    res.add(i.name);
+	    }
+	    catch(SQLException e)
+	    {
+		Log.error("registry", "problem getting values for " + path.toString() + ":" + e.getMessage());
+		e.printStackTrace();
+	    }
+	}
+	return res.toArray(new String[res.size()]);
     }
 
     public boolean hasValue(String pathStr)

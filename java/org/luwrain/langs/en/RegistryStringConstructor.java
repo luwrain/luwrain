@@ -34,4 +34,29 @@ public class RegistryStringConstructor implements org.luwrain.app.registry.Strin
     {
 	return "Luwrain registry";
     }
+
+    public String introduceStringValue(String name, String value)
+    {
+	return "String parameter " + name + " equals " + value;
+    }
+
+    public String introduceIntegerValue(String name, String value)
+    {
+	return "Integer parameter " + name + " equals " + value;
+    }
+
+    public String introduceBooleanValue(String name, boolean value)
+    {
+	return "String parameter " + name + " equals " + (value?"true":"false");
+    }
+
+    public String yes()
+    {
+	return "Yes";
+    }
+
+    public String no()
+    {
+	return "No";
+    }
 }

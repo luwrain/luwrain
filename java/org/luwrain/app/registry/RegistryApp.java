@@ -26,6 +26,7 @@ public class RegistryApp implements Application, RegistryActions
     private StringConstructor stringConstructor;
     private RegistryDirsModel dirsModel;
     private TreeArea dirsArea;
+    private ValuesArea valuesArea;
 
     public boolean onLaunch(Object instance)
     {
@@ -44,19 +45,25 @@ public class RegistryApp implements Application, RegistryActions
     public AreaLayout getAreasToShow()
     {
 	//	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);
-	return new AreaLayout(dirsArea);
+	return new AreaLayout(AreaLayout.LEFT_RIGHT, dirsArea, valuesArea);
     }
 
     public void gotoDirs()
     {
+	Luwrain.setActiveArea(instance, dirsArea);
     }
 
     public void gotoValues()
     {
+	Luwrain.setActiveArea(instance, valuesArea);
     }
 
     public void openDir(RegistryDir dir)
     {
+	if (dir == null)
+	    return;
+	    valuesArea.open(dir);
+	    Luwrain.setActiveArea(instance, valuesArea);
     }
 
     public void close()
@@ -81,8 +88,8 @@ public class RegistryApp implements Application, RegistryActions
 			return true;
 		    }
 		    //Tab;
-		    if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB &&
-			!event.isModified())
+		    if (event.isCommand() && !event.isModified() &&
+			event.getCommand() == KeyboardEvent.TAB)
 		    {
 			actions.gotoValues();
 			return true;
@@ -101,8 +108,21 @@ public class RegistryApp implements Application, RegistryActions
 		}
 		public void onClick(Object obj)
 		{
-		    //FIXME:
+		    if (obj == null)
+			return;
+		    RegistryDir dir;
+		    try {
+			dir = (RegistryDir)obj;
+		    }
+		    catch(ClassCastException e)
+		    {
+			Log.warning("registry-app", "tree returned the object of type different than expected (RegistryDir):" + e.getMessage());
+			e.printStackTrace();
+			return;
+		    }
+		    actions.openDir(dir);
 		}
 	    };
+	valuesArea = new ValuesArea(Luwrain.getRegistry(), this, stringConstructor);
     }
 }

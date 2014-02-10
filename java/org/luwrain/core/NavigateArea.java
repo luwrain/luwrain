@@ -14,6 +14,8 @@
    General Public License for more details.
 */
 
+//FIXME:ControlEnvironment interface support;
+
 package org.luwrain.core;
 
 //TODO:Tab shift respecting on up-down movements;
@@ -230,9 +232,14 @@ public abstract class NavigateArea implements Area
 	return false;
     }
 
+    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	return false;
+    }
+
     public void introduceLine(int index)
     {
-	String line = getLine(index);
+	final String line = getLine(index);
 	if (line == null || line.isEmpty())
 	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
 	    Speech.say(line);
@@ -257,12 +264,12 @@ public abstract class NavigateArea implements Area
 	Luwrain.onAreaNewHotPoint(this);
     }
 
-public int getHotPointX()
+    public int getHotPointX()
     {
 	return hotPointX;
     }
 
-public int getHotPointY()
+    public int getHotPointY()
     {
 	return hotPointY;
     }
