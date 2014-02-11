@@ -21,10 +21,12 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.registry.Registry;
 import org.luwrain.controls.*;
+import org.luwrain.popups.*;
 
 class ValueItem
 {
     public String name = "";
+    public boolean readOnly = false;
     public int type = Registry.STRING;
     public EmbeddedSingleLineEdit edit;
     public String value;
@@ -33,16 +35,19 @@ class ValueItem
 
 class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 {
+    private Object instance;
     private Registry registry;
     private RegistryActions actions;
     private StringConstructor stringConstructor;
     private RegistryDir dir;
     private ValueItem[] items;
 
-    public ValuesArea(Registry registry,
+    public ValuesArea(Object instance,
+		      Registry registry,
 		      RegistryActions actions,
 		      StringConstructor stringConstructor)
     {
+	this.instance = instance;
 	this.registry = registry;
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
@@ -91,7 +96,15 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 
     public void refresh()
     {
-	//FIXME:
+	if (dir == null || !registry.hasDirectory(dir.getPath()))
+	{
+	    dir = null;
+	    items = null;
+	    super.setHotPoint(0, 0);
+	    Luwrain.onAreaNewContent(this);
+	    return;
+	}
+	open(dir);
     }
 
     public int getLineCount()
@@ -113,17 +126,20 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event.isCommand() && !event.isModified() &&
-	    event.getCommand() == KeyboardEvent.TAB)
-	{
-	    actions.gotoDirs();
-	    return true;
-	}
+	if (event.isCommand() && !event.isModified())
+	    switch(event.getCommand())
+	    {
+	    case KeyboardEvent.TAB:
+		actions.gotoDirs();
+		return true;
+	    case KeyboardEvent.INSERT:
+		return onInsert();
+	    }
 	final int index = getHotPointY();
 	if (items != null && index < items.length)
 	{
 	    final ValueItem item = items[index];
-	    if (item.edit != null && item.edit.isPosCovered(getHotPointX(), index) && 
+	    if (!item.readOnly && item.edit != null && item.edit.isPosCovered(getHotPointX(), index) && 
 		item.edit.onKeyboardEvent(event))
 		return true;
 	}
@@ -137,17 +153,90 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	case EnvironmentEvent.CLOSE:
 	    actions.close();
 	    return true;
-	    //FIXME:case EnvironmentEvent.REFRESH:
+	    case EnvironmentEvent.REFRESH:
+		refresh();
+		break;
 	}
 	final int index = getHotPointY();
 	if (items != null && index < items.length)
 	{
 	    final ValueItem item = items[index];
-	    if (item.edit != null && item.edit.isPosCovered(getHotPointX(), index) && 
+	    if (!item.readOnly && item.edit != null && item.edit.isPosCovered(getHotPointX(), index) && 
 		item.edit.onEnvironmentEvent(event))
 		return true;
 	}
 	return super.onEnvironmentEvent(event);
+    }
+
+    public boolean onInsert()
+    {
+	if (dir == null)
+	    return false;
+	String[] types = new String[3];
+	types[0] = "integer";
+	types[1] = "string";
+	types[2] = "boolean";
+	SimpleLinePopup linePopup = new SimpleLinePopup(instance, stringConstructor.newParameterTitle(), stringConstructor.newParameterName(), "");
+	Luwrain.popup(instance, linePopup, linePopup.closing);
+	if (linePopup.closing.cancelled())//FIXME:Validator if not empty
+	    return true;
+	if (linePopup.getText().trim().isEmpty())
+	{
+	    Luwrain.message(stringConstructor.parameterNameMayNotBeEmpty());
+	    return true;
+	}
+	ListPopup listPopup = new ListPopup(new FixedListPopupModel(types), instance, stringConstructor.newParameterTitle(), stringConstructor.newParameterType(), "string");//FIXME:Validator if not from the list;;
+	Luwrain.popup(instance, listPopup, listPopup.closing);
+	if (listPopup.closing.cancelled())
+	    return true;
+	int type;
+	if (listPopup.getText().trim().equals("string"))
+	    type = Registry.STRING; else
+	    if (listPopup.getText().trim().equals("sinteger"))
+		type = Registry.INTEGER; else
+		if (listPopup.getText().trim().equals("boolean"))
+		    type = Registry.BOOLEAN; else
+		{
+		    Luwrain.message(stringConstructor.invalidParameterType(listPopup.getText()));
+		    return true;
+		}
+	if (!insertValue(linePopup.getText(), type))
+	    Luwrain.message(stringConstructor.parameterInsertionFailed());
+	return true;
+    }
+
+    private boolean insertValue(String name, int type)
+    {
+	if (name == null || name.trim().isEmpty())
+	    return false;
+	if (registry.hasValue(dir.getPath() + "/" + name))
+	    return false;
+	switch(type)
+	{
+	case Registry.STRING:
+	    if (!registry.setString(dir.getPath() + "/" + name, ""))
+		return false;
+	    break;
+	case Registry.INTEGER:
+	    if (!registry.setInteger(dir.getPath() + "/" + name, 0))
+		return false;
+	    break;
+	case Registry.BOOLEAN:
+	    if (!registry.setBoolean(dir.getPath() + "/" + name, false))
+		return false;
+	    break;
+	default:
+	    return false;
+	}
+	refresh();
+	if (items != null)
+	    for(int i = 0;i < items.length;++i)
+		if (items[i].name.equals(name))
+		{
+		    super.setHotPoint(0, i);
+		    break;
+		}
+	return true;
     }
 
     public void setHotPointX(int value)

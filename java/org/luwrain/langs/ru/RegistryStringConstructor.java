@@ -79,4 +79,34 @@ public class RegistryStringConstructor implements org.luwrain.app.registry.Strin
     {
 	return "В создании каталога реестра с именем \"" + dirName + "\" отказано";
     }
+
+    public String newParameterTitle()
+    {
+    return "Добавление нового параметра";
+    }
+
+    public String newParameterName()
+    {
+	return "Имя нового параметра реестра:";
+    }
+
+    public String 	newParameterType()
+    {
+	return "Тип нового параметра реестра:";
+    }
+
+    public String parameterNameMayNotBeEmpty()
+    {
+	return "Имя параметра не может быть пустым";
+    }
+
+    public String invalidParameterType(String type)
+    {
+	return "\"" + type + "\" не является допустимым типом параметра";
+    }
+
+    public String parameterInsertionFailed()
+    {
+	return "В добавлении нового параметра отказано";
+    }
 }

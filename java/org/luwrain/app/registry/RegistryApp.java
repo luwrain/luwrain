@@ -77,7 +77,7 @@ public class RegistryApp implements Application, RegistryActions
 
     public void insertDir(RegistryDir parent)
     {
-	SimpleLinePopup popup = new SimpleLinePopup(instance, stringConstructor.newDirectoryTitle(), stringConstructor.newDirectoryPrefix(parent.toString()), "");
+	SimpleLinePopup popup = new SimpleLinePopup(instance, stringConstructor.newDirectoryTitle(), stringConstructor.newDirectoryPrefix(parent.toString()), "");//FIXME:Validator if not empty;
 	Luwrain.popup(instance, popup, popup.closing);
 	if (popup.closing.cancelled())
 	    return;
@@ -169,6 +169,6 @@ public class RegistryApp implements Application, RegistryActions
 		    actions.openDir(dir);
 		}
 	    };
-	valuesArea = new ValuesArea(registry, this, stringConstructor);
+	valuesArea = new ValuesArea(instance, registry, this, stringConstructor);
     }
 }

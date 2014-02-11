@@ -40,7 +40,8 @@ class RegistryDir
 
     public String getPath()
     {
-	return parent != null?(parent.getPath() + "/" + name):("/" + name);
+	String parentPath = parent != null?parent.getPath():"";
+	return parentPath.equals("/")?"/" + name:parentPath + "/" + name;
     }
 
     public boolean isValid()

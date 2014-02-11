@@ -55,6 +55,7 @@ static public     void closeApplication(Object instance)
     }
 
     //Not for popup areas, only standard areas of applications;
+    //Introduces new area in contrast with onAreaNewContent, onAreaNewHotPoint and onAreaNewName  
     static public void setActiveArea(Object instance, Area area)
     {
 	if (!checkEnvironmentInstance())

@@ -177,8 +177,30 @@ public class Registry implements XmlReaderOutput
 
     public boolean setString(String pathStr, String value)
     {
-	//FIXME:
-	return false;
+	if (storage == null)
+	    return false;
+	if (pathStr == null || pathStr.isEmpty() || value == null)
+	    return false;
+	Path path = PathParser.parse(pathStr);
+	if (path == null || !path.isValidAbsoluteValue())
+	    return false;
+	if (findStaticValue(path) != null)
+	    return false;
+	try {
+	    if (!storage.exists(path))
+		if (!storage.addValue(path))
+		    return false;
+	    VariableValue vv = storage.getValue(path);
+	    vv.type = Registry.STRING;
+	    vv.strValue = value;
+	    return vv.update();
+	}
+	catch(SQLException e)
+	{
+	    Log.error("registry", "jdbc problem while setting string value to " + path.toString() + ":" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
     }
 
     public boolean setStaticString(String pathStr, String value)
@@ -201,8 +223,31 @@ public class Registry implements XmlReaderOutput
 
     public boolean setInteger(String pathStr, int value)
     {
-	//FIXME:
-	return false;
+	if (storage == null)
+	    return false;
+	if (pathStr == null || pathStr.isEmpty())
+	    return false;
+	Path path = PathParser.parse(pathStr);
+	if (path == null || !path.isValidAbsoluteValue())
+	    return false;
+	if (findStaticValue(path) != null)
+	    return false;
+
+	try {
+	    if (!storage.exists(path))
+		if (!storage.addValue(path))
+		    return false;
+	    VariableValue vv = storage.getValue(path);
+	    vv.type = Registry.INTEGER;
+	    vv.intValue = value;
+	    return vv.update();
+	}
+	catch(SQLException e)
+	{
+	    Log.error("registry", "jdbc problem while setting string value to " + path.toString() + ":" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
     }
 
     public boolean setStaticInteger(String pathStr, int value)
@@ -225,8 +270,30 @@ public class Registry implements XmlReaderOutput
 
     public boolean setBoolean(String pathStr, boolean value)
     {
-	//FIXME:
-	return false;
+	if (storage == null)
+	    return false;
+	if (pathStr == null || pathStr.isEmpty())
+	    return false;
+	Path path = PathParser.parse(pathStr);
+	if (path == null || !path.isValidAbsoluteValue())
+	    return false;
+	if (findStaticValue(path) != null)
+	    return false;
+	try {
+	    if (!storage.exists(path))
+		if (!storage.addValue(path))
+		    return false;
+	    VariableValue vv = storage.getValue(path);
+	    vv.type = Registry.BOOLEAN;
+	    vv.boolValue = value;
+	    return vv.update();
+	}
+	catch(SQLException e)
+	{
+	    Log.error("registry", "jdbc problem while setting string value to " + path.toString() + ":" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
     }
 
     public boolean setStaticBoolean(String pathStr, boolean value)

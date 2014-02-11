@@ -18,6 +18,7 @@ package org.luwrain.core.registry;
 
 import java.util.ArrayList;
 import java.sql.*;
+import org.luwrain.core.Log;
 
 public class VariableStorage
 {
@@ -34,7 +35,6 @@ public class VariableStorage
 	    return false;
 	return followPathToDir(path) != null;
     }
-
 
     public boolean exists(Path path) throws SQLException
     {
@@ -103,6 +103,15 @@ public class VariableStorage
 	if (path == null || !path.isValidAbsoluteValue())
 	    return false;
 	VariableDirectory parentDir = followPathToDir(path);
+	if (parentDir == null)
+	{
+	    parentDir = addDirForValue(path);
+	    if (parentDir == null)
+	    {
+		Log.warning("registry", "adding variable value:adding absent parent directory");
+		return false;
+	    }
+	}
 	VariableValue value = new VariableValue(con); 
 	value.dirId = parentDir.id;
 	value.name = path.getValueName();
@@ -177,5 +186,33 @@ public class VariableStorage
 	if (dir == null)
 	    return null;
 	return VariableValue.selectByName(con, dir.id, path.getValueName());
+    }
+
+    private VariableDirectory addDirForValue(Path path) throws SQLException
+    {
+	if (path == null)
+	    return null;
+	VariableDirectory dir = VariableDirectory.selectRootDir(con);
+	if (dir == null)
+	    return null;
+	for(String s: path.getDirItems())
+	{
+	    VariableDirectory next = dir.selectSubdirByName(s);
+	    if (next != null)
+	    {
+		dir = next;
+		continue;
+	    }
+
+	    next = new VariableDirectory(con);
+	next.parentId = dir.id;
+	next.name = s;
+	if (!next.insert())
+	    return null;
+dir = dir.selectSubdirByName(s);
+	if (dir == null)
+	    return null;
+	}
+	return dir;
     }
 }

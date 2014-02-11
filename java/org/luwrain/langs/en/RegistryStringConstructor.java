@@ -79,4 +79,34 @@ public class RegistryStringConstructor implements org.luwrain.app.registry.Strin
     {
 	return "Insertion of the registry directory with name \"" + dirName + "\" rejected";
     }
+
+    public String newParameterTitle()
+    {
+    return "New registry parameter";
+    }
+
+    public String newParameterName()
+    {
+	return "Name of the new parameter:";
+    }
+
+    public String 	newParameterType()
+    {
+	return "Type of the new parameter:";
+    }
+
+    public String parameterNameMayNotBeEmpty()
+    {
+	return "Parameter name may not be empty";
+    }
+
+    public String invalidParameterType(String type)
+    {
+	return "\"" + type + "\" is not a valid parameter type";
+    }
+
+    public String parameterInsertionFailed()
+    {
+	return "Insertion of a new registry parameter failed";
+    }
 }

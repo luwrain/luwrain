@@ -14,6 +14,7 @@
    General Public License for more details.
 */
 
+//FIXME:Introduce handling with prefix speaking 
 //FIXME:ControlEnvironment interface support;
 //FIXME:Improper behaviour on backspace;
 

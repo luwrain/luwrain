@@ -30,4 +30,10 @@ public interface StringConstructor
     String newDirectoryPrefix(String parentName);
     String directoryNameMayNotBeEmpty();
     String directoryInsertionRejected(String parentName, String dirName);
+    String newParameterTitle();
+    String newParameterName();
+    String 	newParameterType();
+    String parameterNameMayNotBeEmpty();
+    String invalidParameterType(String type);
+    String parameterInsertionFailed();
 }

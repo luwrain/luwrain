@@ -24,8 +24,14 @@ public class FixedListPopupModel implements ListPopupModel
 
     public FixedListPopupModel(String[] items)
     {
-	this.items = items != null?items:new String[0];
-	Arrays.sort(this.items);
+	if (items != null)
+	{
+	    this.items = new String[items.length];
+	    for(int i = 0;i < items.length;++i)
+		this.items[i] = items[i];
+	    Arrays.sort(this.items);
+	} else
+	    this.items = new String[0];
     }
 
     public String getCompletion(String beginning)
