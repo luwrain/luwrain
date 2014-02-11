@@ -47,7 +47,8 @@ public class Langs
     public static final int START_WORK_FROM_MAIN_MENU = 106;
     public static final int NO_LAUNCHED_APPS = 107;
     public static final int LIST_NO_ITEMS = 108;
-
+    public static final int QUIT_CONFIRM_NAME = 109;
+    public static final int QUIT_CONFIRM = 110;
 
     private static Language currentLang = new org.luwrain.langs.en.Language();
 
@@ -67,7 +68,7 @@ public class Langs
 	return value;
     }
 
-public static     Object requestStringConstructor(String id)
+    public static     Object requestStringConstructor(String id)
     {
 	if (currentLang == null)
 	    return null;

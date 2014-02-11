@@ -81,6 +81,10 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Элементы в списке отсутствуют";
 	case Langs.FONT_SIZE:
 	    return "Размер шрифта:";
+	case Langs.QUIT_CONFIRM_NAME:
+	    return "Завершение работы";
+	case Langs.QUIT_CONFIRM:
+	    return "Вы действительно хотите завершить работу в Luwrain?";
 	default:
 	    return "#Неизвестный идентификатор строки?#";
 	}

@@ -104,8 +104,8 @@ public class KeyboardEvent extends Event
     public boolean equals(KeyboardEvent event)
     {
 	return (cmd == event.cmd &&
-		((cmd && cmdCode == event.cmdCode) ||
-		 (!cmd && 		nonCmdChar == event.nonCmdChar)) &&
+		(!cmd || cmdCode == event.cmdCode) &&
+		(cmd || 		nonCmdChar == event.nonCmdChar) &&
 		shiftPressed == event.shiftPressed &&
 		controlPressed == event.controlPressed &&
 		leftAltPressed == event.leftAltPressed &&
@@ -180,5 +180,19 @@ public class KeyboardEvent extends Event
     public boolean withRightAltOnly()
     {
 	return rightAltPressed && !leftAltPressed && !shiftPressed && !controlPressed;
+    }
+
+    public String toString()
+    {
+	String res = cmd?("[CMD] " + cmdCode):("\'" + nonCmdChar + "\'");
+	if (shiftPressed)
+	    res += " SHIFT";
+	if (controlPressed)
+	    res += " CTRL";
+	if (leftAltPressed)
+	    res += " LEFT-ALT";
+	if (rightAltPressed)
+	    res += " RIGHT-ALT";
+	return res;
     }
 }

@@ -38,7 +38,7 @@ public class GlobalKeys
     public GlobalKeys()
     {
 	addMapping(new KeyboardEvent(true, KeyboardEvent.TAB, ' ', false, false, true, false), "switch-next-app");
-	addMapping(new KeyboardEvent(true, KeyboardEvent.TAB, ' ', true, false, false, false), "switch-next-area");
+	addMapping(new KeyboardEvent(true, KeyboardEvent.TAB, ' ', false, true, false, false), "switch-next-area");
 	addMapping(new KeyboardEvent(true, KeyboardEvent.WINDOWS, ' '), "main-menu");
 	addMapping(new KeyboardEvent(true, KeyboardEvent.ESCAPE, ' '), "cancel");
 	addMapping(new KeyboardEvent(false, 0, 'c', false, true, false, false), "ok");

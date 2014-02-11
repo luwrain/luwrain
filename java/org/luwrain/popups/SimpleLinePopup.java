@@ -14,7 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:Introduce handling with prefix speaking 
 //FIXME:ControlEnvironment interface support;
 //FIXME:Improper behaviour on backspace;
 
@@ -122,7 +121,15 @@ public class SimpleLinePopup implements Area, PopupClosingRequest, HotPointInfo,
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	switch (event.getCode())
+	{
+	case EnvironmentEvent.INTRODUCE:
+	    Luwrain.message(prefix + text);
+	    return true;
+	default:
+	    //FIXME:Transmit event to edit
 	return closing.onEnvironmentEvent(event);
+	}
     }
 
     public String getName()

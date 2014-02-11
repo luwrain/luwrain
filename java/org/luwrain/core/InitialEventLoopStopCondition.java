@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 public class InitialEventLoopStopCondition implements EventLoopStopCondition
 {
-    static public boolean shouldContinue = true;
+    static public boolean shouldContinue = true;//FIXME:No static members
 
     public boolean continueEventLoop()
     {

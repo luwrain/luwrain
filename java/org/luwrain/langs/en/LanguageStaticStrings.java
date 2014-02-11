@@ -81,6 +81,10 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "No items in list";
 	case Langs.FONT_SIZE:
 	    return "Font size:";
+	case Langs.QUIT_CONFIRM_NAME:
+	    return "Luwrain shutdown";
+	case Langs.QUIT_CONFIRM:
+	    return "Are you sure you want to exit Luwrain?";
 	default:
 	    return "#Unknown string identifier?#";
 	}

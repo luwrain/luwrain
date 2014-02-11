@@ -192,7 +192,7 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	int type;
 	if (listPopup.getText().trim().equals("string"))
 	    type = Registry.STRING; else
-	    if (listPopup.getText().trim().equals("sinteger"))
+	    if (listPopup.getText().trim().equals("integer"))
 		type = Registry.INTEGER; else
 		if (listPopup.getText().trim().equals("boolean"))
 		    type = Registry.BOOLEAN; else

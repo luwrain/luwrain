@@ -17,7 +17,7 @@
 package org.luwrain.core.registry;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.*;
 import  org.luwrain.core.Log;
 
 public class Registry implements XmlReaderOutput
@@ -71,7 +71,7 @@ public class Registry implements XmlReaderOutput
 	Directory s = findStaticDirectory(path);
 	if(s != null && s.subdirs != null) 
 	    for(Directory d: s.subdirs)
-		if (d != null && d.name != null && !d.name.isEmpty())
+		if (d != null && d.name != null && !d.name.isEmpty() && res.indexOf(d.name) < 0)
 		    res.add(d.name);
 	if (storage != null)
 	{
@@ -80,7 +80,7 @@ public class Registry implements XmlReaderOutput
 		v = storage.getSubdirs(path);
 		if (v != null)
 		    for(VariableDirectory d: v)
-			if (d != null && d.name != null && !d.name.isEmpty())
+			if (d != null && d.name != null && !d.name.isEmpty() && res.indexOf(d.name) < 0)
 			    res.add(d.name);
 	    }
 	    catch(SQLException e)
@@ -89,7 +89,9 @@ public class Registry implements XmlReaderOutput
 		e.printStackTrace();
 	    }
 	}
-	return res.toArray(new String[res.size()]);
+	String[] toReturn = res.toArray(new String[res.size()]);
+	Arrays.sort(toReturn);
+	return toReturn;
     }
 
     public String[] getValues(String pathStr)
@@ -103,7 +105,7 @@ public class Registry implements XmlReaderOutput
 	Directory s = findStaticDirectory(path);
 	if(s != null && s.values != null) 
 	    for(Value i: s.values)
-		if (i != null && i.name != null && !i.name.isEmpty())
+		if (i != null && i.name != null && !i.name.isEmpty() && res.indexOf(i.name) < 0)
 		    res.add(i.name);
 	if (storage != null)
 	{
@@ -112,7 +114,7 @@ public class Registry implements XmlReaderOutput
 		v = storage.getValues(path);
 		if (v != null)
 		    for(VariableValue i: v)
-			if (i != null && i.name != null && !i.name.isEmpty())
+			if (i != null && i.name != null && !i.name.isEmpty() && res.indexOf(i.name) < 0)
 			    res.add(i.name);
 	    }
 	    catch(SQLException e)
@@ -121,7 +123,9 @@ public class Registry implements XmlReaderOutput
 		e.printStackTrace();
 	    }
 	}
-	return res.toArray(new String[res.size()]);
+	String[] toReturn = res.toArray(new String[res.size()]);
+	Arrays.sort(toReturn);
+	return toReturn;
     }
 
     public boolean hasDirectory(String pathStr)

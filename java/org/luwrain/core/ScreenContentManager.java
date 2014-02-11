@@ -121,9 +121,13 @@ return applications.getActiveAreaOfActiveApp();
 	    return;
 	}
 	Area activeArea = applications.getActiveAreaOfActiveApp();
-	Window[] windows = (Window[])getWindows().getObjects();
+	Object[] objs = getWindows().getObjects();
+	Window[] windows = new Window[objs.length];
+	for(int i = 0;i < objs.length;++i)
+	    windows[i] = (Window)objs[i];
 	if (windows == null || windows.length <= 0)
 	{
+	    //	    Log.debug("screen", "no windows");
 	    activePopup = hasProperPopup();
 	    return;
 	}
@@ -131,6 +135,7 @@ return applications.getActiveAreaOfActiveApp();
 	for(index = 0;index < windows.length;index++)
 	    if (windows[index].area == activeArea)
 		break;
+	//	Log.debug("screen", "index=" + index + ", total=" + windows.length);
 	index++;
 	if (index >= windows.length)
 	    index = 0;

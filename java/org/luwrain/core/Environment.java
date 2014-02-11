@@ -22,11 +22,10 @@ import org.luwrain.core.registry.Registry;
 import org.luwrain.app.system.MainMenuArea;
 import org.luwrain.pim.PimManager;
 import org.luwrain.core.events.*;
-import org.luwrain.popups.ListPopup;
-import org.luwrain.popups.FixedListPopupModel;
+import org.luwrain.popups.*;
 import org.luwrain.mmedia.EnvironmentSounds;
 
-public class Environment
+class Environment
 {
     private String[] cmdLine;
     private Registry registry;
@@ -76,6 +75,10 @@ public class Environment
 
     public void quit()
     {
+	YesNoPopup popup = new YesNoPopup(Langs.staticValue(Langs.QUIT_CONFIRM_NAME), Langs.staticValue(Langs.QUIT_CONFIRM), true);
+	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup.closing);
+	if (popup.closing.cancelled() || !popup.getResult())
+	    return;
 	InitialEventLoopStopCondition.shouldContinue = false;
     }
 
