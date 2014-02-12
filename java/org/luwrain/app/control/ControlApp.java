@@ -68,7 +68,7 @@ public class ControlApp implements Application, ControlActions
 
     public void close()
     {
-	Luwrain.closeApplication(instance);
+	Luwrain.closeApp(instance);
     }
 
     private void createAreas()

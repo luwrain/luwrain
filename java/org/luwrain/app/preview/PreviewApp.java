@@ -77,6 +77,6 @@ public class PreviewApp implements Application, PreviewActions
 
     public void closePreview()
     {
-	Luwrain.closeApplication(instance);
+	Luwrain.closeApp(instance);
     }
 }

@@ -14,16 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.interaction;
+package org.luwrain.core;
 
-class OnScreenLine
+public interface EventConsumer
 {
-    public int pos1 = 0;
-    public int pos2 = 0;
-
-    public OnScreenLine(int pos1, int pos2)
-    {
-	this.pos1 = pos1;
-	this.pos2 = pos2;
-    }
+    void enqueueEvent(Event event);
 }

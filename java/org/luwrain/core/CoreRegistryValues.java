@@ -28,6 +28,11 @@ public class CoreRegistryValues
     public static final String REGISTRY_JDBC_LOGIN = "/org/luwrain/registry/jdbc/login";
     public static final String REGISTRY_JDBC_PASSWD = "/org/luwrain/registry/jdbc/passwd";
 
+    //Speech;
+    public static final String SPEECH_TYPE = "/org/luwrain/speech/type";
+    public static final String SPEECH_HOST = "/org/luwrain/speech/host";
+    public static final String SPEECH_PORT = "/org/luwrain/speech/port";
+
     //Main menu;
     public static final String MAIN_MENU_CONTENT = "/org/luwrain/main-menu/content";
 

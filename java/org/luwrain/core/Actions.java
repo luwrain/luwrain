@@ -236,7 +236,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.notepad.NotepadApp();
-		    Luwrain.launchApplication(app);
+		    Luwrain.launchApp(app);
 		}
 	    });
 
@@ -249,7 +249,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.commander.CommanderApp();
-		    Luwrain.launchApplication(app);
+		    Luwrain.launchApp(app);
 		}
 	    });
 
@@ -262,7 +262,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.news.NewsReaderApp();
-		    Luwrain.launchApplication(app);
+		    Luwrain.launchApp(app);
 		}
 	    });
 
@@ -275,7 +275,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.mail.MailReaderApp();
-		    Luwrain.launchApplication(app);
+		    Luwrain.launchApp(app);
 		}
 	    });
 
@@ -288,7 +288,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.fetch.FetchApp();
-		    Luwrain.launchApplication(app);
+		    Luwrain.launchApp(app);
 		}
 	    });
 
@@ -301,7 +301,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.message.MessageApp();
-		    Luwrain.launchApplication(app);
+		    Luwrain.launchApp(app);
 		}
 	    });
 
@@ -314,7 +314,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.preview.PreviewApp();
-		    Luwrain.launchApplication(app);
+		    Luwrain.launchApp(app);
 		}
 	    });
 
@@ -327,7 +327,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.control.ControlApp();
-		    Luwrain.launchApplication(app);
+		    Luwrain.launchApp(app);
 		}
 	    });
 
@@ -340,7 +340,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.registry.RegistryApp();
-		    Luwrain.launchApplication(app);
+		    Luwrain.launchApp(app);
 		}
 	    });
 

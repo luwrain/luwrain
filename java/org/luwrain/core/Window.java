@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-public class Window
+class Window
 {
     public Application app;
     public Area area;

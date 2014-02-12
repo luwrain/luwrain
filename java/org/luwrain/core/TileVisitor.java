@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-public interface TileVisitor
+interface TileVisitor
 {
     void onTile(Object obj);
 }

@@ -40,18 +40,18 @@ public class Luwrain
 	environment.enqueueEvent(e);
     }
 
-    static public void launchApplication(Application app)
+    static public void launchApp(Application app)
     {
 	if (!checkEnvironmentInstance())
 	    return;
-	environment.launchApplication(app);
+	environment.launchApp(app);
     }
 
-static public     void closeApplication(Object instance)
+static public     void closeApp(Object instance)
     {
 	if (!checkEnvironmentInstance())
 	    return;
-	environment.closeApplication(instance);
+	environment.closeApp(instance);
     }
 
     //Not for popup areas, only standard areas of applications;

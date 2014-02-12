@@ -21,7 +21,7 @@ package org.luwrain.core;
 import org.luwrain.core.events.*;
 import org.luwrain.mmedia.*;
 
-public class ScreenContentManager
+class ScreenContentManager
 {
     public static final int NO_APPLICATIONS = 0;
     public static final int EVENT_NOT_PROCESSED = 1;
@@ -50,6 +50,11 @@ Application systemApp)
 	    activePopup = false;
 	}
 	Area activeArea = applications.getActiveAreaOfActiveApp();
+	if (activeArea == null && hasProperPopup())
+	{
+	    activePopup = true;
+	    activeArea = popups.getAreaOfLastPopup();
+	}
 	if (activeArea != null)
 	    return activeArea.onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
 	return NO_APPLICATIONS;
@@ -64,6 +69,11 @@ Application systemApp)
 	    activePopup = false;
 	}
 	Area activeArea = applications.getActiveAreaOfActiveApp();
+	if (activeArea == null && hasProperPopup())
+	{
+	    activePopup = true;
+	    activeArea = popups.getAreaOfLastPopup();
+	}
 	if (activeArea != null)
 	    return activeArea.onEnvironmentEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
 	return NO_APPLICATIONS;
@@ -97,8 +107,15 @@ Application systemApp)
 
     public void updatePopupState()
     {
-	if (!hasProperPopup())
-	    activePopup = false;
+	if (activePopup)
+	{
+	    if (!hasProperPopup())
+		activePopup = false;
+	} else
+	{
+	    if (applications.getActiveAreaOfActiveApp() == null && hasProperPopup())
+		activePopup = true;
+	}
     }
 
     public Area getActiveArea()
@@ -114,20 +131,15 @@ return applications.getActiveAreaOfActiveApp();
 
     public void activateNextArea()
     {
-	if (activePopup)
-	{
-	    if (applications.getActiveAreaOfActiveApp() != null)
-		activePopup = false;
+	Area activeArea = getActiveArea();
+	if (activeArea == null)
 	    return;
-	}
-	Area activeArea = applications.getActiveAreaOfActiveApp();
 	Object[] objs = getWindows().getObjects();
 	Window[] windows = new Window[objs.length];
 	for(int i = 0;i < objs.length;++i)
 	    windows[i] = (Window)objs[i];
 	if (windows == null || windows.length <= 0)
 	{
-	    //	    Log.debug("screen", "no windows");
 	    activePopup = hasProperPopup();
 	    return;
 	}
@@ -135,17 +147,15 @@ return applications.getActiveAreaOfActiveApp();
 	for(index = 0;index < windows.length;index++)
 	    if (windows[index].area == activeArea)
 		break;
-	//	Log.debug("screen", "index=" + index + ", total=" + windows.length);
 	index++;
 	if (index >= windows.length)
 	    index = 0;
-	if (windows[index].popup)
+	activePopup = windows[index].popup;
+	if (!activePopup)
 	{
-	    activePopup = true;
-	    return;
+	    applications.setActiveAreaOfApp(windows[index].app, windows[index].area);
+	    applications.setActiveApp(windows[index].app);
 	}
-	applications.setActiveAreaOfApp(windows[index].app, windows[index].area);
-	applications.setActiveApp(windows[index].app);
     }
 
     TileManager getWindows()

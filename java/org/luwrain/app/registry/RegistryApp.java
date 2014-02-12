@@ -100,7 +100,7 @@ public class RegistryApp implements Application, RegistryActions
 
     public void close()
     {
-	Luwrain.closeApplication(instance);
+	Luwrain.closeApp(instance);
     }
 
     private void createAreas()

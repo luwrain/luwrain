@@ -130,6 +130,6 @@ children = null;
 
     public void closeMailReader()
     {
-	Luwrain.closeApplication(instance);
+	Luwrain.closeApp(instance);
     }
 }

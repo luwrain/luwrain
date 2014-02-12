@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-public class WindowManager 
+class WindowManager 
 {
     private static final int MIN_RANGE_HORIZONTAL = 5;
     private static final int MIN_RANGE_VERTICAL = 2;

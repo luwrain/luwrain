@@ -20,7 +20,7 @@ public interface Interaction
 {
     boolean init(InteractionParams params);
     void close();
-    void startInputEventsAccepting();
+    void startInputEventsAccepting(EventConsumer eventConsumer);
     void stopInputEventsAccepting();
     boolean setDesirableFontSize(int size);
     int getFontSize();

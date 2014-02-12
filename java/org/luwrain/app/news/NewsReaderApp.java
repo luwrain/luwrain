@@ -61,7 +61,7 @@ public class NewsReaderApp implements Application, NewsReaderActions
 
     public void closeNewsReader()
     {
-	Luwrain.closeApplication(instance);
+	Luwrain.closeApp(instance);
     }
 
     public void gotoGroups()

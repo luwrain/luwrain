@@ -51,7 +51,7 @@ public class FetchApp implements Application, FetchActions
 	    Luwrain.message(stringConstructor.processNotFinished());
 	    return;
 	}
-	Luwrain.closeApplication(instance);
+	Luwrain.closeApp(instance);
     }
 
     public void launchFetching()

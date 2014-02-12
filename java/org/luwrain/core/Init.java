@@ -20,10 +20,11 @@ import java.util.*;
 import java.io.*;
 import java.sql.*;
 import org.luwrain.core.registry.Registry;
+import org.luwrain.speech.VoiceMan;
 import org.luwrain.pim.PimManager;
 import org.luwrain.mmedia.EnvironmentSounds;
 
-public class Init
+class Init
 {
     private static final String  PREFIX_CONF_LIST = "--conf-list=";
     private static final String  PREFIX_DATA_DIR = "--data-dir=";
@@ -182,15 +183,52 @@ public class Init
 	Langs.setCurrentLang(new org.luwrain.langs.ru.Language());
 	return true;
     }
+
+    if (lang.equals("en"))
+    {
+	Log.info("init", "using English language in user interface");
+	Langs.setCurrentLang(new org.luwrain.langs.en.Language());
+	return true;
+    }
     Log.warning("init", "unknown language \'" + lang + "\', using English as a default");
     return true;
     }
 
     private boolean initSpeech()
     {
-	//FIXME:
-	SpeechBackEndVoiceMan backend = new SpeechBackEndVoiceMan();
-	backend.connect("localhost", 5511);
+	if (registry.getTypeOf(CoreRegistryValues.SPEECH_TYPE) != Registry.STRING)
+	{
+	    Log.fatal("init", "no registry key " + CoreRegistryValues.SPEECH_TYPE + " needed for obtaining  speech output");
+	    return false;
+	}
+	if (registry.getTypeOf(CoreRegistryValues.SPEECH_HOST) != Registry.STRING)
+	{
+	    Log.fatal("init", "no registry key " + CoreRegistryValues.SPEECH_HOST + " needed for obtaining  speech output");
+	    return false;
+	}
+	if (registry.getTypeOf(CoreRegistryValues.SPEECH_PORT) != Registry.INTEGER)
+	{
+	    Log.fatal("init", "no registry key " + CoreRegistryValues.SPEECH_PORT + " needed for obtaining  speech output");
+	    return false;
+	}
+	final String type = registry.getString(CoreRegistryValues.SPEECH_TYPE);
+	final String host = registry.getString(CoreRegistryValues.SPEECH_HOST);
+	final int port = registry.getInteger(CoreRegistryValues.SPEECH_PORT);
+	if (!type.equals("voiceman"))
+	{
+	    Log.fatal("init", "unsupported type of speech connection: \'" + type + "\'");
+	    return false;
+	}
+	Log.debug("init", "ready to obtain speech output connection with the following parameters:");
+	Log.debug("init", "type: " + type);
+	Log.debug("init", "thost: " + host);
+	Log.debug("init", "port: " + port);
+	VoiceMan backend = new VoiceMan();
+	if (!backend.connect(!host.trim().isEmpty()?host.trim():"localhost", port))
+	{
+	    Log.error("init", "speech output connection failed");
+	    return false;
+	}
 	Speech.setBackEnd(backend);
 	return true;
     }

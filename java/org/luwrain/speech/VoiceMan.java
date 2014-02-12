@@ -14,16 +14,16 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.speech;
 
 import java.net.*;
 import java.io.*;
+import org.luwrain.core.*;
 
-public class SpeechBackEndVoiceMan implements SpeechBackEnd
+public class VoiceMan implements SpeechBackEnd
 {
-    private Socket sock = null;
-
-    private PrintStream output = null;
+    private Socket sock;
+    private PrintStream output;
 
     public boolean connect(String host, int port)
     {
@@ -35,6 +35,8 @@ public class SpeechBackEndVoiceMan implements SpeechBackEnd
 	{
 	    sock = null;
 	    output = null;
+	    Log.error("voiceman", "cannot obtain a connection to VoiceMan speech server:" + e.getMessage());
+	    e.printStackTrace();
 	    return false;
 	}
 	return true;
@@ -42,14 +44,25 @@ public class SpeechBackEndVoiceMan implements SpeechBackEnd
 
     public void close()
     {
-	try {
+	//	try {
 	    if (output != null)
 		output.close();
+	    /*
+	}
+	catch(IOException e)
+	{
+	    Log.error("voiceman", "unexpected error while closing the connection to VoiceMan:" + e.getMessage());
+	    e.printStackTrace();
+	}
+	    */
+	try {
 	    if (sock != null)
 		sock.close();
 	}
 	catch(IOException e)
 	{
+	    Log.error("voiceman", "unexpected error while closing the connection to VoiceMan:" + e.getMessage());
+	    e.printStackTrace();
 	}
 	output = null;
 	sock = null;
@@ -92,5 +105,4 @@ public class SpeechBackEndVoiceMan implements SpeechBackEnd
 	output.println("S:");
 	output.flush();
     }
-
 }

@@ -24,7 +24,7 @@ import java.awt.font.*;
 import org.luwrain.core.Log;
 
 
-public class MainFrame extends Frame
+class MainFrame extends Frame
 {
     private static final int MIN_TABLE_WIDTH = 16;
     private static final int MIN_TABLE_HEIGHT = 8;

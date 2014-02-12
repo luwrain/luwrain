@@ -19,6 +19,7 @@ package org.luwrain.interaction;
 import java.awt.*;
 import java.awt.event.*;
 import org.luwrain.core.events.KeyboardEvent;
+import org.luwrain.core.EventConsumer;
 import org.luwrain.core.Interaction;
 import org.luwrain.core.InteractionParams;
 import org.luwrain.core.Log;
@@ -32,7 +33,8 @@ public class AwtInteraction implements Interaction
     private boolean drawingInProgress = false;
     private String fontName = java.awt.Font.MONOSPACED;
     private int currentFontSize = 14;
-    private boolean acceptingInputEvents = false;
+
+    private EventConsumer eventConsumer;
     private boolean leftAltPressed = false;
     private boolean rightAltPressed = false;
     private boolean controlPressed = false;
@@ -40,7 +42,7 @@ public class AwtInteraction implements Interaction
 
     private void onKeyPress(KeyEvent event)
     {
-	if (!acceptingInputEvents)
+	if (eventConsumer == null)
 	    return;
 	int code;
 	//	System.out.println("" + shiftPressed + " " + controlPressed + " " + leftAltPressed + " " + rightAltPressed);
@@ -138,12 +140,13 @@ public class AwtInteraction implements Interaction
 	default:
 	    return;
 	}
-	org.luwrain.core.Luwrain.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
+	if (eventConsumer != null)
+	    eventConsumer.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
     }
 
     private void onKeyRelease(KeyEvent event)
     {
-	if (!acceptingInputEvents)
+	if (eventConsumer == null)
 	    return;
 	switch(event.getKeyCode())
 	{
@@ -166,7 +169,7 @@ public class AwtInteraction implements Interaction
 
     private void onKeyTyping(KeyEvent event)
     {
-	if (!acceptingInputEvents)
+	if (eventConsumer == null)
 	    return;
 	int code;
 	switch (event.getKeyChar())
@@ -187,10 +190,12 @@ public class AwtInteraction implements Interaction
 	    code = KeyboardEvent.TAB;
 	    break;
 	default:
-	    org.luwrain.core.Luwrain.enqueueEvent(new KeyboardEvent(false, 0, event.getKeyChar(), shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
+	    if (eventConsumer != null)
+		eventConsumer.enqueueEvent(new KeyboardEvent(false, 0, event.getKeyChar(), shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
 	    return;
 	}
-	org.luwrain.core.Luwrain.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
+	if (eventConsumer != null)
+	    eventConsumer.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
     }
 
     public boolean init(InteractionParams params)
@@ -265,14 +270,14 @@ public class AwtInteraction implements Interaction
 	return frame.getTableHeight();
     }
 
-    public void startInputEventsAccepting()
+    public void startInputEventsAccepting(EventConsumer eventConsumer)
     {
-	acceptingInputEvents = true;
+	this.eventConsumer = eventConsumer;
     }
 
     public void stopInputEventsAccepting()
     {
-	acceptingInputEvents = false;
+	eventConsumer = null;
     }
 
     public void startDrawSession()

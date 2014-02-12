@@ -61,7 +61,7 @@ public class CommanderApp implements Application, CommanderActions
 
     public void closeCommander()
     {
-	Luwrain.closeApplication(instance);
+	Luwrain.closeApp(instance);
     }
 
     public void openFiles(String[] fileNames)

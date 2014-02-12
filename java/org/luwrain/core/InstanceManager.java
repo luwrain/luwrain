@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 
-public class InstanceManager
+class InstanceManager
 {
     private class Entry
     {

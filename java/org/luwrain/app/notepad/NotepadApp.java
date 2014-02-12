@@ -106,7 +106,7 @@ public class NotepadApp implements Application, NotepadActions
 
     public void closeNotepad()
     {
-	Luwrain.closeApplication(instance);
+	Luwrain.closeApp(instance);
     }
 
     private String[] readTextFile(String fileName) throws IOException

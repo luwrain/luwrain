@@ -25,14 +25,14 @@ import org.luwrain.core.events.*;
 import org.luwrain.popups.*;
 import org.luwrain.mmedia.EnvironmentSounds;
 
-class Environment
+class Environment implements EventConsumer
 {
     private String[] cmdLine;
     private Registry registry;
     private Interaction interaction;
     private EventQueue eventQueue = new EventQueue();
     private InstanceManager instanceManager = new InstanceManager();
-    private ApplicationRegistry applications = new ApplicationRegistry();
+    private ApplicationRegistry apps = new ApplicationRegistry();
     private PopupRegistry popups = new PopupRegistry();
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
@@ -63,11 +63,11 @@ class Environment
 	    Log.fatal("environment", "the environment is tried to launch twice but that is prohibited");
 	    return;
 	}
-	screenContentManager = new ScreenContentManager(applications, popups, systemApp);
+	screenContentManager = new ScreenContentManager(apps, popups, systemApp);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	actions.fillWithStandardActions(this);
 	appWrappers.fillWithStandardWrappers();
-	interaction.startInputEventsAccepting();
+	interaction.startInputEventsAccepting(this);
 	EnvironmentSounds.play(EnvironmentSounds.STARTUP);//FIXME:
 		eventLoop(new InitialEventLoopStopCondition());
 		interaction.stopInputEventsAccepting();
@@ -85,7 +85,7 @@ class Environment
     //Application management;
 
     //Always full screen;
-    public void launchApplication(Application app)
+    public void launchApp(Application app)
     {
 	if (app == null)
 	    return;
@@ -123,13 +123,13 @@ class Environment
 	    instanceManager.releaseInstance(o);
 	    return;
 	}
-	applications.registerAppSingleVisible(app, activeArea);
+	apps.registerAppSingleVisible(app, activeArea);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	introduceActiveArea();
     }
 
-    public void closeApplication(Object instance)
+    public void closeApp(Object instance)
     {
 	if (instance == null)
 	    return;
@@ -141,9 +141,9 @@ class Environment
 	    message(Langs.staticValue(Langs.APPLICATION_CLOSE_ERROR_HAS_POPUP));
 	    return;
 	}
-	applications.releaseApp(app);
+	apps.releaseApp(app);
 	instanceManager.releaseInstance(instance);
-	screenContentManager.updatePopupState();//Actually not needed but for consistency;
+	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	introduceActiveArea();
     }
@@ -155,7 +155,7 @@ class Environment
 	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);//FIXME:Probably not well suited sound; 
 	    return;
 	}
-	applications.switchNextInvisible();
+	apps.switchNextInvisible();
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	introduceActiveArea();
@@ -328,8 +328,8 @@ class Environment
 	Application app = instanceManager.getAppByInstance(instance);
 	if (app == null)
 	    return;//FIXME:Log message;
-	applications.setActiveAreaOfApp(app, area);
-	if (applications.isActiveApp(app) && !screenContentManager.isPopupAreaActive())
+	apps.setActiveAreaOfApp(app, area);
+	if (apps.isActiveApp(app) && !screenContentManager.isPopupAreaActive())
 	    introduceActiveAreaNoEvent();
 	windowManager.redraw();
     }
