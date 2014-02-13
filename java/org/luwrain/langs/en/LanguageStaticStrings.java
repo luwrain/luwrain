@@ -55,11 +55,11 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	case Langs.EMPTY_TREE_ITEM:
 	    return "Empty tree item";
 	case Langs.TREE_EXPANDED:
-	    return "Expended";
+	    return "Expanded";
 	case Langs.TREE_COLLAPSED:
 	    return "Collapsed";
 	case Langs.TREE_LEVEL:
-	    return "УLevel";
+	    return "Level";
 
 	case Langs.NO_REQUESTED_ACTION:
 	    return "The entered action is unknown in the system";

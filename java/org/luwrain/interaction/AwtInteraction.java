@@ -205,13 +205,26 @@ public class AwtInteraction implements Interaction
 	if (params.fontName != null && !params.fontName.trim().isEmpty())
 	    fontName = params.fontName;
 	currentFontSize = params.initialFontSize;
-	Log.info("awt", "creating window " + params.wndWidth + "x" + params.wndHeight + " at position (" + params.wndLeft + "," + params.wndTop + ")");
+	int wndWidth = params.wndWidth;
+int wndHeight = params.wndHeight;
+Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	if (wndWidth < 0)
+	{
+	    Log.debug("awt", "interaction params have window width equal to " + wndWidth + ", taking screen width " + screenSize.width);
+	    wndWidth = screenSize.width;
+	}
+	if (wndHeight < 0)
+	{
+	    Log.debug("awt", "interaction params have window height equal to " + wndHeight + ", taking screen height " + screenSize.height);
+	    wndHeight = screenSize.height;
+	}
+	Log.info("awt", "creating window " + wndWidth + "x" + wndHeight + " at position (" + params.wndLeft + "," + params.wndTop + ")");
 	Log.info("awt", "initial font size is " + params.initialFontSize);
 	frame = new org.luwrain.interaction.MainFrame(FRAME_TITLE);
 	frame.setInteractionFont(createFont(currentFontSize));
 	frame.setColors(params.fontColor, params.bkgColor, params.splitterColor);
 	frame.setMargin(params.marginLeft, params.marginTop, params.marginRight, params.marginBottom);
-	frame.setSize(params.wndWidth, params.wndHeight);
+	frame.setSize(wndWidth, wndHeight);
 	frame.setFocusTraversalKeysEnabled(false);
 	frame.addKeyListener(new KeyListener() {
 		public void              keyPressed(KeyEvent event)

@@ -221,7 +221,7 @@ class Init
 	}
 	Log.debug("init", "ready to obtain speech output connection with the following parameters:");
 	Log.debug("init", "type: " + type);
-	Log.debug("init", "thost: " + host);
+	Log.debug("init", "host: " + host);
 	Log.debug("init", "port: " + port);
 	VoiceMan backend = new VoiceMan();
 	if (!backend.connect(!host.trim().isEmpty()?host.trim():"localhost", port))
@@ -297,8 +297,7 @@ class Init
 	InteractionParams params = new InteractionParams();
 	String backend = "awt";
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_BACKEND) == Registry.STRING)
-	    backend = registry.getString(CoreRegistryValues.INTERACTION_BACKEND); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_BACKEND + "\' or it has incorrect type, using default value");
+	    backend = registry.getString(CoreRegistryValues.INTERACTION_BACKEND);
 	if (!backend.equals("awt"))
 	{
 	    Log.fatal("init", "unknown interaction back-end \'" + backend + "\', only \'awt\' back-end is currently supported");
@@ -310,75 +309,58 @@ class Init
 	    if (!value.trim().isEmpty())
 		params.fontName = value; else
 		Log.warning("init", "registry value \'" + CoreRegistryValues.INTERACTION_FONT_NAME + "\' is empty, using default value \'" + params.fontName + "\'");
-	}else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_FONT_NAME + "\' or it has incorrect type, using default value \'" + params.fontName + "\'");
+	}
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_INITIAL_FONT_SIZE) == Registry.INTEGER)
-	    params.initialFontSize = registry.getInteger(CoreRegistryValues.INTERACTION_INITIAL_FONT_SIZE); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_INITIAL_FONT_SIZE + "\' or it has incorrect type, using default value");
+	    params.initialFontSize = registry.getInteger(CoreRegistryValues.INTERACTION_INITIAL_FONT_SIZE);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_WND_X) == Registry.INTEGER)
-	    params.wndLeft = registry.getInteger(CoreRegistryValues.INTERACTION_WND_X); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_WND_X + "\' or it has incorrect type, using default value");
+	    params.wndLeft = registry.getInteger(CoreRegistryValues.INTERACTION_WND_X);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_WND_Y) == Registry.INTEGER)
-	    params.wndTop = registry.getInteger(CoreRegistryValues.INTERACTION_WND_Y); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_WND_Y + "\' or it has incorrect type, using default value");
+	    params.wndTop = registry.getInteger(CoreRegistryValues.INTERACTION_WND_Y);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_WND_WIDTH) == Registry.INTEGER)
-	    params.wndWidth = registry.getInteger(CoreRegistryValues.INTERACTION_WND_WIDTH); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_WND_WIDTH + "\' or it has incorrect type, using default value");
+	    params.wndWidth = registry.getInteger(CoreRegistryValues.INTERACTION_WND_WIDTH);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_WND_HEIGHT) == Registry.INTEGER)
-	    params.wndHeight = registry.getInteger(CoreRegistryValues.INTERACTION_WND_HEIGHT); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_WND_HEIGHT + "\' or it has incorrect type, using default value");
+	    params.wndHeight = registry.getInteger(CoreRegistryValues.INTERACTION_WND_HEIGHT);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_MARGIN_LEFT) == Registry.INTEGER)
-	    params.marginLeft = registry.getInteger(CoreRegistryValues.INTERACTION_MARGIN_LEFT); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_MARGIN_LEFT + "\' or it has incorrect type, using default value");
+	    params.marginLeft = registry.getInteger(CoreRegistryValues.INTERACTION_MARGIN_LEFT);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_MARGIN_TOP) == Registry.INTEGER)
-	    params.marginTop = registry.getInteger(CoreRegistryValues.INTERACTION_MARGIN_TOP); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_MARGIN_TOP + "\' or it has incorrect type, using default value");
+	    params.marginTop = registry.getInteger(CoreRegistryValues.INTERACTION_MARGIN_TOP);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_MARGIN_RIGHT) == Registry.INTEGER)
-	    params.marginRight = registry.getInteger(CoreRegistryValues.INTERACTION_MARGIN_RIGHT); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_MARGIN_RIGHT + "\' or it has incorrect type, using default value");
+	    params.marginRight = registry.getInteger(CoreRegistryValues.INTERACTION_MARGIN_RIGHT);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_MARGIN_BOTTOM) == Registry.INTEGER)
-	    params.marginBottom = registry.getInteger(CoreRegistryValues.INTERACTION_MARGIN_BOTTOM); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_MARGIN_BOTTOM + "\' or it has incorrect type, using default value");
-	int fontRed = 255, fontGreen = 255, fontBlue = 255;
-	int bkgRed = 0, bkgGreen = 0, bkgBlue = 0;
-	int splitterRed = 128, splitterGreen = 128, splitterBlue = 128;
+	    params.marginBottom = registry.getInteger(CoreRegistryValues.INTERACTION_MARGIN_BOTTOM);
+	int fontRed = params.fontColor.getRed();
+	int fontGreen = params.fontColor.getGreen();
+	int fontBlue = params.fontColor.getBlue();
+	int bkgRed = params.bkgColor.getRed();
+	int bkgGreen = params.bkgColor.getGreen();
+	int bkgBlue = params.bkgColor.getBlue();
+	int splitterRed = params.splitterColor.getRed();
+	int splitterGreen = params.splitterColor.getGreen();
+	int splitterBlue = params.splitterColor.getBlue();
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_FONT_RED) == Registry.INTEGER)
-	    fontRed = registry.getInteger(CoreRegistryValues.INTERACTION_FONT_RED); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_FONT_RED + "\' or it has incorrect type, using default value");
+	    fontRed = registry.getInteger(CoreRegistryValues.INTERACTION_FONT_RED);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_FONT_GREEN) == Registry.INTEGER)
-	    fontGreen = registry.getInteger(CoreRegistryValues.INTERACTION_FONT_GREEN); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_FONT_GREEN + "\' or it has incorrect type, using default value");
+	    fontGreen = registry.getInteger(CoreRegistryValues.INTERACTION_FONT_GREEN);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_FONT_BLUE) == Registry.INTEGER)
-	    fontBlue = registry.getInteger(CoreRegistryValues.INTERACTION_FONT_BLUE); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_FONT_BLUE + "\' or it has incorrect type, using default value");
+	    fontBlue = registry.getInteger(CoreRegistryValues.INTERACTION_FONT_BLUE);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_BKG_RED) == Registry.INTEGER)
-	    bkgRed = registry.getInteger(CoreRegistryValues.INTERACTION_BKG_RED); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_BKG_RED + "\' or it has incorrect type, using default value");
+	    bkgRed = registry.getInteger(CoreRegistryValues.INTERACTION_BKG_RED); 
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_BKG_GREEN) == Registry.INTEGER)
-	    bkgGreen = registry.getInteger(CoreRegistryValues.INTERACTION_BKG_GREEN); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_BKG_GREEN + "\' or it has incorrect type, using default value");
+	    bkgGreen = registry.getInteger(CoreRegistryValues.INTERACTION_BKG_GREEN);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_BKG_BLUE) == Registry.INTEGER)
-	    bkgBlue = registry.getInteger(CoreRegistryValues.INTERACTION_BKG_BLUE); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_BKG_BLUE + "\' or it has incorrect type, using default value");
+	    bkgBlue = registry.getInteger(CoreRegistryValues.INTERACTION_BKG_BLUE);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_SPLITTER_RED) == Registry.INTEGER)
-	    splitterRed = registry.getInteger(CoreRegistryValues.INTERACTION_SPLITTER_RED); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_SPLITTER_RED + "\' or it has incorrect type, using default value");
+	    splitterRed = registry.getInteger(CoreRegistryValues.INTERACTION_SPLITTER_RED);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_SPLITTER_GREEN) == Registry.INTEGER)
-	    splitterGreen = registry.getInteger(CoreRegistryValues.INTERACTION_SPLITTER_GREEN); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_SPLITTER_GREEN + "\' or it has incorrect type, using default value");
+	    splitterGreen = registry.getInteger(CoreRegistryValues.INTERACTION_SPLITTER_GREEN);
 	if (registry.getTypeOf(CoreRegistryValues.INTERACTION_SPLITTER_BLUE) == Registry.INTEGER)
-	    splitterBlue = registry.getInteger(CoreRegistryValues.INTERACTION_SPLITTER_BLUE); else
-	    Log.warning("init", "no registry value \'" + CoreRegistryValues.INTERACTION_SPLITTER_BLUE + "\' or it has incorrect type, using default value");
+	    splitterBlue = registry.getInteger(CoreRegistryValues.INTERACTION_SPLITTER_BLUE);
 	if (params.initialFontSize < 8)
 	    params.initialFontSize = 8;
 	if (params.wndLeft < 0)
 	    params.wndLeft = 0;
 	if (params.wndTop < 0)
 	    params.wndTop = 0;
-	if (params.wndWidth < 0)
-	    params.wndWidth = 0;
-	if (params.wndHeight < 0)
-	    params.wndHeight = 0;
 	if (params.marginLeft < 0)
 	    params.marginLeft = 0;
 	if (params.marginTop < 0)
@@ -387,10 +369,45 @@ class Init
 	    params.marginRight = 0;
 	if (params.marginBottom < 0)
 	    params.marginBottom = 0;
+	if (fontRed < 0)
+	    fontGreen = 0;
+	if (fontGreen < 0)
+	    fontGreen = 0;
+	if (fontBlue < 0)
+	    fontBlue = 0;
+	if (bkgRed < 0)
+	    bkgGreen = 0;
+	if (bkgGreen < 0)
+	    bkgGreen = 0;
+	if (bkgBlue < 0)
+	    bkgBlue = 0;
+	if (splitterRed < 0)
+	    splitterGreen = 0;
+	if (splitterGreen < 0)
+	    splitterGreen = 0;
+	if (splitterBlue < 0)
+	    splitterBlue = 0;
+	if (fontRed > 255)
+	    fontGreen = 255;
+	if (fontGreen > 255)
+	    fontGreen = 255;
+	if (fontBlue > 255)
+	    fontBlue = 255;
+	if (bkgRed > 255)
+	    bkgGreen = 255;
+	if (bkgGreen > 255)
+	    bkgGreen = 255;
+	if (bkgBlue > 255)
+	    bkgBlue = 255;
+	if (splitterRed > 255)
+	    splitterGreen = 255;
+	if (splitterGreen > 255)
+	    splitterGreen = 255;
+	if (splitterBlue > 255)
+	    splitterBlue = 255;
 	params.fontColor = new java.awt.Color(fontRed, fontGreen, fontBlue);
 	params.bkgColor = new java.awt.Color(bkgRed, bkgGreen, bkgBlue);
 	params.splitterColor = new java.awt.Color(splitterRed, splitterGreen, splitterBlue);
-	//FIXME:Adjust color values to be inside of range between 0 and 255;
 	return interaction.init(params);
     }
 

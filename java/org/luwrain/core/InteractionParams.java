@@ -22,8 +22,8 @@ public class InteractionParams
 {
     public int wndLeft = 0;
     public int wndTop = 0;
-    public int wndWidth = 640;
-    public int wndHeight = 480;
+    public int wndWidth = -1;//-1 means screen with;
+    public int wndHeight = -1;//-1 means screen height;
     public int marginLeft = 16;
     public int marginTop = 16;
     public int marginRight = 16;

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<registry>
-  <regdir name="/org/luwrain/langs">
-    <regvalue name="current" type="string">en</regvalue>
-  </regdir>
-</registry>
