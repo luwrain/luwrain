@@ -16,7 +16,7 @@
 
 package org.luwrain.langs.ru;
 
-public class FetchStringConstructor implements org.luwrain.app.fetch.FetchStringConstructor
+public class FetchStringConstructor implements org.luwrain.app.fetch.StringConstructor
 {
     public String appName()
     {
@@ -28,14 +28,24 @@ public class FetchStringConstructor implements org.luwrain.app.fetch.FetchString
 	return "Отсутствует информация о новостных группах!";
     }
 
-    public String newsFetchingCompleted()
+    public String fetchingCompleted()
     {
-	return "Доставка новостей завершена!";
+	return "Доставка электронной почты и новостей завершена!";
     }
 
-    public String newsFetchingError()
+    public String newsGroupsError()
     {
-	return "Произошла ошибка доставки новостей!";
+	return "Произошла ошибка при доставке информации о новостных группах, доставка новостей пропущена";
+    }
+
+    public String noNewsGroups()
+    {
+	return "Нет групп новостей, доставка новостей пропущена";
+    }
+
+    public String newsFetchingError(String groupName)
+    {
+	return "Произошла ошибка доставки новостей для группы \"" + groupName + "\", группа пропущена";
     }
 
     public String newsGroupFetched(String name, int fresh, int total)
@@ -63,11 +73,32 @@ public class FetchStringConstructor implements org.luwrain.app.fetch.FetchString
 	return "Чтение электронной почты с учётной записи \"" + accountName + "\"";
     }
 
+    public String mailErrorWithAccount(String accountName)
+    {
+	return "Произошла ошибка при доставке почты с учётной записи \"" + accountName + "\", учётная запись пропущена";
+    }
+
     public String connecting(String host)
     {
 	return "Подключение к серверу " + host;
     }
 
+    public String noMailAccounts()
+    {
+	return "Почтовых учётных записей нет, чтение электронной почты пропущено";
+    }
+
+    public String noMailStoring()
+    {
+	return "Нет соединения для хранения электронной почты, чтение почты пропущено";
+    }
+
+    public String mailAccountsProblem()
+    {
+	return "Произошла ошибка при получении списка учётных записей электронной почты, чтение почты пропущено";
+    }
+
+    /*
     public String readingMailInFolder(String folder)
     {
 	return "Открытие каталога \"" + folder + "\"";
@@ -81,5 +112,11 @@ public class FetchStringConstructor implements org.luwrain.app.fetch.FetchString
     public String noMail()
     {
 	return "Нет новых сообщений";
+    }
+*/
+
+    public String fetchedMailMessages(int count)
+    {
+	return "Получено сообщений: " + count;
     }
 }

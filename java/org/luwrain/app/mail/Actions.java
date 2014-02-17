@@ -14,13 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.news;
+package org.luwrain.app.mail;
 
-public interface NewsReaderActions
+interface Actions
 {
-    void gotoGroups();
-    void gotoArticles();
-    void gotoView();
-    void openGroup(int index);
-    void closeNewsReader();
+    void gotoFolders();
+    void gotoSummary();
+    void gotoMessage();
+    void openFolder(Object obj);
+    void close();
 }

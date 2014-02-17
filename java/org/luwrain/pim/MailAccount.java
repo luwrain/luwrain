@@ -18,12 +18,19 @@ package org.luwrain.pim;
 
 public class MailAccount
 {
-    public String name = new String();
-    public String protocol = new String();
-    public String host = new String();
-    public int port = 110;
-    public String file = new String();
-    public String login = new String();
-    public String passwd = new String();
-    public String extInfo = new String();
+    public final static int INCOMING = 1;
+    public final static int RELAY = 2;
+    public final static int RELAY_DEFAULT = 3;
+
+    public final static int POP3 = 1;
+    public final static int POP3_SSL = 2;
+    public final static int SMTP = 3;
+
+    public String name = "";
+    public int type;
+    public int protocol;
+    public String host = "";
+    public int port;
+    public String login = "";
+    public String passwd = "";
 }

@@ -109,4 +109,14 @@ public class RegistryStringConstructor implements org.luwrain.app.registry.Strin
     {
 	return "В добавлении нового параметра отказано";
     }
+
+    public String savingOk()
+    {
+	return "Все изменения успешно сохранены!";
+    }
+
+    public String savingFailed()
+    {
+	return "Некоторые из изменений не могут быть сохранены";
+    }
 }

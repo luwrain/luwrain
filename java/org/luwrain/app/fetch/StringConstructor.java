@@ -16,19 +16,22 @@
 
 package org.luwrain.app.fetch;
 
-public interface FetchStringConstructor
+public interface StringConstructor
 {
     String appName();
     String noNewsGroupsData();
-    String newsFetchingCompleted();
-    String newsFetchingError();
+    String fetchingCompleted();
+    String newsGroupsError();
+    String noNewsGroups();
+    String newsFetchingError(String groupName);
     String newsGroupFetched(String name, int fresh, int total);
     String pressEnterToStart();
     String processAlreadyRunning();
     String processNotFinished();
     String readingMailFromAccount(String accountName);
-    String connecting(String host);
-    String readingMailInFolder(String folder);
-    String readingMessage(int msgNum, int totalCount);
-    String noMail();
+    String fetchedMailMessages(int count);
+    String mailErrorWithAccount(String accountName);
+    String noMailAccounts();
+    String mailAccountsProblem();
+    String noMailStoring();
 }

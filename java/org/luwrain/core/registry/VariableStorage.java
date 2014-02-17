@@ -89,13 +89,7 @@ public class VariableStorage
     {
 	if (path == null || !path.isValidAbsoluteDir() || path.isRootDir())
 	    return false;
-	VariableDirectory parentDir = followPathToDir(path.getParentOfDir());
-	if (parentDir == null)
-	    return false;
-	VariableDirectory dir = new VariableDirectory(con);
-	dir.parentId = parentDir.id;
-	dir.name = path.getLastDirItem();
-	return dir.insert();
+	return ensureDirExists(path) != null;
     }
 
     public boolean addValue(Path path) throws SQLException
@@ -105,7 +99,7 @@ public class VariableStorage
 	VariableDirectory parentDir = followPathToDir(path);
 	if (parentDir == null)
 	{
-	    parentDir = addDirForValue(path);
+	    parentDir = ensureDirExists(path);
 	    if (parentDir == null)
 	    {
 		Log.warning("registry", "adding variable value:adding absent parent directory");
@@ -188,7 +182,7 @@ public class VariableStorage
 	return VariableValue.selectByName(con, dir.id, path.getValueName());
     }
 
-    private VariableDirectory addDirForValue(Path path) throws SQLException
+    private VariableDirectory ensureDirExists(Path path) throws SQLException
     {
 	if (path == null)
 	    return null;
@@ -203,13 +197,12 @@ public class VariableStorage
 		dir = next;
 		continue;
 	    }
-
 	    next = new VariableDirectory(con);
 	next.parentId = dir.id;
 	next.name = s;
 	if (!next.insert())
 	    return null;
-dir = dir.selectSubdirByName(s);
+	dir = dir.selectSubdirByName(s);
 	if (dir == null)
 	    return null;
 	}

@@ -109,4 +109,14 @@ public class RegistryStringConstructor implements org.luwrain.app.registry.Strin
     {
 	return "Insertion of a new registry parameter failed";
     }
+
+    public String savingOk()
+    {
+	return "All changes saved successfully!";
+    }
+
+    public String savingFailed()
+    {
+	return "Some of the changes cannot be saved";
+    }
 }

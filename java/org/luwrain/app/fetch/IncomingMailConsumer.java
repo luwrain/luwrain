@@ -14,50 +14,42 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.news;
+package org.luwrain.app.fetch;
 
 import org.luwrain.core.Log;
-import org.luwrain.controls.*;
 import org.luwrain.pim.*;
+import org.luwrain.network.*;
 
-class GroupModel implements ListModel
+
+class IncomingMailConsumer implements MailConsumer
 {
-    private NewsStoring newsStoring;
-    private StoredNewsGroup[] items;
+    private  int count = 0;
+    private MailStoring mailStoring;
+    private StoredMailGroup mailGroup;
 
-    public GroupModel(NewsStoring newsStoring)
+    public IncomingMailConsumer(MailStoring mailStoring, StoredMailGroup mailGroup)
     {
-	this.newsStoring = newsStoring;
-	refresh();
+	this.mailStoring = mailStoring;
+	this.mailGroup = mailGroup;
     }
 
-    public int getItemCount()
+    public void onMessage(MailMessage mailMessage)
     {
-	return items != null?items.length:0;
-    }
-
-    public Object getItem(int index)
-    {
-	if (items == null || index >= items.length)
-	    return null;
-	return items[index];
-    }
-
-    public void refresh()
-    {
-	if (newsStoring == null)
-	{
-	    items = null;
+	if (mailMessage == null)
 	    return;
-	}
+	count++;
 	try {
-	    items = newsStoring.loadNewsGroups();
+	    mailStoring.addMessageToGroup(mailGroup, mailMessage);
 	}
 	catch(Exception e)
 	{
-	    Log.error("news", "could not construct list of groups:" + e.getMessage());
+	    Log.error("fetch", "the problem while adding new message to mail group:" + e.getMessage());
 	    e.printStackTrace();
-	    items = null;
 	}
+    }
+
+    public int getCount()
+    {
+	return count;
     }
 }

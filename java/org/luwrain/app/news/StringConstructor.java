@@ -14,16 +14,18 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.mail;
+package org.luwrain.app.news;
 
-import javax.mail.Message;
-
-public interface MailGroup
+public interface StringConstructor
 {
-    String getName();
-    boolean hasChildFolders();
-    MailGroup[] getChildGroups();
-    //null means retrieving error, zero lenth means no messages;
-    Message[] getMessages();
-    MailGroup getParentGroup();
+    String appName();
+    String groupAreaName();
+    String summaryAreaName();
+    String viewAreaName();
+    String errorReadingArticles();
+    String readPrefix();
+    String markedPrefix();
+    String noSummaryItems();
+    String noSummaryItemsAbove();
+    String noSummaryItemsBelow();
 }

@@ -21,103 +21,141 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.pim.*;
-import org.luwrain.network.FeedReader;
+import org.luwrain.network.*;
 
-public class FetchThread implements Runnable
+class FetchThread implements Runnable
 {
     public boolean done = false;
-    private FetchStringConstructor stringConstructor;
+    private StringConstructor stringConstructor;
     private Area messageArea;
 
-    public FetchThread(FetchStringConstructor stringConstructor, Area messageArea)
+    public FetchThread(StringConstructor stringConstructor, Area messageArea)
     {
 	this.stringConstructor = stringConstructor;
 	this.messageArea = messageArea;
     }
 
-    public void run()
+    private void fetchMail()
     {
-	done = false;
-	fetchNews();
-	done = true;
+	MailStoring mailStoring = Luwrain.getPimManager().getMailStoring();//FIXME:Must be with new connection since in separate thread;
+	if (mailStoring == null)
+	{
+	    message(stringConstructor.noMailStoring());
+	    return;
+	}
+	StoredMailAccount[] accounts;
+	try {
+	    accounts = mailStoring.loadMailAccounts();
+	}
+	catch(Exception e)
+	{
+	    message(stringConstructor.mailAccountsProblem());
+	    Log.error("fetch", "the problem  while getting a list of mail accounts:" + e.getMessage());
+	    e.printStackTrace();
+	    return;
+	}
+	if (accounts == null || accounts.length < 1)
+	{
+	    message(stringConstructor.noMailAccounts());
+	    return;
+	}
+	for(StoredMailAccount account: accounts)
+	{
+	    try {
+		fetchMailFromAccount(mailStoring, account);
+	    }
+	    catch (Exception e)
+	    {
+		message(stringConstructor.mailErrorWithAccount(account.getName()));
+		Log.error("fetch", "the problem while fetching mail from " + account.getName() + ":" + e.getMessage());
+		e.printStackTrace();
+	    }
+	}
+    }
+
+    private void fetchMailFromAccount(MailStoring mailStoring, StoredMailAccount account) throws Exception
+    {
+	if (mailStoring == null || account == null)
+	    return;
+	StoredMailGroup mailGroup = mailStoring.loadGroupByUri("mailgrp:2");//FIXME:
+	if (mailGroup == null)
+	    return;
+	message(stringConstructor.readingMailFromAccount(account.getName()));
+	IncomingMailConsumer consumer = new IncomingMailConsumer(mailStoring, mailGroup);
+	if (account.getProtocol() == MailAccount.POP3_SSL)
+	{
+	    PopSslFetch popSslFetch = new PopSslFetch(consumer);
+	    popSslFetch.fetch(account.getHost(), account.getPort(), account.getLogin(), account.getPasswd());//FIXME:Password;;
+	} else
+	    Log.warning("fetch", "unknown protocol of incoming account" + account.getProtocol());
+	message(stringConstructor.fetchedMailMessages(consumer.getCount()));
     }
 
     private void fetchNews()
     {
-	try {
-	    NewsStoring newsStoring = Luwrain.getPimManager().getNewsStoring();//FIXME:In independent connection;
-	    if (newsStoring == null)
-	    {
-		Log.error("fetch", "No news storing object");
-		message(stringConstructor.noNewsGroupsData());
-		return;
-	    }
-	    StoredNewsGroup[] groups = newsStoring.loadNewsGroups();
-	    for(int i = 0;i < groups.length;i++)
-	    {
-		Vector<NewsArticle> freshNews = new Vector<NewsArticle>();
-		int totalCount = 0;
-		String[] urls = groups[i].getUrls();
-		for (int k = 0;k < urls.length;k++)
-		{
-		    NewsArticle[] articles = FeedReader.readFeed(new URL(urls[k]));
-		    totalCount += articles.length;
-		    for(int z = 0;z < articles.length;z++)
-			if (newsStoring. countArticlesByUriInGroup(groups[i], articles[z].uri) == 0)
-			    freshNews.add(articles[z]);
-		}
-		message(stringConstructor.newsGroupFetched(groups[i].getName(), freshNews.size(), totalCount));
-		for(int k = 0;k < freshNews.size();k++)
-		    newsStoring.saveNewsArticle(groups[i], freshNews.get(k));
-	    }
-	    message(stringConstructor.newsFetchingCompleted());
+	NewsStoring newsStoring = Luwrain.getPimManager().getNewsStoring();//FIXME:In independent connection;
+	if (newsStoring == null)
+	{
+	    Log.error("fetch", "No news storing object");
+	    message(stringConstructor.noNewsGroupsData());
 	    return;
 	}
-	catch(Exception e)
+	StoredNewsGroup[] groups;
+	try {
+	    groups = newsStoring.loadNewsGroups();
+	}
+	catch (Exception e)
 	{
+	    message(stringConstructor.newsGroupsError());
+	    Log.error("fetch", "the problem while getting list of news groups:" + e.getMessage());
 	    e.printStackTrace();
-	    Log.error("fetch", "could not fetch news articles:" + e.getMessage());
-	    message(stringConstructor.newsFetchingError());
+	    return;
+	}
+	if (groups == null || groups.length < 1)
+	{
+	    message(stringConstructor.noNewsGroups());
+	    return;
+	}
+	for(StoredNewsGroup g: groups)
+	{
+	    try {
+		fetchNewsGroup(newsStoring, g);
+	    }
+	    catch (Exception e)
+	    {
+		message(stringConstructor.newsFetchingError(g.getName()));
+		Log.error("fetch", "the problem while fetching and saving news in group \'" + g.getName() + "\':" + e.getMessage());
+		e.printStackTrace();
+	    }
 	}
     }
 
-    /*
-    private void fetchMail()
+    private void 		fetchNewsGroup(NewsStoring newsStoring, StoredNewsGroup group) throws Exception
     {
-	MailStoring mailStoring = PimManager.createMailStoring();
-	if (mailStoring == null)
+	Vector<NewsArticle> freshNews = new Vector<NewsArticle>();
+	int totalCount = 0;
+	String[] urls = group.getUrls();
+	for (int k = 0;k < urls.length;k++)
 	{
-	    addLine("FIXME:No database connection");
-	    return;
+	    NewsArticle[] articles = FeedReader.readFeed(new URL(urls[k]));
+	    totalCount += articles.length;
+	    for(NewsArticle a: articles)
+		if (newsStoring. countArticlesByUriInGroup(group, a.uri) == 0)
+		    freshNews.add(a);
 	}
-	final SimpleArea a = this;
-	Properties p = new Properties();
-	Session session = Session.getInstance(p, null);
-	MailFetching mailFetching = new MailFetching(session, new FetchProgressListener(){
-		SimpleArea thisArea = a;
-		public void onProgressLine(String line)
-		{
-		    thisArea.addLine(line);
-		    Speech.say(line);
-		}
-	    }, stringConstructor, false, mailStoring);
-	try {
-	    StoredMailAccount accounts[] = mailStoring.loadMailAccounts();
-	    for(int i = 0;i < accounts.length;i++)
-	    {
-		if (!accounts[i].getProtocol().equals("pop3"))
-		    continue;
-		addLine(stringConstructor.readingMailFromAccount(accounts[i].getName()));
-		mailFetching.fetchPop3(new URLName("pop3", accounts[i].getHost(), accounts[i].getPort(), accounts[i].getFile(), accounts[i].getLogin(), accounts[i].getPasswd()));
-	    }
-	}
-	catch(Exception e)
-	{
-	    addLine("Error: " + e.getMessage());
-	    e.printStackTrace();
-	}
+	message(stringConstructor.newsGroupFetched(group.getName(), freshNews.size(), totalCount));
+	for(int k = 0;k < freshNews.size();k++)
+	    newsStoring.saveNewsArticle(group, freshNews.get(k));
     }
-    */
+
+    public void run()
+    {
+	done = false;
+	fetchMail();
+	fetchNews();
+	message(stringConstructor.fetchingCompleted());
+	done = true;
+    }
 
     private void message(String text)
     {

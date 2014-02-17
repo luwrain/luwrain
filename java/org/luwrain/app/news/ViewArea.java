@@ -21,10 +21,10 @@ import org.luwrain.core.events.*;
 
 public class ViewArea extends SimpleArea
 {
-    private NewsReaderStringConstructor stringConstructor;
-    private NewsReaderActions actions;
+    private StringConstructor stringConstructor;
+    private Actions actions;
 
-    public ViewArea(NewsReaderActions actions, NewsReaderStringConstructor stringConstructor)
+    public ViewArea(Actions actions, StringConstructor stringConstructor)
     {
 	super(stringConstructor.viewAreaName());
 	this.actions =  actions;
@@ -62,7 +62,7 @@ public class ViewArea extends SimpleArea
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.CLOSE:
-	    actions.closeNewsReader();
+	    actions.close();
 	    return true;
 	case EnvironmentEvent.INTRODUCE:
 	    Speech.say(stringConstructor.appName() + " " + stringConstructor.viewAreaName());

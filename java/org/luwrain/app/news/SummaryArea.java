@@ -22,13 +22,13 @@ import org.luwrain.pim.*;
 
 public class SummaryArea implements Area
 {
-    private NewsReaderStringConstructor stringConstructor;
-    private NewsReaderActions actions;
+    private StringConstructor stringConstructor;
+    private Actions actions;
     private StoredNewsArticle articles[];
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public SummaryArea(NewsReaderActions actions, NewsReaderStringConstructor stringConstructor)
+    public SummaryArea(Actions actions, StringConstructor stringConstructor)
     {
 	this.stringConstructor = stringConstructor;
 	this.actions = actions;
@@ -243,7 +243,7 @@ public class SummaryArea implements Area
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.CLOSE:
-	    actions.closeNewsReader();
+	    actions.close();
 	    return true;
 	case EnvironmentEvent.INTRODUCE:
 	    Speech.say(stringConstructor.appName() + " " + stringConstructor.summaryAreaName());

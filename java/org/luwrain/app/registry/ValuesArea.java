@@ -29,8 +29,19 @@ class ValueItem
     public boolean readOnly = false;
     public int type = Registry.STRING;
     public EmbeddedSingleLineEdit edit;
-    public String value;
-    public boolean boolValue;
+    public String value, initialValue;
+    public boolean boolValue, initialBoolValue;
+
+    public boolean isModified()
+    {
+	if (readOnly)
+	    return false;
+	if (type == Registry.BOOLEAN)
+	    return boolValue != initialBoolValue;
+	if (value == null || initialValue == null)
+	    return false;
+	return !value.equals(initialValue);
+    }
 } 
 
 class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
@@ -72,16 +83,19 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	    case Registry.STRING:
 		i.type = Registry.STRING;
 		i.value = registry.getString(dir.getPath() + "/" + s);
+		i.initialValue = i.value;
 		i.edit = new EmbeddedSingleLineEdit(this, this, i.name.length() + 3, n.size());
 		break;
 	    case Registry.INTEGER:
 		i.type = Registry.INTEGER;
 		i.value = "" + registry.getInteger(dir.getPath() + "/" + s);
+		i.initialValue = i.value;
 		i.edit = new EmbeddedSingleLineEdit(this, this, i.name.length() + 3, n.size());
 		break;
 	    case Registry.BOOLEAN:
 		i.type = Registry.BOOLEAN;
 		i.boolValue = registry.getBoolean(dir.getPath() + "/" + s);
+		i.initialBoolValue = i.boolValue;
 		i.edit = new EmbeddedSingleLineEdit(this, this, i.name.length() + 3, n.size());
 		break;
 	    }
@@ -105,6 +119,63 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	    return;
 	}
 	open(dir);
+    }
+
+    public boolean hasModified()
+    {
+	if (items == null)
+	    return false;
+	for(ValueItem i: items)
+	    if (i.isModified())
+		return true;
+	return false;
+    }
+
+    public void save()
+    {
+	if (items == null || dir == null)
+	    return;
+	boolean hasProblems = false;
+	for(ValueItem i: items)
+	{
+	    {
+		if (!i.isModified())
+		    continue;
+		final String path = dir.getPath() + "/" + i.name;
+		switch (i.type)
+		{
+		case Registry.STRING:
+		    if (registry.setString(path, i.value))
+			i.initialValue = i.value; else
+			hasProblems = true;
+		    break;
+		case Registry.INTEGER:
+		try {
+		    if (registry.setInteger(path, Integer.parseInt(i.value)))
+			i.initialValue = i.value; else
+			hasProblems = true;
+		}
+		catch(NumberFormatException e)
+		{
+		    hasProblems = true;
+		}
+		break;
+		case Registry.BOOLEAN:
+		    if (registry.setBoolean(path, i.boolValue))
+			i.initialBoolValue = i.boolValue; else
+			hasProblems = true;
+		    break;
+		}
+	    }
+	}
+	if (hasProblems)
+	    Luwrain.message(stringConstructor.savingFailed()); else
+	    Luwrain.message(stringConstructor.savingOk());
+    }
+
+    public RegistryDir getOpenedDir()
+    {
+	return dir;
     }
 
     public int getLineCount()
@@ -150,10 +221,15 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
     {
 	switch (event.getCode())
 	{
+	case EnvironmentEvent.SAVE:
+	case EnvironmentEvent.OK:
+	    save();
+	    return true;
 	case EnvironmentEvent.CLOSE:
 	    actions.close();
 	    return true;
 	    case EnvironmentEvent.REFRESH:
+		//FIXME:Check if there are unsaved changes
 		refresh();
 		break;
 	}
@@ -228,7 +304,7 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	default:
 	    return false;
 	}
-	refresh();
+	loadNewlyInsertedItems();
 	if (items != null)
 	    for(int i = 0;i < items.length;++i)
 		if (items[i].name.equals(name))
@@ -310,5 +386,10 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	if (item.type == Registry.BOOLEAN)
 	    res += item.boolValue?stringConstructor.yes():stringConstructor.no();
 	return res;
+    }
+
+    private void loadNewlyInsertedItems()
+    {
+	//FIXME:
     }
 }

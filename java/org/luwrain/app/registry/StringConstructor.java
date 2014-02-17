@@ -36,4 +36,6 @@ public interface StringConstructor
     String parameterNameMayNotBeEmpty();
     String invalidParameterType(String type);
     String parameterInsertionFailed();
+    String savingOk();
+    String savingFailed();
 }

@@ -16,15 +16,12 @@
 
 package org.luwrain.pim;
 
-import java.sql.SQLException;
-
 public interface MailStoring
 {
-    StoredMailGroup loadRootGroup() throws SQLException;
-    StoredMailGroup[] loadChildGroups(StoredMailGroup parentGroup) throws SQLException;
-    StoredMailMessage[] loadMessagesFromGroup(StoredMailGroup mailGroup) throws SQLException;
-    void addMessageToGroup(StoredMailGroup mailGroup, MailMessage message) throws SQLException;
-    StoredMailAccount[] loadMailAccounts()throws SQLException;
-    String getStringIdentOfGroup(StoredMailGroup mailGroup);
-    StoredMailGroup loadGroupByStringIdent(String ident) throws SQLException;
+    StoredMailGroup loadRootGroup() throws Exception;
+    StoredMailGroup[] loadChildGroups(StoredMailGroup parentGroup) throws Exception;
+    StoredMailGroup loadGroupByUri(String uri) throws Exception;
+    StoredMailAccount[] loadMailAccounts() throws Exception;
+    StoredMailMessage[] loadMessagesFromGroup(StoredMailGroup mailGroup) throws Exception;
+    void addMessageToGroup(StoredMailGroup mailGroup, MailMessage message) throws Exception;
 }

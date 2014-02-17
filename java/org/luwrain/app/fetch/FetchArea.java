@@ -26,59 +26,50 @@ import org.luwrain.pim.MailStoring;
 import javax.mail.*;
 import java.util.*;
 
-public class FetchArea extends SimpleArea
+class FetchArea extends SimpleArea
 {
-    private FetchActions actions;
-    private FetchStringConstructor stringConstructor;
+    private Actions actions;
+    private StringConstructor stringConstructor;
 
-    public FetchArea(FetchActions actions, FetchStringConstructor stringConstructor)
+    public FetchArea(Actions actions, StringConstructor stringConstructor)
     {
-	super("Fetch area");//FIXME:
+	super(stringConstructor.appName());
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
 	addLine(stringConstructor.pressEnterToStart());
+	addLine("");
 	addLine("");
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (super.onKeyboardEvent(event ))
-	    return true;
-
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ENTER &&
-	    !event.isModified())
+	if (event.isCommand() && !event.isModified() &&
+	    event.getCommand() == KeyboardEvent.ENTER)
 	{
 	    actions.launchFetching();
 	    return true;
 	}
-
-	return false;
+	return super.onKeyboardEvent(event);
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.THREAD_SYNC)
+	switch(event.getCode())
 	{
+	case EnvironmentEvent.THREAD_SYNC:
 	    MessageLineEvent messageLineEvent = (MessageLineEvent)event;
-	    addLine(messageLineEvent.message);
+	    if (getLineCount() > 1)
+		setLine(getLineCount() - 1, messageLineEvent.message); else
+		addLine(messageLineEvent.message);
+	    addLine("");
+	    if (messageLineEvent.message.equals(stringConstructor.fetchingCompleted()))
+		Luwrain.message(messageLineEvent.message);
 	    return true;
-	}
-	switch (event.getCode())
-	{
 	case EnvironmentEvent.CLOSE:
-	    actions.closeFetchApp();
-	    return true;
-	case EnvironmentEvent.INTRODUCE:
-	    Speech.say(stringConstructor.appName());
+	    actions.close();
 	    return true;
 	default:
 	    return false;
 	}
-    }
-
-    public String getName()
-    {
-	return stringConstructor.appName();
     }
 }

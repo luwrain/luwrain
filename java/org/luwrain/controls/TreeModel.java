@@ -19,7 +19,10 @@ package org.luwrain.controls;
 public interface TreeModel
 {
     Object getRoot();
+    boolean isLeaf(Object node);
+    void beginChildEnumeration(Object obj);
     int getChildCount(Object parent);
     Object getChild(Object parent, int index);
-    boolean isLeaf(Object node);
+    void endChildEnumeration(Object obj);
+
 }

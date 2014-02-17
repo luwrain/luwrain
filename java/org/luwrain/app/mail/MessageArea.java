@@ -23,10 +23,10 @@ import org.luwrain.core.events.*;
 
 public class MessageArea extends SimpleArea
 {
-    private MailReaderStringConstructor stringConstructor;
-    private MailReaderActions actions;
+    private StringConstructor stringConstructor;
+    private Actions actions;
 
-    public MessageArea(MailReaderActions actions, MailReaderStringConstructor stringConstructor)
+    public MessageArea(Actions actions, StringConstructor stringConstructor)
     {
 	super(stringConstructor.messageAreaName());
 	this.actions =  actions;
@@ -62,7 +62,7 @@ public class MessageArea extends SimpleArea
 	//Tab;
 	if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB && !event.isModified())
 	{
-	    actions.gotoGroups();
+	    actions.gotoFolders();
 	    return true;
 	}
 	return false;
@@ -72,7 +72,7 @@ public class MessageArea extends SimpleArea
     {
 	if (event.getCode() == EnvironmentEvent.CLOSE)
 	{
-	    actions.closeMailReader();
+	    actions.close();
 	    return true;
 	}
 	return false;

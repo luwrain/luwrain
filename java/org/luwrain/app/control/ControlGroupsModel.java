@@ -45,6 +45,20 @@ class ControlGroupsModel implements TreeModel
 	return root;
     }
 
+    public boolean isLeaf(Object node)
+    {
+	if (node == root)
+	    return false;
+	if (node == news)
+	    return newsGroups == null || newsGroups.length <= 0;
+	return true;
+    }
+
+    public void beginChildEnumeration(Object node)
+    {
+	//FIXME:
+    }
+
     public int getChildCount(Object parent)
     {
 	if (parent == root)
@@ -63,13 +77,9 @@ class ControlGroupsModel implements TreeModel
 	return null;
     }
 
-    public boolean isLeaf(Object node)
+    public void endChildEnumeration(Object node)
     {
-	if (node == root)
-	    return false;
-	if (node == news)
-	    return newsGroups == null || newsGroups.length <= 0;
-	return true;
+	//FIXME:
     }
 
     private void createItems()

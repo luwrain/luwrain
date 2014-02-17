@@ -43,7 +43,7 @@ class StoredNewsGroupRegistry implements StoredNewsGroup
 	ensureValid();
 	if (name == null || name.trim().isEmpty())
 	    throw new ValidityException("Trying to set empty name of the news group");
-	RegistryUpdateWrapper.setString(registry, NewsStoringRegistry.GROUPS_PATH + id + "/title", name);
+	RegistryUpdateWrapper.setString(registry, NewsStoringRegistry.GROUPS_PATH + id + "/name", name);
 	this.name = name;
     }
 

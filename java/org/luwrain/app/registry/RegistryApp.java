@@ -14,13 +14,18 @@
    General Public License for more details.
 */
 
+//FIXME:Delete directory;
+//FIXME:Rename directory;
+//FIXME:Refresh on inserting;
+//FIXME:Saving values on values inserting;
+
 package org.luwrain.app.registry;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.registry.Registry;
 import org.luwrain.controls.*;
-import org.luwrain.popups.SimpleLinePopup;
+import org.luwrain.popups.*;
 
 public class RegistryApp implements Application, RegistryActions
 {
@@ -69,8 +74,18 @@ public class RegistryApp implements Application, RegistryActions
 
     public void openDir(RegistryDir dir)
     {
-	if (dir == null)
+	if (dir == null || dir.equals(valuesArea.getOpenedDir()))
 	    return;
+	if (valuesArea.hasModified())
+	{
+	    YesNoPopup popup = new YesNoPopup("Saving values", "Are you want to loose changes?", true);//FIXME:
+	    Luwrain.popup(instance, popup, popup.closing);
+	    if (popup.closing.cancelled() || !popup.getResult())
+	    {
+		gotoValues();
+		return;
+	    }
+	}
 	    valuesArea.open(dir);
 	    Luwrain.setActiveArea(instance, valuesArea);
     }
@@ -96,6 +111,8 @@ public class RegistryApp implements Application, RegistryActions
 	    Luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.getText()));
 	    return;
 	}
+	    dirsArea.refresh();
+
     }
 
     public void close()

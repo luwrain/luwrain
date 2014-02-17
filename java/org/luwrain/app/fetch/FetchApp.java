@@ -18,10 +18,10 @@ package org.luwrain.app.fetch;
 
 import org.luwrain.core.*;
 
-public class FetchApp implements Application, FetchActions
+public class FetchApp implements Application, Actions
 {
     private Object instance;
-    FetchStringConstructor stringConstructor;
+    private StringConstructor stringConstructor;
     private FetchArea fetchArea;
     private FetchThread fetchThread ;
 
@@ -33,25 +33,10 @@ public class FetchApp implements Application, FetchActions
 	    Log.error("fetch", "no string constructor for fetch application");
 	    return false;
 	}
-	stringConstructor = (FetchStringConstructor)o;
+	stringConstructor = (StringConstructor)o;
 	fetchArea = new FetchArea(this, stringConstructor);
 	this.instance = instance;
 	return true;
-    }
-
-    public AreaLayout getAreasToShow()
-    {
-	return new AreaLayout(fetchArea);
-    }
-
-    public void closeFetchApp()
-    {
-	if (fetchThread != null && !fetchThread.done)
-	{
-	    Luwrain.message(stringConstructor.processNotFinished());
-	    return;
-	}
-	Luwrain.closeApp(instance);
     }
 
     public void launchFetching()
@@ -65,5 +50,20 @@ public class FetchApp implements Application, FetchActions
 	fetchThread = new FetchThread(stringConstructor, fetchArea);
 	Thread t = new Thread(fetchThread);
 	t.start();
+    }
+
+    public AreaLayout getAreasToShow()
+    {
+	return new AreaLayout(fetchArea);
+    }
+
+    public void close()
+    {
+	if (fetchThread != null && !fetchThread.done)
+	{
+	    Luwrain.message(stringConstructor.processNotFinished());
+	    return;
+	}
+	Luwrain.closeApp(instance);
     }
 }

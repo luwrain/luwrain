@@ -16,24 +16,21 @@
 
 package org.luwrain.pim;
 
-import java.sql.SQLException;
-import java.sql.Connection;
+import org.luwrain.core.registry.Registry;
 
-public class StoredMailGroupSql implements StoredMailGroup
+class StoredMailGroupRegistry implements StoredMailGroup
 {
-    private Connection con = null;
+    private Registry registry;
 
-    public long id = 0;
-    public long parentGroupId = 0;
-    public String name = new String();
-    public String groupType = new String();
+    public long id;
+    public long parentId = 0;
+    public String name = "";
     public int orderIndex = 0;
     public int expireAfterDays = 0;
-    public String extInfo = new String();
 
-    public     StoredMailGroupSql(Connection con)
+    public     StoredMailGroupRegistry(Registry registry)
     {
-	this.con = con;
+	this.registry = registry;
     }
 
     public String getName()
@@ -41,17 +38,7 @@ public class StoredMailGroupSql implements StoredMailGroup
 	return name;
     }
 
-    public void setName(String name) throws SQLException
-    {
-	//FIXME:
-    }
-
-    public String getGroupType()
-    {
-	return groupType;
-    }
-
-    public void setGroupType(String value) throws SQLException
+    public void setName(String name) throws Exception
     {
 	//FIXME:
     }
@@ -61,7 +48,7 @@ public class StoredMailGroupSql implements StoredMailGroup
 	return orderIndex;
     }
 
-    public void setOrderIndex(int index) throws SQLException
+    public void setOrderIndex(int index) throws Exception
     {
 	//FIXME:
     }
@@ -71,18 +58,26 @@ public class StoredMailGroupSql implements StoredMailGroup
 	return expireAfterDays;
     }
 
-    public void setExpireAfterDays(int count) throws SQLException
+    public void setExpireAfterDays(int count) throws Exception
     {
 	//FIXME:
     }
 
-    public String getExtInfo()
+    public String toString()
     {
-	return extInfo;
+	return name != null?name:"";
     }
 
-    public void setExtInfo(String value) throws SQLException
+    public boolean equals(Object o)
     {
-	//FIXME:
+	StoredMailGroupRegistry g;
+	try {
+	    g = (StoredMailGroupRegistry)o;
+	}
+	catch(ClassCastException e)
+	{
+	    return false;
+	}
+	return id == g.id;
     }
 }

@@ -22,7 +22,7 @@ import org.luwrain.core.registry.Registry;
 
 abstract class NewsStoringRegistry implements NewsStoring
 {
-    public final static String GROUPS_PATH = "/org/luwrain/news/groups/";
+    public final static String GROUPS_PATH = "/org/luwrain/pim/news/groups/";
 
     private Registry registry;
 
@@ -43,6 +43,7 @@ abstract class NewsStoringRegistry implements NewsStoring
 	    if (g != null)
 		groups.add(g);
 	}
+	Log.debug("pim", "found " + groups.size() + " news groups");
 	return groups.toArray(new StoredNewsGroup[groups.size()]);
     }
 
@@ -60,30 +61,18 @@ abstract class NewsStoringRegistry implements NewsStoring
 	    return null;
 	}
 	final String path = GROUPS_PATH + name;
-	if (registry.getTypeOf(path + "/title") != Registry.STRING)
+	if (registry.getTypeOf(path + "/name") != Registry.STRING)
 	{
 	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'title\'");
 	    return null;
 	}
-	if (registry.getTypeOf(path + "/expire-days") != Registry.INTEGER)
-	{
-	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'expire-days\'");
-	    return null;
-	}
-	if (registry.getTypeOf(path + "/order-index") != Registry.INTEGER)
-	{
-	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'order-index\'");
-	    return null;
-	}
-	if (registry.getTypeOf(path + "/media-content-type") != Registry.STRING)
-	{
-	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'sort-media-content-type\'");
-	    return null;
-	}
-	g.name = registry.getString(path + "/title");
-	g.expireAfterDays = registry.getInteger(path + "expire-days");
-	g.orderIndex = registry.getInteger(path + "order-index");
-	g.mediaContentType = registry.getString(path + "media-content-type");
+	g.name = registry.getString(path + "/name");
+	if (registry.getTypeOf(path + "/expire-days") == Registry.INTEGER)
+	    g.expireAfterDays = registry.getInteger(path + "expire-days");
+	if (registry.getTypeOf(path + "/order-index") == Registry.INTEGER)
+	    g.orderIndex = registry.getInteger(path + "order-index");
+	if (registry.getTypeOf(path + "/media-content-type") == Registry.STRING)
+	    g.mediaContentType = registry.getString(path + "media-content-type");
 	String[] values = registry.getValues(path);
 	if (values == null)
 	    return null;

@@ -16,18 +16,12 @@
 
 package org.luwrain.pim;
 
-import java.sql.SQLException;
-
 public interface StoredMailGroup
 {
     String getName();
-    void setName(String name) throws SQLException;
-    String getGroupType();
-    void setGroupType(String value) throws SQLException;
+    void setName(String name) throws Exception;
     int getOrderIndex();
-    void setOrderIndex(int index) throws SQLException;
+    void setOrderIndex(int index) throws Exception;
     int getExpireAfterDays();
-    void setExpireAfterDays(int count) throws SQLException;
-    String getExtInfo();
-    void setExtInfo(String value) throws SQLException;
+    void setExpireAfterDays(int count) throws Exception;
 }

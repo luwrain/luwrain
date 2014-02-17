@@ -16,12 +16,12 @@
 
 package org.luwrain.app.mail;
 
-public interface MailReaderStringConstructor
+public interface StringConstructor
 {
-    String groupAreaName();
+    String foldersAreaName();
     String summaryAreaName();
     String messageAreaName();
-    String mailGroupsRoot();
+    String mailFoldersRoot();
     String readPrefix();
     String markedPrefix();
     String emptySummaryArea();

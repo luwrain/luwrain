@@ -16,6 +16,7 @@
 
 package org.luwrain.app.registry;
 
+import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.core.registry.Registry;
@@ -26,6 +27,7 @@ class RegistryDirsModel implements TreeModel
     private StringConstructor stringConstructor;
     private Registry registry = Luwrain.getRegistry();
     private RegistryDir root;
+    private AbstractMap<RegistryDir, String[]> dirsCache = new HashMap<RegistryDir, String[]>();
 
     public RegistryDirsModel(RegistryActions actions, StringConstructor stringConstructor)
     {
@@ -39,47 +41,46 @@ class RegistryDirsModel implements TreeModel
 	return root;
     }
 
+    public boolean isLeaf(Object node)
+    {
+	if (node == null)
+	    return true;
+	RegistryDir dir = (RegistryDir)node;
+	String[] children = registry.getDirectories(dir.getPath());
+	return children == null || children .length < 1;
+    }
+
+    public void beginChildEnumeration(Object node)
+    {
+	if (node == null)
+	    return;
+	RegistryDir dir = (RegistryDir)node;
+	String[] children = registry.getDirectories(dir.getPath());
+	if (children != null)
+	    dirsCache.put(dir, children);
+    }
+
     public int getChildCount(Object parent)
     {
 	if (parent == null)
 	    return 0;
-	RegistryDir dir ;
-	try {
-	    dir = (RegistryDir)parent;
-	}
-	catch (ClassCastException e)
-	{
-	    Log.warning("registry-app", "trying to get child count  of non registry item:" + e.getMessage());
-	    e.printStackTrace();
-	    return 0;
-	}
-	String[] children = registry.getDirectories(dir.getPath());
+	String[] children = dirsCache.get((RegistryDir)parent);
 	return children != null?children.length:0;
     }
 
     public Object getChild(Object parent, int index)
     {
-	//FIXME:extremely ineffective, must be rewritten;
 	if (parent == null)
-	    return null;
-	RegistryDir dir ;
-	try {
-	    dir = (RegistryDir)parent;
-	}
-	catch (ClassCastException e)
-	{
-	    Log.warning("registry-app", "trying to get children count  of non registry item:" + e.getMessage());
-	    e.printStackTrace();
-	    return null;
-	}
-	String[] children = registry.getDirectories(dir.getPath());
-	if (children == null || index >= children.length)
-	    return null;
-	return new RegistryDir(dir, children[index]);
+	    return 0;
+	String[] children = dirsCache.get((RegistryDir)parent);
+	if (children != null && index < children.length)
+	    return new RegistryDir((RegistryDir)parent, children[index]);
+	return null;
     }
 
-    public boolean isLeaf(Object node)
+    public void endChildEnumeration(Object node)
     {
-	return getChildCount(node) < 1;
+	if (dirsCache.containsKey((RegistryDir)node))
+	    dirsCache.remove((RegistryDir)node);
     }
 }

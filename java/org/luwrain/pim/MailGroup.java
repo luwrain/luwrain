@@ -18,9 +18,7 @@ package org.luwrain.pim;
 
 public class MailGroup
 {
-    public String name = new String();
-    public String groupType = new String();
+    public String name = "";
     public int orderIndex = 0;
     public int expireAfterDays = 0;
-    public String extInfo = new String();
 }

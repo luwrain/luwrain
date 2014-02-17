@@ -18,9 +18,9 @@ package org.luwrain.langs.ru;
 
 import java.util.*;
 
-public class MailReaderStringConstructor implements org.luwrain.app.mail.MailReaderStringConstructor
+class MailReaderStringConstructor implements org.luwrain.app.mail.StringConstructor
 {
-    public String groupAreaName()
+    public String foldersAreaName()
     {
 	return "Список почтовых групп";
     }
@@ -35,7 +35,7 @@ public class MailReaderStringConstructor implements org.luwrain.app.mail.MailRea
 	return "Просмотр сообщения";
     }
 
-    public String mailGroupsRoot()
+    public String mailFoldersRoot()
     {
 	return "Почтовые группы";
     }

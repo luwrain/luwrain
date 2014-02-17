@@ -14,18 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.news;
+package org.luwrain.app.fetch;
 
-public interface NewsReaderStringConstructor
+interface Actions
 {
-    String appName();
-    String groupAreaName();
-    String summaryAreaName();
-    String viewAreaName();
-    String errorReadingArticles();
-    String readPrefix();
-    String markedPrefix();
-    String noSummaryItems();
-    String noSummaryItemsAbove();
-    String noSummaryItemsBelow();
+    void launchFetching();
+    void close();
 }

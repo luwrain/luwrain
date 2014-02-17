@@ -16,106 +16,53 @@
 
 package org.luwrain.app.mail;
 
-import java.io.*;
 import java.util.*;
-import javax.mail.*;
-import javax.mail.internet.*;
-import org.luwrain.pim.StoredMailGroup;
-import org.luwrain.pim.MailStoring;
-import org.luwrain.pim.PimManager;
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
+import org.luwrain.pim.*;
+import org.luwrain.controls.*;
 
-public class MailReaderApp implements Application, MailReaderActions
+public class MailReaderApp implements Application, Actions
 {
-    private static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
-
-    private Object instance = null;
-    private MailReaderStringConstructor stringConstructor = null;
-    private GroupArea groupArea;
+    private Object instance;
+    private StringConstructor stringConstructor;
+    private FoldersTreeModel foldersModel;
+    private TreeArea foldersArea;
     private SummaryArea summaryArea;
     private MessageArea messageArea;
     MailStoring mailStoring;
-
-    private Session session;
-    private MailGroup topLevelGroups[]; 
-    private RootMailGroup rootGroup;
-
-    private void initSession()
-    {
-	Properties p = new Properties();
-	//	p.setProperty("mail.pop3.socketFactory.class", SSL_FACTORY);
-	//	p.setProperty("mail.pop3.socketFactory.fallback", "false");
-	//	p.setProperty("mail.pop3.port",  "995");
-	//	p.setProperty("mail.pop3.socketFactory.port", "995");//FIXME:
-	session = Session.getInstance(p, null);
-    }
-
-    private void fillTopLevelGroups()
-    {
-	rootGroup = new RootMailGroup(stringConstructor);
-	Vector<MailGroup> groups = new Vector<MailGroup>();
-	if (mailStoring != null)
-	{
-	    StoredMailGroup storedRoot;
-	    StoredMailGroup[] children;
-	    try {
-		storedRoot = mailStoring.loadRootGroup();
-		children = mailStoring.loadChildGroups(storedRoot);
-	    }
-	    catch(Exception e)
-	    {
-		storedRoot = null;
-children = null;
-		//FIXME:Log report;
-		groups.add(new EmptyMailGroup(rootGroup, "(Ошибка доставки групп)"));
-	    }
-	    if (storedRoot != null && children != null)
-		for(int i = 0;i < children.length;i++)
-		    groups.add(new LocalGroup(rootGroup, mailStoring, children[i]));
-	} else
-	    groups.add(new EmptyMailGroup(rootGroup, "(Нет соединения с базой данных)"));//FIXME:
-	//FIXME:Online groups;
-	topLevelGroups = new MailGroup[groups.size()];
-	Iterator<MailGroup> it = groups.iterator();
-	int k = 0;
-	while(it.hasNext())
-	    topLevelGroups[k++] = it.next();
-	rootGroup.setChildGroups(topLevelGroups);
-    }
 
     public boolean onLaunch(Object instance)
     {
 	Object o = Langs.requestStringConstructor("mail-reader");
 	if (o == null)
 	    return false;
-	stringConstructor = (MailReaderStringConstructor)o;
+	stringConstructor = (StringConstructor)o;
 	mailStoring = Luwrain.getPimManager().getMailStoring();
 	if (mailStoring == null)
 	{
-	    //FIXME:
+	    Luwrain.message("No mail storing");//FIXME:string constructor; ;
+	    return false;
 	}
-	initSession();
-	fillTopLevelGroups();
-	groupArea = new GroupArea(this, stringConstructor, new MailGroupTreeModel(rootGroup));
-	summaryArea = new SummaryArea(this, stringConstructor);
-	messageArea = new MessageArea(this, stringConstructor);
+	foldersModel = new FoldersTreeModel(mailStoring, stringConstructor);
+	createAreas();
 	this.instance = instance;
 	return true;
     }
 
     public AreaLayout getAreasToShow()
     {
-	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);
+	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, summaryArea, messageArea);
     }
 
-    public void openGroup(MailGroup group)
+    public void openFolder(Object folder)
     {
-	summaryArea.show(group);
+	//	summaryArea.show(group);
     }
 
-    public void gotoGroups()
+    public void gotoFolders()
     {
-	Luwrain.setActiveArea(instance, groupArea);
+	Luwrain.setActiveArea(instance, foldersArea);
     }
 
     public void gotoSummary()
@@ -128,8 +75,47 @@ children = null;
 	Luwrain.setActiveArea(instance, messageArea);
     }
 
-    public void closeMailReader()
+    public void close()
     {
 	Luwrain.closeApp(instance);
     }
+
+    private void createAreas()
+    {
+	final Actions a = this;
+	final StringConstructor s = stringConstructor;
+	foldersArea = new TreeArea(foldersModel, stringConstructor.foldersAreaName()){
+		private StringConstructor stringConstructor = s;
+		private Actions actions = a;
+		public boolean onKeyboardEvent(KeyboardEvent event)
+		{
+		    if (event.isCommand() && !event.isModified() &&
+			event.getCommand() == KeyboardEvent.TAB)
+		    {
+			actions.gotoSummary();
+			return true;
+		    }
+		    return super.onKeyboardEvent(event);
+		}
+		public boolean onEnvironmentEvent(EnvironmentEvent event)
+		{
+		    switch(event.getCode())
+		    {
+		    case EnvironmentEvent.CLOSE:
+			actions.close();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
+		public void onClick(Object obj)
+		{
+		    if (obj != null)
+			actions.openFolder(obj);
+		}
+	    };
+
+    }
+
+
 }

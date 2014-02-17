@@ -14,6 +14,8 @@
    General Public License for more details.
 */
 
+//FIXME:Custom checker of equality for refresh() and selectObject();
+
 package org.luwrain.controls;
 
 import org.luwrain.core.*;
@@ -174,9 +176,19 @@ public class TreeArea implements Area
     public void refresh()
     {
 	Object oldSelected = getObjectUnderHotPoint();
-	if (root.obj != model.getRoot())
-	    root = constructNode(model.getRoot(), null, true); else//true means expand children;
+	Object newRoot = model.getRoot();
+	if (newRoot == null)
+	{
+	    root = null;
+	    items = null;
+	    return;
+	}
+	if (root.obj.equals(newRoot))//FIXME:equals();
+	{
+	    root.obj = newRoot;
 	    refreshNode(root);
+	} else
+	    root = constructNode(model.getRoot(), null, true); //true means expand children;
 	items = generateAllVisibleItems();
 	environment.onAreaNewContent(this);
 	if (oldSelected != null)
@@ -200,7 +212,7 @@ public class TreeArea implements Area
 	    return false;
 	int k;
 	for(k = 0;k < items.length;++k)
-	    if (items[k].node.obj == obj)
+	    if (items[k].node.obj.equals(obj))//FIXME:equals;
 		break;
 	if (k >= items.length)
 	    return false;
@@ -241,10 +253,12 @@ public class TreeArea implements Area
 	    node.makeLeaf();
 	    return;
 	}
+	model.beginChildEnumeration(node.obj);
 	final int count = model.getChildCount(node.obj);
 	if (count < 1)
 	{
 	    node.makeLeaf();
+	    model.endChildEnumeration(node.obj);
 	    return;
 	}
 	node.leaf = false;
@@ -257,12 +271,14 @@ public class TreeArea implements Area
 	    if (n.obj == null)
 	    {
 		node.makeLeaf();
+		model.endChildEnumeration(node.obj);
 		return;
 	    }
 	    n.leaf = model.isLeaf(n.obj);
 	    n.children = null;
 	    n.parent = node;
 	}
+	model.endChildEnumeration(node.obj);
     }
 
     private TreeAreaNode constructNode(Object obj, TreeAreaNode parent, boolean fillChildren)
@@ -293,13 +309,15 @@ public class TreeArea implements Area
 	    node.makeLeaf();
 	    return;
 	}
-	//Was and remains a non leaf;
+	//Was and remains a non-leaf;
 	if (node.children == null)
 	    return;
+	model.beginChildEnumeration(node.obj);
 	final int newCount = model.getChildCount(node.obj);
 	if (newCount == 0)
 	{
 	    node.makeLeaf();
+	    model.endChildEnumeration(node.obj);
 	    return;
 	}
 	TreeAreaNode[] newNodes = new TreeAreaNode[newCount];
@@ -309,16 +327,21 @@ public class TreeArea implements Area
 	    if (newObj == null)
 	    {
 		node.makeLeaf();
+		model.endChildEnumeration(node.obj);
 		return;
 	    }
 	    int k;
 	    for(k = 0;k < node.children.length;++k)
-		if (node.children[k].obj == newObj)
+		if (node.children[k].obj.equals(newObj))//FIXME:equals();
 		    break;
 	    if (k < node.children.length)
-		newNodes[i] = node.children[k]; else
+	    {
+		newNodes[i] = node.children[k]; 
+		newNodes[i].obj = newObj;
+	    }else
 		newNodes[i] = constructNode(newObj, node, false);
 	}
+	model.endChildEnumeration(node.obj);
 	node.children = newNodes;
 	for(TreeAreaNode n: node.children)
 	    refreshNode(n);

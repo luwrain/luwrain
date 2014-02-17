@@ -17,6 +17,7 @@
 package org.luwrain.controls;
 
 //FIXME:fixHotPoint();
+//FIXME:ControlEnvironment interface support;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -166,6 +167,27 @@ hotPointY < 0 ||
 	return false;
     }
 
+    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	switch (event.getCode())
+	{
+	case EnvironmentEvent.REFRESH:
+	    refresh();
+	    return true;
+	default:
+	    return false;
+	}
+    }
+
+    public void refresh()
+    {
+	model.refresh();
+	hotPointX = 0;
+	hotPointY = hotPointY < model.getItemCount()?hotPointY:model.getItemCount();
+	Luwrain.onAreaNewContent(this);
+	Luwrain.onAreaNewHotPoint(this);
+    }
+
     public int getLineCount()
     {
 	if (model == null || model.getItemCount() <= 0)
@@ -210,5 +232,4 @@ hotPointY < 0 ||
 	}
 	Speech.say(model.getItem(index).toString());
     }
-
 }

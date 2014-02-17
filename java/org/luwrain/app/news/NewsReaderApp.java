@@ -16,19 +16,17 @@
 
 package org.luwrain.app.news;
 
-import java.net.URL;
-import java.sql.SQLException;
 import org.luwrain.core.*;
-import org.luwrain.network.FeedReader;
-import org.luwrain.pim.NewsArticle;
+import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 import org.luwrain.pim.*;
 
-public class NewsReaderApp implements Application, NewsReaderActions
+public class NewsReaderApp implements Application, Actions
 {
-    private Object instance = null;
-    private NewsReaderStringConstructor stringConstructor = null;
+    private Object instance;
+    private StringConstructor stringConstructor = null;
     private GroupModel groupModel;
-    private GroupArea groupArea;
+    private ListArea groupArea;
     private SummaryArea summaryArea;
     private ViewArea viewArea;
     private NewsStoring newsStoring;
@@ -42,71 +40,59 @@ public class NewsReaderApp implements Application, NewsReaderActions
 	    Log.error("news", "no string constructor for news reader");
 	    return false;
 	}
-	stringConstructor = (NewsReaderStringConstructor)o;
-	groupModel = new GroupModel();
-	groupArea = new GroupArea(this, stringConstructor, groupModel);
-	summaryArea = new SummaryArea(this, stringConstructor);
-	viewArea = new ViewArea(this, stringConstructor);
+	stringConstructor = (StringConstructor)o;
 	newsStoring = Luwrain.getPimManager().getNewsStoring();
-	//FIXME:if (newsStoring == null)
-	fillGroups();
+	if (newsStoring == null)
+	{
+	    Luwrain.message("No news storing");//FIXME:
+	    return false;
+	}
+	createAreas();
 	this.instance = instance;
 	return true;
     }
 
-    public AreaLayout getAreasToShow()
+    private void createAreas()
     {
-	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, viewArea);
-    }
-
-    public void closeNewsReader()
-    {
-	Luwrain.closeApp(instance);
-    }
-
-    public void gotoGroups()
-    {
-	Luwrain.setActiveArea(instance, groupArea);
-    }
-
-    public void gotoArticles()
-    {
-	Luwrain.setActiveArea(instance, summaryArea);
-    }
-
-    public void gotoView()
-    {
-	Luwrain.setActiveArea(instance, viewArea);
-    }
-
-    private boolean 	fillGroups()
-    {
-	if (newsStoring == null)
-	{
-	    Log.error("news", "No news storing object");
-	    groups = null;
-	    groupModel.setItems(new StoredNewsGroup[0]);
-	    Luwrain.onAreaNewContent(groupArea);
-	    Luwrain.onAreaNewHotPoint(groupArea);
-	    return false;
-	}
-	try {
-	    groups = newsStoring.loadNewsGroups();
-	    groupModel.setItems(groups);
-	    Luwrain.onAreaNewContent(groupArea);
-	    Luwrain.onAreaNewHotPoint(groupArea);
-	    return true;
-	}
-	catch(Exception e)
-	{
-	    e.printStackTrace();
-	    Log.error("news", "could not construct list of groups:" + e.getMessage());
-	    groups = null;
-	    groupModel.setItems(new StoredNewsGroup[0]);
-	    Luwrain.onAreaNewContent(groupArea);
-	    Luwrain.onAreaNewHotPoint(groupArea);
-	    return false;
-	}
+	final Actions a = this;
+	final StringConstructor s = stringConstructor;
+	groupModel = new GroupModel(newsStoring);
+	groupArea = new ListArea(groupModel) {
+		private StringConstructor stringConstructor = s;
+		private Actions actions = a;
+		public boolean onKeyboardEvent(KeyboardEvent event)
+		{
+		    if (event.isCommand() && !event.isModified())
+			switch(event.getCommand())
+			{
+			case KeyboardEvent.TAB:
+			    actions.gotoArticles();
+			    return true;
+			case KeyboardEvent.ENTER:
+			    if (getSelectedIndex() >= 0)
+				actions.openGroup(getSelectedIndex());
+			    return true;
+			}
+		    return super.onKeyboardEvent(event);
+		}
+		public boolean onEnvironmentEvent(EnvironmentEvent event)
+		{
+		    switch(event.getCode())
+		    {
+		    case EnvironmentEvent.CLOSE:
+			actions.close();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
+		public String getName()
+		{
+		    return stringConstructor.groupAreaName();
+		}
+	    };
+	summaryArea = new SummaryArea(this, stringConstructor);
+	viewArea = new ViewArea(this, stringConstructor);
     }
 
     public void openGroup(int index)
@@ -135,5 +121,30 @@ index < 0 ||
 	}
     summaryArea.show(articles);
     gotoArticles();
+    }
+
+    public AreaLayout getAreasToShow()
+    {
+	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, viewArea);
+    }
+
+    public void close()
+    {
+	Luwrain.closeApp(instance);
+    }
+
+    public void gotoGroups()
+    {
+	Luwrain.setActiveArea(instance, groupArea);
+    }
+
+    public void gotoArticles()
+    {
+	Luwrain.setActiveArea(instance, summaryArea);
+    }
+
+    public void gotoView()
+    {
+	Luwrain.setActiveArea(instance, viewArea);
     }
 }

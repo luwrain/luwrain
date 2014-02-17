@@ -24,6 +24,7 @@ import org.luwrain.core.registry.Registry;
 
 public class PimManager
 {
+    public static final String MAIL_GROUP_URI_SCHEME = "mailgrp";
     private static final String NEWS_TYPE_PATH = "/org/luwrain/pim/news/storing/type";
     private static final String NEWS_URL_PATH = "/org/luwrain/pim/news/storing/url";
     private static final String NEWS_DRIVER_PATH = "/org/luwrain/pim/news/storing/driver";
@@ -172,6 +173,6 @@ public class PimManager
 
     public MailStoring getMailStoring()
     {
-	return null;
+	return mailJdbcCon != null?new MailStoringSql(registry, mailJdbcCon):null;
     }
 }

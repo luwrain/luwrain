@@ -14,9 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.fetch;
+package org.luwrain.network;
 
-public interface FetchProgressListener
+import org.luwrain.pim.MailMessage;
+
+public interface MailConsumer
 {
-    void onProgressLine(String line);
+    void onMessage(MailMessage message);
 }

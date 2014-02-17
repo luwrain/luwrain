@@ -16,7 +16,7 @@
 
 package org.luwrain.langs.en;
 
-public class FetchStringConstructor implements org.luwrain.app.fetch.FetchStringConstructor
+public class FetchStringConstructor implements org.luwrain.app.fetch.StringConstructor
 {
     public String appName()
     {
@@ -28,14 +28,24 @@ public class FetchStringConstructor implements org.luwrain.app.fetch.FetchString
 	return "No information about news groups!";
     }
 
-    public String newsFetchingCompleted()
+    public String fetchingCompleted()
     {
-	return "News fetching is completed!";
+	return "Fetching is completed!";
     }
 
-    public String newsFetchingError()
+    public String newsGroupsError()
     {
-	return "An error occurred while news fetching!";
+	return "An error occurred while fetching the news groups information, skipping news fetching";
+    }
+
+    public String noNewsGroups()
+    {
+	return "No news groups, skipping news fetching";
+    }
+
+    public String newsFetchingError(String groupName)
+    {
+	return "An error occurred while fetching the news of group \"" + groupName + "\", skipping";
     }
 
     public String newsGroupFetched(String name, int fresh, int total)
@@ -63,11 +73,37 @@ public class FetchStringConstructor implements org.luwrain.app.fetch.FetchString
 	return "Reading mail from account \"" + accountName + "\"";
     }
 
+    public String mailErrorWithAccount(String accountName)
+    {
+	return "Error fetching mail from account \"" + accountName + "\", skipping...";
+    }
+
     public String connecting(String host)
     {
 	return "Connecting to host " + host;
     }
 
+    public String fetchedMailMessages(int count)
+    {
+	return "Fetched messages: " + count;
+    }
+
+    public String noMailAccounts()
+    {
+	return "No mail accounts, skipping mail fetching";
+    }
+
+    public String noMailStoring()
+    {
+	return "No mail storing connection, skipping mail fetching";
+    }
+
+    public String mailAccountsProblem()
+    {
+	return "Error getting the list of mail accounts, skipping mail fetching";
+    }
+
+    /*
     public String readingMailInFolder(String folder)
     {
 	return "Opening folder \"" + folder + "\"";
@@ -82,4 +118,5 @@ public class FetchStringConstructor implements org.luwrain.app.fetch.FetchString
     {
 	return "No new mail";
     }
+*/
 }

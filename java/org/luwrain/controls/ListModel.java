@@ -20,4 +20,5 @@ public interface ListModel
 {
     int getItemCount();
     Object getItem(int index);
+    void refresh();
 }

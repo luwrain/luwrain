@@ -21,7 +21,7 @@ class RegistryDir
     public String name = "";
     public String title = "";
     public RegistryDir parent;
-    public boolean deleted = false;
+    //    public boolean deleted = false;
 
     //Used only for root directory;
     public RegistryDir(String title)
@@ -44,13 +44,29 @@ class RegistryDir
 	return parentPath.equals("/")?"/" + name:parentPath + "/" + name;
     }
 
+    /*
     public boolean isValid()
     {
 	return !deleted && (parent != null?parent.isValid():true);
     }
+    */
 
     public String toString()
     {
 	return title != null?title:"";
+    }
+
+    public boolean equals(Object o)
+    {
+	if (o == null)
+	    return false;
+	try {
+	    RegistryDir dir = (RegistryDir)o;
+	    return getPath().equals(dir.getPath());
+	}
+	catch(ClassCastException e)
+	{
+	    return false;
+	}
     }
 }

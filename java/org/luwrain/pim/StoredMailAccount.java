@@ -16,24 +16,20 @@
 
 package org.luwrain.pim;
 
-import java.sql.SQLException;
-
 public interface StoredMailAccount
 {
     String getName();
-    void setName(String value) throws SQLException;
-    String getProtocol();
-    void setProtocol(String value) throws SQLException;
+    void setName(String value) throws Exception;
+    int getType();
+    void setType(int value) throws Exception;
+    int getProtocol();
+    void setProtocol(int value) throws Exception;
     String getHost();
-    void setHost(String value) throws SQLException;
+    void setHost(String value) throws Exception;
     int getPort();
-    void setPort(int value) throws SQLException;
-    String getFile();
-    void setFile(String value) throws SQLException;
+    void setPort(int value) throws Exception;
     String getLogin();
-    void setLogin(String value) throws SQLException;
+    void setLogin(String value) throws Exception;
     String getPasswd();
-    void setPasswd(String value) throws SQLException;
-    String getExtInfo();
-    void setExtInfo(String value) throws SQLException;
+    void setPasswd(String value) throws Exception;
 }

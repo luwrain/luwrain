@@ -17,205 +17,156 @@
 package org.luwrain.app.mail;
 
 import java.util.*;
-
-import javax.mail.*;
-import javax.mail.internet.*;
-
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.pim.*;
 
-class SummaryItem
+class SummaryArea implements Area
 {
-    public String from;
-    public String subject;
-    public MimeMessage message;
-}
+    private static final int INITIAL_HOT_POINT_X = 2;
 
-public class SummaryArea implements Area
-{
-    private MailReaderStringConstructor stringConstructor;
-    private MailReaderActions actions;
-    private SummaryItem items[];
+    private StringConstructor stringConstructor;
+    private Actions actions;
+    private StoredMailMessage[] messages;
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public SummaryArea(MailReaderActions actions, MailReaderStringConstructor stringConstructor)
+    public SummaryArea(Actions actions, StringConstructor stringConstructor)
     {
 	this.stringConstructor = stringConstructor;
 	this.actions = actions;
     }
 
-    public void show(MailGroup group)
+    public void show(StoredMailMessage[] messages)
     {
-	Message messages[] = group.getMessages();
-	if (messages == null || messages.length < 1)
-	{
-	    items = null;
-	    hotPointX = 0;
-	    hotPointY = 0;
-	    Luwrain.onAreaNewContent(this);
-	    Luwrain.onAreaNewHotPoint(this);
-	    Luwrain.onAreaNewName(this);
-	    return;
-	}
-	Vector<SummaryItem> v = new Vector<SummaryItem>();
-	for(int i = 0;i < messages.length;i++)
-	{
-	    SummaryItem item = new SummaryItem();
-	    try {
-		if (messages[i] == null)
-		    continue;
-		MimeMessage m = (MimeMessage)messages[i];
-		item.message = m;
-		if (m.getFrom() == null || m.getFrom().length < 1 || m.getFrom()[0] == null)
-		    item.from = new String("#FIXME:NO VALUE"); else
-		{
-		    InternetAddress a = (InternetAddress)m.getFrom()[0];
-		    if (a.getPersonal() == null || a.getPersonal().isEmpty())
-		    {
-			if (a.getAddress() == null || a.getAddress().isEmpty())
-			    item.from = "#NO FROM"; else//FIXME:stringConstructor;
-			    item.from = a.getAddress();
-		    } else
-			item.from = a.getPersonal();
-		}
-		item.subject = m.getSubject() == null || m.getSubject().isEmpty()?new String("#FIXME:NO SUBJECT"):m.getSubject();//FIXME:stringConstant;
-	    }
-	    catch(ClassCastException e)
-	    {
-		//FIXME:Log warning;
-		e.printStackTrace();//FIXME:
-		continue;
-	    }
-	    catch(MessagingException e)
-	    {
-		//FIXME:log warning and errors flags;
-		e.printStackTrace();
-		continue;
-	    }
-	    v.add(item);
-	}
-	items = new SummaryItem[v.size()];
-	Iterator<SummaryItem> it = v.iterator();
-	int k = 0;
-	while(it.hasNext())
-	    items[k++] = it.next();
-	hotPointX = 0;//FIXME:
+	this.messages = messages;
 	hotPointY = 0;
-	Luwrain.onAreaNewContent(this);
+	hotPointX = this.messages != null && this.messages.length >= 1?INITIAL_HOT_POINT_X:0;
 	Luwrain.onAreaNewHotPoint(this);
-	Luwrain.onAreaNewName(this);
-    }
-
-    private void introduceItem(int index)
-    {
-	if (items == null || items.length < 1)
-	    return;
-	SummaryItem item = items[index];
-	if (item == null)
-	    return;
-	Speech.say(item.from + " " + item.subject);
+	Luwrain.onAreaNewContent(this);
     }
 
     public int getLineCount()
     {
-	if (items == null || items.length < 1)
-	    return 1;
-	return items.length;
+	return messages != null && messages.length >= 1?messages.length:1;
     }
 
     public String getLine(int index)
     {
-	return new String();//FIXME:
+	return messages != null && index < messages.length?constructStringForScreen(messages[index]):"";
     }
 
     public int getHotPointX()
     {
-	if (hotPointX < 0)//Actually never happens;
-	    return 0;
-	return hotPointX;
+	return hotPointX >= 0?hotPointX:0;
     }
 
     public int getHotPointY()
     {
-	if (hotPointY < 0)//Actually never happens;
-	    return 0;
-	return hotPointY;
+	return hotPointY >= 0?hotPointY:0;
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	//Tab;
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB && !event.isModified())
+	if (event.isCommand() && !event.isModified() &&
+	    event.getCommand() == KeyboardEvent.TAB)
 	{
 	    actions.gotoMessage();
 	    return true;
 	}
-	if (event.withAlt() || event.withShift())
+	if (!event.isCommand() || event.isModified())
 	    return false;
-	if (items == null || items.length < 1)
+	if (messages == null || messages.length <= 0)
 	{
 	    Speech.say(stringConstructor.emptySummaryArea(), Speech.PITCH_HIGH);
 	    return true;
 	}
-	final int cmd = event.getCommand();
-
-	//Arrow down;
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.ARROW_DOWN && !event.isModified())
+	switch(event.getCommand())
 	{
-	    if (hotPointY >= items.length)
-	    {
-		Speech.say(stringConstructor.lastSummaryLine(), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointY++;
-	    if (hotPointY < items.length)
-	    {
-		hotPointX = 2;
-		introduceItem(hotPointY);
-	    } else
-	    {
-		hotPointX = 0;
-		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-	    }
-	    Luwrain.onAreaNewHotPoint(this);
+	case KeyboardEvent.ARROW_DOWN:
+	    onKeyDown(event);
 	    return true;
+	case KeyboardEvent.ARROW_UP:
+	    onKeyUp(event);
+	    return true; 
+	default:
+	    return false;
 	}
-
-	//Arrow up;
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.ARROW_UP && !event.isModified())
-	{
-	    if (hotPointY < 1)
-	    {
-		Speech.say(stringConstructor.firstSummaryLine(), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointY--;
-	    if (hotPointY == items.length)
-		hotPointX = 0; else
-		hotPointX = 2;
-	    introduceItem(hotPointY);
-	    Luwrain.onAreaNewHotPoint(this);
-	    return true;
-	}
-
-	//FIXME:
-	return false;
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.CLOSE)
+	switch(event.getCode())
 	{
-	    actions.closeMailReader();
+	case EnvironmentEvent.CLOSE:
+	    actions.close();
 	    return true;
+	case EnvironmentEvent.REFRESH:
+	    //FIXME:
+	    return true;
+	default:
+	    return false;
 	}
-	return false;
     }
 
     public String getName()
     {
 	return stringConstructor.summaryAreaName();
+    }
+
+    private void onKeyDown(KeyboardEvent event)
+    {
+	if (hotPointY >= messages.length)
+	{
+	    Speech.say(stringConstructor.lastSummaryLine(), Speech.PITCH_HIGH);
+	    return;
+	}
+	hotPointY++;
+	if (hotPointY < messages.length)
+	{
+	    hotPointX = INITIAL_HOT_POINT_X;
+	    Speech.say(constructStringForSpeech(messages[hotPointY]));
+	} else
+	{
+	    hotPointX = 0;
+	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	}
+	Luwrain.onAreaNewHotPoint(this);
+    }
+
+    public void onKeyUp(KeyboardEvent event)
+    {
+	if (hotPointY < 1)
+	{
+	    Speech.say(stringConstructor.firstSummaryLine(), Speech.PITCH_HIGH);
+	    return;
+	}
+	hotPointY--;
+	if (hotPointY >= messages.length)
+	{
+	    hotPointY = messages.length;
+	    hotPointX = 0;
+	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	    Luwrain.onAreaNewHotPoint(this);
+	    return;
+	}
+	hotPointX = INITIAL_HOT_POINT_X;
+	Speech.say(constructStringForSpeech(messages[hotPointY]));
+	Luwrain.onAreaNewHotPoint(this);
+    }
+
+    private String constructStringForSpeech(StoredMailMessage message)
+    {
+	if (message == null)
+	    return "";
+	return message.getFromAddr() + " " + message.getSubject();
+    }
+
+    private String constructStringForScreen(StoredMailMessage message)
+    {
+	if (message == null)
+	    return "";
+	return message.getFromAddr() + " " + message.getSubject();
     }
 }

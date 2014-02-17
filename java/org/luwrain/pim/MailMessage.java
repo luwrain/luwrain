@@ -23,13 +23,13 @@ public class MailMessage
     public static final int MARKED = 2;
 
     public int state = READ;
-    public String fromAddr = new String();
+    public String fromAddr = "";
     public String[] fromAddrs = new String[0];
-    public String toAddr = new String();
+    public String toAddr = "";
     public String[] toAddrs = new String[0];
     public String subject = new String();
     public java.util.Date date = new java.util.Date();
-    public String rawMsg = new String();
-    public String content = new String();
+    public String rawMsg = "";
+    public String contentText = "";
     public String extInfo = new String();
 }

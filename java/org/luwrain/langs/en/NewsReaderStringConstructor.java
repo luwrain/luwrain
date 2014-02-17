@@ -18,7 +18,7 @@ package org.luwrain.langs.en;
 
 import java.util.*;
 
-public class NewsReaderStringConstructor implements org.luwrain.app.news.NewsReaderStringConstructor
+public class NewsReaderStringConstructor implements org.luwrain.app.news.StringConstructor
 {
     public String appName()
     {
