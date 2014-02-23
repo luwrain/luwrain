@@ -136,6 +136,19 @@ class Actions
 		}
 	    });
 
+	//open;
+	add(new Action() {
+		private Environment e = environment;
+		public String getName()
+		{
+		    return "open";
+		}
+		public void onAction()
+		{
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.OPEN));
+		}
+	    });
+
 	//Refresh;
 	add(new Action() {
 		private Environment e = environment;

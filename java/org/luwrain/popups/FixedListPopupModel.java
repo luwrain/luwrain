@@ -18,87 +18,30 @@ package org.luwrain.popups;
 
 import java.util.*;
 
-public class FixedListPopupModel implements ListPopupModel
+public class FixedListPopupModel extends DynamicListPopupModel
 {
-    private String[] items;
+    private String[] fixedItems;
 
-    public FixedListPopupModel(String[] items)
+    public FixedListPopupModel(String[] fixedItems)
     {
-	if (items != null)
+	if (fixedItems != null)
 	{
-	    this.items = new String[items.length];
-	    for(int i = 0;i < items.length;++i)
-		this.items[i] = items[i];
-	    Arrays.sort(this.items);
+	    this.fixedItems = new String[fixedItems.length];
+	    for(int i = 0;i < fixedItems.length;++i)
+		this.fixedItems[i] = fixedItems[i];
+	    Arrays.sort(this.fixedItems);
 	} else
-	    this.items = new String[0];
+	    this.fixedItems = new String[0];
     }
 
-    public String getCompletion(String beginning)
+    protected String[] getItems(String context)
     {
-	if (beginning == null)
-	    return "";
-	ArrayList<String> m = new ArrayList<String>();
-	for(String s: items)
-	    if (beginning.isEmpty() || s.indexOf(beginning) == 0)
-		m.add(s);
-	if (m.size() == 0)
-	    return "";
-	String[] matching = m.toArray(new String[m.size()]);
-	String res = "";
-	while(true)
-	{
-	    if (beginning.length() + res.length() >= matching[0].length())
-		break;
-	    final char c = matching[0].charAt(beginning.length() + res.length());
-	    int k;
-	    for(k = 1;k < matching.length;++k)
-		if (beginning.length() + res.length() >= matching[k].length() ||
-		    matching[k].charAt(beginning.length() + res.length()) != c)
-		    break;
-	    if (k >= matching.length)
-		res += c; else
-		break;
-	}
-	return res;
+	//Returning every time the same items regardless the context;
+	return fixedItems;
     }
 
-    public String[] getAlternatives(String beginning)
+    protected String getEmptyItem(String context)
     {
-	if (beginning == null || beginning.isEmpty())
-	    return items;
-	ArrayList<String> matching = new ArrayList<String>();
-	for(String s: items)
-	    if (s.indexOf(beginning) == 0)
-		matching.add(s);
-	return matching.toArray(new String[matching.size()]);
-    }
-
-    public String getListPopupPreviousItem(String text)
-    {
-	if (text == null || text.isEmpty())
-	    return null;
-	if (items == null || items.length <= 1)
-	    return "";
-	if (text.compareTo(items[0]) <= 0)
-	    return "";
-	for(int i = 1;i < items.length;++i)
-	    if (text.compareTo(items[i]) <= 0)
-		return items[i - 1];
-	return items[items.length - 1];
-    }
-
-    public String getListPopupNextItem(String text)
-    {
-	if (text == null || text.isEmpty())
-	    return (items != null && items.length > 0)?items[0]:null;
-	if (items == null || items.length <= 1)
-	    return null;
-	if (text.compareTo(items[items.length - 1]) >= 0)
-	    return null;
-	for(int i = items.length - 2;i >= 0;--i)
-	    if (text.compareTo(items[i]) >= 0)
-		return items[i + 1];
-	return items[0];
+	return "";
     }
 }

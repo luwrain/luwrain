@@ -16,21 +16,25 @@
 
 package org.luwrain.app.notepad;
 
+import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.charset.*;
-import java.util.*;
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
+import org.luwrain.controls.EditArea;
 import org.luwrain.core.registry.Registry;
+import org.luwrain.popups.*;
 
-public class NotepadApp implements Application, NotepadActions
+public class NotepadApp implements Application, Actions
 {
     static private final Charset ENCODING = StandardCharsets.UTF_8;
 
-    private NotepadStringConstructor stringConstructor;
+    private StringConstructor stringConstructor;
     private Object instance;
-    private NotepadArea area;
-    private String arg;
+    private EditArea area;
+    private String fileName = "";
+    private boolean modified = false; 
 
     public NotepadApp()
     {
@@ -38,7 +42,7 @@ public class NotepadApp implements Application, NotepadActions
 
     public NotepadApp(String arg)
     {
-	this.arg = arg;
+	this.fileName = arg;
     }
 
     public boolean onLaunch(Object instance)
@@ -46,67 +50,94 @@ public class NotepadApp implements Application, NotepadActions
 	Object o = Langs.requestStringConstructor("notepad");
 	if (o == null)
 	    return false;
-	stringConstructor = (NotepadStringConstructor)o;
-	area = new NotepadArea(this, stringConstructor, stringConstructor.newFileName());
-	if (arg != null && !arg.trim().isEmpty())
+	stringConstructor = (StringConstructor)o;
+	createArea();
+	if (fileName != null && !fileName.isEmpty())
 	{
-	    try {
-		String[] text = readTextFile(arg);
-		area.setContent(text);
-		area.setFileName(arg);
-	    }
-	    catch (IOException e)
-	    {
-		e.printStackTrace();
-		Log.error("notepad", arg + ":" + e.getMessage());
-		Luwrain.message(stringConstructor.errorOpeningFile());
-		return false;
-	    }
+	    readByFileName(fileName);
+	    File f = new File(fileName);
+	    area.setName(f.getName());
 	} else
-	{
-	    Registry registry = Luwrain.getRegistry();
-	    if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING)
-	    {
-		File dir = new File(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR));
-		File f = new File(dir, stringConstructor.newFileName());
-		area.setFileName(f.getAbsolutePath());
-	    } else
-		area.setFileName(stringConstructor.newFileName());
-	}
+	    area.setName(stringConstructor.newFileName());
 	this.instance = instance;
 	return true;
     }
 
-    public void save()
+    public boolean save()
     {
-	//FIXME:Proper file name choosing;
-	String fileName = area.getFileName();
-	if (fileName == null || fileName.trim().isEmpty())
+	if (fileName == null || fileName.isEmpty())
 	{
-	    Log.warning("notepad", "edit area has no associated file name");
-	    return;
+	    Registry registry = Luwrain.getRegistry();
+	    File dir = new File(registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING?registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR):"/");//FIXME:System dependent slash;
+	    FilePopup popup = new FilePopup(instance,  stringConstructor.savePopupName(), stringConstructor.savePopupPrefix(),
+					    new File(dir, stringConstructor.newFileName()));
+	    Luwrain.popup(instance, popup, popup.closing);
+	    if (popup.closing.cancelled())
+		return false;
+	    fileName = popup.getFile().getAbsolutePath();
 	}
 	try {
 	    if (area.getContent() != null)
 		writeTextFile(fileName, area.getContent());
+	    modified = false;
 	    Luwrain.message(stringConstructor.fileIsSaved());
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
 	    Log.error("notepad", fileName + ":" + e.getMessage());
+	    e.printStackTrace();
 	    Luwrain.message(stringConstructor.errorSavingFile());
+	    return false;
 	}
+	return true;
     }
 
-    public AreaLayout getAreasToShow()
+    public void open()
     {
-	return new AreaLayout(area);
+	if (!checkIfUnsaved())
+	    return;
+	File dir = null;
+	if (fileName == null || fileName.isEmpty())
+	{
+	    Registry registry = Luwrain.getRegistry();
+	    dir = new File(registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING?registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR):"/");//FIXME:System dependent slash;
+	} else
+	{
+	    File f = new File(fileName);
+	    dir = f.getParentFile();
+	}
+	FilePopup popup = new FilePopup(instance, Langs.staticValue(Langs.OPEN_POPUP_NAME), Langs.staticValue(Langs.OPEN_POPUP_PREFIX), dir);
+	Luwrain.popup(instance, popup, popup.closing);
+	if (popup.closing.cancelled())
+	    return;
+	if (!readByFileName(popup.getFile().getAbsolutePath()))
+	{
+	    //	    Luwrain.message(stringConstructor.errorOpeningFile());
+	    return;
+	}
+	    fileName = popup.getFile().getAbsolutePath();
+	    area.setName(popup.getFile().getName());
     }
 
-    public void closeNotepad()
+    public void markAsModified()
     {
-	Luwrain.closeApp(instance);
+	modified = true;
+    }
+
+    private boolean readByFileName(String pathToRead)
+    {
+	if (pathToRead == null || pathToRead.isEmpty())
+	    return false;
+	try {
+		area.setContent(readTextFile(pathToRead));
+	    }
+	    catch (IOException e)
+	    {
+		Log.error("notepad", fileName + ":" + e.getMessage());
+		e.printStackTrace();
+		return false;
+	    }
+	return true;
     }
 
     private String[] readTextFile(String fileName) throws IOException
@@ -132,5 +163,63 @@ public class NotepadApp implements Application, NotepadActions
 		writer.newLine();
 	    }
 	}
+    }
+
+    private void createArea()
+    {
+	final Actions a = this;
+	area = new EditArea(fileName){
+		private Actions actions = a;
+		public void onChange()
+		{
+		    actions.markAsModified();
+		}
+		public boolean onEnvironmentEvent(EnvironmentEvent event)
+		{
+		    switch(event.getCode())
+		    {
+		    case EnvironmentEvent.CLOSE:
+			actions.close();
+			return true;
+		    case EnvironmentEvent.INTRODUCE:
+			Speech.say(stringConstructor.introduction() + " " + getName()); 
+			return true;
+		    case EnvironmentEvent.SAVE:
+			actions.save();
+			return true;
+		    case EnvironmentEvent.OPEN:
+			actions.open();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
+	    };
+    }
+
+    public AreaLayout getAreasToShow()
+    {
+	return new AreaLayout(area);
+    }
+
+    public void close()
+    {
+	if (!checkIfUnsaved())
+	    return;
+	Luwrain.closeApp(instance);
+    }
+
+    private boolean checkIfUnsaved()
+    {
+	if (!modified)
+	    return true;
+	YesNoPopup popup = new YesNoPopup(stringConstructor.saveChangesPopupName(), stringConstructor.saveChangesPopupQuestion(), false);
+	Luwrain.popup(instance, popup, popup.closing);
+	if (popup.closing.cancelled())
+	    return false;
+	if ( popup.getResult() && !save())
+	    return false;
+	modified = false;
+	return true;
     }
 }

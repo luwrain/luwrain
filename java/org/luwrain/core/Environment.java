@@ -16,8 +16,9 @@
 
 package org.luwrain.core;
 
-import java.util.concurrent.*;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 import org.luwrain.core.registry.Registry;
 import org.luwrain.app.system.MainMenuArea;
 import org.luwrain.pim.PimManager;
@@ -248,6 +249,13 @@ class Environment implements EventConsumer
     {
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
+	    if (event.getCode() == EnvironmentEvent.OPEN)
+	    {
+		if (screenContentManager.onEnvironmentEvent(event) == ScreenContentManager.EVENT_PROCESSED)
+		    return;
+		onOpenEvent(event);
+		return;
+	    }
 	    if (event.getCode() == EnvironmentEvent.THREAD_SYNC)
 	    {
 		ThreadSyncEvent threadSync = (ThreadSyncEvent)event;
@@ -362,6 +370,7 @@ class Environment implements EventConsumer
     {
 	if (text == null || text.trim().isEmpty())
 	    return;
+	Log.debug("environment", "message:" + text);
 	needForIntroduction = false;
 	//FIXME:Message class for message collecting;
 	Speech.say(text);
@@ -479,5 +488,19 @@ class Environment implements EventConsumer
 	    return;
 	}
 	goIntoPopup(app, area, PopupRegistry.BOTTOM, stopCondition);
+    }
+
+    private void onOpenEvent(EnvironmentEvent event)
+    {
+	FilePopup popup = null;
+	if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING)
+	    popup = new FilePopup(new Object(), Langs.staticValue(Langs.OPEN_POPUP_NAME), Langs.staticValue(Langs.OPEN_POPUP_PREFIX), new File(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR))); else
+	    popup = new FilePopup(new Object(), Langs.staticValue(Langs.OPEN_POPUP_NAME), Langs.staticValue(Langs.OPEN_POPUP_PREFIX), new File("/"));//FIXME:System dependent slash;
+	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup.closing);
+	if (popup.closing.cancelled())
+	    return;
+	String[] fileNames = new String[1];
+	fileNames[0] = popup.getFile().getAbsolutePath();
+	openFileNames(fileNames);
     }
 }

@@ -14,14 +14,29 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.notepad;
+//FIXME:ControlEnvironment interface support;
 
-public interface NotepadStringConstructor
+package org.luwrain.popups;
+
+import java.io.*;
+import org.luwrain.core.*;
+import org.luwrain.core.events.*;
+
+public class FilePopup extends ListPopup
 {
-    String appName();
-    String introduction();
-    String newFileName();
-    String errorOpeningFile();
-    String errorSavingFile();
-    String fileIsSaved();
+    private File file;
+
+    public FilePopup(Object instance,
+			   String name,
+			   String prefix,
+			   File file)
+    {
+	super(new FileListPopupModel(), instance, name, prefix, file.getAbsolutePath());
+	this.file = file;
+    }
+
+    public File getFile()
+    {
+	return new File(getText());
+    }
 }

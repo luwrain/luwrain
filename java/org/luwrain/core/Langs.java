@@ -49,6 +49,8 @@ public class Langs
     public static final int LIST_NO_ITEMS = 108;
     public static final int QUIT_CONFIRM_NAME = 109;
     public static final int QUIT_CONFIRM = 110;
+    public static final int OPEN_POPUP_NAME = 111;
+    public static final int OPEN_POPUP_PREFIX = 112;
 
     private static Language currentLang = new org.luwrain.langs.en.Language();
 

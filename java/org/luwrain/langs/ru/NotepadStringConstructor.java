@@ -18,7 +18,7 @@ package org.luwrain.langs.ru;
 
 import java.util.*;
 
-public class NotepadStringConstructor implements org.luwrain.app.notepad.NotepadStringConstructor
+public class NotepadStringConstructor implements org.luwrain.app.notepad.StringConstructor
 {
     public String appName()
     {
@@ -35,11 +35,6 @@ public class NotepadStringConstructor implements org.luwrain.app.notepad.Notepad
 	return "Новый файл.txt";
     }
 
-    public String errorOpeningFile()
-    {
-	return "Невозможно открыть файл для редактирования";
-    }
-
     public String errorSavingFile()
     {
 	return "Произошла ошибка, файл не сохранён";
@@ -47,6 +42,26 @@ public class NotepadStringConstructor implements org.luwrain.app.notepad.Notepad
 
     public String fileIsSaved()
     {
-	return "Файл успешно записан!";
+	return "Файл успешно сохранён!";
+    }
+
+    public String savePopupName()
+    {
+	return "Сохранение файла";
+    }
+
+    public String savePopupPrefix()
+    {
+	return "Введите имя файла для сохранения:";
+    }
+
+    public String saveChangesPopupName()
+    {
+	return "Несохранённые изменения";
+    }
+
+    public String saveChangesPopupQuestion()
+    {
+	return "Вы хотите сохранить изменения?";
     }
 }

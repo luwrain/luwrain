@@ -124,7 +124,7 @@ public class SimpleLinePopup implements Area, PopupClosingRequest, HotPointInfo,
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
-	    Luwrain.message(prefix + text);
+	    Speech.say(prefix + text);
 	    return true;
 	default:
 	    //FIXME:Transmit event to edit

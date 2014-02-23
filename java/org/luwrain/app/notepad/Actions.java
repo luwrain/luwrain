@@ -16,8 +16,10 @@
 
 package org.luwrain.app.notepad;
 
-public interface NotepadActions
+interface Actions
 {
-    void closeNotepad();
-    void save();
+    void close();
+    boolean save();
+    void open();
+    void markAsModified();
 }

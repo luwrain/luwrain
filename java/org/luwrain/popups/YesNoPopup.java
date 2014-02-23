@@ -75,7 +75,7 @@ public class YesNoPopup implements Area, PopupClosingRequest
 	    if (c == 'n' || c == 'N')
 	    {
 		res = false;
-		closing.doCancel();
+		closing.doOk();
 		return true;
 	    }
 	    return false;
@@ -104,7 +104,7 @@ public class YesNoPopup implements Area, PopupClosingRequest
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
-	    Luwrain.message(text);
+	    Speech.say(text);
 	    return true;
 	default:
 	return closing.onEnvironmentEvent(event);

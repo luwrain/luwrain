@@ -85,6 +85,10 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Завершение работы";
 	case Langs.QUIT_CONFIRM:
 	    return "Вы действительно хотите завершить работу в Luwrain?";
+	case Langs.OPEN_POPUP_NAME:
+	    return "Открытие файла";
+	case Langs.OPEN_POPUP_PREFIX:
+	    return "Введите имя файла для открытия:";
 	default:
 	    return "#Неизвестный идентификатор строки?#";
 	}
