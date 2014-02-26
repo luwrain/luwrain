@@ -47,6 +47,8 @@ public class Language implements org.luwrain.core.Language
 	    return new ControlStringConstructor();
 	if (id.equals("registry"))
 	    return new RegistryStringConstructor();
+	if (id.equals("calendar"))
+	    return new CalendarStringConstructor();
 	return null;
     }
 
@@ -92,6 +94,18 @@ public class Language implements org.luwrain.core.Language
 	    return "Documents preview";
 	if (actionName.trim().equals("control"))
 	    return "Control panel";
+	if (actionName.trim().equals("registry"))
+	    return "Registry";
+	if (actionName.trim().equals("calendar"))
+	    return "Calendar";
+	if (actionName.trim().equals("copy-cut-point"))
+	    return "Set copy-cut point";
+	if (actionName.trim().equals("copy"))
+	    return "Copy";
+	if (actionName.trim().equals("Cut"))
+	    return "Cut";
+	if (actionName.trim().equals("paste"))
+	    return "Paste";
 	return "";
     }
 }

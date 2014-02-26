@@ -69,4 +69,9 @@ public class NewsReaderStringConstructor implements org.luwrain.app.news.StringC
     {
 	return "End of news article list";
     }
+
+    public String errorUpdatingArticleState()
+    {
+	return "Error occurred while saving new article state";
+    }
 }

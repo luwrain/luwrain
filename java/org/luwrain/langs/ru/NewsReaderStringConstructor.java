@@ -69,4 +69,9 @@ public     String errorReadingArticles()
     {
 	return "Конец списка новостных статей";
     }
+
+    public String errorUpdatingArticleState()
+    {
+	return "Произошла ошибка сохранения состояния новостной статьи";
+    }
 }

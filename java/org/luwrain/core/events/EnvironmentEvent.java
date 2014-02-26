@@ -31,7 +31,11 @@ public class EnvironmentEvent extends Event
     public static final int THREAD_SYNC = 8;
     public static final int OPEN = 9;
 
-
+    public static final int COPY_CUT_POINT = 10;
+    public static final int COPY = 11;
+    public static final int CUT = 12;
+    public static final int PASTE = 13;
+    public static final int INSERT = 14;
 
     private int code;
 

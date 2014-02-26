@@ -30,7 +30,7 @@ public class NewsReaderApp implements Application, Actions
     private SummaryArea summaryArea;
     private ViewArea viewArea;
     private NewsStoring newsStoring;
-    private StoredNewsGroup[] groups;
+    //    private StoredNewsGroup[] groups;
 
     public boolean onLaunch(Object instance)
     {
@@ -97,24 +97,30 @@ public class NewsReaderApp implements Application, Actions
 
     public void openGroup(int index)
     {
-	if (groups == null || 
+	if (groupModel == null || 
 index < 0 ||
-	    index >= groups.length)
+	    index >= groupModel.getItemCount())
 	{
 	    Log.warning("news", "trying to open non-existing group with index " + index + " or groups list is not prepared");
 	    return;
 	}
-	Luwrain.message("go");
+	Object obj = groupModel.getItem(index);
+	if (obj == null || !(obj instanceof StoredNewsGroup))
+	{
+	    Log.warning("news", "group model returned null or an object of instance other than StoredNewsGroup");
+	    return;
+	}
+	StoredNewsGroup group =(StoredNewsGroup)obj; 
 	StoredNewsArticle articles[];
 	try {
-	    articles = newsStoring.loadNewsArticlesInGroupWithoutRead(groups[index]);
+	    articles = newsStoring.loadNewsArticlesInGroupWithoutRead(group);
 	    if (articles == null || articles.length < 1)
-		articles = newsStoring.loadNewsArticlesInGroup(groups[index]);
+		articles = newsStoring.loadNewsArticlesInGroup(group);
 	}
 	catch (Exception e)
 	{
+	    Log.error("news", "could not get list of articles in group:" + group.getName());
 	    e.printStackTrace();
-	    Log.error("news", "could not get list of articles in group:" + groups[index].getName());
 	    Luwrain.message(stringConstructor.errorReadingArticles());
 	    summaryArea.show(null);
 	    return;

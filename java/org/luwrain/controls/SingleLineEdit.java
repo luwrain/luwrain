@@ -14,23 +14,26 @@
    General Public License for more details.
 */
 
+//FIXME:ControlEnvironment interface support;
+
 package org.luwrain.controls;
 
 import org.luwrain.core.*;
-import org.luwrain.core.events.KeyboardEvent;
-import org.luwrain.core.events.EnvironmentEvent;
+import org.luwrain.core.events.*;
 
-public class SingleLineEdit
+public class SingleLineEdit implements CopyCutRequest
 {
     private final String tabMessage = Langs.staticValue(Langs.TAB);
     private final String textBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
     private final String textEndMessage = Langs.staticValue(Langs.AREA_END);
 
     private SingleLineEditModel model;
+    private CopyCutInfo copyCutInfo;
 
     public SingleLineEdit(SingleLineEditModel model)
     {
 	this.model = model;
+	this.copyCutInfo = new CopyCutInfo(this);
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -135,6 +138,69 @@ public class SingleLineEdit
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	return false;
+	switch(event.getCode())
+	{
+	case EnvironmentEvent.COPY_CUT_POINT:
+	    return copyCutInfo.doCopyCutPoint(model.getHotPointX(), 0);
+	case EnvironmentEvent.COPY:
+	    return copyCutInfo.doCopy(model.getHotPointX(), 0);
+	case EnvironmentEvent.CUT:
+	    return copyCutInfo.doCut(model.getHotPointX(), 0);
+	case EnvironmentEvent.INSERT:
+	    if (event instanceof InsertEvent)
+		return onInsert((InsertEvent)event);
+	    return false;
+	default:
+	    return false;
+	}
+    }
+
+    public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    {
+	String line = model.getLine();
+	if (line == null || line.isEmpty())
+	    return false;
+	int fromPos = fromX < line.length()?fromX:line.length();
+	int toPos = toX < line.length()?toX:line.length();
+	if (fromPos >= toPos)
+	    return false;
+	String[] res = new String[1];
+	res[0] = line.substring(fromPos, toPos);
+	Luwrain.setClipboard(res);
+	return true;
+    }
+
+    public boolean onCut(int fromX, int fromY, int toX, int toY)
+    {
+	String line = model.getLine();
+	if (line == null || line.isEmpty())
+	    return false;
+	int fromPos = fromX < line.length()?fromX:line.length();
+	int toPos = toX < line.length()?toX:line.length();
+	if (fromPos >= toPos)
+	    return false;
+	String[] res = new String[1];
+	res[0] = line.substring(fromPos, toPos);
+	Luwrain.setClipboard(res);
+	model.setLine(line.substring(0, fromPos) + line.substring(toPos));
+	model.setHotPointX(fromPos);
+	return true;
+    }
+
+    private boolean onInsert(InsertEvent event)
+    {
+	if (event.getData() == null || !(event.getData() instanceof String[]))
+	    return false;
+	String[] lines = (String[])event.getData();
+	if (lines.length < 1)
+	    return false;
+	String text = lines[0];
+	for(int i = 1;i < lines.length;++i)
+	    text += " " + lines[i];
+	String line = model.getLine();
+	int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
+	model.setLine(line.substring(0, pos) + text + line.substring(pos));
+	model.setHotPointX(pos + text.length());
+	return true;
     }
 }

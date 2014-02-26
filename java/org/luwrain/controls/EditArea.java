@@ -43,8 +43,6 @@ public class EditArea extends SimpleArea
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (super.onKeyboardEvent(event))
-	    return true;
 	modified = false;
 	if (edit.onKeyboardEvent(event))
 	{
@@ -54,7 +52,21 @@ public class EditArea extends SimpleArea
 	    return true;
 	}
 	modified = false;
-	return false;
+	return super.onKeyboardEvent(event);
+    }
+
+    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	modified = false;
+	if (edit.onEnvironmentEvent(event))
+	{
+	    if (modified)
+		onChange();
+	    modified = false;
+	    return true;
+	}
+	modified = false;
+	return super.onEnvironmentEvent(event);
     }
 
     public void onChange()
@@ -107,6 +119,14 @@ public class EditArea extends SimpleArea
 		    area.insertLine(index, text);
 		    area.modified = true;
 		}
+
+    public void addLine(String text)
+		{
+		    area.addLine(text);
+		    area.modified = true;
+		}
+
+
 		public String getTabSeq()
 		{
 		    return area.getTabSeq();

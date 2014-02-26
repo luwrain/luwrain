@@ -16,6 +16,7 @@
 
 package org.luwrain.app.system;
 
+import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.mmedia.EnvironmentSounds;
@@ -32,13 +33,12 @@ public class MainMenuArea  implements Area, PopupClosingRequest
     public MainMenuArea(SystemAppStringConstructor stringConstructor, String[] content)
     {
 	this.stringConstructor = stringConstructor;
-	items = new MainMenuItem[content.length];
-	for(int i = 0;i < content.length;i++)
-	    items[i] = constructItem(content[i]);
+	items = constructItems(content);
 	hotPointY = 0;
 	while(hotPointY < items.length && !items[hotPointY].isAction())
 	    hotPointY++;
-	if (hotPointY >= items.length)
+	hotPointY--;
+	if (hotPointY < 0 || hotPointY >= items.length)
 	    hotPointY = 0;
     }
 
@@ -207,8 +207,6 @@ public class MainMenuArea  implements Area, PopupClosingRequest
     {
 	if (name == null || name.trim().isEmpty())
 	    return new EmptyMainMenuItem();
-	if (name.equals("date-time"))
-	    return new DateTimeMainMenuItem(stringConstructor);
 	String title = stringConstructor.actionTitle(name);
 	if (title.trim().isEmpty())
 	    return new EmptyMainMenuItem();
@@ -231,5 +229,16 @@ public class MainMenuArea  implements Area, PopupClosingRequest
     public boolean onCancel()
     {
 	return true;
+    }
+
+    private MainMenuItem[] constructItems(String[] content)
+    { 
+	Vector<MainMenuItem> res = new Vector<MainMenuItem>();
+	res.add(new EmptyMainMenuItem());
+	res.add(new DateTimeMainMenuItem(stringConstructor));
+	res.add(new EmptyMainMenuItem());
+	for(int i = 0;i < content.length;++i)
+	    res.add(constructItem(content[i]));
+	return res.toArray(new MainMenuItem[res.size()]);
     }
 }

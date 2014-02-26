@@ -38,13 +38,14 @@ class Environment implements EventConsumer
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
     private PimManager pimManager;
-    private GlobalKeys globalKeys = new GlobalKeys();
+    private GlobalKeys globalKeys;
     private Actions actions = new Actions();
     private AppWrapperRegistry appWrappers = new AppWrapperRegistry();
     private org.luwrain.app.system.SystemApp systemApp = new org.luwrain.app.system.SystemApp();
 
     private FileTypes fileTypes = new FileTypes(appWrappers);
     private boolean needForIntroduction = false;
+    private String[] clipboard = null;
 
     public Environment(String[] cmdLine,
 		       Registry registry,
@@ -66,6 +67,8 @@ class Environment implements EventConsumer
 	}
 	screenContentManager = new ScreenContentManager(apps, popups, systemApp);
 	windowManager = new WindowManager(interaction, screenContentManager);
+	globalKeys = new GlobalKeys(registry);
+	globalKeys.loadFromRegistry();
 	actions.fillWithStandardActions(this);
 	appWrappers.fillWithStandardWrappers();
 	interaction.startInputEventsAccepting(this);
@@ -249,6 +252,15 @@ class Environment implements EventConsumer
     {
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
+	    //Paste;
+	    if (event.getCode() == EnvironmentEvent.PASTE)
+	    {
+		if (clipboard == null || clipboard.length < 1)
+		    return;
+		onEnvironmentEvent(new InsertEvent(clipboard));
+		return;
+	    }
+	    //Open;
 	    if (event.getCode() == EnvironmentEvent.OPEN)
 	    {
 		if (screenContentManager.onEnvironmentEvent(event) == ScreenContentManager.EVENT_PROCESSED)
@@ -502,5 +514,15 @@ class Environment implements EventConsumer
 	String[] fileNames = new String[1];
 	fileNames[0] = popup.getFile().getAbsolutePath();
 	openFileNames(fileNames);
+    }
+
+    public void setClipboard(String[] value)
+    {
+	clipboard = value;
+    }
+
+    public String[] getClipboard()
+    {
+	return clipboard;
     }
 }

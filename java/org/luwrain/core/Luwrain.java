@@ -140,7 +140,21 @@ static public     void closeApp(Object instance)
 	return environment.getPimManager();
     }
 
-static private boolean checkEnvironmentInstance()
+    public static void setClipboard(String[] value)
+    {
+	if (!checkEnvironmentInstance())
+	    return;
+	environment.setClipboard(value);
+    }
+
+    public static String[] getClipboard()
+    {
+	if (!checkEnvironmentInstance())
+	    return null;
+	return environment.getClipboard();
+    }
+
+    static private boolean checkEnvironmentInstance()
     {
 	if (environment != null)
 	    return true;

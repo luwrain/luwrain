@@ -192,6 +192,13 @@ public class MessageArea extends SimpleArea
 		{
 		    area.insertLine(index + area.textEditOffset, text);
 		}
+
+		public void addLine(String text)
+		{
+		    area.addLine(text);
+		}
+
+
 		public String getTabSeq()
 		{
 		    return "\t";

@@ -162,6 +162,58 @@ class Actions
 		}
 	    });
 
+	//copy-cut-point;
+	add(new Action() {
+		private Environment e = environment;
+		public String getName()
+		{
+		    return "copy-cut-point";
+		}
+		public void onAction()
+		{
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.COPY_CUT_POINT));
+		}
+	    });
+
+	//copy;
+	add(new Action() {
+		private Environment e = environment;
+		public String getName()
+		{
+		    return "copy";
+		}
+		public void onAction()
+		{
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.COPY));
+		}
+	    });
+
+	//cut;
+	add(new Action() {
+		private Environment e = environment;
+		public String getName()
+		{
+		    return "cut";
+		}
+		public void onAction()
+		{
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CUT));
+		}
+	    });
+
+	//paste;
+	add(new Action() {
+		private Environment e = environment;
+		public String getName()
+		{
+		    return "paste";
+		}
+		public void onAction()
+		{
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.PASTE));
+		}
+	    });
+
 	//Describe;
 	add(new Action() {
 		private Environment e = environment;
@@ -357,6 +409,18 @@ class Actions
 		}
 	    });
 
+	//Calendar;
+	add(new Action() {
+		public String getName()
+		{
+		    return "calendar";
+		}
+		public void onAction()
+		{
+		    Application app = new org.luwrain.app.calendar.CalendarApp();
+		    Luwrain.launchApp(app);
+		}
+	    });
 
     }
 }

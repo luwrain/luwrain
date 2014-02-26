@@ -44,7 +44,7 @@ public class VariableValue extends Value
 	st.setString(3, name.trim());
 	st.setInt(4, type);
 	st.setInt(5, intValue);
-	st.setString(6, strValue.trim());
+	st.setString(6, strValue);
 	st.setBoolean(7, boolValue);
 	return st.executeUpdate() >= 1;
     }
@@ -60,7 +60,7 @@ public class VariableValue extends Value
 	name = rs.getString(2).trim();
 	type = rs.getInt(3);
 	intValue = rs.getInt(4);
-	strValue = rs.getString(5).trim();
+	strValue = rs.getString(5);
 	boolValue = rs.getBoolean(6);
 	return true;
     }
@@ -72,7 +72,7 @@ public class VariableValue extends Value
 	st.setString(2, name.trim());
 	st.setInt(3, type);
 	st.setInt(4, intValue);
-	st.setString(5, strValue.trim());
+	st.setString(5, strValue);
 	st.setBoolean(6, boolValue);
 	st.setLong(7, id);
 	return st.executeUpdate() >= 1;
@@ -106,7 +106,7 @@ public class VariableValue extends Value
 	    value.name = rs.getString(3).trim();
 	    value.type = rs.getInt(4);
 	    value.intValue = rs.getInt(5);
-	    value.strValue = rs.getString(6).trim();
+	    value.strValue = rs.getString(6);
 	    value.boolValue = rs.getBoolean(7);
 	    values.add(value);
 	}
@@ -131,7 +131,7 @@ public class VariableValue extends Value
 	value.name = rs.getString(3).trim();
 	value.type = rs.getInt(4);
 	value.intValue = rs.getInt(5);
-	value.strValue = rs.getString(6).trim();
+	value.strValue = rs.getString(6);
 	value.boolValue = rs.getBoolean(7);
 	return value;
     }

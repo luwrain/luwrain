@@ -14,19 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.news;
+package org.luwrain.core;
 
-public interface StringConstructor
+public interface CopyCutRequest
 {
-    String appName();
-    String groupAreaName();
-    String summaryAreaName();
-    String viewAreaName();
-    String errorReadingArticles();
-    String readPrefix();
-    String markedPrefix();
-    String noSummaryItems();
-    String noSummaryItemsAbove();
-    String noSummaryItemsBelow();
-    String errorUpdatingArticleState();
+    boolean onCopy(int fromX, int fromY, int toX, int toY);
+    boolean onCut(int fromX, int fromY, int toX, int toY);
 }

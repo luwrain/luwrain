@@ -63,4 +63,7 @@ public class CoreRegistryValues
 
     //Langs;
     public static final String LANGS_CURRENT = "/org/luwrain/langs/current";
+
+    //Global keys
+    public static final String GLOBAL_KEYS = "/org/luwrain/global-keys";
 };

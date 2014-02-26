@@ -14,19 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.news;
+package org.luwrain.app.calendar;
 
-public interface StringConstructor
+interface Actions
 {
-    String appName();
-    String groupAreaName();
-    String summaryAreaName();
-    String viewAreaName();
-    String errorReadingArticles();
-    String readPrefix();
-    String markedPrefix();
-    String noSummaryItems();
-    String noSummaryItemsAbove();
-    String noSummaryItemsBelow();
-    String errorUpdatingArticleState();
+    void close();
 }

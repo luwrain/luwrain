@@ -14,19 +14,27 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.news;
+package org.luwrain.core.events;
 
-public interface StringConstructor
+import org.luwrain.core.*;
+
+public class InsertEvent extends EnvironmentEvent
 {
-    String appName();
-    String groupAreaName();
-    String summaryAreaName();
-    String viewAreaName();
-    String errorReadingArticles();
-    String readPrefix();
-    String markedPrefix();
-    String noSummaryItems();
-    String noSummaryItemsAbove();
-    String noSummaryItemsBelow();
-    String errorUpdatingArticleState();
+    private Object data;
+
+    public InsertEvent(Object data)
+    {
+	super(INSERT);
+	this.data = data;
+    }
+
+    public int getCode()
+    {
+	return INSERT;
+    }
+
+    public Object getData()
+    {
+	return data;
+    }
 }

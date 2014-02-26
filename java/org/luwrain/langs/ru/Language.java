@@ -47,6 +47,8 @@ public class Language implements org.luwrain.core.Language
 	    return new ControlStringConstructor();
 	if (id.equals("registry"))
 	    return new RegistryStringConstructor();
+	if (id.equals("calendar"))
+	    return new CalendarStringConstructor();
 	return null;
     }
 
@@ -92,6 +94,18 @@ public class Language implements org.luwrain.core.Language
 	    return "Просмотр документов";
 	if (actionName.trim().equals("control"))
 	    return "Панель управления";
+	if (actionName.trim().equals("registry"))
+	    return "Реестр";
+	if (actionName.trim().equals("calendar"))
+	    return "Календарь";
+	if (actionName.trim().equals("copy-cut-point"))
+	    return "Установить начало копирования-вырезания";
+	if (actionName.trim().equals("copy"))
+	    return "Копировать";
+	if (actionName.trim().equals("Cut"))
+	    return "Вырезать";
+	if (actionName.trim().equals("paste"))
+	    return "Вставить";
 	return "";
     }
 }

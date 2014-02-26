@@ -14,19 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.news;
+package org.luwrain.langs.ru;
 
-public interface StringConstructor
+import java.util.*;
+
+class CalendarStringConstructor implements org.luwrain.app.calendar.StringConstructor
 {
-    String appName();
-    String groupAreaName();
-    String summaryAreaName();
-    String viewAreaName();
-    String errorReadingArticles();
-    String readPrefix();
-    String markedPrefix();
-    String noSummaryItems();
-    String noSummaryItemsAbove();
-    String noSummaryItemsBelow();
-    String errorUpdatingArticleState();
+    public String introduction()
+    {
+	return "Календарь";
+    }
 }

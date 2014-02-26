@@ -25,6 +25,7 @@ public interface MultilinedEditModel
     int getHotPointY();
     void setHotPoint(int x, int y);
     void removeLine(int index);
-    void insertLine(int index, String text);
+    void insertLine(int newLineIndex, String text);
+    void addLine(String line);
     String getTabSeq();
 }

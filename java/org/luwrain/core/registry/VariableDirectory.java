@@ -51,7 +51,7 @@ public class VariableDirectory
 
     public VariableDirectory[] selectAllSubdirs() throws SQLException
     {
-	PreparedStatement st = con.prepareStatement("SELECT  id,parent_id,name FROM registry_dir WHERE parent_id=?;");
+	PreparedStatement st = con.prepareStatement("SELECT  id,parent_id,name FROM registry_dir WHERE parent_id=? AND parent_id <> id;");
 	st.setLong(1, id);
 	ResultSet rs = st.executeQuery();
 	ArrayList<VariableDirectory> dirs = new ArrayList<VariableDirectory>();
@@ -70,7 +70,7 @@ public class VariableDirectory
     {
 	if (subdirName == null || subdirName.trim().isEmpty())
 	    return null;
-	PreparedStatement st = con.prepareStatement("SELECT  id,parent_id,name FROM registry_dir WHERE parent_id=? AND name=?;");
+	PreparedStatement st = con.prepareStatement("SELECT  id,parent_id,name FROM registry_dir WHERE parent_id=? AND name=? AND parent_id <> id;");
 	st.setLong(1, id);
 	st.setString(2, subdirName);
 	ResultSet rs = st.executeQuery();
