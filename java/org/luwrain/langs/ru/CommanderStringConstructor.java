@@ -16,12 +16,14 @@
 
 package org.luwrain.langs.ru;
 
+
+import java.io.*;
 import java.util.*;
 import org.luwrain.core.Langs;
 import org.luwrain.app.commander.DirItem;
 import org.luwrain.app.commander.PanelArea;
 
-public class CommanderStringConstructor implements org.luwrain.app.commander.CommanderStringConstructor
+class CommanderStringConstructor implements org.luwrain.app.commander.StringConstructor
 {
     public String appName()
     {
@@ -84,5 +86,38 @@ public class CommanderStringConstructor implements org.luwrain.app.commander.Com
 		    text = "Выделенный файл " + text;
 	}
 	return text;
+    }
+
+    public String done()
+    {
+	return "Завершено";
+    }
+
+    public String failed()
+    {
+	return "Ошибка";
+    }
+
+    public String copying(File[] files)
+    {
+	if (files == null)
+	    return "";
+	if (files.length == 1)
+	    return "Копирование " + files[0].getName();
+	return "Копирование " + files + " элемента(ов)";
+    }
+
+    public String copyPopupName()
+    {
+	return "Копирование файлов и каталогов";
+    }
+
+    public String copyPopupPrefix(File[] files)
+    {
+	if (files == null || files.length < 1)
+	    return "";
+	if (files.length == 1)
+	    return "Копировать \"" + files[0].getName() + "\" в:";
+	return "Копировать " + files.length + " элемента(ов) в:";
     }
 }

@@ -184,7 +184,7 @@ class Environment implements EventConsumer
 	    switch (event.type())
 	    {
 	    case Event.KEYBOARD_EVENT:
-		onKeyboardEvent((KeyboardEvent)event);
+		onKeyboardEvent(translateKeyboardEvent((KeyboardEvent)event));
 		break;
 	    case Event.ENVIRONMENT_EVENT:
 		onEnvironmentEvent((EnvironmentEvent)event);
@@ -524,5 +524,36 @@ class Environment implements EventConsumer
     public String[] getClipboard()
     {
 	return clipboard;
+    }
+
+    private KeyboardEvent translateKeyboardEvent(KeyboardEvent event)
+    {
+	if (event == null)
+	    return null;
+	if (!event.isCommand() || !event.withControlOnly())
+	    return event;
+	switch (event.getCommand())
+	{
+	case KeyboardEvent.ARROW_UP:
+	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_UP, ' ');
+
+	case KeyboardEvent.ARROW_DOWN:
+	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_DOWN, ' ');
+	case KeyboardEvent.ARROW_LEFT:
+	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_LEFT, ' ');
+	case KeyboardEvent.ARROW_RIGHT:
+	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_RIGHT, ' ');
+
+	case KeyboardEvent.PAGE_DOWN:
+	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_PAGE_DOWN, ' ');
+	case KeyboardEvent.PAGE_UP:
+	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_PAGE_UP, ' ');
+	case KeyboardEvent.HOME:
+	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_HOME, ' ');
+	case KeyboardEvent.END:
+	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_END, ' ');
+	default:
+	    return event;
+	}
     }
 }

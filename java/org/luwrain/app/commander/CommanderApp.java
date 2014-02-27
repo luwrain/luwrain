@@ -16,12 +16,14 @@
 
 package org.luwrain.app.commander;
 
+import java.io.*;
 import org.luwrain.core.*;
+import org.luwrain.popups.*;
 
-public class CommanderApp implements Application, CommanderActions
+public class CommanderApp implements Application, Actions
 {
     private Object instance = null;
-    private CommanderStringConstructor stringConstructor = null;
+    private StringConstructor stringConstructor = null;
     private PanelArea leftPanel;
     private PanelArea rightPanel;
     private TasksArea tasks;
@@ -31,12 +33,57 @@ public class CommanderApp implements Application, CommanderActions
 	Object o = Langs.requestStringConstructor("commander");
 	if (o == null)
 	    return false;
-	stringConstructor = (CommanderStringConstructor)o;
+	stringConstructor = (StringConstructor)o;
 	leftPanel = new PanelArea(this, stringConstructor, PanelArea.LEFT);
 	rightPanel = new PanelArea(this, stringConstructor, PanelArea.RIGHT);
 	tasks = new TasksArea(this, stringConstructor);
 	this.instance = instance;
 	return true;
+    }
+
+    public boolean copy(int panelSide)
+    {
+	File[] filesToCopy = null;
+	File copyTo = null;
+	if (panelSide == PanelArea.LEFT)
+	{
+	    filesToCopy = leftPanel.getSelected();
+	    copyTo= rightPanel.getCurrentDir(); 
+	} else
+	if (panelSide == PanelArea.RIGHT)
+	{
+	    filesToCopy = rightPanel.getSelected();
+	    copyTo= leftPanel.getCurrentDir(); 
+	} else
+	    return false;
+	if (filesToCopy == null || filesToCopy.length < 1|| copyTo == null)
+	    return false;
+	FilePopup popup = new FilePopup(instance, stringConstructor.copyPopupName(),
+					stringConstructor.copyPopupPrefix(filesToCopy), copyTo);
+	Luwrain.popup(instance, popup, popup.closing);
+	if (popup.closing.cancelled())
+	    return true;
+	copyTo = popup.getFile();
+
+	Task task = new Task(stringConstructor.copying(filesToCopy));
+	tasks.addTask(task);
+	DirCopyOperation op = new DirCopyOperation(tasks, task, filesToCopy, copyTo);
+	Thread t = new Thread(op);
+	t.start();
+	return true;
+    }
+
+    public void refresh()
+    {
+	leftPanel.refresh();
+	rightPanel.refresh();
+    }
+
+    public void openFiles(String[] fileNames)
+    {
+	Log.debug("commander", "need to open " + fileNames.length + " files");
+	if (fileNames != null && fileNames.length > 0)
+	    Luwrain.open(fileNames);
     }
 
     public AreaLayout getAreasToShow()
@@ -59,15 +106,8 @@ public class CommanderApp implements Application, CommanderActions
 	Luwrain.setActiveArea(instance, tasks);
     }
 
-    public void closeCommander()
+    public void close()
     {
 	Luwrain.closeApp(instance);
-    }
-
-    public void openFiles(String[] fileNames)
-    {
-	Log.debug("commander", "need to open " + fileNames.length + " files");
-	if (fileNames != null && fileNames.length > 0)
-	    Luwrain.open(fileNames);
     }
 }

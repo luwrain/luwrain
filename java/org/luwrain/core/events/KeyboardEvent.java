@@ -60,6 +60,15 @@ public class KeyboardEvent extends Event
     public static final int LEFT_ALT = 62;
     public static final int RIGHT_ALT = 63;
 
+    public static final int ALTERNATIVE_ARROW_DOWN = 70;
+    public static final int ALTERNATIVE_ARROW_UP = 71;
+    public static final int ALTERNATIVE_ARROW_LEFT = 72;
+    public static final int ALTERNATIVE_ARROW_RIGHT = 73;
+    public static final int ALTERNATIVE_HOME = 74;
+    public static final int ALTERNATIVE_END = 75;
+    public static final int ALTERNATIVE_PAGE_UP = 76;
+    public static final int ALTERNATIVE_PAGE_DOWN = 77;
+
     private boolean cmd = false;
     private int cmdCode = 0;
     private char nonCmdChar = 0;

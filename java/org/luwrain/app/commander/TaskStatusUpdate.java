@@ -16,15 +16,38 @@
 
 package org.luwrain.app.commander;
 
-public interface CommanderStringConstructor
+import org.luwrain.core.*;
+import org.luwrain.core.events.*;
+
+class TaskStatusUpdateEvent extends ThreadSyncEvent
 {
-    String appName();
-    String leftPanelName(String path);
-    String rightPanelName(String path);
-    String tasksAreaName();
-    String noItemsAbove();
-    String noItemsBelow();
-    String inaccessibleDirectoryContent();
-    String rootDirectory();
-    String dirItemIntroduction(DirItem item, boolean brief);
+    private Task task;
+    private int state;
+    private int percent;
+
+    public TaskStatusUpdateEvent(Area area,
+				 Task task,
+				 int state,
+				 int percent)
+    {
+	super(area);
+	this.task = task;
+	this.state = state;
+	this.percent = percent;
+    }
+
+    public Task getTask()
+    {
+	return task;
+    }
+
+    public int getState()
+    {
+	return state;
+    }
+
+    public int getPercent()
+    {
+	return percent;
+    }
 }

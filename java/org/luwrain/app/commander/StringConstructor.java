@@ -16,11 +16,22 @@
 
 package org.luwrain.app.commander;
 
-public interface CommanderActions
+import java.io.*;
+
+public interface StringConstructor
 {
-    void gotoLeftPanel();
-    void gotoRightPanel();
-    void gotoTasks();
-    void closeCommander();
-    void openFiles(String[] fileNames);
+    String appName();
+    String leftPanelName(String path);
+    String rightPanelName(String path);
+    String tasksAreaName();
+    String noItemsAbove();
+    String noItemsBelow();
+    String inaccessibleDirectoryContent();
+    String rootDirectory();
+    String dirItemIntroduction(DirItem item, boolean brief);
+    String copying(File[] files);
+    String done();
+    String failed();
+    String copyPopupName();
+    String copyPopupPrefix(File[] files);
 }

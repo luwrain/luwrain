@@ -31,6 +31,8 @@ public class PanelArea implements Area
     public static final int LEFT = 1;
     public static final int RIGHT = 2;
 
+    public static final int INITIAL_HOT_POINT_X = 2;
+
     public static final String ROOT_DIR = "/";//Yes, it is really for UNIX;
     public static final String PARENT_DIR = "..";
 
@@ -38,13 +40,13 @@ public class PanelArea implements Area
     private Vector<DirItem> items = null;//null means directory content is inaccessible;
 
     private int side = LEFT;
-    private CommanderStringConstructor stringConstructor;
-    private CommanderActions actions;
+    private StringConstructor stringConstructor;
+    private Actions actions;
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public PanelArea(CommanderActions actions,
-		     CommanderStringConstructor stringConstructor,
+    public PanelArea(Actions actions,
+		     StringConstructor stringConstructor,
 		     int side)
     {
 	this.stringConstructor = stringConstructor;
@@ -57,6 +59,40 @@ public class PanelArea implements Area
 	openByPath(ROOT_DIR);
 	} else
 	    openByPath(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR));
+    }
+
+    public File[] getSelected()
+    {
+	if (items == null)
+	    return null;
+	Vector<File> files = new Vector<File>();
+	for(DirItem i: items)
+	    if (i.isSelected())
+		files.add(i.getFileObject());
+	if (files.size() > 0)
+	    return files.toArray(new File[files.size()]);
+	if (hotPointY >= items.size())
+	    return null;
+	File[] f = new File[1];
+	f[0] = items.get(hotPointY).getFileObject();
+	return f;
+    }
+
+    public File getCurrentDir()
+    {
+	return current;
+    }
+
+    public void refresh()
+    {
+	if (current == null)
+	    return;
+	if (items == null || hotPointY >= items.size())
+	{
+	    openByFile(current);
+	    return;
+	}
+	openByFile(current, items.get(hotPointY).getFileName());
     }
 
     public int getLineCount()
@@ -77,276 +113,84 @@ public class PanelArea implements Area
 
     public int getHotPointX()
     {
-	if (hotPointX < 0)//Actually never happens;
-	    return 0;
-	return hotPointX;
+	return hotPointX >= 0?hotPointX:0;
     }
 
     public int getHotPointY()
     {
-	if (hotPointY < 0)//Actually never happens;
-	    return 0;
-	if (items != null && hotPointY > items.size())
-	    hotPointY = items.size();
-	return hotPointY;
+	return hotPointY >= 0?hotPointY:0;
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event.withShift() || event.withAlt())
+	if (event.isModified() || !event.isCommand())
 	    return false;
-
-	//Tab;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.TAB &&
-	    !event.isModified())
+	switch(event.getCommand())
 	{
+	case KeyboardEvent.TAB:
 	    if (side == LEFT)
-	    actions.gotoRightPanel(); else
-	    if (side == RIGHT)
-		actions.gotoTasks();
+		actions.gotoRightPanel(); else
+		if (side == RIGHT)
+		    actions.gotoTasks();
 	    return true;
+	case KeyboardEvent.F5:
+	    return actions.copy(side);
+	case KeyboardEvent.BACKSPACE:
+	    return onBackspace(event);
+	case KeyboardEvent.ENTER:
+	    return onEnter();
+	case KeyboardEvent.ARROW_DOWN:
+	    return onArrowDown(event, false);
+	case KeyboardEvent.ARROW_UP:
+	    return onArrowUp(event, false);
+	case KeyboardEvent.ALTERNATIVE_ARROW_DOWN:
+	    return onArrowDown(event, true);
+	case KeyboardEvent.ALTERNATIVE_ARROW_UP:
+	    return onArrowUp(event, true);
+	case KeyboardEvent.ARROW_LEFT:
+	    return onArrowLeft(event);
+	case KeyboardEvent.ARROW_RIGHT:
+	    return onArrowRight(event);
+	    //FIXME:ALTERNATIVE_ARROW_LEFT;
+	    //FIXME:ALTERNATIVE_ARROW_RIGHT;
+	case KeyboardEvent.PAGE_DOWN:
+	    return onPageDown(event, false);
+	case KeyboardEvent.PAGE_UP:
+	    return onPageUp(event, false);
+	case KeyboardEvent.HOME:
+	    return onHome(event);
+	case KeyboardEvent.END:
+	    return onEnd(event);
+	case KeyboardEvent.ALTERNATIVE_PAGE_DOWN:
+	    return onPageDown(event, true);
+	case KeyboardEvent.ALTERNATIVE_PAGE_UP:
+	    return onPageUp(event, true);
+	case KeyboardEvent.ALTERNATIVE_HOME:
+	    return onAlternativeHome(event);
+	case KeyboardEvent.ALTERNATIVE_END:
+	    return onAlternativeEnd(event);
+	default:
+	    return false;
 	}
-
-	//Backspace;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.BACKSPACE &&
-	    !event.isModified())
-	{
-	    handleBackspace();
-		return true;
-	}
-
-	if (items == null)
-	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
-	    return true;
-	}
-
-	//Enter;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ENTER &&
-	    !event.isModified())
-	{
-	    if (hotPointY < items.size())
-		handleEnter(hotPointY);
-		return true;
-	}
-
-	//Down;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ARROW_DOWN &&
-	    !event.withAlt() && !event.withShift())
-	{
-	    if (hotPointY + 1> items.size())
-	    {
-		Speech.say(stringConstructor.noItemsBelow(), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointX = 2;
-	    hotPointY++;
-	    Luwrain.onAreaNewHotPoint(this);
-	    introduceItem(hotPointY, event.withControl());
-	    return true;
-	}
-
-	//Up;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ARROW_UP &&
-	    !event.withAlt() && !event.withShift())
-	{
-	    if (hotPointY < 1)
-	    {
-		Speech.say(stringConstructor.noItemsAbove(), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointX = 2;
-	    hotPointY--;
-	    Luwrain.onAreaNewHotPoint(this);
-	    introduceItem(hotPointY, event.withControl());
-	    return true;
-	}
-
-	//Right;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ARROW_RIGHT &&
-	    !event.isModified())
-	{
-	    if (hotPointY >= items.size())
-	    {
-		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    if (items.get(hotPointY) == null ||
-		items.get(hotPointY).getFileObject() == null)
-		return true;
-	    String name = items.get(hotPointY).getFileName();
-	    if (name == null)
-		return true;
-	    if (hotPointX >= name.length() + 2)
-	    {
-		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointX++;
-	    if (hotPointX < 2)
-		hotPointX = 2;
-	    Luwrain.onAreaNewHotPoint(this);
-	    if (hotPointX < name.length() + 2)
-	    Speech.sayLetter(name.charAt(hotPointX - 2)); else
-		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
-	    return true;
-	}
-
-	//Left;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ARROW_LEFT &&
-	    !event.isModified())
-	{
-	    if (hotPointY >= items.size())
-	    {
-		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    if (items.get(hotPointY) == null ||
-		items.get(hotPointY).getFileObject() == null)
-		return true;
-	    String name = items.get(hotPointY).getFileName();
-	    if (name == null)
-		return true;
-
-	    if (hotPointX <= 2)
-	    {
-		Speech.say(Langs.staticValue(Langs.BEGIN_OF_LINE), Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointX--;
-	    if (hotPointX > name.length()  + 2)
-		hotPointX = name.length() + 2;
-	    Luwrain.onAreaNewHotPoint(this);
-	    Speech.sayLetter(name.charAt(hotPointX - 2));
-	    return true;
-	}
-
-	//Page down;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.PAGE_DOWN &&
-	    !event.withAlt() && !event.withShift())
-	{
-	    final int visibleHeight = Luwrain.getAreaVisibleHeight(this);
-	    if (visibleHeight < 1)
-	    {
-		Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page down key");
-		return true;
-	    }
-	    if (hotPointY + visibleHeight > items.size())
-		hotPointY = items.size(); else
-		hotPointY += visibleHeight;
-	    introduceItem(hotPointY, event.withControl());
-	    if (hotPointY < items.size())
-	    hotPointX = 2; else
-		hotPointX = 0;
-	    Luwrain.onAreaNewHotPoint(this);
-	    return true;
-	}
-
-	//Page up;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.PAGE_UP &&
-	    !event.withAlt() && !event.withShift())
-	{
-	    final int visibleHeight = Luwrain.getAreaVisibleHeight(this);
-	    if (visibleHeight < 1)
-	    {
-		Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page up key");
-		return true;
-	    }
-	    if (hotPointY < visibleHeight)
-		hotPointY = 0; else
-		hotPointY -= visibleHeight;
-	    introduceItem(hotPointY, event.withControl());
-	    if (hotPointY < items.size())
-	    hotPointX = 2; else
-		hotPointX = 0;
-	    Luwrain.onAreaNewHotPoint(this);
-	    return true;
-	}
-
-	//Home;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.HOME &&
-	    !event.withAlt() && !event.withShift())
-	{
-	    if (!event.withControl())
-		hotPointY = 0;
-	    if (hotPointY < items.size())
-	    hotPointX = 2; else
-		hotPointX = 0;
-	    if (event.withControl())
-	    {
-		if (hotPointY >= items.size() || hotPointX >= items.get(hotPointY).getFileName().length() + 2)
-		    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
-		    Speech.sayLetter(items.get(hotPointY).getFileName().charAt(hotPointX - 2));
-	    } else
-		introduceItem(hotPointY, false);
-	    Luwrain.onAreaNewHotPoint(this);
-	    return true;
-	}
-
-	//End;
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.END &&
-	    !event.withAlt() && !event.withShift())
-	{
-	    if (!event.withControl())
-	    {
-		hotPointY = items.size();
-		hotPointX = 0;
-		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-	    } else
-	    {
-		if (hotPointY < items.size())
-		{
-		    hotPointX = items.get(hotPointY).getFileName().length() + 2;
-		    Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
-		} else
-		{
-		    hotPointX = 0;
-		    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-		}
-	    }
-	    Luwrain.onAreaNewHotPoint(this);
-	    return true;
-	}
-
-
-
-
-
-
-	//FIXME:backspace;
-	//FIXME:selection;
-
-	return false;
     }
-
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	switch(event.getCode())
 	{
-case EnvironmentEvent.INTRODUCE:
+	case EnvironmentEvent.INTRODUCE:
     Speech.say(stringConstructor.appName() + " " + getName());
     return true;
 	case EnvironmentEvent.CLOSE:
-	    actions.closeCommander();
+	    actions.close();
 	    return true;
 	case EnvironmentEvent.OK:
-	    if (items != null && hotPointY < items.size())
-		handleEnter(hotPointY);
+	    return onEnter();
+	case EnvironmentEvent.REFRESH:
+	    refresh();
 	    return true;
 	default:
+	    return false;
 	}
-    return false;
     }
 
     public String getName()
@@ -356,6 +200,267 @@ case EnvironmentEvent.INTRODUCE:
 	if (side == RIGHT)
 	    return stringConstructor.rightPanelName(current != null?current.getAbsolutePath():null);
 	return "";
+    }
+
+    private boolean onEnter()
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY >= items.size())
+	    return false;
+	final DirItem item = items.get(hotPointY);
+	if (item == null)
+	{
+	    Log.warning("commander", "the panel has null director item");
+	    return false;
+	}
+	if (item.getType() == DirItem.DIRECTORY)
+	{
+	    File parent = current.getParentFile();
+	    if (item.getFileName().equals(PARENT_DIR) && parent != null)
+		openByFile(parent, current.getName()); else
+		openByFile(item.getFileObject());
+	    introduceLocation(current);
+	    return true;
+	}
+	File[] selected = getSelected();
+	if (selected != null && selected.length > 0)
+	{
+	    String[] fileNames = new String[selected.length];
+	    for(int i = 0;i < selected.length;++i)
+		fileNames[i] = selected[i].getAbsolutePath();
+	    actions.openFiles(fileNames);
+	    return true;
+	}
+	String fileNames[] = new String[1];
+	fileNames[0] = item.getFileObject().getAbsolutePath();
+	actions.openFiles(fileNames);
+	return true;
+    }
+
+    private boolean onBackspace(KeyboardEvent event)
+    {
+	if (current == null)
+	    return false;
+	File parent = current.getParentFile();
+	if (parent == null)
+	    return false;
+	openByFile(parent, current.getName());
+	introduceLocation(current);
+	return true;
+    }
+
+    private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY + 1> items.size())
+	{
+	    Speech.say(stringConstructor.noItemsBelow(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
+	hotPointY++;
+	Luwrain.onAreaNewHotPoint(this);
+	introduceItem(hotPointY, briefIntroduction);
+	return true;
+    }
+
+    private boolean onArrowUp(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY < 1)
+	{
+	    Speech.say(stringConstructor.noItemsAbove(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointX = INITIAL_HOT_POINT_X;
+	hotPointY--;
+	Luwrain.onAreaNewHotPoint(this);
+	introduceItem(hotPointY, briefIntroduction);
+	return true;
+    }
+
+    private boolean onArrowRight(KeyboardEvent event)
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY >= items.size())
+	{
+	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (items.get(hotPointY) == null ||
+	    items.get(hotPointY).getFileObject() == null)
+	    return true;
+	final String name = items.get(hotPointY).getFileName();
+	if (name == null)
+	    return true;
+	if (hotPointX >= name.length() + INITIAL_HOT_POINT_X)
+	{
+	    Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointX++;
+	if (hotPointX < INITIAL_HOT_POINT_X)
+	    hotPointX = INITIAL_HOT_POINT_X;
+	Luwrain.onAreaNewHotPoint(this);
+	if (hotPointX < name.length() + 2)
+	    Speech.sayLetter(name.charAt(hotPointX - 2)); else
+	    Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
+	return true;
+    }
+
+    private boolean onArrowLeft(KeyboardEvent event)
+    {
+
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+
+	if (hotPointY >= items.size())
+	{
+	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (items.get(hotPointY) == null ||
+	    items.get(hotPointY).getFileObject() == null)
+	    return true;
+	final String name = items.get(hotPointY).getFileName();
+	if (name == null)
+	    return true;
+	if (hotPointX <= INITIAL_HOT_POINT_X)
+	{
+	    Speech.say(Langs.staticValue(Langs.BEGIN_OF_LINE), Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointX--;
+	if (hotPointX > name.length()  + INITIAL_HOT_POINT_X)
+	    hotPointX = name.length() + INITIAL_HOT_POINT_X;
+	Luwrain.onAreaNewHotPoint(this);
+	Speech.sayLetter(name.charAt(hotPointX - 2));
+	return true;
+    }
+
+    private boolean onPageDown(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	final int visibleHeight = Luwrain.getAreaVisibleHeight(this);
+	if (visibleHeight < 1)
+	{
+	    Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page down key");
+	    return false;
+	}
+	if (hotPointY + visibleHeight > items.size())
+	    hotPointY = items.size(); else
+	    hotPointY += visibleHeight;
+	Luwrain.onAreaNewHotPoint(this);
+	introduceItem(hotPointY, briefIntroduction);
+	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
+	return true;
+    }
+
+    private boolean onPageUp(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	final int visibleHeight = Luwrain.getAreaVisibleHeight(this);
+	if (visibleHeight < 1)
+	{
+	    Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page up key");
+	    return false;
+	}
+	if (hotPointY < visibleHeight)
+	    hotPointY = 0; else
+		hotPointY -= visibleHeight;
+	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
+	Luwrain.onAreaNewHotPoint(this);
+	introduceItem(hotPointY, briefIntroduction);
+	return true;
+    }
+
+    private boolean onHome(KeyboardEvent event)
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointY = 0;
+	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
+	introduceItem(hotPointY, false);
+	Luwrain.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onAlternativeHome(KeyboardEvent event)
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
+	if (hotPointY >= items.size() || hotPointX >= items.get(hotPointY).getFileName().length() + INITIAL_HOT_POINT_X)
+	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
+	    Speech.sayLetter(items.get(hotPointY).getFileName().charAt(hotPointX - 2));
+	return true;
+    }
+
+    private boolean onEnd(KeyboardEvent event)
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointY = items.size();
+	hotPointX = 0;
+	Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	Luwrain.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onAlternativeEnd(KeyboardEvent event)
+    {
+	if (items == null)
+	{
+	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY < items.size())
+	{
+	    hotPointX = items.get(hotPointY).getFileName().length() + INITIAL_HOT_POINT_X;
+	    Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
+	} else
+	{
+	    hotPointX = 0;
+	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	}
+	Luwrain.onAreaNewHotPoint(this);
+	return true;
     }
 
     private void introduceItem(int index, boolean brief)
@@ -380,36 +485,6 @@ case EnvironmentEvent.INTRODUCE:
 	    return;
 	}
 	Speech.say(file.getName());
-    }
-
-    private void handleEnter(int index)
-    {
-	if (items == null || index >= items.size())
-	    return;
-	    DirItem item = items.get(index);
-	    if (item.getType() == DirItem.REGULAR)//FIXME:The same for multiple selection;
-	    {
-		String fileNames[] = new String[1];
-		fileNames[0] = item.getFileObject().getAbsolutePath();
-		actions.openFiles(fileNames);
-		return;
-	    }
-	    File parent = current.getParentFile();
-	    if (item.getFileName().equals(PARENT_DIR) && parent != null)
-		openByFile(parent, current.getName()); else
-		openByFile(item.getFileObject());
-	    introduceLocation(current);
-    }
-
-    private void handleBackspace()
-    {
-	if (current == null)
-	    return;
-	File parent = current.getParentFile();
-	if (parent == null)
-	    return;
-	openByFile(parent, current.getName());
-	introduceLocation(current);
     }
 
     private void openByPath(String path)
