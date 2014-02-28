@@ -173,6 +173,9 @@ public class PimManager
 
     public MailStoring getMailStoring()
     {
+	/*
 	return mailJdbcCon != null?new MailStoringSql(registry, mailJdbcCon):null;
+	*/
+	return null;
     }
 }

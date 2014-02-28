@@ -18,43 +18,67 @@ package org.luwrain.app.news;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.pim.*;
 
-public class ViewArea extends SimpleArea
+class ViewArea extends NavigateArea
 {
     private StringConstructor stringConstructor;
     private Actions actions;
 
+    private StoredNewsArticle article;
+    private String[] text;
+
     public ViewArea(Actions actions, StringConstructor stringConstructor)
     {
-	super(stringConstructor.viewAreaName());
 	this.actions =  actions;
 	this.stringConstructor = stringConstructor;
-	//	setContent(prepareText());
+    }
+
+    public void show(StoredNewsArticle article)
+    {
+	this.article = article;
+	prepareText();
+	setHotPoint(0, 0);
+	Luwrain.onAreaNewContent(this);
+	Luwrain.onAreaNewHotPoint(this);//Maybe needless;
+    }
+
+    public int getLineCount()
+    {
+	if (article == null)
+	    return 1;
+	if (text == null)
+	    return 4;
+	return text.length + 4;
+    }
+
+    public String getLine(int index)
+    {
+	if (article == null)
+	    return "";
+	if (text != null && index < text.length)
+	    return text[index];
+	int num = index - (text != null?text.length:0);
+	switch(num)
+	{
+	case 1:
+	    return article.getUrl();
+	case 2:
+	    return article.getPublishedDate().toString();
+	default:
+	    return "";
+	}
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (super.onKeyboardEvent(event))
-	    return true;
-
-	//Tab;
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB && !event.isModified())
-	{
-	    actions.gotoGroups();
-	    return true;
-	}
-	return false;
-    }
-
-    private String[] prepareText()
-    {
-	String res[] = new String[3];
-	for(int i = 0;i < 3;i++)
-	{
-	    res[i] = new String("Text ");
-	    res[i] += (i + 1);
-	}
-	return res;
+	if (event.isCommand() && !event.isModified() &&
+						    event.getCommand() == KeyboardEvent.TAB)
+	    {
+		actions.gotoGroups();
+		return true;
+	    }
+	return super.onKeyboardEvent(event);
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
@@ -68,7 +92,23 @@ public class ViewArea extends SimpleArea
 	    Speech.say(stringConstructor.appName() + " " + stringConstructor.viewAreaName());
 	    return true;
 	default:
-	    return false;
+	    return super.onEnvironmentEvent(event);
 	}
     }
+
+    public String getName()
+    {
+	return stringConstructor.viewAreaName(); 
+    }
+
+    private void prepareText()
+    {
+	if (article == null)
+	{
+	    text = null;
+	    return;
+	}
+	text = NewsContentParser.parse(article.getContent());
+    }
+
 }

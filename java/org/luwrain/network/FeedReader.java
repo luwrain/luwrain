@@ -19,11 +19,8 @@ package org.luwrain.network;
 import java.net.URL;
 import java.util.*;
 import java.io.*;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
-import com.sun.syndication.io.FeedException;
+import com.sun.syndication.feed.synd.*;
+import com.sun.syndication.io.*;
 import org.luwrain.pim.NewsArticle;
 
 public class FeedReader
@@ -54,6 +51,23 @@ public class FeedReader
 		if (entry.getAuthor() != null)
 		    article.author = entry.getAuthor();
 		//FIXME:category;
+		article.content = "";
+		List contents = entry.getContents();
+		if (contents.size() > 0)
+		{
+		    for(Object o: contents)
+			if (o instanceof SyndContentImpl)
+			{
+			    SyndContentImpl content = (SyndContentImpl)o;
+			    article.content += content.getValue();
+			}
+		} else
+		{
+		    SyndContent content = entry.getDescription();
+		    article.content = content.getValue();
+		}
+
+
 		articles.add(article);
 	    }
 	}

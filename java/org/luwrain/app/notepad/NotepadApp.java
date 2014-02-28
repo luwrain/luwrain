@@ -111,10 +111,7 @@ public class NotepadApp implements Application, Actions
 	if (popup.closing.cancelled())
 	    return;
 	if (!readByFileName(popup.getFile().getAbsolutePath()))
-	{
-	    //	    Luwrain.message(stringConstructor.errorOpeningFile());
 	    return;
-	}
 	    fileName = popup.getFile().getAbsolutePath();
 	    area.setName(popup.getFile().getName());
     }
@@ -160,7 +157,8 @@ public class NotepadApp implements Application, Actions
 	    for(int i = 0;i < lines.length;i++)
 	    {
 		writer.write(lines[i]);
-		writer.newLine();
+		if (i + 1 < lines.length)
+		    writer.newLine();
 	    }
 	}
     }

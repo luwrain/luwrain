@@ -16,11 +16,14 @@
 
 package org.luwrain.app.news;
 
+import org.luwrain.pim.*;
+
 interface Actions
 {
     void gotoGroups();
     void gotoArticles();
     void gotoView();
     void openGroup(int index);
+    void showArticle(StoredNewsArticle article);
     void close();
 }

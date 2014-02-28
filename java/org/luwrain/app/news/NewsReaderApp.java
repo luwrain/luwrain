@@ -95,6 +95,12 @@ public class NewsReaderApp implements Application, Actions
 	viewArea = new ViewArea(this, stringConstructor);
     }
 
+    public void showArticle(StoredNewsArticle article)
+    {
+	viewArea.show(article);
+	Luwrain.setActiveArea(instance, viewArea);
+    }
+
     public void openGroup(int index)
     {
 	if (groupModel == null || 

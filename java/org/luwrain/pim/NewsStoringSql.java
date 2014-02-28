@@ -78,12 +78,7 @@ class NewsStoringSql extends NewsStoringRegistry
 	    a.content = rs.getString(15).trim();
 	    articles.add(a);
 	}
-	StoredNewsArticle[] res = new StoredNewsArticle[articles.size()];
-	Iterator<StoredNewsArticleSql> it = articles.iterator();
-	int k = 0;
-	while (it.hasNext())
-	    res[k++] = it.next();
-	return res;
+	return articles.toArray(new StoredNewsArticle[articles.size()]);
     }
 
     public     StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws SQLException
@@ -113,12 +108,7 @@ class NewsStoringSql extends NewsStoringRegistry
 	    a.content = rs.getString(15).trim();
 	    articles.add(a);
 	}
-	StoredNewsArticle[] res = new StoredNewsArticle[articles.size()];
-	Iterator<StoredNewsArticleSql> it = articles.iterator();
-	int k = 0;
-	while (it.hasNext())
-	    res[k++] = it.next();
-	return res;
+	return articles.toArray(new StoredNewsArticle[articles.size()]);
     }
 
     public int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws SQLException

@@ -20,9 +20,10 @@ package org.luwrain.core;
 
 //TODO:Tab shift respecting on up-down movements;
 
+import java.util.*;
 import org.luwrain.core.events.*;
 
-public abstract class NavigateArea implements Area
+public abstract class NavigateArea implements Area, CopyCutRequest
 {
     private final String areaBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
     private final String areaEndMessage = Langs.staticValue(Langs.AREA_END);
@@ -31,8 +32,14 @@ public abstract class NavigateArea implements Area
     private final String lineEndMessage = Langs.staticValue(Langs.END_OF_LINE);
     private final String emptyLineMessage  = Langs.staticValue(Langs.EMPTY_LINE);
 
+    private CopyCutInfo copyCutInfo;
     private int hotPointX = 0;
     private int hotPointY = 0;
+
+    public NavigateArea()
+    {
+	this.copyCutInfo = new CopyCutInfo(this);
+    }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
@@ -234,7 +241,15 @@ public abstract class NavigateArea implements Area
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	return false;
+	switch(event.getCode())
+	{
+	case EnvironmentEvent.COPY_CUT_POINT:
+	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	case EnvironmentEvent.COPY:
+	    return copyCutInfo.doCopy(hotPointX, hotPointY);
+	default:
+	    return false;
+	}
     }
 
     public void introduceLine(int index)
@@ -287,5 +302,48 @@ public abstract class NavigateArea implements Area
 	if (x > line.length())
 	    x = line.length();
 	setHotPoint(x, y);
+    }
+
+    public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    {
+	if (toY >= getLineCount())
+	    return false;
+	if (fromY == toY)
+	{
+	    String line = getLine(fromY);
+	    if (line == null || line.isEmpty())
+		return false;
+	    int fromPos = fromX < line.length()?fromX:line.length();
+	    int toPos = toX < line.length()?toX:line.length();
+	    if (fromPos >= toPos)
+		return false;
+	    String[] res = new String[1];
+	    res[0] = line.substring(fromPos, toPos);
+	    Luwrain.setClipboard(res);
+	    return true;
+	}
+	Vector<String> res = new Vector<String>();
+	String line = getLine(fromY);
+	if (line == null)
+	    return false;
+	res.add(line.substring(fromX < line.length()?fromX:line.length()));
+	for(int i = fromY + 1;i < toY;++i)
+	{
+	    line = getLine(i);
+	    if (line == null)
+		return false;
+	    res.add(line);
+	}
+	line = getLine(toY);
+	if (line == null)
+	    return false;
+	res.add(line.substring(0, toX <line.length()?toX:line.length()));
+	Luwrain.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
+    public boolean onCut(int fromX, int fromY, int toX, int toY)
+    {
+	return false;
     }
 }

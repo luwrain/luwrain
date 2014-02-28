@@ -211,12 +211,12 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	if (wndWidth < 0)
 	{
 	    Log.debug("awt", "interaction params have window width equal to " + wndWidth + ", taking screen width " + screenSize.width);
-	    wndWidth = screenSize.width;
+	    wndWidth = screenSize.width + 5;//FIXME:+5 eliminates white line in empty X area;
 	}
 	if (wndHeight < 0)
 	{
 	    Log.debug("awt", "interaction params have window height equal to " + wndHeight + ", taking screen height " + screenSize.height);
-	    wndHeight = screenSize.height;
+	    wndHeight = screenSize.height + 5;//FIXME:+5 eliminates white line in empty X area;
 	}
 	Log.info("awt", "creating window " + wndWidth + "x" + wndHeight + " at position (" + params.wndLeft + "," + params.wndTop + ")");
 	Log.info("awt", "initial font size is " + params.initialFontSize);

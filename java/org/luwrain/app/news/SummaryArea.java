@@ -88,6 +88,9 @@ class SummaryArea implements Area, CopyCutRequest
 	    actions.gotoView();
 	    return true;
 	}
+	if (!event.isCommand() && !event.isModified() &&
+	    event.getCharacter() == ' ')
+	    return onSpace(event);
 	if (!event.isCommand())
 	    return false;
 	switch(event.getCommand())
@@ -150,6 +153,36 @@ class SummaryArea implements Area, CopyCutRequest
 	    return false;
 	StoredNewsArticle a = articles[hotPointY];
 	if (a.getState() != NewsArticle.NEW)
+	{
+	    actions.showArticle(a);
+	    return true;//FIXME:View anyway;
+	}
+	try {
+	    a.setState(NewsArticle.READ);
+	}
+	catch (Exception e)
+	{
+	    Log.error("news", "problem during updating news article state:" + e.getMessage());
+	    e.printStackTrace();
+	    Luwrain.message(stringConstructor.errorUpdatingArticleState());
+	    return true;
+	}
+	Luwrain.onAreaNewContent(this);
+	actions.showArticle(a);
+	return true;
+    }
+
+    private boolean onSpace(KeyboardEvent event)
+    {
+	if (articles == null || articles.length < 1)
+	{
+	    Speech.say(stringConstructor.noSummaryItems(), Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY >= articles.length)
+	    return false;
+	StoredNewsArticle a = articles[hotPointY];
+	if (a.getState() != NewsArticle.NEW)
 	    return true;//FIXME:View anyway;
 	try {
 	    a.setState(NewsArticle.READ);
@@ -164,6 +197,7 @@ class SummaryArea implements Area, CopyCutRequest
 	Luwrain.onAreaNewContent(this);
 	return true;
     }
+
 
     private boolean onArrowDown(KeyboardEvent event)
     {

@@ -172,3 +172,12 @@ INSERT INTO registry_value (name,dir_id,value_type,bool_value) VALUES ('with-lef
 INSERT INTO registry_dir (id,name,parent_id) VALUES (41,'ok',30);
 INSERT INTO registry_value (name,dir_id,value_type,str_value) VALUES ('character',41,2,'c');
 INSERT INTO registry_value (name,dir_id,value_type,bool_value) VALUES ('with-control',41,3,true);
+
+-- Screen font size --
+
+INSERT INTO registry_dir (id,name,parent_id) VALUES (50,'increase-font-size',30);
+INSERT INTO registry_value (name,dir_id,value_type,str_value) VALUES ('character',50,2,'=');
+INSERT INTO registry_value (name,dir_id,value_type,bool_value) VALUES ('with-left-alt',50,3,true);
+INSERT INTO registry_dir (id,name,parent_id) VALUES (51,'decrease-font-size',30);
+INSERT INTO registry_value (name,dir_id,value_type,str_value) VALUES ('character',51,2,'-');
+INSERT INTO registry_value (name,dir_id,value_type,bool_value) VALUES ('with-left-alt',51,3,true);

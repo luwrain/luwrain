@@ -134,9 +134,16 @@ public class MessageArea extends SimpleArea
 	case EnvironmentEvent.INTRODUCE:
 	    Speech.say(stringConstructor.appName());
 	    return true;
-	default:
-	    return false;
 	}
+	final int index = getHotPointY();
+	if (index >= textEditOffset)
+	    return textEdit.onEnvironmentEvent(event);
+	if (headerItems == null || index >= headerItems.length)
+	    return super.onEnvironmentEvent(event);
+	if (headerItems[index].type != MessageAreaHeaderItem.EDIT || getHotPointX() < headerItems[index].offset)
+	    return super.onEnvironmentEvent(event);
+	return headerItems[index].edit.onEnvironmentEvent(event); 
+	//FIXME:attachments;
     }
 
     public String getName()
