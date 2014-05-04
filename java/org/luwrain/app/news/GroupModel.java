@@ -16,6 +16,7 @@
 
 package org.luwrain.app.news;
 
+import java.util.*;
 import org.luwrain.core.Log;
 import org.luwrain.controls.*;
 import org.luwrain.pim.*;
@@ -23,7 +24,7 @@ import org.luwrain.pim.*;
 class GroupModel implements ListModel
 {
     private NewsStoring newsStoring;
-    private StoredNewsGroup[] items;
+    private NewsGroupWrapper[] items;
 
     public GroupModel(NewsStoring newsStoring)
     {
@@ -50,8 +51,16 @@ class GroupModel implements ListModel
 	    items = null;
 	    return;
 	}
+	ArrayList<NewsGroupWrapper> w = new ArrayList<NewsGroupWrapper>();
 	try {
-	    items = newsStoring.loadNewsGroups();
+StoredNewsGroup[] groups = newsStoring.loadNewsGroups();
+for(StoredNewsGroup g: groups)
+{
+    //FIXME:It is better to do this through the single query with agregating;
+    final int count = newsStoring.countNewArticleInGroup(g);
+    if (count > 0)
+	w.add(new NewsGroupWrapper(g, count));
+}
 	}
 	catch(Exception e)
 	{
@@ -59,5 +68,6 @@ class GroupModel implements ListModel
 	    e.printStackTrace();
 	    items = null;
 	}
+	items = w.toArray(new NewsGroupWrapper[w.size()]);
     }
 }

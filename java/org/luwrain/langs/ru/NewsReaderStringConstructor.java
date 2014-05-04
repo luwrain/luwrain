@@ -27,17 +27,17 @@ public class NewsReaderStringConstructor implements org.luwrain.app.news.StringC
 
     public String groupAreaName()
     {
-	return "Список групп новостей";
+	return "Группы новостей";
     }
 
     public String summaryAreaName()
     {
-	return "Список новостей";
+	return "Список статей";
     }
 
     public String viewAreaName()
     {
-	return "Просмотр новости";
+	return "Текст статьи";
     }
 
 public     String errorReadingArticles()

@@ -50,7 +50,8 @@ public class FetchStringConstructor implements org.luwrain.app.fetch.StringConst
 
     public String newsGroupFetched(String name, int fresh, int total)
     {
-	return "Группа " + name + " содержит " + fresh + " новых статей из " + total;
+	return"" + fresh + " " + NumberUtil.chooseNumberDependentForm(fresh, "новая статья", "новых статьи", "новых статей") +
+	"в группе " + name;
     }
 
     public String pressEnterToStart()

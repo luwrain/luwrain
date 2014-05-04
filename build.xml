@@ -26,4 +26,14 @@
       </fileset>
     </jar>
   </target>
+  <target name="javadoc">
+    <mkdir dir="api"/>
+    <javadoc classpathref="classpath" destdir="api" defaultexcludes="yes" author="false" version="true" use="true" windowtitle="Accessible environment Luwrain" private="false">
+      <fileset dir="java">
+        <include name="**/*.java"/>
+      </fileset>
+      <doctitle><![CDATA[<h1>Accessible environment Luwrain</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Visit <a href="http://luwrain.org">luwrain.org</a> for more information</i>]]></bottom>
+    </javadoc>
+  </target>
 </project>

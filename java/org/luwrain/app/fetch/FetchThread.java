@@ -143,9 +143,10 @@ class FetchThread implements Runnable
 		if (newsStoring. countArticlesByUriInGroup(group, a.uri) == 0)
 		    freshNews.add(a);
 	}
-	message(stringConstructor.newsGroupFetched(group.getName(), freshNews.size(), totalCount));
 	for(int k = 0;k < freshNews.size();k++)
 	    newsStoring.saveNewsArticle(group, freshNews.get(k));
+	if (freshNews.size() > 0 )
+	    message(stringConstructor.newsGroupFetched(group.getName(), freshNews.size(), totalCount));
     }
 
     public void run()

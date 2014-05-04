@@ -14,14 +14,32 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim;
+package org.luwrain.app.news;
 
-public interface NewsStoring
+import org.luwrain.pim.StoredNewsGroup;
+
+class NewsGroupWrapper
 {
-    StoredNewsGroup[] loadNewsGroups() throws Exception;
-    void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws Exception;
-    StoredNewsArticle[] loadNewsArticlesInGroup(StoredNewsGroup newsGroup) throws Exception;
-    StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws Exception;
-    int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws Exception;
-    int countNewArticleInGroup(StoredNewsGroup group) throws Exception;
+    private StoredNewsGroup group;
+    private int newArticleCount;
+
+    public NewsGroupWrapper(StoredNewsGroup group, int newArticleCount)
+    {
+	this.group = group;
+	this.newArticleCount = newArticleCount;
+    }
+
+    public StoredNewsGroup getStoredGroup()
+    {
+	return group;
+    }
+
+    public String toString()
+    {
+	if (group == null)
+	    return "";
+	if (newArticleCount == 0)
+	    return group.getName();
+	return group.getName() + " (" + newArticleCount + ")";
+    }
 }

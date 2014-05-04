@@ -18,6 +18,7 @@ package org.luwrain.pim;
 
 import java.sql.*;
 import java.util.*;
+import org.luwrain.core.Log;
 import org.luwrain.core.registry.Registry;
 
 class NewsStoringSql extends NewsStoringRegistry
@@ -120,6 +121,28 @@ class NewsStoringSql extends NewsStoringRegistry
 	ResultSet rs = st.executeQuery();
 	if (!rs.next())
 	    return 0;
+	return rs.getInt(1);
+    }
+
+    public int countNewArticleInGroup(StoredNewsGroup group) throws Exception
+    {
+	if (group == null)
+	    return 0;
+	if (!(group instanceof StoredNewsGroupRegistry))
+	{
+	    Log.warning("pim", "provided object to count new articles  for is not an instance of StoredNewsGroupRegistry");
+	    return 0;
+	}
+	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)group;
+	PreparedStatement st = con.prepareStatement("SELECT count(*) FROM news_article WHERE news_group_id=? AND state=?;");
+	st.setLong(1, g.id);
+	st.setLong(2, NewsArticle.NEW);
+	ResultSet rs = st.executeQuery();
+	if (!rs.next())
+	{
+	    Log.warning("pim", "empty result set on attempt to count unread news articles in the group");
+	    return 0;
+	}
 	return rs.getInt(1);
     }
 }

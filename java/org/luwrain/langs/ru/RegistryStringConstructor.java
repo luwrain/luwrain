@@ -22,7 +22,7 @@ public class RegistryStringConstructor implements org.luwrain.app.registry.Strin
 {
     public String dirsAreaName()
     {
-	return "Дерево каталогов";
+	return "Каталоги параметров реестра";
     }
 
     public String valuesAreaName()

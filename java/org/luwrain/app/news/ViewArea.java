@@ -78,6 +78,15 @@ class ViewArea extends NavigateArea
 		actions.gotoGroups();
 		return true;
 	    }
+
+	if (event.isCommand() && !event.isModified() &&
+						    event.getCommand() == KeyboardEvent.BACKSPACE)
+	    {
+		actions.gotoArticles();
+		return true;
+	    }
+
+
 	return super.onKeyboardEvent(event);
     }
 
@@ -108,7 +117,9 @@ class ViewArea extends NavigateArea
 	    text = null;
 	    return;
 	}
-	text = NewsContentParser.parse(article.getContent());
+	NewsContentParser parser = new NewsContentParser();
+	parser.parse(article.getContent());
+	text = parser.getLines();
     }
 
 }

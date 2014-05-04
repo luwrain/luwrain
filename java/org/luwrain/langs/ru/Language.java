@@ -89,7 +89,7 @@ public class Language implements org.luwrain.core.Language
 	if (actionName.trim().equals("fetch"))
 	    return "Доставка сообщений и новостей";
 	if (actionName.trim().equals("message"))
-	    return "Новое сообщение";
+	    return "Сообщение";
 	if (actionName.trim().equals("preview"))
 	    return "Просмотр документов";
 	if (actionName.trim().equals("control"))

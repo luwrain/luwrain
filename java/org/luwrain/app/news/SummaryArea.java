@@ -14,6 +14,8 @@
    General Public License for more details.
 */
 
+//FIXME:Notification about article being read
+
 package org.luwrain.app.news;
 
 import java.util.*;
@@ -88,6 +90,14 @@ class SummaryArea implements Area, CopyCutRequest
 	    actions.gotoView();
 	    return true;
 	}
+
+	if (event.isCommand() && event.getCommand() == KeyboardEvent.BACKSPACE && !event.isModified())
+	{
+	    actions.gotoGroups();
+	    return true;
+	}
+
+
 	if (!event.isCommand() && !event.isModified() &&
 	    event.getCharacter() == ' ')
 	    return onSpace(event);
@@ -335,7 +345,7 @@ class SummaryArea implements Area, CopyCutRequest
     {
 	if (article == null)
 	    return "";
-	return article.getTitle() + ": " + article.getSourceTitle();
+	return article.getTitle();
     }
 
     private String constructStringForScreen(StoredNewsArticle article)

@@ -14,14 +14,26 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim;
+package org.luwrain.langs.ru;
 
-public interface NewsStoring
+class NumberUtil
 {
-    StoredNewsGroup[] loadNewsGroups() throws Exception;
-    void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws Exception;
-    StoredNewsArticle[] loadNewsArticlesInGroup(StoredNewsGroup newsGroup) throws Exception;
-    StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws Exception;
-    int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws Exception;
-    int countNewArticleInGroup(StoredNewsGroup group) throws Exception;
+    public static String chooseNumberDependentForm(int num,
+						   String form1,
+						   String form2,
+String form3)
+    {
+	int k = num;
+	if (k < 0)
+	    k *= -1;
+	k = k % 100;
+	if (k >= 10 && k <= 20)
+	    return form3;
+	int kk = k % 10;
+	if (kk == 1)
+	    return form1;
+	if (kk >= 2 && kk <= 4)
+	    return form2;
+	return form3;
+    }
 }

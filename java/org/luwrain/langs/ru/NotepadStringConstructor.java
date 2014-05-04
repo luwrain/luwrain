@@ -42,7 +42,7 @@ public class NotepadStringConstructor implements org.luwrain.app.notepad.StringC
 
     public String fileIsSaved()
     {
-	return "Файл успешно сохранён!";
+	return "Файл сохранён успешно";
     }
 
     public String savePopupName()

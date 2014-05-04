@@ -143,8 +143,12 @@ public class TreeArea implements Area
 	    return onKeyEnter(event);
 	case KeyboardEvent.ARROW_DOWN:
 	    return onKeyDown(event, false);
+	case KeyboardEvent.ALTERNATIVE_ARROW_DOWN:
+	    return onKeyDown(event, true);
 	case KeyboardEvent.ARROW_UP:
 	    return onKeyUp(event, false);
+	case KeyboardEvent.ALTERNATIVE_ARROW_UP:
+	    return onKeyUp(event, true);
 	case KeyboardEvent.ARROW_RIGHT:
 	    return onKeyRight(event);
 	case KeyboardEvent.ARROW_LEFT:

@@ -24,6 +24,7 @@ interface Actions
     void gotoArticles();
     void gotoView();
     void openGroup(int index);
+    void markAsReadInGroup(int index);
     void showArticle(StoredNewsArticle article);
     void close();
 }

@@ -72,6 +72,10 @@ public class NewsReaderApp implements Application, Actions
 			    if (getSelectedIndex() >= 0)
 				actions.openGroup(getSelectedIndex());
 			    return true;
+			case KeyboardEvent.DELETE:
+			    if (getSelectedIndex() >= 0)
+				actions.markAsReadInGroup(getSelectedIndex());
+			    return true;
 			}
 		    return super.onKeyboardEvent(event);
 		}
@@ -111,21 +115,21 @@ index < 0 ||
 	    return;
 	}
 	Object obj = groupModel.getItem(index);
-	if (obj == null || !(obj instanceof StoredNewsGroup))
+	if (obj == null || !(obj instanceof NewsGroupWrapper))
 	{
-	    Log.warning("news", "group model returned null or an object of instance other than StoredNewsGroup");
+	    Log.warning("news", "group model returned null or an object of instance other than NewsGroupWrapper");
 	    return;
 	}
-	StoredNewsGroup group =(StoredNewsGroup)obj; 
+	NewsGroupWrapper group =(NewsGroupWrapper)obj; 
 	StoredNewsArticle articles[];
 	try {
-	    articles = newsStoring.loadNewsArticlesInGroupWithoutRead(group);
+	    articles = newsStoring.loadNewsArticlesInGroupWithoutRead(group.getStoredGroup());
 	    if (articles == null || articles.length < 1)
-		articles = newsStoring.loadNewsArticlesInGroup(group);
+		articles = newsStoring.loadNewsArticlesInGroup(group.getStoredGroup());
 	}
 	catch (Exception e)
 	{
-	    Log.error("news", "could not get list of articles in group:" + group.getName());
+	    Log.error("news", "could not get list of articles in group:" + group.getStoredGroup().getName());
 	    e.printStackTrace();
 	    Luwrain.message(stringConstructor.errorReadingArticles());
 	    summaryArea.show(null);
@@ -133,6 +137,42 @@ index < 0 ||
 	}
     summaryArea.show(articles);
     gotoArticles();
+    }
+
+    public void markAsReadInGroup(int index)
+    {
+	if (groupModel == null || 
+index < 0 ||
+	    index >= groupModel.getItemCount())
+	{
+	    Log.warning("news", "trying to access non-existing group with index " + index + " or groups list is not prepared");
+	    return;
+	}
+	Object obj = groupModel.getItem(index);
+	if (obj == null || !(obj instanceof NewsGroupWrapper))
+	{
+	    Log.warning("news", "group model returned null or an object of instance other than NewsGroupWrapper");
+	    return;
+	}
+	NewsGroupWrapper group =(NewsGroupWrapper)obj; 
+	StoredNewsArticle articles[];
+	try {
+	    articles = newsStoring.loadNewsArticlesInGroupWithoutRead(group.getStoredGroup());
+	    if (articles == null || articles.length < 1)
+		return;
+	    for(StoredNewsArticle a: articles)
+		a.setState(NewsArticle.READ);
+	}
+	catch (Exception e)
+	{
+	    Log.error("news", "could not mark articles in the group as read:" + group.getStoredGroup().getName());
+	    e.printStackTrace();
+	    Luwrain.message(stringConstructor.errorReadingArticles());
+	    summaryArea.show(null);
+	    return;
+	}
+	groupArea.refresh();
+	//FIXME:Some action to refresh list of articles;
     }
 
     public AreaLayout getAreasToShow()
