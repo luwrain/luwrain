@@ -28,12 +28,12 @@ class ScreenContentManager
     public static final int EVENT_PROCESSED = 2;
 
     private ApplicationRegistry applications;
-    private PopupRegistry popups;
+    private PopupManager popups;
     private Application systemApp;
     private boolean activePopup = false;
 
     public ScreenContentManager(ApplicationRegistry applications,
-				PopupRegistry popups,
+				PopupManager popups,
 Application systemApp)
     {
 	this.applications = applications;
@@ -170,16 +170,16 @@ return applications.getActiveAreaOfActiveApp();
 	    Window popupWindow = new Window(popups.getAppOfLastPopup(), popups.getAreaOfLastPopup(), popups.getPositionOfLastPopup());
 	    switch(popupWindow.popupPlace)
 	    {
-	    case PopupRegistry.BOTTOM:
+	    case PopupManager.BOTTOM:
 		windows.addBottom(popupWindow);
 		break;
-	    case PopupRegistry.TOP:
+	    case PopupManager.TOP:
 		windows.addTop(popupWindow);
 		break;
-	    case PopupRegistry.LEFT:
+	    case PopupManager.LEFT:
 		windows.addLeftSide(popupWindow);
 		break;
-	    case PopupRegistry.RIGHT:
+	    case PopupManager.RIGHT:
 		windows.addRightSide(popupWindow);
 		break;
 	    }

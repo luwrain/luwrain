@@ -21,22 +21,42 @@ package org.luwrain.popups;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class YesNoPopup implements Area, PopupClosingRequest
+public class YesNoPopup implements Area, Popup, PopupClosingRequest
 {
     public PopupClosing closing = new PopupClosing(this);
+    private Object instance;
     private String name = "";
     private String text = "";
     private boolean res;
     private boolean defaultRes;
+    private boolean noMultipleCopies = false;
 
-    public YesNoPopup(String name,
-			    String text,
+    public YesNoPopup(Object instance,
+		      String name,
+		      String text,
 		      boolean defaultRes)
     {
+	this.instance = instance;
 	this.name = name != null?name:"";
 	this.text = text != null?text:"";
 	this.defaultRes = defaultRes;
 	this.res = defaultRes;
+	this.noMultipleCopies = false;
+    }
+
+    public YesNoPopup(Object instance,
+		      String name,
+		      String text,
+		      boolean defaultRes,
+		      boolean noMultipleCopies)
+    {
+	this.instance = instance;
+	this.name = name != null?name:"";
+	this.text = text != null?text:"";
+	this.defaultRes = defaultRes;
+	this.res = defaultRes;
+	this.noMultipleCopies = false;
+	this.noMultipleCopies = noMultipleCopies;
     }
 
     public int getLineCount()
@@ -129,5 +149,20 @@ public class YesNoPopup implements Area, PopupClosingRequest
     public boolean onCancel()
     {
 	return true;
+    }
+
+    @Override public Object getInstance()
+    {
+	return instance;
+    }
+
+    @Override public EventLoopStopCondition getStopCondition()
+    {
+	return closing;
+    }
+
+    @Override public boolean noMultipleCopies()
+    {
+	return noMultipleCopies;
     }
 }

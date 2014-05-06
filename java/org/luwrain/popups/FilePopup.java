@@ -31,7 +31,17 @@ public class FilePopup extends ListPopup
 			   String prefix,
 			   File file)
     {
-	super(new FileListPopupModel(), instance, name, prefix, file.getAbsolutePath());
+	super(instance, new FileListPopupModel(), name, prefix, file.getAbsolutePath());
+	this.file = file;
+    }
+
+    public FilePopup(Object instance,
+			   String name,
+			   String prefix,
+		     File file,
+		     boolean noMultipleCopies)
+    {
+	super(instance, new FileListPopupModel(), name, prefix, file.getAbsolutePath(), noMultipleCopies);
 	this.file = file;
     }
 

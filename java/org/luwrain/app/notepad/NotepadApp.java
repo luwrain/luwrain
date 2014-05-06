@@ -69,12 +69,12 @@ public class NotepadApp implements Application, Actions
 	{
 	    Registry registry = Luwrain.getRegistry();
 	    File dir = new File(registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING?registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR):"/");//FIXME:System dependent slash;
-	    FilePopup popup = new FilePopup(instance,  stringConstructor.savePopupName(), stringConstructor.savePopupPrefix(),
-					    new File(dir, stringConstructor.newFileName()));
-	    Luwrain.popup(instance, popup, popup.closing);
-	    if (popup.closing.cancelled())
+	    File chosenFile = Luwrain.openPopup(instance,  stringConstructor.savePopupName(), stringConstructor.savePopupPrefix(),
+						new File(dir, stringConstructor.newFileName()));
+	    if (chosenFile == null)
 		return false;
-	    fileName = popup.getFile().getAbsolutePath();
+	    //FIXME:Is a valid file;
+	    fileName = chosenFile.getAbsolutePath();
 	}
 	try {
 	    if (area.getContent() != null)
@@ -106,14 +106,13 @@ public class NotepadApp implements Application, Actions
 	    File f = new File(fileName);
 	    dir = f.getParentFile();
 	}
-	FilePopup popup = new FilePopup(instance, Langs.staticValue(Langs.OPEN_POPUP_NAME), Langs.staticValue(Langs.OPEN_POPUP_PREFIX), dir);
-	Luwrain.popup(instance, popup, popup.closing);
-	if (popup.closing.cancelled())
+	File chosenFile = Luwrain.openPopup(instance, null, null, dir);
+	if (chosenFile == null)
 	    return;
-	if (!readByFileName(popup.getFile().getAbsolutePath()))
+	if (!readByFileName(chosenFile.getAbsolutePath()))
 	    return;
-	    fileName = popup.getFile().getAbsolutePath();
-	    area.setName(popup.getFile().getName());
+	    fileName = chosenFile.getAbsolutePath();
+	    area.setName(chosenFile.getName());
     }
 
     public void markAsModified()
@@ -211,8 +210,8 @@ public class NotepadApp implements Application, Actions
     {
 	if (!modified)
 	    return true;
-	YesNoPopup popup = new YesNoPopup(stringConstructor.saveChangesPopupName(), stringConstructor.saveChangesPopupQuestion(), false);
-	Luwrain.popup(instance, popup, popup.closing);
+	YesNoPopup popup = new YesNoPopup(instance, stringConstructor.saveChangesPopupName(), stringConstructor.saveChangesPopupQuestion(), false);
+	Luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return false;
 	if ( popup.getResult() && !save())

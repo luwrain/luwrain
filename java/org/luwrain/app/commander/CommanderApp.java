@@ -60,7 +60,7 @@ public class CommanderApp implements Application, Actions
 	    return false;
 	FilePopup popup = new FilePopup(instance, stringConstructor.copyPopupName(),
 					stringConstructor.copyPopupPrefix(filesToCopy), copyTo);
-	Luwrain.popup(instance, popup, popup.closing);
+	Luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return true;
 	copyTo = popup.getFile();
@@ -83,7 +83,7 @@ public class CommanderApp implements Application, Actions
     {
 	Log.debug("commander", "need to open " + fileNames.length + " files");
 	if (fileNames != null && fileNames.length > 0)
-	    Luwrain.open(fileNames);
+	    Luwrain.openFiles(fileNames);
     }
 
     public AreaLayout getAreasToShow()

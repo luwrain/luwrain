@@ -18,15 +18,23 @@ package org.luwrain.core;
 
 public class PopupEventLoopStopCondition implements EventLoopStopCondition
 {
-    private EventLoopStopCondition popup = null;
+    private EventLoopStopCondition popup;
+    private boolean newCopyLaunched;
 
 public PopupEventLoopStopCondition(EventLoopStopCondition popup)
     {
 	this.popup = popup;
+	this.newCopyLaunched = false;
     }
 
     public boolean continueEventLoop()
     {
-	return InitialEventLoopStopCondition.shouldContinue && popup.continueEventLoop();
+	return !newCopyLaunched && InitialEventLoopStopCondition.shouldContinue && popup.continueEventLoop();
+    }
+
+    public void onNewCopyLaunch()
+    {
+	Log.debug("popups", "marking as old copy");
+	newCopyLaunched = true;
     }
 }

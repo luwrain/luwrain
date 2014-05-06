@@ -16,6 +16,9 @@
 
 package org.luwrain.core;
 
+//FIXME:Open event in open popup should do nothing;
+//FIXME:action popup likely should be of some another class to prevent confusing on no multiple instances checking;
+
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -32,9 +35,9 @@ class Environment implements EventConsumer
     private Registry registry;
     private Interaction interaction;
     private EventQueue eventQueue = new EventQueue();
-    private InstanceManager instanceManager = new InstanceManager();
+    private InstanceManager appInstances = new InstanceManager();
     private ApplicationRegistry apps = new ApplicationRegistry();
-    private PopupRegistry popups = new PopupRegistry();
+    private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
     private PimManager pimManager;
@@ -79,8 +82,8 @@ class Environment implements EventConsumer
 
     public void quit()
     {
-	YesNoPopup popup = new YesNoPopup(Langs.staticValue(Langs.QUIT_CONFIRM_NAME), Langs.staticValue(Langs.QUIT_CONFIRM), true);
-	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup.closing);
+	YesNoPopup popup = new YesNoPopup(null, Langs.staticValue(Langs.QUIT_CONFIRM_NAME), Langs.staticValue(Langs.QUIT_CONFIRM), true);
+	goIntoPopup(systemApp, popup, PopupManager.BOTTOM, popup.closing, true);
 	if (popup.closing.cancelled() || !popup.getResult())
 	    return;
 	InitialEventLoopStopCondition.shouldContinue = false;
@@ -93,23 +96,23 @@ class Environment implements EventConsumer
     {
 	if (app == null)
 	    return;
-	Object o = instanceManager.registerApp(app);
+	Object o = appInstances.registerApp(app);
 	try {
 	    if (!app.onLaunch(o))
 	    {
-		instanceManager.releaseInstance(o);
+		appInstances.releaseInstance(o);
 		return;
 	    }
 	}
 	catch (OutOfMemoryError e)
 	{
-	    instanceManager.releaseInstance(o);
+	    appInstances.releaseInstance(o);
 	    message(Langs.staticValue(Langs.INSUFFICIENT_MEMORY_FOR_APP_LAUNCH));
 	    return;
 	}
 	catch (Throwable e)
 	{
-	    instanceManager.releaseInstance(o);
+	    appInstances.releaseInstance(o);
 	    e.printStackTrace();
 	    //FIXME:Log warning;
 	    message(Langs.staticValue(Langs.UNEXPECTED_ERROR_AT_APP_LAUNCH));
@@ -118,13 +121,13 @@ class Environment implements EventConsumer
 	AreaLayout layout = app.getAreasToShow();
 	if (layout == null)
 	{
-	    instanceManager.releaseInstance(o);
+	    appInstances.releaseInstance(o);
 	    return;
 	}
 	Area activeArea = layout.getDefaultArea();
 	if (activeArea == null)
 	{
-	    instanceManager.releaseInstance(o);
+	    appInstances.releaseInstance(o);
 	    return;
 	}
 	apps.registerAppSingleVisible(app, activeArea);
@@ -137,7 +140,7 @@ class Environment implements EventConsumer
     {
 	if (instance == null)
 	    return;
-	Application app = instanceManager.getAppByInstance(instance);
+	Application app = appInstances.getAppByInstance(instance);
 	if (app == null)
 	    return;
 	if (popups.hasPopupOfApp(app))
@@ -146,7 +149,7 @@ class Environment implements EventConsumer
 	    return;
 	}
 	apps.releaseApp(app);
-	instanceManager.releaseInstance(instance);
+	appInstances.releaseInstance(instance);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	introduceActiveArea();
@@ -265,7 +268,12 @@ class Environment implements EventConsumer
 	    {
 		if (screenContentManager.onEnvironmentEvent(event) == ScreenContentManager.EVENT_PROCESSED)
 		    return;
-		onOpenEvent(event);
+		File f = openPopupByApp(systemApp, null, null, null);
+		if (f == null)
+		    return;
+		String[] fileNames = new String[1];
+		fileNames[0] = f.getAbsolutePath();
+		openFiles(fileNames);
 		return;
 	    }
 	    if (event.getCode() == EnvironmentEvent.THREAD_SYNC)
@@ -306,24 +314,28 @@ class Environment implements EventConsumer
     public void goIntoPopup(Application app,
 			    Area area,
 			    int popupPlace,
-			    EventLoopStopCondition stopCondition)
+			    EventLoopStopCondition stopCondition,
+boolean noMultipleCopies)
     {
 	if (app == null ||
 	    area == null ||
 	    stopCondition == null)
 	    return;
-	if (popupPlace != PopupRegistry.TOP &&
-	    popupPlace != PopupRegistry.BOTTOM && 
-	    popupPlace != PopupRegistry.LEFT &&
-	    popupPlace != PopupRegistry.RIGHT)
+	if (popupPlace != PopupManager.TOP &&
+	    popupPlace != PopupManager.BOTTOM && 
+	    popupPlace != PopupManager.LEFT &&
+	    popupPlace != PopupManager.RIGHT)
 	    return;
-	popups.addNewPopup(app, area, popupPlace, new PopupEventLoopStopCondition(stopCondition));
+	if (noMultipleCopies)
+	    popups.onNewInstanceLaunch(app, area.getClass());
+	PopupEventLoopStopCondition popupStopCondition = new PopupEventLoopStopCondition(stopCondition);
+	popups.addNewPopup(app, area, popupPlace, popupStopCondition, noMultipleCopies);
 	if (screenContentManager.setPopupAreaActive())
 	{
 	    introduceActiveArea();
 	    windowManager.redraw();
 	}
-	eventLoop(new PopupEventLoopStopCondition(stopCondition));
+	eventLoop(popupStopCondition);
 	popups.removeLastPopup();
 	screenContentManager.updatePopupState();
 	needForIntroduction = true;
@@ -332,9 +344,9 @@ class Environment implements EventConsumer
 
     public void runActionPopup()
     {
-	ListPopup popup = new ListPopup(new FixedListPopupModel(actions.getActionsName()),
-					new Object(), systemApp.stringConstructor().runActionTitle(), systemApp.stringConstructor().runAction(), "");
-	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup.closing);
+	ListPopup popup = new ListPopup(null, new FixedListPopupModel(actions.getActionsName()),
+					systemApp.stringConstructor().runActionTitle(), systemApp.stringConstructor().runAction(), "");
+	goIntoPopup(systemApp, popup, PopupManager.BOTTOM, popup.closing, true);
 	if (popup.closing.cancelled())
 	    return;
 	if (!actions.run(popup.getText().trim()))
@@ -345,7 +357,7 @@ class Environment implements EventConsumer
     {
 	if (instance == null || area == null)
 	    return;
-	Application app = instanceManager.getAppByInstance(instance);
+	Application app = appInstances.getAppByInstance(instance);
 	if (app == null)
 	    return;//FIXME:Log message;
 	apps.setActiveAreaOfApp(app, area);
@@ -382,7 +394,6 @@ class Environment implements EventConsumer
     {
 	if (text == null || text.trim().isEmpty())
 	    return;
-	Log.debug("environment", "message:" + text);
 	needForIntroduction = false;
 	//FIXME:Message class for message collecting;
 	Speech.say(text);
@@ -394,10 +405,9 @@ class Environment implements EventConsumer
 
     public void mainMenu()
     {
-	//FIXME:No double opening;
 	MainMenuArea mainMenuArea = systemApp.createMainMenuArea(getMainMenuItems());
 	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU);
-	goIntoPopup(systemApp, mainMenuArea, PopupRegistry.LEFT, mainMenuArea.closing);
+	goIntoPopup(systemApp, mainMenuArea, PopupManager.LEFT, mainMenuArea.closing, true);
 	if (mainMenuArea.closing.cancelled())
 	    return;
 	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_ITEM);
@@ -472,8 +482,13 @@ class Environment implements EventConsumer
 	message(Langs.staticValue(Langs.FONT_SIZE) + " " + interaction.getFontSize());
     }
 
-    public void openFileNames(String[] fileNames)
+    public void openFiles(String[] fileNames)
     {
+	if (fileNames == null || fileNames.length < 1)
+	    return;
+	for(String s: fileNames)
+	    if (s == null)
+		return;
 	fileTypes.openFileNames(fileNames);
     }
 
@@ -487,33 +502,19 @@ class Environment implements EventConsumer
 	return pimManager;
     }
 
-    public void popup(Object instance,
-		      Area area,
-		      EventLoopStopCondition stopCondition)
+    public void popup(Popup popup)
     {
-	if (instance == null || area == null || stopCondition == null)
+	if (popup == null ||
+	    popup.getInstance() == null ||
+	    popup.getStopCondition() == null)
 	    return;
-	Application app = instanceManager.getAppByInstance(instance);
+	Application app = appInstances.getAppByInstance(popup.getInstance());
 	if (app == null)
 	{
 	    Log.warning("environment", "somebody tries to launch a popup with fake application instance");
 	    return;
 	}
-	goIntoPopup(app, area, PopupRegistry.BOTTOM, stopCondition);
-    }
-
-    private void onOpenEvent(EnvironmentEvent event)
-    {
-	FilePopup popup = null;
-	if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING)
-	    popup = new FilePopup(new Object(), Langs.staticValue(Langs.OPEN_POPUP_NAME), Langs.staticValue(Langs.OPEN_POPUP_PREFIX), new File(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR))); else
-	    popup = new FilePopup(new Object(), Langs.staticValue(Langs.OPEN_POPUP_NAME), Langs.staticValue(Langs.OPEN_POPUP_PREFIX), new File("/"));//FIXME:System dependent slash;
-	goIntoPopup(systemApp, popup, PopupRegistry.BOTTOM, popup.closing);
-	if (popup.closing.cancelled())
-	    return;
-	String[] fileNames = new String[1];
-	fileNames[0] = popup.getFile().getAbsolutePath();
-	openFileNames(fileNames);
+	goIntoPopup(app, popup, PopupManager.BOTTOM, popup.getStopCondition(), popup.noMultipleCopies());
     }
 
     public void setClipboard(String[] value)
@@ -555,5 +556,42 @@ class Environment implements EventConsumer
 	default:
 	    return event;
 	}
+    }
+
+    public File openPopup(Object instance,
+			    String name,
+			    String prefix,
+			    File defaultValue)
+    {
+	if (instance == null)
+	    return null;
+	Application app = appInstances.getAppByInstance(instance);
+	if (app == null)
+	    return null;
+	return openPopupByApp(app, name, prefix, defaultValue);
+    }
+
+    private File openPopupByApp(Application app,
+			    String name,
+			    String prefix,
+			    File defaultValue)
+    {
+	if (app == null)
+	    return null;
+	final String chosenName = (name != null && !name.trim().isEmpty())?name.trim():Langs.staticValue(Langs.OPEN_POPUP_NAME);
+	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():Langs.staticValue(Langs.OPEN_POPUP_PREFIX);
+	File chosenDefaultValue = null;
+	if (defaultValue == null)
+	{
+	    if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING)
+		chosenDefaultValue = new File(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR)); else
+		chosenDefaultValue = new File("/");//FIXME:System dependent slash;
+	} else
+	    chosenDefaultValue = defaultValue;
+	FilePopup popup = new FilePopup(null, chosenName, chosenPrefix, chosenDefaultValue);
+	goIntoPopup(app, popup, PopupManager.BOTTOM, popup.closing, true);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.getFile();
     }
 }

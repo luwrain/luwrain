@@ -78,8 +78,8 @@ public class RegistryApp implements Application, RegistryActions
 	    return;
 	if (valuesArea.hasModified())
 	{
-	    YesNoPopup popup = new YesNoPopup("Saving values", "Are you want to loose changes?", true);//FIXME:
-	    Luwrain.popup(instance, popup, popup.closing);
+	    YesNoPopup popup = new YesNoPopup(instance, "Saving values", "Are you want to loose changes?", true);//FIXME:
+	    Luwrain.popup(popup);
 	    if (popup.closing.cancelled() || !popup.getResult())
 	    {
 		gotoValues();
@@ -93,7 +93,7 @@ public class RegistryApp implements Application, RegistryActions
     public void insertDir(RegistryDir parent)
     {
 	SimpleLinePopup popup = new SimpleLinePopup(instance, stringConstructor.newDirectoryTitle(), stringConstructor.newDirectoryPrefix(parent.toString()), "");//FIXME:Validator if not empty;
-	Luwrain.popup(instance, popup, popup.closing);
+	Luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return;
 	if (popup.getText().trim().isEmpty())

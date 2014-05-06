@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 
-class PopupRegistry
+class PopupManager
 {
     public static final int INVALID = -1;
     public static final int TOP = 0;
@@ -32,16 +32,19 @@ class PopupRegistry
 	public Area area;
 	public int position;
 	public PopupEventLoopStopCondition stopCondition;
+	public boolean noMultipleCopies;
 
 	public Wrapper(Application app,
 		       Area area,
 		       int position,
-		       PopupEventLoopStopCondition stopCondition)
+		       PopupEventLoopStopCondition stopCondition,
+		       boolean noMultipleCopies)
 	{
 	    this.app = app;
 	    this.area = area;
 	    this.position = position;
 	    this.stopCondition = stopCondition;
+	    this.noMultipleCopies = noMultipleCopies;
 	}
     }
 
@@ -50,9 +53,10 @@ class PopupRegistry
     public void addNewPopup(Application app,
 			    Area area,
 			    int position,
-			    PopupEventLoopStopCondition stopCondition)
+			    PopupEventLoopStopCondition stopCondition,
+			    boolean noMultipleCopies)
     {
-	wrappers.add(new Wrapper(app, area, position, stopCondition));
+	wrappers.add(new Wrapper(app, area, position, stopCondition, noMultipleCopies));
     }
 
     public void removeLastPopup()
@@ -100,5 +104,12 @@ class PopupRegistry
 	if (!hasPopups())
 	    return INVALID;
 	return wrappers.lastElement().position;
+    }
+
+    public void onNewInstanceLaunch(Application app, Class newCopyClass)
+    {
+	for(Wrapper w: wrappers)
+	    if (w.noMultipleCopies && app == w.app && w.area.getClass().equals(newCopyClass))
+		w.stopCondition.onNewCopyLaunch();
     }
 }

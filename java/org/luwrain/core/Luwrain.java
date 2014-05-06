@@ -16,6 +16,10 @@
 
 package org.luwrain.core;
 
+//No input data checking here, everything in Environment class
+
+import java.io.File;
+
 public class Luwrain
 {
     static private Environment environment;
@@ -109,20 +113,42 @@ static public     void closeApp(Object instance)
 	environment.message(text);
     }
 
-    static public void open(String[] fileNames)
+    /**
+     * @param name The desired popup name, can be null if default value is required
+     * @param prefix The desired input prefix, can be null if default value is required
+     * @param defaultValue The desired default value, can be null to use the user home directory path
+     */
+    static public File openPopup(Object instance,
+				 String name,
+				 String prefix,
+				 File defaultValue)
     {
 	if (!checkEnvironmentInstance())
-	    return;
-	environment.openFileNames(fileNames);
+	    return null;
+	return environment.openPopup(instance, name, prefix, defaultValue);
     }
 
-    static public void popup(Object instance,
-			     Area area,
-			     EventLoopStopCondition stopCondition)
+    static public void openFile(String fileName)
     {
 	if (!checkEnvironmentInstance())
 	    return;
-	environment.popup(instance, area, stopCondition);
+	String[] s = new String[1];
+	s[0] = fileName;
+	environment.openFiles(s);
+    }
+
+    static public void openFiles(String[] fileNames)
+    {
+	if (!checkEnvironmentInstance())
+	    return;
+	environment.openFiles(fileNames);
+    }
+
+    static public void popup(Popup popup)
+    {
+	if (!checkEnvironmentInstance())
+	    return;
+	environment.popup(popup);
     }
 
 

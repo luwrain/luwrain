@@ -23,15 +23,16 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 
-public class SimpleLinePopup implements Area, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
+public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
 {
     public PopupClosing closing = new PopupClosing(this);
-    private EmbeddedSingleLineEdit edit;
     private Object instance;
+    private EmbeddedSingleLineEdit edit;
     private String name;
     private String prefix;
     private String text;
     private int pos;
+    private boolean noMultipleCopies = false;
 
     public SimpleLinePopup(Object instance,
 			    String name,
@@ -44,7 +45,24 @@ public class SimpleLinePopup implements Area, PopupClosingRequest, HotPointInfo,
 	this.text = text != null?text:"";
 	this.pos = prefix.length() + text.length();
 	this.edit = new EmbeddedSingleLineEdit(this, this, prefix.length(), 0);
+	this.noMultipleCopies = false;
     }
+
+    public SimpleLinePopup(Object instance,
+			    String name,
+			    String prefix,
+			   String text,
+			   boolean noMultipleCopies)
+    {
+	this.instance = instance;
+	this.name = name != null?name:"";
+	this.prefix = prefix != null?prefix:"";
+	this.text = text != null?text:"";
+	this.pos = prefix.length() + text.length();
+	this.edit = new EmbeddedSingleLineEdit(this, this, prefix.length(), 0);
+	this.noMultipleCopies = noMultipleCopies;
+    }
+
 
     public int getLineCount()
     {
@@ -209,5 +227,20 @@ public class SimpleLinePopup implements Area, PopupClosingRequest, HotPointInfo,
 	pos = prefix.length() + beforeHotPoint.length();
 	Luwrain.onAreaNewContent(this);
 	Luwrain.onAreaNewHotPoint(this);
+    }
+
+    @Override public Object getInstance()
+    {
+	return instance;
+    }
+
+    @Override public EventLoopStopCondition getStopCondition()
+    {
+	return closing;
+    }
+
+    @Override public boolean noMultipleCopies()
+    {
+	return noMultipleCopies;
     }
 }
