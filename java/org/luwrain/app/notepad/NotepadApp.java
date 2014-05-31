@@ -16,6 +16,8 @@
 
 package org.luwrain.app.notepad;
 
+//FIXME:Enters in new file do not add new lines
+
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
