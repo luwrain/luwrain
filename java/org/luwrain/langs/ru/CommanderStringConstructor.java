@@ -109,7 +109,7 @@ class CommanderStringConstructor implements org.luwrain.app.commander.StringCons
 
     public String copyPopupName()
     {
-	return "Копирование файлов и каталогов";
+	return "Копирование";
     }
 
     public String copyPopupPrefix(File[] files)
@@ -119,5 +119,47 @@ class CommanderStringConstructor implements org.luwrain.app.commander.StringCons
 	if (files.length == 1)
 	    return "Копировать \"" + files[0].getName() + "\" в:";
 	return "Копировать " + files.length + " элемента(ов) в:";
+    }
+
+    public String movePopupName()
+    {
+	return "Переместить/переименовать";
+    }
+
+    public String movePopupPrefix(File[] files)
+    {
+	if (files == null || files.length < 1)
+	    return "";
+	if (files.length == 1)
+	    return "Переместить/переименовать \"" + files[0].getName() + "\" в:";
+	return "Переместить " + files.length + " элемента(ов) в:";
+    }
+
+    public String mkdirPopupName()
+    {
+	return "Создание каталога";
+    }
+
+    public String mkdirPopupPrefix()
+    {
+	return "Имя нового каталога:";
+    }
+
+    public String delPopupName()
+    {
+	return "Удаление";
+    }
+
+    public String delPopupPrefix(File[] files)
+    {
+	if (files == null || files.length < 1)
+	    return "";
+	if (files.length == 1)
+	{
+	    if (files[0].isDirectory())
+	    return "Вы действительно хотите удалить каталог \"" + files[0].getName() + "\"?";
+	    return "Вы действительно хотите удалить файл \"" + files[0].getName() + "\"?";
+	}
+	return "Вы действительно хотите удалить " + files.length + " элемента(ов)?";
     }
 }

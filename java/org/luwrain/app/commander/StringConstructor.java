@@ -34,4 +34,10 @@ public interface StringConstructor
     String failed();
     String copyPopupName();
     String copyPopupPrefix(File[] files);
+    String movePopupName();
+    String movePopupPrefix(File[] files);
+    String mkdirPopupName();
+    String mkdirPopupPrefix();
+    String delPopupName();
+    String delPopupPrefix(File[] files);
 }

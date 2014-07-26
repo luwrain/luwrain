@@ -32,6 +32,17 @@ create table news_article (
   content text NOT NULL
 );
 
+
+title
+comment
+date_time 
+duration
+type
+status
+importance
+attributes
+attr_type
+
 -- Basic registry directories --
 
 INSERT INTO registry_dir (id,name,parent_id) VALUES (1,'root',1);

@@ -60,7 +60,7 @@ public class NewsReaderApp implements Application, Actions
 	groupArea = new ListArea(groupModel) {
 		private StringConstructor stringConstructor = s;
 		private Actions actions = a;
-		public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (event.isCommand() && !event.isModified())
 			switch(event.getCommand())
@@ -79,7 +79,7 @@ public class NewsReaderApp implements Application, Actions
 			}
 		    return super.onKeyboardEvent(event);
 		}
-		public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
 		    switch(event.getCode())
 		    {
@@ -90,7 +90,7 @@ public class NewsReaderApp implements Application, Actions
 			return super.onEnvironmentEvent(event);
 		    }
 		}
-		public String getName()
+		@Override public String getName()
 		{
 		    return stringConstructor.groupAreaName();
 		}

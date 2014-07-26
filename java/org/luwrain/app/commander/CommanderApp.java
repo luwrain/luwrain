@@ -34,8 +34,8 @@ public class CommanderApp implements Application, Actions
 	if (o == null)
 	    return false;
 	stringConstructor = (StringConstructor)o;
-	leftPanel = new PanelArea(this, stringConstructor, PanelArea.LEFT);
-	rightPanel = new PanelArea(this, stringConstructor, PanelArea.RIGHT);
+	leftPanel = new PanelArea(instance, this, stringConstructor, PanelArea.LEFT);
+	rightPanel = new PanelArea(instance, this, stringConstructor, PanelArea.RIGHT);
 	tasks = new TasksArea(this, stringConstructor);
 	this.instance = instance;
 	return true;
@@ -64,14 +64,63 @@ public class CommanderApp implements Application, Actions
 	if (popup.closing.cancelled())
 	    return true;
 	copyTo = popup.getFile();
-
-	Task task = new Task(stringConstructor.copying(filesToCopy));
-	tasks.addTask(task);
-	DirCopyOperation op = new DirCopyOperation(tasks, task, filesToCopy, copyTo);
-	Thread t = new Thread(op);
-	t.start();
+	Operations.copy(stringConstructor, tasks, filesToCopy, copyTo);
 	return true;
     }
+
+    public boolean move(int panelSide)
+    {
+	File[] filesToMove = null;
+	File moveTo = null;
+	if (panelSide == PanelArea.LEFT)
+	{
+	    filesToMove = leftPanel.getSelected();
+	    moveTo= rightPanel.getCurrentDir(); 
+	} else
+	if (panelSide == PanelArea.RIGHT)
+	{
+	    filesToMove = rightPanel.getSelected();
+	    moveTo= leftPanel.getCurrentDir(); 
+	} else
+	    return false;
+	if (filesToMove == null || filesToMove.length < 1|| moveTo == null)
+	    return false;
+	FilePopup popup = new FilePopup(instance, stringConstructor.movePopupName(),
+					stringConstructor.movePopupPrefix(filesToMove), moveTo);
+	Luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return true;
+	moveTo = popup.getFile();
+	return true;
+    }
+
+    public boolean mkdir(int panelSide)
+    {
+	File createIn = panelSide == PanelArea.LEFT?leftPanel.getCurrentDir():rightPanel.getCurrentDir();
+	if (createIn == null)
+	    return false;
+	FilePopup popup = new FilePopup(instance, stringConstructor.mkdirPopupName(),
+					stringConstructor.mkdirPopupPrefix(), createIn);
+	Luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return true;
+	return true;
+    }
+
+    public boolean delete(int panelSide)
+    {
+	File[] filesToDelete = panelSide == PanelArea.LEFT?leftPanel.getSelected():rightPanel.getSelected();
+	if (filesToDelete == null || filesToDelete.length < 1)
+	    return false;
+	YesNoPopup popup = new YesNoPopup(instance, stringConstructor.delPopupName(),
+					stringConstructor.delPopupPrefix(filesToDelete), false);
+	Luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return true;
+	return true;
+    }
+
+
 
     public void refresh()
     {

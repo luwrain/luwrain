@@ -16,16 +16,19 @@
 
 package org.luwrain.app.commander;
 
-interface Actions
+import java.io.*;
+
+class Operations
 {
-    void gotoLeftPanel();
-    void gotoRightPanel();
-    void gotoTasks();
-    void close();
-    void refresh();
-    void openFiles(String[] fileNames);
-    boolean copy(int panelSide);
-    boolean move(int panelSide);
-    boolean mkdir(int panelSide);
-    boolean delete(int panelSide);
+    static public void copy(StringConstructor stringConstructor,
+			    TasksArea tasks,
+			    File[] filesToCopy,
+			    File copyTo)
+    {
+	Task task = new Task(stringConstructor.copying(filesToCopy));
+	tasks.addTask(task);
+	DirCopyOperation op = new DirCopyOperation(tasks, task, filesToCopy, copyTo);
+	Thread t = new Thread(op);
+	t.start();
+    }
 }

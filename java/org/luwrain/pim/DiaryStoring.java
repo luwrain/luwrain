@@ -14,18 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.commander;
+package org.luwrain.pim;
 
-interface Actions
+public interface DiaryStoring
 {
-    void gotoLeftPanel();
-    void gotoRightPanel();
-    void gotoTasks();
-    void close();
-    void refresh();
-    void openFiles(String[] fileNames);
-    boolean copy(int panelSide);
-    boolean move(int panelSide);
-    boolean mkdir(int panelSide);
-    boolean delete(int panelSide);
+    StoredDiaryEntry[] loadEntriesForDate(java.util.Date date) throws Exception;
+    void saveEntry(DiaryEntry entry) throws Exception;
+    boolean deleteEntry(StoredDiaryEntry entry) throws Exception;
 }

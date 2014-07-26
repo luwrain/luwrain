@@ -16,10 +16,6 @@
 
 package org.luwrain.app.commander;
 
-//TODO:Refresh;
-
-//FIXME:refresh;
-
 import java.io.*;
 import java.util.*;
 import org.luwrain.core.*;
@@ -36,19 +32,22 @@ public class PanelArea implements Area
     public static final String ROOT_DIR = "/";//Yes, it is really for UNIX;
     public static final String PARENT_DIR = "..";
 
-    private File current;
+    private File current = null;
     private Vector<DirItem> items = null;//null means directory content is inaccessible;
 
     private int side = LEFT;
     private StringConstructor stringConstructor;
     private Actions actions;
+    private Object instance = null;
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public PanelArea(Actions actions,
+    public PanelArea(Object instance,
+		     Actions actions,
 		     StringConstructor stringConstructor,
 		     int side)
     {
+	this.instance = instance;
 	this.stringConstructor = stringConstructor;
 	this.actions = actions;
 	this.side = side;
@@ -95,14 +94,14 @@ public class PanelArea implements Area
 	openByFile(current, items.get(hotPointY).getFileName());
     }
 
-    public int getLineCount()
+    @Override public int getLineCount()
     {
 	if (items == null || items.isEmpty())
 	    return 1;
 	return items.size() + 1;
     }
 
-    public String getLine(int index)
+    @Override public String getLine(int index)
     {
 	if (items == null)
 	    return stringConstructor.inaccessibleDirectoryContent();
@@ -111,17 +110,17 @@ public class PanelArea implements Area
 	return items.get(index).getScreenTitle();
     }
 
-    public int getHotPointX()
+    @Override public int getHotPointX()
     {
 	return hotPointX >= 0?hotPointX:0;
     }
 
-    public int getHotPointY()
+    @Override public int getHotPointY()
     {
 	return hotPointY >= 0?hotPointY:0;
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	if (event.isModified() || !event.isCommand())
 	    return false;
@@ -135,6 +134,12 @@ public class PanelArea implements Area
 	    return true;
 	case KeyboardEvent.F5:
 	    return actions.copy(side);
+	case KeyboardEvent.F6:
+	    return actions.move(side);
+	case KeyboardEvent.F7:
+	    return actions.mkdir(side);
+	case KeyboardEvent.F8:
+	    return actions.delete(side);
 	case KeyboardEvent.BACKSPACE:
 	    return onBackspace(event);
 	case KeyboardEvent.ENTER:
@@ -169,11 +174,15 @@ public class PanelArea implements Area
 	    return onAlternativeHome(event);
 	case KeyboardEvent.ALTERNATIVE_END:
 	    return onAlternativeEnd(event);
+	    //FIXME:case KeyboardEvent.INSERT:
+	case KeyboardEvent.DELETE:
+	    return actions.delete(side);
 	default:
 	    return false;
 	}
     }
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	switch(event.getCode())
 	{
@@ -188,12 +197,14 @@ public class PanelArea implements Area
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
+	case EnvironmentEvent.OPEN:
+	    return onOpen(event);
 	default:
 	    return false;
 	}
     }
 
-    public String getName()
+    @Override public String getName()
     {
 	if (side == LEFT)
 	    return stringConstructor.leftPanelName(current != null?current.getAbsolutePath():null);
@@ -460,6 +471,19 @@ public class PanelArea implements Area
 	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
 	}
 	Luwrain.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onOpen(EnvironmentEvent event)
+    {
+	if (current == null || !current.isDirectory())
+	    return false;
+	File f = Luwrain.openPopup(instance, null, null, current);
+	if (f == null)
+	    return true;
+	if (f.isDirectory())
+	    openByFile(f); else
+	    Luwrain.openFile(f.getAbsolutePath());
 	return true;
     }
 

@@ -16,28 +16,67 @@
 
 package org.luwrain.controls;
 
-//FIXME:fixHotPoint();
+//FIXME:DESCRIBE;
 //FIXME:ControlEnvironment interface support;
 
+import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public abstract class ListArea  implements Area
+public class ListArea  implements Area, CopyCutRequest
 {
+    static final public int BRIEF_VALUE = 1;
+    static final public int CLIPBOARD_VALUE = 2;
+
+    private String name = "";
+    private ListModel model = null;
+    private ListItemAppearance appearance = null;
+    private ListClickHandler clickHandler = null;
+    private int initialHotPointX = 0;
+    private int hotPointX = 0;
+    private int hotPointY = 0;
+    private CopyCutInfo copyCutInfo;
+
     private String noItemsAbove = Langs.staticValue(Langs.BEGIN_OF_LIST);
     private String noItemsBelow = Langs.staticValue(Langs.END_OF_LIST);
-    private String emptyLine = Langs.staticValue(Langs.EMPTY_LINE);
     private String beginOfLine = Langs.staticValue(Langs.BEGIN_OF_LINE);
     private String endOfLine = Langs.staticValue(Langs.END_OF_LINE);
     private String noItems = Langs.staticValue(Langs.LIST_NO_ITEMS);
-
-    private ListModel model;
-    private int hotPointX = 0;
-    private int hotPointY = 0;
+    private String emptyLine = Langs.staticValue(Langs.EMPTY_LINE);
 
     public ListArea(ListModel model)
     {
 	this.model = model;
+	this.copyCutInfo = new CopyCutInfo(this);
+    }
+
+    public ListArea(ListModel model, String name)
+    {
+	this.model = model;
+	this.name = name != null?name:"";
+	this.copyCutInfo = new CopyCutInfo(this);
+    }
+
+    public ListArea(ListModel model,
+		    String name,
+		    ListItemAppearance appearance,
+		    ListClickHandler clickHandler,
+int initialHotPointX)
+    {
+	this.model = model;
+	this.name = name != null?name:"";
+	this.appearance = appearance;
+	this.clickHandler = clickHandler;
+	this.initialHotPointX = initialHotPointX;
+	this.copyCutInfo = new CopyCutInfo(this);
+	if (initialHotPointX > 0 && model != null &&
+	    model.getItemCount() > 0)
+	{
+	    String line = getScreenAppearance(model, 0, model.getItem(0), 0);
+	    if (line == null)
+		line = "";
+	    hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	}
     }
 
     public Object getSelectedObject()
@@ -48,7 +87,8 @@ public abstract class ListArea  implements Area
     public int getSelectedIndex()
     {
 	if (model == null ||
-hotPointY < 0 ||
+	    model.getItemCount() < 1 &&
+	    hotPointY < 0 ||
 	    hotPointY >= model.getItemCount())
 	    return -1;
 	return hotPointY;
@@ -56,146 +96,120 @@ hotPointY < 0 ||
 
     public void setSelectedIndex(int index, boolean introduce)
     {
+	if (model == null)
+	    return;
 	if (index < 0)
 	    hotPointY = 0; else
 	    if (index >= model.getItemCount())
 		hotPointY = model.getItemCount(); else
 		hotPointY = index;
-	hotPointX = 0;
-	if (introduce)
-	    introduceLine(hotPointY);
+	if (hotPointY >= 0 && hotPointY < model.getItemCount())
+	{
+	    String line = getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0);
+	    if (line == null)
+		line = "";
+	    hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	    if (introduce)
+		introduceItem(model, hotPointY, model.getItem(hotPointY), 0);
+	} else
+	{
+	    hotPointX = 0;
+	    if (introduce)
+		Speech.say(emptyLine, Speech.PITCH_HIGH);
+	}
 	Luwrain.onAreaNewHotPoint(this);
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    public void refresh()
     {
-	//Maybe it is not good idea to do this for all events;
-	if (model == null ||
-	    model.getItemCount() < 1)
+	if (model == null)
+	    return;
+	model.refresh();
+	hotPointY = hotPointY < model.getItemCount()?hotPointY:model.getItemCount();
+	if (hotPointY >= 0 && hotPointY < model.getItemCount())
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
-	}
-
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ARROW_DOWN &&
-	    !event.isModified())
-	{
-	    if (hotPointY >= model.getItemCount())
-	    {
-		Speech.say(noItemsBelow, Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointY++;
+	    String line = getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0);
+	    if (line == null)
+		line = "";
+	    hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	} else
 	    hotPointX = 0;
-	    Luwrain.onAreaNewHotPoint(this);
-	    introduceLine(hotPointY);
-	    return true;
-	}
-
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ARROW_UP &&
-	    !event.isModified())
-	{
-	    if (hotPointY <= 0)
-	    {
-		Speech.say(noItemsAbove, Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointY--;
-	    hotPointX = 0;
-	    Luwrain.onAreaNewHotPoint(this);
-	    introduceLine(hotPointY);
-	    return true;
-	}
-
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ARROW_RIGHT &&
-	    !event.isModified())
-	{
-	    if (hotPointY < 0 ||
-		hotPointY >= model.getItemCount() ||
-		model.getItem(hotPointY) == null ||
-		model.getItem(hotPointY).toString() == null  ||
-		model.getItem(hotPointY).toString().isEmpty())
-	    {
-		Speech.say(emptyLine, Speech.PITCH_HIGH);
-		return true;
-	    }
-		final String line = model.getItem(hotPointY).toString();
-	    if (hotPointX >= line.length())
-	    {
-		Speech.say(endOfLine, Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointX++;
-	    Luwrain.onAreaNewHotPoint(this);
-	    if (hotPointX >= line.length())
-		Speech.say(endOfLine, Speech.PITCH_HIGH); else
-		Speech.sayLetter(line.charAt(hotPointX));
-	    return true;
-	}
-
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ARROW_LEFT &&
-	    !event.isModified())
-	{
-	    if (hotPointY < 0 ||
-		hotPointY >= model.getItemCount() ||
-		model.getItem(hotPointY) == null ||
-		model.getItem(hotPointY).toString() == null  ||
-		model.getItem(hotPointY).toString().isEmpty())
-	    {
-		Speech.say(emptyLine, Speech.PITCH_HIGH);
-		return true;
-	    }
-		final String line = model.getItem(hotPointY).toString();
-	    if (hotPointX <= 0)
-	    {
-		Speech.say(beginOfLine, Speech.PITCH_HIGH);
-		return true;
-	    }
-	    hotPointX--;
-	    Luwrain.onAreaNewHotPoint(this);
-	    if (hotPointX < line.length())
-		Speech.sayLetter(line.charAt(hotPointX));
-	    return true;
-	}
-
-	//FIXME:home-end;
-	//FIXME:page up-page down;
-
-	return false;
+	Luwrain.onAreaNewContent(this);
+	Luwrain.onAreaNewHotPoint(this);
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	if (!event.isCommand() || event.isModified())
+	    return false;
+	switch(event.getCommand())
+	{
+	case KeyboardEvent.ARROW_DOWN:
+	    return onArrowDown(event, false);
+	case KeyboardEvent.ARROW_UP:
+	    return onArrowUp(event, false);
+	case KeyboardEvent.ARROW_RIGHT:
+	    return onArrowRight(event);
+	case KeyboardEvent.ARROW_LEFT:
+	    return onArrowLeft(event);
+	case KeyboardEvent.ALTERNATIVE_ARROW_DOWN:
+	    return onArrowDown(event, true);
+	case KeyboardEvent.ALTERNATIVE_ARROW_UP:
+	    return onArrowUp(event, true);
+	    //FIXME:case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
+	    //FIXME:case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+	case KeyboardEvent.HOME:
+	    return onHome(event);
+	case KeyboardEvent.END:
+	    return onEnd(event);
+	case KeyboardEvent.ALTERNATIVE_HOME:
+	    return onLineHome(event);
+	case KeyboardEvent.ALTERNATIVE_END:
+	    return onLineEnd(event);
+	case KeyboardEvent.PAGE_DOWN:
+	    return onPageDown(event, false);
+	case KeyboardEvent.PAGE_UP:
+	    return onPageUp(event, false);
+	case KeyboardEvent.ALTERNATIVE_PAGE_DOWN:
+	    return onPageDown(event, true);
+	case KeyboardEvent.ALTERNATIVE_PAGE_UP:
+	    return onPageUp(event, true);
+	case KeyboardEvent.ENTER:
+	    if (model == null || 
+		hotPointY < 0 || hotPointY >= model.getItemCount())
+		return false;
+	    return onClick(model, hotPointY, model.getItem(hotPointY));
+	default:
+	    return false;
+	}
+    }
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
+	case EnvironmentEvent.COPY_CUT_POINT:
+	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	case EnvironmentEvent.COPY:
+	    if (!copyCutInfo.doCopy(hotPointX, hotPointY))
+		copyEntireContent();
+	    return true;
 	default:
 	    return false;
 	}
     }
 
-    public void refresh()
-    {
-	model.refresh();
-	hotPointX = 0;
-	hotPointY = hotPointY < model.getItemCount()?hotPointY:model.getItemCount();
-	Luwrain.onAreaNewContent(this);
-	Luwrain.onAreaNewHotPoint(this);
-    }
-
-    public int getLineCount()
+    @Override public int getLineCount()
     {
 	if (model == null || model.getItemCount() <= 0)
 	    return 2;
 	return model.getItemCount() + 1;
     }
 
-    public String getLine(int index)
+    @Override public String getLine(int index)
     {
 	if (model == null || 
 	    model.getItemCount() < 1)
@@ -208,28 +222,406 @@ hotPointY < 0 ||
 	return model.getItem(index).toString();
     }
 
-    public int getHotPointX()
+    protected boolean onClick(ListModel model,
+				     int index,
+				     Object item)
+    {
+	if (clickHandler != null)
+	    return clickHandler.onClick(model, index, item);
+	return false;
+    }
+
+    @Override public int getHotPointX()
     {
 	return hotPointX >= 0?hotPointX:0;
     }
 
-    public int getHotPointY()
+    @Override public int getHotPointY()
     {
 	return hotPointY >= 0?hotPointY:0;
     }
 
-    private void introduceLine(int index)
+    @Override public String getName()
     {
-	if (model == null)
-	    return;
-	if (hotPointY >= model.getItemCount() || 
-	    model.getItem(index) == null ||
-	    model.getItem(index).toString() == null ||
-	    model.getItem(index).toString().trim().isEmpty())
+	return name != null?name:"";
+    }
+
+    public void setName(String value)
+    {
+	name = value != null?value:"";
+	Luwrain.onAreaNewName(this);
+    }
+
+    protected void introduceItem(ListModel model,
+				 int index,
+				 Object item,
+				 int flags)
+    {
+	if (appearance != null)
 	{
-	    Speech.say(emptyLine, Speech.PITCH_HIGH);
+	    appearance.introduceItem(model, index, item, flags);
 	    return;
 	}
-	Speech.say(model.getItem(index).toString());
+	String value = item != null?item.toString():"";
+	if (value == null)
+	    value = "";
+	if (value.trim().isEmpty())
+		Speech.say(emptyLine, Speech.PITCH_HIGH); else
+	    Speech.say(value);
+    }
+
+    protected String getScreenAppearance(ListModel model,
+					 int index,
+					 Object item,
+					 int flags)
+    {
+	if (appearance != null)
+	    return appearance.getScreenAppearance(model, index, item, flags);
+	String value = item != null?item.toString():"";
+	return value != null?value:"";
+    }
+
+    private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY >= model.getItemCount())
+	{
+		Speech.say(noItemsBelow, Speech.PITCH_HIGH);
+		return true;
+	}
+	++hotPointY;
+	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	if (line == null)
+	    line = "";
+	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	Luwrain.onAreaNewHotPoint(this);
+	if (hotPointY < model.getItemCount())
+	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0); else
+		Speech.say(emptyLine, Speech.PITCH_HIGH);
+	return true;
+    }
+
+    private boolean onArrowUp(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY <= 0)
+	{
+	    Speech.say(noItemsAbove, Speech.PITCH_HIGH);
+	    return true;
+	}
+	    --hotPointY;
+	    if (hotPointY >= model.getItemCount())
+		hotPointY = model.getItemCount() - 1;
+	    String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	if (line == null)
+	    line = "";
+	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	Luwrain.onAreaNewHotPoint(this);
+	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0);
+	return true;
+    }
+
+    private boolean onPageDown(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY >= model.getItemCount())
+	{
+		Speech.say(noItemsBelow, Speech.PITCH_HIGH);
+		return true;
+	}
+	hotPointY += Luwrain.getAreaVisibleHeight(this);
+	if (hotPointY >= model.getItemCount())
+	    hotPointY = model.getItemCount();
+	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	if (line == null)
+	    line = "";
+	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	Luwrain.onAreaNewHotPoint(this);
+	if (hotPointY < model.getItemCount())
+	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0); else
+		Speech.say(emptyLine, Speech.PITCH_HIGH);
+	return true;
+    }
+
+    private boolean onPageUp(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY <= 0)
+	{
+	    Speech.say(noItemsAbove, Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointY -= Luwrain.getAreaVisibleHeight(this);
+	if (hotPointY < 0)
+	    hotPointY = 0;
+	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	if (line == null)
+	    line = "";
+	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	Luwrain.onAreaNewHotPoint(this);
+	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0);
+	return true;
+    }
+
+    private boolean onEnd(KeyboardEvent event)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointY = model.getItemCount();
+	hotPointX = 0;
+	Luwrain.onAreaNewHotPoint(this);
+	Speech.say(emptyLine, Speech.PITCH_HIGH);
+	return true;
+    }
+
+    private boolean onHome(KeyboardEvent event)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	hotPointY = 0;
+	String line = getScreenAppearance(model, 0, model.getItem(0), 0);
+	if (line == null)
+	    line = "";
+	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	Luwrain.onAreaNewHotPoint(this);
+	introduceItem(model, 0, model.getItem(0), 0);
+	return true;
+    }
+
+    private boolean onArrowRight(KeyboardEvent event)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY < 0 ||
+	    hotPointY >= model.getItemCount() ||
+	    model.getItem(hotPointY) == null)
+	{
+	    Speech.say(emptyLine, Speech.PITCH_HIGH);
+	    return true;
+	}
+	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	if (line == null)
+	    line = "";
+	if (hotPointX >= line.length())
+	{
+	    if (hotPointX > line.length())
+	    {
+		hotPointX = line.length();
+		Luwrain.onAreaNewHotPoint(this);
+	    }
+	    Speech.say(endOfLine, Speech.PITCH_HIGH);
+	    return true;
+	}
+	++hotPointX;
+	Luwrain.onAreaNewHotPoint(this);
+	if (hotPointX >= line.length())
+	    Speech.say(endOfLine, Speech.PITCH_HIGH); else
+	    Speech.sayLetter(line.charAt(hotPointX));
+	return true;
+    }
+
+    private boolean onArrowLeft(KeyboardEvent event)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY < 0 ||
+	    hotPointY >= model.getItemCount() ||
+	    model.getItem(hotPointY) == null)
+	{
+	    Speech.say(emptyLine, Speech.PITCH_HIGH);
+	    return true;
+	}
+	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	if (line == null)
+	    line = "";
+	if (hotPointX <= (initialHotPointX < line.length()?initialHotPointX:line.length()))
+	{
+	    if (hotPointX < (initialHotPointX < line.length()?initialHotPointX:line.length()))
+	    {
+		hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+		Luwrain.onAreaNewHotPoint(this);
+	    }
+	    Speech.say(beginOfLine, Speech.PITCH_HIGH);
+	    return true;
+	}
+	--hotPointX;
+	if (hotPointX > line.length())
+	    hotPointX = line.length();
+	Luwrain.onAreaNewHotPoint(this);
+	if (hotPointX >= line.length())
+	    Speech.say(endOfLine, Speech.PITCH_HIGH); else
+	    Speech.sayLetter(line.charAt(hotPointX));
+	return true;
+    }
+
+    private boolean onLineEnd(KeyboardEvent event)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY < 0 ||
+	    hotPointY >= model.getItemCount() ||
+	    model.getItem(hotPointY) == null)
+	{
+	    Speech.say(emptyLine, Speech.PITCH_HIGH);
+	    return true;
+	}
+	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	if (line == null)
+	    line = "";
+	hotPointX = line.length();
+	Luwrain.onAreaNewHotPoint(this);
+	Speech.say(endOfLine, Speech.PITCH_HIGH);
+	return true;
+    }
+
+    private boolean onLineHome(KeyboardEvent event)
+    {
+	if (model == null ||
+	    model.getItemCount() < 1)
+	{
+	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (hotPointY < 0 ||
+	    hotPointY >= model.getItemCount() ||
+	    model.getItem(hotPointY) == null)
+	{
+	    Speech.say(emptyLine, Speech.PITCH_HIGH);
+	    return true;
+	}
+	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	if (line == null)
+	    line = "";
+	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	Luwrain.onAreaNewHotPoint(this);
+	if (hotPointX >= line.length())
+	    Speech.say(beginOfLine, Speech.PITCH_HIGH); else
+	    Speech.sayLetter(line.charAt(hotPointX));
+	return true;
+    }
+
+    public void setNoItemsAboveMessage(String value)
+    {
+	noItemsAbove = value != null?value:"";
+    }
+
+    public void setNoItemsBelowMessage(String value)
+    {
+	noItemsBelow = value != null?value:"";
+    }
+
+    public void setBeginOfLineMessage(String value)
+    {
+	beginOfLine = value != null?value:"";
+    }
+
+    public void setEndOfLineMessage(String value)
+    {
+	endOfLine = value != null?value:"";
+    }
+
+    public void setNoItemsMessage(String value)
+    {
+	noItems = value != null?value:"";
+    }
+
+    public void setEmptyLineMessage(String value)
+    {
+	emptyLine = value != null?value:"";
+    }
+
+    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    {
+	if (model == null || model.getItemCount() == 0)
+	    return false;
+	if (fromY >= model.getItemCount() || toY > model.getItemCount())
+	    return false;
+	Vector<String> res = new Vector<String>();
+	for(int i = fromY;i < toY;++i)
+	{
+	    final String line = getScreenAppearance(model, i, model.getItem(i), CLIPBOARD_VALUE);
+	    if (line != null)
+		res.add(line); else
+		res.add("");
+	}
+	if (res.isEmpty())
+	    return false;
+	Luwrain.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
+    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    {
+	return false;
+    }
+
+    private void copyEntireContent()
+    {
+	Vector<String> lines = new Vector<String>();
+	int maxLen = 0;
+	if (model != null && model.getItemCount() > 0)
+	{
+	    for(int i = 0;i < model.getItemCount();++i)
+	    {
+		String line = getScreenAppearance(model, i, model.getItem(i), CLIPBOARD_VALUE);
+		if (line == null)
+		    line = "";
+		lines.add(line);
+		if (line.length() > maxLen)
+		    maxLen = line.length();
+	    }
+	} else
+	    {
+		lines.add(noItems);
+		maxLen = noItems.length();
+	    }
+	String dashes = "";
+	while(dashes.length() < maxLen)
+	    dashes += "-";
+	Vector<String> res = new Vector<String>();
+	res.add(getName() != null?getName():"null");
+	res.add(dashes);
+	res.addAll(lines);
+	Luwrain.setClipboard(res.toArray(new String[res.size()]));
     }
 }

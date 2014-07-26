@@ -14,18 +14,17 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.commander;
+package org.luwrain.controls;
 
-interface Actions
+public interface ListItemAppearance
 {
-    void gotoLeftPanel();
-    void gotoRightPanel();
-    void gotoTasks();
-    void close();
-    void refresh();
-    void openFiles(String[] fileNames);
-    boolean copy(int panelSide);
-    boolean move(int panelSide);
-    boolean mkdir(int panelSide);
-    boolean delete(int panelSide);
+    void introduceItem(ListModel model,
+		       int index,
+		       Object item,
+		       int flags);
+
+    String getScreenAppearance(ListModel model,
+			       int index,
+			       Object item,
+			       int flags);
 }

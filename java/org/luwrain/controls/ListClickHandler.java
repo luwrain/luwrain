@@ -14,18 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.commander;
+package org.luwrain.controls;
 
-interface Actions
+public interface ListClickHandler
 {
-    void gotoLeftPanel();
-    void gotoRightPanel();
-    void gotoTasks();
-    void close();
-    void refresh();
-    void openFiles(String[] fileNames);
-    boolean copy(int panelSide);
-    boolean move(int panelSide);
-    boolean mkdir(int panelSide);
-    boolean delete(int panelSide);
+    boolean onClick(ListModel model,
+		       int index,
+		       Object item);
 }

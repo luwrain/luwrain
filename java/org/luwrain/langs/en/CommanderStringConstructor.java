@@ -108,7 +108,7 @@ class CommanderStringConstructor implements org.luwrain.app.commander.StringCons
 
     public String copyPopupName()
     {
-	return "Copy files and directories";
+	return "Copy";
     }
 
     public String copyPopupPrefix(File[] files)
@@ -117,6 +117,48 @@ class CommanderStringConstructor implements org.luwrain.app.commander.StringCons
 	    return "";
 	if (files.length == 1)
 	    return "Copy \"" + files[0].getName() + "\" to:";
-	return "Copy " + files.length + " элемента(ов) to:";
+	return "Copy " + files.length + " items to:";
+    }
+
+    public String movePopupName()
+    {
+	return "Move/rename";
+    }
+
+    public String movePopupPrefix(File[] files)
+    {
+	if (files == null || files.length < 1)
+	    return "";
+	if (files.length == 1)
+	    return "Move/rename /remove \"" + files[0].getName() + "\" to:";
+	return "Move " + files.length + " items to:";
+    }
+
+    public String mkdirPopupName()
+    {
+	return "Create new directory";
+    }
+
+    public String mkdirPopupPrefix()
+    {
+	return "New directory name";
+    }
+
+    public String delPopupName()
+    {
+	return "Delete";
+    }
+
+    public String delPopupPrefix(File[] files)
+    {
+	if (files == null || files.length < 1)
+	    return "";
+	if (files.length == 1)
+	{
+	    if (files[0].isDirectory())
+		return "Are you sure you want to delete  directory \"" + files[0].getName() + "\"?";
+	    return "Are you sure you want to delete  file \"" + files[0].getName() + "\"?";
+	}
+	return "Are you sure you want to delete " + files.length + " items?";
     }
 }

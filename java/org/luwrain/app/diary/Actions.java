@@ -14,18 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.commander;
+package org.luwrain.app.diary;
 
 interface Actions
 {
-    void gotoLeftPanel();
-    void gotoRightPanel();
-    void gotoTasks();
+    void gotoTimedArea();
+    void gotoNonTimedArea();
+    void gotoCalendar();
+    boolean editDiaryEntry(Object entry);
+    boolean deleteDiaryEntry(Object entry);
     void close();
-    void refresh();
-    void openFiles(String[] fileNames);
-    boolean copy(int panelSide);
-    boolean move(int panelSide);
-    boolean mkdir(int panelSide);
-    boolean delete(int panelSide);
 }
