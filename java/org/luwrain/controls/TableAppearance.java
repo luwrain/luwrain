@@ -13,12 +13,21 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
 */
-package org.freedesktop;
 
-import java.util.*;
-import org.freedesktop.dbus.*;
+package org.luwrain.controls;
 
-public interface NetworkManager extends DBusInterface
+public interface TableAppearance
 {
-    public List<DBusInterface> GetDevices();
+    void introduceRow(TableModel model,
+		      int index,
+		      int flags);
+
+    int getInitialHotPointX(TableModel model);
+
+    String getCellText(TableModel model,
+		       int col,
+		       int row);
+
+    String getRowPrefix(TableModel model, int index);
+int getColWidth(TableModel model, int  colIndex);
 }

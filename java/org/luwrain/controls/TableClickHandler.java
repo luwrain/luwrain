@@ -14,23 +14,12 @@
    General Public License for more details.
 */
 
-package org.luwrain.dbus;
+package org.luwrain.controls;
 
-import org.freedesktop.dbus.exceptions.*;
-import org.freedesktop.*;
-import java.util.*;
-
-public class Connections
+public interface TableClickHandler
 {
-    static public String[] getDevices() throws DBusException
-    {
-	NetworkManager nm = (NetworkManager)org.luwrain.dbus.DBus.con.getRemoteObject("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager", NetworkManager.class);
-	List<org.freedesktop.dbus.DBusInterface> d = nm.GetDevices();
-	String[] res = new String[d.size()];
-	Iterator it = d.iterator();
-	int k = 0;
-	while (it.hasNext())
-res[k++] = it.next().toString();
-	return res;
-    }
+    boolean onClick(TableModel model,
+		    int col,
+		    int row,
+		    Object obj);
 }

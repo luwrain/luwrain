@@ -134,7 +134,7 @@ public class TreeArea implements Area
 	}
 	if (items == null || items.length < 1)
 	{
-	    environment.say(emptyTree, Speech.PITCH_HIGH);
+	    environment.hint(emptyTree);
 	    return true;
 	}
 	switch (event.getCommand())
@@ -457,7 +457,7 @@ public class TreeArea implements Area
 	{
 	    fillChildrenForNonLeaf(item.node);
 	    items = generateAllVisibleItems();
-		environment.say(expanded, Speech.PITCH_HIGH);
+		environment.hint(expanded);
 		environment.onAreaNewContent(this);
 		return true;
 	}
@@ -465,7 +465,7 @@ public class TreeArea implements Area
 	    {
 		item.node.children = null;
 		items = generateAllVisibleItems();
-		environment.say(collapsed, Speech.PITCH_HIGH);
+		environment.hint(collapsed);
 		environment.onAreaNewContent(this);
 		return true;
 	    }
@@ -478,14 +478,14 @@ public class TreeArea implements Area
 	    return false;
 	if (hotPointY  >= items.length)
 	{
-	    environment.say(treeAreaEnd, Speech.PITCH_HIGH);
+	    environment.hint(treeAreaEnd);
 	    return true;
 	}
 	hotPointY++;
 	if (hotPointY >= items.length)
 	{
 	    hotPointX = 0;
-	    environment.say(emptyLine, Speech.PITCH_HIGH);
+	    environment.hint(emptyLine);
 	} else
 	{
 	    hotPointX = getInitialHotPointX(hotPointY);
@@ -501,7 +501,7 @@ public class TreeArea implements Area
 	    return false;
 	if (hotPointY  <= 0)
 	{
-	    environment.say(treeAreaBegin, Speech.PITCH_HIGH);
+	    environment.hint(treeAreaBegin);
 	    return true;
 	}
 	hotPointY--;
@@ -520,19 +520,19 @@ public class TreeArea implements Area
 	final int offset = getInitialHotPointX(hotPointY);
 	if (value.isEmpty())
 	{
-	    environment.say(emptyItem, Speech.PITCH_HIGH);
+	    environment.hint(emptyItem);
 	    return true;
 	}
 	if (hotPointX >= value.length() + offset)
 	{
-	    environment.say(endOfLine, Speech.PITCH_HIGH);
+	    environment.hint(endOfLine);
 	    return true;
 	}
 	if (hotPointX < offset)
 	    hotPointX = offset; else
 	    hotPointX++;
 	if (hotPointX >= value.length() + offset)
-	    environment.say(endOfLine, Speech.PITCH_HIGH); else
+	    environment.hint(endOfLine); else
 	    environment.sayLetter(value.charAt(hotPointX - offset));
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -547,12 +547,12 @@ private boolean onKeyLeft(KeyboardEvent event)
 	final int offset = getInitialHotPointX(hotPointY);
 	if (value.isEmpty())
 	{
-	    environment.say(emptyItem, Speech.PITCH_HIGH);
+	    environment.hint(emptyItem);
 	    return true;
 	}
 	if (hotPointX <= offset)
 	{
-	    environment.say(beginOfLine, Speech.PITCH_HIGH);
+	    environment.hint(beginOfLine);
 	    return true;
 	}
 	if (hotPointX >= value.length() + offset)

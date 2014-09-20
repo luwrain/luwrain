@@ -37,6 +37,9 @@ public class Langs
     public static final int TREE_EXPANDED = 17;
     public static final int TREE_COLLAPSED = 18;
     public static final int TREE_LEVEL = 19;
+    public static final int NO_TABLE_ROWS = 20;
+    public static final int NO_TABLE_ROWS_ABOVE = 21;
+    public static final int NO_TABLE_ROWS_BELOW = 22;
 
     public static final int NO_REQUESTED_ACTION = 100;
     public static final int NO_ACTIVE_AREA = 101;

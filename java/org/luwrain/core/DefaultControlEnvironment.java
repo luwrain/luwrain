@@ -18,11 +18,6 @@ package org.luwrain.core;
 
 public class DefaultControlEnvironment implements ControlEnvironment
 {
-    public void say(String text, int pitch)
-    {
-	Speech.say(text, pitch);
-    }
-
     public void say(String text)
     {
 	Speech.say(text);
@@ -33,6 +28,21 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	Speech.sayLetter(letter);
     }
 
+    public void hint(String text)
+    {
+	Speech.say(text, Speech.PITCH_HIGH);
+    }
+
+    public void hintStaticString(int id)
+    {
+	hint(langStaticString(id));
+    }
+
+    public void onAreaNewName(Area area)
+    {
+	Luwrain.onAreaNewName(area);
+    }
+
     public void onAreaNewContent(Area area)
     {
 	Luwrain.onAreaNewContent(area);
@@ -41,5 +51,15 @@ public class DefaultControlEnvironment implements ControlEnvironment
     public void onAreaNewHotPoint(Area area)
     {
 	Luwrain.onAreaNewHotPoint(area);
+    }
+
+    public int getAreaVisibleHeight(Area area)
+    {
+	return Luwrain.getAreaVisibleHeight(area);
+    }
+
+    public String langStaticString(int id)
+    {
+	return Langs.staticValue(id);
     }
 }

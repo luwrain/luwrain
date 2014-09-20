@@ -14,22 +14,21 @@
    General Public License for more details.
 */
 
-package org.luwrain.dbus;
+package org.luwrain.controls;
 
-import org.freedesktop.dbus.*;
-import org.freedesktop.dbus.exceptions.*;
-
-public class DBus
+/**
+ * The interface for obscuring table content structures. Implementing
+ * this interface it is possible to fill instances of Table class with
+ * exact needed data. The model isn't responsible for an appearance of a
+ * whole table or its cells.All appearance details can be customized
+ * through extending TableAppearance interface.
+ */
+public interface TableModel
 {
-    static public DBusConnection con;
-
-    static public void connect() throws DBusException
-    {
-con = DBusConnection.getConnection(DBusConnection.SYSTEM);
-    }
-
-    static public void shutdown()
-    {
-	con.disconnect();
-    }
+    int getRowCount();
+    int getColCount();
+    Object getCell(int col, int row);
+    Object getRow(int index);
+    Object getCol(int index);
+    void refresh();
 }

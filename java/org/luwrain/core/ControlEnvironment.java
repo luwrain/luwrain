@@ -18,9 +18,13 @@ package org.luwrain.core;
 
 public interface ControlEnvironment
 {
-    void say(String text, int pitch);
     void say(String text);
     void sayLetter(char letter);
+    void hint(String text); 
+    void hintStaticString(int id);
     void onAreaNewContent(Area area);
+    void onAreaNewName(Area area);
     void onAreaNewHotPoint(Area area);
+int getAreaVisibleHeight(Area area);
+    String langStaticString(int id);
 }
