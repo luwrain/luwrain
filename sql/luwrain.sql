@@ -14,7 +14,7 @@ CREATE TABLE registry_value (
   bool_value BOOLEAN NOT NULL
 );
 
-create table news_article (
+CREATE TABLE news_article (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   news_group_id int NOT NULL,
   state int NOT NULL,
@@ -32,16 +32,40 @@ create table news_article (
   content text NOT NULL
 );
 
+CREATE TABLE mail_message (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  mail_group_id  int NOT NULL,
+  state int NOT NULL,
+  from_addr varchar(512) NOT NULL,
+  to_addr varchar(512) NOT NULL,
+  subject varchar(1024) NOT NULL,
+  msg_date timestamp NOT NULL,
+  raw_msg text NOT NULL,
+  content text NOT NULL,
+  ext_info text NOT NULL
+);
 
-title
-comment
-date_time 
-duration
-type
-status
-importance
-attributes
-attr_type
+CREATE TABLE mail_message_to_address (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  mail_message_id  int NOT NULL,
+  value varchar(512) NOT NULL
+);
+
+CREATE TABLE mail_message_attachment (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  mail_message_id  int NOT NULL,
+  value varchar(2048) NOT NULL
+);
+
+--title
+--comment
+--date_time 
+--duration
+--type
+--status
+--importance
+--attributes
+--attr_type
 
 -- Basic registry directories --
 

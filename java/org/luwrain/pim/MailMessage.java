@@ -27,9 +27,10 @@ public class MailMessage
     public String[] fromAddrs = new String[0];
     public String toAddr = "";
     public String[] toAddrs = new String[0];
-    public String subject = new String();
+    public String subject = "";
     public java.util.Date date = new java.util.Date();
     public String rawMsg = "";
     public String contentText = "";
-    public String extInfo = new String();
+    public String extInfo = "";
+    public String[] attachments = new String[0];
 }

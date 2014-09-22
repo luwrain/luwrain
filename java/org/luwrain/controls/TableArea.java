@@ -51,6 +51,7 @@ public class TableArea  implements Area, CopyCutRequest
 	this.appearance = new DefaultTableAppearance(environment);
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
 	this.copyCutInfo = new CopyCutInfo(this);
+	refresh();
     }
 
     public TableArea(ControlEnvironment environment,
@@ -63,6 +64,7 @@ public class TableArea  implements Area, CopyCutRequest
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
 	this.name = name != null?name:"";
 	this.copyCutInfo = new CopyCutInfo(this);
+	refresh();
     }
 
     public TableArea(ControlEnvironment environment,
@@ -78,6 +80,51 @@ public class TableArea  implements Area, CopyCutRequest
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
 	this.clickHandler = clickHandler;
 	this.copyCutInfo = new CopyCutInfo(this);
+	refresh();
+    }
+
+    public void refresh()
+    {
+	if (model == null)
+	{
+	    colWidth = null;
+	    cellShift = 0;
+	    hotPointX = 0;
+	    hotPointY = 0;
+	    environment.onAreaNewContent(this);
+	    environment.onAreaNewHotPoint(this);
+	    return;
+	}
+	model.refresh();
+	final int colCount = model.getColCount();
+	final int rowCount = model.getRowCount();
+	if (colCount <= 0 || rowCount <= 0)
+	{
+	    colWidth = null;
+	    cellShift = 0;
+	    hotPointX = 0;
+	    hotPointY = 0;
+	    environment.onAreaNewContent(this);
+	    environment.onAreaNewHotPoint(this);
+	    return;
+	}
+	initialHotPointX = appearance.getInitialHotPointX(model);
+	colWidth = new int[colCount];
+	int totalWidth = initialHotPointX;
+	for(int i = 0;i < colCount;++i)
+	{
+	    final int width = appearance.getColWidth(model, i);
+	    colWidth[i] =  width >= 1?width:1;
+	    totalWidth += (colWidth[i] + 1);
+	}
+	if (hotPointY > rowCount)
+	    hotPointY = rowCount;
+	if (hotPointY < rowCount && hotPointX >= totalWidth )
+	    hotPointX = totalWidth - 1; //totalWidth may not be zero as always we have at least one column here;
+	if (hotPointY == rowCount)
+	    hotPointX = 0;
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
     }
 
     public Object getSelectedRow()
@@ -108,15 +155,6 @@ public class TableArea  implements Area, CopyCutRequest
     {
 	//FIXME:
 	return -1;
-    }
-
-    public void refresh()
-    {
-	if (model == null)
-	    return;
-	model.refresh();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -595,6 +633,6 @@ colWidth == null || colWidth.length <= 0;
 
     private String colEndMessage(int index)
     {
-	return "FIXME";//FIXME:
+	return environment.langStaticString(Langs.END_OF_TABLE_COL);
     }
 }

@@ -339,7 +339,7 @@ class Actions
 		}
 		public void onAction()
 		{
-		    Application app = new org.luwrain.app.mail.MailReaderApp();
+		    Application app = new org.luwrain.app.mail.MailApp();
 		    Luwrain.launchApp(app);
 		}
 	    });

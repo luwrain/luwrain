@@ -89,6 +89,14 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Open file";
 	case Langs.OPEN_POPUP_PREFIX:
 	    return "Enter the name of the file to open:";
+	case Langs.NO_TABLE_ROWS:
+	    return "No table rows"; 
+	case Langs.NO_TABLE_ROWS_ABOVE:
+	    return "No table rows above"; 
+	case Langs.NO_TABLE_ROWS_BELOW:
+	    return "No table rows below";
+	case Langs.END_OF_TABLE_COL:
+	    return "Column end";
 	default:
 	    return "#Unknown string identifier?#";
 	}

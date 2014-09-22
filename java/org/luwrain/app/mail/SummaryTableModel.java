@@ -16,16 +16,37 @@
 
 package org.luwrain.app.mail;
 
-public interface StringConstructor
+import org.luwrain.core.*;
+import org.luwrain.controls.*;
+
+class SummaryTableModel implements TableModel
 {
-    String foldersAreaName();
-    String summaryAreaName();
-    String messageAreaName();
-    String noMailStoring();
-    String mailFoldersRoot();
-    String readPrefix();
-    String markedPrefix();
-    String emptySummaryArea();
-    String lastSummaryLine();
-    String firstSummaryLine();
+    public int getRowCount()
+    {
+	return 3;
+    }
+
+    public int getColCount()
+    {
+	return 3;
+    }
+
+    public Object getCell(int col, int row)
+    {
+	return "Luwrain experimental cell";
+    }
+
+    public Object getRow(int index)
+    {
+	return "Row";
+    }
+
+    public Object getCol(int index)
+    {
+	return "Column";
+    }
+
+    public void refresh()
+    {
+    }
 }

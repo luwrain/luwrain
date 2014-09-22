@@ -35,6 +35,7 @@ public class StoredMailMessageSql implements StoredMailMessage
     public String rawMsg = new String();
     public String content = new String();
     public String extInfo = new String();
+    public String[] attachments = new String[0];
 
     public StoredMailMessageSql(Connection con)
     {

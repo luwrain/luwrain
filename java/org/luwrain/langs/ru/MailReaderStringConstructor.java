@@ -65,4 +65,10 @@ class MailReaderStringConstructor implements org.luwrain.app.mail.StringConstruc
 	return "Последняя строка списка сообщений";
     }
 
+    public String noMailStoring()
+    {
+	return "Нет подключения к хранилищу электронной почты";
+    }
+
+
 }

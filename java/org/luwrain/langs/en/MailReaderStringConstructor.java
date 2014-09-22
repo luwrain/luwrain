@@ -64,4 +64,9 @@ class MailReaderStringConstructor implements org.luwrain.app.mail.StringConstruc
     {
 	return "Last summary list";
     }
+
+    public String noMailStoring()
+    {
+	return "No mail storing connection";
+    }
 }

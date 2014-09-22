@@ -30,21 +30,13 @@ class MailStoringSql extends  MailStoringRegistry
 	this.con = con;
     }
 
-    private String[] loadFromAddrs(long id) throws SQLException
+    public StoredMailMessage[] loadMessagesFromGroup(StoredMailGroup mailGroup) throws Exception
     {
-	return new String[0];//FIXME:
-    }
-
-    private String[] loadToAddrs(long id) throws SQLException
-    {
-	return new String[0];//FIXME:
-    }
-
-    public StoredMailMessage[] loadMessagesFromGroup(StoredMailGroup mailGroup) throws SQLException
-    {
-	if (mailGroup == null)
+	if (mailGroup == null || !(mailGroup instanceof StoredMailGroupRegistry))
 	    return null;
 	StoredMailGroupRegistry group = (StoredMailGroupRegistry)mailGroup;
+	if (group.id < 0)
+	    return null;
 	PreparedStatement st = con.prepareStatement("SELECT id,mail_group_id,state,from_addr,to_addr,subject,msg_date,raw_msg,content,ext_info FROM mail_message WHERE mail_group_id = ?;");
 	st.setLong(1, group.id);
 	ResultSet rs = st.executeQuery();
@@ -62,15 +54,75 @@ class MailStoringSql extends  MailStoringRegistry
 	    message.rawMsg = rs.getString(8);
 	    message.content = rs.getString(9);
 	    message.extInfo = rs.getString(10);
-	    message.fromAddrs = loadFromAddrs(message.id);
-	    message.toAddrs = loadToAddrs(message.id);
 	    messages.add(message);
 	}
-	StoredMailMessage res[] = new StoredMailMessage[messages.size()];
-	Iterator<StoredMailMessageSql> it = messages.iterator();
-	int k = 0;
-	while (it.hasNext())
-	    res[k++] = it.next();
+	StoredMailMessageSql[] res = messages.toArray(new StoredMailMessageSql[messages.size()]);
+	//Reading table of multiple recipients;
+    st = con.prepareStatement("SELECT mail_message.id,mail_message_to_address.value FROM mail_message,mail_message_to_address WHERE mail_message.id = mail_message_to_address.mail_message_id AND mail_message.mail_group_id = ?;");
+    st.setLong(1, group.id);
+    rs = st.executeQuery();
+    TreeMap<Long, Vector<String> > m = new TreeMap<Long, Vector<String> >();
+    while(rs.next())
+    {
+	final long id = rs.getLong(1);
+	final String value = rs.getString(2);
+	Vector<String> values = m.get(new Long(id));
+	if (values == null)
+	{
+	    values = new Vector<String>();
+	    values.add(value);
+	    m.put(new Long(id), values);
+	} else
+	    values.add(value != null?value:"");
+    }
+    Map.Entry<Long, Vector <String> > entry;
+    for(entry = m.firstEntry();entry != null;entry = m.higherEntry(entry.getKey()))
+    {
+	final long id = entry.getKey().longValue();
+	final Vector<String> values = entry.getValue(); 
+	if (id < 0 || values == null)//Actually should never happen;
+	    continue;
+	int k;
+	for(k = 0;k < res.length;++k)
+	    if (res[k].id == id)
+		break;
+	if (k >= res.length)
+	    continue;
+	res[k].toAddrs = values.toArray(new String[values.size()]);
+    }
+
+    //Reading list of attachments;
+    st = con.prepareStatement("SELECT mail_message.id,mail_message_attachment.value FROM mail_message,mail_message_attachment WHERE mail_message.id = mail_message_attachment.mail_message_id AND mail_message.mail_group_id = ?;");
+    st.setLong(1, group.id);
+    rs = st.executeQuery();
+    m = new TreeMap<Long, Vector<String> >();
+    while(rs.next())
+    {
+	final long id = rs.getLong(1);
+	final String value = rs.getString(2);
+	Vector<String> values = m.get(new Long(id));
+	if (values == null)
+	{
+	    values = new Vector<String>();
+	    values.add(value);
+	    m.put(new Long(id), values);
+	} else
+	    values.add(value != null?value:"");
+    }
+    for(entry = m.firstEntry();entry != null;entry = m.higherEntry(entry.getKey()))
+    {
+	final long id = entry.getKey().longValue();
+	final Vector<String> values = entry.getValue(); 
+	if (id < 0 || values == null)//Actually should never happen;
+	    continue;
+	int k;
+	for(k = 0;k < res.length;++k)
+	    if (res[k].id == id)
+		break;
+	if (k >= res.length)
+	    continue;
+	res[k].attachments = values.toArray(new String[values.size()]);
+    }
 	return res;
     }
 
