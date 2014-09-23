@@ -18,30 +18,10 @@ package org.luwrain.langs.en;
 
 import java.util.*;
 
-public class MessageStringConstructor implements org.luwrain.app.message.MessageStringConstructor
+public class MessageStringConstructor implements org.luwrain.app.message.StringConstructor
 {
-    public String appName()
+    @Override public String appName()
     {
 	return "New message";
-    }
-
-    public String to()
-    {
-	return "To:";
-    }
-
-    public String cc()
-    {
-	return "CC:";
-    }
-
-    public String subject()
-    {
-	return "Subject:";
-    }
-
-    public String messageText()
-    {
-	return "Message text:";
     }
 }

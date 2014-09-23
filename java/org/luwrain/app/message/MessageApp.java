@@ -18,10 +18,11 @@ package org.luwrain.app.message;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 
-public class MessageApp implements Application, MessageActions
+public class MessageApp implements Application, Actions
 {
-    private MessageStringConstructor stringConstructor = null;
+    private StringConstructor stringConstructor;
     private Object instance;
     private MessageArea messageArea;
 
@@ -34,10 +35,38 @@ public class MessageApp implements Application, MessageActions
 	Object o = Langs.requestStringConstructor("message");
 	if (o == null)
 	    return false;
-	stringConstructor = (MessageStringConstructor)o;
-	messageArea = new MessageArea(this, stringConstructor);
+	stringConstructor = (StringConstructor)o;
+	createMessageArea();
 	this.instance = instance;
 	return true;
+    }
+
+    public void sendMessage()
+    {
+	//FIXME:
+    }
+
+
+    private void createMessageArea()
+    {
+	final Actions a = this;
+	messageArea = new MessageArea(new DefaultControlEnvironment()){
+		final Actions actions = a;
+		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		{
+		    switch (event.getCode())
+		    {
+		    case EnvironmentEvent.CLOSE:
+			actions.close();
+			return true;
+		    case EnvironmentEvent.OK:
+			actions.sendMessage();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
+	    };
     }
 
     public AreaLayout getAreasToShow()
@@ -45,7 +74,7 @@ public class MessageApp implements Application, MessageActions
 	return new AreaLayout(messageArea);
     }
 
-    public void closeMessage()
+    public void close()
     {
 	Luwrain.closeApp(instance);
     }

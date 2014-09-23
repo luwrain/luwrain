@@ -16,7 +16,7 @@
 
 package org.luwrain.app.message;
 
-public interface MessageActions
+public interface StringConstructor
 {
-    void closeMessage();
+    String appName();
 }

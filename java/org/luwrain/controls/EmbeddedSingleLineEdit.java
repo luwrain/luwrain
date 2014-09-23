@@ -26,6 +26,12 @@ public class EmbeddedSingleLineEdit implements SingleLineEditModel
     private int posY;
     private SingleLineEdit edit;
 
+    /**
+     * @param lines The object to provide and to accept edited text
+     * @param hotPointInfo The object to provide and to set real hot point position in area (without any shift)
+     * @param posX The X position of this edit in the area
+     * @param posY The Y position of this edit in the area
+     */
     public EmbeddedSingleLineEdit(EmbeddedEditLines lines,
 				  HotPointInfo hotPointInfo,
 				  int posX,

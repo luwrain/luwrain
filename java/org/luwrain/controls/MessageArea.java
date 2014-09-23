@@ -14,14 +14,21 @@
    General Public License for more details.
 */
 
-package org.luwrain.langs.ru;
+package org.luwrain.controls;
 
-import java.util.*;
+import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 
-public class MessageStringConstructor implements org.luwrain.app.message.StringConstructor
+public class MessageArea extends FormArea
 {
-    @Override public String appName()
+    private ControlEnvironment environment;
+
+    public MessageArea(ControlEnvironment environment)
     {
-	return "Новое сообщение";
+	super(environment);
+	this.environment = environment;
+	addEdit("to", "to", "", true);
+	addEdit("cc", "cc", "", true);
+	addEdit("subject", "subject", "", true);
     }
 }

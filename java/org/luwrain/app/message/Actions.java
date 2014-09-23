@@ -16,11 +16,8 @@
 
 package org.luwrain.app.message;
 
-public interface MessageStringConstructor
+interface Actions
 {
-    String appName();
-    String to();
-    String cc();
-    String subject();
-    String messageText();
+    void sendMessage();
+    void close();
 }
