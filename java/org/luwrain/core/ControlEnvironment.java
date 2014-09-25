@@ -27,4 +27,5 @@ public interface ControlEnvironment
     void onAreaNewHotPoint(Area area);
 int getAreaVisibleHeight(Area area);
     String langStaticString(int id);
+    void popup(Popup popupObj);
 }

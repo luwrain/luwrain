@@ -19,4 +19,8 @@ package org.luwrain.app.message;
 public interface StringConstructor
 {
     String appName();
+    String noMailStoring();
+    String withoutSubject();
+    String emptyRecipient();
+    String errorSendingMessage();
 }

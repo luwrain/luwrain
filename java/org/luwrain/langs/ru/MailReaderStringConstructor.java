@@ -35,6 +35,11 @@ class MailReaderStringConstructor implements org.luwrain.app.mail.StringConstruc
 	return "Просмотр сообщения";
     }
 
+    @Override public String errorOpeningFolder()
+    {
+	return "Произошла ошибка при открытии группы сообщений";
+    }
+
     public String mailFoldersRoot()
     {
 	return "Почтовые группы";

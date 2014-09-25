@@ -20,6 +20,7 @@ import org.luwrain.os.Terminal;
 import org.luwrain.os.TerminalException;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 import org.luwrain.core.registry.Registry;
 
 public class TerminalApp implements Application, Actions

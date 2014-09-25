@@ -35,6 +35,11 @@ class MailReaderStringConstructor implements org.luwrain.app.mail.StringConstruc
 	return "Message preview";
     }
 
+    @Override public String errorOpeningFolder()
+    {
+	return "An error occurred while opening mail folder";
+    }
+
     public String mailFoldersRoot()
     {
 	return "Mail groups";

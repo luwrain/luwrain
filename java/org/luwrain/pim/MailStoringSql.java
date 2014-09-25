@@ -126,7 +126,7 @@ class MailStoringSql extends  MailStoringRegistry
 	return res;
     }
 
-    public void addMessageToGroup(StoredMailGroup mailGroup, MailMessage message) throws SQLException
+    public void saveMessageInGroup(StoredMailGroup mailGroup, MailMessage message) throws SQLException
     {
 	if (mailGroup == null || message == null)
 	    return;

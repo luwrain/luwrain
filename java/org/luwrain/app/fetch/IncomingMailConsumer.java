@@ -39,7 +39,7 @@ class IncomingMailConsumer implements MailConsumer
 	    return;
 	count++;
 	try {
-	    mailStoring.addMessageToGroup(mailGroup, mailMessage);
+	    mailStoring.saveMessageInGroup(mailGroup, mailMessage);
 	}
 	catch(Exception e)
 	{

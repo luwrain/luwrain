@@ -20,6 +20,7 @@ import javax.mail.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 
 public class MessageArea extends SimpleArea
 {

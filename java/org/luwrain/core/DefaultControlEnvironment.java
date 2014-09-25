@@ -62,4 +62,9 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	return Langs.staticValue(id);
     }
+
+    public void popup(Popup popupObj)
+    {
+	Luwrain.popup(popupObj);
+    }
 }

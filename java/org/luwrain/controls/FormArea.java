@@ -20,11 +20,14 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class FormArea  extends NavigateArea implements HotPointInfo
+public class FormArea  extends NavigateArea
 {
+    public static final int NONE = 0;
     public static final int EDIT = 1;
     public static final int CHECKBOX = 2;
     public static final int LIST = 3;
+    public static final int STATIC = 4;
+    public static final int MULTILINED = 5;
 
     class Item implements EmbeddedEditLines
     {
@@ -33,14 +36,23 @@ public class FormArea  extends NavigateArea implements HotPointInfo
     public String caption;
 	public boolean enabled = true;
 
+	private ControlEnvironment environment;//Needed for sending notifications about text changing;
+	private Area area;//Needed for sending notifications about text changing;
+
 	private String enteredText = "";
 	private EmbeddedSingleLineEdit edit;
 
-	public Item(int type,
+	private Object staticObject;
+
+	public Item(ControlEnvironment environment,
+		    Area area,
+		    int type,
 		    String name,
 		    String caption,
 		    boolean enabled)
 	{
+	    this.environment = environment;
+	    this.area = area;
 	    this.type = type;
 	    this.name = name;
 	    this.caption = caption;
@@ -50,11 +62,22 @@ public class FormArea  extends NavigateArea implements HotPointInfo
 	public void initEdit(String enteredText,
 			     HotPointInfo hotPointInfo,
 			     int posX,
-int posY)
+			     int posY)
 	{
+	    if (hotPointInfo == null)
+		return;
 	    type = EDIT;
 	    this.enteredText = enteredText != null?enteredText:"";
 	    this.edit = new EmbeddedSingleLineEdit(this, hotPointInfo, posX >= 0?posX:0, posY >= 0?posY:0);
+	}
+
+	public void initStatic(Object obj)
+	{
+	    if (obj == null)
+		return;
+	    type = STATIC;
+	    staticObject = obj;
+	    caption = obj.toString();
 	}
 
 	public String getEnteredText()
@@ -62,12 +85,12 @@ int posY)
 	    return enteredText != null?enteredText:"";
 	}
 
-    public boolean isPosCovered(int x, int y)
-    {
-	if (edit == null)
-	    return false;
-	return edit.isPosCovered(x, y);
-    }
+	public boolean isPosCovered(int x, int y)
+	{
+	    if (edit == null)
+		return false;
+	    return edit.isPosCovered(x, y);
+	}
 
 	boolean onKeyboardEvent(KeyboardEvent event)
 	{
@@ -95,6 +118,7 @@ int posY)
 	{
 	    //We may skip checking of editPosX and editPosY because there is only one edit to call this method;
 	    enteredText = value != null?value:"";
+	    environment.onAreaNewContent(area);
 	}
     }
 
@@ -126,19 +150,62 @@ int posY)
 	return false;
     }
 
+    //For multiline zone returns "MULTILINE" on multiline caption as well (the line above the multiline edit) 
+    public int getItemTypeOnLine(int index)
+    {
+	if (items == null || index < 0 || index >= items.size())
+	    return NONE;
+	return items.get(index).type;
+    }
+
+    public String getItemNameOnLine(int index)
+    {
+	if (items == null || index < 0 || index >= items.size())
+	    return null;
+	return items.get(index).name;
+    }
+
     public boolean addEdit(String itemName,
 			   String caption,
 			   String initialText,
 			   boolean enabled)
     {
-	if (itemName == null || itemName.trim().isEmpty() && hasItemWithName(itemName))
+	if (itemName == null || itemName.trim().isEmpty() || hasItemWithName(itemName))
 	    return false;
 	if (caption == null || caption.length() < 1)
 	    return false;
-	Item item = new Item(EDIT, itemName, caption, enabled);
+	Item item = new Item(environment, this, EDIT, itemName, caption, enabled);
 	item.initEdit(initialText, this, caption.length() + 1, items.size());
 	items.add(item);
+	environment.onAreaNewContent(this);
 	return true;
+    }
+
+    public boolean addStatic(String itemName, Object staticObject)
+    {
+	if (itemName == null || itemName.trim().isEmpty() || hasItemWithName(itemName))
+	    return false;
+	if (staticObject == null)
+	    return false;
+	Item item = new Item(environment, this, STATIC, itemName, staticObject.toString(), true);
+	item.initStatic(staticObject);
+	items.add(item);
+	environment.onAreaNewContent(this);
+	return true;
+    }
+
+
+    public String getEnteredText(String itemName)
+    {
+	if (items == null || itemName == null || itemName.trim().isEmpty())
+	    return null;
+	int k;
+	for(k = 0;k < items.size();++k)
+	    if (items.get(k).name.equals(itemName))
+		break;
+	if (k >= items.size() || items.get(k).type != EDIT)
+	    return null;
+	return items.get(k).getEnteredText();
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -177,25 +244,15 @@ int posY)
 	{
 	case EDIT:
 	    return item.caption + ":" + item.getEnteredText();
+	case STATIC:
+	    return item.caption;
 	default:
 	    return "FIXME";
 	}
     }
 
-    @Override public void setHotPointX(int value)
-    {
-	if (value >= 0)
-	    super.setHotPoint(value, getHotPointY());
-    }
-
-    @Override public void setHotPointY(int value)
-    {
-	if (value >= 0)
-	    super.setHotPoint(getHotPointX(), value);
-    }
-
     @Override public String getName()
     {
-	return "FIXME";
+	return name != null?name:"";
     }
 }

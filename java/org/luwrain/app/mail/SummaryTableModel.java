@@ -18,12 +18,32 @@ package org.luwrain.app.mail;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
+import org.luwrain.pim.*;
 
 class SummaryTableModel implements TableModel
 {
+    private MailStoring mailStoring;
+    private StoredMailGroup mailGroup;
+    private StoredMailMessage[] messages;//null value with existing group means invalid state, empty content should be a valid array with zero length;
+
+    public SummaryTableModel(MailStoring mailStoring)
+    {
+	this.mailStoring = mailStoring;
+    }
+
+    public void setCurrentMailGroup(StoredMailGroup mailGroup)
+    {
+	this.mailGroup = mailGroup;
+    }
+
+    public boolean isValidState()
+    {
+	return mailGroup  == null || messages != null;
+    }
+
     public int getRowCount()
     {
-	return 3;
+	return messages != null?messages.length:0;
     }
 
     public int getColCount()
@@ -33,20 +53,38 @@ class SummaryTableModel implements TableModel
 
     public Object getCell(int col, int row)
     {
-	return "Luwrain experimental cell";
+	if (messages == null || row >= messages.length)
+	    return null;
+	return messages[row].getSubject();//FIXME:
     }
 
     public Object getRow(int index)
     {
-	return "Row";
+	if (messages == null || index >= messages.length)
+	    return null;
+	return messages[index];
     }
 
     public Object getCol(int index)
     {
-	return "Column";
+	return "Column";//FIXME:
     }
 
     public void refresh()
     {
+	if (mailStoring == null || mailGroup == null)
+	{
+	    messages = null;
+	    return;
+	}
+	try {
+	    messages = mailStoring.loadMessagesFromGroup(mailGroup);
+	}
+	catch(Exception e)
+	{
+	    Log.error("mail", "loading messages from group" + mailGroup.getName() + ":" + e.getMessage());
+	    e.printStackTrace();
+	    messages = null;
+	}
     }
 }

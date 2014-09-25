@@ -84,35 +84,41 @@ abstract class MailStoringRegistry implements MailStoring
 
     public StoredMailGroup loadGroupByUri(String uri) throws Exception
     {
-	URI u = new URI(uri);
-	if (!u.getScheme().equals(PimManager.MAIL_GROUP_URI_SCHEME))
+	if (uri == null || uri.trim ().isEmpty())
 	    return null;
+	URI u = new URI(uri);
+	if (u.getScheme() == null ||
+	    !u.getScheme().equals(PimManager.MAIL_GROUP_URI_SCHEME))
+	{
+	    Log.error("pim", "Cannot get mail group by URI " + uri + ", scheme value " + u.getScheme() + " is invalid");
+	    return null;
+	}
 	return readMailGroup(u.getSchemeSpecificPart());
     }
 
-    private StoredMailGroupRegistry readMailGroup(String name)
+    private StoredMailGroupRegistry readMailGroup(String numStr)
     {
-	if (name == null || name.isEmpty())
+	if (numStr == null || numStr.trim().isEmpty())
 	    return null;
 	StoredMailGroupRegistry g = new StoredMailGroupRegistry(registry);
 	try {
-	    g.id = Integer.parseInt(name.trim());
+	    g.id = Integer.parseInt(numStr.trim());
 	}
 	catch(NumberFormatException e)
 	{
-	    Log.warning("pim", "registry directory \'" + GROUPS_PATH + "\' contains illegal subdirectory \'" + name + "\'");
+	    Log.error("pim", "registry directory \'" + GROUPS_PATH + "\' contains illegal subdirectory \'" + numStr + "\'");
 	    return null;
 	}
-	final String path = GROUPS_PATH + name;
+	final String path = GROUPS_PATH + numStr;
 	if (registry.getTypeOf(path + "/name") != Registry.STRING)
 	{
-	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'name\'");
+	    Log.warning("pim", "registry directory " + path + " has no proper value \'name\', cannot open group " + numStr);
 	    return null;
 	}
 	g.name = registry.getString(path + "/name");
 	if (registry.getTypeOf(path + "/parent") != Registry.INTEGER)
 	{
-	    Log.warning("pim", "registry directory \'" + path + "\' has no proper value \'parent\'");
+	    Log.error("pim", "registry directory " + path + " has no proper value \'parent\', cannot read group " + numStr);
 	    return null;
 	}
 	    g.parentId = registry.getInteger(path + "/parent");

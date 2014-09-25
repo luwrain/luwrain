@@ -22,6 +22,7 @@ public interface StringConstructor
     String summaryAreaName();
     String messageAreaName();
     String noMailStoring();
+    String errorOpeningFolder();
     String mailFoldersRoot();
     String readPrefix();
     String markedPrefix();

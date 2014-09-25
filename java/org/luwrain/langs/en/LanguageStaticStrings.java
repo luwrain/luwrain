@@ -97,6 +97,24 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "No table rows below";
 	case Langs.END_OF_TABLE_COL:
 	    return "Column end";
+	case Langs.MESSAGE:
+	    return "Message";
+	case Langs.MESSAGE_FOR:
+	    return "Message for";
+	case Langs.MESSAGE_TO:
+	    return "To";
+	case Langs.MESSAGE_CC:
+	    return "cc";
+	case Langs.MESSAGE_SUBJECT:
+	    return "Subject";
+	case Langs.MESSAGE_TEXT:
+	    return "Enter the message text below:";
+	case Langs.MESSAGE_ATTACHMENT:
+	    return "Attachment";
+	case Langs.MESSAGE_ATTACHMENT_POPUP_TITLE:
+	    return "New attachment";
+	case Langs.MESSAGE_ATTACHMENT_POPUP_PREFIX:
+	    return "File to attach:";
 	default:
 	    return "#Unknown string identifier?#";
 	}

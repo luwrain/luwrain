@@ -16,19 +16,72 @@
 
 package org.luwrain.controls;
 
+import java.io.File;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.popups.FilePopup;
 
 public class MessageArea extends FormArea
 {
+    private Object instance;
     private ControlEnvironment environment;
+    private int attachmentCounter = 0;
 
-    public MessageArea(ControlEnvironment environment)
+    public MessageArea(Object instance, ControlEnvironment environment)
     {
 	super(environment);
+	this.instance = instance;
 	this.environment = environment;
-	addEdit("to", "to", "", true);
-	addEdit("cc", "cc", "", true);
-	addEdit("subject", "subject", "", true);
+	addEdit("to", environment.langStaticString(Langs.MESSAGE_TO), "", true);
+	addEdit("cc", environment.langStaticString(Langs.MESSAGE_CC), "", true);
+	addEdit("subject", environment.langStaticString(Langs.MESSAGE_SUBJECT), "", true);
+    }
+
+    public String getTo()
+    {
+	final String value = getEnteredText("to");
+	return value != null?value:"";
+    }
+
+    public String getCC()
+    {
+	final String value = getEnteredText("cc");
+	return value != null?value:"";
+    }
+
+    public String getSubject()
+    {
+	final String value = getEnteredText("subject");
+	return value != null?value:"";
+    }
+
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	if (event.isCommand() &&
+	    !event.isModified() &&
+	    event.getCommand() == KeyboardEvent.INSERT)
+	{
+	    insertAttachment();
+	    return true;
+	}
+	return super.onKeyboardEvent(event);
+    }
+
+    @Override public String getName()
+    {
+	return environment.langStaticString(Langs.MESSAGE);
+    }
+
+    private void insertAttachment()
+    {
+	FilePopup popup = new FilePopup(instance, 
+					environment.langStaticString(Langs.MESSAGE_ATTACHMENT_POPUP_TITLE),
+					environment.langStaticString(Langs.MESSAGE_ATTACHMENT_POPUP_PREFIX),
+					new File("/"));//FIXME:
+	environment.popup(popup);
+	if (popup.closing.cancelled())
+	    return;
+	addStatic("attachment" + attachmentCounter, environment.langStaticString(Langs.MESSAGE_ATTACHMENT) + " " + popup.getFile().getName() + " (" + popup.getFile().getAbsolutePath() + ")");
+	++attachmentCounter;
     }
 }

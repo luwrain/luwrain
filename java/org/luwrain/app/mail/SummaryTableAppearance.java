@@ -18,6 +18,7 @@ package org.luwrain.app.mail;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
+import org.luwrain.pim.*;
 
 class SummaryTableAppearance implements TableAppearance
 {
@@ -25,7 +26,13 @@ class SummaryTableAppearance implements TableAppearance
 			     int index,
 			     int flags)
     {
-	Speech.say("row " + index);
+	if (model == null || index >= model.getRowCount())
+	    return;
+	Object obj = model.getRow(index);
+	if (obj == null || !(obj instanceof StoredMailMessage))
+	    return;
+	StoredMailMessage message = (StoredMailMessage)obj;
+	Speech.say(message.getSubject());
     }
 
     public int getInitialHotPointX(TableModel model)
@@ -50,6 +57,6 @@ class SummaryTableAppearance implements TableAppearance
 
     public int getColWidth(TableModel model, int  colIndex)
     {
-	return 10;
+	return 20;
     }
 }

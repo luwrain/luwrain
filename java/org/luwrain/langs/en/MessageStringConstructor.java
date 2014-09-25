@@ -24,4 +24,24 @@ public class MessageStringConstructor implements org.luwrain.app.message.StringC
     {
 	return "New message";
     }
+
+    @Override public String noMailStoring()
+    {
+	return "No mail storing connection";
+    }
+
+    @Override public String withoutSubject()
+    {
+	return "(No subject)";
+    }
+
+    @Override public String emptyRecipient()
+    {
+	return "You should write the recipient address";
+    }
+
+    @Override public String errorSendingMessage()
+    {
+	return "An error occurred while sending message";
+    }
 }

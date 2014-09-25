@@ -97,6 +97,24 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Строки ниже отсутствуют";
 	case Langs.END_OF_TABLE_COL:
 	    return "Конец столбца";
+	case Langs.MESSAGE:
+	    return "Сообщение";
+	case Langs.MESSAGE_FOR:
+	    return "Сообщение для";
+	case Langs.MESSAGE_TO:
+	    return "Кому";
+	case Langs.MESSAGE_CC:
+	    return "Копия";
+	case Langs.MESSAGE_SUBJECT:
+	    return "Тема";
+	case Langs.MESSAGE_TEXT:
+	    return "Введите ниже текст сообщения:";
+	case Langs.MESSAGE_ATTACHMENT:
+	    return "Прикрепление";
+	case Langs.MESSAGE_ATTACHMENT_POPUP_TITLE:
+	    return "Прикрепления файла";
+	case Langs.MESSAGE_ATTACHMENT_POPUP_PREFIX:
+	    return "Файл для прикрепления:";
 	default:
 	    return "#Неизвестный идентификатор строки?#";
 	}

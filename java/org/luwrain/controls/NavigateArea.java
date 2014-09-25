@@ -16,14 +16,15 @@
 
 //FIXME:ControlEnvironment interface support;
 
-package org.luwrain.core;
+package org.luwrain.controls;
 
 //TODO:Tab shift respecting on up-down movements;
 
 import java.util.*;
+import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public abstract class NavigateArea implements Area, CopyCutRequest
+public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 {
     private final String areaBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
     private final String areaEndMessage = Langs.staticValue(Langs.AREA_END);
@@ -262,29 +263,35 @@ public abstract class NavigateArea implements Area, CopyCutRequest
 
     public void setHotPoint(int x,int y)
     {
-	if (x < 0 || y < 0)
-	    return;
-	int newX = x, newY = y;
-	if (newY >= getLineCount())
-	    newY = getLineCount() - 1;
-	if (newY < 0)//With proper getLineCount() never happens;
-	    newY = 0;
-	String line = getLine(newY);
-	if (newX > line.length())
-	    newX = line.length();
-	if (hotPointX == newX && hotPointY == newY)
-	    return;
-	hotPointX = newX;
-	hotPointY = newY;
+	if (x >= 0)
+	    hotPointX = x;
+	if (y >= 0)
+	    hotPointY = y;
 	Luwrain.onAreaNewHotPoint(this);
     }
 
-    public int getHotPointX()
+    @Override public void setHotPointX(int value)
+    {
+	if (value < 0)
+	    return;
+	hotPointX = value;
+	Luwrain.onAreaNewHotPoint(this);
+    }
+
+    @Override public void setHotPointY(int value)
+    {
+	if (value < 0)
+	    return;
+	hotPointY = value;
+	Luwrain.onAreaNewHotPoint(this);
+    }
+
+    @Override public int getHotPointX()
     {
 	return hotPointX;
     }
 
-    public int getHotPointY()
+    @Override public int getHotPointY()
     {
 	return hotPointY;
     }

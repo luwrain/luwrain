@@ -24,4 +24,24 @@ public class MessageStringConstructor implements org.luwrain.app.message.StringC
     {
 	return "Новое сообщение";
     }
+
+    @Override public String noMailStoring()
+    {
+	return "Нет подключения к хранилищу электронной почты";
+    }
+
+    @Override public String withoutSubject()
+    {
+	return "(Нет темы)";
+    }
+
+    @Override public String emptyRecipient()
+    {
+	return "Необходимо указать адрес получателя";
+    }
+
+    @Override public String errorSendingMessage()
+    {
+	return "Произошла ошибка во время отправления сообщения";
+    }
 }

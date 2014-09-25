@@ -20,6 +20,7 @@ package org.luwrain.app.fetch;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 import org.luwrain.pim.StoredMailAccount;
 import org.luwrain.pim.PimManager;
 import org.luwrain.pim.MailStoring;

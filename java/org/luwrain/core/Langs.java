@@ -42,6 +42,16 @@ public class Langs
     public static final int NO_TABLE_ROWS_BELOW = 22;
     public static final int END_OF_TABLE_COL = 23;
 
+    public static final int MESSAGE = 30;
+    public static final int MESSAGE_FOR = 31;
+    public static final int MESSAGE_TO = 32;
+    public static final int MESSAGE_CC = 33;
+    public static final int MESSAGE_SUBJECT = 34;
+    public static final int MESSAGE_TEXT = 35;
+    public static final int MESSAGE_ATTACHMENT = 36;
+    public static final int MESSAGE_ATTACHMENT_POPUP_TITLE = 37;
+    public static final int MESSAGE_ATTACHMENT_POPUP_PREFIX = 38;
+
     public static final int NO_REQUESTED_ACTION = 100;
     public static final int NO_ACTIVE_AREA = 101;
     public static final int APPLICATION_INTERNAL_ERROR = 102;

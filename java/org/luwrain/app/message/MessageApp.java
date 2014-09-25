@@ -24,6 +24,7 @@ public class MessageApp implements Application, Actions
 {
     private StringConstructor stringConstructor;
     private Object instance;
+    private Base base = new Base();
     private MessageArea messageArea;
 
     public MessageApp()
@@ -36,21 +37,35 @@ public class MessageApp implements Application, Actions
 	if (o == null)
 	    return false;
 	stringConstructor = (StringConstructor)o;
-	createMessageArea();
+	base.init(stringConstructor);
+	if (!base.isValid())
+	{
+	    Luwrain.message(stringConstructor.noMailStoring());
+	    return false;
+	}
 	this.instance = instance;
+	createMessageArea();
 	return true;
     }
 
     public void sendMessage()
     {
-	//FIXME:
+	if (messageArea.getTo().trim().isEmpty())
+	{
+	    Luwrain.message(stringConstructor.emptyRecipient());
+			    return;
+	}
+	    if (base.send(messageArea.getTo(), messageArea.getCC(),
+				 messageArea.getSubject(), "", new String[0])) //FIXME:
+		close(); else
+		Luwrain.message(stringConstructor.errorSendingMessage());
     }
 
 
     private void createMessageArea()
     {
 	final Actions a = this;
-	messageArea = new MessageArea(new DefaultControlEnvironment()){
+	messageArea = new MessageArea(instance, new DefaultControlEnvironment()){
 		final Actions actions = a;
 		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{

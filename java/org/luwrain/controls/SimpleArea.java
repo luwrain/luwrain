@@ -14,8 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.controls;
 
+import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
 public class SimpleArea extends NavigateArea

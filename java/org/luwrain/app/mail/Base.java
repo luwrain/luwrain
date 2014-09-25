@@ -53,7 +53,7 @@ class Base
     {
 	if (summaryModel != null)
 	    return summaryModel;
-	summaryModel = new SummaryTableModel();
+	summaryModel = new SummaryTableModel(mailStoring);
 	return summaryModel;
     }
 
@@ -63,5 +63,19 @@ class Base
 	    return summaryAppearance;
 	summaryAppearance = new SummaryTableAppearance();
 	return summaryAppearance;
+    }
+
+    public boolean isStoredMailGroup(Object obj)
+    {
+	return obj != null && (obj instanceof StoredMailGroup);
+    }
+
+    public boolean openFolder(Object obj, TableArea summaryTable)
+    {
+	if (obj == null || !(obj instanceof StoredMailGroup))
+	    return false;
+	summaryModel.setCurrentMailGroup((StoredMailGroup)obj);
+	summaryTable.refresh();//FIXME:Reset hot point position;
+	return summaryModel.isValidState();
     }
 }

@@ -51,7 +51,11 @@ public class MailApp implements Application, Actions
 
     public void openFolder(Object folder)
     {
-	//	summaryArea.show(group);
+	if (folder == null || !base.isStoredMailGroup(folder))
+	    return;
+	if (base.openFolder(folder, summaryArea))
+	    gotoSummary(); else
+	    Luwrain.message(stringConstructor.errorOpeningFolder());
     }
 
     private void createFoldersArea()

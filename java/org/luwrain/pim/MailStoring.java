@@ -23,5 +23,5 @@ public interface MailStoring
     StoredMailGroup loadGroupByUri(String uri) throws Exception;
     StoredMailAccount[] loadMailAccounts() throws Exception;
     StoredMailMessage[] loadMessagesFromGroup(StoredMailGroup mailGroup) throws Exception;
-    void addMessageToGroup(StoredMailGroup mailGroup, MailMessage message) throws Exception;
+    void saveMessageInGroup(StoredMailGroup mailGroup, MailMessage message) throws Exception;
 }
