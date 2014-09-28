@@ -29,6 +29,7 @@ class Init
     private static final String  PREFIX_CONF_LIST = "--conf-list=";
     private static final String  PREFIX_DATA_DIR = "--data-dir=";
     private static final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
+    private static final String  PREFIX_ADD_REGISTRY = "--add-reg=";
 
     private String[] cmdLine;
     private Registry registry;
@@ -60,14 +61,13 @@ class Init
 	    Log.warning("init", "jdbc initialization failed, registry access are restricted");
 	if (!initRegistrySecondStage())
 	    Log.warning("init", "second stage of registry initialization failed, registry data is incomplete");
+	processAddRegKeys();
 	if (!initLanguages())
 	    return false;
 	if (!initSpeech())
 	    return false;
 	if (!initPim())
 	    Log.warning("init", "PIM initialization failed or incomplete");
-	if (!initDBus())
-	    Log.warning("init", "D-Bus connection initialization failed, some system services will be disabled");
 	if (!initInteraction())
 	    return false;
 	if (!initEnvironmentSounds())
@@ -276,22 +276,6 @@ class Init
 	return pimManager.initDefaultConnections();
     }
 
-    private boolean initDBus()
-    {
-	//FIXME:
-	/*
-	try {
-	    org.luwrain.dbus.DBus.connect();
-	}
-	catch(org.freedesktop.dbus.exceptions.DBusException e)
-	{
-	    Log.fatal("init", "DBus initialization fault:" + e.getMessage());
-	    return false;
-	}
-	*/
-	return true;
-    }
-
     private boolean initInteraction()
     {
 	InteractionParams params = new InteractionParams();
@@ -414,13 +398,27 @@ class Init
     private void shutdown()
     {
 	interaction.close();
-	//FIXME:	org.luwrain.dbus.DBus.shutdown();
     }
 
     public void exit()
     {
 	shutdown();
 	System.exit(0);
+    }
+
+    private void processAddRegKeys()
+    {
+	RegistryValuesFile valuesFile = new RegistryValuesFile(registry);
+	for(String s: cmdLine)
+	{
+	    if (s == null || 
+		s.length() <= PREFIX_ADD_REGISTRY.length() ||
+		!s.startsWith(PREFIX_ADD_REGISTRY))
+		continue;
+	    String rest = s.substring(PREFIX_ADD_REGISTRY.length());
+	    Log.debug("init", "reading registry values from file " + rest);
+	    valuesFile.readValuesFromFile(rest);
+	}
     }
 
     private String[] getConfList()

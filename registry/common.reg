@@ -1,0 +1,93 @@
+# The initial registry settings for Luwrain. These values should be
+# loaded only once with --add-reg command line option for luwrain
+# preferably on first Luwrain launch on every installation. Before
+# loading a user should have prepared SQL database (see sql/luwrain.sql
+# file). Some locale-specific settings can be found in separate files
+# with corresponding names.
+
+# Global keys
+# The following directory is actually created with SQL scrip because copy-cut-point cannot be set with this syntax
+#dir /org/luwrain/global-keys/
+dir /org/luwrain/global-keys/save
+string /org/luwrain/global-keys/save/non-character f2
+dir /org/luwrain/global-keys/open
+string /org/luwrain/global-keys/open/non-character f3
+dir /org/luwrain/global-keys/close
+string /org/luwrain/global-keys/close/non-character f4
+dir /org/luwrain/global-keys/refresh
+string /org/luwrain/global-keys/refresh/non-character f12
+dir /org/luwrain/global-keys/switch-next-app
+string /org/luwrain/global-keys/switch-next-app/non-character tab
+bool /org/luwrain/global-keys/switch-next-app/with-left-alt true
+dir /org/luwrain/global-keys/switch-next-area
+string /org/luwrain/global-keys/switch-next-area/non-character tab
+bool /org/luwrain/global-keys/switch-next-area/with-control  true
+# This command cannot be set with this file syntax, SQL script is used instead
+#dir /org/luwrain/global-keys/copy-cut-point
+#string /org/luwrain/global-keys/copy-cut-point/character
+#bool /org/luwrain/global-keys/copy-cut-point/with-control true
+dir /org/luwrain/global-keys/copy
+string /org/luwrain/global-keys/copy/non-character insert
+bool /org/luwrain/global-keys/copy/with-control true
+dir /org/luwrain/global-keys/paste
+string /org/luwrain/global-keys/paste/non-character insert
+bool /org/luwrain/global-keys/paste/with-shift true
+dir /org/luwrain/global-keys/main-menu
+string /org/luwrain/global-keys/main-menu/non-character windows
+dir /org/luwrain/global-keys/quit
+string /org/luwrain/global-keys/quit/character q
+bool /org/luwrain/global-keys/quit/with-left-alt true
+dir /org/luwrain/global-keys/ok
+string /org/luwrain/global-keys/ok/character c
+bool /org/luwrain/global-keys/ok/with-left-alt true
+dir /org/luwrain/global-keys/increase-font-size
+string /org/luwrain/global-keys/increase-font-size/character =
+bool /org/luwrain/global-keys/increase-font-size/with-left-alt true
+dir /org/luwrain/global-keys/decrease-font-size
+string /org/luwrain/global-keys/decrease-font-size/character -
+bool /org/luwrain/global-keys/decrease-font-size/with-left-alt true
+
+# Main menu
+dir /org/luwrain/main-menu
+string /org/luwrain/main-menu/content mail:news:message:fetch::commander:notepad:calendar::control:registry::quit
+
+# Sounds
+dir /org/luwrain/sounds
+string /org/luwrain/sounds/event-not-processed sounds/piano/beep1.wav
+string /org/luwrain/sounds/no-applications sounds/piano/no-applications.wav
+string /org/luwrain/sounds/startup sounds/piano/startup.wav
+string /org/luwrain/sounds/shutdown sounds/piano/beep1.wav
+string /org/luwrain/sounds/main-menu sounds/piano/main-menu.wav
+string /org/luwrain/sounds/main-menu-item sounds/piano/main-menu-item.wav
+string /org/luwrain/sounds/main-menu-empty-line sounds/piano/main-menu-empty-line.wav
+
+# Mail
+dir /org/luwrain/pim
+dir /org/luwrain/pim/mail
+dir /org/luwrain/pim/mail/storing
+dir /org/luwrain/pim/mail/group
+dir /org/luwrain/pim/mail/accounts
+string /org/luwrain/pim/mail/storing/type jdbc
+string /org/luwrain/pim/mail/storing/url jdbc:mysql://localhost/luwrain?characterEncoding=utf-8
+string /org/luwrain/pim/mail/storing/driver com.mysql.jdbc.Driver
+string /org/luwrain/pim/mail/storing/login root
+string /org/luwrain/pim/mail/storing/passwd
+# Default mail account
+dir /org/luwrain/pim/mail/accounts/1
+string /org/luwrain/pim/mail/accounts/1/name gmail.com
+string /org/luwrain/pim/mail/accounts/1/type incoming
+string /org/luwrain/pim/mail/accounts/1/protocol pop3-ssl
+string /org/luwrain/pim/mail/accounts/1/host pop.gmail.com
+int /org/luwrain/pim/mail/accounts/1/port 995
+string /org/luwrain/pim/mail/accounts/1/login
+string /org/luwrain/pim/mail/accounts/1/passwd
+
+# News
+dir /org/luwrain/pim/news
+dir /org/luwrain/pim/news/storing
+dir /org/luwrain/pim/news/groups
+string /org/luwrain/pim/news/storing/type jdbc
+string /org/luwrain/pim/news/storing/url jdbc:mysql://localhost/luwrain?characterEncoding=utf-8
+string /org/luwrain/pim/news/storing/driver com.mysql.jdbc.Driver
+string /org/luwrain/pim/news/storing/login root
+string /org/luwrain/pim/news/storing/passwd
