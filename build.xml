@@ -1,7 +1,10 @@
 <project name="luwrain" default="jar" basedir=".">
   <path id="classpath">
     <pathelement location="."/>
-    <fileset dir="lib">
+     <fileset dir="lib">
+      <include name="**/*.jar"/>
+    </fileset>
+     <fileset dir="os">
       <include name="**/*.jar"/>
     </fileset>
   </path>

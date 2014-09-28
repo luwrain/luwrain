@@ -20,7 +20,8 @@ import java.util.*;
 import java.io.*;
 import java.sql.*;
 import org.luwrain.core.registry.Registry;
-import org.luwrain.speech.VoiceMan;
+import org.luwrain.os.SpeechBackEnd;
+import org.luwrain.os.SpeechBackEnds;
 import org.luwrain.pim.PimManager;
 import org.luwrain.mmedia.EnvironmentSounds;
 
@@ -214,19 +215,14 @@ class Init
 	final String type = registry.getString(CoreRegistryValues.SPEECH_TYPE);
 	final String host = registry.getString(CoreRegistryValues.SPEECH_HOST);
 	final int port = registry.getInteger(CoreRegistryValues.SPEECH_PORT);
-	if (!type.equals("voiceman"))
-	{
-	    Log.fatal("init", "unsupported type of speech connection: \'" + type + "\'");
-	    return false;
-	}
 	Log.debug("init", "ready to obtain speech output connection with the following parameters:");
 	Log.debug("init", "type: " + type);
 	Log.debug("init", "host: " + host);
 	Log.debug("init", "port: " + port);
-	VoiceMan backend = new VoiceMan();
-	if (!backend.connect(!host.trim().isEmpty()?host.trim():"localhost", port))
+	SpeechBackEnd backend = SpeechBackEnds.obtain(type, host, port);
+	if (backend == null)
 	{
-	    Log.error("init", "speech output connection failed");
+	    Log.fatal("init", "unable to obtain speech backend with specified parameters");
 	    return false;
 	}
 	Speech.setBackEnd(backend);

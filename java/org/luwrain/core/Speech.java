@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import org.luwrain.os.SpeechBackEnd;
+
 public class Speech
 {
     public static final int PITCH_NORMAL = 50;
