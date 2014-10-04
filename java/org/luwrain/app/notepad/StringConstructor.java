@@ -21,10 +21,12 @@ public interface StringConstructor
     String appName();
     String introduction();
     String newFileName();
+    String errorOpeningFile();
     String errorSavingFile();
     String fileIsSaved();
     String savePopupName();
     String savePopupPrefix();
     String saveChangesPopupName();
     String saveChangesPopupQuestion();
+    String noModificationsToSave();
 }

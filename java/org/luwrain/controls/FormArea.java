@@ -126,6 +126,9 @@ public class FormArea  extends NavigateArea
     private CopyCutInfo copyCutInfo;
     private String name = "";
     private Vector<Item> items = new Vector<Item>();
+    public String multilinedCaption = "";
+    private DefaultMultilinedEditContent multilinedContent;
+    private EmbeddedMultilinedEdit multilinedEdit = null;
 
     public FormArea(ControlEnvironment environment)
     {
@@ -181,20 +184,6 @@ public class FormArea  extends NavigateArea
 	return true;
     }
 
-    public boolean addStatic(String itemName, Object staticObject)
-    {
-	if (itemName == null || itemName.trim().isEmpty() || hasItemWithName(itemName))
-	    return false;
-	if (staticObject == null)
-	    return false;
-	Item item = new Item(environment, this, STATIC, itemName, staticObject.toString(), true);
-	item.initStatic(staticObject);
-	items.add(item);
-	environment.onAreaNewContent(this);
-	return true;
-    }
-
-
     public String getEnteredText(String itemName)
     {
 	if (items == null || itemName == null || itemName.trim().isEmpty())
@@ -208,37 +197,129 @@ public class FormArea  extends NavigateArea
 	return items.get(k).getEnteredText();
     }
 
+    public boolean addStatic(String itemName, Object staticObject)
+    {
+	if (itemName == null || itemName.trim().isEmpty() || hasItemWithName(itemName))
+	    return false;
+	if (staticObject == null)
+	    return false;
+	Item item = new Item(environment, this, STATIC, itemName, staticObject.toString(), true);
+	item.initStatic(staticObject);
+	items.add(item);
+	environment.onAreaNewContent(this);
+	return true;
+    }
+
+    public boolean multilinedEditActivated()
+    {
+	return multilinedEdit != null && 
+multilinedContent != null &&
+multilinedCaption != null;
+    }
+
+    public boolean activateMultilinedEdit(String caption)  
+    {
+	if (multilinedEditActivated())
+	    return false;
+	final ControlEnvironment env = environment;
+	final Area thisArea = this;
+	this.multilinedCaption = caption != null?caption:"";
+	multilinedContent = new DefaultMultilinedEditContent(){
+		private ControlEnvironment environment = env;
+		private Area area = thisArea;
+    @Override public void setLine(int index, String line)
+		{
+		    super.setLine(index, line);
+		    environment.onAreaNewContent(area);
+		}
+    @Override public void removeLine(int index)
+		{
+		    super.removeLine(index);
+		    environment.onAreaNewContent(area);
+		}
+		@Override public void insertLine(int index, String line)
+		{
+		    super.insertLine(index, line);
+		    environment.onAreaNewContent(area);
+		}
+    @Override public void addLine(String line)
+		{
+		    super.addLine(line);
+		    environment.onAreaNewContent(area);
+		}
+	    };
+	this.multilinedEdit = new EmbeddedMultilinedEdit(multilinedContent, this, (items != null?items.size():0) +
+							 (!multilinedCaption.isEmpty()?1:0));
+	environment.onAreaNewContent(this);
+	return true;
+    }
+
+    public String getMultilinedEditText()
+    {
+	return !multilinedEditActivated()?multilinedContent.getWholeText():null;
+    }
+
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	for(int i = 0;i < items.size();++i)
-	    if (items.get(i).type == EDIT &&
-		items.get(i).isPosCovered(getHotPointX(), getHotPointY()) &&
-		items.get(i).enabled)
-		if (items.get(i).onKeyboardEvent(event))
+	if (items != null)
+	    for(int i = 0;i < items.size();++i)
+		if (items.get(i).type == EDIT &&
+		    items.get(i).isPosCovered(getHotPointX(), getHotPointY()) &&
+		    items.get(i).enabled &&
+		    items.get(i).onKeyboardEvent(event))
 		    return true;
+	if (multilinedEditActivated() && 
+	    multilinedEdit.isPosCovered(getHotPointX(), getHotPointY()) &&
+	    multilinedEdit.onKeyboardEvent(event))
+	    return true;
 	return super.onKeyboardEvent(event);
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	for(int i = 0;i < items.size();++i)
-	    if (items.get(i).type == EDIT &&
-		items.get(i).isPosCovered(getHotPointX(), getHotPointY()) &&
-		items.get(i).enabled)
-		if (items.get(i).onEnvironmentEvent(event))
+	if (items != null)
+	    for(int i = 0;i < items.size();++i)
+		if (items.get(i).type == EDIT &&
+		    items.get(i).isPosCovered(getHotPointX(), getHotPointY()) &&
+		    items.get(i).enabled &&
+		    items.get(i).onEnvironmentEvent(event))
 		    return true;
+	if (multilinedEditActivated() && 
+	    multilinedEdit.isPosCovered(getHotPointX(), getHotPointY()) &&
+	    multilinedEdit.onEnvironmentEvent(event))
+	    return true;
 	return super.onEnvironmentEvent(event);
     }
 
     @Override public int getLineCount()
     {
-	return items != null?items.size() + 1:1;
+	final int multilinedEditCount = multilinedEditActivated()?multilinedEdit.getLineCount():0;
+	return (items != null?items.size():0) +
+	(multilinedEditActivated() && !multilinedCaption.isEmpty()?1:0) +
+	(multilinedEditCount > 0?multilinedEditCount:1);
     }
 
     @Override public String getLine(int index)
     {
 	if (items == null || index >= items.size())
+	{
+	    if (multilinedEdit == null)
+		return "";
+	    final int offset = items != null?items.size():0;
+	    final int pos = index - offset;
+	    if (pos < 0)//Actually never happens;
+		return "";
+	    if (multilinedCaption != null && !multilinedCaption.isEmpty())
+	    {
+		if (pos == 0)
+		    return multilinedCaption;
+		if (pos < multilinedContent.getLineCount() + 1)
+		    return multilinedContent.getLine(pos - 1);
+	    } else 
+		if (pos < multilinedContent.getLineCount())
+		    return multilinedContent.getLine(pos);
 	    return "";
+	}
 	final Item item = items.get(index);
 	switch(item.type)
 	{

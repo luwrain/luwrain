@@ -16,6 +16,7 @@
 
 package org.luwrain.controls;
 
+//FIXME:Improper name, this interface is valid only for single-line edits;
 public interface EmbeddedEditLines
 {
     String getEmbeddedEditLine(int editPosX, int editPosY);

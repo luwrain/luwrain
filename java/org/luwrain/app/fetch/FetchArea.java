@@ -34,7 +34,7 @@ class FetchArea extends SimpleArea
 
     public FetchArea(Actions actions, StringConstructor stringConstructor)
     {
-	super(stringConstructor.appName());
+	super(new DefaultControlEnvironment(), stringConstructor.appName());
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
 	addLine(stringConstructor.pressEnterToStart());

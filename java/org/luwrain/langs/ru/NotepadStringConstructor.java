@@ -20,48 +20,58 @@ import java.util.*;
 
 public class NotepadStringConstructor implements org.luwrain.app.notepad.StringConstructor
 {
-    public String appName()
+    @Override public String appName()
     {
 	return "Блокнот";
     }
 
-    public String introduction()
+    @Override public String introduction()
     {
 	return "Редактирование";
     }
 
-    public String newFileName()
+    @Override public String newFileName()
     {
 	return "Новый файл.txt";
     }
 
-    public String errorSavingFile()
+    @Override public String errorOpeningFile()
     {
-	return "Произошла ошибка, файл не сохранён";
+	return "Произошла ошибка при чтении файла";
     }
 
-    public String fileIsSaved()
+    public String errorSavingFile()
+    {
+	return "Произошла ошибка при сохранении файла";
+    }
+
+    @Override public String fileIsSaved()
     {
 	return "Файл сохранён успешно";
     }
 
-    public String savePopupName()
+    @Override public String savePopupName()
     {
 	return "Сохранение файла";
     }
 
-    public String savePopupPrefix()
+    @Override public String savePopupPrefix()
     {
 	return "Введите имя файла для сохранения:";
     }
 
-    public String saveChangesPopupName()
+    @Override public String saveChangesPopupName()
     {
 	return "Несохранённые изменения";
     }
 
-    public String saveChangesPopupQuestion()
+    @Override public String saveChangesPopupQuestion()
     {
 	return "Вы хотите сохранить изменения?";
+    }
+
+    @Override public String noModificationsToSave()
+    {
+	return "Нет изменений для сохранения";
     }
 }

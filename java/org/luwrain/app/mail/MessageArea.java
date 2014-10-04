@@ -29,7 +29,7 @@ public class MessageArea extends SimpleArea
 
     public MessageArea(Actions actions, StringConstructor stringConstructor)
     {
-	super(stringConstructor.messageAreaName());
+	super(new DefaultControlEnvironment(), stringConstructor.messageAreaName());
 	this.actions =  actions;
 	this.stringConstructor = stringConstructor;
     }

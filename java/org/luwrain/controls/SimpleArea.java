@@ -21,150 +21,104 @@ import org.luwrain.core.events.*;
 
 public class SimpleArea extends NavigateArea
 {
+    private ControlEnvironment environment;
     private String name = "";
-    private String[] content = null;
+    private DefaultMultilinedEditContent content = new DefaultMultilinedEditContent();
 
-    public SimpleArea()
+    public SimpleArea(ControlEnvironment environment)
     {
+	this.environment = environment;
     }
 
-    public SimpleArea(String name)
+    public SimpleArea(ControlEnvironment environment, String name)
     {
-	this.name = name;
+	this.environment = environment;
+	this.name = name != null?name:"";
     }
 
-    public SimpleArea(String name, String[] content)
+    public SimpleArea(ControlEnvironment environment,
+		      String name,
+		      String[] lines)
     {
-	this.name = name;
-	this.content = content;
+	this.environment = environment;
+	this.name = name != null?name:"";
+	content.setLines(lines);
     }
 
-    public int getLineCount()
+    @Override public int getLineCount()
     {
-	if (content == null || content.length < 1)
-	    return 1;
-	return content.length;
+	final int value = content.getLineCount();
+	return value > 0?value:1;
     }
 
-    public String getLine(int index)
+    @Override public String getLine(int index)
     {
-	if (content == null || content.length < 1)
-	    return new String();
-	if (index >= content.length || content[index] == null)
-	    return new String();
-	return content[index];
+	final String line = content.getLine(index);
+	return line != null?line:"";
     }
 
-    public void setContent(String[] content)
+    public void setContent(String[] lines)
     {
-	this.content = content;
-	Luwrain.onAreaNewContent(this);
+	content.setLines(lines != null?lines:new String[0]);
+	environment.onAreaNewContent(this);
 	fixHotPoint();
     }
 
     public String[] getContent()
     {
-	return content;
+	return content.getLines();
     }
 
     public void setLine(int index, String line)
     {
-	if (content == null || content.length < 1)
-	{
-	    if (index != 0)
-		return;
-	    content = new String[1];
-	    content[0] = line;
-	    return;
-	}
-	if (index >= content.length)
-	    return;
-	content[index] = line;
+	content.setLine(index, line);
+	environment.onAreaNewContent(this);
+	fixHotPoint();
     }
 
     public void addLine(String line)
     {
-	if (content == null || content.length < 1)
-	{
-	    content = new String[1];
-	    content[0] = line;
-	    Luwrain.onAreaNewContent(this);
+	content.addLine(line);
+	    environment.onAreaNewContent(this);
 	    fixHotPoint();
-	    return;
-	}
-	String[] newContent = new String[content.length + 1];
-	for(int i = 0;i < content.length;i++)
-	    newContent[i] = content[i];
-	newContent[newContent.length - 1] = line;
-	content = newContent;
-	Luwrain.onAreaNewContent(this);
-	fixHotPoint();
     }
 
+    //index is the position of newly inserted line
     public void insertLine(int index, String line)
     {
-	if (content == null || content.length < 1)
-	{
-	    if (index != 0)
-		return;
-	    content = new String[1];
-	    content[0] = line;
-	    Luwrain.onAreaNewContent(this);
-	    fixHotPoint();
-	    return;
-	}
-	if (index > content.length)
-	    return;
-	String[] newContent = new String[content.length + 1];
-	for(int i = 0;i < index;i++)
-	    newContent[i] = content[i];
-	newContent[index] = line;
-	for(int i = index;i < content.length;i++)
-	    newContent[i + 1] = content[i];
-	content = newContent;
-	Luwrain.onAreaNewContent(this);
+	content.insertLine(index, line);
+	environment.onAreaNewContent(this);
 	fixHotPoint();
     }
 
     public void removeLine(int index)
     {
-	if (content == null || content.length < 1)
-	    return;
-	if (index >= content.length)
-	    return;
-	String[] newContent = new String[content.length - 1];
-	for(int i = 0;i < index;i++)
-	    newContent[i] = content[i];
-	for(int i = index + 1;i < content.length;i++)
-	    newContent[i - 1] = content[i];
-	content = newContent;
-	Luwrain.onAreaNewContent(this);
+	content.removeLine(index);
+	environment.onAreaNewContent(this);
 	fixHotPoint();
     }
 
     public void clear()
     {
-	content = null;
-	Luwrain.onAreaNewContent(this);
+	content.clear();
+	environment.onAreaNewContent(this);
 	fixHotPoint();
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	//Nothing here;
 	return false;
     }
 
-    public String getName()
+    @Override public String getName()
     {
-	if (name == null)
-	    return "";
-	return name;
+	return name != null?name:"";
     }
 
 public void setName(String name)
 {
-    this.name = name;
-    Luwrain.onAreaNewName(this);
+    this.name = name != null?name:"";
+    environment.onAreaNewName(this);
 }
 }

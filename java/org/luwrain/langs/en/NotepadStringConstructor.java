@@ -20,19 +20,24 @@ import java.util.*;
 
 public class NotepadStringConstructor implements org.luwrain.app.notepad.StringConstructor
 {
-    public String appName()
+    @Override public String appName()
     {
 	return "Notepad";
     }
 
-    public String introduction()
+    @Override public String introduction()
     {
 	return "Editing";
     }
 
-    public String newFileName()
+    @Override public String newFileName()
     {
 	return "New file.txt";
+    }
+
+    @Override public String errorOpeningFile()
+    {
+	return "An error occurred while reading the file";
     }
 
     public String errorSavingFile()
@@ -40,28 +45,33 @@ public class NotepadStringConstructor implements org.luwrain.app.notepad.StringC
 	return "An error occurred while saving the file";
     }
 
-    public String fileIsSaved()
+    @Override public String fileIsSaved()
     {
-	return "File was successfully saved!";
+	return "File is successfully saved";
     }
 
-    public String savePopupName()
+    @Override public String savePopupName()
     {
 	return "Save file";
     }
 
-    public String savePopupPrefix()
+    @Override public String savePopupPrefix()
     {
 	return "Enter the name of the file to save as:";
     }
 
-    public String saveChangesPopupName()
+    @Override public String saveChangesPopupName()
     {
 	return "Unsaved changes";
     }
 
-    public String saveChangesPopupQuestion()
+    @Override public String saveChangesPopupQuestion()
     {
 	return "Do you want to save changes?";
+    }
+
+    @Override public String noModificationsToSave()
+    {
+	return "There are no unsaved changes";
     }
 }

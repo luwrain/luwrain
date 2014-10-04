@@ -14,12 +14,27 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls;
+package org.luwrain.core;
 
-public interface MultilinedEditModel extends MultilinedEditContent
+import java.io.*;
+import org.luwrain.core.registry.Registry;
+
+public class SystemDirs
 {
-    int getHotPointX();
-    int getHotPointY();
-    void setHotPoint(int x, int y);
-    String getTabSeq();
+    private Registry registry;
+
+    public SystemDirs(Registry registry)
+    {
+	this.registry = registry;
+    }
+
+    public String userHome()
+    {
+	return registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING?registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR):"/";//FIXME:System dependent slash;
+    }
+
+    public File userHomeAsFile()
+    {
+	return new File(userHome());
+    }
 }

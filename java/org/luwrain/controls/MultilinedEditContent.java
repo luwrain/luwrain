@@ -16,10 +16,19 @@
 
 package org.luwrain.controls;
 
-public interface MultilinedEditModel extends MultilinedEditContent
+/**
+ * The interface to store multilined edit content and handle its
+ * modifications. The empty state of the edit can be represented in two
+ * ways: without lines at all (getLineCount() returns zero) and with
+ * single empty line (getLineCount() returns 1 and getLine(0) returnes an
+ * empty line). Both of these ways are equal and valid.
+*/
+public interface MultilinedEditContent
 {
-    int getHotPointX();
-    int getHotPointY();
-    void setHotPoint(int x, int y);
-    String getTabSeq();
+    String getLine(int index);
+    void setLine(int index, String text);
+    int getLineCount();
+    void removeLine(int index);
+    void insertLine(int newLineIndex, String text);
+    void addLine(String line);
 }

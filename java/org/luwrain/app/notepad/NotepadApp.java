@@ -16,22 +16,19 @@
 
 package org.luwrain.app.notepad;
 
-//FIXME:Enters in new file do not add new lines
 
-import java.util.*;
 import java.io.*;
-import java.nio.file.*;
 import java.nio.charset.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.controls.EditArea;
-import org.luwrain.core.registry.Registry;
+import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 
 public class NotepadApp implements Application, Actions
 {
     static private final Charset ENCODING = StandardCharsets.UTF_8;
 
+    private Base base = new Base();
     private StringConstructor stringConstructor;
     private Object instance;
     private EditArea area;
@@ -56,9 +53,13 @@ public class NotepadApp implements Application, Actions
 	createArea();
 	if (fileName != null && !fileName.isEmpty())
 	{
-	    readByFileName(fileName);
+	    String[] lines = base.read(fileName, ENCODING);
+
 	    File f = new File(fileName);
 	    area.setName(f.getName());
+	    if (lines == null)
+		Luwrain.message(stringConstructor.errorOpeningFile()); else 
+		area.setContent(lines);
 	} else
 	    area.setName(stringConstructor.newFileName());
 	this.instance = instance;
@@ -67,31 +68,27 @@ public class NotepadApp implements Application, Actions
 
     public boolean save()
     {
+	if (!modified)
+	{
+	    Luwrain.message(stringConstructor.noModificationsToSave());
+	    return true;
+	}
 	if (fileName == null || fileName.isEmpty())
 	{
-	    Registry registry = Luwrain.getRegistry();
-	    File dir = new File(registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING?registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR):"/");//FIXME:System dependent slash;
-	    File chosenFile = Luwrain.openPopup(instance,  stringConstructor.savePopupName(), stringConstructor.savePopupPrefix(),
-						new File(dir, stringConstructor.newFileName()));
-	    if (chosenFile == null)
+	    String newFileName = askFileNameToSave();
+	    if (newFileName == null || newFileName.isEmpty())
 		return false;
-	    //FIXME:Is a valid file;
-	    fileName = chosenFile.getAbsolutePath();
+	    fileName = newFileName;
 	}
-	try {
-	    if (area.getContent() != null)
-		writeTextFile(fileName, area.getContent());
-	    modified = false;
-	    Luwrain.message(stringConstructor.fileIsSaved());
-	}
-	catch(IOException e)
-	{
-	    Log.error("notepad", fileName + ":" + e.getMessage());
-	    e.printStackTrace();
-	    Luwrain.message(stringConstructor.errorSavingFile());
-	    return false;
-	}
-	return true;
+	if (area.getContent() != null)
+	    if (base.save(fileName, area.getContent(), ENCODING))
+	    {
+		modified = false;
+		Luwrain.message(stringConstructor.fileIsSaved());
+		return true;
+	    }
+	Luwrain.message(stringConstructor.errorSavingFile());
+	return false;
     }
 
     public void open()
@@ -101,8 +98,8 @@ public class NotepadApp implements Application, Actions
 	File dir = null;
 	if (fileName == null || fileName.isEmpty())
 	{
-	    Registry registry = Luwrain.getRegistry();
-	    dir = new File(registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING?registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR):"/");//FIXME:System dependent slash;
+	    SystemDirs systemDirs = new SystemDirs(Luwrain.getRegistry());
+	    dir = systemDirs.userHomeAsFile();
 	} else
 	{
 	    File f = new File(fileName);
@@ -111,8 +108,13 @@ public class NotepadApp implements Application, Actions
 	File chosenFile = Luwrain.openPopup(instance, null, null, dir);
 	if (chosenFile == null)
 	    return;
-	if (!readByFileName(chosenFile.getAbsolutePath()))
+	String[] lines = base.read(chosenFile.getAbsolutePath(), ENCODING);
+	if (lines == null)
+	{
+	    Luwrain.message(stringConstructor.errorOpeningFile());
 	    return;
+	}
+	area.setContent(lines);
 	    fileName = chosenFile.getAbsolutePath();
 	    area.setName(chosenFile.getName());
     }
@@ -122,52 +124,10 @@ public class NotepadApp implements Application, Actions
 	modified = true;
     }
 
-    private boolean readByFileName(String pathToRead)
-    {
-	if (pathToRead == null || pathToRead.isEmpty())
-	    return false;
-	try {
-		area.setContent(readTextFile(pathToRead));
-	    }
-	    catch (IOException e)
-	    {
-		Log.error("notepad", fileName + ":" + e.getMessage());
-		e.printStackTrace();
-		return false;
-	    }
-	return true;
-    }
-
-    private String[] readTextFile(String fileName) throws IOException
-    {
-	ArrayList<String> a = new ArrayList<String>();
-	Path path = Paths.get(fileName);
-	try (Scanner scanner =  new Scanner(path, ENCODING.name()))
-	{
-	    while (scanner.hasNextLine())
-		a.add(scanner.nextLine());
-	    }
-	return a.toArray(new String[a.size()]);
-    }
-
-    private void writeTextFile(String fileName, String[] lines) throws IOException
-    {
-	Path path = Paths.get(fileName);
-	try (BufferedWriter writer = Files.newBufferedWriter(path, ENCODING))
-	{
-	    for(int i = 0;i < lines.length;i++)
-	    {
-		writer.write(lines[i]);
-		if (i + 1 < lines.length)
-		    writer.newLine();
-	    }
-	}
-    }
-
     private void createArea()
     {
 	final Actions a = this;
-	area = new EditArea(fileName){
+	area = new EditArea(new DefaultControlEnvironment(), fileName){
 		private Actions actions = a;
 		public void onChange()
 		{
@@ -208,6 +168,7 @@ public class NotepadApp implements Application, Actions
 	Luwrain.closeApp(instance);
     }
 
+    //Returns true if there are no more modification user wants to save;
     private boolean checkIfUnsaved()
     {
 	if (!modified)
@@ -220,5 +181,20 @@ public class NotepadApp implements Application, Actions
 	    return false;
 	modified = false;
 	return true;
+    }
+
+    //null means user cancelled file name popup
+    private String askFileNameToSave()
+    {
+	SystemDirs systemDirs = new SystemDirs(Luwrain.getRegistry());
+	final File dir = systemDirs.userHomeAsFile();
+	final File chosenFile = Luwrain.openPopup(instance, 
+						  stringConstructor.savePopupName(),
+						  stringConstructor.savePopupPrefix(),
+						  new File(dir, stringConstructor.newFileName()));
+	if (chosenFile == null)
+	    return null;
+	//FIXME:Is a valid file;
+	return chosenFile.getAbsolutePath();
     }
 }

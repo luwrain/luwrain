@@ -41,29 +41,20 @@ public class MultilinedEdit implements CopyCutRequest
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	final int index = model.getHotPointY();
-	if (index >= model.getLineCount())
-	    return false;
-	final String line = model.getLine(index);
-	if (line == null)
-	    return false;
-	final int pos = model.getHotPointX();
-	if (pos > line.length())
-	    return false;
 	if (!event.isCommand())
-	    return onChar(event.getCharacter(), line, index, pos);
+	    return onChar(event);
 	if (event.isModified())
 	    return false;
 	switch(event.getCommand())
 	{
 	case KeyboardEvent.BACKSPACE:
-	    return onBackspace(line, index, pos);
+	    return onBackspace(event);
 	case KeyboardEvent.DELETE:
-	    return onDelete(line, index, pos);
+	    return onDelete(event);
 	case KeyboardEvent.TAB:
-	    return onTab(line, index, pos);
+	    return onTab(event);
 	case KeyboardEvent.ENTER:
-	    return onEnter(line, index, pos);
+	    return onEnter(event);
 	default:
 	    return false;
 	}
@@ -88,7 +79,207 @@ public class MultilinedEdit implements CopyCutRequest
 	}
     }
 
-    public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    private boolean onBackspace(KeyboardEvent event)
+    {
+	final int index = model.getHotPointY();
+	final int count = model.getLineCount();
+	if (count < 1)
+	{
+	    Speech.say(textBeginMessage, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (index >= count)
+	    return false;
+	final String line = model.getLine(index);
+	if (line == null)
+	    return false;
+	int pos = model.getHotPointX();
+	if (pos > line.length())
+	    pos = line.length();
+
+	if (pos < 1 && index < 1)
+	{
+	    if (count == 1 && line.isEmpty())
+		model.removeLine(0);
+	    Speech.say(textBeginMessage, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (pos < 1)
+	{
+	    final int prevPos = model.getLine(index - 1).length();
+	    model.setLine(index - 1, model.getLine(index - 1) + line);
+	    model.removeLine(index);
+	    model.setHotPoint(prevPos, index - 1);
+	    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
+	    return true;
+	}
+	String newLine = new String(line.substring(0, pos - 1) + line.substring(pos));
+	if (count == 1 && newLine.isEmpty() && pos == 1)
+	    model.removeLine(0); else
+	model.setLine(index, newLine);
+	model.setHotPoint(pos - 1, index);
+	Speech.sayLetter(line.charAt(pos - 1));
+	return true;
+    }
+
+    private boolean onDelete(KeyboardEvent event)
+    {
+	final int index = model.getHotPointY();
+	final int count = model.getLineCount();
+	if (count < 1)
+	{
+	    Speech.say(textEndMessage, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (index >= count)
+	    return false;
+	final String line = model.getLine(index);
+	if (line == null)
+	    return false;
+	int pos = model.getHotPointX();
+	if (pos > line.length())
+	    pos = line.length();
+
+	if (index + 1>= count && pos >= line.length())
+	{
+	    Speech.say(textEndMessage, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (pos == line.length())
+	{
+	    model.setLine(index, line + model.getLine(index + 1));
+	    model.removeLine(index + 1);
+	    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
+	    return true;
+	}
+	if (pos == line.length() - 1)
+	{
+	    model.setLine(index, line.substring(0, pos));
+	    Speech.sayLetter(line.charAt(pos));
+	    return true;
+	}
+	String newLine = new String(line.substring(0, pos) + line.substring(pos + 1));
+	model.setLine(index, newLine);
+	Speech.sayLetter(line.charAt(pos));
+	return true;
+    }
+
+    private boolean onTab(KeyboardEvent event)
+    {
+	final int index = model.getHotPointY();
+	int count = model.getLineCount();
+	if (index > count)
+	    return false;
+	if (index == count)
+	{
+	    model.addLine("");
+	    ++count;
+	}
+	final String line = model.getLine(index);
+	if (line == null)
+	    return false;
+	int pos = model.getHotPointX();
+	if (pos > line.length())
+	    pos = line.length();
+
+	String tabSeq = model.getTabSeq();
+	if (tabSeq == null)
+	    return false;
+	if (pos == line.length())
+	{
+	    model.setLine(index, line + tabSeq);
+	    Speech.say(tabMessage);
+	    model.setHotPoint(pos + tabSeq.length(), index);
+	    return true;
+	}
+	String newLine = new String(line.substring(0, pos) + tabSeq + line.substring(pos));
+	model.setLine(index, newLine);
+	model.setHotPoint(pos + tabSeq.length(), index);
+	Speech.say(tabMessage);
+	return true;
+    }
+
+    private boolean onEnter(KeyboardEvent event)
+    {
+	final int index = model.getHotPointY();
+	int count = model.getLineCount();
+	if (index > count)
+	    return false;
+	if (index == count)
+	{
+	    model.addLine("");
+	    ++count;
+	}
+	final String line = model.getLine(index);
+	if (line == null)
+	    return false;
+	int pos = model.getHotPointX();
+	if (pos > line.length())
+	    pos = line.length();
+
+	if (pos >= line.length())
+	{
+	    model.insertLine(index + 1, "");
+	    model.setHotPoint(0, index + 1);
+	    Speech.say(emptyLineMessage, Speech.PITCH_HIGH);
+	    return true;
+	}
+	model.setLine(index, line.substring(0, pos));
+	String newLine = line.substring(pos);
+	model.insertLine(index + 1, newLine);
+	model.setHotPoint(0, index + 1);
+	Speech.say(newLine);
+	return true;
+    }
+
+    private boolean onChar(KeyboardEvent event)
+    {
+	final int index = model.getHotPointY();
+	int count = model.getLineCount();
+	if (index > count)
+	    return false;
+	if (index == count)
+	{
+	    model.addLine("");
+	    ++count;
+	}
+	final String line = model.getLine(index);
+	if (line == null)
+	    return false;
+	int pos = model.getHotPointX();
+	if (pos > line.length())
+	    pos = line.length();
+
+	final char c = event.getCharacter();
+	if (pos == line.length())
+	{
+	    model.setLine(index, line + c);
+	    model.setHotPoint(pos + 1, index);
+	    if (c == ' ')
+	    {
+		String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
+		if (lastWord != null && !lastWord.isEmpty())
+		    Speech.say(lastWord); else
+		    Speech.sayLetter(' ');
+	    } else
+		Speech.sayLetter(c);
+	    return true;
+	}
+	String newLine = new String(line.substring(0, pos) + c + line.substring(pos));
+	model.setLine(index, newLine);
+	model.setHotPoint(pos + 1, index);
+	if (c == ' ')
+	{
+	    String lastWord = TextUtils.getLastWord(newLine, pos + 1);
+	    if (lastWord != null && !lastWord.isEmpty())
+		Speech.say(lastWord); else
+		Speech.sayLetter(' ');
+	} else
+	    Speech.sayLetter(c);
+	return true;
+    }
+
+    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
 	if (toY >= model.getLineCount())
 	    return false;
@@ -126,7 +317,7 @@ public class MultilinedEdit implements CopyCutRequest
 	return true;
     }
 
-    public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
     {
 	//FIXME:
 	return false;
@@ -165,123 +356,6 @@ public class MultilinedEdit implements CopyCutRequest
 	    model.insertLine(index + i, text[i]);
 	model.insertLine(index + text.length - 1, text[text.length - 1] + line.substring(pos));
 	model.setHotPoint(text[text.length - 1].length(), index + text.length - 1);
-	return true;
-    }
-
-
-
-    private boolean onBackspace(String line, int index, int pos)
-    {
-	if (pos < 1 && index < 1)
-	{
-	    Speech.say(textBeginMessage, Speech.PITCH_HIGH);
-	    return true;
-	}
-	if (pos < 1)
-	{
-	    final int prevPos = model.getLine(index - 1).length();
-	    model.setLine(index - 1, model.getLine(index - 1) + line);
-	    model.removeLine(index);
-	    model.setHotPoint(prevPos, index - 1);
-	    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
-	    return true;
-	}
-	String newLine = new String(line.substring(0, pos - 1) + line.substring(pos));
-	model.setLine(index, newLine);
-	model.setHotPoint(pos - 1, index);
-	Speech.sayLetter(line.charAt(pos - 1));
-	return true;
-    }
-
-    private boolean onDelete(String line, int index, int pos)
-    {
-	if (index + 1>= model.getLineCount() && pos >= line.length())
-	{
-	    Speech.say(textEndMessage, Speech.PITCH_HIGH);
-	    return true;
-	}
-	if (pos == line.length())
-	{
-	    model.setLine(index, line + model.getLine(index + 1));
-	    model.removeLine(index + 1);
-	    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
-	    return true;
-	}
-	if (pos == line.length() - 1)
-	{
-	    model.setLine(index, line.substring(0, pos));
-	    Speech.sayLetter(line.charAt(pos));
-	    return true;
-	}
-	String newLine = new String(line.substring(0, pos) + line.substring(pos + 1));
-	model.setLine(index, newLine);
-	Speech.sayLetter(line.charAt(pos));
-	return true;
-    }
-
-    private boolean onTab(String line, int index, int pos)
-    {
-	String tabSeq = model.getTabSeq();
-	if (tabSeq == null)
-	    return false;
-	if (pos == line.length())
-	{
-	    model.setLine(index, line + tabSeq);
-	    Speech.say(tabMessage);
-	    model.setHotPoint(pos + tabSeq.length(), index);
-	    return true;
-	}
-	String newLine = new String(line.substring(0, pos) + tabSeq + line.substring(pos));
-	model.setLine(index, newLine);
-	model.setHotPoint(pos + tabSeq.length(), index);
-	Speech.say(tabMessage);
-	return true;
-    }
-
-    private boolean onEnter(String line, int index, int pos)
-    {
-	if (pos >= line.length())
-	{
-	    model.insertLine(index + 1, "");
-	    model.setHotPoint(0, index + 1);
-	    Speech.say(emptyLineMessage, Speech.PITCH_HIGH);
-	    return true;
-	}
-				      model.setLine(index, line.substring(0, pos));
-	String newLine = line.substring(pos);
-	model.insertLine(index + 1, newLine);
-	model.setHotPoint(0, index + 1);
-	Speech.say(newLine);
-	return true;
-    }
-
-    private boolean onChar(char c, String line, int index, int pos)
-    {
-	if (pos == line.length())
-	{
-	    model.setLine(index, line + c);
-	    model.setHotPoint(pos + 1, index);
-	    if (c == ' ')
-	    {
-		String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
-		if (lastWord != null && !lastWord.isEmpty())
-		    Speech.say(lastWord); else
-		    Speech.sayLetter(' ');
-	    } else
-		Speech.sayLetter(c);
-	    return true;
-	}
-	String newLine = new String(line.substring(0, pos) + c + line.substring(pos));
-	model.setLine(index, newLine);
-	model.setHotPoint(pos + 1, index);
-	if (c == ' ')
-	{
-	    String lastWord = TextUtils.getLastWord(newLine, pos + 1);
-	    if (lastWord != null && !lastWord.isEmpty())
-		Speech.say(lastWord); else
-		Speech.sayLetter(' ');
-	} else
-	    Speech.sayLetter(c);
 	return true;
     }
 }

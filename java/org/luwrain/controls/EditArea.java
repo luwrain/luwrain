@@ -21,27 +21,34 @@ import org.luwrain.core.events.*;
 
 public class EditArea extends SimpleArea
 {
+    private ControlEnvironment environment;
     private MultilinedEdit edit;
     private boolean modified = false;
 
-    public EditArea()
+    public EditArea(ControlEnvironment environment)
     {
+	super(environment);
+	this.environment = environment;
 	createEdit();
     }
 
-    public EditArea(String name)
+    public EditArea(ControlEnvironment environment, String name)
     {
-	super(name);
+	super(environment, name);
+	this.environment = environment;
 	createEdit();
     }
 
-    public EditArea(String name, String[] content)
+    public EditArea(ControlEnvironment environment,
+		    String name,
+String[] content)
     {
-	super(name, content);
+	super(environment, name, content);
+	this.environment = environment;
 	createEdit();
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	modified = false;
 	if (edit.onKeyboardEvent(event))
@@ -55,7 +62,7 @@ public class EditArea extends SimpleArea
 	return super.onKeyboardEvent(event);
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	modified = false;
 	if (edit.onEnvironmentEvent(event))
@@ -84,50 +91,47 @@ public class EditArea extends SimpleArea
 	final EditArea thisArea = this;
 	edit = new MultilinedEdit(new MultilinedEditModel(){
 		private EditArea area = thisArea;
-		public String getLine(int index)
+		@Override public String getLine(int index)
 		{
 		    return area.getLine(index);
 		}
-		public void setLine(int index, String text)
+		@Override public void setLine(int index, String text)
 		{
 		    area.setLine(index, text);
 		    area.modified = true;
 		}
-		public int getLineCount()
+		@Override public int getLineCount()
 		{
 		    return area.getLineCount();
 		}
-		public int getHotPointX()
+		@Override public int getHotPointX()
 		{
 		    return area.getHotPointX();
 		}
-		public int getHotPointY()
+		@Override public int getHotPointY()
 		{
 		    return area.getHotPointY();
 		}
-		public void setHotPoint(int x, int y)
+		@Override public void setHotPoint(int x, int y)
 		{
 		    area.setHotPoint(x, y);
 		}
-		public void removeLine(int index)
+		@Override public void removeLine(int index)
 		{
 		    area.removeLine(index);
 		    area.modified = true;
 		}
-    public void insertLine(int index, String text)
+    @Override public void insertLine(int index, String text)
 		{
 		    area.insertLine(index, text);
 		    area.modified = true;
 		}
-
-    public void addLine(String text)
+		@Override public void addLine(String text)
 		{
 		    area.addLine(text);
 		    area.modified = true;
 		}
-
-
-		public String getTabSeq()
+		@Override public String getTabSeq()
 		{
 		    return area.getTabSeq();
 		}

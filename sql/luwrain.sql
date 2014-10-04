@@ -64,7 +64,7 @@ INSERT INTO registry_dir (id,name,parent_id) VALUES (3,'luwrain',2);
 
 -- The workaround as in *.reg files we cannot use string with spaces only --
 INSERT INTO registry_dir (id,name,parent_id) VALUES (4,'global-keys',3);
-INSERT INTO registry_dir (id,name,parent_id) VALUES (5,'cut-copy-point',4);
+INSERT INTO registry_dir (id,name,parent_id) VALUES (5,'copy-cut-point',4);
 INSERT INTO registry_value (name,dir_id,value_type,str_value) VALUES ('character',5,2,' ');
 INSERT INTO registry_value (name,dir_id,value_type,bool_value) VALUES ('with-control',5,3,true);
 

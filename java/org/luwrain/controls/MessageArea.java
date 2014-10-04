@@ -17,14 +17,33 @@
 package org.luwrain.controls;
 
 import java.io.File;
+import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.popups.FilePopup;
 
 public class MessageArea extends FormArea
 {
+    private static final String TO_NAME = "to";
+    private static final String CC_NAME = "cc";
+    private static final String SUBJECT_NAME = "subject";
+    private static final String ATTACHMENT = "attachment";
+
+    class Attachment
+    {
+	public String name;
+	public File file;
+
+	public Attachment(String name, File file)
+	{
+	    this.name = name;
+	    this.file = file;
+	}
+    }
+
     private Object instance;
     private ControlEnvironment environment;
+    private Vector<Attachment> attachments = new Vector<Attachment>();
     private int attachmentCounter = 0;
 
     public MessageArea(Object instance, ControlEnvironment environment)
@@ -32,27 +51,42 @@ public class MessageArea extends FormArea
 	super(environment);
 	this.instance = instance;
 	this.environment = environment;
-	addEdit("to", environment.langStaticString(Langs.MESSAGE_TO), "", true);
-	addEdit("cc", environment.langStaticString(Langs.MESSAGE_CC), "", true);
-	addEdit("subject", environment.langStaticString(Langs.MESSAGE_SUBJECT), "", true);
+	addEdit(TO_NAME, environment.langStaticString(Langs.MESSAGE_TO), "", true);
+	addEdit(CC_NAME, environment.langStaticString(Langs.MESSAGE_CC), "", true);
+	addEdit(SUBJECT_NAME, environment.langStaticString(Langs.MESSAGE_SUBJECT), "", true);
+	activateMultilinedEdit(environment.langStaticString(Langs.MESSAGE_TEXT));
     }
 
     public String getTo()
     {
-	final String value = getEnteredText("to");
+	final String value = getEnteredText(TO_NAME);
 	return value != null?value:"";
     }
 
     public String getCC()
     {
-	final String value = getEnteredText("cc");
+	final String value = getEnteredText(CC_NAME);
 	return value != null?value:"";
     }
 
     public String getSubject()
     {
-	final String value = getEnteredText("subject");
+	final String value = getEnteredText(SUBJECT_NAME);
 	return value != null?value:"";
+    }
+
+    public String getText()
+    {
+	final String value = getMultilinedEditText();
+	return value != null?value:"";
+    }
+
+    public File[] getAttachments()
+    {
+	File[] res = new File[attachments.size()];
+	for(int i = 0;i < attachments.size();++i)
+	    res[i] = attachments.get(i).file;
+	return res;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -64,6 +98,11 @@ public class MessageArea extends FormArea
 	    insertAttachment();
 	    return true;
 	}
+	if (event.isCommand() &&
+	    !event.isModified() &&
+	    event.getCommand() == KeyboardEvent.DELETE &&
+	    removeAttachment())
+	    return true;
 	return super.onKeyboardEvent(event);
     }
 
@@ -81,7 +120,14 @@ public class MessageArea extends FormArea
 	environment.popup(popup);
 	if (popup.closing.cancelled())
 	    return;
-	addStatic("attachment" + attachmentCounter, environment.langStaticString(Langs.MESSAGE_ATTACHMENT) + " " + popup.getFile().getName() + " (" + popup.getFile().getAbsolutePath() + ")");
+	Attachment a = new Attachment(ATTACHMENT + attachmentCounter, popup.getFile());
 	++attachmentCounter;
+	attachments.add(a);
+	addStatic("attachment" + attachmentCounter, environment.langStaticString(Langs.MESSAGE_ATTACHMENT) + " " + popup.getFile().getName() + " (" + popup.getFile().getAbsolutePath() + ")");
+    }
+
+    private boolean removeAttachment()
+    {
+	return false;
     }
 }
