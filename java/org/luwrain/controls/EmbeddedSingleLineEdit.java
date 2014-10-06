@@ -54,6 +54,12 @@ public class EmbeddedSingleLineEdit implements SingleLineEditModel
 	return posY == y && x >= posX;
     }
 
+    public void setNewPos(int x, int y)
+    {
+	posX = x;
+	posY = y;
+    }
+
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	return edit.onKeyboardEvent(event);

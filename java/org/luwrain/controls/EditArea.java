@@ -135,6 +135,13 @@ String[] content)
 		{
 		    return area.getTabSeq();
 		}
+		@Override public boolean beginEditTrans()
+		{
+		    return true;
+		}
+		@Override public void endEditTrans()
+		{
+		}
 	    });
     }
 }

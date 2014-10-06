@@ -34,6 +34,7 @@ public class FormArea  extends NavigateArea
 	public int type;
     public String name;
     public String caption;
+	public Object obj;
 	public boolean enabled = true;
 
 	private ControlEnvironment environment;//Needed for sending notifications about text changing;
@@ -45,51 +46,10 @@ public class FormArea  extends NavigateArea
 	private Object staticObject;
 
 	public Item(ControlEnvironment environment,
-		    Area area,
-		    int type,
-		    String name,
-		    String caption,
-		    boolean enabled)
+		    Area area)
 	{
 	    this.environment = environment;
 	    this.area = area;
-	    this.type = type;
-	    this.name = name;
-	    this.caption = caption;
-	    this.enabled = enabled;
-	}
-
-	public void initEdit(String enteredText,
-			     HotPointInfo hotPointInfo,
-			     int posX,
-			     int posY)
-	{
-	    if (hotPointInfo == null)
-		return;
-	    type = EDIT;
-	    this.enteredText = enteredText != null?enteredText:"";
-	    this.edit = new EmbeddedSingleLineEdit(this, hotPointInfo, posX >= 0?posX:0, posY >= 0?posY:0);
-	}
-
-	public void initStatic(Object obj)
-	{
-	    if (obj == null)
-		return;
-	    type = STATIC;
-	    staticObject = obj;
-	    caption = obj.toString();
-	}
-
-	public String getEnteredText()
-	{
-	    return enteredText != null?enteredText:"";
-	}
-
-	public boolean isPosCovered(int x, int y)
-	{
-	    if (edit == null)
-		return false;
-	    return edit.isPosCovered(x, y);
 	}
 
 	boolean onKeyboardEvent(KeyboardEvent event)
@@ -126,9 +86,11 @@ public class FormArea  extends NavigateArea
     private CopyCutInfo copyCutInfo;
     private String name = "";
     private Vector<Item> items = new Vector<Item>();
-    public String multilinedCaption = "";
+
+    public String multilinedCaption;
     private DefaultMultilinedEditContent multilinedContent;
     private EmbeddedMultilinedEdit multilinedEdit = null;
+    private boolean multilinedEnabled = true;
 
     public FormArea(ControlEnvironment environment)
     {
@@ -156,9 +118,15 @@ public class FormArea  extends NavigateArea
     //For multiline zone returns "MULTILINE" on multiline caption as well (the line above the multiline edit) 
     public int getItemTypeOnLine(int index)
     {
+	if (index < 0)
+	    return NONE;
+	if (items != null && index < items.size())
+	    return items.get(index).type;
 	if (items == null || index < 0 || index >= items.size())
 	    return NONE;
-	return items.get(index).type;
+	if (!multilinedEditActivated())
+	    return NONE;
+	return MULTILINED;
     }
 
     public String getItemNameOnLine(int index)
@@ -168,18 +136,43 @@ public class FormArea  extends NavigateArea
 	return items.get(index).name;
     }
 
+    public Object getItemObjOnLine(int index)
+    {
+	if (items == null || index < 0 || index >= items.size())
+	    return null;
+	return items.get(index).obj;
+    }
+
+    public Object getItemObjByName(String itemName)
+    {
+	if (items == null || itemName == null || itemName.trim().isEmpty())
+	    return null;
+	for(int i = 0;i < items.size();++i)
+	    if (items.get(i).name.equals(itemName))
+		return items.get(i).obj;
+	return null;
+    }
+
     public boolean addEdit(String itemName,
 			   String caption,
 			   String initialText,
+			   Object obj,
 			   boolean enabled)
     {
 	if (itemName == null || itemName.trim().isEmpty() || hasItemWithName(itemName))
 	    return false;
-	if (caption == null || caption.length() < 1)
-	    return false;
-	Item item = new Item(environment, this, EDIT, itemName, caption, enabled);
-	item.initEdit(initialText, this, caption.length() + 1, items.size());
+	if (items == null)
+	    items = new Vector<Item>();
+	Item item = new Item(environment, this);
+	item.type = EDIT;
+	item.name = itemName;
+	item.caption = caption != null?caption:"";
+	item.enteredText = initialText != null?initialText:"";
+	item.obj = obj;
+	item.enabled = enabled;
+	item.edit = new EmbeddedSingleLineEdit(item, this, item.caption.length(), items.size());
 	items.add(item);
+	updateEditsPos();
 	environment.onAreaNewContent(this);
 	return true;
     }
@@ -188,24 +181,31 @@ public class FormArea  extends NavigateArea
     {
 	if (items == null || itemName == null || itemName.trim().isEmpty())
 	    return null;
-	int k;
-	for(k = 0;k < items.size();++k)
-	    if (items.get(k).name.equals(itemName))
-		break;
-	if (k >= items.size() || items.get(k).type != EDIT)
-	    return null;
-	return items.get(k).getEnteredText();
+	for(int i = 0;i < items.size();++i)
+	    if (items.get(i).type == EDIT && items.get(i).name.equals(itemName))
+		return items.get(i).enteredText;
+	return null;
     }
 
-    public boolean addStatic(String itemName, Object staticObject)
+    public boolean addStatic(String itemName, 
+			     String caption,
+			     Object obj)
     {
 	if (itemName == null || itemName.trim().isEmpty() || hasItemWithName(itemName))
 	    return false;
-	if (staticObject == null)
+	if (obj == null)
 	    return false;
-	Item item = new Item(environment, this, STATIC, itemName, staticObject.toString(), true);
-	item.initStatic(staticObject);
+	if (items == null)
+	    items = new Vector<Item>();
+	Item item = new Item(environment, this);
+	item.type = STATIC;
+	item.name = itemName;
+	if (caption == null)
+	    item.caption = obj.toString() != null?obj.toString():""; else
+	    item.caption = caption;
+	item.obj = obj;
 	items.add(item);
+	updateEditsPos();
 	environment.onAreaNewContent(this);
 	return true;
     }
@@ -213,11 +213,19 @@ public class FormArea  extends NavigateArea
     public boolean multilinedEditActivated()
     {
 	return multilinedEdit != null && 
-multilinedContent != null &&
-multilinedCaption != null;
+	multilinedContent != null &&
+	multilinedCaption != null;
     }
 
-    public boolean activateMultilinedEdit(String caption)  
+    public boolean multilinedEditEnabled()
+    {
+	return multilinedEditActivated() && multilinedEnabled;
+    }
+
+
+    public boolean activateMultilinedEdit(String caption, 
+					  String[] initialText,
+					  boolean enabled)
     {
 	if (multilinedEditActivated())
 	    return false;
@@ -227,29 +235,16 @@ multilinedCaption != null;
 	multilinedContent = new DefaultMultilinedEditContent(){
 		private ControlEnvironment environment = env;
 		private Area area = thisArea;
-    @Override public void setLine(int index, String line)
+		@Override public void endEditTrans()
 		{
-		    super.setLine(index, line);
-		    environment.onAreaNewContent(area);
-		}
-    @Override public void removeLine(int index)
-		{
-		    super.removeLine(index);
-		    environment.onAreaNewContent(area);
-		}
-		@Override public void insertLine(int index, String line)
-		{
-		    super.insertLine(index, line);
-		    environment.onAreaNewContent(area);
-		}
-    @Override public void addLine(String line)
-		{
-		    super.addLine(line);
-		    environment.onAreaNewContent(area);
+		    super.endEditTrans();
+		    env.onAreaNewContent(thisArea);
 		}
 	    };
+	//FIXME:setLines;
 	this.multilinedEdit = new EmbeddedMultilinedEdit(multilinedContent, this, (items != null?items.size():0) +
 							 (!multilinedCaption.isEmpty()?1:0));
+	multilinedEnabled = enabled;
 	environment.onAreaNewContent(this);
 	return true;
     }
@@ -264,11 +259,12 @@ multilinedCaption != null;
 	if (items != null)
 	    for(int i = 0;i < items.size();++i)
 		if (items.get(i).type == EDIT &&
-		    items.get(i).isPosCovered(getHotPointX(), getHotPointY()) &&
+		    items.get(i).edit != null &&
+		    items.get(i).edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		    items.get(i).enabled &&
 		    items.get(i).onKeyboardEvent(event))
 		    return true;
-	if (multilinedEditActivated() && 
+	if (multilinedEditEnabled() && 
 	    multilinedEdit.isPosCovered(getHotPointX(), getHotPointY()) &&
 	    multilinedEdit.onKeyboardEvent(event))
 	    return true;
@@ -280,11 +276,12 @@ multilinedCaption != null;
 	if (items != null)
 	    for(int i = 0;i < items.size();++i)
 		if (items.get(i).type == EDIT &&
-		    items.get(i).isPosCovered(getHotPointX(), getHotPointY()) &&
+		    items.get(i).edit != null &&
+		    items.get(i).edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		    items.get(i).enabled &&
 		    items.get(i).onEnvironmentEvent(event))
 		    return true;
-	if (multilinedEditActivated() && 
+	if (multilinedEditEnabled() && 
 	    multilinedEdit.isPosCovered(getHotPointX(), getHotPointY()) &&
 	    multilinedEdit.onEnvironmentEvent(event))
 	    return true;
@@ -303,13 +300,13 @@ multilinedCaption != null;
     {
 	if (items == null || index >= items.size())
 	{
-	    if (multilinedEdit == null)
+	    if (!multilinedEditActivated())
 		return "";
 	    final int offset = items != null?items.size():0;
 	    final int pos = index - offset;
 	    if (pos < 0)//Actually never happens;
 		return "";
-	    if (multilinedCaption != null && !multilinedCaption.isEmpty())
+	    if (!multilinedCaption.isEmpty())
 	    {
 		if (pos == 0)
 		    return multilinedCaption;
@@ -324,7 +321,7 @@ multilinedCaption != null;
 	switch(item.type)
 	{
 	case EDIT:
-	    return item.caption + ":" + item.getEnteredText();
+	    return item.caption + item.enteredText;
 	case STATIC:
 	    return item.caption;
 	default:
@@ -335,5 +332,22 @@ multilinedCaption != null;
     @Override public String getName()
     {
 	return name != null?name:"";
+    }
+
+    private void updateEditsPos()
+    {
+	if (items != null)
+	    for(int i = 0;i < items.size();++i)
+		if (items.get(i).type == EDIT)
+		{
+		    Item item = items.get(i);
+		    item.edit.setNewPos(item.caption != null?item.caption.length():0, i);
+		}
+	if (!multilinedEditActivated())
+	    return;
+	int offset = items != null?items.size():0;
+	if (!multilinedCaption.isEmpty())
+	    ++offset;
+	multilinedEdit.setNewPos(0, offset);
     }
 }

@@ -56,8 +56,13 @@ public class EmbeddedMultilinedEdit implements MultilinedEditModel
 
     public boolean isPosCovered(int x, int y)
     {
-	//	org.luwrain.core.Log.debug("proba", "" + (y >= posY && x >= posX));
 	return y >= posY && x >= posX;
+    }
+
+    public void setNewPos(int x, int y)
+    {
+	posX = x;
+	posY = y;
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -122,5 +127,15 @@ public class EmbeddedMultilinedEdit implements MultilinedEditModel
     @Override public String getTabSeq()
     {
 	return " ";
+    }
+
+    @Override public boolean beginEditTrans()
+    {
+	return content.beginEditTrans();
+    }
+
+    @Override public void endEditTrans()
+    {
+	content.endEditTrans();
     }
 }

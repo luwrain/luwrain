@@ -43,7 +43,6 @@ public class Langs
     public static final int END_OF_TABLE_COL = 23;
 
     public static final int MESSAGE = 30;
-    public static final int MESSAGE_FOR = 31;
     public static final int MESSAGE_TO = 32;
     public static final int MESSAGE_CC = 33;
     public static final int MESSAGE_SUBJECT = 34;

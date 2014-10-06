@@ -41,20 +41,43 @@ public class MultilinedEdit implements CopyCutRequest
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	boolean res = false;
 	if (!event.isCommand())
-	    return onChar(event);
+	{
+	    if (!model.beginEditTrans())
+		return false;
+	    res = onChar(event);
+	    model.endEditTrans();
+	    return res;
+	}
 	if (event.isModified())
 	    return false;
 	switch(event.getCommand())
 	{
 	case KeyboardEvent.BACKSPACE:
-	    return onBackspace(event);
+	    if (!model.beginEditTrans())
+		return false;
+	    res = onBackspace(event);
+	    model.endEditTrans();
+	    return res;
 	case KeyboardEvent.DELETE:
-	    return onDelete(event);
+	    if (!model.beginEditTrans())
+		return false;
+	    res = onDelete(event);
+	    model.endEditTrans();
+	    return res;
 	case KeyboardEvent.TAB:
-	    return onTab(event);
+	    if (!model.beginEditTrans())
+		return false;
+	    res = onTab(event);
+	    model.endEditTrans();
+	    return res;
 	case KeyboardEvent.ENTER:
-	    return onEnter(event);
+	    if (!model.beginEditTrans())
+		return false;
+	    res = onEnter(event);
+	    model.endEditTrans();
+	    return res;
 	default:
 	    return false;
 	}
@@ -62,6 +85,7 @@ public class MultilinedEdit implements CopyCutRequest
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	boolean res = false;
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.COPY_CUT_POINT:
@@ -69,11 +93,17 @@ public class MultilinedEdit implements CopyCutRequest
 	case EnvironmentEvent.COPY:
 	    return copyCutInfo.doCopy(model.getHotPointX(), model.getHotPointY());
 	case EnvironmentEvent.CUT:
-	    return copyCutInfo.doCut(model.getHotPointX(), model.getHotPointY());
+	    if (!model.beginEditTrans())
+		return false;
+	    res = copyCutInfo.doCut(model.getHotPointX(), model.getHotPointY());
+	    model.endEditTrans();
+	    return res;
 	case EnvironmentEvent.INSERT:
-	    if (event instanceof InsertEvent)
-		return onInsert((InsertEvent)event);
-	    return false;
+	    if (!(event instanceof InsertEvent) || !model.beginEditTrans())
+		return false;
+res = onInsert((InsertEvent)event);
+model.endEditTrans();
+return res;
 	default:
 	    return false;
 	}
@@ -81,6 +111,7 @@ public class MultilinedEdit implements CopyCutRequest
 
     private boolean onBackspace(KeyboardEvent event)
     {
+	//Preparing;
 	final int index = model.getHotPointY();
 	final int count = model.getLineCount();
 	if (count < 1)
@@ -96,29 +127,32 @@ public class MultilinedEdit implements CopyCutRequest
 	int pos = model.getHotPointX();
 	if (pos > line.length())
 	    pos = line.length();
-
+	//Nothing to eliminate with backspace;
 	if (pos < 1 && index < 1)
-	{
-	    if (count == 1 && line.isEmpty())
-		model.removeLine(0);
-	    Speech.say(textBeginMessage, Speech.PITCH_HIGH);
-	    return true;
-	}
-	if (pos < 1)
-	{
-	    final int prevPos = model.getLine(index - 1).length();
-	    model.setLine(index - 1, model.getLine(index - 1) + line);
-	    model.removeLine(index);
-	    model.setHotPoint(prevPos, index - 1);
-	    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
-	    return true;
-	}
-	String newLine = new String(line.substring(0, pos - 1) + line.substring(pos));
-	if (count == 1 && newLine.isEmpty() && pos == 1)
-	    model.removeLine(0); else
-	model.setLine(index, newLine);
-	model.setHotPoint(pos - 1, index);
-	Speech.sayLetter(line.charAt(pos - 1));
+	    Speech.say(textBeginMessage, Speech.PITCH_HIGH); else
+	    //Jumping to previous line;
+	    if (pos < 1)
+	    {
+		final int prevLineIndex = index - 1;
+		String prevLine = model.getLine(prevLineIndex);
+		if (prevLine == null)
+		    prevLine = "";
+		final int prevLinePos = prevLine.length();
+		model.setLine(prevLineIndex, prevLine + line);
+		model.removeLine(index);
+		model.setHotPoint(prevLinePos, prevLineIndex);
+		Speech.say(lineEndMessage, Speech.PITCH_HIGH);
+	    } else
+		//Eliminating just previous char;
+	    {
+		final String newLine = line.substring(0, pos - 1) + line.substring(pos);
+		model.setLine(index, newLine);
+		model.setHotPoint(pos - 1, index);
+		Speech.sayLetter(line.charAt(pos - 1));
+	    }
+	//Removing first empty line  if it is the only line in model;
+	if (model.getLineCount() == 1 && model.getLine(0).isEmpty())
+	    model.removeLine(0);
 	return true;
     }
 
@@ -139,28 +173,35 @@ public class MultilinedEdit implements CopyCutRequest
 	int pos = model.getHotPointX();
 	if (pos > line.length())
 	    pos = line.length();
-
+	//Nothing to eliminate with delete;
 	if (index + 1>= count && pos >= line.length())
-	{
-	    Speech.say(textEndMessage, Speech.PITCH_HIGH);
-	    return true;
-	}
-	if (pos == line.length())
-	{
-	    model.setLine(index, line + model.getLine(index + 1));
-	    model.removeLine(index + 1);
-	    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
-	    return true;
-	}
-	if (pos == line.length() - 1)
-	{
-	    model.setLine(index, line.substring(0, pos));
-	    Speech.sayLetter(line.charAt(pos));
-	    return true;
-	}
-	String newLine = new String(line.substring(0, pos) + line.substring(pos + 1));
-	model.setLine(index, newLine);
-	Speech.sayLetter(line.charAt(pos));
+	    Speech.say(textEndMessage, Speech.PITCH_HIGH); else
+	    //Eliminating new line position;
+	    if (pos == line.length())
+	    {
+		final int nextLineIndex = index + 1;
+		String nextLine = model.getLine(nextLineIndex);
+		if (nextLine == null)
+		    nextLine = "";
+		model.setLine(index, line + nextLine);
+		model.removeLine(nextLineIndex);
+		Speech.say(lineEndMessage, Speech.PITCH_HIGH);
+	    } else
+		//eliminating last character of line;
+		if (pos + 1 == line.length())
+		{
+		    model.setLine(index, line.substring(0, pos));
+		    Speech.sayLetter(line.charAt(pos));
+		} else
+		    //Eliminating just last character of line;
+		{
+		    String newLine = line.substring(0, pos) + line.substring(pos + 1);
+		    model.setLine(index, newLine);
+		    Speech.sayLetter(line.charAt(pos));
+		}
+	//Removing first empty line  if it is the only line in model;
+	if (model.getLineCount() == 1 && model.getLine(0).isEmpty())
+	    model.removeLine(0);
 	return true;
     }
 
@@ -175,14 +216,13 @@ public class MultilinedEdit implements CopyCutRequest
 	    model.addLine("");
 	    ++count;
 	}
-	final String line = model.getLine(index);
+	String line = model.getLine(index);
 	if (line == null)
-	    return false;
+	    line = "";
 	int pos = model.getHotPointX();
 	if (pos > line.length())
 	    pos = line.length();
-
-	String tabSeq = model.getTabSeq();
+	final String tabSeq = model.getTabSeq();
 	if (tabSeq == null)
 	    return false;
 	if (pos == line.length())
@@ -192,7 +232,7 @@ public class MultilinedEdit implements CopyCutRequest
 	    model.setHotPoint(pos + tabSeq.length(), index);
 	    return true;
 	}
-	String newLine = new String(line.substring(0, pos) + tabSeq + line.substring(pos));
+	final String newLine = line.substring(0, pos) + tabSeq + line.substring(pos);
 	model.setLine(index, newLine);
 	model.setHotPoint(pos + tabSeq.length(), index);
 	Speech.say(tabMessage);
@@ -210,13 +250,12 @@ public class MultilinedEdit implements CopyCutRequest
 	    model.addLine("");
 	    ++count;
 	}
-	final String line = model.getLine(index);
+	String line = model.getLine(index);
 	if (line == null)
-	    return false;
+	    line = "";
 	int pos = model.getHotPointX();
 	if (pos > line.length())
 	    pos = line.length();
-
 	if (pos >= line.length())
 	{
 	    model.insertLine(index + 1, "");
@@ -225,7 +264,7 @@ public class MultilinedEdit implements CopyCutRequest
 	    return true;
 	}
 	model.setLine(index, line.substring(0, pos));
-	String newLine = line.substring(pos);
+	final String newLine = line.substring(pos);
 	model.insertLine(index + 1, newLine);
 	model.setHotPoint(0, index + 1);
 	Speech.say(newLine);
@@ -243,13 +282,12 @@ public class MultilinedEdit implements CopyCutRequest
 	    model.addLine("");
 	    ++count;
 	}
-	final String line = model.getLine(index);
+	String line = model.getLine(index);
 	if (line == null)
-	    return false;
+	    line = "";
 	int pos = model.getHotPointX();
 	if (pos > line.length())
 	    pos = line.length();
-
 	final char c = event.getCharacter();
 	if (pos == line.length())
 	{
@@ -265,7 +303,7 @@ public class MultilinedEdit implements CopyCutRequest
 		Speech.sayLetter(c);
 	    return true;
 	}
-	String newLine = new String(line.substring(0, pos) + c + line.substring(pos));
+	final String newLine = line.substring(0, pos) + c + line.substring(pos);
 	model.setLine(index, newLine);
 	model.setHotPoint(pos + 1, index);
 	if (c == ' ')

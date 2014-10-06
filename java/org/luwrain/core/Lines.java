@@ -16,25 +16,8 @@
 
 package org.luwrain.core;
 
-import org.luwrain.core.events.*;
-
-//Cannot be composite;
-//Real character length on the screen never taken into account;
-//getLineCount() never returns 0, an empty area - the area  with single empty line;
-
-public interface Area extends Lines
+public interface Lines
 {
-    //May never return 0, empty area means one empty line;
-    //    int getLineCount();
-    //    String getLine(int index);
-    int getHotPointX();
-    int getHotPointY();
-    boolean onKeyboardEvent(KeyboardEvent event);
-    boolean onEnvironmentEvent(EnvironmentEvent event);
-    String getName();
-
-    /*TODO:
-     * Command[] getCommands();
-     */
-
+    int getLineCount();
+    String getLine(int index);
 }

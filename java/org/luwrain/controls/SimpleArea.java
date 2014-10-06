@@ -19,7 +19,7 @@ package org.luwrain.controls;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class SimpleArea extends NavigateArea
+public class SimpleArea extends NavigateArea implements MutableLines
 {
     private ControlEnvironment environment;
     private String name = "";

@@ -125,6 +125,15 @@ public class DefaultMultilinedEditContent implements MultilinedEditContent
 	lines = newLines;
     }
 
+    @Override public boolean beginEditTrans()
+    {
+	return true;
+    }
+
+    @Override public void endEditTrans()
+    {
+    }
+
     public void clear()
     {
 	lines = new String[0];

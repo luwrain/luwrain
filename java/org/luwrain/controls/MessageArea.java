@@ -51,10 +51,10 @@ public class MessageArea extends FormArea
 	super(environment);
 	this.instance = instance;
 	this.environment = environment;
-	addEdit(TO_NAME, environment.langStaticString(Langs.MESSAGE_TO), "", true);
-	addEdit(CC_NAME, environment.langStaticString(Langs.MESSAGE_CC), "", true);
-	addEdit(SUBJECT_NAME, environment.langStaticString(Langs.MESSAGE_SUBJECT), "", true);
-	activateMultilinedEdit(environment.langStaticString(Langs.MESSAGE_TEXT));
+	addEdit(TO_NAME, environment.langStaticString(Langs.MESSAGE_TO), "", null, true);
+	addEdit(CC_NAME, environment.langStaticString(Langs.MESSAGE_CC), "", null, true);
+	addEdit(SUBJECT_NAME, environment.langStaticString(Langs.MESSAGE_SUBJECT), "", null, true);
+	activateMultilinedEdit(environment.langStaticString(Langs.MESSAGE_TEXT), new String[0], true);
     }
 
     public String getTo()
@@ -123,7 +123,7 @@ public class MessageArea extends FormArea
 	Attachment a = new Attachment(ATTACHMENT + attachmentCounter, popup.getFile());
 	++attachmentCounter;
 	attachments.add(a);
-	addStatic("attachment" + attachmentCounter, environment.langStaticString(Langs.MESSAGE_ATTACHMENT) + " " + popup.getFile().getName() + " (" + popup.getFile().getAbsolutePath() + ")");
+	addStatic(a.name, environment.langStaticString(Langs.MESSAGE_ATTACHMENT) + " " + popup.getFile().getName() + " (" + popup.getFile().getAbsolutePath() + ")", a);
     }
 
     private boolean removeAttachment()

@@ -99,14 +99,12 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Column end";
 	case Langs.MESSAGE:
 	    return "Message";
-	case Langs.MESSAGE_FOR:
-	    return "Message for";
 	case Langs.MESSAGE_TO:
-	    return "To";
+	    return "To:";
 	case Langs.MESSAGE_CC:
-	    return "cc";
+	    return "cc:";
 	case Langs.MESSAGE_SUBJECT:
-	    return "Subject";
+	    return "Subject:";
 	case Langs.MESSAGE_TEXT:
 	    return "Enter the message text below:";
 	case Langs.MESSAGE_ATTACHMENT:
