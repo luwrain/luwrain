@@ -44,7 +44,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	this.prefix = prefix != null?prefix:"";
 	this.text = text != null?text:"";
 	this.pos = prefix.length() + text.length();
-	this.edit = new EmbeddedSingleLineEdit(this, this, prefix.length(), 0);
+	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, prefix.length(), 0);
 	this.noMultipleCopies = false;
     }
 
@@ -59,7 +59,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	this.prefix = prefix != null?prefix:"";
 	this.text = text != null?text:"";
 	this.pos = prefix.length() + text.length();
-	this.edit = new EmbeddedSingleLineEdit(this, this, prefix.length(), 0);
+	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, prefix.length(), 0);
 	this.noMultipleCopies = noMultipleCopies;
     }
 

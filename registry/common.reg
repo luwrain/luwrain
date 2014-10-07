@@ -29,6 +29,9 @@ bool /org/luwrain/global-keys/switch-next-area/with-control  true
 dir /org/luwrain/global-keys/copy
 string /org/luwrain/global-keys/copy/non-character insert
 bool /org/luwrain/global-keys/copy/with-control true
+dir /org/luwrain/global-keys/cut
+string /org/luwrain/global-keys/cut/non-character delete
+bool /org/luwrain/global-keys/cut/with-control true
 dir /org/luwrain/global-keys/paste
 string /org/luwrain/global-keys/paste/non-character insert
 bool /org/luwrain/global-keys/paste/with-shift true

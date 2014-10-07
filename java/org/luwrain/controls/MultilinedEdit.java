@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:ControlEnvironment interface support;
-
 package org.luwrain.controls;
 
 import java.util.*;
@@ -30,11 +28,13 @@ public class MultilinedEdit implements CopyCutRequest
     private final String textEndMessage = Langs.staticValue(Langs.AREA_END);
     private final String lineEndMessage = Langs.staticValue(Langs.END_OF_LINE);
 
+    private ControlEnvironment environment;
     private MultilinedEditModel model;
     private CopyCutInfo copyCutInfo;
 
-    public MultilinedEdit(MultilinedEditModel model)
+    public MultilinedEdit(ControlEnvironment environment, MultilinedEditModel model)
     {
+	this.environment = environment;
 	this.model = model;
 	this.copyCutInfo = new CopyCutInfo(this);
     }
@@ -323,7 +323,7 @@ return res;
 	    return false;
 	if (fromY == toY)
 	{
-	    String line = model.getLine(fromY);
+	    final String line = model.getLine(fromY);
 	    if (line == null || line.isEmpty())
 		return false;
 	    int fromPos = fromX < line.length()?fromX:line.length();
@@ -332,7 +332,8 @@ return res;
 		return false;
 	    String[] res = new String[1];
 	    res[0] = line.substring(fromPos, toPos);
-	    Luwrain.setClipboard(res);
+	    environment.say(res[0]);
+	    environment.setClipboard(res);
 	    return true;
 	}
 	Vector<String> res = new Vector<String>();
@@ -351,38 +352,81 @@ return res;
 	if (line == null)
 	    return false;
 	res.add(line.substring(0, toX <line.length()?toX:line.length()));
-	Luwrain.setClipboard(res.toArray(new String[res.size()]));
+	environment.hint(environment.langStaticString(Langs.COPIED_LINES) + res.size());
+	environment.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }
 
     @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
     {
-	//FIXME:
-	return false;
+	if (toY >= model.getLineCount())
+	    return false;
+	if (fromY == toY)
+	{
+	    final String line = model.getLine(fromY);
+	    if (line == null || line.isEmpty())
+		return false;
+	    int fromPos = fromX < line.length()?fromX:line.length();
+	    int toPos = toX < line.length()?toX:line.length();
+	    if (fromPos >= toPos)
+		return false;
+	    String[] res = new String[1];
+	    res[0] = line.substring(fromPos, toPos);
+	    model.setLine(fromY, line.substring(0, fromPos) + line.substring(toPos));
+	    environment.say(res[0]);
+	    environment.setClipboard(res);
+	    return true;
+	}
+	Vector<String> res = new Vector<String>();
+	String firstLine = model.getLine(fromY);
+	if (firstLine == null)
+	    firstLine = "";
+	final int fromPos = fromX < firstLine.length()?fromX:firstLine.length();
+	res.add(firstLine.substring(fromPos));
+	for(int i = fromY + 1;i < toY;++i)
+	{
+	    String line = model.getLine(i);
+	    if (line == null)
+		line = "";
+	    res.add(line);
+	}
+	String endingLine = model.getLine(toY);
+	if (endingLine == null)
+	    endingLine = "";
+	final int toPos = toX <endingLine.length()?toX:endingLine.length();
+	res.add(endingLine.substring(0, toPos));
+	model.setLine(fromY, firstLine.substring(0, fromPos) + endingLine.substring(toPos));
+	for(int i = fromY + 1;i <= toY;++i)
+	    model.removeLine(fromY + 1);
+	environment.hint(environment.langStaticString(Langs.CUT_LINES) + res.size());
+	environment.setClipboard(res.toArray(new String[res.size()]));
+	return true;
     }
 
     private boolean onInsert(InsertEvent event)
     {
 	if (event.getData() == null || !(event.getData() instanceof String[]))
 	    return false;
-	String[] text = (String[])event.getData();
+	final String[] text = (String[])event.getData();
 	if (text.length < 1)
 	    return false;
 	if (model.getHotPointY() >= model.getLineCount())
 	{
 	    for(String s: text)
-		model.addLine(s);
+		model.addLine(s != null?s:"");
 	    model.setHotPoint(text[text.length - 1].length(), model.getLineCount() - 1);
+	    environment.say(text[0]);
 	    return true;
 	}
 	if (text.length == 1)
 	{
 	    int index = model.getHotPointY();
 	    String line = model.getLine(index);
-	    int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
+	    final int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
 	    line = line.substring(0, pos) + text[0] + line.substring(pos);
 	    model.setLine(index, line);
 	    model.setHotPoint(pos + text[0].length(), index);
+	    environment.say(text[0]);
 	    return true;
 	}
 	//Multilined new text;
@@ -394,6 +438,7 @@ return res;
 	    model.insertLine(index + i, text[i]);
 	model.insertLine(index + text.length - 1, text[text.length - 1] + line.substring(pos));
 	model.setHotPoint(text[text.length - 1].length(), index + text.length - 1);
+	environment.say(text[0]);
 	return true;
     }
 }

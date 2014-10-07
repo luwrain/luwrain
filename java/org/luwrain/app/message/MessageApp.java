@@ -19,6 +19,7 @@ package org.luwrain.app.message;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.pim.*;
 
 public class MessageApp implements Application, Actions
 {
@@ -65,7 +66,9 @@ public class MessageApp implements Application, Actions
     private void createMessageArea()
     {
 	final Actions a = this;
-	messageArea = new MessageArea(instance, new DefaultControlEnvironment()){
+	messageArea = new MessageArea(instance, new DefaultControlEnvironment(),
+				      "", "", "",
+				      getInitialText(), null){
 		final Actions actions = a;
 		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
@@ -92,5 +95,19 @@ public class MessageApp implements Application, Actions
     public void close()
     {
 	Luwrain.closeApp(instance);
+    }
+
+    private String[] getInitialText()
+    {
+	MailRegistryValues mailValues = new MailRegistryValues(Luwrain.getRegistry());
+	final String signature = mailValues.getSignature();
+	if (signature == null)
+	    return new String[0];
+	String[] res = new String[4];
+	res[0] = "";
+	res[1] = "--";
+	res[2] = signature;
+	res[3] = "";
+	return res;
     }
 }

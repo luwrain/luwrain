@@ -27,6 +27,7 @@ public class MailRegistryValues
     private static final String PASSWD_PATH = "/org/luwrain/pim/mail/storing/passwd";
 
     private static final String OUTGOING_GROUP_URI_PATH = "/org/luwrain/pim/mail/group-outgoing-uri";
+    private static final String SIGNATURE_PATH = "/org/luwrain/pim/mail/signature";
 
     private Registry registry;
 
@@ -38,5 +39,10 @@ public class MailRegistryValues
     public String getOutgoingGroupUri()
     {
 	return registry.getTypeOf(OUTGOING_GROUP_URI_PATH) == Registry.STRING?registry.getString(OUTGOING_GROUP_URI_PATH):null;
+    }
+
+    public String getSignature()
+    {
+	return registry.getTypeOf(SIGNATURE_PATH) == Registry.STRING?registry.getString(SIGNATURE_PATH):null;
     }
 }

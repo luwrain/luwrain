@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:ControlEnvironment interface support;
-
 package org.luwrain.controls;
 
 import org.luwrain.core.*;
@@ -27,11 +25,13 @@ public class SingleLineEdit implements CopyCutRequest
     private final String textBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
     private final String textEndMessage = Langs.staticValue(Langs.AREA_END);
 
+    private ControlEnvironment environment;
     private SingleLineEditModel model;
     private CopyCutInfo copyCutInfo;
 
-    public SingleLineEdit(SingleLineEditModel model)
+    public SingleLineEdit(ControlEnvironment environment, SingleLineEditModel model)
     {
+	this.environment = environment;
 	this.model = model;
 	this.copyCutInfo = new CopyCutInfo(this);
     }
@@ -157,7 +157,7 @@ public class SingleLineEdit implements CopyCutRequest
 
     public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
-	String line = model.getLine();
+	final String line = model.getLine();
 	if (line == null || line.isEmpty())
 	    return false;
 	int fromPos = fromX < line.length()?fromX:line.length();
@@ -166,13 +166,14 @@ public class SingleLineEdit implements CopyCutRequest
 	    return false;
 	String[] res = new String[1];
 	res[0] = line.substring(fromPos, toPos);
-	Luwrain.setClipboard(res);
+	environment.say(res[0]);
+	environment.setClipboard(res);
 	return true;
     }
 
     public boolean onCut(int fromX, int fromY, int toX, int toY)
     {
-	String line = model.getLine();
+	final String line = model.getLine();
 	if (line == null || line.isEmpty())
 	    return false;
 	int fromPos = fromX < line.length()?fromX:line.length();
@@ -181,7 +182,8 @@ public class SingleLineEdit implements CopyCutRequest
 	    return false;
 	String[] res = new String[1];
 	res[0] = line.substring(fromPos, toPos);
-	Luwrain.setClipboard(res);
+	environment.say(res[0]);
+	environment.setClipboard(res);
 	model.setLine(line.substring(0, fromPos) + line.substring(toPos));
 	model.setHotPointX(fromPos);
 	return true;
@@ -191,7 +193,7 @@ public class SingleLineEdit implements CopyCutRequest
     {
 	if (event.getData() == null || !(event.getData() instanceof String[]))
 	    return false;
-	String[] lines = (String[])event.getData();
+	final String[] lines = (String[])event.getData();
 	if (lines.length < 1)
 	    return false;
 	String text = lines[0];
@@ -200,6 +202,7 @@ public class SingleLineEdit implements CopyCutRequest
 	String line = model.getLine();
 	int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
 	model.setLine(line.substring(0, pos) + text + line.substring(pos));
+	environment.say(text);
 	model.setHotPointX(pos + text.length());
 	return true;
     }

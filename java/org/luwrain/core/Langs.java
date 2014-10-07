@@ -51,6 +51,9 @@ public class Langs
     public static final int MESSAGE_ATTACHMENT_POPUP_TITLE = 37;
     public static final int MESSAGE_ATTACHMENT_POPUP_PREFIX = 38;
 
+    public static final int COPIED_LINES = 40;
+    public static final int CUT_LINES = 41;
+
     public static final int NO_REQUESTED_ACTION = 100;
     public static final int NO_ACTIVE_AREA = 101;
     public static final int APPLICATION_INTERNAL_ERROR = 102;

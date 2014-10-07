@@ -113,6 +113,10 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Прикрепления файла";
 	case Langs.MESSAGE_ATTACHMENT_POPUP_PREFIX:
 	    return "Файл для прикрепления:";
+	case Langs.COPIED_LINES:
+	    return "Скопировано строк:";
+	case Langs.CUT_LINES:
+	    return "Вырезано строк:";
 	default:
 	    return "#Неизвестный идентификатор строки?#";
 	}

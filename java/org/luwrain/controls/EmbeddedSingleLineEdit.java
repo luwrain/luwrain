@@ -16,10 +16,12 @@
 
 package org.luwrain.controls;
 
+import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
 public class EmbeddedSingleLineEdit implements SingleLineEditModel
 {
+    private ControlEnvironment environment;
     private EmbeddedEditLines lines;
     private HotPointInfo hotPointInfo;
     private int posX;
@@ -32,16 +34,18 @@ public class EmbeddedSingleLineEdit implements SingleLineEditModel
      * @param posX The X position of this edit in the area
      * @param posY The Y position of this edit in the area
      */
-    public EmbeddedSingleLineEdit(EmbeddedEditLines lines,
+    public EmbeddedSingleLineEdit(ControlEnvironment environment,
+				  EmbeddedEditLines lines,
 				  HotPointInfo hotPointInfo,
 				  int posX,
 				  int posY)
     {
+	this.environment = environment;
 	this.lines = lines;
 	this.hotPointInfo = hotPointInfo;
 	this.posX = posX;
 	this.posY = posY;
-	edit = new SingleLineEdit(this);
+	edit = new SingleLineEdit(environment, this);
     }
 
     public SingleLineEdit getEditObj()

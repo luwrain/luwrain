@@ -89,7 +89,7 @@ String[] content)
     private void createEdit()
     {
 	final EditArea thisArea = this;
-	edit = new MultilinedEdit(new MultilinedEditModel(){
+	edit = new MultilinedEdit(environment, new MultilinedEditModel(){
 		private EditArea area = thisArea;
 		@Override public String getLine(int index)
 		{

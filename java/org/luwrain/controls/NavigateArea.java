@@ -311,13 +311,13 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	setHotPoint(x, y);
     }
 
-    public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
 	if (toY >= getLineCount())
 	    return false;
 	if (fromY == toY)
 	{
-	    String line = getLine(fromY);
+	    final String line = getLine(fromY);
 	    if (line == null || line.isEmpty())
 		return false;
 	    int fromPos = fromX < line.length()?fromX:line.length();
@@ -326,6 +326,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		return false;
 	    String[] res = new String[1];
 	    res[0] = line.substring(fromPos, toPos);
+	    Speech.say(res[0]);
 	    Luwrain.setClipboard(res);
 	    return true;
 	}
@@ -345,11 +346,12 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	if (line == null)
 	    return false;
 	res.add(line.substring(0, toX <line.length()?toX:line.length()));
+	Speech.say(Langs.staticValue(Langs.COPIED_LINES) + res.size(), Speech.PITCH_HIGH);
 	Luwrain.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }
 
-    public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
     {
 	return false;
     }

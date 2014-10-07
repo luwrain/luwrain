@@ -63,6 +63,16 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	return Langs.staticValue(id);
     }
 
+    public void setClipboard(String[] value)
+    {
+	Luwrain.setClipboard(value);
+    }
+
+    public String[] getClipboard()
+    {
+	return Luwrain.getClipboard();
+    }
+
     public void popup(Popup popupObj)
     {
 	Luwrain.popup(popupObj);

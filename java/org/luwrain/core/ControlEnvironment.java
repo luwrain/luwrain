@@ -28,4 +28,6 @@ public interface ControlEnvironment
 int getAreaVisibleHeight(Area area);
     String langStaticString(int id);
     void popup(Popup popupObj);
+    void setClipboard(String[] value);
+    String[] getClipboard();
 }

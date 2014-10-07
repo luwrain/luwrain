@@ -83,7 +83,6 @@ public class FormArea  extends NavigateArea
     }
 
     private ControlEnvironment environment = null;
-    private CopyCutInfo copyCutInfo;
     private String name = "";
     private Vector<Item> items = new Vector<Item>();
 
@@ -170,7 +169,7 @@ public class FormArea  extends NavigateArea
 	item.enteredText = initialText != null?initialText:"";
 	item.obj = obj;
 	item.enabled = enabled;
-	item.edit = new EmbeddedSingleLineEdit(item, this, item.caption.length(), items.size());
+	item.edit = new EmbeddedSingleLineEdit(environment, item, this, item.caption.length(), items.size());
 	items.add(item);
 	updateEditsPos();
 	environment.onAreaNewContent(this);
@@ -222,7 +221,6 @@ public class FormArea  extends NavigateArea
 	return multilinedEditActivated() && multilinedEnabled;
     }
 
-
     public boolean activateMultilinedEdit(String caption, 
 					  String[] initialText,
 					  boolean enabled)
@@ -232,7 +230,7 @@ public class FormArea  extends NavigateArea
 	final ControlEnvironment env = environment;
 	final Area thisArea = this;
 	this.multilinedCaption = caption != null?caption:"";
-	multilinedContent = new DefaultMultilinedEditContent(){
+	multilinedContent = new DefaultMultilinedEditContent(initialText != null?initialText:new String[0]){
 		private ControlEnvironment environment = env;
 		private Area area = thisArea;
 		@Override public void endEditTrans()
@@ -242,7 +240,10 @@ public class FormArea  extends NavigateArea
 		}
 	    };
 	//FIXME:setLines;
-	this.multilinedEdit = new EmbeddedMultilinedEdit(multilinedContent, this, (items != null?items.size():0) +
+	this.multilinedEdit = new EmbeddedMultilinedEdit(environment,
+							 multilinedContent,
+							 this,
+							 (items != null?items.size():0) +
 							 (!multilinedCaption.isEmpty()?1:0));
 	multilinedEnabled = enabled;
 	environment.onAreaNewContent(this);
@@ -253,6 +254,32 @@ public class FormArea  extends NavigateArea
     {
 	return !multilinedEditActivated()?multilinedContent.getWholeText():null;
     }
+
+    public boolean removeItemOnLine(int index)
+    {
+	if (items == null || index < 0 || index >= items.size())
+	    return false;
+	items.remove(index);
+	updateEditsPos();
+	environment.onAreaNewContent(this);
+	return true;
+    }
+
+    public boolean removeItemByName(String itemName)
+    {
+	if (items == null || itemName == null || itemName.trim().isEmpty())
+	    return false;
+	for(int i = 0;i < items.size();++i)
+	    if (items.get(i).name.equals(itemName))
+	    {
+		items.remove(i);
+		updateEditsPos();
+		environment.onAreaNewContent(this);
+		return true;
+	    }
+	return false;
+    }
+
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {

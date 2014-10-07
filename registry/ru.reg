@@ -16,6 +16,7 @@ dir /org/luwrain/pim/mail/groups/5
 string /org/luwrain/pim/mail/groups/5/name Черновики
 int /org/luwrain/pim/mail/groups/5/parent 1
 string /org/luwrain/pim/mail/groups/group-outgoing-uri mailgrp:4
+string /org/luwrain/pim/mail/signature С уважением, проект Luwrain!
 
 # Лента.ру
 dir /org/luwrain/pim/news/groups/1
@@ -23,9 +24,9 @@ string /org/luwrain/pim/news/groups/1/name Лента.ру
 string /org/luwrain/pim/news/groups/1/url1 http://lenta.ru/rss/ 
 
 # РБК 
-dir /org/luwrain/pim/news/groups/2
-string /org/luwrain/pim/news/groups/2/name РБК 
-string /org/luwrain/pim/news/groups/2/url1 http://static.feed.rbc.ru/rbc/internal/rss.rbc.ru/rbc.ru/news.rss
+#dir /org/luwrain/pim/news/groups/2
+#string /org/luwrain/pim/news/groups/2/name РБК 
+#string /org/luwrain/pim/news/groups/2/url1 http://static.feed.rbc.ru/rbc/internal/rss.rbc.ru/rbc.ru/news.rss
 
 # RT (русский)
 dir /org/luwrain/pim/news/groups/3
@@ -43,10 +44,10 @@ dir /org/luwrain/pim/news/groups/5
 string /org/luwrain/pim/news/groups/5/name Русская служба новостей 
 string /org/luwrain/pim/news/groups/5/url1 http://www.rusnovosti.ru/rss/all.xml
 
-# BBC (Русский)
-#dir /org/luwrain/pim/news/groups/6
-#string /org/luwrain/pim/news/groups/6/name Русская служба новостей 
-#string /org/luwrain/pim/news/groups/6/url1 
+# Forbs (Русский)
+dir /org/luwrain/pim/news/groups/6
+string /org/luwrain/pim/news/groups/6/name Forbs 
+string /org/luwrain/pim/news/groups/6/url1 http://rss.forbes.ru/c/32589/f/492646/index.rss
 
 # CNEWS
 dir /org/luwrain/pim/news/groups/20
@@ -59,9 +60,9 @@ string /org/luwrain/pim/news/groups/21/name Ferra.ru
 string /org/luwrain/pim/news/groups/21/url1 http://www.ferra.ru/export/news-rss.xml
 
 # travel.ru
-#dir /org/luwrain/pim/news/groups/22
-#string /org/luwrain/pim/news/groups/22/name Travel.ru
-#string /org/luwrain/pim/news/groups/22/url1 
+dir /org/luwrain/pim/news/groups/22
+string /org/luwrain/pim/news/groups/22/name Travel.ru
+string /org/luwrain/pim/news/groups/22/url1 http://informer.travel.ru/inc/side/news.rss
 
 # Авиа.ру
 dir /org/luwrain/pim/news/groups/23
@@ -78,6 +79,11 @@ string /org/luwrain/pim/news/groups/101/url1 http://rt.com/rss/
 dir /org/luwrain/pim/news/groups/102
 string /org/luwrain/pim/news/groups/102/name Reuters
 string /org/luwrain/pim/news/groups/102/url1 http://feeds.reuters.com/reuters/MostRead
+
+# New York Times
+dir /org/luwrain/pim/news/groups/103
+string /org/luwrain/pim/news/groups/103/name New York Times
+string /org/luwrain/pim/news/groups/103/url1 http://rss.nytimes.com/services/xml/rss/nyt/InternationalHome.xml
 
 # TechCrunch
 dir /org/luwrain/pim/news/groups/151

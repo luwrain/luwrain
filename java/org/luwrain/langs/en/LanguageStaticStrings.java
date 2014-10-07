@@ -113,6 +113,10 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "New attachment";
 	case Langs.MESSAGE_ATTACHMENT_POPUP_PREFIX:
 	    return "File to attach:";
+	case Langs.COPIED_LINES:
+	    return "Lines copied:";
+	case Langs.CUT_LINES:
+	    return "Lines cut:";
 	default:
 	    return "#Unknown string identifier?#";
 	}

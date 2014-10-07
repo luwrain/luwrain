@@ -16,37 +16,43 @@
 
 package org.luwrain.controls;
 
+import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
 public class EmbeddedMultilinedEdit implements MultilinedEditModel
 {
+    private ControlEnvironment environment;
     private MultilinedEditContent content;
     private HotPointInfo hotPointInfo;
     private int posX;
     private int posY;
     private MultilinedEdit edit;
 
-    public EmbeddedMultilinedEdit(MultilinedEditContent content,
+    public EmbeddedMultilinedEdit(ControlEnvironment environment,
+				  MultilinedEditContent content,
 				  HotPointInfo hotPointInfo,
 				  int posX,
 				  int posY)
     {
+	this.environment = environment;
 	this.content = content;
 	this.hotPointInfo = hotPointInfo;
 	this.posX = posX;
 	this.posY = posY;
-	edit = new MultilinedEdit(this);
+	edit = new MultilinedEdit(environment, this);
     }
 
-    public EmbeddedMultilinedEdit(MultilinedEditContent content,
+    public EmbeddedMultilinedEdit(ControlEnvironment environment,
+				  MultilinedEditContent content,
 				  HotPointInfo hotPointInfo,
 				  int posY)
     {
+	this.environment = environment;
 	this.content = content;
 	this.hotPointInfo = hotPointInfo;
 	this.posX = 0;
 	this.posY = posY;
-	edit = new MultilinedEdit(this);
+	edit = new MultilinedEdit(environment, this);
     }
 
     public MultilinedEdit getEditObj()

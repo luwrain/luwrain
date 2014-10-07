@@ -84,19 +84,19 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 		i.type = Registry.STRING;
 		i.value = registry.getString(dir.getPath() + "/" + s);
 		i.initialValue = i.value;
-		i.edit = new EmbeddedSingleLineEdit(this, this, i.name.length() + 3, n.size());
+		i.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, i.name.length() + 3, n.size());
 		break;
 	    case Registry.INTEGER:
 		i.type = Registry.INTEGER;
 		i.value = "" + registry.getInteger(dir.getPath() + "/" + s);
 		i.initialValue = i.value;
-		i.edit = new EmbeddedSingleLineEdit(this, this, i.name.length() + 3, n.size());
+		i.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, i.name.length() + 3, n.size());
 		break;
 	    case Registry.BOOLEAN:
 		i.type = Registry.BOOLEAN;
 		i.boolValue = registry.getBoolean(dir.getPath() + "/" + s);
 		i.initialBoolValue = i.boolValue;
-		i.edit = new EmbeddedSingleLineEdit(this, this, i.name.length() + 3, n.size());
+		i.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, i.name.length() + 3, n.size());
 		break;
 	    }
 	    n.add(i);

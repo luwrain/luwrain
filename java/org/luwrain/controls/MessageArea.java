@@ -57,6 +57,24 @@ public class MessageArea extends FormArea
 	activateMultilinedEdit(environment.langStaticString(Langs.MESSAGE_TEXT), new String[0], true);
     }
 
+    public MessageArea(Object instance,
+		       ControlEnvironment environment,
+		       String initialTo,
+		       String initialCC,
+		       String initialSubject,
+		       String[] initialText,
+		       File initialAttachments[])
+    {
+	super(environment);
+	this.instance = instance;
+	this.environment = environment;
+	addEdit(TO_NAME, environment.langStaticString(Langs.MESSAGE_TO), initialTo != null?initialTo:"", null, true);
+	addEdit(CC_NAME, environment.langStaticString(Langs.MESSAGE_CC), initialCC != null?initialCC:"", null, true);
+	addEdit(SUBJECT_NAME, environment.langStaticString(Langs.MESSAGE_SUBJECT), initialSubject != null?initialSubject:"", null, true);
+	activateMultilinedEdit(environment.langStaticString(Langs.MESSAGE_TEXT), initialText != null?initialText:new String[0], true);
+    }
+
+
     public String getTo()
     {
 	final String value = getEnteredText(TO_NAME);
@@ -128,6 +146,21 @@ public class MessageArea extends FormArea
 
     private boolean removeAttachment()
     {
-	return false;
+	final int index = getHotPointY();
+	if (getItemTypeOnLine(index) != STATIC)
+	    return false;
+	final Object obj = getItemObjOnLine(index);
+	if (obj == null || !(obj instanceof Attachment))
+	    return false;
+	final Attachment a = (Attachment)obj;
+	removeItemOnLine(index);
+	int k;
+	for(k = 0;k < attachments.size();++k)
+	    if (attachments.get(k).name.equals(a.name))
+		break;
+	if (k >= attachments.size())//Should never happen;
+	    return false;
+	attachments.remove(k);
+	return true;
     }
 }
