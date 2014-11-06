@@ -23,16 +23,21 @@ import org.luwrain.core.registry.Registry;
 
 class RegistryDirsModel implements TreeModel
 {
+    private Luwrain luwrain;
     private RegistryActions actions;
     private StringConstructor stringConstructor;
-    private Registry registry = Luwrain.getRegistry();
+    private Registry registry;
     private RegistryDir root;
     private AbstractMap<RegistryDir, String[]> dirsCache = new HashMap<RegistryDir, String[]>();
 
-    public RegistryDirsModel(RegistryActions actions, StringConstructor stringConstructor)
+    public RegistryDirsModel(Luwrain luwrain,
+			     RegistryActions actions,
+			     StringConstructor stringConstructor)
     {
+	this.luwrain = luwrain;
 	this.actions = actions;
 	this.stringConstructor = stringConstructor; 
+	this.registry = luwrain.getRegistry();
 	this.root = new RegistryDir(stringConstructor.rootItemTitle());
     }
 

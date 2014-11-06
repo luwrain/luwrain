@@ -28,6 +28,7 @@ public class ListArea  implements Area, CopyCutRequest
     static final public int BRIEF_VALUE = 1;
     static final public int CLIPBOARD_VALUE = 2;
 
+    private ControlEnvironment environment;
     private String name = "";
     private ListModel model = null;
     private ListItemAppearance appearance = null;
@@ -44,25 +45,31 @@ public class ListArea  implements Area, CopyCutRequest
     private String noItems = Langs.staticValue(Langs.LIST_NO_ITEMS);
     private String emptyLine = Langs.staticValue(Langs.EMPTY_LINE);
 
-    public ListArea(ListModel model)
+    public ListArea(ControlEnvironment environment, ListModel model)
     {
+	this.environment = environment;
 	this.model = model;
 	this.copyCutInfo = new CopyCutInfo(this);
     }
 
-    public ListArea(ListModel model, String name)
+    public ListArea(ControlEnvironment environment,
+		    ListModel model,
+		    String name)
     {
+	this.environment = environment;
 	this.model = model;
 	this.name = name != null?name:"";
 	this.copyCutInfo = new CopyCutInfo(this);
     }
 
-    public ListArea(ListModel model,
+    public ListArea(ControlEnvironment environment,
+		    ListModel model,
 		    String name,
 		    ListItemAppearance appearance,
 		    ListClickHandler clickHandler,
-int initialHotPointX)
+		    int initialHotPointX)
     {
+	this.environment = environment;
 	this.model = model;
 	this.name = name != null?name:"";
 	this.appearance = appearance;
@@ -117,7 +124,7 @@ int initialHotPointX)
 	    if (introduce)
 		Speech.say(emptyLine, Speech.PITCH_HIGH);
 	}
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
     }
 
     public void refresh()
@@ -134,8 +141,8 @@ int initialHotPointX)
 	    hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
 	} else
 	    hotPointX = 0;
-	Luwrain.onAreaNewContent(this);
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -249,7 +256,7 @@ int initialHotPointX)
     public void setName(String value)
     {
 	name = value != null?value:"";
-	Luwrain.onAreaNewName(this);
+	environment.onAreaNewName(this);
     }
 
     protected void introduceItem(ListModel model,
@@ -299,7 +306,7 @@ int initialHotPointX)
 	if (line == null)
 	    line = "";
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	if (hotPointY < model.getItemCount())
 	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0); else
 		Speech.say(emptyLine, Speech.PITCH_HIGH);
@@ -326,7 +333,7 @@ int initialHotPointX)
 	if (line == null)
 	    line = "";
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0);
 	return true;
     }
@@ -344,14 +351,14 @@ int initialHotPointX)
 		Speech.say(noItemsBelow, Speech.PITCH_HIGH);
 		return true;
 	}
-	hotPointY += Luwrain.getAreaVisibleHeight(this);
+	hotPointY += environment.getAreaVisibleHeight(this);
 	if (hotPointY >= model.getItemCount())
 	    hotPointY = model.getItemCount();
 	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
 	if (line == null)
 	    line = "";
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	if (hotPointY < model.getItemCount())
 	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0); else
 		Speech.say(emptyLine, Speech.PITCH_HIGH);
@@ -371,14 +378,14 @@ int initialHotPointX)
 	    Speech.say(noItemsAbove, Speech.PITCH_HIGH);
 	    return true;
 	}
-	hotPointY -= Luwrain.getAreaVisibleHeight(this);
+	hotPointY -= environment.getAreaVisibleHeight(this);
 	if (hotPointY < 0)
 	    hotPointY = 0;
 	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
 	if (line == null)
 	    line = "";
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0);
 	return true;
     }
@@ -393,7 +400,7 @@ int initialHotPointX)
 	}
 	hotPointY = model.getItemCount();
 	hotPointX = 0;
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	Speech.say(emptyLine, Speech.PITCH_HIGH);
 	return true;
     }
@@ -411,7 +418,7 @@ int initialHotPointX)
 	if (line == null)
 	    line = "";
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	introduceItem(model, 0, model.getItem(0), 0);
 	return true;
     }
@@ -439,13 +446,13 @@ int initialHotPointX)
 	    if (hotPointX > line.length())
 	    {
 		hotPointX = line.length();
-		Luwrain.onAreaNewHotPoint(this);
+		environment.onAreaNewHotPoint(this);
 	    }
 	    Speech.say(endOfLine, Speech.PITCH_HIGH);
 	    return true;
 	}
 	++hotPointX;
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	if (hotPointX >= line.length())
 	    Speech.say(endOfLine, Speech.PITCH_HIGH); else
 	    Speech.sayLetter(line.charAt(hotPointX));
@@ -475,7 +482,7 @@ int initialHotPointX)
 	    if (hotPointX < (initialHotPointX < line.length()?initialHotPointX:line.length()))
 	    {
 		hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-		Luwrain.onAreaNewHotPoint(this);
+		environment.onAreaNewHotPoint(this);
 	    }
 	    Speech.say(beginOfLine, Speech.PITCH_HIGH);
 	    return true;
@@ -483,7 +490,7 @@ int initialHotPointX)
 	--hotPointX;
 	if (hotPointX > line.length())
 	    hotPointX = line.length();
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	if (hotPointX >= line.length())
 	    Speech.say(endOfLine, Speech.PITCH_HIGH); else
 	    Speech.sayLetter(line.charAt(hotPointX));
@@ -509,7 +516,7 @@ int initialHotPointX)
 	if (line == null)
 	    line = "";
 	hotPointX = line.length();
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	Speech.say(endOfLine, Speech.PITCH_HIGH);
 	return true;
     }
@@ -533,7 +540,7 @@ int initialHotPointX)
 	if (line == null)
 	    line = "";
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	if (hotPointX >= line.length())
 	    Speech.say(beginOfLine, Speech.PITCH_HIGH); else
 	    Speech.sayLetter(line.charAt(hotPointX));
@@ -586,7 +593,7 @@ int initialHotPointX)
 	}
 	if (res.isEmpty())
 	    return false;
-	Luwrain.setClipboard(res.toArray(new String[res.size()]));
+	environment.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }
 
@@ -622,6 +629,6 @@ int initialHotPointX)
 	res.add(getName() != null?getName():"null");
 	res.add(dashes);
 	res.addAll(lines);
-	Luwrain.setClipboard(res.toArray(new String[res.size()]));
+	environment.setClipboard(res.toArray(new String[res.size()]));
     }
 }

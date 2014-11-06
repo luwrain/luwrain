@@ -32,7 +32,13 @@ class InstanceManager
 	}
     }
 
+    private Environment environment;
     private Vector<Entry> entries = new Vector<Entry>();
+
+    public InstanceManager(Environment environment)
+    {
+	this.environment = environment;
+    }
 
     public Object getInstanceByApp(Application app)
     {
@@ -50,14 +56,14 @@ class InstanceManager
 	return null;
     }
 
-    public Object registerApp(Application app)
+    public Luwrain registerApp(Application app)
     {
 	if (app == null)
 	    return null;
-	Object instance = getInstanceByApp(app);
+	Luwrain instance = (Luwrain)getInstanceByApp(app);//FIXME:
 	if (instance != null)
-	    return instance;
-	instance = new Object();
+	    return (Luwrain)instance;//FIXME:
+	instance = new Luwrain(environment);
 	entries.add(new Entry(instance, app));
 	return instance;
     }

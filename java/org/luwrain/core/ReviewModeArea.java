@@ -21,7 +21,13 @@ import org.luwrain.controls.*;
 
 public class ReviewModeArea extends NavigateArea
 {
+    private ControlEnvironment environment;
     private Area hiddenArea = null;
+
+    public ReviewModeArea(ControlEnvironment environment)
+    {
+	super(environment);
+    }
 
     public int getLineCount()
     {

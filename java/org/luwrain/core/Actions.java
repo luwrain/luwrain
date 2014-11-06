@@ -294,6 +294,7 @@ class Actions
 
 	//Notepad;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "notepad";
@@ -301,12 +302,13 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.notepad.NotepadApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 
 	//Commander;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "commander";
@@ -314,12 +316,13 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.commander.CommanderApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 
 	//News;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "news";
@@ -327,12 +330,13 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.news.NewsReaderApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 
 	//Mail;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "mail";
@@ -340,12 +344,13 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.mail.MailApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 
 	//Fetch;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "fetch";
@@ -353,12 +358,13 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.fetch.FetchApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 
 	//Message;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "message";
@@ -366,12 +372,13 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.message.MessageApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 
 	//Preview;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "preview";
@@ -379,12 +386,13 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.preview.PreviewApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 
 	//control;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "control";
@@ -392,12 +400,13 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.control.ControlApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 
 	//registry;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "registry";
@@ -405,12 +414,13 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.registry.RegistryApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 
 	//Calendar;
 	add(new Action() {
+		private Environment e = environment;
 		public String getName()
 		{
 		    return "calendar";
@@ -418,7 +428,7 @@ class Actions
 		public void onAction()
 		{
 		    Application app = new org.luwrain.app.calendar.CalendarApp();
-		    Luwrain.launchApp(app);
+		    e.launchApp(app);
 		}
 	    });
 

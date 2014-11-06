@@ -29,12 +29,16 @@ import java.util.*;
 
 class FetchArea extends SimpleArea
 {
+    private Luwrain luwrain;
     private Actions actions;
     private StringConstructor stringConstructor;
 
-    public FetchArea(Actions actions, StringConstructor stringConstructor)
+    public FetchArea(Luwrain luwrain,
+		     Actions actions,
+		     StringConstructor stringConstructor)
     {
-	super(new DefaultControlEnvironment(), stringConstructor.appName());
+	super(new DefaultControlEnvironment(luwrain), stringConstructor.appName());
+	this.luwrain = luwrain;
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
 	addLine(stringConstructor.pressEnterToStart());
@@ -64,7 +68,7 @@ class FetchArea extends SimpleArea
 		addLine(messageLineEvent.message);
 	    addLine("");
 	    if (messageLineEvent.message.equals(stringConstructor.fetchingCompleted()))
-		Luwrain.message(messageLineEvent.message);
+		luwrain.message(messageLineEvent.message);
 	    return true;
 	case EnvironmentEvent.CLOSE:
 	    actions.close();

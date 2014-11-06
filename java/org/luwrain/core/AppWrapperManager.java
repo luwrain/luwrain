@@ -19,9 +19,15 @@ package org.luwrain.core;
 import java.util.*;
 import org.luwrain.core.events.*;
 
-public class AppWrapperRegistry
+class AppWrapperManager
 {
+    private Environment environment;
     private Vector<AppWrapper> wrappers = new Vector<AppWrapper>();
+
+    public AppWrapperManager(Environment environment)
+    {
+	this.environment = environment;
+    }
 
     public void add(AppWrapper wrapper)
     {
@@ -47,8 +53,11 @@ public class AppWrapperRegistry
 
     public void fillWithStandardWrappers()
     {
+	final Environment env = environment;
+
 	//Preview;
 	add(new AppWrapper() {
+		private Environment e = env;
 		public String getName()
 		{
 		    return "preview";
@@ -57,17 +66,18 @@ public class AppWrapperRegistry
 		{
 		    if (args == null || args.length < 1)
 		    {
-			Luwrain.launchApp(new org.luwrain.app.preview.PreviewApp());
+			e.launchApp(new org.luwrain.app.preview.PreviewApp());
 			return;
 		    }
 		    for(int i = 0;i < args.length;i++)
 			if (args[i] != null)
-			    Luwrain.launchApp(new org.luwrain.app.preview.PreviewApp(args[i]));
+			    e.launchApp(new org.luwrain.app.preview.PreviewApp(args[i]));
 		}
 	    });
 
 	//Notepad;
 	add(new AppWrapper() {
+		private Environment e = env;
 		public String getName()
 		{
 		    return "notepad";
@@ -76,12 +86,12 @@ public class AppWrapperRegistry
 		{
 		    if (args == null || args.length < 1)
 		    {
-			Luwrain.launchApp(new org.luwrain.app.notepad.NotepadApp());
+			e.launchApp(new org.luwrain.app.notepad.NotepadApp());
 			return;
 		    }
 		    for(int i = 0;i < args.length;i++)
 			if (args[i] != null)
-			    Luwrain.launchApp(new org.luwrain.app.notepad.NotepadApp(args[i]));
+			    e.launchApp(new org.luwrain.app.notepad.NotepadApp(args[i]));
 		}
 	    });
 

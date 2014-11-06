@@ -28,9 +28,9 @@ public class NotepadApp implements Application, Actions
 {
     static private final Charset ENCODING = StandardCharsets.UTF_8;
 
+    private Luwrain luwrain;
     private Base base = new Base();
     private StringConstructor stringConstructor;
-    private Object instance;
     private EditArea area;
     private String fileName = "";
     private boolean modified = false; 
@@ -44,12 +44,13 @@ public class NotepadApp implements Application, Actions
 	this.fileName = arg;
     }
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
 	Object o = Langs.requestStringConstructor("notepad");
 	if (o == null)
 	    return false;
 	stringConstructor = (StringConstructor)o;
+	this.luwrain = luwrain;
 	createArea();
 	if (fileName != null && !fileName.isEmpty())
 	{
@@ -58,11 +59,10 @@ public class NotepadApp implements Application, Actions
 	    File f = new File(fileName);
 	    area.setName(f.getName());
 	    if (lines == null)
-		Luwrain.message(stringConstructor.errorOpeningFile()); else 
+		luwrain.message(stringConstructor.errorOpeningFile()); else 
 		area.setContent(lines);
 	} else
 	    area.setName(stringConstructor.newFileName());
-	this.instance = instance;
 	return true;
     }
 
@@ -70,7 +70,7 @@ public class NotepadApp implements Application, Actions
     {
 	if (!modified)
 	{
-	    Luwrain.message(stringConstructor.noModificationsToSave());
+	    luwrain.message(stringConstructor.noModificationsToSave());
 	    return true;
 	}
 	if (fileName == null || fileName.isEmpty())
@@ -84,10 +84,10 @@ public class NotepadApp implements Application, Actions
 	    if (base.save(fileName, area.getContent(), ENCODING))
 	    {
 		modified = false;
-		Luwrain.message(stringConstructor.fileIsSaved());
+		luwrain.message(stringConstructor.fileIsSaved());
 		return true;
 	    }
-	Luwrain.message(stringConstructor.errorSavingFile());
+	luwrain.message(stringConstructor.errorSavingFile());
 	return false;
     }
 
@@ -98,20 +98,20 @@ public class NotepadApp implements Application, Actions
 	File dir = null;
 	if (fileName == null || fileName.isEmpty())
 	{
-	    SystemDirs systemDirs = new SystemDirs(Luwrain.getRegistry());
+	    SystemDirs systemDirs = new SystemDirs(luwrain.getRegistry());
 	    dir = systemDirs.userHomeAsFile();
 	} else
 	{
 	    File f = new File(fileName);
 	    dir = f.getParentFile();
 	}
-	File chosenFile = Luwrain.openPopup(instance, null, null, dir);
+	File chosenFile = luwrain.openPopup(null, null, dir);
 	if (chosenFile == null)
 	    return;
 	String[] lines = base.read(chosenFile.getAbsolutePath(), ENCODING);
 	if (lines == null)
 	{
-	    Luwrain.message(stringConstructor.errorOpeningFile());
+	    luwrain.message(stringConstructor.errorOpeningFile());
 	    return;
 	}
 	area.setContent(lines);
@@ -127,7 +127,7 @@ public class NotepadApp implements Application, Actions
     private void createArea()
     {
 	final Actions a = this;
-	area = new EditArea(new DefaultControlEnvironment(), fileName){
+	area = new EditArea(new DefaultControlEnvironment(luwrain), fileName){
 		private Actions actions = a;
 		public void onChange()
 		{
@@ -165,7 +165,7 @@ public class NotepadApp implements Application, Actions
     {
 	if (!checkIfUnsaved())
 	    return;
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 
     //Returns true if there are no more modification user wants to save;
@@ -173,8 +173,8 @@ public class NotepadApp implements Application, Actions
     {
 	if (!modified)
 	    return true;
-	YesNoPopup popup = new YesNoPopup(instance, stringConstructor.saveChangesPopupName(), stringConstructor.saveChangesPopupQuestion(), false);
-	Luwrain.popup(popup);
+	YesNoPopup popup = new YesNoPopup(luwrain, stringConstructor.saveChangesPopupName(), stringConstructor.saveChangesPopupQuestion(), false);
+	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return false;
 	if ( popup.getResult() && !save())
@@ -186,10 +186,9 @@ public class NotepadApp implements Application, Actions
     //null means user cancelled file name popup
     private String askFileNameToSave()
     {
-	SystemDirs systemDirs = new SystemDirs(Luwrain.getRegistry());
+	SystemDirs systemDirs = new SystemDirs(luwrain.getRegistry());
 	final File dir = systemDirs.userHomeAsFile();
-	final File chosenFile = Luwrain.openPopup(instance, 
-						  stringConstructor.savePopupName(),
+	final File chosenFile = luwrain.openPopup(stringConstructor.savePopupName(),
 						  stringConstructor.savePopupPrefix(),
 						  new File(dir, stringConstructor.newFileName()));
 	if (chosenFile == null)

@@ -77,16 +77,6 @@ public class TreeArea implements Area
     private String collapsed = "";
     private String level = "";
 
-    public TreeArea(TreeModel model, String name)
-    {
-	this.environment = new DefaultControlEnvironment();
-	this.model = model;
-	this.name = name;
-	root = constructNode(model.getRoot(), null, true);//true means expand children;
-	items = generateAllVisibleItems();
-	initStringConstants();
-    }
-
     public TreeArea(ControlEnvironment environment,
 		    TreeModel model,
 		    String name)

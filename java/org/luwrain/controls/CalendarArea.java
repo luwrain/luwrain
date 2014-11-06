@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:ControlEnvironment interface support;
-
 package org.luwrain.controls;
 
 import java.util.*;
@@ -24,13 +22,15 @@ import org.luwrain.core.events.*;
 
 public class CalendarArea implements Area
 {
+    private ControlEnvironment environment;
     private Calendar calendar;
     private int[][] table;
     private int tableX = 0;
     private int tableY = 0;
 
-    public CalendarArea(Calendar calendar)
+    public CalendarArea(ControlEnvironment environment, Calendar calendar)
     {
+	this.environment = environment;
 	this.calendar = calendar;
 	refresh();
     }
@@ -86,9 +86,9 @@ public class CalendarArea implements Area
 	default:return false;
 	}
 	refresh();
-	Luwrain.onAreaNewContent(this);
-	Luwrain.onAreaNewHotPoint(this);
-	Luwrain.onAreaNewName(this);
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+	environment.onAreaNewName(this);
 	Speech.say(constructDayStringForSpeech(calendar));
 	return true;
     }

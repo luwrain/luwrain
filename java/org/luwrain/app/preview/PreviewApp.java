@@ -20,7 +20,7 @@ import org.luwrain.core.*;
 
 public class PreviewApp implements Application, PreviewActions
 {
-    private Object instance;
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private PreviewArea area;
     private String arg;
@@ -34,23 +34,20 @@ public class PreviewApp implements Application, PreviewActions
 	this.arg = arg;
     }
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
 	Object o = Langs.requestStringConstructor("preview");
 	if (o == null)
-	{
-	    Log.error("preview", "No string constructor for preview application");
 	    return false;
-	}
 	stringConstructor = (StringConstructor)o;
-	area = new PreviewArea(stringConstructor, this);
+	this.luwrain = luwrain;
+	area = new PreviewArea(luwrain, stringConstructor, this);
 	if (arg != null)
 	    if (!handleToPreview(arg))
 	    {
-		Luwrain.message(stringConstructor.errorOpeningFile());
+		luwrain.message(stringConstructor.errorOpeningFile());
 		return false;
 	    }
-	this.instance = instance;
 	return true;
     }
 
@@ -77,6 +74,6 @@ public class PreviewApp implements Application, PreviewActions
 
     public void closePreview()
     {
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 }

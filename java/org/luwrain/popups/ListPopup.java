@@ -27,24 +27,24 @@ public class ListPopup extends SimpleLinePopup
 
     private ListPopupModel model;
 
-    public ListPopup(Object instance,
+    public ListPopup(Luwrain luwrain,
 		     ListPopupModel model,
 		     String name,
 		     String prefix,
 		     String text)
     {
-	super(instance, name, prefix, text);
+	super(luwrain, name, prefix, text);
 	this.model = model;
     }
 
-    public ListPopup(Object instance,
+    public ListPopup(Luwrain luwrain,
 		     ListPopupModel model,
 		     String name,
 		     String prefix,
 		     String text,
 		     boolean noMultipleCopies)
     {
-	super(instance, name, prefix, text, noMultipleCopies);
+	super(luwrain, name, prefix, text, noMultipleCopies);
 	this.model = model;
     }
 

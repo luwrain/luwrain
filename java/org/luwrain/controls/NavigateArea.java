@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:ControlEnvironment interface support;
-
 package org.luwrain.controls;
 
 //TODO:Tab shift respecting on up-down movements;
@@ -26,6 +24,7 @@ import org.luwrain.core.events.*;
 
 public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 {
+    private ControlEnvironment environment;
     private final String areaBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
     private final String areaEndMessage = Langs.staticValue(Langs.AREA_END);
     private final String firstLineMessage = Langs.staticValue(Langs.THE_FIRST_LINE);
@@ -37,8 +36,9 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public NavigateArea()
+    public NavigateArea(ControlEnvironment environment)
     {
+	this.environment = environment;
 	this.copyCutInfo = new CopyCutInfo(this);
     }
 
@@ -62,7 +62,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		}
 		hotPointX = 0;
 		hotPointY = 0;
-		Luwrain.onAreaNewHotPoint(this);
+		environment.onAreaNewHotPoint(this);
 		Speech.say(areaBeginMessage, Speech.PITCH_HIGH);
 		return true;
 	    }
@@ -86,7 +86,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		hotPointY = getLineCount() - 1;
 		if (hotPointY < 0)//Incorrect getLineCount() behaviour;
 		    hotPointY = 0;
-		Luwrain.onAreaNewHotPoint(this);
+		environment.onAreaNewHotPoint(this);
 		    Speech.say(areaEndMessage, Speech.PITCH_HIGH);
 		    return true;
 	    }
@@ -109,7 +109,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    //FIXME:hotPointX = proper new position respecting tab sequences;
 	    if (hotPointX > line.length())
 		hotPointX = line.length();
-	    Luwrain.onAreaNewHotPoint(this);
+	    environment.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -130,7 +130,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    //FIXME:hotPointX = proper position respecting tab sequences;
 	    if (hotPointX > line.length())
 		hotPointX = line.length();
-	    Luwrain.onAreaNewHotPoint(this);
+	    environment.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -150,7 +150,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		hotPointX = 0;
 	    } else
 		hotPointX++;
-	    Luwrain.onAreaNewHotPoint(this);
+	    environment.onAreaNewHotPoint(this);
 	    String line = getLine(hotPointY);
 	    if (line == null)
 		line = new String();
@@ -182,7 +182,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		hotPointX = line.length();
 	    } else
 		hotPointX--;
-	    Luwrain.onAreaNewHotPoint(this);
+	    environment.onAreaNewHotPoint(this);
 	    String line = getLine(hotPointY);
 	    if (line == null)
 		line = new String();
@@ -207,7 +207,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    if (hotPointX > 0)
 	    {
 		hotPointX = 0;
-		Luwrain.onAreaNewHotPoint(this);
+		environment.onAreaNewHotPoint(this);
 	    } 
 	    Speech.sayLetter(line.charAt(0));
 	    return true;
@@ -228,7 +228,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    if (hotPointX < line.length())
 	    {
 		hotPointX = line.length();
-		Luwrain.onAreaNewHotPoint(this);
+		environment.onAreaNewHotPoint(this);
 	    } 
 	    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
 	    return true;
@@ -267,7 +267,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    hotPointX = x;
 	if (y >= 0)
 	    hotPointY = y;
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
     }
 
     @Override public void setHotPointX(int value)
@@ -275,7 +275,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	if (value < 0)
 	    return;
 	hotPointX = value;
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
     }
 
     @Override public void setHotPointY(int value)
@@ -283,7 +283,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	if (value < 0)
 	    return;
 	hotPointY = value;
-	Luwrain.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
     }
 
     @Override public int getHotPointX()
@@ -327,7 +327,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    String[] res = new String[1];
 	    res[0] = line.substring(fromPos, toPos);
 	    Speech.say(res[0]);
-	    Luwrain.setClipboard(res);
+	    environment.setClipboard(res);
 	    return true;
 	}
 	Vector<String> res = new Vector<String>();
@@ -347,7 +347,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    return false;
 	res.add(line.substring(0, toX <line.length()?toX:line.length()));
 	Speech.say(Langs.staticValue(Langs.COPIED_LINES) + res.size(), Speech.PITCH_HIGH);
-	Luwrain.setClipboard(res.toArray(new String[res.size()]));
+	environment.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }
 

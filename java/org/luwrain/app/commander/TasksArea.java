@@ -23,12 +23,17 @@ import org.luwrain.controls.*;
 
 class TasksArea extends NavigateArea
 {
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private Actions actions;
     Vector<Task> tasks = new Vector<Task>();
 
-    public TasksArea(Actions actions, StringConstructor stringConstructor)
+    public TasksArea(Luwrain luwrain,
+		     Actions actions,
+		     StringConstructor stringConstructor)
     {
+	super(new DefaultControlEnvironment(luwrain));
+	this.luwrain = luwrain;
 	this.stringConstructor = stringConstructor;
 	this.actions = actions;
     }
@@ -107,7 +112,7 @@ class TasksArea extends NavigateArea
 	    Speech.say(stringConstructor.failed());
 	    actions.refresh();
 	}
-	Luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewContent(this);
     }
 
     private String constructStringForScreen(Task task)

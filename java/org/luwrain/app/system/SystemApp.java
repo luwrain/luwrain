@@ -20,15 +20,17 @@ import org.luwrain.core.*;
 
 public class SystemApp implements Application
 {
+    private Luwrain luwrain;
     private SystemAppStringConstructor stringConstructor = null;
 
-    public SystemApp()
+    public SystemApp(Luwrain luwrain)
     {
+	this.luwrain = luwrain;
 	Object o = Langs.requestStringConstructor("system-application");
 	stringConstructor = (SystemAppStringConstructor)o;
     }
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
 	//Actually never called;
 	return true;
@@ -41,7 +43,7 @@ public class SystemApp implements Application
 
     public MainMenuArea createMainMenuArea(String[] items)
     {
-	return new MainMenuArea(stringConstructor, items);
+	return new MainMenuArea(luwrain, stringConstructor, items);
     }
 
     public SystemAppStringConstructor stringConstructor()

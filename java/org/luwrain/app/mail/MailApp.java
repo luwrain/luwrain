@@ -22,30 +22,30 @@ import org.luwrain.controls.*;
 
 public class MailApp implements Application, Actions
 {
+    private Luwrain luwrain;
     private Base base = new Base();
     private StringConstructor stringConstructor = null;
-    private Object instance;
 
     private TreeArea foldersArea;
     private TableArea summaryArea;
     private MessageArea messageArea;
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
 	Object o = Langs.requestStringConstructor("mail-reader");
 	if (o == null)
 	    return false;
 	stringConstructor = (StringConstructor)o;
-	base.init(stringConstructor);
+	this.luwrain = luwrain;
+	base.init(luwrain, stringConstructor);
 	if (!base.isValid())
 	{
-	    Luwrain.message(stringConstructor.noMailStoring());
+	    luwrain.message(stringConstructor.noMailStoring());
 	    return false;
 	}
 	createFoldersArea();
 	createSummaryArea();
 	createMessageArea();
-	this.instance = instance;
 	return true;
     }
 
@@ -55,14 +55,16 @@ public class MailApp implements Application, Actions
 	    return;
 	if (base.openFolder(folder, summaryArea))
 	    gotoSummary(); else
-	    Luwrain.message(stringConstructor.errorOpeningFolder());
+	    luwrain.message(stringConstructor.errorOpeningFolder());
     }
 
     private void createFoldersArea()
     {
 	final Actions a = this;
 	final StringConstructor s = stringConstructor;
-	foldersArea = new TreeArea(base.getFoldersModel(), stringConstructor.foldersAreaName()){
+	foldersArea = new TreeArea(new DefaultControlEnvironment(luwrain),
+				   base.getFoldersModel(),
+				   stringConstructor.foldersAreaName()){
 		private StringConstructor stringConstructor = s;
 		private Actions actions = a;
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -99,7 +101,7 @@ public class MailApp implements Application, Actions
     {
 	final Actions a = this;
 	final StringConstructor s = stringConstructor;
-	summaryArea = new TableArea(new DefaultControlEnvironment(),
+	summaryArea = new TableArea(new DefaultControlEnvironment(luwrain),
 				    base.getSummaryModel(),
 				    stringConstructor.summaryAreaName(),
 				    base.getSummaryAppearance(),
@@ -141,7 +143,7 @@ public class MailApp implements Application, Actions
 
     private void createMessageArea()
     {
-	messageArea = new MessageArea(this, stringConstructor);
+	messageArea = new MessageArea(luwrain, this, stringConstructor);
     }
 
     public AreaLayout getAreasToShow()
@@ -151,21 +153,21 @@ public class MailApp implements Application, Actions
 
     public void gotoFolders()
     {
-	Luwrain.setActiveArea(instance, foldersArea);
+	luwrain.setActiveArea(foldersArea);
     }
 
     public void gotoSummary()
     {
-	Luwrain.setActiveArea(instance, summaryArea);
+	luwrain.setActiveArea(summaryArea);
     }
 
     public void gotoMessage()
     {
-	Luwrain.setActiveArea(instance, messageArea);
+	luwrain.setActiveArea(messageArea);
     }
 
     public void close()
     {
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 }

@@ -27,8 +27,8 @@ public class TerminalApp implements Application, Actions
 {
     private final static String SHELL_COMMAND = "/bin/sh";//FIXME:System dependent, it is better to read it from the registry;
 
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
-    private Object instance;
     private NavigateArea area;
     private Terminal terminal = new Terminal();
     private TerminalThread terminalThread;
@@ -37,12 +37,13 @@ public class TerminalApp implements Application, Actions
     {
     }
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
 	Object o = Langs.requestStringConstructor("term");
 	if (o == null || !(o instanceof StringConstructor))
 	    return false;
 	stringConstructor = (StringConstructor)o;
+	this.luwrain = luwrain;
 	createArea();
 	openTerminal();
 	return true;
@@ -77,7 +78,7 @@ public class TerminalApp implements Application, Actions
 	final Actions a = this;
 	final Terminal t = terminal;
 	final StringConstructor s = stringConstructor;
-	area = new NavigateArea(){
+	area = new NavigateArea(new DefaultControlEnvironment(luwrain)){
 		private Actions actions = a;
 		private StringConstructor stringConstructor = s;
 		private Terminal terminal = t;
@@ -126,6 +127,6 @@ public class TerminalApp implements Application, Actions
     public void close()
     {
 	closeTerminal();
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 }

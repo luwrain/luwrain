@@ -17,17 +17,19 @@
 package org.luwrain.app.commander;
 
 import java.io.*;
+import org.luwrain.core.*;
 
 class Operations
 {
-    static public void copy(StringConstructor stringConstructor,
+    static public void copy(Luwrain luwrain,
+			    StringConstructor stringConstructor,
 			    TasksArea tasks,
 			    File[] filesToCopy,
 			    File copyTo)
     {
 	Task task = new Task(stringConstructor.copying(filesToCopy));
 	tasks.addTask(task);
-	DirCopyOperation op = new DirCopyOperation(tasks, task, filesToCopy, copyTo);
+	DirCopyOperation op = new DirCopyOperation(luwrain, tasks, task, filesToCopy, copyTo);
 	Thread t = new Thread(op);
 	t.start();
     }

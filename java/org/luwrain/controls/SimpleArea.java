@@ -27,11 +27,13 @@ public class SimpleArea extends NavigateArea implements MutableLines
 
     public SimpleArea(ControlEnvironment environment)
     {
+	super(environment);
 	this.environment = environment;
     }
 
     public SimpleArea(ControlEnvironment environment, String name)
     {
+	super(environment);
 	this.environment = environment;
 	this.name = name != null?name:"";
     }
@@ -40,6 +42,7 @@ public class SimpleArea extends NavigateArea implements MutableLines
 		      String name,
 		      String[] lines)
     {
+	super(environment);
 	this.environment = environment;
 	this.name = name != null?name:"";
 	content.setLines(lines);

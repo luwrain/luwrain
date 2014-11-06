@@ -18,9 +18,9 @@ package org.luwrain.core;
 
 public class FileTypes
 {
-    private AppWrapperRegistry appWrappers;
+    private AppWrapperManager appWrappers;
 
-    public FileTypes(AppWrapperRegistry appWrappers)
+    public FileTypes(AppWrapperManager appWrappers)
     {
 	this.appWrappers = appWrappers;
     }

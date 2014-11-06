@@ -22,21 +22,19 @@ import org.luwrain.controls.*;
 
 public class ControlApp implements Application, ControlActions
 {
-    private Object instance;
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private ControlGroupsModel groupsModel;
     private TreeArea groupsArea;
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
-	if (instance == null)
-	    return false;
 	Object str = Langs.requestStringConstructor("control");
 	if (str == null)
 	    return false;
+	this.luwrain = luwrain;
 	stringConstructor = (StringConstructor)str;
-	this.instance = instance;
-	groupsModel = new ControlGroupsModel(this, stringConstructor);
+	groupsModel = new ControlGroupsModel(luwrain, this, stringConstructor);
 	createAreas();
 	return true;
     }
@@ -58,7 +56,7 @@ public class ControlApp implements Application, ControlActions
     public void openGroup(Object obj)
     {
 	if (obj != null)//FIXME:
-	Luwrain.message(obj.toString());
+	luwrain.message(obj.toString());
     }
 
     public void refreshGroups(Object preferableSelected)
@@ -68,13 +66,15 @@ public class ControlApp implements Application, ControlActions
 
     public void close()
     {
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 
     private void createAreas()
     {
 	final ControlActions a = this;
-	groupsArea = new TreeArea(groupsModel, stringConstructor.groupsAreaName()) {
+	groupsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
+				  groupsModel,
+				  stringConstructor.groupsAreaName()) {
 		private ControlActions actions = a;
 		public boolean onKeyboardEvent(KeyboardEvent event)
 		{

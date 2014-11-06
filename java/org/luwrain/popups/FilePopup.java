@@ -26,22 +26,22 @@ public class FilePopup extends ListPopup
 {
     private File file;
 
-    public FilePopup(Object instance,
+    public FilePopup(Luwrain luwrain,
 			   String name,
 			   String prefix,
 			   File file)
     {
-	super(instance, new FileListPopupModel(), name, prefix, file.getAbsolutePath());
+	super(luwrain, new FileListPopupModel(), name, prefix, file.getAbsolutePath());
 	this.file = file;
     }
 
-    public FilePopup(Object instance,
+    public FilePopup(Luwrain luwrain,
 			   String name,
 			   String prefix,
 		     File file,
 		     boolean noMultipleCopies)
     {
-	super(instance, new FileListPopupModel(), name, prefix, file.getAbsolutePath(), noMultipleCopies);
+	super(luwrain, new FileListPopupModel(), name, prefix, file.getAbsolutePath(), noMultipleCopies);
 	this.file = file;
     }
 

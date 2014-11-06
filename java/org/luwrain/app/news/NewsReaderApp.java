@@ -23,7 +23,7 @@ import org.luwrain.pim.*;
 
 public class NewsReaderApp implements Application, Actions
 {
-    private Object instance;
+    private Luwrain luwrain;
     private StringConstructor stringConstructor = null;
     private GroupModel groupModel;
     private ListArea groupArea;
@@ -32,7 +32,7 @@ public class NewsReaderApp implements Application, Actions
     private NewsStoring newsStoring;
     //    private StoredNewsGroup[] groups;
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
 	Object o = Langs.requestStringConstructor("news-reader");
 	if (o == null)
@@ -41,14 +41,14 @@ public class NewsReaderApp implements Application, Actions
 	    return false;
 	}
 	stringConstructor = (StringConstructor)o;
-	newsStoring = Luwrain.getPimManager().getNewsStoring();
+	this.luwrain = luwrain;
+	newsStoring = luwrain.getPimManager().getNewsStoring();
 	if (newsStoring == null)
 	{
-	    Luwrain.message("No news storing");//FIXME:
+	    luwrain.message("No news storing");//FIXME:
 	    return false;
 	}
 	createAreas();
-	this.instance = instance;
 	return true;
     }
 
@@ -57,7 +57,8 @@ public class NewsReaderApp implements Application, Actions
 	final Actions a = this;
 	final StringConstructor s = stringConstructor;
 	groupModel = new GroupModel(newsStoring);
-	groupArea = new ListArea(groupModel) {
+	groupArea = new ListArea(new DefaultControlEnvironment(luwrain),
+				 groupModel) {
 		private StringConstructor stringConstructor = s;
 		private Actions actions = a;
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -95,14 +96,14 @@ public class NewsReaderApp implements Application, Actions
 		    return stringConstructor.groupAreaName();
 		}
 	    };
-	summaryArea = new SummaryArea(this, stringConstructor);
-	viewArea = new ViewArea(this, stringConstructor);
+	summaryArea = new SummaryArea(luwrain, this, stringConstructor);
+	viewArea = new ViewArea(luwrain, this, stringConstructor);
     }
 
     public void showArticle(StoredNewsArticle article)
     {
 	viewArea.show(article);
-	Luwrain.setActiveArea(instance, viewArea);
+	luwrain.setActiveArea(viewArea);
     }
 
     public void openGroup(int index)
@@ -131,7 +132,7 @@ index < 0 ||
 	{
 	    Log.error("news", "could not get list of articles in group:" + group.getStoredGroup().getName());
 	    e.printStackTrace();
-	    Luwrain.message(stringConstructor.errorReadingArticles());
+	    luwrain.message(stringConstructor.errorReadingArticles());
 	    summaryArea.show(null);
 	    return;
 	}
@@ -167,7 +168,7 @@ index < 0 ||
 	{
 	    Log.error("news", "could not mark articles in the group as read:" + group.getStoredGroup().getName());
 	    e.printStackTrace();
-	    Luwrain.message(stringConstructor.errorReadingArticles());
+	    luwrain.message(stringConstructor.errorReadingArticles());
 	    summaryArea.show(null);
 	    return;
 	}
@@ -182,21 +183,21 @@ index < 0 ||
 
     public void close()
     {
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 
     public void gotoGroups()
     {
-	Luwrain.setActiveArea(instance, groupArea);
+	luwrain.setActiveArea(groupArea);
     }
 
     public void gotoArticles()
     {
-	Luwrain.setActiveArea(instance, summaryArea);
+	luwrain.setActiveArea(summaryArea);
     }
 
     public void gotoView()
     {
-	Luwrain.setActiveArea(instance, viewArea);
+	luwrain.setActiveArea(viewArea);
     }
 }

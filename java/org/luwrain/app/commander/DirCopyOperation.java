@@ -7,6 +7,7 @@ import org.luwrain.core.events.*;
 
 class DirCopyOperation implements Runnable
 {
+    private Luwrain luwrain;
     private Area area;
     private Task task;
 
@@ -17,11 +18,13 @@ class DirCopyOperation implements Runnable
     private long bytesCopied = 0;
     private int lastPercent = 0;
 
-    public DirCopyOperation(Area area,
+    public DirCopyOperation(Luwrain luwrain,
+			    Area area,
 			    Task task,
 			    File[] filesToCopy,
 			    File copyTo)
     {
+	this.luwrain = luwrain;
 	this.area = area;
 	this.task = task;
 	this.filesToCopy = filesToCopy;
@@ -118,12 +121,12 @@ class DirCopyOperation implements Runnable
 
     private void onDone()
     {
-	Luwrain.enqueueEvent(new TaskStatusUpdateEvent(area, task, Task.DONE, 0));
+	luwrain.enqueueEvent(new TaskStatusUpdateEvent(area, task, Task.DONE, 0));
     }
 
     private void onFailed()
     {
-	Luwrain.enqueueEvent(new TaskStatusUpdateEvent(area, task, Task.FAILED, 0));
+	luwrain.enqueueEvent(new TaskStatusUpdateEvent(area, task, Task.FAILED, 0));
     }
 
     private void onNewData(int bytes)
@@ -133,6 +136,6 @@ class DirCopyOperation implements Runnable
 	if (percent == lastPercent)
 	    return;
 	lastPercent = percent;
-	Luwrain.enqueueEvent(new TaskStatusUpdateEvent(area, task, Task.LAUNCHED, percent));
+	luwrain.enqueueEvent(new TaskStatusUpdateEvent(area, task, Task.LAUNCHED, percent));
     }
 }

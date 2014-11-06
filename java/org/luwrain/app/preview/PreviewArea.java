@@ -25,12 +25,17 @@ import org.luwrain.controls.*;
 
 public class PreviewArea extends NavigateArea
 {
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private PreviewActions actions;
     private Filter filter;
 
-    public PreviewArea(StringConstructor stringConstructor, PreviewActions actions)
+    public PreviewArea(Luwrain luwrain,
+		       StringConstructor stringConstructor,
+		       PreviewActions actions)
     {
+	super(new DefaultControlEnvironment(luwrain));
+	this.luwrain = luwrain;
 	this.stringConstructor = stringConstructor;
 	this.actions = actions;
     }
@@ -41,8 +46,8 @@ public class PreviewArea extends NavigateArea
 	    return;
 	this.filter = filter;
 	setHotPoint(0, 0);
-	Luwrain.onAreaNewContent(this);
-	Luwrain.onAreaNewName(this);
+	luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewName(this);
     }
 
     public int getLineCount()

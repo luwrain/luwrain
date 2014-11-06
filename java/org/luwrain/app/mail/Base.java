@@ -24,16 +24,18 @@ import org.luwrain.pim.*;
 
 class Base
 {
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private MailStoring mailStoring;
     private FoldersTreeModel foldersModel;
     private SummaryTableModel summaryModel;
     private SummaryTableAppearance summaryAppearance;
 
-    public void init(StringConstructor stringConstructor)
+    public void init(Luwrain luwrain, StringConstructor stringConstructor)
     {
+	this.luwrain = luwrain;
 	this.stringConstructor = stringConstructor;
-	mailStoring = Luwrain.getPimManager().getMailStoring();
+	mailStoring = luwrain.getPimManager().getMailStoring();
     }
 
     public boolean isValid()

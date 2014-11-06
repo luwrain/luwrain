@@ -24,12 +24,15 @@ import org.luwrain.controls.*;
 
 public class MessageArea extends SimpleArea
 {
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private Actions actions;
 
-    public MessageArea(Actions actions, StringConstructor stringConstructor)
+    public MessageArea(Luwrain luwrain,
+		       Actions actions,
+		       StringConstructor stringConstructor)
     {
-	super(new DefaultControlEnvironment(), stringConstructor.messageAreaName());
+	super(new DefaultControlEnvironment(luwrain), stringConstructor.messageAreaName());
 	this.actions =  actions;
 	this.stringConstructor = stringConstructor;
     }

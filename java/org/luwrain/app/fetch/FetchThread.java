@@ -26,10 +26,13 @@ import org.luwrain.network.*;
 class FetchThread implements Runnable
 {
     public boolean done = false;
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private Area messageArea;
 
-    public FetchThread(StringConstructor stringConstructor, Area messageArea)
+    public FetchThread(Luwrain luwrain,
+		       StringConstructor stringConstructor,
+		       Area messageArea)
     {
 	this.stringConstructor = stringConstructor;
 	this.messageArea = messageArea;
@@ -37,7 +40,7 @@ class FetchThread implements Runnable
 
     private void fetchMail()
     {
-	MailStoring mailStoring = Luwrain.getPimManager().getMailStoring();//FIXME:Must be with new connection since in separate thread;
+	MailStoring mailStoring = luwrain.getPimManager().getMailStoring();//FIXME:Must be with new connection since in separate thread;
 	if (mailStoring == null)
 	{
 	    message(stringConstructor.noMailStoring());
@@ -93,7 +96,7 @@ class FetchThread implements Runnable
 
     private void fetchNews()
     {
-	NewsStoring newsStoring = Luwrain.getPimManager().getNewsStoring();//FIXME:In independent connection;
+	NewsStoring newsStoring = luwrain.getPimManager().getNewsStoring();//FIXME:In independent connection;
 	if (newsStoring == null)
 	{
 	    Log.error("fetch", "No news storing object");
@@ -161,6 +164,6 @@ class FetchThread implements Runnable
     private void message(String text)
     {
 	if (text != null && !text.trim().isEmpty())
-	    Luwrain.enqueueEvent(new MessageLineEvent(messageArea, text));
+	    luwrain.enqueueEvent(new MessageLineEvent(messageArea, text));
     }
 }

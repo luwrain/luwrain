@@ -25,8 +25,9 @@ import org.luwrain.pim.*;
 
 public class DiaryApp implements Application, Actions
 {
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
-    private Object instance;
+
     private ListModel timedAreaModel, nonTimedAreaModel;
     private ListArea nonTimedArea, timedArea;
     private CalendarArea calendarArea;
@@ -35,7 +36,7 @@ public class DiaryApp implements Application, Actions
     {
     }
 
-    @Override public boolean onLaunch(Object instance)
+    @Override public boolean onLaunch(Luwrain luwrain)
     {
 	Object o = Langs.requestStringConstructor("diary");
 	if (o == null || !(o instanceof StringConstructor))
@@ -49,7 +50,12 @@ public class DiaryApp implements Application, Actions
 	final Actions a = this;
 	final StringConstructor s = stringConstructor;
 
-	nonTimedArea = new ListArea(nonTimedAreaModel, stringConstructor.nonTimedAreaName(), null, null, 1) {
+	nonTimedArea = new ListArea(new DefaultControlEnvironment(luwrain),
+				    nonTimedAreaModel,
+				    stringConstructor.nonTimedAreaName(),
+				    null,
+				    null,
+				    1) {
 		private StringConstructor stringConstructor = s;
 		private Actions actions = a;
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -82,7 +88,11 @@ public class DiaryApp implements Application, Actions
 		}
 	    };
 
-	timedArea = new ListArea(timedAreaModel, stringConstructor.timedAreaName(), null, null, 1) {
+	timedArea = new ListArea(new DefaultControlEnvironment(luwrain),
+				 timedAreaModel,
+				 stringConstructor.timedAreaName(),
+				 null,
+				 null, 1) {
 		private StringConstructor stringConstructor = s;
 		private Actions actions = a;
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -124,7 +134,7 @@ public class DiaryApp implements Application, Actions
 
     @Override public void close()
     {
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 
     public boolean editDiaryEntry(Object entry)

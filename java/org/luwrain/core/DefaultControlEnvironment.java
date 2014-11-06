@@ -18,6 +18,13 @@ package org.luwrain.core;
 
 public class DefaultControlEnvironment implements ControlEnvironment
 {
+    private Luwrain luwrain;
+
+    public DefaultControlEnvironment(Luwrain luwrain)
+    {
+	this.luwrain = luwrain;
+    }
+
     public void say(String text)
     {
 	Speech.say(text);
@@ -40,22 +47,22 @@ public class DefaultControlEnvironment implements ControlEnvironment
 
     public void onAreaNewName(Area area)
     {
-	Luwrain.onAreaNewName(area);
+	luwrain.onAreaNewName(area);
     }
 
     public void onAreaNewContent(Area area)
     {
-	Luwrain.onAreaNewContent(area);
+	luwrain.onAreaNewContent(area);
     }
 
     public void onAreaNewHotPoint(Area area)
     {
-	Luwrain.onAreaNewHotPoint(area);
+	luwrain.onAreaNewHotPoint(area);
     }
 
     public int getAreaVisibleHeight(Area area)
     {
-	return Luwrain.getAreaVisibleHeight(area);
+	return luwrain.getAreaVisibleHeight(area);
     }
 
     public String langStaticString(int id)
@@ -65,16 +72,16 @@ public class DefaultControlEnvironment implements ControlEnvironment
 
     public void setClipboard(String[] value)
     {
-	Luwrain.setClipboard(value);
+	luwrain.setClipboard(value);
     }
 
     public String[] getClipboard()
     {
-	return Luwrain.getClipboard();
+	return luwrain.getClipboard();
     }
 
     public void popup(Popup popupObj)
     {
-	Luwrain.popup(popupObj);
+	luwrain.popup(popupObj);
     }
 }

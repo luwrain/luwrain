@@ -22,14 +22,16 @@ import org.luwrain.core.registry.Registry;
 
 class Base
 {
+    private Luwrain luwrain;
     private Registry registry;
     private MailStoring mailStoring;
     private StringConstructor stringConstructor;
 
-    public void init(StringConstructor stringConstructor)
+    public void init(Luwrain luwrain, StringConstructor stringConstructor)
     {
-	registry = Luwrain.getRegistry();
-	mailStoring = Luwrain.getPimManager().getMailStoring();
+	this.luwrain = luwrain;
+	registry = luwrain.getRegistry();
+	mailStoring = luwrain.getPimManager().getMailStoring();
 	this.stringConstructor = stringConstructor;
     }
 

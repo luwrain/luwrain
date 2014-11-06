@@ -20,12 +20,12 @@ import org.luwrain.core.*;
 
 public class FetchApp implements Application, Actions
 {
-    private Object instance;
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private FetchArea fetchArea;
     private FetchThread fetchThread ;
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
 	Object o = Langs.requestStringConstructor("fetch");
 	if (o == null)
@@ -33,9 +33,9 @@ public class FetchApp implements Application, Actions
 	    Log.error("fetch", "no string constructor for fetch application");
 	    return false;
 	}
+	this.luwrain = luwrain;
 	stringConstructor = (StringConstructor)o;
-	fetchArea = new FetchArea(this, stringConstructor);
-	this.instance = instance;
+	fetchArea = new FetchArea(luwrain, this, stringConstructor);
 	return true;
     }
 
@@ -43,11 +43,11 @@ public class FetchApp implements Application, Actions
     {
 	if (fetchThread != null && !fetchThread.done)
 	{
-	    Luwrain.message(stringConstructor.processAlreadyRunning());
+	    luwrain.message(stringConstructor.processAlreadyRunning());
 	    return;
 	}
 	fetchArea.clear();
-	fetchThread = new FetchThread(stringConstructor, fetchArea);
+	fetchThread = new FetchThread(luwrain, stringConstructor, fetchArea);
 	Thread t = new Thread(fetchThread);
 	t.start();
     }
@@ -61,9 +61,9 @@ public class FetchApp implements Application, Actions
     {
 	if (fetchThread != null && !fetchThread.done)
 	{
-	    Luwrain.message(stringConstructor.processNotFinished());
+	    luwrain.message(stringConstructor.processNotFinished());
 	    return;
 	}
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 }

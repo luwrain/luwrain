@@ -18,6 +18,6 @@ package org.luwrain.core;
 
 public interface Application
 {
-    boolean onLaunch(Object instance);
+    boolean onLaunch(Luwrain luwrain);
     AreaLayout getAreasToShow();
 }

@@ -41,15 +41,15 @@ public class MessageArea extends FormArea
 	}
     }
 
-    private Object instance;
+    private Luwrain luwrain;
     private ControlEnvironment environment;
     private Vector<Attachment> attachments = new Vector<Attachment>();
     private int attachmentCounter = 0;
 
-    public MessageArea(Object instance, ControlEnvironment environment)
+    public MessageArea(Luwrain luwrain, ControlEnvironment environment)
     {
 	super(environment);
-	this.instance = instance;
+	this.luwrain = luwrain;
 	this.environment = environment;
 	addEdit(TO_NAME, environment.langStaticString(Langs.MESSAGE_TO), "", null, true);
 	addEdit(CC_NAME, environment.langStaticString(Langs.MESSAGE_CC), "", null, true);
@@ -57,7 +57,7 @@ public class MessageArea extends FormArea
 	activateMultilinedEdit(environment.langStaticString(Langs.MESSAGE_TEXT), new String[0], true);
     }
 
-    public MessageArea(Object instance,
+    public MessageArea(Luwrain luwrain,
 		       ControlEnvironment environment,
 		       String initialTo,
 		       String initialCC,
@@ -66,7 +66,7 @@ public class MessageArea extends FormArea
 		       File initialAttachments[])
     {
 	super(environment);
-	this.instance = instance;
+	this.luwrain = luwrain;
 	this.environment = environment;
 	addEdit(TO_NAME, environment.langStaticString(Langs.MESSAGE_TO), initialTo != null?initialTo:"", null, true);
 	addEdit(CC_NAME, environment.langStaticString(Langs.MESSAGE_CC), initialCC != null?initialCC:"", null, true);
@@ -131,7 +131,7 @@ public class MessageArea extends FormArea
 
     private void insertAttachment()
     {
-	FilePopup popup = new FilePopup(instance, 
+	FilePopup popup = new FilePopup(luwrain, 
 					environment.langStaticString(Langs.MESSAGE_ATTACHMENT_POPUP_TITLE),
 					environment.langStaticString(Langs.MESSAGE_ATTACHMENT_POPUP_PREFIX),
 					new File("/"));//FIXME:

@@ -93,12 +93,14 @@ public class FormArea  extends NavigateArea
 
     public FormArea(ControlEnvironment environment)
     {
+	super(environment);
 	this.environment = environment;
 	//	this.copyCutInfo = new CopyCutInfo(this);
     }
 
     public FormArea(ControlEnvironment environment, String name)
     {
+	super(environment);
 	this.environment = environment;
 	this.name = name != null?name:"";
 	//	this.copyCutInfo = new CopyCutInfo(this);

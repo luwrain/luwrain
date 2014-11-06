@@ -26,7 +26,7 @@ import org.luwrain.controls.*;
 public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
 {
     public PopupClosing closing = new PopupClosing(this);
-    private Object instance;
+    private Luwrain luwrain;
     private EmbeddedSingleLineEdit edit;
     private String name;
     private String prefix;
@@ -34,32 +34,32 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
     private int pos;
     private boolean noMultipleCopies = false;
 
-    public SimpleLinePopup(Object instance,
+    public SimpleLinePopup(Luwrain luwrain,
 			    String name,
 			    String prefix,
 			    String text)
     {
-	this.instance = instance;
+	this.luwrain = luwrain;
 	this.name = name != null?name:"";
 	this.prefix = prefix != null?prefix:"";
 	this.text = text != null?text:"";
 	this.pos = prefix.length() + text.length();
-	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, prefix.length(), 0);
+	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, prefix.length(), 0);
 	this.noMultipleCopies = false;
     }
 
-    public SimpleLinePopup(Object instance,
+    public SimpleLinePopup(Luwrain luwrain,
 			    String name,
 			    String prefix,
 			   String text,
 			   boolean noMultipleCopies)
     {
-	this.instance = instance;
+	this.luwrain = luwrain;
 	this.name = name != null?name:"";
 	this.prefix = prefix != null?prefix:"";
 	this.text = text != null?text:"";
 	this.pos = prefix.length() + text.length();
-	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, prefix.length(), 0);
+	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, prefix.length(), 0);
 	this.noMultipleCopies = noMultipleCopies;
     }
 
@@ -105,7 +105,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	    if (pos < line.length())
 		Speech.sayLetter(line.charAt(pos)); else
 		Speech.sayLetter(' ');
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    return true;
 	case KeyboardEvent.ARROW_RIGHT:
 	    if (pos >= line.length())
@@ -117,7 +117,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	    if (pos < line.length())
 		Speech.sayLetter(line.charAt(pos)); else
 		Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    return true;
 	case KeyboardEvent.HOME:
 	    pos = prefix.length();
@@ -128,7 +128,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	case KeyboardEvent.END:
 	    pos = line.length();
 	    Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    return true;
 	case KeyboardEvent.ENTER:
 	    closing.doOk();
@@ -168,7 +168,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
     public void setEmbeddedEditLine(int editPosX, int editPosY, String value)
     {
 	text = value != null?value:"";
-	Luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewContent(this);
     }
 
     public void setHotPointX(int value)
@@ -176,7 +176,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	if (value < 0)
 	    return;
 	pos = value;
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
     }
 
     public void setHotPointY(int value)
@@ -225,13 +225,13 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	    return;
 	text = beforeHotPoint + afterHotPoint;
 	pos = prefix.length() + beforeHotPoint.length();
-	Luwrain.onAreaNewContent(this);
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewHotPoint(this);
     }
 
     @Override public Object getInstance()
     {
-	return instance;
+	return luwrain;
     }
 
     @Override public EventLoopStopCondition getStopCondition()

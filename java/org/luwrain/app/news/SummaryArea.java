@@ -27,6 +27,7 @@ class SummaryArea implements Area, CopyCutRequest
 {
     private static final int INITIAL_HOT_POINT_X = 2;
 
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private Actions actions;
     private StoredNewsArticle articles[];
@@ -34,8 +35,11 @@ class SummaryArea implements Area, CopyCutRequest
     private int hotPointY = 0;
     private CopyCutInfo copyCutInfo;
 
-    public SummaryArea(Actions actions, StringConstructor stringConstructor)
+    public SummaryArea(Luwrain luwrain,
+		       Actions actions,
+		       StringConstructor stringConstructor)
     {
+	this.luwrain = luwrain;
 	this.stringConstructor = stringConstructor;
 	this.actions = actions;
 	this.copyCutInfo = new CopyCutInfo(this);
@@ -48,15 +52,15 @@ class SummaryArea implements Area, CopyCutRequest
 	    this.articles = null;
 	    hotPointX = 0;
 	    hotPointY = 0;
-	    Luwrain.onAreaNewContent(this);
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewContent(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    return;
 	}
 	this.articles = articles;
 	hotPointX = INITIAL_HOT_POINT_X;
 	hotPointY = 0;
-	Luwrain.onAreaNewContent(this);
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewHotPoint(this);
     }
 
     public int getLineCount()
@@ -174,10 +178,10 @@ class SummaryArea implements Area, CopyCutRequest
 	{
 	    Log.error("news", "problem during updating news article state:" + e.getMessage());
 	    e.printStackTrace();
-	    Luwrain.message(stringConstructor.errorUpdatingArticleState());
+	    luwrain.message(stringConstructor.errorUpdatingArticleState());
 	    return true;
 	}
-	Luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewContent(this);
 	actions.showArticle(a);
 	return true;
     }
@@ -201,10 +205,10 @@ class SummaryArea implements Area, CopyCutRequest
 	{
 	    Log.error("news", "problem during updating news article state:" + e.getMessage());
 	    e.printStackTrace();
-	    Luwrain.message(stringConstructor.errorUpdatingArticleState());
+	    luwrain.message(stringConstructor.errorUpdatingArticleState());
 	    return true;
 	}
-	Luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewContent(this);
 	return true;
     }
 
@@ -226,12 +230,12 @@ class SummaryArea implements Area, CopyCutRequest
 	{
 	    hotPointX = 0;
 	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 	Speech.say(constructStringForSpeech(articles[hotPointY]));
 	hotPointX = INITIAL_HOT_POINT_X;
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -250,7 +254,7 @@ class SummaryArea implements Area, CopyCutRequest
 	hotPointY--;
 	hotPointX = INITIAL_HOT_POINT_X;
 	Speech.say(constructStringForSpeech(articles[hotPointY]));
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -271,12 +275,12 @@ class SummaryArea implements Area, CopyCutRequest
 	{
 	    hotPointX = 0;
 	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    return true;
 	}
 	Speech.say(constructString(articles[hotPointY]));
 	hotPointX = INITIAL_HOT_POINT_X;
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -295,7 +299,7 @@ class SummaryArea implements Area, CopyCutRequest
 	hotPointY--;
 	hotPointX = INITIAL_HOT_POINT_X;
 	Speech.say(constructString(articles[hotPointY]));
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -316,7 +320,7 @@ class SummaryArea implements Area, CopyCutRequest
 	if (hotPointX - INITIAL_HOT_POINT_X >= line.length())
 	    Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH); else
 	    Speech.sayLetter(line.charAt(hotPointX - INITIAL_HOT_POINT_X));
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -337,7 +341,7 @@ class SummaryArea implements Area, CopyCutRequest
 	hotPointX--;
 	final String line = constructString(articles[hotPointY]);
 	Speech.sayLetter(line.charAt(hotPointX - INITIAL_HOT_POINT_X));
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -391,7 +395,7 @@ class SummaryArea implements Area, CopyCutRequest
 	Vector<String> res = new Vector<String>();
 	for(int i = fromPos;i < toPos;++i)
 	    res.add(constructStringForScreen(articles[i]));
-	Luwrain.setClipboard(res.toArray(new String[res.size()]));
+	luwrain.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }
 

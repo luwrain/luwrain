@@ -23,8 +23,8 @@ import org.luwrain.pim.*;
 
 public class MessageApp implements Application, Actions
 {
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
-    private Object instance;
     private Base base = new Base();
     private MessageArea messageArea;
 
@@ -32,19 +32,19 @@ public class MessageApp implements Application, Actions
     {
     }
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
 	Object o = Langs.requestStringConstructor("message");
 	if (o == null)
 	    return false;
 	stringConstructor = (StringConstructor)o;
-	base.init(stringConstructor);
+	this.luwrain = luwrain;
+	base.init(luwrain, stringConstructor);
 	if (!base.isValid())
 	{
-	    Luwrain.message(stringConstructor.noMailStoring());
+	    luwrain.message(stringConstructor.noMailStoring());
 	    return false;
 	}
-	this.instance = instance;
 	createMessageArea();
 	return true;
     }
@@ -53,20 +53,20 @@ public class MessageApp implements Application, Actions
     {
 	if (messageArea.getTo().trim().isEmpty())
 	{
-	    Luwrain.message(stringConstructor.emptyRecipient());
+	    luwrain.message(stringConstructor.emptyRecipient());
 			    return;
 	}
 	    if (base.send(messageArea.getTo(), messageArea.getCC(),
 				 messageArea.getSubject(), "", new String[0])) //FIXME:
 		close(); else
-		Luwrain.message(stringConstructor.errorSendingMessage());
+		luwrain.message(stringConstructor.errorSendingMessage());
     }
 
 
     private void createMessageArea()
     {
 	final Actions a = this;
-	messageArea = new MessageArea(instance, new DefaultControlEnvironment(),
+	messageArea = new MessageArea(luwrain, new DefaultControlEnvironment(luwrain),
 				      "", "", "",
 				      getInitialText(), null){
 		final Actions actions = a;
@@ -94,12 +94,12 @@ public class MessageApp implements Application, Actions
 
     public void close()
     {
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 
     private String[] getInitialText()
     {
-	MailRegistryValues mailValues = new MailRegistryValues(Luwrain.getRegistry());
+	MailRegistryValues mailValues = new MailRegistryValues(luwrain.getRegistry());
 	final String signature = mailValues.getSignature();
 	if (signature == null)
 	    return new String[0];

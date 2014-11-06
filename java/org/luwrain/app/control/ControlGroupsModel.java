@@ -22,6 +22,7 @@ import org.luwrain.pim.*;
 
 class ControlGroupsModel implements TreeModel
 {
+    private Luwrain luwrain;
     private ControlActions actions;
     private StringConstructor stringConstructor;
     private NewsStoring newsStoring;
@@ -33,7 +34,9 @@ class ControlGroupsModel implements TreeModel
     private String[] rootItems;
     private StoredNewsGroup[] newsGroups;
 
-    public ControlGroupsModel(ControlActions actions, StringConstructor stringConstructor)
+    public ControlGroupsModel(Luwrain luwrain,
+			      ControlActions actions,
+			      StringConstructor stringConstructor)
     {
 	this.actions = actions;
 	this.stringConstructor = stringConstructor; 
@@ -92,8 +95,8 @@ class ControlGroupsModel implements TreeModel
 	rootItems[0] =interaction;
 	rootItems[1] = mail;
 	rootItems[2] = news; 
-	newsStoring = Luwrain.getPimManager().getNewsStoring();
-	mailStoring = Luwrain.getPimManager().getMailStoring();
+	newsStoring = luwrain.getPimManager().getNewsStoring();
+	mailStoring = luwrain.getPimManager().getMailStoring();
 	if (newsStoring != null)
 	{
 	    try {

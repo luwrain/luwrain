@@ -38,20 +38,20 @@ public class PanelArea implements Area
     private int side = LEFT;
     private StringConstructor stringConstructor;
     private Actions actions;
-    private Object instance = null;
+    private Luwrain luwrain;
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public PanelArea(Object instance,
+    public PanelArea(Luwrain luwrain,
 		     Actions actions,
 		     StringConstructor stringConstructor,
 		     int side)
     {
-	this.instance = instance;
+	this.luwrain = luwrain;
 	this.stringConstructor = stringConstructor;
 	this.actions = actions;
 	this.side = side;
-	Registry registry = Luwrain.getRegistry();
+	Registry registry = luwrain.getRegistry();
 	if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) != Registry.STRING)
 	{
 	    Log.warning("commander", "registry hasn\'t value with user home directory");
@@ -278,7 +278,7 @@ public class PanelArea implements Area
 	}
 	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
 	hotPointY++;
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	introduceItem(hotPointY, briefIntroduction);
 	return true;
     }
@@ -297,7 +297,7 @@ public class PanelArea implements Area
 	}
 	hotPointX = INITIAL_HOT_POINT_X;
 	hotPointY--;
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	introduceItem(hotPointY, briefIntroduction);
 	return true;
     }
@@ -328,7 +328,7 @@ public class PanelArea implements Area
 	hotPointX++;
 	if (hotPointX < INITIAL_HOT_POINT_X)
 	    hotPointX = INITIAL_HOT_POINT_X;
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	if (hotPointX < name.length() + 2)
 	    Speech.sayLetter(name.charAt(hotPointX - 2)); else
 	    Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
@@ -363,7 +363,7 @@ public class PanelArea implements Area
 	hotPointX--;
 	if (hotPointX > name.length()  + INITIAL_HOT_POINT_X)
 	    hotPointX = name.length() + INITIAL_HOT_POINT_X;
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	Speech.sayLetter(name.charAt(hotPointX - 2));
 	return true;
     }
@@ -375,7 +375,7 @@ public class PanelArea implements Area
 	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
 	    return true;
 	}
-	final int visibleHeight = Luwrain.getAreaVisibleHeight(this);
+	final int visibleHeight = luwrain.getAreaVisibleHeight(this);
 	if (visibleHeight < 1)
 	{
 	    Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page down key");
@@ -384,7 +384,7 @@ public class PanelArea implements Area
 	if (hotPointY + visibleHeight > items.size())
 	    hotPointY = items.size(); else
 	    hotPointY += visibleHeight;
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	introduceItem(hotPointY, briefIntroduction);
 	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
 	return true;
@@ -397,7 +397,7 @@ public class PanelArea implements Area
 	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
 	    return true;
 	}
-	final int visibleHeight = Luwrain.getAreaVisibleHeight(this);
+	final int visibleHeight = luwrain.getAreaVisibleHeight(this);
 	if (visibleHeight < 1)
 	{
 	    Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page up key");
@@ -407,7 +407,7 @@ public class PanelArea implements Area
 	    hotPointY = 0; else
 		hotPointY -= visibleHeight;
 	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	introduceItem(hotPointY, briefIntroduction);
 	return true;
     }
@@ -422,7 +422,7 @@ public class PanelArea implements Area
 	hotPointY = 0;
 	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
 	introduceItem(hotPointY, false);
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -450,7 +450,7 @@ public class PanelArea implements Area
 	hotPointY = items.size();
 	hotPointX = 0;
 	Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -470,7 +470,7 @@ public class PanelArea implements Area
 	    hotPointX = 0;
 	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
 	}
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -478,12 +478,12 @@ public class PanelArea implements Area
     {
 	if (current == null || !current.isDirectory())
 	    return false;
-	File f = Luwrain.openPopup(instance, null, null, current);
+	File f = luwrain.openPopup(null, null, current);
 	if (f == null)
 	    return true;
 	if (f.isDirectory())
 	    openByFile(f); else
-	    Luwrain.openFile(f.getAbsolutePath());
+	    luwrain.openFile(f.getAbsolutePath());
 	return true;
     }
 
@@ -543,9 +543,9 @@ public class PanelArea implements Area
 	    if (hotPointY >= items.size())
 		hotPointY = 0;
 	}
-	Luwrain.onAreaNewContent(this);
-	Luwrain.onAreaNewHotPoint(this);
-	Luwrain.onAreaNewName(this);
+	luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewName(this);
     }
 
     static private Vector<DirItem> constructDirItems(File f)

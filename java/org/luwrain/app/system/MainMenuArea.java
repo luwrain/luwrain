@@ -23,6 +23,7 @@ import org.luwrain.mmedia.EnvironmentSounds;
 
 public class MainMenuArea  implements Area, PopupClosingRequest
 {
+    public Luwrain luwrain;
     public PopupClosing closing = new PopupClosing(this);
     private SystemAppStringConstructor stringConstructor;
     private MainMenuItem items[];
@@ -30,8 +31,11 @@ public class MainMenuArea  implements Area, PopupClosingRequest
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public MainMenuArea(SystemAppStringConstructor stringConstructor, String[] content)
+    public MainMenuArea(Luwrain luwrain,
+			SystemAppStringConstructor stringConstructor,
+			String[] content)
     {
+	this.luwrain = luwrain;
 	this.stringConstructor = stringConstructor;
 	items = constructItems(content);
 	hotPointY = 0;
@@ -73,7 +77,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 	    }
 	    hotPointY++;
 	    hotPointX = 0;
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -89,7 +93,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 	    }
 	    hotPointY--;
 	    hotPointX = 0;
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    introduceLine(hotPointY);
 	    return true;
 	}
@@ -113,7 +117,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 		return true;
 	    }
 	    hotPointX++;
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    if (hotPointX >= line.length())
 		Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH); else
 		Speech.sayLetter(line.charAt(hotPointX));
@@ -139,7 +143,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 		return true;
 	    }
 	    hotPointX--;
-	    Luwrain.onAreaNewHotPoint(this);
+	    luwrain.onAreaNewHotPoint(this);
 	    if (hotPointX < line.length())
 		Speech.sayLetter(line.charAt(hotPointX));
 	    return true;
@@ -219,7 +223,7 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 	    return false;
 	if (hotPointY >= items.length || !items[hotPointY].isAction())
 	{
-	    Luwrain.message("Необходимо выбрать допустимый пункт меню");//FIXME:
+	    luwrain.message("Необходимо выбрать допустимый пункт меню");//FIXME:
 	    return false;
 	}
 	selectedActionName = items[hotPointY].getActionName();

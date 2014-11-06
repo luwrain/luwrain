@@ -35,7 +35,7 @@ class Environment implements EventConsumer
     private Registry registry;
     private Interaction interaction;
     private EventQueue eventQueue = new EventQueue();
-    private InstanceManager appInstances = new InstanceManager();
+    private InstanceManager appInstances;
     private ApplicationRegistry apps = new ApplicationRegistry();
     private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
@@ -43,8 +43,8 @@ class Environment implements EventConsumer
     private PimManager pimManager;
     private GlobalKeys globalKeys;
     private Actions actions = new Actions();
-    private AppWrapperRegistry appWrappers = new AppWrapperRegistry();
-    private org.luwrain.app.system.SystemApp systemApp = new org.luwrain.app.system.SystemApp();
+    private AppWrapperManager appWrappers;
+    private org.luwrain.app.system.SystemApp systemApp;
 
     private FileTypes fileTypes = new FileTypes(appWrappers);
     private boolean needForIntroduction = false;
@@ -68,6 +68,9 @@ class Environment implements EventConsumer
 	    Log.fatal("environment", "the environment is tried to launch twice but that is prohibited");
 	    return;
 	}
+	systemApp = new org.luwrain.app.system.SystemApp(new Luwrain(this));
+	appInstances = new InstanceManager(this);
+	AppWrapperManager appWrappers = new AppWrapperManager(this);
 	screenContentManager = new ScreenContentManager(apps, popups, systemApp);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	globalKeys = new GlobalKeys(registry);
@@ -96,7 +99,7 @@ class Environment implements EventConsumer
     {
 	if (app == null)
 	    return;
-	Object o = appInstances.registerApp(app);
+	Luwrain o = appInstances.registerApp(app);
 	try {
 	    if (!app.onLaunch(o))
 	    {

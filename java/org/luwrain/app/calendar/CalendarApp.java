@@ -23,29 +23,30 @@ import org.luwrain.controls.CalendarArea;
 
 public class CalendarApp implements Application, Actions
 {
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
-    private Object instance;
     private CalendarArea area;
 
     public CalendarApp()
     {
     }
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
 	Object o = Langs.requestStringConstructor("calendar");
 	if (o == null)
 	    return false;
+	this.luwrain = luwrain;
 	stringConstructor = (StringConstructor)o;
 	createArea();
-	this.instance = instance;
 	return true;
     }
 
     private void createArea()
     {
 	final Actions a = this;
-	area = new CalendarArea(new GregorianCalendar()){
+	area = new CalendarArea(new DefaultControlEnvironment(luwrain),
+				new GregorianCalendar()){
 		private Actions actions = a;
 		public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
@@ -71,6 +72,6 @@ public class CalendarApp implements Application, Actions
 
     public void close()
     {
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 }

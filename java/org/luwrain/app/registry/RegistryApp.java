@@ -29,23 +29,22 @@ import org.luwrain.popups.*;
 
 public class RegistryApp implements Application, RegistryActions
 {
-    private Object instance;
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private RegistryDirsModel dirsModel;
     private TreeArea dirsArea;
     private ValuesArea valuesArea;
-    private Registry registry = Luwrain.getRegistry();
+    private Registry registry;
 
-    public boolean onLaunch(Object instance)
+    public boolean onLaunch(Luwrain luwrain)
     {
-	if (instance == null)
-	    return false;
 	Object str = Langs.requestStringConstructor("registry");
 	if (str == null)
 	    return false;
 	stringConstructor = (StringConstructor)str;
-	this.instance = instance;
-	dirsModel = new RegistryDirsModel(this, stringConstructor);
+	this.luwrain = luwrain;
+	this.registry = luwrain.getRegistry();
+	dirsModel = new RegistryDirsModel(luwrain, this, stringConstructor);
 	createAreas();
 	return true;
     }
@@ -58,12 +57,12 @@ public class RegistryApp implements Application, RegistryActions
 
     public void gotoDirs()
     {
-	Luwrain.setActiveArea(instance, dirsArea);
+	luwrain.setActiveArea(dirsArea);
     }
 
     public void gotoValues()
     {
-	Luwrain.setActiveArea(instance, valuesArea);
+	luwrain.setActiveArea(valuesArea);
     }
 
     public void refresh()
@@ -78,8 +77,8 @@ public class RegistryApp implements Application, RegistryActions
 	    return;
 	if (valuesArea.hasModified())
 	{
-	    YesNoPopup popup = new YesNoPopup(instance, "Saving values", "Are you want to loose changes?", true);//FIXME:
-	    Luwrain.popup(popup);
+	    YesNoPopup popup = new YesNoPopup(luwrain, "Saving values", "Are you want to loose changes?", true);//FIXME:
+	    luwrain.popup(popup);
 	    if (popup.closing.cancelled() || !popup.getResult())
 	    {
 		gotoValues();
@@ -87,28 +86,28 @@ public class RegistryApp implements Application, RegistryActions
 	    }
 	}
 	    valuesArea.open(dir);
-	    Luwrain.setActiveArea(instance, valuesArea);
+	    luwrain.setActiveArea(valuesArea);
     }
 
     public void insertDir(RegistryDir parent)
     {
-	SimpleLinePopup popup = new SimpleLinePopup(instance, stringConstructor.newDirectoryTitle(), stringConstructor.newDirectoryPrefix(parent.toString()), "");//FIXME:Validator if not empty;
-	Luwrain.popup(popup);
+	SimpleLinePopup popup = new SimpleLinePopup(luwrain, stringConstructor.newDirectoryTitle(), stringConstructor.newDirectoryPrefix(parent.toString()), "");//FIXME:Validator if not empty;
+	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return;
 	if (popup.getText().trim().isEmpty())
 	{
-	    Luwrain.message(stringConstructor.directoryNameMayNotBeEmpty());
+	    luwrain.message(stringConstructor.directoryNameMayNotBeEmpty());
 	    return;
 	}
 	if (popup.getText().indexOf("/") >= 0)
 	{
-	    Luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.getText()));
+	    luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.getText()));
 	    return;
 	}
 	if (!registry.addDirectory(parent.getPath() + "/" + popup.getText()))
 	{
-	    Luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.getText()));
+	    luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.getText()));
 	    return;
 	}
 	    dirsArea.refresh();
@@ -117,13 +116,15 @@ public class RegistryApp implements Application, RegistryActions
 
     public void close()
     {
-	Luwrain.closeApp(instance);
+	luwrain.closeApp();
     }
 
     private void createAreas()
     {
 	final RegistryActions a = this;
-	dirsArea = new TreeArea(dirsModel, stringConstructor.dirsAreaName()) {
+	dirsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
+				dirsModel,
+				stringConstructor.dirsAreaName()) {
 		private RegistryActions actions = a;
 		public boolean onKeyboardEvent(KeyboardEvent event)
 		{
@@ -186,6 +187,6 @@ public class RegistryApp implements Application, RegistryActions
 		    actions.openDir(dir);
 		}
 	    };
-	valuesArea = new ValuesArea(instance, registry, this, stringConstructor);
+	valuesArea = new ValuesArea(luwrain, registry, this, stringConstructor);
     }
 }

@@ -23,14 +23,19 @@ import org.luwrain.pim.*;
 
 class ViewArea extends NavigateArea
 {
+    private Luwrain luwrain;
     private StringConstructor stringConstructor;
     private Actions actions;
 
     private StoredNewsArticle article;
     private String[] text;
 
-    public ViewArea(Actions actions, StringConstructor stringConstructor)
+    public ViewArea(Luwrain luwrain,
+		    Actions actions,
+		    StringConstructor stringConstructor)
     {
+	super(new DefaultControlEnvironment(luwrain));
+	this.luwrain = luwrain;
 	this.actions =  actions;
 	this.stringConstructor = stringConstructor;
     }
@@ -40,8 +45,8 @@ class ViewArea extends NavigateArea
 	this.article = article;
 	prepareText();
 	setHotPoint(0, 0);
-	Luwrain.onAreaNewContent(this);
-	Luwrain.onAreaNewHotPoint(this);//Maybe needless;
+	luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewHotPoint(this);//Maybe needless;
     }
 
     public int getLineCount()

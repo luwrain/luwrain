@@ -46,19 +46,20 @@ class ValueItem
 
 class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 {
-    private Object instance;
+    private Luwrain luwrain;
     private Registry registry;
     private RegistryActions actions;
     private StringConstructor stringConstructor;
     private RegistryDir dir;
     private ValueItem[] items;
 
-    public ValuesArea(Object instance,
+    public ValuesArea(Luwrain luwrain,
 		      Registry registry,
 		      RegistryActions actions,
 		      StringConstructor stringConstructor)
     {
-	this.instance = instance;
+	super(new DefaultControlEnvironment(luwrain));
+	this.luwrain = luwrain;
 	this.registry = registry;
 	this.actions = actions;
 	this.stringConstructor = stringConstructor;
@@ -84,19 +85,19 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 		i.type = Registry.STRING;
 		i.value = registry.getString(dir.getPath() + "/" + s);
 		i.initialValue = i.value;
-		i.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, i.name.length() + 3, n.size());
+		i.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, i.name.length() + 3, n.size());
 		break;
 	    case Registry.INTEGER:
 		i.type = Registry.INTEGER;
 		i.value = "" + registry.getInteger(dir.getPath() + "/" + s);
 		i.initialValue = i.value;
-		i.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, i.name.length() + 3, n.size());
+		i.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, i.name.length() + 3, n.size());
 		break;
 	    case Registry.BOOLEAN:
 		i.type = Registry.BOOLEAN;
 		i.boolValue = registry.getBoolean(dir.getPath() + "/" + s);
 		i.initialBoolValue = i.boolValue;
-		i.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(), this, this, i.name.length() + 3, n.size());
+		i.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, i.name.length() + 3, n.size());
 		break;
 	    }
 	    n.add(i);
@@ -104,8 +105,8 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	items = n.toArray(new ValueItem[n.size()]);
 	this.dir = dir;
 	super.setHotPoint(0, 0);
-	Luwrain.onAreaNewContent(this);
-	Luwrain.onAreaNewHotPoint(this);
+	luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewHotPoint(this);
     }
 
     public void refresh()
@@ -115,7 +116,7 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	    dir = null;
 	    items = null;
 	    super.setHotPoint(0, 0);
-	    Luwrain.onAreaNewContent(this);
+	    luwrain.onAreaNewContent(this);
 	    return;
 	}
 	open(dir);
@@ -169,8 +170,8 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	    }
 	}
 	if (hasProblems)
-	    Luwrain.message(stringConstructor.savingFailed()); else
-	    Luwrain.message(stringConstructor.savingOk());
+	    luwrain.message(stringConstructor.savingFailed()); else
+	    luwrain.message(stringConstructor.savingOk());
     }
 
     public RegistryDir getOpenedDir()
@@ -252,17 +253,17 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	types[0] = "integer";
 	types[1] = "string";
 	types[2] = "boolean";
-	SimpleLinePopup linePopup = new SimpleLinePopup(instance, stringConstructor.newParameterTitle(), stringConstructor.newParameterName(), "");
-	Luwrain.popup(linePopup);
+	SimpleLinePopup linePopup = new SimpleLinePopup(luwrain, stringConstructor.newParameterTitle(), stringConstructor.newParameterName(), "");
+	luwrain.popup(linePopup);
 	if (linePopup.closing.cancelled())//FIXME:Validator if not empty
 	    return true;
 	if (linePopup.getText().trim().isEmpty())
 	{
-	    Luwrain.message(stringConstructor.parameterNameMayNotBeEmpty());
+	    luwrain.message(stringConstructor.parameterNameMayNotBeEmpty());
 	    return true;
 	}
-	ListPopup listPopup = new ListPopup(instance, new FixedListPopupModel(types), stringConstructor.newParameterTitle(), stringConstructor.newParameterType(), "string");//FIXME:Validator if not from the list;;
-	Luwrain.popup(listPopup);
+	ListPopup listPopup = new ListPopup(luwrain, new FixedListPopupModel(types), stringConstructor.newParameterTitle(), stringConstructor.newParameterType(), "string");//FIXME:Validator if not from the list;;
+	luwrain.popup(listPopup);
 	if (listPopup.closing.cancelled())
 	    return true;
 	int type;
@@ -273,11 +274,11 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 		if (listPopup.getText().trim().equals("boolean"))
 		    type = Registry.BOOLEAN; else
 		{
-		    Luwrain.message(stringConstructor.invalidParameterType(listPopup.getText()));
+		    luwrain.message(stringConstructor.invalidParameterType(listPopup.getText()));
 		    return true;
 		}
 	if (!insertValue(linePopup.getText(), type))
-	    Luwrain.message(stringConstructor.parameterInsertionFailed());
+	    luwrain.message(stringConstructor.parameterInsertionFailed());
 	return true;
     }
 
@@ -338,7 +339,7 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	if (items == null || editPosY >= items.length || items[editPosY].edit == null)
 	    return;
 	items[editPosY].value = value;
-	Luwrain.onAreaNewContent(this);
+	luwrain.onAreaNewContent(this);
     }
 
     public void introduceLine(int index)
