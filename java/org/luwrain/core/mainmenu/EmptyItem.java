@@ -14,15 +14,27 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+package org.luwrain.core.mainmenu;
 
-public interface SystemAppStringConstructor
+class EmptyItem implements Item
 {
-    String mainMenuTitle();
-    String runActionTitle();
-    String runAction();
-    String actionTitle(String actionName);
-    String currentDateTime();
-    String mainMenuNoItemsAbove();
-    String mainMenuNoItemsBelow();
+    public String getText()
+    {
+	return "";
+    }
+
+    public boolean isEmpty()
+    {
+	return true;
+    }
+
+    public boolean isAction()
+    {
+	return false;
+    }
+
+    public String getActionName()
+    {
+	return "";
+    }
 }

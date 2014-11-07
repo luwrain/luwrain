@@ -23,7 +23,8 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import org.luwrain.core.registry.Registry;
-import org.luwrain.app.system.MainMenuArea;
+import org.luwrain.core.sysapp.SystemApp;
+import org.luwrain.core.mainmenu.MainMenu;
 import org.luwrain.pim.PimManager;
 import org.luwrain.core.events.*;
 import org.luwrain.popups.*;
@@ -44,7 +45,7 @@ class Environment implements EventConsumer
     private GlobalKeys globalKeys;
     private Actions actions = new Actions();
     private AppWrapperManager appWrappers;
-    private org.luwrain.app.system.SystemApp systemApp;
+    private SystemApp systemApp;
 
     private FileTypes fileTypes = new FileTypes(appWrappers);
     private boolean needForIntroduction = false;
@@ -68,7 +69,7 @@ class Environment implements EventConsumer
 	    Log.fatal("environment", "the environment is tried to launch twice but that is prohibited");
 	    return;
 	}
-	systemApp = new org.luwrain.app.system.SystemApp(new Luwrain(this));
+	systemApp = new SystemApp(new Luwrain(this));
 	appInstances = new InstanceManager(this);
 	AppWrapperManager appWrappers = new AppWrapperManager(this);
 	screenContentManager = new ScreenContentManager(apps, popups, systemApp);
@@ -408,13 +409,13 @@ boolean noMultipleCopies)
 
     public void mainMenu()
     {
-	MainMenuArea mainMenuArea = systemApp.createMainMenuArea(getMainMenuItems());
+	MainMenu mainMenu = systemApp.createMainMenu(getMainMenuItems());
 	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU);
-	goIntoPopup(systemApp, mainMenuArea, PopupManager.LEFT, mainMenuArea.closing, true);
-	if (mainMenuArea.closing.cancelled())
+	goIntoPopup(systemApp, mainMenu, PopupManager.LEFT, mainMenu.closing, true);
+	if (mainMenu.closing.cancelled())
 	    return;
 	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_ITEM);
-	if (!actions.run(mainMenuArea.getSelectedActionName()))
+	if (!actions.run(mainMenu.getSelectedActionName()))
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
     }
 

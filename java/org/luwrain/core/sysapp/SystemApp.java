@@ -14,20 +14,21 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+package org.luwrain.core.sysapp;
 
 import org.luwrain.core.*;
+import org.luwrain.core.mainmenu.MainMenu;
 
 public class SystemApp implements Application
 {
     private Luwrain luwrain;
-    private SystemAppStringConstructor stringConstructor = null;
+    private StringConstructor stringConstructor;
 
     public SystemApp(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
 	Object o = Langs.requestStringConstructor("system-application");
-	stringConstructor = (SystemAppStringConstructor)o;
+	stringConstructor = (StringConstructor)o;
     }
 
     public boolean onLaunch(Luwrain luwrain)
@@ -41,12 +42,12 @@ public class SystemApp implements Application
 	return null;
     }
 
-    public MainMenuArea createMainMenuArea(String[] items)
+    public MainMenu createMainMenu(String[] items)
     {
-	return new MainMenuArea(luwrain, stringConstructor, items);
+	return new MainMenu(luwrain, stringConstructor, items);
     }
 
-    public SystemAppStringConstructor stringConstructor()
+    public StringConstructor stringConstructor()
     {
 	return stringConstructor;
     }

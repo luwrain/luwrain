@@ -17,8 +17,9 @@
 package org.luwrain.langs.en;
 
 import java.util.*;
+import org.luwrain.core.sysapp.StringConstructor;
 
-public class SystemAppStringConstructor implements org.luwrain.app.system.SystemAppStringConstructor
+public class SystemAppStringConstructor implements org.luwrain.core.sysapp.StringConstructor
 {
     private Language lang;
 

@@ -14,18 +14,31 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+//FIXME:Automatic updating;
 
-public class EmptyMainMenuItem implements MainMenuItem
+package org.luwrain.core.mainmenu;
+
+import org.luwrain.core.sysapp.StringConstructor;
+
+class DateTimeItem implements Item
 {
+    private StringConstructor stringConstructor;
+    private String value;
+
+    public DateTimeItem(StringConstructor stringConstructor)
+    {
+	this.stringConstructor = stringConstructor;
+	value = stringConstructor.currentDateTime();
+    }
+
     public String getText()
     {
-	return "";
+	return value;
     }
 
     public boolean isEmpty()
     {
-	return true;
+	return false;
     }
 
     public boolean isAction()

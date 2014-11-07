@@ -14,36 +14,12 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+package org.luwrain.core.mainmenu;
 
-public class ActionMainMenuItem implements MainMenuItem
+public interface Item 
 {
-    private String action;
-    private String title;
-
-    public ActionMainMenuItem(String action, String title)
-    {
-	this.action = action;
-	this.title = title;
-    }
-
-    public String getText()
-    {
-	return title;
-    }
-
-    public boolean isEmpty()
-    {
-	return false;
-    }
-
-    public boolean isAction()
-    {
-	return true;
-    }
-
-    public String getActionName()
-    {
-	return action;
-    }
+    String getText();
+    boolean isEmpty();
+    boolean isAction();
+    String getActionName();
 }

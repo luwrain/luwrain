@@ -14,12 +14,15 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+package org.luwrain.core.sysapp;
 
-public interface MainMenuItem 
+public interface StringConstructor
 {
-    String getText();
-    boolean isEmpty();
-    boolean isAction();
-    String getActionName();
+    String mainMenuTitle();
+    String runActionTitle();
+    String runAction();
+    String actionTitle(String actionName);
+    String currentDateTime();
+    String mainMenuNoItemsAbove();
+    String mainMenuNoItemsBelow();
 }

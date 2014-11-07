@@ -14,25 +14,26 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.system;
+package org.luwrain.core.mainmenu;
 
 import java.util.*;
 import org.luwrain.core.*;
+import org.luwrain.core.sysapp.StringConstructor;
 import org.luwrain.core.events.*;
 import org.luwrain.mmedia.EnvironmentSounds;
 
-public class MainMenuArea  implements Area, PopupClosingRequest
+public class MainMenu  implements Area, PopupClosingRequest
 {
     public Luwrain luwrain;
     public PopupClosing closing = new PopupClosing(this);
-    private SystemAppStringConstructor stringConstructor;
-    private MainMenuItem items[];
+    private StringConstructor stringConstructor;
+    private Item items[];
     private String selectedActionName = "";
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public MainMenuArea(Luwrain luwrain,
-			SystemAppStringConstructor stringConstructor,
+    public MainMenu(Luwrain luwrain,
+			StringConstructor stringConstructor,
 			String[] content)
     {
 	this.luwrain = luwrain;
@@ -207,14 +208,14 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 	Speech.say(items[hotPointY].getText());
     }
 
-    private MainMenuItem constructItem(String name)
+    private Item constructItem(String name)
     {
 	if (name == null || name.trim().isEmpty())
-	    return new EmptyMainMenuItem();
+	    return new EmptyItem();
 	String title = stringConstructor.actionTitle(name);
 	if (title.trim().isEmpty())
-	    return new EmptyMainMenuItem();
-	return new ActionMainMenuItem(name, title);
+	    return new EmptyItem();
+	return new ActionItem(name, title);
     }
 
     public boolean onOk()
@@ -235,14 +236,14 @@ public class MainMenuArea  implements Area, PopupClosingRequest
 	return true;
     }
 
-    private MainMenuItem[] constructItems(String[] content)
+    private Item[] constructItems(String[] content)
     { 
-	Vector<MainMenuItem> res = new Vector<MainMenuItem>();
-	res.add(new EmptyMainMenuItem());
-	res.add(new DateTimeMainMenuItem(stringConstructor));
-	res.add(new EmptyMainMenuItem());
+	Vector<Item> res = new Vector<Item>();
+	res.add(new EmptyItem());
+	res.add(new DateTimeItem(stringConstructor));
+	res.add(new EmptyItem());
 	for(int i = 0;i < content.length;++i)
 	    res.add(constructItem(content[i]));
-	return res.toArray(new MainMenuItem[res.size()]);
+	return res.toArray(new Item[res.size()]);
     }
 }
