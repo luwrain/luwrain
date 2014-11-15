@@ -14,16 +14,26 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp;
+package org.luwrain.core.sysapp.mainmenu;
 
-public interface StringConstructor
+import org.luwrain.core.sysapp.StringConstructor;
+
+public class Builder
 {
-    String mainMenuTitle();
-    String runActionTitle();
-    String runAction();
-    String actionTitle(String actionName);
-    String currentDateTime();
-    String mainMenuNoItemsAbove();
-    String mainMenuNoItemsBelow();
-    String mainMenuStandardPart();
+    private StringConstructor stringConstructor;
+    private StandardBuilderPart standardPart;
+
+    public Builder(StringConstructor stringConstructor)
+    {
+	this.stringConstructor = stringConstructor;
+	this.standardPart = new StandardBuilderPart(stringConstructor, new String[0]);
+    }
+
+    public Item[] buildItems(String[] actionsList)
+    {
+	if (actionsList != null)
+	    standardPart.setContent(actionsList);
+	//FIXME:Optional parts;
+	return standardPart.buildItems();
+    }
 }

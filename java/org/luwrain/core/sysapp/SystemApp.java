@@ -17,34 +17,36 @@
 package org.luwrain.core.sysapp;
 
 import org.luwrain.core.*;
-import org.luwrain.core.mainmenu.MainMenu;
+import org.luwrain.core.sysapp.mainmenu.MainMenu;
 
 public class SystemApp implements Application
 {
     private Luwrain luwrain;
     private StringConstructor stringConstructor;
+    private org.luwrain.core.sysapp.mainmenu.Builder mainMenuBuilder;
 
     public SystemApp(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
 	Object o = Langs.requestStringConstructor("system-application");
 	stringConstructor = (StringConstructor)o;
+	mainMenuBuilder = new org.luwrain.core.sysapp.mainmenu.Builder(stringConstructor);
     }
 
-    public boolean onLaunch(Luwrain luwrain)
+    @Override public boolean onLaunch(Luwrain luwrain)
     {
 	//Actually never called;
 	return true;
     }
 
-    public AreaLayout getAreasToShow()
+    @Override public AreaLayout getAreasToShow()
     {
 	return null;
     }
 
-    public MainMenu createMainMenu(String[] items)
+    public MainMenu createMainMenu(String[] actionsList)
     {
-	return new MainMenu(luwrain, stringConstructor, items);
+	return new MainMenu(new DefaultControlEnvironment(luwrain), stringConstructor, mainMenuBuilder.buildItems(actionsList));
     }
 
     public StringConstructor stringConstructor()

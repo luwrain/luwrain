@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import org.luwrain.core.registry.Registry;
 import org.luwrain.core.sysapp.SystemApp;
-import org.luwrain.core.mainmenu.MainMenu;
+import org.luwrain.core.sysapp.mainmenu.MainMenu;
 import org.luwrain.pim.PimManager;
 import org.luwrain.core.events.*;
 import org.luwrain.popups.*;
@@ -415,8 +415,10 @@ boolean noMultipleCopies)
 	if (mainMenu.closing.cancelled())
 	    return;
 	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_ITEM);
+	/*
 	if (!actions.run(mainMenu.getSelectedActionName()))
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
+	*/
     }
 
     private String[] getMainMenuItems()

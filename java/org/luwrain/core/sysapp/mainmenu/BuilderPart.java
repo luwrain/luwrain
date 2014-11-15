@@ -14,36 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.mainmenu;
+package org.luwrain.core.sysapp.mainmenu;
 
-class ActionItem implements Item
+public interface BuilderPart
 {
-    private String action;
-    private String title;
-
-    public ActionItem(String action, String title)
-    {
-	this.action = action;
-	this.title = title;
-    }
-
-    public String getText()
-    {
-	return title;
-    }
-
-    public boolean isEmpty()
-    {
-	return false;
-    }
-
-    public boolean isAction()
-    {
-	return true;
-    }
-
-    public String getActionName()
-    {
-	return action;
-    }
+    Item[] buildItems();
 }

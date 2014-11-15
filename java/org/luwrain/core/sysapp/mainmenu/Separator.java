@@ -14,12 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.mainmenu;
+package org.luwrain.core.sysapp.mainmenu;
 
-public interface Item 
+public interface Separator extends Item 
 {
-    String getText();
-    boolean isEmpty();
-    boolean isAction();
-    String getActionName();
+    boolean isDefaultSeparator();
+    String getSeparatorText();
 }

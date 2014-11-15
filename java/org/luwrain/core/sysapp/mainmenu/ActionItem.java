@@ -14,27 +14,38 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.mainmenu;
+package org.luwrain.core.sysapp.mainmenu;
 
-class EmptyItem implements Item
+import org.luwrain.core.*;
+
+class ActionItem implements Item
 {
-    public String getText()
+    private String action;
+    private String title;
+
+    public ActionItem(String action, String title)
     {
-	return "";
+	this.action = action;
+	this.title = title;
     }
 
-    public boolean isEmpty()
+    @Override public String getText()
+    {
+	return title;
+    }
+
+    @Override public void introduce()
+    {
+	Speech.say(title);
+    }
+
+    @Override public boolean isAction()
     {
 	return true;
     }
 
-    public boolean isAction()
+    @Override public void doAction()
     {
-	return false;
-    }
-
-    public String getActionName()
-    {
-	return "";
+	//FIXME:
     }
 }

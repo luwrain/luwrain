@@ -137,4 +137,9 @@ public class SystemAppStringConstructor implements org.luwrain.core.sysapp.Strin
 	    s = "0" + s;
 	return s;
     }
+
+    @Override public String mainMenuStandardPart()
+    {
+	return "Main applications";
+    }
 }

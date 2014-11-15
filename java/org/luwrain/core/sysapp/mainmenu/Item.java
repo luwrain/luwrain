@@ -14,16 +14,12 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp;
+package org.luwrain.core.sysapp.mainmenu;
 
-public interface StringConstructor
+public interface Item 
 {
-    String mainMenuTitle();
-    String runActionTitle();
-    String runAction();
-    String actionTitle(String actionName);
-    String currentDateTime();
-    String mainMenuNoItemsAbove();
-    String mainMenuNoItemsBelow();
-    String mainMenuStandardPart();
+    String getText();
+    void introduce();
+    boolean isAction();
+    void doAction();
 }

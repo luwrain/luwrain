@@ -14,40 +14,30 @@
    General Public License for more details.
 */
 
-//FIXME:Automatic updating;
+package org.luwrain.core.sysapp.mainmenu;
 
-package org.luwrain.core.mainmenu;
+import org.luwrain.core.*; 
+import org.luwrain.mmedia.EnvironmentSounds;
 
-import org.luwrain.core.sysapp.StringConstructor;
-
-class DateTimeItem implements Item
+class EmptyItem implements Item
 {
-    private StringConstructor stringConstructor;
-    private String value;
-
-    public DateTimeItem(StringConstructor stringConstructor)
-    {
-	this.stringConstructor = stringConstructor;
-	value = stringConstructor.currentDateTime();
-    }
-
-    public String getText()
-    {
-	return value;
-    }
-
-    public boolean isEmpty()
-    {
-	return false;
-    }
-
-    public boolean isAction()
-    {
-	return false;
-    }
-
-    public String getActionName()
+    @Override public String getText()
     {
 	return "";
+    }
+
+    @Override public void introduce()
+    {
+	Speech.silence();
+	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_EMPTY_LINE);
+    }
+
+    @Override public boolean isAction()
+    {
+	return false;
+    }
+
+    @Override public void doAction()
+    {
     }
 }
