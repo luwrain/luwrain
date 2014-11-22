@@ -20,6 +20,7 @@ package org.luwrain.popups;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.util.*;
 
 public class YesNoPopup implements Area, Popup, PopupClosingRequest
 {

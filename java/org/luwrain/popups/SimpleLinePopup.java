@@ -22,6 +22,7 @@ package org.luwrain.popups;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.util.*;
 
 public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
 {

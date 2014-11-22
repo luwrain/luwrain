@@ -29,16 +29,13 @@ class ScreenContentManager
 
     private ApplicationRegistry applications;
     private PopupManager popups;
-    private Application systemApp;
     private boolean activePopup = false;
 
     public ScreenContentManager(ApplicationRegistry applications,
-				PopupManager popups,
-Application systemApp)
+				PopupManager popups)
     {
 	this.applications = applications;
 	this.popups = popups;
-	this.systemApp = systemApp;
     }
 
     public  int onKeyboardEvent(KeyboardEvent event)
@@ -189,7 +186,8 @@ return applications.getActiveAreaOfActiveApp();
 
     private boolean hasProperPopup()
     {
-	return popups.hasPopups() && (applications.isVisibleApp(popups.getAppOfLastPopup()) || popups.getAppOfLastPopup() == systemApp);
+	//FIXME:	return popups.hasPopups() && (applications.isVisibleApp(popups.getAppOfLastPopup()) || popups.getAppOfLastPopup() == systemApp);
+	return popups.hasPopups() && (applications.isVisibleApp(popups.getAppOfLastPopup()));
     }
 
     private TileManager constructWindowLayoutOfApp(Application app)

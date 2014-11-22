@@ -14,26 +14,22 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp.mainmenu;
+package org.luwrain.controls;
 
-import org.luwrain.core.sysapp.StringConstructor;
+import org.luwrain.core.*;
 
-public class Builder
+public interface ControlEnvironment
 {
-    private StringConstructor stringConstructor;
-    private StandardBuilderPart standardPart;
-
-    public Builder(StringConstructor stringConstructor)
-    {
-	this.stringConstructor = stringConstructor;
-	this.standardPart = new StandardBuilderPart(stringConstructor, new String[0]);
-    }
-
-    public Item[] buildItems(String[] actionsList)
-    {
-	if (actionsList != null)
-	    standardPart.setContent(actionsList);
-	//FIXME:Optional parts;
-	return standardPart.buildItems();
-    }
+    void say(String text);
+    void sayLetter(char letter);
+    void hint(String text); 
+    void hintStaticString(int id);
+    void onAreaNewContent(Area area);
+    void onAreaNewName(Area area);
+    void onAreaNewHotPoint(Area area);
+int getAreaVisibleHeight(Area area);
+    String langStaticString(int id);
+    void popup(Popup popupObj);
+    void setClipboard(String[] value);
+    String[] getClipboard();
 }

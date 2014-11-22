@@ -119,7 +119,7 @@ public void onAreaNewName(Area area)
 	return environment.getRegistry();
     }
 
-    public org.luwrain.pim.PimManager getPimManager()
+    public Object getPimManager()
     {
 	return environment.getPimManager();
     }

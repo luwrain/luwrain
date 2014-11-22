@@ -18,6 +18,7 @@ package org.luwrain.controls;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.util.*;
 
 public class SingleLineEdit implements CopyCutRequest
 {

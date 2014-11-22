@@ -19,385 +19,289 @@ package org.luwrain.core;
 import java.util.*;
 import org.luwrain.core.events.*;
 
-class Actions
+class CommandManager
 {
-    private Vector<Action> actions = new Vector<Action>();
+    private Vector<Command> commands = new Vector<Command>();
 
-    public void add(Action action)
+    public void add(Command command)
     {
-	if (action != null && action.getName() != null && !action .getName().trim().isEmpty())
-	    actions.add(action);
+	if (command != null &&
+	    command.getName() != null &&
+	    !command.getName().trim().isEmpty())
+	    commands.add(command);
     }
 
-    public boolean run(String actionName)
+    public boolean run(String name)
     {
-	for(Action act: actions)
+	for(Command cmd: commands)
 	{
-	    if (!act.getName().trim().equals(actionName.trim()))
+	    if (!cmd.getName().trim().equals(name.trim()))
 		continue;
-	    act.onAction();
+	    cmd.onCommand();
 	    return true;
 	}
 	return false;
     }
 
-    public String[] getActionsName()
+    public String[] getCommandsName()
     {
-	if (actions == null)
+	if (commands == null)
 	    return new String[0];
 	Vector<String> res = new Vector<String>();
-	for(Action a: actions)
-	    res.add(a.getName());
+	for(Command c: commands)
+	    res.add(c.getName());
 	String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);
 	return str;
     }
 
-    public void fillWithStandardActions(Environment env)
+    public void fillWithStandardCommands(Environment env)
     {
 	if (env == null)
 	    return;
 	final Environment environment = env;
 	//Main menu;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "main-menu";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.mainMenu();
 		}
 	    });
 
 	//Quit;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "quit";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.quit();
 		}
 	    });
 
 	//OK;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "ok";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.OK));
 		}
 	    });
 
 	//Cancel;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "cancel";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CANCEL));
 		}
 	    });
 
 	//Close;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "close";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CLOSE));
 		}
 	    });
 
 	//Save;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "save";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.SAVE));
 		}
 	    });
 
 	//open;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "open";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.OPEN));
 		}
 	    });
 
 	//Refresh;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "refresh";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REFRESH));
 		}
 	    });
 
 	//copy-cut-point;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "copy-cut-point";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.COPY_CUT_POINT));
 		}
 	    });
 
 	//copy;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "copy";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.COPY));
 		}
 	    });
 
 	//cut;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "cut";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CUT));
 		}
 	    });
 
 	//paste;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "paste";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.PASTE));
 		}
 	    });
 
 	//Describe;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "describe";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.DESCRIBE));
 		}
 	    });
 
 	//Help;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "help";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.HELP));
 		}
 	    });
 
 	//Switch to next App;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "switch-next-app";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.switchNextApp();
 		}
 	    });
 
 	//Switch to next area;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "switch-next-area";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.switchNextArea();
 		}
 	    });
 
 	//Increase font size;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "increase-font-size";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.increaseFontSize();
 		}
 	    });
 
 	//Decrease font size;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "decrease-font-size";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    e.decreaseFontSize();
 		}
 	    });
 
-	//Notepad;
-	add(new Action() {
-		private Environment e = environment;
-		public String getName()
-		{
-		    return "notepad";
-		}
-		public void onAction()
-		{
-		    Application app = new org.luwrain.app.notepad.NotepadApp();
-		    e.launchApp(app);
-		}
-	    });
-
-	//Commander;
-	add(new Action() {
-		private Environment e = environment;
-		public String getName()
-		{
-		    return "commander";
-		}
-		public void onAction()
-		{
-		    Application app = new org.luwrain.app.commander.CommanderApp();
-		    e.launchApp(app);
-		}
-	    });
-
-	//News;
-	add(new Action() {
-		private Environment e = environment;
-		public String getName()
-		{
-		    return "news";
-		}
-		public void onAction()
-		{
-		    Application app = new org.luwrain.app.news.NewsReaderApp();
-		    e.launchApp(app);
-		}
-	    });
-
-	//Mail;
-	add(new Action() {
-		private Environment e = environment;
-		public String getName()
-		{
-		    return "mail";
-		}
-		public void onAction()
-		{
-		    Application app = new org.luwrain.app.mail.MailApp();
-		    e.launchApp(app);
-		}
-	    });
-
-	//Fetch;
-	add(new Action() {
-		private Environment e = environment;
-		public String getName()
-		{
-		    return "fetch";
-		}
-		public void onAction()
-		{
-		    Application app = new org.luwrain.app.fetch.FetchApp();
-		    e.launchApp(app);
-		}
-	    });
-
-	//Message;
-	add(new Action() {
-		private Environment e = environment;
-		public String getName()
-		{
-		    return "message";
-		}
-		public void onAction()
-		{
-		    Application app = new org.luwrain.app.message.MessageApp();
-		    e.launchApp(app);
-		}
-	    });
-
-	//Preview;
-	add(new Action() {
-		private Environment e = environment;
-		public String getName()
-		{
-		    return "preview";
-		}
-		public void onAction()
-		{
-		    Application app = new org.luwrain.app.preview.PreviewApp();
-		    e.launchApp(app);
-		}
-	    });
-
 	//control;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "control";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    Application app = new org.luwrain.app.control.ControlApp();
 		    e.launchApp(app);
@@ -405,29 +309,15 @@ class Actions
 	    });
 
 	//registry;
-	add(new Action() {
+	add(new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
 		    return "registry";
 		}
-		public void onAction()
+		public void onCommand()
 		{
 		    Application app = new org.luwrain.app.registry.RegistryApp();
-		    e.launchApp(app);
-		}
-	    });
-
-	//Calendar;
-	add(new Action() {
-		private Environment e = environment;
-		public String getName()
-		{
-		    return "calendar";
-		}
-		public void onAction()
-		{
-		    Application app = new org.luwrain.app.calendar.CalendarApp();
 		    e.launchApp(app);
 		}
 	    });

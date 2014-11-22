@@ -14,38 +14,41 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp.mainmenu;
+//FIXME:Automatic updating;
+
+package org.luwrain.mainmenu;
 
 import org.luwrain.core.*;
+import org.luwrain.mainmenu.StringConstructor;
 
-class ActionItem implements Item
+class DateTimeItem implements Item
 {
-    private String action;
-    private String title;
+    private StringConstructor stringConstructor;
+    //    private Luwrain luwrain;
+    private String value;
 
-    public ActionItem(String action, String title)
+    public DateTimeItem(StringConstructor stringConstructor)
     {
-	this.action = action;
-	this.title = title;
+	this.stringConstructor = stringConstructor;
+	value = stringConstructor.currentDateTime();
     }
 
     @Override public String getText()
     {
-	return title;
+	return value;
     }
 
     @Override public void introduce()
     {
-	Speech.say(title);
+	Speech.say(value);
     }
 
     @Override public boolean isAction()
     {
-	return true;
+	return false;
     }
 
     @Override public void doAction()
     {
-	//FIXME:
     }
 }

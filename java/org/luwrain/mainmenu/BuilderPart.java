@@ -14,16 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp;
+package org.luwrain.mainmenu;
 
-public interface StringConstructor
+public interface BuilderPart
 {
-    String mainMenuTitle();
-    String runActionTitle();
-    String runAction();
-    String actionTitle(String actionName);
-    String currentDateTime();
-    String mainMenuNoItemsAbove();
-    String mainMenuNoItemsBelow();
-    String mainMenuStandardPart();
+    Item[] buildItems();
 }

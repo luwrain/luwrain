@@ -14,11 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp.mainmenu;
+package org.luwrain.mainmenu;
 
 import java.util.*;
 import org.luwrain.core.*;
-import org.luwrain.core.sysapp.StringConstructor;
+import org.luwrain.mainmenu.StringConstructor;
 import org.luwrain.mmedia.EnvironmentSounds;
 
 public class StandardBuilderPart implements BuilderPart

@@ -14,12 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp.mainmenu;
+package org.luwrain.mainmenu;
 
 import java.util.*;
 import org.luwrain.core.*;
-import org.luwrain.core.sysapp.StringConstructor;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
+import org.luwrain.util.*;
 
 public class MainMenu  implements Area, PopupClosingRequest
 {

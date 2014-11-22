@@ -14,10 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.util;
 
-public interface AppWrapper 
+public interface CopyCutRequest
 {
-    String getName();
-    void launch(String[] args);
+    boolean onCopy(int fromX, int fromY, int toX, int toY);
+    boolean onCut(int fromX, int fromY, int toX, int toY);
 }

@@ -14,7 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.controls;
+
+import org.luwrain.core.*;
 
 public class DefaultControlEnvironment implements ControlEnvironment
 {

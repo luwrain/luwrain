@@ -14,17 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.langs.ru;
+package org.luwrain.mainmenu;
 
-public class PreviewStringConstructor implements org.luwrain.app.preview.StringConstructor
+public interface Separator extends Item 
 {
-    public String appName()
-    {
-	return "Просмотр";
-    }
-
-    public String errorOpeningFile()
-    {
-	return "Файл для просмотра недоступен или повреждён";
-    }
+    boolean isDefaultSeparator();
+    String getSeparatorText();
 }

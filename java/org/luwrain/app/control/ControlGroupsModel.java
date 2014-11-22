@@ -18,21 +18,17 @@ package org.luwrain.app.control;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.pim.*;
 
 class ControlGroupsModel implements TreeModel
 {
     private Luwrain luwrain;
     private ControlActions actions;
     private StringConstructor stringConstructor;
-    private NewsStoring newsStoring;
-    private MailStoring mailStoring;
     private String root;
     private String interaction;
     private String mail;
     private String news;
     private String[] rootItems;
-    private StoredNewsGroup[] newsGroups;
 
     public ControlGroupsModel(Luwrain luwrain,
 			      ControlActions actions,
@@ -52,8 +48,6 @@ class ControlGroupsModel implements TreeModel
     {
 	if (node == root)
 	    return false;
-	if (node == news)
-	    return newsGroups == null || newsGroups.length <= 0;
 	return true;
     }
 
@@ -67,7 +61,8 @@ class ControlGroupsModel implements TreeModel
 	if (parent == root)
 	    return rootItems.length;
 	if (parent == news)
-	    return newsGroups != null?newsGroups.length:0;
+	    return 0;
+	    //FIXME:	    return newsGroups != null?newsGroups.length:0;
 	return 0;
     }
 
@@ -75,8 +70,10 @@ class ControlGroupsModel implements TreeModel
     {
 	if (parent == root && index < rootItems.length)
 	    return rootItems[index];
+	/*FIXME:
 	if (parent == news && newsGroups != null && index < newsGroups.length)
 	    return newsGroups[index];
+	*/
 	return null;
     }
 
@@ -95,6 +92,7 @@ class ControlGroupsModel implements TreeModel
 	rootItems[0] =interaction;
 	rootItems[1] = mail;
 	rootItems[2] = news; 
+	/*FIXME:
 	newsStoring = luwrain.getPimManager().getNewsStoring();
 	mailStoring = luwrain.getPimManager().getMailStoring();
 	if (newsStoring != null)
@@ -107,6 +105,7 @@ class ControlGroupsModel implements TreeModel
 		Log.error("control", "news groups loading problem:" + e.getMessage());
 	    }
 	}
+	*/
     }
 
     public void insertItem()

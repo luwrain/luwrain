@@ -22,6 +22,7 @@ package org.luwrain.controls;
 import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.util.*;
 
 public class ListArea  implements Area, CopyCutRequest
 {

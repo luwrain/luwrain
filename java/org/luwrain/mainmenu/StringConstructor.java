@@ -14,14 +14,16 @@
    General Public License for more details.
 */
 
-package org.luwrain.langs.ru;
+package org.luwrain.mainmenu;
 
-import java.util.*;
-
-class CalendarStringConstructor implements org.luwrain.app.calendar.StringConstructor
+public interface StringConstructor
 {
-    public String introduction()
-    {
-	return "Календарь";
-    }
+    String mainMenuTitle();
+    String runActionTitle();
+    String runAction();
+    String actionTitle(String actionName);
+    String currentDateTime();
+    String mainMenuNoItemsAbove();
+    String mainMenuNoItemsBelow();
+    String mainMenuStandardPart();
 }

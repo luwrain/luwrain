@@ -16,8 +16,8 @@
 
 package org.luwrain.core;
 
-public interface Action
+public interface Shortcut
 {
     String getName();
-    void onAction();
+    void launch(String[] args);
 }

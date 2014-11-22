@@ -23,9 +23,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import org.luwrain.core.registry.Registry;
-import org.luwrain.core.sysapp.SystemApp;
-import org.luwrain.core.sysapp.mainmenu.MainMenu;
-import org.luwrain.pim.PimManager;
+import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.core.events.*;
 import org.luwrain.popups.*;
 import org.luwrain.mmedia.EnvironmentSounds;
@@ -41,25 +39,21 @@ class Environment implements EventConsumer
     private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
-    private PimManager pimManager;
     private GlobalKeys globalKeys;
-    private Actions actions = new Actions();
-    private AppWrapperManager appWrappers;
-    private SystemApp systemApp;
+    private CommandManager commands = new CommandManager();
+    private ShortcutManager shortcuts;
 
-    private FileTypes fileTypes = new FileTypes(appWrappers);
+    private FileTypes fileTypes = new FileTypes(shortcuts);
     private boolean needForIntroduction = false;
     private String[] clipboard = null;
 
     public Environment(String[] cmdLine,
 		       Registry registry,
-		       Interaction interaction,
-		       PimManager pimManager)
+		       Interaction interaction)
     {
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	this.interaction = interaction;
-	this.pimManager = pimManager;
     }
 
     public void  run()
@@ -69,15 +63,14 @@ class Environment implements EventConsumer
 	    Log.fatal("environment", "the environment is tried to launch twice but that is prohibited");
 	    return;
 	}
-	systemApp = new SystemApp(new Luwrain(this));
 	appInstances = new InstanceManager(this);
-	AppWrapperManager appWrappers = new AppWrapperManager(this);
-	screenContentManager = new ScreenContentManager(apps, popups, systemApp);
+	shortcuts = new ShortcutManager(this);
+	screenContentManager = new ScreenContentManager(apps, popups);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
-	actions.fillWithStandardActions(this);
-	appWrappers.fillWithStandardWrappers();
+	commands.fillWithStandardCommands(this);
+	shortcuts.fillWithStandardShortcuts();
 	interaction.startInputEventsAccepting(this);
 	EnvironmentSounds.play(EnvironmentSounds.STARTUP);//FIXME:
 		eventLoop(new InitialEventLoopStopCondition());
@@ -87,7 +80,7 @@ class Environment implements EventConsumer
     public void quit()
     {
 	YesNoPopup popup = new YesNoPopup(null, Langs.staticValue(Langs.QUIT_CONFIRM_NAME), Langs.staticValue(Langs.QUIT_CONFIRM), true);
-	goIntoPopup(systemApp, popup, PopupManager.BOTTOM, popup.closing, true);
+	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true);
 	if (popup.closing.cancelled() || !popup.getResult())
 	    return;
 	InitialEventLoopStopCondition.shouldContinue = false;
@@ -209,10 +202,10 @@ class Environment implements EventConsumer
     {
 	if (event == null)
 	    return;
-	String actionName = globalKeys.getActionName(event);
-	if (actionName != null)
+	String commandName = globalKeys.getActionName(event);
+	if (commandName != null)
 	{
-	    if (!actions.run(actionName))
+	    if (!commands.run(commandName))
 		message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));//FIXME:sound;
 	    return;
 	}
@@ -272,7 +265,7 @@ class Environment implements EventConsumer
 	    {
 		if (screenContentManager.onEnvironmentEvent(event) == ScreenContentManager.EVENT_PROCESSED)
 		    return;
-		File f = openPopupByApp(systemApp, null, null, null);
+		File f = openPopupByApp(null, null, null, null);
 		if (f == null)
 		    return;
 		String[] fileNames = new String[1];
@@ -348,12 +341,12 @@ boolean noMultipleCopies)
 
     public void runActionPopup()
     {
-	ListPopup popup = new ListPopup(null, new FixedListPopupModel(actions.getActionsName()),
-					systemApp.stringConstructor().runActionTitle(), systemApp.stringConstructor().runAction(), "");
-	goIntoPopup(systemApp, popup, PopupManager.BOTTOM, popup.closing, true);
+	ListPopup popup = new ListPopup(null, new FixedListPopupModel(commands.getCommandsName()),
+					"FIXME:runActionTitle()", "FIXME:runAction()", "");
+	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true);
 	if (popup.closing.cancelled())
 	    return;
-	if (!actions.run(popup.getText().trim()))
+	if (!commands.run(popup.getText().trim()))
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
     }
 
@@ -409,9 +402,10 @@ boolean noMultipleCopies)
 
     public void mainMenu()
     {
-	MainMenu mainMenu = systemApp.createMainMenu(getMainMenuItems());
+	//FIXME:MainMenuBuilder;
+	MainMenu mainMenu = new MainMenu(null, null, null);//FIXME:
 	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU);
-	goIntoPopup(systemApp, mainMenu, PopupManager.LEFT, mainMenu.closing, true);
+	goIntoPopup(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true);
 	if (mainMenu.closing.cancelled())
 	    return;
 	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_ITEM);
@@ -503,9 +497,9 @@ boolean noMultipleCopies)
 	return registry;
     }
 
-    public PimManager getPimManager()
+    public Object getPimManager()
     {
-	return pimManager;
+	return null;
     }
 
     public void popup(Popup popup)

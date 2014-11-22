@@ -14,10 +14,38 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp.mainmenu;
+package org.luwrain.mainmenu;
 
-public interface Separator extends Item 
+import org.luwrain.core.*;
+
+class ActionItem implements Item
 {
-    boolean isDefaultSeparator();
-    String getSeparatorText();
+    private String action;
+    private String title;
+
+    public ActionItem(String action, String title)
+    {
+	this.action = action;
+	this.title = title;
+    }
+
+    @Override public String getText()
+    {
+	return title;
+    }
+
+    @Override public void introduce()
+    {
+	Speech.say(title);
+    }
+
+    @Override public boolean isAction()
+    {
+	return true;
+    }
+
+    @Override public void doAction()
+    {
+	//FIXME:
+    }
 }

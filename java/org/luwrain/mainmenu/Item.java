@@ -14,9 +14,12 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp.mainmenu;
+package org.luwrain.mainmenu;
 
-public interface BuilderPart
+public interface Item 
 {
-    Item[] buildItems();
+    String getText();
+    void introduce();
+    boolean isAction();
+    void doAction();
 }

@@ -18,11 +18,9 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.io.*;
-import java.sql.*;
 import org.luwrain.core.registry.Registry;
 import org.luwrain.os.SpeechBackEnd;
 import org.luwrain.os.SpeechBackEnds;
-import org.luwrain.pim.PimManager;
 import org.luwrain.mmedia.EnvironmentSounds;
 
 class Init
@@ -35,8 +33,6 @@ class Init
     private String[] cmdLine;
     private Registry registry;
     private Interaction interaction = new org.luwrain.interaction.AwtInteraction();
-    private PimManager pimManager;
-    private Connection jdbcConRegistry;
 
     public void go(String[] args)
     {
@@ -46,7 +42,7 @@ class Init
 	    Log.debug("init", s);
 	if (init())
 	{
-	    Environment environment = new Environment(cmdLine, registry, interaction, pimManager);
+	    Environment environment = new Environment(cmdLine, registry, interaction);
 		environment.run();
 	}
 	exit();
@@ -65,8 +61,6 @@ class Init
 	    return false;
 	if (!initSpeech())
 	    return false;
-	if (!initPim())
-	    Log.warning("init", "PIM initialization failed or incomplete");
 	if (!initInteraction())
 	    return false;
 	if (!initEnvironmentSounds())
@@ -106,6 +100,7 @@ class Init
 
     private boolean initJdbcForRegistry()
     {
+	/*
 	if (registry.getTypeOf(CoreRegistryValues.REGISTRY_JDBC_URL) != Registry.STRING)
 	{
 	    Log.error("init", "no registry value \'" + CoreRegistryValues.REGISTRY_JDBC_URL + "\' needed for proper registry work");
@@ -155,17 +150,21 @@ class Init
 	    return false;
 	}
 	Log.debug("init", "jdbc connection for registry is obtained");
+	*/
 	return true;
     }
 
     private boolean initRegistrySecondStage()
     {
+	/*
 	if (jdbcConRegistry == null)
 	{
 	    Log.error("init", "skipping second stage registry initialization (no jdbc connection)");
 	    return false;
 	}
 	return registry.initWithJdbc(jdbcConRegistry);
+	*/
+	return false;
     }
 
     private boolean initLanguages()
@@ -262,12 +261,6 @@ class Init
 	    return;
 	}
 	EnvironmentSounds.setSoundFile(soundId, f.getAbsolutePath());
-    }
-
-    private boolean initPim()
-    {
-	pimManager = new PimManager(registry);
-	return pimManager.initDefaultConnections();
     }
 
     private boolean initInteraction()

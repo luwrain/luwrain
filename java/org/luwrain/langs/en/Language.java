@@ -29,26 +29,10 @@ public class Language implements org.luwrain.core.Language
     {
 	if (id.equals("system-application"))
 	    return new SystemAppStringConstructor(this);
-	if (id.equals("news-reader"))
-	    return new NewsReaderStringConstructor();
-	if (id.equals("mail-reader"))
-	    return new MailReaderStringConstructor();
-	if (id.equals("message"))
-	    return new MessageStringConstructor();
-	if (id.equals("commander"))
-	    return new CommanderStringConstructor();
-	if (id.equals("notepad"))
-	    return new NotepadStringConstructor();
-	if (id.equals("fetch"))
-	    return new FetchStringConstructor();
-	if (id.equals("preview"))
-	    return new PreviewStringConstructor();
 	if (id.equals("control"))
 	    return new ControlStringConstructor();
 	if (id.equals("registry"))
 	    return new RegistryStringConstructor();
-	if (id.equals("calendar"))
-	    return new CalendarStringConstructor();
 	return null;
     }
 

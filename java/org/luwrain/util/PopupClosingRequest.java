@@ -14,12 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp.mainmenu;
+package org.luwrain.util;
 
-public interface Item 
+public interface PopupClosingRequest
 {
-    String getText();
-    void introduce();
-    boolean isAction();
-    void doAction();
+    boolean onOk();
+    boolean onCancel();
 }

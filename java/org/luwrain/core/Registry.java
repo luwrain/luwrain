@@ -16,8 +16,20 @@
 
 package org.luwrain.core;
 
-public interface CopyCutRequest
+public interface Registry
 {
-    boolean onCopy(int fromX, int fromY, int toX, int toY);
-    boolean onCut(int fromX, int fromY, int toX, int toY);
+    boolean addDirectory(String path);
+    boolean deleteDir(String path);
+    boolean deleteValue(String path);
+    boolean getBoolean(String path);
+    String[] getDirectories(String path);
+    int getInteger(String path);
+    String getString(String path);
+    int getTypeOf(String path);
+    String[] getValues(String path);
+    boolean hasDirectory(String path);
+    boolean hasValue(String path);
+    boolean setBoolean(String path, boolean value);
+    boolean setInteger(String path, int value);
+    boolean setString(String path, String value);
 }

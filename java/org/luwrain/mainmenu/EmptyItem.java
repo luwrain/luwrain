@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.sysapp.mainmenu;
+package org.luwrain.mainmenu;
 
 import org.luwrain.core.*; 
 import org.luwrain.mmedia.EnvironmentSounds;

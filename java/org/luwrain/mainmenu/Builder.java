@@ -14,10 +14,26 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.mainmenu;
 
-public interface PopupClosingRequest
+import org.luwrain.mainmenu.StringConstructor;
+
+public class Builder
 {
-    boolean onOk();
-    boolean onCancel();
+    private StringConstructor stringConstructor;
+    private StandardBuilderPart standardPart;
+
+    public Builder(StringConstructor stringConstructor)
+    {
+	this.stringConstructor = stringConstructor;
+	this.standardPart = new StandardBuilderPart(stringConstructor, new String[0]);
+    }
+
+    public Item[] buildItems(String[] actionsList)
+    {
+	if (actionsList != null)
+	    standardPart.setContent(actionsList);
+	//FIXME:Optional parts;
+	return standardPart.buildItems();
+    }
 }

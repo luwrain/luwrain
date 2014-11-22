@@ -14,8 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.util;
 
+import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
 public class PopupClosing implements EventLoopStopCondition

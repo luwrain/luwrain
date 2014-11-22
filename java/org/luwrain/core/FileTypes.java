@@ -18,11 +18,11 @@ package org.luwrain.core;
 
 public class FileTypes
 {
-    private AppWrapperManager appWrappers;
+    private ShortcutManager shortcuts;
 
-    public FileTypes(AppWrapperManager appWrappers)
+    public FileTypes(ShortcutManager shortcuts)
     {
-	this.appWrappers = appWrappers;
+	this.shortcuts = shortcuts;
     }
 
     public void openFileNames(String[] fileNames)
@@ -36,14 +36,14 @@ public class FileTypes
 	String ext = extension(fileNames[0]);
 	if (ext.equals("txt") || ext.equals("TXT"))
 	{
-	    if (!appWrappers.launch("notepad", fileNames))
+	    if (!shortcuts.launch("notepad", fileNames))
 		Log.warning("file-types", "could not launch the application by wrapper with name \'notepad\'");
 	    return;
 	}
 
 	if (ext.equals("doc") || ext.equals("DOC"))
 	{
-	    if (!appWrappers.launch("preview", fileNames))
+	    if (!shortcuts.launch("preview", fileNames))
 		Log.warning("file-types", "could not launch the application by wrapper with name \'preview\'");
 	    return;
 	}
