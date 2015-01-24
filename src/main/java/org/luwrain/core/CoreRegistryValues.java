@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2014 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
 
    This file is part of the Luwrain.
 
@@ -67,7 +67,7 @@ public class CoreRegistryValues
     //Global keys
     public static final String GLOBAL_KEYS = "/org/luwrain/global-keys";
 
-    String interaction Backend();
+        String interactionBackend();
     String interactionWndLeft();
     String interactionWndTop();
     String interactionWndWidth();

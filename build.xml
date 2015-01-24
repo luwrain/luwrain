@@ -4,9 +4,6 @@
      <fileset dir="lib">
       <include name="**/*.jar"/>
     </fileset>
-     <fileset dir="os">
-      <include name="**/*.jar"/>
-    </fileset>
   </path>
   <target name="clean">
     <delete dir="build"/>
@@ -14,7 +11,7 @@
   </target>
   <target name="compile" depends="clean">
     <mkdir dir="build"/>
-    <javac srcdir="java" destdir="build" source="1.7" target="1.7">
+    <javac srcdir="src/main/java" destdir="build" source="1.7" target="1.7">
       <classpath refid="classpath"/>
     </javac>
   </target>
