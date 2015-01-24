@@ -20,6 +20,8 @@ import java.awt.Color;
 
 public class InteractionParams
 {
+    private static final int MAX_MARGIN = 64;
+
     public int wndLeft = 0;
     public int wndTop = 0;
     public int wndWidth = -1;//-1 means screen with;
@@ -33,4 +35,22 @@ public class InteractionParams
     public Color splitterColor = new Color(128, 128, 128);
     public int initialFontSize = 14;
     public String fontName = java.awt.Font.MONOSPACED;
+
+    public void loadFromRegistry(Registry registry, String logger)
+    {
+	if (registry == null)
+	    throw new NullPointerException("Registry cannot be null");
+	RegistryValueCheck check= new RegistryValueCheck(registry, logger != null?logger:"interaction");
+	wndLeft = check.intPositive("", wndLeft);
+	wndTop = check.intPositive("", intTop);
+	wndWidth = check.intAny("", wndWidth);
+	wndHeight = chekc.intPositive("", wndHeight);
+	marginLeft = check.intRange("", 0, MAX_MARGIN, marginLeft);
+	marginTop = check.intRange("", 0, MAX_MARGIN, marginTop);
+	marginRight = check.intRange("", 0, MAX_MARGIN, marginRight);
+	marginBottom = check.intRange("", 0, MAX_MARGIN, marginBotoom);
+	//FIXME:colors;
+	initialFontSize = check.intPositiveNotZero("", initialFontSize);
+	fontName = check.strNotEmpty("", fontName);
+    }
 }

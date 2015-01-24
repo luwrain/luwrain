@@ -66,4 +66,17 @@ public class CoreRegistryValues
 
     //Global keys
     public static final String GLOBAL_KEYS = "/org/luwrain/global-keys";
+
+    String interaction Backend();
+    String interactionWndLeft();
+    String interactionWndTop();
+    String interactionWndWidth();
+    String interactionWndHeight();
+    String interactionMarginLeft();
+    String interactionMarginTop();
+    String interactionMarginRight();
+    String interactionMarginBottom();
+
+
+
 };
