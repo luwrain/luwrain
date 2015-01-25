@@ -16,16 +16,16 @@
 
 package org.luwrain.core;
 
-import org.luwrain.os.SpeechBackEnd;
+import org.luwrain.speech.BackEnd;
 
 public class Speech
 {
     public static final int PITCH_NORMAL = 50;
     public static final int PITCH_HIGH = 80;
 
-    static private SpeechBackEnd backend = null;
+    static private BackEnd backend = null;
 
-    static public void setBackEnd(SpeechBackEnd b)
+    static public void setBackEnd(BackEnd b)
     {
 	backend = b;
     }

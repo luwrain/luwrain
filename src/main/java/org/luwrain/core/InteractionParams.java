@@ -36,19 +36,19 @@ public class InteractionParams
     public int initialFontSize = 14;
     public String fontName = java.awt.Font.MONOSPACED;
 
-    public void loadFromRegistry(Registry registry, String logger)
+    public void loadFromRegistry(Registry registry)
     {
 	if (registry == null)
-	    throw new NullPointerException("Registry cannot be null");
-	RegistryValueCheck check= new RegistryValueCheck(registry, logger != null?logger:"interaction");
+	    throw new NullPointerException("Registry may not be null");
+	RegistryValueCheck check= new RegistryValueCheck(registry, "interaction");
 	wndLeft = check.intPositive("", wndLeft);
-	wndTop = check.intPositive("", intTop);
+	wndTop = check.intPositive("", wndTop);
 	wndWidth = check.intAny("", wndWidth);
-	wndHeight = chekc.intPositive("", wndHeight);
+	wndHeight = check.intPositive("", wndHeight);
 	marginLeft = check.intRange("", 0, MAX_MARGIN, marginLeft);
 	marginTop = check.intRange("", 0, MAX_MARGIN, marginTop);
 	marginRight = check.intRange("", 0, MAX_MARGIN, marginRight);
-	marginBottom = check.intRange("", 0, MAX_MARGIN, marginBotoom);
+	marginBottom = check.intRange("", 0, MAX_MARGIN, marginBottom);
 	//FIXME:colors;
 	initialFontSize = check.intPositiveNotZero("", initialFontSize);
 	fontName = check.strNotEmpty("", fontName);

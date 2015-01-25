@@ -67,16 +67,48 @@ public class CoreRegistryValues
     //Global keys
     public static final String GLOBAL_KEYS = "/org/luwrain/global-keys";
 
-        String interactionBackend();
-    String interactionWndLeft();
-    String interactionWndTop();
-    String interactionWndWidth();
-    String interactionWndHeight();
-    String interactionMarginLeft();
-    String interactionMarginTop();
-    String interactionMarginRight();
-    String interactionMarginBottom();
+        public String interactionBackend()
+    {
+	return "FIXME";
+    }
 
+    public String interactionWndLeft()
+    {
+	return "FIXME";
+    }
 
+    public String interactionWndTop()
+    {
+	return "FIXME";
+    }
 
+    public String interactionWndWidth()
+    {
+	return "FIXME";
+    }
+
+    public String interactionWndHeight()
+    {
+	return "FIXME";
+    }
+
+    public String interactionMarginLeft()
+    {
+	return "FIXME";
+    }
+
+    public String interactionMarginTop()
+    {
+	return "FIXME";
+    }
+
+    public String interactionMarginRight()
+    {
+	return "FIXME";
+    }
+
+    public String interactionMarginBottom()
+    {
+	return "FIXME";
+    }
 };

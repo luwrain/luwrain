@@ -19,8 +19,8 @@ package org.luwrain.core;
 import java.util.*;
 import java.io.*;
 import org.luwrain.core.registry.Registry;
-import org.luwrain.os.SpeechBackEnd;
-import org.luwrain.os.SpeechBackEnds;
+import org.luwrain.speech.*;
+//import org.luwrain.os.SpeechBackEnds;
 import org.luwrain.mmedia.EnvironmentSounds;
 
 class Init
@@ -216,7 +216,7 @@ class Init
 	Log.debug("init", "type: " + type);
 	Log.debug("init", "host: " + host);
 	Log.debug("init", "port: " + port);
-	SpeechBackEnd backend = SpeechBackEnds.obtain(type, host, port);
+	BackEnd backend = BackEnds.obtain(type, host, port);
 	if (backend == null)
 	{
 	    Log.fatal("init", "unable to obtain speech backend with specified parameters");

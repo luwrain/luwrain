@@ -16,10 +16,12 @@
 
 package org.luwrain.speech;
 
-public interface BackEnd
+public class BackEnds
 {
-    void say(String text);
-    void sayLetter(char letter);
-    void silence();
-    void setPitch(int value);
+    static public BackEnd obtain(String type,
+			  String host,
+int port)
+    {
+	return null;
+    }
 }
