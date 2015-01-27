@@ -18,7 +18,6 @@ package org.luwrain.core;
 
 import java.util.*;
 import org.luwrain.core.events.*;
-import org.luwrain.core.registry.Registry;
 
 class GlobalKeys
 {
@@ -57,11 +56,13 @@ class GlobalKeys
 
     public void loadFromRegistry()
     {
-	String[] dirs = registry.getDirectories(CoreRegistryValues.GLOBAL_KEYS);
+	RegistryKeys registryKeys = new RegistryKeys();
+	final String globalKeysDir = registryKeys.globalKeysDir();
+	String[] dirs = registry.getDirectories(registryKeys.globalKeysDir());
 	if (dirs != null)
 	    for(String s: dirs)
 	    {
-		KeyboardEvent event = getKeyboardEventFromRegistry(CoreRegistryValues.GLOBAL_KEYS + "/" + s);
+		KeyboardEvent event = getKeyboardEventFromRegistry(globalKeysDir + "/" + s);
 		if (event != null)
 		    addMapping(event, s.trim());
 	    }

@@ -20,7 +20,6 @@ import java.io.*;
 import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.core.registry.Registry;
 
 public class CommanderArea implements Area
 {
@@ -43,12 +42,12 @@ public class CommanderArea implements Area
     {
 	this.luwrain = luwrain;
 	Registry registry = luwrain.getRegistry();
-	if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) != Registry.STRING)
+	if (registry.getTypeOf("FIXME:RegistryKeys.INSTANCE_USER_HOME_DIR") != Registry.STRING)
 	{
 	    Log.warning("commander", "registry hasn\'t value with user home directory");
 	openByPath(ROOT_DIR);
 	} else
-	    openByPath(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR));
+	    openByPath(registry.getString("FIXME:RegistryKeys.INSTANCE_USER_HOME_DIR"));
     }
 
     public File[] getSelected()

@@ -19,7 +19,6 @@ package org.luwrain.app.registry;
 import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.core.registry.Registry;
 
 class RegistryDirsModel implements TreeModel
 {

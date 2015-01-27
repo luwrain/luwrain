@@ -24,6 +24,9 @@
       <fileset dir="./build">
         <include name="**/*.class"/>
       </fileset>
+      <fileset dir="./src/main/resources">
+        <include name="**/*.properties"/>
+      </fileset>
     </jar>
   </target>
   <target name="javadoc">

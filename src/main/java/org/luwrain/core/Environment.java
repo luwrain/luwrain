@@ -16,23 +16,26 @@
 
 package org.luwrain.core;
 
-//FIXME:Open event in open popup should do nothing;
-//FIXME:action popup likely should be of some another class to prevent confusing on no multiple instances checking;
-
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
-import org.luwrain.core.registry.Registry;
+
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.core.events.*;
 import org.luwrain.popups.*;
 import org.luwrain.mmedia.EnvironmentSounds;
+import org.luwrain.util.RegistryAutoCheck;
 
 class Environment implements EventConsumer
 {
+    private static final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
+
     private String[] cmdLine;
     private Registry registry;
+    private RegistryAutoCheck registryAutoCheck;
+    private RegistryKeys registryKeys;
     private Interaction interaction;
+    private SystemDirs systemDirs;
     private EventQueue eventQueue = new EventQueue();
     private InstanceManager appInstances;
     private ApplicationRegistry apps = new ApplicationRegistry();
@@ -49,20 +52,28 @@ class Environment implements EventConsumer
 
     public Environment(String[] cmdLine,
 		       Registry registry,
-		       Interaction interaction)
+		       Interaction interaction,
+SystemDirs systemDirs)
     {
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	this.interaction = interaction;
+	this.systemDirs = systemDirs;
+	if (cmdLine == null)
+	    throw new NullPointerException("cmdLine may not be null");
+	for(int i = 0;i < cmdLine.length;++i)
+	    if (cmdLine[i] == null)
+		throw new NullPointerException("cmdLine[" + i + "] may not be null");
+	if (registry == null)
+	    throw new NullPointerException("registry may not be null");
+	if (interaction == null)
+	    throw new NullPointerException("interaction may not be null");
     }
 
     public void  run()
     {
-	if (screenContentManager != null || windowManager != null)
-	{
-	    Log.fatal("environment", "the environment is tried to launch twice but that is prohibited");
-	    return;
-	}
+	registryKeys = new RegistryKeys();
+	registryAutoCheck = new RegistryAutoCheck(registry, "environment");
 	appInstances = new InstanceManager(this);
 	shortcuts = new ShortcutManager(this);
 	screenContentManager = new ScreenContentManager(apps, popups);
@@ -417,12 +428,7 @@ boolean noMultipleCopies)
 
     private String[] getMainMenuItems()
     {
-	if (registry.getTypeOf(CoreRegistryValues.MAIN_MENU_CONTENT) != Registry.STRING)
-	{
-	    Log.error("environment", "registry has no value \'" + CoreRegistryValues.MAIN_MENU_CONTENT + "\' needed for proper main menu appearance");
-	    return new String[0];
-	}
-	final String content = registry.getString(CoreRegistryValues.MAIN_MENU_CONTENT);
+	final String content = registryAutoCheck.stringNotEmpty(registryKeys.mainMenuContent(), DEFAULT_MAIN_MENU_CONTENT);
 	ArrayList<String> a = new ArrayList<String>();
 	String s = "";
 	if (content.trim().isEmpty())
@@ -582,11 +588,7 @@ boolean noMultipleCopies)
 	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():Langs.staticValue(Langs.OPEN_POPUP_PREFIX);
 	File chosenDefaultValue = null;
 	if (defaultValue == null)
-	{
-	    if (registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING)
-		chosenDefaultValue = new File(registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR)); else
-		chosenDefaultValue = new File("/");//FIXME:System dependent slash;
-	} else
+		chosenDefaultValue = systemDirs.userHomeAsFile(); else
 	    chosenDefaultValue = defaultValue;
 	FilePopup popup = new FilePopup(null, chosenName, chosenPrefix, chosenDefaultValue);
 	goIntoPopup(app, popup, PopupManager.BOTTOM, popup.closing, true);

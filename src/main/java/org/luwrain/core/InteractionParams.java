@@ -17,11 +17,13 @@
 package org.luwrain.core;
 
 import java.awt.Color;
+import org.luwrain.util.RegistryAutoCheck;
 
 public class InteractionParams
 {
     private static final int MAX_MARGIN = 64;
 
+    public String backend = "awt";
     public int wndLeft = 0;
     public int wndTop = 0;
     public int wndWidth = -1;//-1 means screen with;
@@ -40,17 +42,33 @@ public class InteractionParams
     {
 	if (registry == null)
 	    throw new NullPointerException("Registry may not be null");
-	RegistryValueCheck check= new RegistryValueCheck(registry, "interaction");
-	wndLeft = check.intPositive("", wndLeft);
-	wndTop = check.intPositive("", wndTop);
-	wndWidth = check.intAny("", wndWidth);
-	wndHeight = check.intPositive("", wndHeight);
-	marginLeft = check.intRange("", 0, MAX_MARGIN, marginLeft);
-	marginTop = check.intRange("", 0, MAX_MARGIN, marginTop);
-	marginRight = check.intRange("", 0, MAX_MARGIN, marginRight);
-	marginBottom = check.intRange("", 0, MAX_MARGIN, marginBottom);
-	//FIXME:colors;
-	initialFontSize = check.intPositiveNotZero("", initialFontSize);
-	fontName = check.strNotEmpty("", fontName);
+	RegistryAutoCheck  check= new RegistryAutoCheck (registry, "interaction");
+	RegistryKeys keys = new RegistryKeys();
+	wndLeft = check.intPositive(keys.interactionWndLeft(), wndLeft);
+	wndTop = check.intPositive(keys.interactionWndTop(), wndTop);
+	wndWidth = check.intAny(keys.interactionWndWidth(), wndWidth);
+	wndHeight = check.intPositive(keys.interactionWndHeight(), wndHeight);
+	marginLeft = check.intRange(keys.interactionMarginLeft(), 0, MAX_MARGIN, marginLeft);
+	marginTop = check.intRange(keys.interactionMarginTop(), 0, MAX_MARGIN, marginTop);
+	marginRight = check.intRange(keys.interactionMarginRight(), 0, MAX_MARGIN, marginRight);
+	marginBottom = check.intRange(keys.interactionMarginBottom(), 0, MAX_MARGIN, marginBottom);
+
+	int red = check.intRange(keys.interactionFontColorRed(), 0, 255, 255);
+	int green = check.intRange(keys.interactionFontColorGreen(), 0, 255, 255);
+	int blue = check.intRange(keys.interactionFontColorBlue(), 0, 255, 255);
+	fontColor = new Color(red, green, blue);
+
+	red = check.intRange(keys.interactionBkgColorRed(), 0, 255, 0);
+	green = check.intRange(keys.interactionBkgColorGreen(), 0, 255, 0);
+	blue = check.intRange(keys.interactionBkgColorBlue(), 0, 255, 0);
+	bkgColor = new Color(red, green, blue);
+
+	red = check.intRange(keys.interactionSplitterColorRed(), 0, 255, 128);
+	green = check.intRange(keys.interactionSplitterColorGreen(), 0, 255, 128);
+	blue = check.intRange(keys.interactionSplitterColorBlue(), 0, 255, 128);
+	splitterColor = new Color(red, green, blue);
+
+	initialFontSize = check.intPositiveNotZero(keys.interactionInitialFontSize(), initialFontSize);
+	fontName = check.stringNotEmpty(keys.interactionFontName(), fontName);
     }
 }

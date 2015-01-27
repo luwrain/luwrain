@@ -114,7 +114,7 @@ public void onAreaNewName(Area area)
 	environment.popup(popup);
     }
 
-    public org.luwrain.core.registry.Registry getRegistry()
+    public org.luwrain.core.Registry getRegistry()
     {
 	return environment.getRegistry();
     }

@@ -17,24 +17,21 @@
 package org.luwrain.core;
 
 import java.io.*;
-import org.luwrain.core.registry.Registry;
 
 public class SystemDirs
 {
-    private Registry registry;
-
-    public SystemDirs(Registry registry)
-    {
-	this.registry = registry;
-    }
-
     public String userHome()
     {
-	return registry.getTypeOf(CoreRegistryValues.INSTANCE_USER_HOME_DIR) == Registry.STRING?registry.getString(CoreRegistryValues.INSTANCE_USER_HOME_DIR):"/";//FIXME:System dependent slash;
+	return "FIXME";
     }
 
     public File userHomeAsFile()
     {
 	return new File(userHome());
+    }
+
+    public String data()
+    {
+	return "FIXME";
     }
 }

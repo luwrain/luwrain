@@ -19,7 +19,6 @@ package org.luwrain.app.registry;
 import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.core.registry.Registry;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 

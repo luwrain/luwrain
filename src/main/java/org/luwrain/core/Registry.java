@@ -18,13 +18,19 @@ package org.luwrain.core;
 
 public interface Registry
 {
+    public static final int INVALID = 0;
+    public static final int INTEGER = 1;
+    public static final int STRING = 2;
+    public static final int BOOLEAN = 3;
+
     boolean addDirectory(String path);
-    boolean deleteDir(String path);
+    boolean deleteDirectory(String path);
     boolean deleteValue(String path);
     boolean getBoolean(String path);
     String[] getDirectories(String path);
     int getInteger(String path);
     String getString(String path);
+    String getStringDesignationOfType(int type);
     int getTypeOf(String path);
     String[] getValues(String path);
     boolean hasDirectory(String path);

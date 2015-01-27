@@ -27,6 +27,7 @@ public class Registry implements XmlReaderOutput
     public static final int STRING = 2;
     public static final int BOOLEAN = 3;
 
+
     private Directory root = new Directory("");
     private VariableStorage storage;
 
