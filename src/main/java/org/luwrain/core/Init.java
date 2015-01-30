@@ -27,11 +27,13 @@ class Init
     private static final String  PREFIX_CONF_LIST = "--conf-list=";
     private static final String  PREFIX_DATA_DIR = "--data-dir=";
     private static final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
+    private static final String  PREFIX_SPEECH= "--speech=";
     private static final String  PREFIX_ADD_REGISTRY = "--add-reg=";
 
     private String[] cmdLine;
     private Registry registry;
-    private Interaction interaction = new org.luwrain.interaction.AwtInteraction();
+    private Interaction interaction;
+    private org.luwrain.speech.BackEnd speech;
 
     public void go(String[] args)
     {
@@ -61,8 +63,24 @@ class Init
 	    return false;
 	if (!initSpeech())
 	    return false;
-	if (!initInteraction())
+
+	//Interaction;
+	InteractionParams interactionParams = new InteractionParams();
+	interactionParams.loadFromRegistry(registry);
+	if (!interactionParams.backend.equals("awt"))
+	{
+	    Log.fatal("init", "unsupported interaction type \'" + interactionParams.backend + "\'");
 	    return false;
+	}
+	Interaction interaction = new org.luwrain.interaction.AwtInteraction();
+	if (!interaction.init(interactionParams))
+	{
+	    Log.fatal("init", "interaction initialization failed");
+	    return false;
+	}
+
+
+
 	if (!initEnvironmentSounds())
 	    return false;
 	return true;
@@ -198,37 +216,48 @@ class Init
 
     private boolean initSpeech()
     {
-	/*
-	if (registry.getTypeOf(RegistryKeys.SPEECH_TYPE) != Registry.STRING)
+	final String backendClass = getFirstCmdLineOption(PREFIX_SPEECH);
+	if (backendClass == null || backendClass.isEmpty())
 	{
-	    Log.fatal("init", "no registry key " + RegistryKeys.SPEECH_TYPE + " needed for obtaining  speech output");
+	    Log.fatal("init", "no speech back-end class in the command line (the \'--speech=\' option), Luwrain has no idea how to speak");
 	    return false;
 	}
-	if (registry.getTypeOf(RegistryKeys.SPEECH_HOST) != Registry.STRING)
+	Object o;
+	try {
+	    o = Class.forName(backendClass).newInstance();
+	}
+	catch (InstantiationException e)
 	{
-	    Log.fatal("init", "no registry key " + RegistryKeys.SPEECH_HOST + " needed for obtaining  speech output");
+	    Log.fatal("init", "an error while creating a new instance of class " + backendClass + ":InstantiationException:" + e.getMessage());
+	    e.printStackTrace();
 	    return false;
 	}
-	if (registry.getTypeOf(RegistryKeys.SPEECH_PORT) != Registry.INTEGER)
+	catch (IllegalAccessException e)
 	{
-	    Log.fatal("init", "no registry key " + RegistryKeys.SPEECH_PORT + " needed for obtaining  speech output");
+	    Log.fatal("init", "an error while creating a new instance of class " + backendClass + ":IllegalAccessException:" + e.getMessage());
+	    e.printStackTrace();
 	    return false;
 	}
-	final String type = registry.getString(RegistryKeys.SPEECH_TYPE);
-	final String host = registry.getString(RegistryKeys.SPEECH_HOST);
-	final int port = registry.getInteger(RegistryKeys.SPEECH_PORT);
-	Log.debug("init", "ready to obtain speech output connection with the following parameters:");
-	Log.debug("init", "type: " + type);
-	Log.debug("init", "host: " + host);
-	Log.debug("init", "port: " + port);
-	BackEnd backend = BackEnds.obtain(type, host, port);
-	if (backend == null)
+	catch (ClassNotFoundException e)
 	{
-	    Log.fatal("init", "unable to obtain speech backend with specified parameters");
+	    Log.fatal("init", "an error while creating a new instance of class " + backendClass + ":ClassNotFoundException:" + e.getMessage());
+	    e.printStackTrace();
 	    return false;
 	}
-	Speech.setBackEnd(backend);
-	*/
+
+	if (!(o instanceof org.luwrain.speech.BackEnd))
+	{
+	    Log.fatal("init", "created instance of class " + backendClass + " is not an instance of org.luwrain.speech.BackEnd");
+	    return false;
+	}
+	speech = (org.luwrain.speech.BackEnd)o;
+	final String errorMessage = speech.init(cmdLine);
+	if (errorMessage != null)
+	{
+	    Log.fatal("init", "speech back-end initialization failed:" + errorMessage);
+	    return false;
+	}
+	Log.debug("init", "speech back-end " + backendClass + " is initialized successfully");
 	return true;
     }
 
@@ -271,127 +300,6 @@ class Init
 	}
 	EnvironmentSounds.setSoundFile(soundId, f.getAbsolutePath());
 	*/
-    }
-
-    private boolean initInteraction()
-    {
-	/*
-	InteractionParams params = new InteractionParams();
-	String backend = "awt";
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_BACKEND) == Registry.STRING)
-	    backend = registry.getString(RegistryKeys.INTERACTION_BACKEND);
-	if (!backend.equals("awt"))
-	{
-	    Log.fatal("init", "unknown interaction back-end \'" + backend + "\', only \'awt\' back-end is currently supported");
-	    return false;
-	}
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_FONT_NAME) == Registry.STRING)
-	{
-	    String value = registry.getString(RegistryKeys.INTERACTION_FONT_NAME);
-	    if (!value.trim().isEmpty())
-		params.fontName = value; else
-		Log.warning("init", "registry value \'" + RegistryKeys.INTERACTION_FONT_NAME + "\' is empty, using default value \'" + params.fontName + "\'");
-	}
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_INITIAL_FONT_SIZE) == Registry.INTEGER)
-	    params.initialFontSize = registry.getInteger(RegistryKeys.INTERACTION_INITIAL_FONT_SIZE);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_WND_X) == Registry.INTEGER)
-	    params.wndLeft = registry.getInteger(RegistryKeys.INTERACTION_WND_X);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_WND_Y) == Registry.INTEGER)
-	    params.wndTop = registry.getInteger(RegistryKeys.INTERACTION_WND_Y);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_WND_WIDTH) == Registry.INTEGER)
-	    params.wndWidth = registry.getInteger(RegistryKeys.INTERACTION_WND_WIDTH);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_WND_HEIGHT) == Registry.INTEGER)
-	    params.wndHeight = registry.getInteger(RegistryKeys.INTERACTION_WND_HEIGHT);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_MARGIN_LEFT) == Registry.INTEGER)
-	    params.marginLeft = registry.getInteger(RegistryKeys.INTERACTION_MARGIN_LEFT);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_MARGIN_TOP) == Registry.INTEGER)
-	    params.marginTop = registry.getInteger(RegistryKeys.INTERACTION_MARGIN_TOP);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_MARGIN_RIGHT) == Registry.INTEGER)
-	    params.marginRight = registry.getInteger(RegistryKeys.INTERACTION_MARGIN_RIGHT);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_MARGIN_BOTTOM) == Registry.INTEGER)
-	    params.marginBottom = registry.getInteger(RegistryKeys.INTERACTION_MARGIN_BOTTOM);
-	int fontRed = params.fontColor.getRed();
-	int fontGreen = params.fontColor.getGreen();
-	int fontBlue = params.fontColor.getBlue();
-	int bkgRed = params.bkgColor.getRed();
-	int bkgGreen = params.bkgColor.getGreen();
-	int bkgBlue = params.bkgColor.getBlue();
-	int splitterRed = params.splitterColor.getRed();
-	int splitterGreen = params.splitterColor.getGreen();
-	int splitterBlue = params.splitterColor.getBlue();
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_FONT_RED) == Registry.INTEGER)
-	    fontRed = registry.getInteger(RegistryKeys.INTERACTION_FONT_RED);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_FONT_GREEN) == Registry.INTEGER)
-	    fontGreen = registry.getInteger(RegistryKeys.INTERACTION_FONT_GREEN);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_FONT_BLUE) == Registry.INTEGER)
-	    fontBlue = registry.getInteger(RegistryKeys.INTERACTION_FONT_BLUE);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_BKG_RED) == Registry.INTEGER)
-	    bkgRed = registry.getInteger(RegistryKeys.INTERACTION_BKG_RED); 
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_BKG_GREEN) == Registry.INTEGER)
-	    bkgGreen = registry.getInteger(RegistryKeys.INTERACTION_BKG_GREEN);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_BKG_BLUE) == Registry.INTEGER)
-	    bkgBlue = registry.getInteger(RegistryKeys.INTERACTION_BKG_BLUE);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_SPLITTER_RED) == Registry.INTEGER)
-	    splitterRed = registry.getInteger(RegistryKeys.INTERACTION_SPLITTER_RED);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_SPLITTER_GREEN) == Registry.INTEGER)
-	    splitterGreen = registry.getInteger(RegistryKeys.INTERACTION_SPLITTER_GREEN);
-	if (registry.getTypeOf(RegistryKeys.INTERACTION_SPLITTER_BLUE) == Registry.INTEGER)
-	    splitterBlue = registry.getInteger(RegistryKeys.INTERACTION_SPLITTER_BLUE);
-	if (params.initialFontSize < 8)
-	    params.initialFontSize = 8;
-	if (params.wndLeft < 0)
-	    params.wndLeft = 0;
-	if (params.wndTop < 0)
-	    params.wndTop = 0;
-	if (params.marginLeft < 0)
-	    params.marginLeft = 0;
-	if (params.marginTop < 0)
-	    params.marginTop = 0;
-	if (params.marginRight < 0)
-	    params.marginRight = 0;
-	if (params.marginBottom < 0)
-	    params.marginBottom = 0;
-	if (fontRed < 0)
-	    fontGreen = 0;
-	if (fontGreen < 0)
-	    fontGreen = 0;
-	if (fontBlue < 0)
-	    fontBlue = 0;
-	if (bkgRed < 0)
-	    bkgGreen = 0;
-	if (bkgGreen < 0)
-	    bkgGreen = 0;
-	if (bkgBlue < 0)
-	    bkgBlue = 0;
-	if (splitterRed < 0)
-	    splitterGreen = 0;
-	if (splitterGreen < 0)
-	    splitterGreen = 0;
-	if (splitterBlue < 0)
-	    splitterBlue = 0;
-	if (fontRed > 255)
-	    fontGreen = 255;
-	if (fontGreen > 255)
-	    fontGreen = 255;
-	if (fontBlue > 255)
-	    fontBlue = 255;
-	if (bkgRed > 255)
-	    bkgGreen = 255;
-	if (bkgGreen > 255)
-	    bkgGreen = 255;
-	if (bkgBlue > 255)
-	    bkgBlue = 255;
-	if (splitterRed > 255)
-	    splitterGreen = 255;
-	if (splitterGreen > 255)
-	    splitterGreen = 255;
-	if (splitterBlue > 255)
-	    splitterBlue = 255;
-	params.fontColor = new java.awt.Color(fontRed, fontGreen, fontBlue);
-	params.bkgColor = new java.awt.Color(bkgRed, bkgGreen, bkgBlue);
-	params.splitterColor = new java.awt.Color(splitterRed, splitterGreen, splitterBlue);
-	*/
-	return true;//FIXME:interaction.init(params);
     }
 
     private void shutdown()
@@ -448,6 +356,24 @@ class Init
 		res.add(ss);
 	}
 	return res.toArray(new String[res.size()]);
+    }
+
+    private String getFirstCmdLineOption(String prefix)
+    {
+	if (prefix == null)
+	    throw new NullPointerException("prefix may not be null");
+	if (prefix.isEmpty())
+	    throw new IllegalArgumentException("prefix may not be empty");
+	if (cmdLine == null)
+	    return null;
+	for(String s: cmdLine)
+	{
+	    if (s == null)
+		continue;
+	    if (s.startsWith(prefix))
+return s.substring(prefix.length());
+	}
+	return null;
     }
 
     public static void main(String[] args)

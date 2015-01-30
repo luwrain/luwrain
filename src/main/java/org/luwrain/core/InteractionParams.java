@@ -44,6 +44,7 @@ public class InteractionParams
 	    throw new NullPointerException("Registry may not be null");
 	RegistryAutoCheck  check= new RegistryAutoCheck (registry, "interaction");
 	RegistryKeys keys = new RegistryKeys();
+	backend = check.stringNotEmpty(keys.interactionBackend(), backend);
 	wndLeft = check.intPositive(keys.interactionWndLeft(), wndLeft);
 	wndTop = check.intPositive(keys.interactionWndTop(), wndTop);
 	wndWidth = check.intAny(keys.interactionWndWidth(), wndWidth);

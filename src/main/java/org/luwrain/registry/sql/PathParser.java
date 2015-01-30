@@ -22,10 +22,8 @@ public class PathParser
 {
     public static Path parse(String str)
     {
-	if (str == null)
-	    throw new NullPointerException("str may not be null");
-	if (str.isEmpty())
-	    throw new IllegalArgumentException();
+	if (str == null || str.isEmpty())
+	    return null;
 	ArrayList<String> items = new ArrayList<String>();
 	String current = "";
 	for(int i = 0;i < str.length();++i)
@@ -49,10 +47,8 @@ public class PathParser
 
     public static Path parseAsDirectory(String str)
     {
-	if (str == null)
-	    throw new NullPointerException("str may not be null");
-	if (str.isEmpty())
-	    throw new IllegalArgumentException();
+	if (str == null || str.isEmpty())
+	    return null;
 	ArrayList<String> items = new ArrayList<String>();
 	String current = "";
 	for(int i = 0;i < str.length();++i)
