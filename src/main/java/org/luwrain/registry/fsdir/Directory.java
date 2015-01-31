@@ -42,17 +42,17 @@ public class Directory
 	return name;
     }
 
-    public Directory createSubdir(String newName) throw IOException
+    public Directory createSubdir(String newName) throws IOException
     {
 	if (newName == null)
-	    return new NullPointerException("newName may not be null");
+	    throw new NullPointerException("newName may not be null");
 	if (newName.isEmpty())
 	    throw new IllegalArgumentException("newName may not be empty");
 	Directory d = findSubdir(name);
 	if (d != null)
 	    return d;
 	File f = new File(dir, newName);
-	d = new Directory(f, newName);
+	d = new Directory(newName, f);
 	subdirs.add(d);
 	return d;
     }
@@ -63,12 +63,72 @@ public class Directory
     }
 
     //null means no subdirectory
-    public Directory findSubdir(String dirName throw IOException)
+    public Directory findSubdir(String dirName) throws IOException
+    {
+	return null;
+    }
+
+    public void init() throws IOException
     {
     }
 
-    public void init() throw IOException
+    public void delete() throws IOException
     {
+    }
+
+    public boolean deleteValue(String valueName) throws IOException
+    {
+	return false;
+    }
+
+    public boolean getBoolean(String valueName) throws IOException
+    {
+	return false;
+    }
+
+    public int getInteger(String valueName) throws IOException
+    {
+	return 0;
+    }
+
+    public String getString(String valueName) throws IOException
+    {
+	return "";
+    }
+
+    public boolean setBoolean(String valueName, boolean value) throws IOException
+    {
+	return true;
+    }
+
+    public boolean setInteger(String valueName, int value) throws IOException
+    {
+	return true;
+    }
+
+    public boolean setString(String valueName, String value) throws IOException
+    {
+	return true;
+    }
+
+    public String[] subdirs() throws IOException
+    {
+	return null;
+    }
+
+    public String[] values() throws IOException
+    {
+	return null;
+    }
+
+    public boolean hasValue(String valueName) throws IOException
+    {
+	return false;
+    }
+
+    public int getTypeOf(String valueName) throws IOException
+    {
+	return 0;
     }
 
     public void refreshDeleted() throws IOException

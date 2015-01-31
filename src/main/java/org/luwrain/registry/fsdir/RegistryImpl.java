@@ -17,8 +17,11 @@
 package org.luwrain.registry.fsdir;
 
 import java.util.*;
+import java.io.IOException;
+import java.io.File;
 
 import org.luwrain.core.Registry;
+import org.luwrain.core.Log;
 import org.luwrain.registry.Path;
 import org.luwrain.registry.PathParser;
 
@@ -34,7 +37,7 @@ public class RegistryImpl implements Registry
 	    throw new NullPointerException("base may not be null");
 	if (base.isEmpty())
 	    throw new IllegalArgumentException("base may not be empty");
-	root = new Directory(new File(base), "root");
+	root = new Directory("root", new File(base));
     }
 
     @Override public boolean addDirectory(String path)
@@ -58,7 +61,7 @@ public class RegistryImpl implements Registry
 		return true;
 	    while(pos < items.length)
 	    {
-		D= d.createSubdir(items[pos]);
+		d = d.createSubdir(items[pos]);
 		++pos;
 	    }
 	}
@@ -92,7 +95,6 @@ public class RegistryImpl implements Registry
 	    e.printStackTrace();
 	    return false;
 	}
-	return true;
     }
 
     @Override public boolean deleteValue(String path)
@@ -143,7 +145,7 @@ public class RegistryImpl implements Registry
 	}
 	catch (IOException e)
 	{
-	    Log.error("registry", "error while reading list of subdirectories of " + p.toString() + ":" + e.printStackTrace());
+	    Log.error("registry", "error while reading list of subdirectories of " + p.toString() + ":" + e.getMessage());
 	    e.printStackTrace();
 	    return null;
 	}
@@ -158,11 +160,11 @@ public class RegistryImpl implements Registry
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
 		return 0;
-	    return d.getString(p.valueName());
+	    return d.getInteger(p.valueName());
 	}
 	catch (IOException e)
 	{
-	    Log.error("registry", "error reading string value " + p.toString() + ":" + e.getMessage());
+	    Log.error("registry", "error reading integer value " + p.toString() + ":" + e.getMessage());
 	    e.printStackTrace();
 	    return 0;
 	}
@@ -207,10 +209,10 @@ public class RegistryImpl implements Registry
 	try {
 	    Path p = parse(path);
 	    if (p.isDirectory())
-		return null;
+		return INVALID;
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
-		return "";
+		return INVALID;
 	    return d.getTypeOf(p.valueName());
 	}
 	catch (Exception e)
@@ -232,7 +234,7 @@ public class RegistryImpl implements Registry
 	}
 	catch (IOException e)
 	{
-	    Log.error("registry", "error while reading list of values of " + p.toString() + ":" + e.printStackTrace());
+	    Log.error("registry", "error while reading list of values of " + p.toString() + ":" + e.getMessage());
 	    e.printStackTrace();
 	    return null;
 	}
@@ -263,7 +265,7 @@ public class RegistryImpl implements Registry
 		return false;
 	    return d.hasValue(p.valueName());
 	}
-	catch(IOexception e)
+	catch(IOException e)
 	{
 	    Log.error("registry", "error while checking a value " + p.toString() + ":" + e.getMessage());
 	    e.printStackTrace();
@@ -338,19 +340,18 @@ public class RegistryImpl implements Registry
 	Directory d = root;
 	for(int pos = 0;pos < path.length;++pos)
 	{
-	    if (items[pos] == null)
+	    if (path[pos] == null)
 		throw new NullPointerException("path[" + pos + "] may not be null");
-
-	    if (items[pos].isEmpty())
+	    if (path[pos].isEmpty())
 		throw new NullPointerException("path[" + pos + "] may not be empty");
-	    d = d.findSubdir(items[pos]);
+	    d = d.findSubdir(path[pos]);
 	    if (d == null)
 		return null;
 	}
 	return d;
     }
 
-    private Path parsePath(String path)
+    private Path parse(String path)
     {
 	if (path == null)
 	    throw new NullPointerException("path may not be null");
@@ -368,7 +369,7 @@ public class RegistryImpl implements Registry
 	    throw new NullPointerException("path may not be null");
 	if (path.isEmpty())
 	    throw new IllegalArgumentException("path may not be empty");
-	Path p = PathParser.parseAsDir(path);
+	Path p = PathParser.parseAsDirectory(path);
 	if (p == null)
 	    throw new IllegalArgumentException("meaningless path");
 	return p;

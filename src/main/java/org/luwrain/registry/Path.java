@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.registry;
+package org.luwrain.registry;
 
 //Root directory may not contain values;
 public class Path
@@ -30,12 +30,32 @@ public class Path
 	this.absolute = absolute;
 	this.dirItems = dirItems;
 	this.valueName = valueName;
+	if (dirItems == null)
+	    throw new NullPointerException("dirItems may not be null");
+	for(int i = 0;i < dirItems.length;++i)
+	{
+	    if (dirItems[i] == null)
+		throw new NullPointerException("dirItems[" + i + "] may not be null");
+	    if (dirItems[i].isEmpty())
+		throw new NullPointerException("dirItems[" + i + "] may not be empty");
+	}
+	if (valueName == null)
+	    throw new NullPointerException("valueName may not be null");
     }
 
     public Path(boolean absolute, String[] dirItems)
     {
 	this.absolute = absolute;
 	this.dirItems = dirItems;
+	if (dirItems == null)
+	    throw new NullPointerException("dirItems may not be null");
+	for(int i = 0;i < dirItems.length;++i)
+	{
+	    if (dirItems[i] == null)
+		throw new NullPointerException("dirItems[" + i + "] may not be null");
+	    if (dirItems[i].isEmpty())
+		throw new NullPointerException("dirItems[" + i + "] may not be empty");
+	}
     }
 
     public boolean isAbsolute()
@@ -43,41 +63,41 @@ public class Path
 	return absolute;
     }
 
-    public String[] getDirItems()
+    public boolean isDirectory()
     {
-	if (dirItems == null)
-	    return new String[0];
-	int i;
-	for(i = 0;i < dirItems.length;++i)
-	    if (dirItems[i] == null)
-		break;
-	if (i >= dirItems.length)
-	    return dirItems;
-	String[] newItems = new String[dirItems.length];
-	for(i = 0;i < dirItems.length;++i)
-	    newItems [i] = dirItems[i] != null?dirItems[i]:"";
-	return newItems;
+	return valueName.isEmpty();
     }
 
-    public String getValueName()
+    public boolean isRoot()
     {
-	return valueName != null?valueName:"";
+	return absolute && dirItems.length < 1 && valueName.isEmpty();
     }
 
-    public Path getDirPart()
+
+    public String[] dirItems()
+    {
+	return dirItems;
+    }
+
+    public String valueName()
+    {
+	return valueName;
+    }
+
+    public Path getDirectory()
     {
 	return new Path(absolute, dirItems);
     }
 
     public int getDirCount()
     {
-	return dirItems != null?dirItems.length:0;
+	return dirItems.length;
     }
 
     public Path getParentOfDir()
     {
-	if (getDirCount() == 0)
-	    return null;
+	if (dirItems.length < 1)
+	    return this;
 	String[] newItems = new String[dirItems.length - 1];
 	for(int i = 0;i < dirItems.length - 1;++i)
 	    newItems[i] = dirItems[i];
@@ -86,74 +106,17 @@ public class Path
 
     public String getLastDirItem()
     {
-	if (dirItems == null || dirItems.length == 0)
+	if (dirItems.length < 1)
 	    return "";
-	return dirItems[dirItems.length - 1] != null?dirItems[dirItems.length - 1].trim():"";
+	return dirItems[dirItems.length - 1];
     }
 
-    public boolean isDir()
-    {
-	return valueName == null || valueName.trim().isEmpty();
-    }
-
-    public boolean isRootDir()
-    {
-	return absolute && isDir() && (dirItems == null || dirItems.length <= 0);
-    }
-
-    public boolean isValidDir()
-    {
-	if (!absolute && (dirItems == null || dirItems.length <= 0))
-	    return false;
-	if (dirItems != null)
-	for(int i = 0;i < dirItems.length;++i)
-	    if (dirItems[i] == null || dirItems[i].trim().isEmpty())
-		return false;
-	return valueName == null || valueName.isEmpty();
-    }
-
-    public boolean isValidAbsoluteDir()
-    {
-	return absolute && isValidDir();
-    }
-
-    public boolean isValidValue()
-    {
-	if (absolute && (dirItems == null || dirItems.length <= 0))
-	    return false;
-	if (dirItems != null)
-	for(int i = 0;i < dirItems.length;++i)
-	    if (dirItems[i] == null || dirItems[i].trim().isEmpty())
-		return false;
-	return valueName != null && !valueName.trim().isEmpty();
-    }
-
-    public boolean isValidAbsoluteValue()
-    {
-	return absolute && isValidValue();
-    }
-
-    public boolean isValid()
-    {
-	return isDir()?isValidDir():isValidValue();
-    }
-
-    public boolean isValidAbsolute()
-    {
-	if (!absolute)
-	    return false;
-	return isDir()?isValidAbsoluteDir():isValidAbsoluteValue();
-    }
-
-    public String toString()
+    public @Override String toString()
     {
 	String res = absolute?"/":"";
-	if (dirItems != null)
-	    for(String s: dirItems)
-		if (s != null)
-		    res += s + "/";
-	if (valueName != null)
-	    res += valueName;
+	for(String s: dirItems)
+	    res += s + "/";
+	res += valueName;
 	return res;
     }
 }
