@@ -24,7 +24,7 @@ import org.luwrain.core.Log;
 
 class ValueReader
 {
-    public Map<String, String> readValuesFromFile(String fileName)
+    public static Map<String, String> readValuesFromFile(String fileName) throws IOException
     {
 	if (fileName == null)
 	    throw new NullPointerException("fileName may not be null");
@@ -33,9 +33,8 @@ class ValueReader
 	Map<String, String> values = new TreeMap<String, String>();
 	ValueLineParser parser = new ValueLineParser();
 	int lineNum = 0;
-	try {
-	    Path path = Paths.get(fileName);
-	    try (Scanner scanner =  new Scanner(path, "utf-8")) 
+	Path path = Paths.get(fileName);
+	try (Scanner scanner =  new Scanner(path, "utf-8")) 
 	    {
 		while (scanner.hasNextLine())
 		{
@@ -46,13 +45,6 @@ class ValueReader
 			Log.warning("registry", "skipping invalid line:" + fileName + ":" + lineNum + ":" + line);
 		}
 	    }
-	}
-	catch(IOException e)
-	{
-	    Log.error("registry", "problem reading values file " + fileName + ":" + e.getMessage());
-	    e.printStackTrace();
-	    return null;
-	}
 	return values;
     }
 }
