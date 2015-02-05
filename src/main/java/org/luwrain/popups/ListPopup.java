@@ -25,6 +25,7 @@ public class ListPopup extends SimpleLinePopup
 {
     private final static int MAX_ALTERNATIVES_TO_SAY = 100;
 
+    private Luwrain luwrain;//FIXME:
     private ListPopupModel model;
 
     public ListPopup(Luwrain luwrain,
@@ -82,7 +83,7 @@ public class ListPopup extends SimpleLinePopup
 	    final String completion = model.getCompletion(text);
 	    if (completion != null && !completion.isEmpty())
 	    {
-		Speech.say(completion);
+		luwrain.say(completion);
 		setText(text + completion, after);
 		return;
 	    }
@@ -94,7 +95,7 @@ public class ListPopup extends SimpleLinePopup
 	String res = "";
 	for(int i = 0;i < count;++i)
 	    res += alternatives[i] + " ";
-	Speech.say(res);
+	luwrain.say(res);
     }
 
     private void onKeyUp()
@@ -103,12 +104,12 @@ public class ListPopup extends SimpleLinePopup
 
 	if (item == null)
 	{
-	    Speech.say(Langs.staticValue(Langs.BEGIN_OF_LIST), Speech.PITCH_HIGH);
+	    luwrain.say(Langs.staticValue(Langs.BEGIN_OF_LIST));
 	    return;
 	}
 	if (item.isEmpty())
-	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
-	    Speech.say(item);
+	    luwrain.say(Langs.staticValue(Langs.EMPTY_LINE)); else
+	    luwrain.say(item);
 	setText(item, "");
     }
 
@@ -117,12 +118,12 @@ public class ListPopup extends SimpleLinePopup
 	final String item = model.getListPopupNextItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
-	    Speech.say(Langs.staticValue(Langs.END_OF_LIST), Speech.PITCH_HIGH);
+	    luwrain.say(Langs.staticValue(Langs.END_OF_LIST));
 	    return;
 	}
 	if (item.isEmpty())
-	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
-	    Speech.say(item);
+	    luwrain.say(Langs.staticValue(Langs.EMPTY_LINE)); else
+	    luwrain.say(item);
 	setText(item, "");
     }
 }

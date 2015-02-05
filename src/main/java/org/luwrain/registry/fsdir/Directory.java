@@ -270,9 +270,10 @@ return values.get(valueName).type;
 
     private void loadValues() throws IOException
     {
-	if (values == null)
-	    values = new TreeMap<String, Value>(); else
-	    values.clear();
+	if (values != null)
+	    return;
+	//	Log.debug("fsdir", "loading values in " + dir.getAbsolutePath());
+	values = new TreeMap<String, Value>();
 	Map<String, String> raw;
 
 	//Strings;
@@ -318,6 +319,7 @@ return values.get(valueName).type;
 	{
 	    final String k = e.getKey();
 	    final String v = e.getValue();
+	    //	    Log.debug("fsdir", "k=" + k + ",v=" + v);
 	    if (values. containsKey(k))
 	    {
 		Log.warning("registry", "doublicating of key \'" + k + "\' in values of " + dir.getAbsolutePath());
@@ -329,18 +331,20 @@ return values.get(valueName).type;
 	    }
 	    catch (NumberFormatException ee)
 	    {
-		Log.warning("registry", "key \'" + k + "\' in " + dir.getAbsolutePath() + "\' has an invalid integer value \'" + v + "\'");
+		Log.warning("fsdir", "key \'" + k + "\' in " + dir.getAbsolutePath() + "\' has an invalid integer value \'" + v + "\'");
 		continue;
 	    }
 	    values.put(e.getKey(), new Value(res));
 	}
 
+	//	Log.debug("fsdir", "have " + values.size() + " values");
     }
 
     private void loadSubdirs() throws IOException
     {
 	if (subdirs != null)
 	    return;
+	//	Log.debug("fsdir", "loading subdirs in " + dir.getAbsolutePath());
 	subdirs = new Vector<Directory>();
 	File[] content = dir.listFiles();
 	for(File f: content)

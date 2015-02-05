@@ -17,10 +17,12 @@
 package org.luwrain.mainmenu;
 
 import org.luwrain.core.*; 
-import org.luwrain.mmedia.EnvironmentSounds;
+import org.luwrain.sounds.EnvironmentSounds;
 
 class EmptyItem implements Item
 {
+    private Luwrain luwrain;
+
     @Override public String getText()
     {
 	return "";
@@ -28,7 +30,7 @@ class EmptyItem implements Item
 
     @Override public void introduce()
     {
-	Speech.silence();
+	luwrain.silence();
 	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_EMPTY_LINE);
     }
 

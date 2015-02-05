@@ -22,7 +22,7 @@ import java.io.IOException;
 
 class RegistryKeys
 {
-    private static final String REGISTRY_KEYS_RESOURCE = "/org/luwrain/core/registry-keys.properties";
+    private static final String REGISTRY_KEYS_RESOURCE = "org/luwrain/core/registry-keys.properties";
 
     private Properties properties;
 
@@ -102,7 +102,7 @@ class RegistryKeys
 
     public String interactionMarginBottom()
     {
-	return getProperty("interaction.MarginBotoom ");
+	return getProperty("interaction.MarginBottom");
     }
 
     public String interactionFontColorRed()
@@ -166,6 +166,7 @@ class RegistryKeys
 	    throw new NullPointerException("name may not be null");
 	if (name.isEmpty())
 	    throw new IllegalArgumentException("name may not be empty");
+	//	Log.debug("param", name);
 	if (properties == null)
 	    throw new NullPointerException("properties object is null");
 	final String value = properties.getProperty(name);

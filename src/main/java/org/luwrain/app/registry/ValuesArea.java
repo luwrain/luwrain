@@ -345,20 +345,20 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
     {
 	if (items == null || index >= items.length || items[index] == null)
 	{
-	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE));
+	    luwrain.say(Langs.staticValue(Langs.EMPTY_LINE));
 	    return;
 	}
 	final ValueItem item = items[index];
 	switch(item.type)
 	{
 	case Registry.STRING:
-	    Speech.say(stringConstructor.introduceStringValue(item.name, item.value));
+	    luwrain.say(stringConstructor.introduceStringValue(item.name, item.value));
 	    break;
 	case Registry.INTEGER:
-	    Speech.say(stringConstructor.introduceIntegerValue(item.name, item.value));
+	    luwrain.say(stringConstructor.introduceIntegerValue(item.name, item.value));
 	    break;
 	case Registry.BOOLEAN:
-	    Speech.say(stringConstructor.introduceBooleanValue(item.name, item.boolValue));
+	    luwrain.say(stringConstructor.introduceBooleanValue(item.name, item.boolValue));
 	    break;
 	}
     }

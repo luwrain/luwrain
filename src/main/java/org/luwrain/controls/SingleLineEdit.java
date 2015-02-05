@@ -56,13 +56,13 @@ public class SingleLineEdit implements CopyCutRequest
 	    {
 		if (pos < 1)
 		{
-		    Speech.say(textBeginMessage, Speech.PITCH_HIGH);
+		    environment.say(textBeginMessage);
 		    return true;
 		}
 		String newLine = new String(line.substring(0, pos - 1) + line.substring(pos));
 		model.setLine(newLine);
 		model.setHotPointX(pos - 1);
-		Speech.sayLetter(line.charAt(pos - 1));
+		environment.sayLetter(line.charAt(pos - 1));
 		return true;
 	    }
 
@@ -71,18 +71,18 @@ public class SingleLineEdit implements CopyCutRequest
 	    {
 		if (pos >= line.length())
 		{
-		    Speech.say(textEndMessage, Speech.PITCH_HIGH);
+		    environment.say(textEndMessage);
 		    return true;
 		}
 		if (pos == line.length() - 1)
 		{
 		    model.setLine(line.substring(0, pos));
-		    Speech.sayLetter(line.charAt(pos));
+		    environment.sayLetter(line.charAt(pos));
 		    return true;
 		}
 		String newLine = new String(line.substring(0, pos) + line.substring(pos + 1));
 		model.setLine(newLine);
-		Speech.sayLetter(line.charAt(pos));
+		environment.sayLetter(line.charAt(pos));
 		return true;
 	    }
 
@@ -95,14 +95,14 @@ public class SingleLineEdit implements CopyCutRequest
 		if (pos == line.length())
 		{
 	    model.setLine(line + tabSeq);
-	    Speech.say(tabMessage);
+	    environment.say(tabMessage);
 	    model.setHotPointX(pos + tabSeq.length());
 	    return true;
 	}
 	String newLine = new String(line.substring(0, pos) + tabSeq + line.substring(pos));
 	model.setLine(newLine);
 	model.setHotPointX(pos + tabSeq.length());
-	Speech.say(tabMessage);
+	environment.say(tabMessage);
 	    return true;
 	    }
 	    return false;
@@ -117,10 +117,10 @@ public class SingleLineEdit implements CopyCutRequest
 	    {
 		String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
 		if (lastWord != null && !lastWord.isEmpty())
-		    Speech.say(lastWord); else
-		    Speech.sayLetter(' ');
+		    environment.say(lastWord); else
+		    environment.sayLetter(' ');
 		    } else
-		Speech.sayLetter(event.getCharacter());
+		environment.sayLetter(event.getCharacter());
 	    return true;
 	}
 	String newLine = new String(line.substring(0, pos) + event.getCharacter() + line.substring(pos));
@@ -130,10 +130,10 @@ public class SingleLineEdit implements CopyCutRequest
 	{
 	    String lastWord = TextUtils.getLastWord(newLine, pos + 1);
 	    if (lastWord != null && !lastWord.isEmpty())
-		Speech.say(lastWord); else
-		Speech.sayLetter(' ');
+		environment.say(lastWord); else
+		environment.sayLetter(' ');
 	} else
-	    Speech.sayLetter(event.getCharacter());
+	    environment.sayLetter(event.getCharacter());
 	return true;
     }
 

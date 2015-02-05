@@ -58,13 +58,13 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		//No need to call fixHotPoint();
 		if (hotPointX < 1 && hotPointY < 1)
 		{
-		    Speech.say(areaBeginMessage, Speech.PITCH_HIGH);
+		    environment.say(areaBeginMessage);
 		    return true;
 		}
 		hotPointX = 0;
 		hotPointY = 0;
 		environment.onAreaNewHotPoint(this);
-		Speech.say(areaBeginMessage, Speech.PITCH_HIGH);
+		environment.say(areaBeginMessage);
 		return true;
 	    }
 
@@ -77,7 +77,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		    line = new String();
 		if (hotPointY + 1 >= getLineCount() && hotPointX >= line.length())
 		{
-		    Speech.say(areaEndMessage, Speech.PITCH_HIGH);
+		    environment.say(areaEndMessage);
 		    return true;
 		}
 		line = getLine(getLineCount() - 1);
@@ -88,7 +88,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		if (hotPointY < 0)//Incorrect getLineCount() behaviour;
 		    hotPointY = 0;
 		environment.onAreaNewHotPoint(this);
-		    Speech.say(areaEndMessage, Speech.PITCH_HIGH);
+		    environment.say(areaEndMessage);
 		    return true;
 	    }
 	    return false;
@@ -100,7 +100,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    fixHotPoint();
 	    if (hotPointY + 1 >= getLineCount())
 	    {
-		Speech.say(lastLineMessage, Speech.PITCH_HIGH);
+		environment.say(lastLineMessage);
 		return true;
 	    }
 	    hotPointY++;
@@ -121,7 +121,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    fixHotPoint();
 	    if (hotPointY == 0)
 	    {
-		Speech.say(firstLineMessage, Speech.PITCH_HIGH);
+		environment.say(firstLineMessage);
 		return true;
 	    }
 	    hotPointY--;
@@ -144,7 +144,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    {
 		if (hotPointY + 1 >= getLineCount())
 		{
-		    Speech.say(areaEndMessage, Speech.PITCH_HIGH);
+		    environment.say(areaEndMessage);
 		    return true;
 		}
 		hotPointY++;
@@ -158,10 +158,10 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    if (hotPointX == line.length())
 	    {
 		if (hotPointY + 1 == getLineCount())
-		    Speech.say(areaEndMessage, Speech.PITCH_HIGH); else
-		    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
+		    environment.say(areaEndMessage); else
+		    environment.say(lineEndMessage);
 	    } else
-		Speech.sayLetter(line.charAt(hotPointX));
+		environment.sayLetter(line.charAt(hotPointX));
 	    return true;
 	}
 
@@ -173,7 +173,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    {
 		if (hotPointY == 0)
 		{
-		    Speech.say(areaBeginMessage, Speech.PITCH_HIGH);
+		    environment.say(areaBeginMessage);
 		    return true;
 		}
 		hotPointY--;
@@ -188,8 +188,8 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    if (line == null)
 		line = new String();
 	    if (hotPointX == line.length())
-		Speech.say(lineEndMessage, Speech.PITCH_HIGH); else
-		Speech.sayLetter(line.charAt(hotPointX));
+		environment.say(lineEndMessage); else
+		environment.sayLetter(line.charAt(hotPointX));
 	    return true;
 	}
 
@@ -202,7 +202,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		line = new String();
 	    if (line.isEmpty())
 	    {
-		Speech.say(emptyLineMessage, Speech.PITCH_HIGH);
+		environment.say(emptyLineMessage);
 		return true;
 	    }
 	    if (hotPointX > 0)
@@ -210,7 +210,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		hotPointX = 0;
 		environment.onAreaNewHotPoint(this);
 	    } 
-	    Speech.sayLetter(line.charAt(0));
+	    environment.sayLetter(line.charAt(0));
 	    return true;
 	}
 
@@ -223,7 +223,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		line = new String();
 	    if (line.isEmpty())
 	    {
-		Speech.say(emptyLineMessage, Speech.PITCH_HIGH);
+		environment.say(emptyLineMessage);
 		return true;
 	    }
 	    if (hotPointX < line.length())
@@ -231,7 +231,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		hotPointX = line.length();
 		environment.onAreaNewHotPoint(this);
 	    } 
-	    Speech.say(lineEndMessage, Speech.PITCH_HIGH);
+	    environment.say(lineEndMessage);
 	    return true;
 	}
 
@@ -258,8 +258,8 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
     {
 	final String line = getLine(index);
 	if (line == null || line.isEmpty())
-	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
-	    Speech.say(line);
+	    environment.say(Langs.staticValue(Langs.EMPTY_LINE)); else
+	    environment.say(line);
     }
 
     public void setHotPoint(int x,int y)
@@ -327,7 +327,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 		return false;
 	    String[] res = new String[1];
 	    res[0] = line.substring(fromPos, toPos);
-	    Speech.say(res[0]);
+	    environment.say(res[0]);
 	    environment.setClipboard(res);
 	    return true;
 	}
@@ -347,7 +347,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	if (line == null)
 	    return false;
 	res.add(line.substring(0, toX <line.length()?toX:line.length()));
-	Speech.say(Langs.staticValue(Langs.COPIED_LINES) + res.size(), Speech.PITCH_HIGH);
+	environment.say(Langs.staticValue(Langs.COPIED_LINES) + res.size());
 	environment.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }

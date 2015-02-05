@@ -18,22 +18,24 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.io.*;
-import org.luwrain.speech.*;
-//import org.luwrain.os.SpeechBackEnds;
-import org.luwrain.mmedia.EnvironmentSounds;
+
+import org.luwrain.speech.BackEnd;
+import org.luwrain.sounds.EnvironmentSounds;
 
 class Init
 {
-    private static final String  PREFIX_CONF_LIST = "--conf-list=";
+    //    private static final String  PREFIX_CONF_LIST = "--conf-list=";
+    private static final String  PREFIX_REGISTRY_DIR = "--registry-dir=";
     private static final String  PREFIX_DATA_DIR = "--data-dir=";
     private static final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
     private static final String  PREFIX_SPEECH= "--speech=";
-    private static final String  PREFIX_ADD_REGISTRY = "--add-reg=";
+    private static final String  PREFIX_LANG= "--lang=";
 
     private String[] cmdLine;
     private Registry registry;
     private Interaction interaction;
     private org.luwrain.speech.BackEnd speech;
+    private LaunchContext launchContext;
 
     public void go(String[] args)
     {
@@ -42,25 +44,60 @@ class Init
 	for(String s: cmdLine)
 	    Log.debug("init", s);
 	if (init())
-	{
-	    SystemDirs systemDirs = new SystemDirs();//FIXME:
-	    Environment environment = new Environment(cmdLine, registry, interaction, systemDirs);
-		environment.run();
-	}
+	    new Environment(cmdLine, registry, speech, interaction, launchContext).run();
 	exit();
     }
 
     private boolean init()
     {
-	if (!initRegistryFirstStage())
+	//Registry;
+	final String regDirPath = getFirstCmdLineOption(PREFIX_REGISTRY_DIR);
+	if (regDirPath == null || regDirPath.isEmpty())
+	{
+	    Log.fatal("init", "no \'" + PREFIX_REGISTRY_DIR + "\' command line option, Luwrain don\'t know where to get registry data");
 	    return false;
-	if (!initJdbcForRegistry())
-	    Log.warning("init", "jdbc initialization failed, registry access are restricted");
-	if (!initRegistrySecondStage())
-	    Log.warning("init", "second stage of registry initialization failed, registry data is incomplete");
-	processAddRegKeys();
-	if (!initLanguages())
+	}
+	File regDir = new File(regDirPath);
+	if (!regDir.isAbsolute() || !regDir.isDirectory())
+	{
+	    Log.fatal("init", "registry location \'" + regDirPath + "\' isn\'t a directory or isn\'t an absolute path");
 	    return false;
+	}
+	registry = new org.luwrain.registry.fsdir.RegistryImpl(regDir.getAbsolutePath());
+
+	//Launch context;
+	final String dataDirPath = getFirstCmdLineOption(PREFIX_DATA_DIR);
+	if (dataDirPath == null || dataDirPath.isEmpty())
+	{
+	    Log.fatal("init", "no command line option \'" + PREFIX_DATA_DIR + "\', Luwrain doesn\'t know where its data is");
+	    return false;
+	}
+	final File dataDir = new File(dataDirPath);
+	if (!dataDir.isDirectory() || !dataDir.isAbsolute())
+	{
+	    Log.fatal("init", "data location \'" + dataDirPath + "\' isn\'t a directory or isn\'t an absolute path");
+	    return false;
+	}
+	final String userHomeDirPath = getFirstCmdLineOption(PREFIX_USER_HOME_DIR);
+	if (userHomeDirPath == null || userHomeDirPath.isEmpty())
+	{
+	    Log.fatal("init", "no command line option \'" + PREFIX_USER_HOME_DIR + "\', Luwrain doesn\'t know where user home files should be");
+	    return false;
+	}
+	final File userHomeDir = new File(userHomeDirPath);
+	if (!userHomeDir.isDirectory() || !userHomeDir.isAbsolute())
+	{
+	    Log.fatal("init", "user home location \'" + userHomeDirPath + "\' isn\'t a directory or isn\'t an absolute path");
+	    return false;
+	}
+	final String lang = getFirstCmdLineOption(PREFIX_LANG);
+	if (lang == null || lang.isEmpty())
+	{
+	    Log.fatal("init", "no chosen language, use command line option \'" + PREFIX_LANG + "\'");
+return false;
+	}
+launchContext = new LaunchContext(dataDir.getAbsolutePath(), userHomeDir.getAbsolutePath(), lang);
+
 	if (!initSpeech())
 	    return false;
 
@@ -79,139 +116,9 @@ class Init
 	    return false;
 	}
 
-
-
 	if (!initEnvironmentSounds())
 	    return false;
 	return true;
-    }
-
-    private boolean initRegistryFirstStage()
-    {
-	/*
-	//	registry = new Registry();
-	if (!registry.initWithConfFiles(getConfList()))
-	{
-	    Log.fatal("init", "Stopping initialization due to configuration file error");
-	    return false;
-	}
-	for(String s: cmdLine)
-	{
-	    if (s == null)
-		continue;
-	    if (s.startsWith(PREFIX_DATA_DIR))
-	    {
-		String rest = s.substring(PREFIX_DATA_DIR.length());
-		registry.setStaticString(RegistryKeys.INSTANCE_DATA_DIR, rest);
-		Log.info("init", "data directory path is set to " + rest);
-		continue;
-	    }
-	    if (s.startsWith(PREFIX_USER_HOME_DIR))
-	    {
-		String rest = s.substring(PREFIX_USER_HOME_DIR.length());
-		registry.setStaticString(RegistryKeys.INSTANCE_USER_HOME_DIR, rest);
-		Log.info("init", "user home directory path is set to " + rest);
-		continue;
-	    }
-	}
-	*/
-	return true;
-    }
-
-    private boolean initJdbcForRegistry()
-    {
-	/*
-	if (registry.getTypeOf(RegistryKeys.REGISTRY_JDBC_URL) != Registry.STRING)
-	{
-	    Log.error("init", "no registry value \'" + RegistryKeys.REGISTRY_JDBC_URL + "\' needed for proper registry work");
-	    return false;
-	}
-	if (registry.getTypeOf(RegistryKeys.REGISTRY_JDBC_DRIVER) != Registry.STRING)
-	{
-	    Log.error("init", "no registry value \'" + RegistryKeys.REGISTRY_JDBC_DRIVER + "\' needed for proper registry work");
-	    return false;
-	}
-	if (registry.getTypeOf(RegistryKeys.REGISTRY_JDBC_LOGIN) != Registry.STRING)
-	{
-	    Log.error("init", "no registry value \'" + RegistryKeys.REGISTRY_JDBC_LOGIN + "\' needed for proper registry work");
-	    return false;
-	}
-	if (registry.getTypeOf(RegistryKeys.REGISTRY_JDBC_PASSWD) != Registry.STRING)
-	{
-	    Log.error("init", "no registry value \'" + RegistryKeys.REGISTRY_JDBC_PASSWD + "\' needed for proper registry work");
-	    return false;
-	}
-	final String url = registry.getString(RegistryKeys.REGISTRY_JDBC_URL);
-	final String driver = registry.getString(RegistryKeys.REGISTRY_JDBC_DRIVER);
-	final String login = registry.getString(RegistryKeys.REGISTRY_JDBC_LOGIN);
-	final String passwd = registry.getString(RegistryKeys.REGISTRY_JDBC_PASSWD);
-	if (url.trim().isEmpty())
-	{
-	    Log.error("init", "the registry value at " + RegistryKeys.REGISTRY_JDBC_URL + " is empty");
-	    return false;
-	}
-	if (login.trim().isEmpty())
-	{
-	    Log.error("init", "the registry value at " + RegistryKeys.REGISTRY_JDBC_LOGIN + " is empty");
-	    return false;
-	}
-	Log.debug("init", "ready to establish the jdbc connection for registry ");
-	Log.debug("init", "driver: " + driver);
-	Log.debug("init", "URL: " + url);
-	Log.debug("init", "login: " + login);
-	Log.debug("init", "passwd: " + passwd.length() + " characters");
-	try {
-	    Class.forName (driver).newInstance ();
-	    jdbcConRegistry = DriverManager.getConnection (url, login, passwd);
-	}
-	catch(Exception e)
-	{
-	    Log.error("init", "jdbc connection problem:" + e.getMessage());
-	    return false;
-	}
-	Log.debug("init", "jdbc connection for registry is obtained");
-	*/
-	return true;
-    }
-
-    private boolean initRegistrySecondStage()
-    {
-	/*
-	if (jdbcConRegistry == null)
-	{
-	    Log.error("init", "skipping second stage registry initialization (no jdbc connection)");
-	    return false;
-	}
-	return registry.initWithJdbc(jdbcConRegistry);
-	*/
-	return false;
-    }
-
-    private boolean initLanguages()
-    {
-	/*
-	if (registry.getTypeOf(RegistryKeys.LANGS_CURRENT) != Registry.STRING)
-	{
-	    Log.warning("init", "No value " + RegistryKeys.LANGS_CURRENT + ", using English language as a default");
-	    return true;
-	}
-	final String lang = registry.getString(RegistryKeys.LANGS_CURRENT);
-    if (lang.equals("ru"))
-    {
-	Log.info("init", "using Russian language in user interface");
-	Langs.setCurrentLang(new org.luwrain.langs.ru.Language());
-	return true;
-    }
-
-    if (lang.equals("en"))
-    {
-	Log.info("init", "using English language in user interface");
-	Langs.setCurrentLang(new org.luwrain.langs.en.Language());
-	return true;
-    }
-    Log.warning("init", "unknown language \'" + lang + "\', using English as a default");
-	*/
-    return true;
     }
 
     private boolean initSpeech()
@@ -244,7 +151,6 @@ class Init
 	    e.printStackTrace();
 	    return false;
 	}
-
 	if (!(o instanceof org.luwrain.speech.BackEnd))
 	{
 	    Log.fatal("init", "created instance of class " + backendClass + " is not an instance of org.luwrain.speech.BackEnd");
@@ -313,51 +219,6 @@ class Init
 	System.exit(0);
     }
 
-    private void processAddRegKeys()
-    {
-	/*
-	RegistryValuesFile valuesFile = new RegistryValuesFile(registry);
-	for(String s: cmdLine)
-	{
-	    if (s == null || 
-		s.length() <= PREFIX_ADD_REGISTRY.length() ||
-		!s.startsWith(PREFIX_ADD_REGISTRY))
-		continue;
-	    String rest = s.substring(PREFIX_ADD_REGISTRY.length());
-	    Log.debug("init", "reading registry values from file " + rest);
-	    valuesFile.readValuesFromFile(rest);
-	}
-	*/
-    }
-
-    private String[] getConfList()
-    {
-	ArrayList<String> res = new ArrayList<String>();
-	for(String s: cmdLine)
-	{
-	    if (s == null || !s.startsWith(PREFIX_CONF_LIST))
-		continue;
-	    String rest = s.substring(PREFIX_CONF_LIST.length());
-	    String ss = "";
-	    for(int k = 0;k < rest.length();k++)
-	    {
-		if (rest.charAt(k) != ':')
-		{
-		    ss += rest.charAt(k);
-		    continue;
-		}
-		ss = ss.trim();
-		if (!ss.isEmpty())
-		    res.add(ss);
-		ss = "";
-	    }
-	    ss = ss.trim();
-	    if (!ss.isEmpty())
-		res.add(ss);
-	}
-	return res.toArray(new String[res.size()]);
-    }
-
     private String getFirstCmdLineOption(String prefix)
     {
 	if (prefix == null)
@@ -371,7 +232,7 @@ class Init
 	    if (s == null)
 		continue;
 	    if (s.startsWith(prefix))
-return s.substring(prefix.length());
+		return s.substring(prefix.length());
 	}
 	return null;
     }

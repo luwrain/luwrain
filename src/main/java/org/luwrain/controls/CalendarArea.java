@@ -89,7 +89,7 @@ public class CalendarArea implements Area
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	environment.onAreaNewName(this);
-	Speech.say(constructDayStringForSpeech(calendar));
+	environment.say(constructDayStringForSpeech(calendar));
 	return true;
     }
 

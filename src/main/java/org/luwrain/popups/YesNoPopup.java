@@ -25,7 +25,8 @@ import org.luwrain.util.*;
 public class YesNoPopup implements Area, Popup, PopupClosingRequest
 {
     public PopupClosing closing = new PopupClosing(this);
-    private Object instance;
+    private Object instance;//FIXME:
+    private Luwrain luwrain;
     private String name = "";
     private String text = "";
     private boolean res;
@@ -114,7 +115,7 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 	    cmd == KeyboardEvent.ARROW_LEFT ||
 	    cmd == KeyboardEvent.ARROW_RIGHT)
 	{
-	    Speech.say(text);
+	    luwrain.say(text);
 	    return true;
 	}
 	return false;
@@ -125,7 +126,7 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
-	    Speech.say(text);
+	    luwrain.say(text);
 	    return true;
 	default:
 	return closing.onEnvironmentEvent(event);

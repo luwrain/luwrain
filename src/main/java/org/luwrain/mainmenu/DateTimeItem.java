@@ -24,7 +24,7 @@ import org.luwrain.mainmenu.StringConstructor;
 class DateTimeItem implements Item
 {
     private StringConstructor stringConstructor;
-    //    private Luwrain luwrain;
+    private Luwrain luwrain;
     private String value;
 
     public DateTimeItem(StringConstructor stringConstructor)
@@ -40,7 +40,7 @@ class DateTimeItem implements Item
 
     @Override public void introduce()
     {
-	Speech.say(value);
+	luwrain.say(value);
     }
 
     @Override public boolean isAction()

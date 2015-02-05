@@ -133,4 +133,30 @@ public void onAreaNewName(Area area)
     {
 	return environment.getClipboard();
     }
+
+    public void say(String text)
+    {
+	//FIXME:
+    }
+
+    public void sayLetter(char letter)
+    {
+    }
+
+    public void hint(String text)
+    {
+
+    }
+
+    public void hint(String text, int code)
+    {
+    }
+
+    public void hint(int code)
+    {
+    }
+
+    public void silence()
+    {
+    }
 }

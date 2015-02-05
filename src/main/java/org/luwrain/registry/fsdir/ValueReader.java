@@ -41,8 +41,17 @@ class ValueReader
 		    ++lineNum;
 		    final String line = scanner.nextLine();
 		    if (parser.parse(line))
-			values.put(parser.key, parser.value); else
-			Log.warning("registry", "skipping invalid line:" + fileName + ":" + lineNum + ":" + line);
+		    {
+			if (parser.key.isEmpty() && parser.value.isEmpty())
+			    continue;
+			if (parser.key.isEmpty() && !parser.value.isEmpty())
+			{
+			Log.warning("fsdir", "skipping the line with an empty key and a non-empty value:" + fileName + ":" + lineNum + ":" + line);
+			continue;
+			}
+			values.put(parser.key, parser.value);
+			} else
+			Log.warning("fsdir", "skipping a invalid line:" + fileName + ":" + lineNum + ":" + line);
 		}
 	    }
 	return values;

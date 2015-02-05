@@ -177,7 +177,7 @@ public class MainMenu  implements Area, PopupClosingRequest
 	environment.onAreaNewHotPoint(this);
 	if (hotPointX >= line.length())
 	    environment.hintStaticString(Langs.END_OF_LINE); else
-	    Speech.sayLetter(line.charAt(hotPointX));
+	    environment.sayLetter(line.charAt(hotPointX));
 	return true;
     }
 

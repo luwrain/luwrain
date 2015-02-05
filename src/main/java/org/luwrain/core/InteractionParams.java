@@ -48,7 +48,7 @@ public class InteractionParams
 	wndLeft = check.intPositive(keys.interactionWndLeft(), wndLeft);
 	wndTop = check.intPositive(keys.interactionWndTop(), wndTop);
 	wndWidth = check.intAny(keys.interactionWndWidth(), wndWidth);
-	wndHeight = check.intPositive(keys.interactionWndHeight(), wndHeight);
+	wndHeight = check.intAny(keys.interactionWndHeight(), wndHeight);
 	marginLeft = check.intRange(keys.interactionMarginLeft(), 0, MAX_MARGIN, marginLeft);
 	marginTop = check.intRange(keys.interactionMarginTop(), 0, MAX_MARGIN, marginTop);
 	marginRight = check.intRange(keys.interactionMarginRight(), 0, MAX_MARGIN, marginRight);

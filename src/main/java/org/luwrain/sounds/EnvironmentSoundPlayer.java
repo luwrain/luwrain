@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.mmedia;
+package org.luwrain.sounds;
 
 import java.io.File;
 import java.io.IOException;

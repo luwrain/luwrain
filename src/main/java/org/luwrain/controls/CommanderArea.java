@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.commander;
+package org.luwrain.controls;
 
 import java.io.*;
 import java.util.*;
@@ -34,7 +34,8 @@ public class CommanderArea implements Area
     private File current = null;
     private Vector items = null;//null means directory content is inaccessible;
 
-    private Luwrain luwrain;
+    private Luwrain luwrain;//FIXME:
+    private ControlEnvironment environment;
     private int hotPointX = 0;
     private int hotPointY = 0;
 
@@ -166,7 +167,7 @@ public class CommanderArea implements Area
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
-    Speech.say("FIXME:stringConstructor.appName() +  + getName()");
+    environment.say("FIXME:stringConstructor.appName() +  + getName()");
 	case EnvironmentEvent.OK:
 	    return onEnter();
 	case EnvironmentEvent.REFRESH:
@@ -189,7 +190,7 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say("FIXME:stringConstructor.inaccessibleDirectoryContent()", Speech.PITCH_HIGH);
+	    environment.say("FIXME:stringConstructor.inaccessibleDirectoryContent()");
 	    return true;
 	}
 	if (hotPointY >= items.size())
@@ -242,12 +243,12 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 	if (hotPointY + 1> items.size())
 	{
-	    Speech.say(stringConstructor.noItemsBelow(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.noItemsBelow());
 	    return true;
 	}
 	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
@@ -263,12 +264,12 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 	if (hotPointY < 1)
 	{
-	    Speech.say(stringConstructor.noItemsAbove(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.noItemsAbove());
 	    return true;
 	}
 	hotPointX = INITIAL_HOT_POINT_X;
@@ -284,12 +285,12 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 	if (hotPointY >= items.size())
 	{
-	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	    environment.say(Langs.staticValue(Langs.EMPTY_LINE));
 	    return true;
 	}
 	if (items.get(hotPointY) == null ||
@@ -300,7 +301,7 @@ return current.getAbsolutePath();
 	    return true;
 	if (hotPointX >= name.length() + INITIAL_HOT_POINT_X)
 	{
-	    Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
+	    environment.say(Langs.staticValue(Langs.END_OF_LINE));
 	    return true;
 	}
 	hotPointX++;
@@ -308,8 +309,8 @@ return current.getAbsolutePath();
 	    hotPointX = INITIAL_HOT_POINT_X;
 	luwrain.onAreaNewHotPoint(this);
 	if (hotPointX < name.length() + 2)
-	    Speech.sayLetter(name.charAt(hotPointX - 2)); else
-	    Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
+	    environment.sayLetter(name.charAt(hotPointX - 2)); else
+	    environment.say(Langs.staticValue(Langs.END_OF_LINE));
 	*/
 	return true;
     }
@@ -320,13 +321,13 @@ return current.getAbsolutePath();
 
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 
 	if (hotPointY >= items.size())
 	{
-	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	    environment.say(Langs.staticValue(Langs.EMPTY_LINE));
 	    return true;
 	}
 	if (items.get(hotPointY) == null ||
@@ -337,14 +338,14 @@ return current.getAbsolutePath();
 	    return true;
 	if (hotPointX <= INITIAL_HOT_POINT_X)
 	{
-	    Speech.say(Langs.staticValue(Langs.BEGIN_OF_LINE), Speech.PITCH_HIGH);
+	    environment.say(Langs.staticValue(Langs.BEGIN_OF_LINE));
 	    return true;
 	}
 	hotPointX--;
 	if (hotPointX > name.length()  + INITIAL_HOT_POINT_X)
 	    hotPointX = name.length() + INITIAL_HOT_POINT_X;
 	luwrain.onAreaNewHotPoint(this);
-	Speech.sayLetter(name.charAt(hotPointX - 2));
+	environment.sayLetter(name.charAt(hotPointX - 2));
 	*/
 	return true;
     }
@@ -354,7 +355,7 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 	final int visibleHeight = luwrain.getAreaVisibleHeight(this);
@@ -378,7 +379,7 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 	final int visibleHeight = luwrain.getAreaVisibleHeight(this);
@@ -402,7 +403,7 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 	hotPointY = 0;
@@ -418,13 +419,13 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
 	if (hotPointY >= items.size() || hotPointX >= items.get(hotPointY).getFileName().length() + INITIAL_HOT_POINT_X)
-	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
-	    Speech.sayLetter(items.get(hotPointY).getFileName().charAt(hotPointX - 2));
+	    environment.say(Langs.staticValue(Langs.EMPTY_LINE)); else
+	    environment.sayLetter(items.get(hotPointY).getFileName().charAt(hotPointX - 2));
 	*/
 	return true;
     }
@@ -434,12 +435,12 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 	hotPointY = items.size();
 	hotPointX = 0;
-	Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	environment.say(Langs.staticValue(Langs.EMPTY_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	*/
 	return true;
@@ -450,17 +451,17 @@ return current.getAbsolutePath();
 	/*
 	if (items == null)
 	{
-	    Speech.say(stringConstructor.inaccessibleDirectoryContent(), Speech.PITCH_HIGH);
+	    environment.say(stringConstructor.inaccessibleDirectoryContent());
 	    return true;
 	}
 	if (hotPointY < items.size())
 	{
 	    hotPointX = items.get(hotPointY).getFileName().length() + INITIAL_HOT_POINT_X;
-	    Speech.say(Langs.staticValue(Langs.END_OF_LINE), Speech.PITCH_HIGH);
+	    environment.say(Langs.staticValue(Langs.END_OF_LINE));
 	} else
 	{
 	    hotPointX = 0;
-	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	    environment.say(Langs.staticValue(Langs.EMPTY_LINE));
 	}
 	luwrain.onAreaNewHotPoint(this);
 	*/
@@ -489,10 +490,10 @@ return current.getAbsolutePath();
 	    return;
 	if (index >= items.size())
 	{
-	    Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH);
+	    environment.say(Langs.staticValue(Langs.EMPTY_LINE));
 	    return;
 	}
-	Speech.say(stringConstructor.dirItemIntroduction(items.get(index), brief));
+	environment.say(stringConstructor.dirItemIntroduction(items.get(index), brief));
 	*/
     }
 
@@ -503,10 +504,10 @@ return current.getAbsolutePath();
 	    return;
 	if (file.getAbsolutePath().equals(ROOT_DIR))
 	{
-	    Speech.say(stringConstructor.rootDirectory());
+	    environment.say(stringConstructor.rootDirectory());
 	    return;
 	}
-	Speech.say(file.getName());
+	environment.say(file.getName());
 	*/
     }
 

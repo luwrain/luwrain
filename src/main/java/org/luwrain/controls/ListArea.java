@@ -123,7 +123,7 @@ public class ListArea  implements Area, CopyCutRequest
 	{
 	    hotPointX = 0;
 	    if (introduce)
-		Speech.say(emptyLine, Speech.PITCH_HIGH);
+		environment.say(emptyLine);
 	}
 	environment.onAreaNewHotPoint(this);
     }
@@ -274,8 +274,8 @@ public class ListArea  implements Area, CopyCutRequest
 	if (value == null)
 	    value = "";
 	if (value.trim().isEmpty())
-		Speech.say(emptyLine, Speech.PITCH_HIGH); else
-	    Speech.say(value);
+		environment.say(emptyLine); else
+	    environment.say(value);
     }
 
     protected String getScreenAppearance(ListModel model,
@@ -294,12 +294,12 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	if (hotPointY >= model.getItemCount())
 	{
-		Speech.say(noItemsBelow, Speech.PITCH_HIGH);
+		environment.say(noItemsBelow);
 		return true;
 	}
 	++hotPointY;
@@ -310,7 +310,7 @@ public class ListArea  implements Area, CopyCutRequest
 	environment.onAreaNewHotPoint(this);
 	if (hotPointY < model.getItemCount())
 	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0); else
-		Speech.say(emptyLine, Speech.PITCH_HIGH);
+		environment.say(emptyLine);
 	return true;
     }
 
@@ -319,12 +319,12 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	if (hotPointY <= 0)
 	{
-	    Speech.say(noItemsAbove, Speech.PITCH_HIGH);
+	    environment.say(noItemsAbove);
 	    return true;
 	}
 	    --hotPointY;
@@ -344,12 +344,12 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	if (hotPointY >= model.getItemCount())
 	{
-		Speech.say(noItemsBelow, Speech.PITCH_HIGH);
+		environment.say(noItemsBelow);
 		return true;
 	}
 	hotPointY += environment.getAreaVisibleHeight(this);
@@ -362,7 +362,7 @@ public class ListArea  implements Area, CopyCutRequest
 	environment.onAreaNewHotPoint(this);
 	if (hotPointY < model.getItemCount())
 	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0); else
-		Speech.say(emptyLine, Speech.PITCH_HIGH);
+		environment.say(emptyLine);
 	return true;
     }
 
@@ -371,12 +371,12 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	if (hotPointY <= 0)
 	{
-	    Speech.say(noItemsAbove, Speech.PITCH_HIGH);
+	    environment.say(noItemsAbove);
 	    return true;
 	}
 	hotPointY -= environment.getAreaVisibleHeight(this);
@@ -396,13 +396,13 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	hotPointY = model.getItemCount();
 	hotPointX = 0;
 	environment.onAreaNewHotPoint(this);
-	Speech.say(emptyLine, Speech.PITCH_HIGH);
+	environment.say(emptyLine);
 	return true;
     }
 
@@ -411,7 +411,7 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	hotPointY = 0;
@@ -429,14 +429,14 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	if (hotPointY < 0 ||
 	    hotPointY >= model.getItemCount() ||
 	    model.getItem(hotPointY) == null)
 	{
-	    Speech.say(emptyLine, Speech.PITCH_HIGH);
+	    environment.say(emptyLine);
 	    return true;
 	}
 	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
@@ -449,14 +449,14 @@ public class ListArea  implements Area, CopyCutRequest
 		hotPointX = line.length();
 		environment.onAreaNewHotPoint(this);
 	    }
-	    Speech.say(endOfLine, Speech.PITCH_HIGH);
+	    environment.say(endOfLine);
 	    return true;
 	}
 	++hotPointX;
 	environment.onAreaNewHotPoint(this);
 	if (hotPointX >= line.length())
-	    Speech.say(endOfLine, Speech.PITCH_HIGH); else
-	    Speech.sayLetter(line.charAt(hotPointX));
+	    environment.say(endOfLine); else
+	    environment.sayLetter(line.charAt(hotPointX));
 	return true;
     }
 
@@ -465,14 +465,14 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	if (hotPointY < 0 ||
 	    hotPointY >= model.getItemCount() ||
 	    model.getItem(hotPointY) == null)
 	{
-	    Speech.say(emptyLine, Speech.PITCH_HIGH);
+	    environment.say(emptyLine);
 	    return true;
 	}
 	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
@@ -485,7 +485,7 @@ public class ListArea  implements Area, CopyCutRequest
 		hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
 		environment.onAreaNewHotPoint(this);
 	    }
-	    Speech.say(beginOfLine, Speech.PITCH_HIGH);
+	    environment.say(beginOfLine);
 	    return true;
 	}
 	--hotPointX;
@@ -493,8 +493,8 @@ public class ListArea  implements Area, CopyCutRequest
 	    hotPointX = line.length();
 	environment.onAreaNewHotPoint(this);
 	if (hotPointX >= line.length())
-	    Speech.say(endOfLine, Speech.PITCH_HIGH); else
-	    Speech.sayLetter(line.charAt(hotPointX));
+	    environment.say(endOfLine); else
+	    environment.sayLetter(line.charAt(hotPointX));
 	return true;
     }
 
@@ -503,14 +503,14 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	if (hotPointY < 0 ||
 	    hotPointY >= model.getItemCount() ||
 	    model.getItem(hotPointY) == null)
 	{
-	    Speech.say(emptyLine, Speech.PITCH_HIGH);
+	    environment.say(emptyLine);
 	    return true;
 	}
 	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
@@ -518,7 +518,7 @@ public class ListArea  implements Area, CopyCutRequest
 	    line = "";
 	hotPointX = line.length();
 	environment.onAreaNewHotPoint(this);
-	Speech.say(endOfLine, Speech.PITCH_HIGH);
+	environment.say(endOfLine);
 	return true;
     }
 
@@ -527,14 +527,14 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null ||
 	    model.getItemCount() < 1)
 	{
-	    Speech.say(noItems, Speech.PITCH_HIGH);
+	    environment.say(noItems);
 	    return true;
 	}
 	if (hotPointY < 0 ||
 	    hotPointY >= model.getItemCount() ||
 	    model.getItem(hotPointY) == null)
 	{
-	    Speech.say(emptyLine, Speech.PITCH_HIGH);
+	    environment.say(emptyLine);
 	    return true;
 	}
 	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
@@ -543,8 +543,8 @@ public class ListArea  implements Area, CopyCutRequest
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
 	environment.onAreaNewHotPoint(this);
 	if (hotPointX >= line.length())
-	    Speech.say(beginOfLine, Speech.PITCH_HIGH); else
-	    Speech.sayLetter(line.charAt(hotPointX));
+	    environment.say(beginOfLine); else
+	    environment.sayLetter(line.charAt(hotPointX));
 	return true;
     }
 

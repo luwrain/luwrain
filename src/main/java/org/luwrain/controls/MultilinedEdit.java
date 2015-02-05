@@ -117,7 +117,7 @@ return res;
 	final int count = model.getLineCount();
 	if (count < 1)
 	{
-	    Speech.say(textBeginMessage, Speech.PITCH_HIGH);
+	    environment.say(textBeginMessage);
 	    return true;
 	}
 	if (index >= count)
@@ -130,7 +130,7 @@ return res;
 	    pos = line.length();
 	//Nothing to eliminate with backspace;
 	if (pos < 1 && index < 1)
-	    Speech.say(textBeginMessage, Speech.PITCH_HIGH); else
+	    environment.say(textBeginMessage); else
 	    //Jumping to previous line;
 	    if (pos < 1)
 	    {
@@ -142,14 +142,14 @@ return res;
 		model.setLine(prevLineIndex, prevLine + line);
 		model.removeLine(index);
 		model.setHotPoint(prevLinePos, prevLineIndex);
-		Speech.say(lineEndMessage, Speech.PITCH_HIGH);
+		environment.say(lineEndMessage);
 	    } else
 		//Eliminating just previous char;
 	    {
 		final String newLine = line.substring(0, pos - 1) + line.substring(pos);
 		model.setLine(index, newLine);
 		model.setHotPoint(pos - 1, index);
-		Speech.sayLetter(line.charAt(pos - 1));
+		environment.sayLetter(line.charAt(pos - 1));
 	    }
 	//Removing first empty line  if it is the only line in model;
 	if (model.getLineCount() == 1 && model.getLine(0).isEmpty())
@@ -163,7 +163,7 @@ return res;
 	final int count = model.getLineCount();
 	if (count < 1)
 	{
-	    Speech.say(textEndMessage, Speech.PITCH_HIGH);
+	    environment.say(textEndMessage);
 	    return true;
 	}
 	if (index >= count)
@@ -176,7 +176,7 @@ return res;
 	    pos = line.length();
 	//Nothing to eliminate with delete;
 	if (index + 1>= count && pos >= line.length())
-	    Speech.say(textEndMessage, Speech.PITCH_HIGH); else
+	    environment.say(textEndMessage); else
 	    //Eliminating new line position;
 	    if (pos == line.length())
 	    {
@@ -186,19 +186,19 @@ return res;
 		    nextLine = "";
 		model.setLine(index, line + nextLine);
 		model.removeLine(nextLineIndex);
-		Speech.say(lineEndMessage, Speech.PITCH_HIGH);
+		environment.say(lineEndMessage);
 	    } else
 		//eliminating last character of line;
 		if (pos + 1 == line.length())
 		{
 		    model.setLine(index, line.substring(0, pos));
-		    Speech.sayLetter(line.charAt(pos));
+		    environment.sayLetter(line.charAt(pos));
 		} else
 		    //Eliminating just last character of line;
 		{
 		    String newLine = line.substring(0, pos) + line.substring(pos + 1);
 		    model.setLine(index, newLine);
-		    Speech.sayLetter(line.charAt(pos));
+		    environment.sayLetter(line.charAt(pos));
 		}
 	//Removing first empty line  if it is the only line in model;
 	if (model.getLineCount() == 1 && model.getLine(0).isEmpty())
@@ -229,14 +229,14 @@ return res;
 	if (pos == line.length())
 	{
 	    model.setLine(index, line + tabSeq);
-	    Speech.say(tabMessage);
+	    environment.say(tabMessage);
 	    model.setHotPoint(pos + tabSeq.length(), index);
 	    return true;
 	}
 	final String newLine = line.substring(0, pos) + tabSeq + line.substring(pos);
 	model.setLine(index, newLine);
 	model.setHotPoint(pos + tabSeq.length(), index);
-	Speech.say(tabMessage);
+	environment.say(tabMessage);
 	return true;
     }
 
@@ -261,14 +261,14 @@ return res;
 	{
 	    model.insertLine(index + 1, "");
 	    model.setHotPoint(0, index + 1);
-	    Speech.say(emptyLineMessage, Speech.PITCH_HIGH);
+	    environment.say(emptyLineMessage);
 	    return true;
 	}
 	model.setLine(index, line.substring(0, pos));
 	final String newLine = line.substring(pos);
 	model.insertLine(index + 1, newLine);
 	model.setHotPoint(0, index + 1);
-	Speech.say(newLine);
+	environment.say(newLine);
 	return true;
     }
 
@@ -298,10 +298,10 @@ return res;
 	    {
 		String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
 		if (lastWord != null && !lastWord.isEmpty())
-		    Speech.say(lastWord); else
-		    Speech.sayLetter(' ');
+		    environment.say(lastWord); else
+		    environment.sayLetter(' ');
 	    } else
-		Speech.sayLetter(c);
+		environment.sayLetter(c);
 	    return true;
 	}
 	final String newLine = line.substring(0, pos) + c + line.substring(pos);
@@ -311,10 +311,10 @@ return res;
 	{
 	    String lastWord = TextUtils.getLastWord(newLine, pos + 1);
 	    if (lastWord != null && !lastWord.isEmpty())
-		Speech.say(lastWord); else
-		Speech.sayLetter(' ');
+		environment.say(lastWord); else
+		environment.sayLetter(' ');
 	} else
-	    Speech.sayLetter(c);
+	    environment.sayLetter(c);
 	return true;
     }
 

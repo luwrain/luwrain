@@ -99,36 +99,36 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	case KeyboardEvent.ARROW_LEFT:
 	    if (pos == 0)
 	    {
-		Speech.say(Langs.staticValue(Langs.AREA_BEGIN), Speech.PITCH_HIGH);
+		luwrain.say(Langs.staticValue(Langs.AREA_BEGIN));
 		return true;
 	    }
 	    pos--;
 	    if (pos < line.length())
-		Speech.sayLetter(line.charAt(pos)); else
-		Speech.sayLetter(' ');
+		luwrain.sayLetter(line.charAt(pos)); else
+		luwrain.sayLetter(' ');
 	    luwrain.onAreaNewHotPoint(this);
 	    return true;
 	case KeyboardEvent.ARROW_RIGHT:
 	    if (pos >= line.length())
 	    {
-		Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
+		luwrain.say(Langs.staticValue(Langs.AREA_END));
 		return true;
 	    }
 	    pos++;
 	    if (pos < line.length())
-		Speech.sayLetter(line.charAt(pos)); else
-		Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
+		luwrain.sayLetter(line.charAt(pos)); else
+		luwrain.say(Langs.staticValue(Langs.AREA_END));
 	    luwrain.onAreaNewHotPoint(this);
 	    return true;
 	case KeyboardEvent.HOME:
 	    pos = prefix.length();
 	    if (pos >= line.length())
-		Speech.say(Langs.staticValue(Langs.EMPTY_LINE), Speech.PITCH_HIGH); else
-		Speech.sayLetter(prefix.charAt(pos));
+		luwrain.say(Langs.staticValue(Langs.EMPTY_LINE)); else
+		luwrain.sayLetter(prefix.charAt(pos));
 	    return true;
 	case KeyboardEvent.END:
 	    pos = line.length();
-	    Speech.say(Langs.staticValue(Langs.AREA_END), Speech.PITCH_HIGH);
+	    luwrain.say(Langs.staticValue(Langs.AREA_END));
 	    luwrain.onAreaNewHotPoint(this);
 	    return true;
 	case KeyboardEvent.ENTER:
@@ -143,7 +143,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
-	    Speech.say(prefix + text);
+	    luwrain.say(prefix + text);
 	    return true;
 	default:
 	    //FIXME:Transmit event to edit

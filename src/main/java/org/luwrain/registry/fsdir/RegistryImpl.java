@@ -175,11 +175,14 @@ public class RegistryImpl implements Registry
 	Path p = parse(path);
 	if (p.isDirectory())
 	    throw new IllegalArgumentException("path addresses a directory, not a value");
+	//	Log.debug("fsreg", "looking for the string value " + p.toString());
 	try {
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
 		return "";
-	    return d.getString(p.valueName());
+	    final String res = d.getString(p.valueName());
+	    //	    Log.debug("fsreg", "result is \'" + res + "\'");
+	    return res;
 	}
 	catch (IOException e)
 	{

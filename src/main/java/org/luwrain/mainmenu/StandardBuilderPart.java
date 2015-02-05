@@ -19,10 +19,11 @@ package org.luwrain.mainmenu;
 import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.mainmenu.StringConstructor;
-import org.luwrain.mmedia.EnvironmentSounds;
+import org.luwrain.sounds.EnvironmentSounds;
 
 public class StandardBuilderPart implements BuilderPart
 {
+    private Luwrain luwrain;
     private String[] content;
     private StringConstructor stringConstructor;
 
@@ -59,7 +60,7 @@ public class StandardBuilderPart implements BuilderPart
 		}
 		@Override public void introduce()
 		{
-		    Speech.silence();
+		    luwrain.silence();
 		    EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_EMPTY_LINE);
 		}
 		@Override public boolean isAction()

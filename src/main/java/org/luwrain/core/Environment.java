@@ -23,7 +23,7 @@ import java.util.concurrent.*;
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.core.events.*;
 import org.luwrain.popups.*;
-import org.luwrain.mmedia.EnvironmentSounds;
+import org.luwrain.sounds.EnvironmentSounds;
 import org.luwrain.util.RegistryAutoCheck;
 
 class Environment implements EventConsumer
@@ -34,8 +34,9 @@ class Environment implements EventConsumer
     private Registry registry;
     private RegistryAutoCheck registryAutoCheck;
     private RegistryKeys registryKeys;
+    private org.luwrain.speech.BackEnd speech;
     private Interaction interaction;
-    private SystemDirs systemDirs;
+    private LaunchContext launchContext;
     private EventQueue eventQueue = new EventQueue();
     private InstanceManager appInstances;
     private ApplicationRegistry apps = new ApplicationRegistry();
@@ -52,13 +53,15 @@ class Environment implements EventConsumer
 
     public Environment(String[] cmdLine,
 		       Registry registry,
+		       org.luwrain.speech.BackEnd speech,
 		       Interaction interaction,
-SystemDirs systemDirs)
+		       LaunchContext launchContext)
     {
 	this.cmdLine = cmdLine;
 	this.registry = registry;
+	this.speech = speech;
 	this.interaction = interaction;
-	this.systemDirs = systemDirs;
+	this.launchContext = launchContext;
 	if (cmdLine == null)
 	    throw new NullPointerException("cmdLine may not be null");
 	for(int i = 0;i < cmdLine.length;++i)
@@ -66,8 +69,12 @@ SystemDirs systemDirs)
 		throw new NullPointerException("cmdLine[" + i + "] may not be null");
 	if (registry == null)
 	    throw new NullPointerException("registry may not be null");
+	if (speech == null)
+	    throw new NullPointerException("speech may not be null");
 	if (interaction == null)
 	    throw new NullPointerException("interaction may not be null");
+	if (launchContext == null)
+	    throw new NullPointerException("launchContext may not be null");
     }
 
     public void  run()
@@ -404,7 +411,7 @@ boolean noMultipleCopies)
 	    return;
 	needForIntroduction = false;
 	//FIXME:Message class for message collecting;
-	Speech.say(text);
+	speech.say(text);
 	interaction.startDrawSession();
 	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
 	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text);
@@ -453,12 +460,12 @@ boolean noMultipleCopies)
 	if (activeArea == null)
 	{
 	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
-	    Speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
+	    speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
 	    return;
 	}
 	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
 	    return;
-	Speech.say(activeArea.getName());
+	speech.say(activeArea.getName());
     }
 
     public void introduceActiveAreaNoEvent()
@@ -468,10 +475,10 @@ boolean noMultipleCopies)
 	if (activeArea == null)
 	{
 	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
-	    Speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
+	    speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
 	    return;
 	}
-	Speech.say(activeArea.getName());
+	speech.say(activeArea.getName());
     }
 
     public void increaseFontSize()
@@ -588,7 +595,7 @@ boolean noMultipleCopies)
 	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():Langs.staticValue(Langs.OPEN_POPUP_PREFIX);
 	File chosenDefaultValue = null;
 	if (defaultValue == null)
-		chosenDefaultValue = systemDirs.userHomeAsFile(); else
+		chosenDefaultValue = launchContext.userHomeDirAsFile(); else
 	    chosenDefaultValue = defaultValue;
 	FilePopup popup = new FilePopup(null, chosenName, chosenPrefix, chosenDefaultValue);
 	goIntoPopup(app, popup, PopupManager.BOTTOM, popup.closing, true);

@@ -20,6 +20,7 @@ import org.luwrain.core.*;
 
 class ActionItem implements Item
 {
+    private Luwrain luwrain;
     private String action;
     private String title;
 
@@ -36,7 +37,7 @@ class ActionItem implements Item
 
     @Override public void introduce()
     {
-	Speech.say(title);
+	luwrain.say(title);
     }
 
     @Override public boolean isAction()

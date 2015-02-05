@@ -29,17 +29,17 @@ public class DefaultControlEnvironment implements ControlEnvironment
 
     public void say(String text)
     {
-	Speech.say(text);
+	luwrain.say(text);
     }
 
     public void sayLetter(char letter)
     {
-	Speech.sayLetter(letter);
+	luwrain.sayLetter(letter);
     }
 
     public void hint(String text)
     {
-	Speech.say(text, Speech.PITCH_HIGH);
+	luwrain.say(text);
     }
 
     public void hintStaticString(int id)
