@@ -16,17 +16,42 @@
 
 package org.luwrain.core;
 
-//No input data checking here, everything in Environment class
-
 import java.io.File;
 
-public class Luwrain
+/**
+ * The main gate to Luwrain core for applications. This class is the
+ * single point which all applications have for the access to system
+ * functions.  All other classes considered as parts of Luwrain API
+ * (e.g. from packages {@code org.luwrain.controls} or {@code
+ * org.luwrain.popups}) only wrap the object of this class. In other
+ * words, this class is an interface for interaction with environment
+ * features.
+ * <p>
+ * On every application launch environment creates new instance of this
+ * class which is provided to the application object through {@code
+ * Application.onLaunch()} method.  All methods of this class dealing with the
+ * environment always give the {@code this} reference. Therefore, the
+ * environment is always aware which application the request is come
+ * from. With this behaviour {@code Luwrain} class does the
+ * identification function and applications should try to keep the reference
+ * to this class in secret.
+ */
+public final class Luwrain
 {
+    public static final int PITCH_HIGH = org.luwrain.speech.BackEnd.HIGH;
+    public static final int PITCH_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
+    public static final int PITCH_LOW = org.luwrain.speech.BackEnd.LOW;
+    public static final int RATE_HIGH = org.luwrain.speech.BackEnd.HIGH;
+    public static final int RATE_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
+    public static final int RATE_LOW = org.luwrain.speech.BackEnd.LOW;
+
     private Environment environment;
 
     public Luwrain(Environment environment)
     {
 	this.environment = environment;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
     }
 
     public void enqueueEvent(Event e)
@@ -38,7 +63,7 @@ public class Luwrain
     {
 	environment.launchApp(app);
     }
-    
+
 public     void closeApp()
     {
 	environment.closeApp(this);
@@ -64,7 +89,7 @@ public     void closeApp()
     }
 
     //Never produces any speech output automatically;
-public void onAreaNewName(Area area)
+    public void onAreaNewName(Area area)
     {
 	environment.onAreaNewName(area);
     }
@@ -114,15 +139,17 @@ public void onAreaNewName(Area area)
 	environment.popup(popup);
     }
 
-    public org.luwrain.core.Registry getRegistry()
+    public Registry getRegistry()
     {
-	return environment.getRegistry();
+	return environment.registry();
     }
 
+    /*
     public Object getPimManager()
     {
 	return environment.getPimManager();
     }
+    */
 
     public void setClipboard(String[] value)
     {
@@ -136,27 +163,104 @@ public void onAreaNewName(Area area)
 
     public void say(String text)
     {
-	//FIXME:
+	silence();
+	if (text != null)
+	    environment.speech().say(text);
+    }
+
+    public void say(String text, int pitch)
+    {
+	silence();
+	if (text != null)
+	    environment.speech().say(text, pitch);
+    }
+
+    public void say(String text,
+		    int pitch,
+		    int rate)
+    {
+	silence();
+	if (text != null)
+	    environment.speech().say(text, pitch, rate);
     }
 
     public void sayLetter(char letter)
     {
+	silence();
+	environment.speech().sayLetter(letter);
+    }
+
+    public void sayLetter(char letter, int pitch)
+    {
+	silence();
+	environment.speech().sayLetter(letter, pitch);
+    }
+
+    public void sayLetter(char letter,
+			  int pitch,
+			  int rate)
+    {
+	silence();
+	environment.speech().sayLetter(letter, pitch, rate);
     }
 
     public void hint(String text)
     {
-
+	say(text, PITCH_LOW);
     }
 
     public void hint(String text, int code)
     {
+	if (environment.onStandardHint(code))
+	    hint(text);
     }
 
-    public void hint(int code)
+    public boolean hint(int code)
     {
+	String msg = "";
+	switch (code)
+	{
+	case Hints.SPACE:
+	    msg = staticString(Langs.SPACE);
+	    break;
+	case Hints.EMPTY_LINE:
+	    msg = staticString(Langs.EMPTY_LINE);
+	    break;
+	case Hints.BEGIN_OF_LINE:
+	    msg = staticString(Langs.BEGIN_OF_LINE);
+	    break;
+	case Hints.END_OF_LINE:
+	    msg = staticString(Langs.END_OF_LINE);
+	    break;
+	case Hints.END_OF_TEXT:
+	    msg = staticString(Langs.AREA_END);
+	    break;
+	case Hints.NO_LINES_ABOVE:
+	    msg = staticString(Langs.THE_FIRST_LINE);
+	    break;
+	case Hints.NO_LINES_BELOW:
+	    msg = staticString(Langs.THE_LAST_LINE);
+	    break;
+	case Hints.NO_ITEMS_ABOVE:
+	    msg = staticString(Langs.THE_FIRST_LINE);
+	    break;
+	case Hints.NO_ITEMS_BELOW:
+	    msg = staticString(Langs.THE_LAST_LINE);
+	    break;
+	default:
+	    return false;
+	}
+			       hint(msg, code);
+			       return true;
     }
 
     public void silence()
     {
+	environment.speech().silence();
+    }
+
+    public String staticString(int code)
+    {
+	return Langs.staticValue(code);
     }
 }

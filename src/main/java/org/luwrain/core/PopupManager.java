@@ -20,7 +20,7 @@ import java.util.*;
 
 class PopupManager
 {
-    public static final int INVALID = -1;
+        public static final int INVALID = -1;
     public static final int TOP = 0;
     public static final int BOTTOM = 1;
     public static final int LEFT = 2;
@@ -50,33 +50,43 @@ class PopupManager
 
     private Vector<Wrapper> wrappers = new Vector<Wrapper>();
 
-    public void addNewPopup(Application app,
+    //null app means environment popup;
+    public void addNewP(Application app,
 			    Area area,
 			    int position,
 			    PopupEventLoopStopCondition stopCondition,
 			    boolean noMultipleCopies)
     {
+	if (area == null)
+	    throw new NullPointerException("area may not be null");
+	if (stopCondition == null)
+	    throw new NullPointerException("stopCondition may not be null");
 	wrappers.add(new Wrapper(app, area, position, stopCondition, noMultipleCopies));
     }
 
-    public void removeLastPopup()
+    public void removeLast()
     {
 	if (wrappers.isEmpty())
+	{
+	    Log.warning("popups", "trying to remove last popup without having any popups at all");
 	    return;
+	}
 	wrappers.remove(wrappers.size() - 1);
     }
 
     public boolean isLastPopupDiscontinued()
     {
-	//FIXME:
-	return false;
+	if (wrappers.isEmpty())
+	    return true;
+	return !wrappers.lastElement().stopCondition.continueEventLoop();
     }
 
-    public boolean hasPopups()
+    public boolean hasAny()
     {
 	return !wrappers.isEmpty();
     }
 
+    //null is a valid argument;
     public boolean hasPopupOfApp(Application app)
     {
 	for(int i = 0;i < wrappers.size();i++)
@@ -87,21 +97,21 @@ class PopupManager
 
     public Application getAppOfLastPopup()
     {
-	if (!hasPopups())
+	if (wrappers.isEmpty())
 	    return null;
 	return wrappers.lastElement().app;
     }
 
     public Area getAreaOfLastPopup()
     {
-	if (!hasPopups())
+	if (wrappers.isEmpty())
 	    return null;
 	return wrappers.lastElement().area;
     }
 
     public int getPositionOfLastPopup()
     {
-	if (!hasPopups())
+	if (wrappers.isEmpty())
 	    return INVALID;
 	return wrappers.lastElement().position;
     }

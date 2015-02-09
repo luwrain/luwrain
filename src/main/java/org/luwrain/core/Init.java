@@ -20,20 +20,21 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.speech.BackEnd;
-import org.luwrain.sounds.EnvironmentSounds;
+import org.luwrain.os.OperatingSystem;
 
 class Init
 {
-    //    private static final String  PREFIX_CONF_LIST = "--conf-list=";
     private static final String  PREFIX_REGISTRY_DIR = "--registry-dir=";
     private static final String  PREFIX_DATA_DIR = "--data-dir=";
     private static final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
     private static final String  PREFIX_SPEECH= "--speech=";
+    private static final String  PREFIX_OS= "--os=";
     private static final String  PREFIX_LANG= "--lang=";
 
     private String[] cmdLine;
     private Registry registry;
     private Interaction interaction;
+    private OperatingSystem os;
     private org.luwrain.speech.BackEnd speech;
     private LaunchContext launchContext;
 
@@ -98,6 +99,8 @@ return false;
 	}
 launchContext = new LaunchContext(dataDir.getAbsolutePath(), userHomeDir.getAbsolutePath(), lang);
 
+if (!initOs())
+    return false;
 	if (!initSpeech())
 	    return false;
 
@@ -109,15 +112,13 @@ launchContext = new LaunchContext(dataDir.getAbsolutePath(), userHomeDir.getAbso
 	    Log.fatal("init", "unsupported interaction type \'" + interactionParams.backend + "\'");
 	    return false;
 	}
-	Interaction interaction = new org.luwrain.interaction.AwtInteraction();
+	interaction = new org.luwrain.interaction.AwtInteraction();
 	if (!interaction.init(interactionParams))
 	{
 	    Log.fatal("init", "interaction initialization failed");
 	    return false;
 	}
 
-	if (!initEnvironmentSounds())
-	    return false;
 	return true;
     }
 
@@ -167,45 +168,50 @@ launchContext = new LaunchContext(dataDir.getAbsolutePath(), userHomeDir.getAbso
 	return true;
     }
 
-    private boolean initEnvironmentSounds()
+    private boolean initOs()
     {
-	/*
-	if (registry.getTypeOf(RegistryKeys.INSTANCE_DATA_DIR) != Registry.STRING)
+	final String osClass = getFirstCmdLineOption(PREFIX_OS);
+	if (osClass == null || osClass.isEmpty())
 	{
-	    Log.error("init", "initialization of environment sounds is impossible, no proper registry value for " + RegistryKeys.INSTANCE_DATA_DIR);
-	    return true;
+	    Log.fatal("init", "no operating system class in the command line (the \'" + PREFIX_OS + "\' option)");
+	    return false;
 	}
-	File dataDir = new File(registry.getString(RegistryKeys.INSTANCE_DATA_DIR));
-	setSoundFileName(dataDir, "event-not-processed", EnvironmentSounds.EVENT_NOT_PROCESSED);
-	setSoundFileName(dataDir, "no-applications", EnvironmentSounds.NO_APPLICATIONS);
-	setSoundFileName(dataDir, "startup", EnvironmentSounds.STARTUP);
-	setSoundFileName(dataDir, "shutdown", EnvironmentSounds.SHUTDOWN);
-	setSoundFileName(dataDir, "main-menu", EnvironmentSounds.MAIN_MENU);
-	setSoundFileName(dataDir, "main-menu-item", EnvironmentSounds.MAIN_MENU_ITEM);
-	setSoundFileName(dataDir, "main-menu-empty-line", EnvironmentSounds.MAIN_MENU_EMPTY_LINE);
-	*/
+	Object o;
+	try {
+	    o = Class.forName(osClass).newInstance();
+	}
+	catch (InstantiationException e)
+	{
+	    Log.fatal("init", "an error while creating a new instance of class " + osClass + ":InstantiationException:" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
+	catch (IllegalAccessException e)
+	{
+	    Log.fatal("init", "an error while creating a new instance of class " + osClass + ":IllegalAccessException:" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
+	catch (ClassNotFoundException e)
+	{
+	    Log.fatal("init", "an error while creating a new instance of class " + osClass + ":ClassNotFoundException:" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
+	if (!(o instanceof OperatingSystem))
+	{
+	    Log.fatal("init", "created instance of class " + osClass + " is not an instance of org.luwrain.os.OperatingSystem");
+	    return false;
+	}
+	os = (org.luwrain.os.OperatingSystem)o;
+	final String errorMessage = os.init();
+	if (errorMessage != null)
+	{
+	    Log.fatal("init", "operating system initialization failed:" + errorMessage);
+	    return false;
+	}
+	Log.debug("init", "operating system functions (" + osClass + " class) are initialized successfully");
 	return true;
-    }
-
-    private void setSoundFileName(File dataDir,
-				  String valueName,
-				  int soundId)
-    {
-	/*
-	String v = RegistryKeys.SOUNDS + "/" + valueName;
-	if (registry.getTypeOf(v) != Registry.STRING)
-	{
-	    Log.warning("init", "registry has no value for sound file by path " + v);
-	    return;
-	}
-	File f = new File(dataDir, registry.getString(v));
-	if (!f.exists() || f.isDirectory())
-	{
-	    Log.error("init", "sound file " + f.getAbsolutePath() + " does not exist or is a directory");
-	    return;
-	}
-	EnvironmentSounds.setSoundFile(soundId, f.getAbsolutePath());
-	*/
     }
 
     private void shutdown()

@@ -303,7 +303,7 @@ return values.get(valueName).type;
 	    }
 	    boolean res;
 	    if (v.equals("true") || v.equals("True") || v.equals("TRUE"))
-		res = true;
+		res = true; else
 	    if (v.equals("false") || v.equals("False") || v.equals("FALSE"))
 		res = false; else
 	    {

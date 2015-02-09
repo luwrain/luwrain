@@ -61,7 +61,7 @@ public class StandardBuilderPart implements BuilderPart
 		@Override public void introduce()
 		{
 		    luwrain.silence();
-		    EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_EMPTY_LINE);
+		    EnvironmentSounds.play(Sounds.MAIN_MENU_EMPTY_LINE);
 		}
 		@Override public boolean isAction()
 		{

@@ -16,10 +16,8 @@
 
 package org.luwrain.core;
 
-//TODO:Popups without known applications;
-
 import org.luwrain.core.events.*;
-import org.luwrain.sounds.*;
+import org.luwrain.sounds.EnvironmentSounds;
 
 class ScreenContentManager
 {
@@ -36,16 +34,16 @@ class ScreenContentManager
     {
 	this.applications = applications;
 	this.popups = popups;
+	if (applications == null)
+	    throw new NullPointerException("apps may not be null");
+	if (popups == null)
+	    throw new NullPointerException("popups may not be null");
     }
 
     public  int onKeyboardEvent(KeyboardEvent event)
     {
-	if (activePopup)
-	{
-	    if (hasProperPopup())
+	    if (inProperPopup())
 		return popups.getAreaOfLastPopup().onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
-	    activePopup = false;
-	}
 	Area activeArea = applications.getActiveAreaOfActiveApp();
 	if (activeArea == null && hasProperPopup())
 	{
@@ -59,12 +57,8 @@ class ScreenContentManager
 
     public  int onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (activePopup)
-	{
-	    if (hasProperPopup())
+	    if (inProperPopup())
 		return popups.getAreaOfLastPopup().onEnvironmentEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
-	    activePopup = false;
-	}
 	Area activeArea = applications.getActiveAreaOfActiveApp();
 	if (activeArea == null && hasProperPopup())
 	{
@@ -94,12 +88,7 @@ class ScreenContentManager
 
     public boolean isPopupAreaActive()
     {
-	if (!hasProperPopup())
-	{
-	    activePopup = false;
-	    return false;
-	}
-	return activePopup;
+	return inProperPopup();
     }
 
     public void updatePopupState()
@@ -117,12 +106,8 @@ class ScreenContentManager
 
     public Area getActiveArea()
     {
-	if (activePopup)
-	{
-	    if (hasProperPopup())
+	    if (inProperPopup())
 		return popups.getAreaOfLastPopup();
-	    activePopup = false;
-	}
 return applications.getActiveAreaOfActiveApp();
     }
 
@@ -186,8 +171,12 @@ return applications.getActiveAreaOfActiveApp();
 
     private boolean hasProperPopup()
     {
-	//FIXME:	return popups.hasPopups() && (applications.isVisibleApp(popups.getAppOfLastPopup()) || popups.getAppOfLastPopup() == systemApp);
-	return popups.hasPopups() && (applications.isVisibleApp(popups.getAppOfLastPopup()));
+	if (!popups.hasAny())
+	    return false;
+	final Application app = popups.getAppOfLastPopup();
+	if (app == null)//it is an environment popup;
+	    return true;
+	return applications.isVisibleApp(app);
     }
 
     private TileManager constructWindowLayoutOfApp(Application app)
@@ -221,5 +210,15 @@ return applications.getActiveAreaOfActiveApp();
 	    break;
 	}
 	return tiles;
+    }
+
+    private boolean inProperPopup()
+    {
+	if (!activePopup)
+	    return false;
+	    if (hasProperPopup())
+		return true;
+	    activePopup = false;
+	    return false;
     }
 }

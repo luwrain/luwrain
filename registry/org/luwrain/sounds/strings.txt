@@ -1,0 +1,7 @@
+"event-not-processed" = "sounds/piano/beep1.wav"
+"no-applications" = "sounds/piano/no-applications.wav"
+"startup" = "sounds/piano/startup.wav"
+"shutdown" = "sounds/piano/beep1.wav"
+"main-menu" = "sounds/piano/main-menu.wav"
+"main-menu-item" = "sounds/piano/main-menu-item.wav"
+"main-menu-empty-line" = "sounds/piano/main-menu-empty-line.wav"

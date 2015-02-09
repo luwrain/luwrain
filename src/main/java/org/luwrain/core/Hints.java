@@ -14,32 +14,17 @@
    General Public License for more details.
 */
 
-package org.luwrain.mainmenu;
+package org.luwrain.core;
 
-import org.luwrain.core.*; 
-import org.luwrain.sounds.EnvironmentSounds;
-
-class EmptyItem implements Item
+public class Hints
 {
-    private Luwrain luwrain;
-
-    @Override public String getText()
-    {
-	return "";
-    }
-
-    @Override public void introduce()
-    {
-	luwrain.silence();
-	EnvironmentSounds.play(Sounds.MAIN_MENU_EMPTY_LINE);
-    }
-
-    @Override public boolean isAction()
-    {
-	return false;
-    }
-
-    @Override public void doAction()
-    {
-    }
-}
+    public static final int SPACE = 1;
+    public static final int EMPTY_LINE = 2;
+    public static final int BEGIN_OF_LINE = 3;
+    public static final int END_OF_LINE = 4;
+    public static final int END_OF_TEXT = 5;
+    public static final int NO_LINES_ABOVE = 6;
+    public static final int NO_LINES_BELOW = 7;
+    public static final int NO_ITEMS_ABOVE = 8;
+    public static final int NO_ITEMS_BELOW = 9;
+} 

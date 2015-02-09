@@ -20,6 +20,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.luwrain.speech.BackEnd;
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.core.events.*;
 import org.luwrain.popups.*;
@@ -81,16 +82,21 @@ class Environment implements EventConsumer
     {
 	registryKeys = new RegistryKeys();
 	registryAutoCheck = new RegistryAutoCheck(registry, "environment");
+	EnvironmentSounds.init(registry, launchContext);
 	appInstances = new InstanceManager(this);
 	shortcuts = new ShortcutManager(this);
 	screenContentManager = new ScreenContentManager(apps, popups);
 	windowManager = new WindowManager(interaction, screenContentManager);
+
+	if (launchContext.lang().equals("ru"))//FIXME:
+	    Langs.setCurrentLang(new org.luwrain.langs.ru.Language());
+
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	commands.fillWithStandardCommands(this);
 	shortcuts.fillWithStandardShortcuts();
 	interaction.startInputEventsAccepting(this);
-	EnvironmentSounds.play(EnvironmentSounds.STARTUP);//FIXME:
+	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
 		eventLoop(new InitialEventLoopStopCondition());
 		interaction.stopInputEventsAccepting();
     }
@@ -174,7 +180,7 @@ class Environment implements EventConsumer
     {
 	if (screenContentManager.isPopupAreaActive())
 	{
-	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);//FIXME:Probably not well suited sound; 
+	    EnvironmentSounds.play(Sounds.EVENT_NOT_PROCESSED);//FIXME:Probably not well suited sound; 
 	    return;
 	}
 	apps.switchNextInvisible();
@@ -251,16 +257,16 @@ class Environment implements EventConsumer
 	{
 	    Log.error("environment", "keyboard event throws an exception:" + e.getMessage());
 	    e.printStackTrace();
-	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
+	    EnvironmentSounds.play(Sounds.EVENT_NOT_PROCESSED);
 	    return;
 	}
 	switch(res)
 	{
 	case ScreenContentManager.EVENT_NOT_PROCESSED:
-	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
+	    EnvironmentSounds.play(Sounds.EVENT_NOT_PROCESSED);
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
-	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
+	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
 	    message(Langs.staticValue(Langs.START_WORK_FROM_MAIN_MENU));
 	    break;
 	}
@@ -304,16 +310,16 @@ class Environment implements EventConsumer
 	{
 	    Log.error("environment", "environment event throws an exception:" + e.getMessage());
 	    e.printStackTrace();
-	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
+	    EnvironmentSounds.play(Sounds.EVENT_NOT_PROCESSED);
 	    return;
 	}
 	switch(res)
 	{
 	case ScreenContentManager.EVENT_NOT_PROCESSED:
-	    EnvironmentSounds.play(EnvironmentSounds.EVENT_NOT_PROCESSED);
+	    EnvironmentSounds.play(Sounds.EVENT_NOT_PROCESSED);
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
-	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
+	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
 	    message(Langs.staticValue(Langs.START_WORK_FROM_MAIN_MENU));
 	    break;
 	}
@@ -332,26 +338,31 @@ class Environment implements EventConsumer
 			    EventLoopStopCondition stopCondition,
 boolean noMultipleCopies)
     {
-	if (app == null ||
-	    area == null ||
+	if (area == null ||
 	    stopCondition == null)
 	    return;
 	if (popupPlace != PopupManager.TOP &&
 	    popupPlace != PopupManager.BOTTOM && 
 	    popupPlace != PopupManager.LEFT &&
 	    popupPlace != PopupManager.RIGHT)
+	{
+	    Log.warning("environment", "trying to get a popup with illegal place (" + popupPlace + ")");
 	    return;
+	}
 	if (noMultipleCopies)
 	    popups.onNewInstanceLaunch(app, area.getClass());
 	PopupEventLoopStopCondition popupStopCondition = new PopupEventLoopStopCondition(stopCondition);
-	popups.addNewPopup(app, area, popupPlace, popupStopCondition, noMultipleCopies);
+	popups.addNewP(app, area, popupPlace, popupStopCondition, noMultipleCopies);
 	if (screenContentManager.setPopupAreaActive())
 	{
+	    Log.debug("environment", "screen content manager accepted new popup");
 	    introduceActiveArea();
 	    windowManager.redraw();
 	}
+	Log.debug("environment", "starting new event loop for popup");
 	eventLoop(popupStopCondition);
-	popups.removeLastPopup();
+	Log.debug("environment", "new event loop finished");
+	popups.removeLast();
 	screenContentManager.updatePopupState();
 	needForIntroduction = true;
 	windowManager.redraw();
@@ -359,11 +370,14 @@ boolean noMultipleCopies)
 
     public void runActionPopup()
     {
-	ListPopup popup = new ListPopup(null, new FixedListPopupModel(commands.getCommandsName()),
+	Log.debug("environment", "opening command line");
+	ListPopup popup = new ListPopup(new Luwrain(this), new FixedListPopupModel(commands.getCommandsName()),
 					"FIXME:runActionTitle()", "FIXME:runAction()", "");
 	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true);
+	    Log.debug("environment", "after popup");
 	if (popup.closing.cancelled())
 	    return;
+	    Log.debug("environment", "popup " + popup.getText());
 	if (!commands.run(popup.getText().trim()))
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
     }
@@ -411,7 +425,8 @@ boolean noMultipleCopies)
 	    return;
 	needForIntroduction = false;
 	//FIXME:Message class for message collecting;
-	speech.say(text);
+	speech.silence();
+	speech.say(text);//, BackEnd.LOW);
 	interaction.startDrawSession();
 	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
 	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text);
@@ -422,11 +437,11 @@ boolean noMultipleCopies)
     {
 	//FIXME:MainMenuBuilder;
 	MainMenu mainMenu = new MainMenu(null, null, null);//FIXME:
-	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU);
+	EnvironmentSounds.play(Sounds.MAIN_MENU);
 	goIntoPopup(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true);
 	if (mainMenu.closing.cancelled())
 	    return;
-	EnvironmentSounds.play(EnvironmentSounds.MAIN_MENU_ITEM);
+	EnvironmentSounds.play(Sounds.MAIN_MENU_ITEM);
 	/*
 	if (!actions.run(mainMenu.getSelectedActionName()))
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
@@ -459,7 +474,7 @@ boolean noMultipleCopies)
 	Area activeArea = screenContentManager.getActiveArea();
 	if (activeArea == null)
 	{
-	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
+	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
 	    speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
 	    return;
 	}
@@ -474,7 +489,7 @@ boolean noMultipleCopies)
 	Area activeArea = screenContentManager.getActiveArea();
 	if (activeArea == null)
 	{
-	    EnvironmentSounds.play(EnvironmentSounds.NO_APPLICATIONS);
+	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
 	    speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
 	    return;
 	}
@@ -505,7 +520,7 @@ boolean noMultipleCopies)
 	fileTypes.openFileNames(fileNames);
     }
 
-    public Registry  getRegistry()
+    public Registry  registry()
     {
 	return registry;
     }
@@ -602,5 +617,18 @@ boolean noMultipleCopies)
 	if (popup.closing.cancelled())
 	    return null;
 	return popup.getFile();
+    }
+
+    public BackEnd speech()
+    {
+	return speech;
+    }
+
+    /**
+     * @return true if this hint should be spoken as well
+     */
+    public boolean onStandardHint(int code)
+    {
+	return true;
     }
 }
