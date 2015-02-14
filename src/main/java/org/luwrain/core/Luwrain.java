@@ -186,22 +186,56 @@ public     void closeApp()
 
     public void sayLetter(char letter)
     {
-	silence();
-	environment.speech().sayLetter(letter);
+	switch(letter)
+	{
+	case ' ':
+	    hint(Hints.SPACE);
+	    return;
+	case '\t':
+	    hint(Hints.TAB);
+	    return;
+	}
+	final String value = lang().hasSpecialNameOfChar(letter);
+	if (value == null)
+	{
+	    silence();
+	    environment.speech().sayLetter(letter);
+	} else
+	    hint(value); 
     }
 
     public void sayLetter(char letter, int pitch)
     {
-	silence();
-	environment.speech().sayLetter(letter, pitch);
+	switch(letter)
+	{
+	case ' ':
+	    hint(Hints.SPACE);
+	    return;
+	case '\t':
+	    hint(Hints.TAB);
+	    return;
+	default:
+	    silence();
+	    environment.speech().sayLetter(letter, pitch);
+	}
     }
 
     public void sayLetter(char letter,
 			  int pitch,
 			  int rate)
     {
-	silence();
-	environment.speech().sayLetter(letter, pitch, rate);
+	switch(letter)
+	{
+	case ' ':
+	    hint(Hints.SPACE);
+	    return;
+	case '\t':
+	    hint(Hints.TAB);
+	    return;
+	default:
+	    silence();
+	    environment.speech().sayLetter(letter, pitch, rate);
+	}
     }
 
     public void hint(String text)
@@ -221,37 +255,43 @@ public     void closeApp()
 	switch (code)
 	{
 	case Hints.SPACE:
-	    msg = staticString(Langs.SPACE);
+	    msg = lang().staticStr(LangStatic.SPACE);
+	    break;
+	case Hints.TAB:
+	    msg = lang().staticStr(LangStatic.TAB);
 	    break;
 	case Hints.EMPTY_LINE:
-	    msg = staticString(Langs.EMPTY_LINE);
+	    msg = lang().staticStr(LangStatic.EMPTY_LINE);
 	    break;
 	case Hints.BEGIN_OF_LINE:
-	    msg = staticString(Langs.BEGIN_OF_LINE);
+	    msg = lang().staticStr(LangStatic.BEGIN_OF_LINE);
 	    break;
 	case Hints.END_OF_LINE:
-	    msg = staticString(Langs.END_OF_LINE);
+	    msg = lang().staticStr(LangStatic.END_OF_LINE);
+	    break;
+	case Hints.BEGIN_OF_TEXT:
+	    msg = lang().staticStr(LangStatic.BEGIN_OF_TEXT);
 	    break;
 	case Hints.END_OF_TEXT:
-	    msg = staticString(Langs.AREA_END);
+	    msg = lang().staticStr(LangStatic.END_OF_TEXT);
 	    break;
 	case Hints.NO_LINES_ABOVE:
-	    msg = staticString(Langs.THE_FIRST_LINE);
+	    msg = lang().staticStr(LangStatic.NO_LINES_ABOVE);
 	    break;
 	case Hints.NO_LINES_BELOW:
-	    msg = staticString(Langs.THE_LAST_LINE);
+	    msg = lang().staticStr(LangStatic.NO_LINES_BELOW);
 	    break;
 	case Hints.NO_ITEMS_ABOVE:
-	    msg = staticString(Langs.THE_FIRST_LINE);
+	    msg = lang().staticStr(LangStatic.NO_ITEMS_ABOVE);
 	    break;
 	case Hints.NO_ITEMS_BELOW:
-	    msg = staticString(Langs.THE_LAST_LINE);
+	    msg = lang().staticStr(LangStatic.NO_ITEMS_BELOW);
 	    break;
 	default:
 	    return false;
 	}
-			       hint(msg, code);
-			       return true;
+	hint(msg, code);
+	return true;
     }
 
     public void silence()
@@ -261,6 +301,16 @@ public     void closeApp()
 
     public String staticString(int code)
     {
-	return Langs.staticValue(code);
+	return lang().staticStr(code);
+    }
+
+    public Lang lang()
+    {
+	return environment.lang();
+    }
+
+    public void playSound(int code)
+    {
+	environment.playSound(code);
     }
 }

@@ -64,7 +64,7 @@ public class SimpleArea extends NavigateArea implements MutableLines
     {
 	content.setLines(lines != null?lines:new String[0]);
 	environment.onAreaNewContent(this);
-	fixHotPoint();
+	//	fixHotPoint();
     }
 
     public String[] getContent()
@@ -76,14 +76,14 @@ public class SimpleArea extends NavigateArea implements MutableLines
     {
 	content.setLine(index, line);
 	environment.onAreaNewContent(this);
-	fixHotPoint();
+	//	fixHotPoint();
     }
 
     public void addLine(String line)
     {
 	content.addLine(line);
 	    environment.onAreaNewContent(this);
-	    fixHotPoint();
+	    //	    fixHotPoint();
     }
 
     //index is the position of newly inserted line
@@ -91,21 +91,21 @@ public class SimpleArea extends NavigateArea implements MutableLines
     {
 	content.insertLine(index, line);
 	environment.onAreaNewContent(this);
-	fixHotPoint();
+	//	fixHotPoint();
     }
 
     public void removeLine(int index)
     {
 	content.removeLine(index);
 	environment.onAreaNewContent(this);
-	fixHotPoint();
+	//	fixHotPoint();
     }
 
     public void clear()
     {
 	content.clear();
 	environment.onAreaNewContent(this);
-	fixHotPoint();
+	//	fixHotPoint();
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)

@@ -26,12 +26,12 @@ import org.luwrain .util.*;
 public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 {
     private ControlEnvironment environment;
-    private final String areaBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
-    private final String areaEndMessage = Langs.staticValue(Langs.AREA_END);
-    private final String firstLineMessage = Langs.staticValue(Langs.THE_FIRST_LINE);
-    private final String lastLineMessage = Langs.staticValue(Langs.THE_LAST_LINE);
-    private final String lineEndMessage = Langs.staticValue(Langs.END_OF_LINE);
-    private final String emptyLineMessage  = Langs.staticValue(Langs.EMPTY_LINE);
+    //    private final String areaBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
+    //    private final String areaEndMessage = Langs.staticValue(Langs.AREA_END);
+    ///    private final String firstLineMessage = Langs.staticValue(Langs.THE_FIRST_LINE);
+    //    private final String lastLineMessage = Langs.staticValue(Langs.THE_LAST_LINE);
+    //    private final String lineEndMessage = Langs.staticValue(Langs.END_OF_LINE);
+    //    private final String emptyLineMessage  = Langs.staticValue(Langs.EMPTY_LINE);
 
     private CopyCutInfo copyCutInfo;
     private int hotPointX = 0;
@@ -40,209 +40,45 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
     public NavigateArea(ControlEnvironment environment)
     {
 	this.environment = environment;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
 	this.copyCutInfo = new CopyCutInfo(this);
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (!event.isCommand() || event.withAlt())
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
+	if (!event.isCommand() || event.isModified())
 	    return false;
-	final int cmd = event.getCommand();
-	if (event.withControl() && !event.withAlt() && !event.withShift())
+	switch (event.getCommand())
 	{
-	    //FIXME:left-right over the words;
-
-	    //Ctrl+home;
-	    if (cmd == KeyboardEvent.HOME)
-	    {
-		//No need to call fixHotPoint();
-		if (hotPointX < 1 && hotPointY < 1)
-		{
-		    environment.say(areaBeginMessage);
-		    return true;
-		}
-		hotPointX = 0;
-		hotPointY = 0;
-		environment.onAreaNewHotPoint(this);
-		environment.say(areaBeginMessage);
-		return true;
-	    }
-
-	    //Ctrl+end;
-	    if (cmd == KeyboardEvent.END)
-	    {
-		fixHotPoint();
-		String line = getLine(hotPointY);
-		if (line == null)
-		    line = new String();
-		if (hotPointY + 1 >= getLineCount() && hotPointX >= line.length())
-		{
-		    environment.say(areaEndMessage);
-		    return true;
-		}
-		line = getLine(getLineCount() - 1);
-		if (line == null)
-		    line = new String();
-		hotPointX = line.length();
-		hotPointY = getLineCount() - 1;
-		if (hotPointY < 0)//Incorrect getLineCount() behaviour;
-		    hotPointY = 0;
-		environment.onAreaNewHotPoint(this);
-		    environment.say(areaEndMessage);
-		    return true;
-	    }
-	    return false;
-	} //If with control;
-
-	//Arrow down;
-	if (cmd == KeyboardEvent.ARROW_DOWN)
-	{
-	    fixHotPoint();
-	    if (hotPointY + 1 >= getLineCount())
-	    {
-		environment.say(lastLineMessage);
-		return true;
-	    }
-	    hotPointY++;
-	    String line = getLine(hotPointY);
-	    if (line == null)
-		line = new String();
-	    //FIXME:hotPointX = proper new position respecting tab sequences;
-	    if (hotPointX > line.length())
-		hotPointX = line.length();
-	    environment.onAreaNewHotPoint(this);
-	    introduceLine(hotPointY);
-	    return true;
-	}
-
-	//Arrow up;
-	if (cmd == KeyboardEvent.ARROW_UP)
-	{
-	    fixHotPoint();
-	    if (hotPointY == 0)
-	    {
-		environment.say(firstLineMessage);
-		return true;
-	    }
-	    hotPointY--;
-	    String line = getLine(hotPointY);
-	    if (line == null)
-		line = "";
-	    //FIXME:hotPointX = proper position respecting tab sequences;
-	    if (hotPointX > line.length())
-		hotPointX = line.length();
-	    environment.onAreaNewHotPoint(this);
-	    introduceLine(hotPointY);
-	    return true;
-	}
-
-	//Arrow right;
-	if (cmd == KeyboardEvent.ARROW_RIGHT)
-	{
-	    fixHotPoint();
-	    if (hotPointX >= getLine(hotPointY).length())
-	    {
-		if (hotPointY + 1 >= getLineCount())
-		{
-		    environment.say(areaEndMessage);
-		    return true;
-		}
-		hotPointY++;
-		hotPointX = 0;
-	    } else
-		hotPointX++;
-	    environment.onAreaNewHotPoint(this);
-	    String line = getLine(hotPointY);
-	    if (line == null)
-		line = new String();
-	    if (hotPointX == line.length())
-	    {
-		if (hotPointY + 1 == getLineCount())
-		    environment.say(areaEndMessage); else
-		    environment.say(lineEndMessage);
-	    } else
-		environment.sayLetter(line.charAt(hotPointX));
-	    return true;
-	}
-
-	    //Arrow left;
-	if (cmd == KeyboardEvent.ARROW_LEFT)
-	{
-	    fixHotPoint();
-	    if (hotPointX == 0)
-	    {
-		if (hotPointY == 0)
-		{
-		    environment.say(areaBeginMessage);
-		    return true;
-		}
-		hotPointY--;
-		String line = getLine(hotPointY);
-		if (line == null)
-		    line = new String();
-		hotPointX = line.length();
-	    } else
-		hotPointX--;
-	    environment.onAreaNewHotPoint(this);
-	    String line = getLine(hotPointY);
-	    if (line == null)
-		line = new String();
-	    if (hotPointX == line.length())
-		environment.say(lineEndMessage); else
-		environment.sayLetter(line.charAt(hotPointX));
-	    return true;
-	}
-
-	//Home;
-	if (cmd == KeyboardEvent.HOME)
-	{
-	    fixHotPoint();
-	    String line = getLine(hotPointY);
-	    if (line == null)
-		line = new String();
-	    if (line.isEmpty())
-	    {
-		environment.say(emptyLineMessage);
-		return true;
-	    }
-	    if (hotPointX > 0)
-	    {
-		hotPointX = 0;
-		environment.onAreaNewHotPoint(this);
-	    } 
-	    environment.sayLetter(line.charAt(0));
-	    return true;
-	}
-
-	//End;
-	if (cmd == KeyboardEvent.END)
-	{
-	    fixHotPoint();
-	    String line = getLine(hotPointY);
-	    if (line == null)
-		line = new String();
-	    if (line.isEmpty())
-	    {
-		environment.say(emptyLineMessage);
-		return true;
-	    }
-	    if (hotPointX < line.length())
-	    {
-		hotPointX = line.length();
-		environment.onAreaNewHotPoint(this);
-	    } 
-	    environment.say(lineEndMessage);
-	    return true;
-	}
-
+	case KeyboardEvent.HOME:
+	    return onHome(event);
+	case KeyboardEvent.END:
+	    return onEnd(event);
+	case KeyboardEvent.ALTERNATIVE_HOME:
+	    return onAltHome(event);
+	case KeyboardEvent.ALTERNATIVE_END:
+	    return onAltEnd(event);
+	case KeyboardEvent.ARROW_DOWN:
+	    return onArrowDown(event);
+	case KeyboardEvent.ARROW_UP:
+	    return onArrowUp(event);
+	case KeyboardEvent.ARROW_RIGHT:
+	    return onArrowRight(event);
+	case KeyboardEvent.ARROW_LEFT:
+	    return onArrowLeft(event);
 	//FIXME:PageUp;
 	//FIXME:PageDown;
-
+	}
 	return false;
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.COPY_CUT_POINT:
@@ -254,11 +90,164 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	}
     }
 
-    public void introduceLine(int index)
+    private boolean onHome(KeyboardEvent event)
     {
-	final String line = getLine(index);
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	final String line = getLineNotNull(hotPointY);
+	if (line.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX > 0)
+	{
+	    hotPointX = 0;
+	    environment.onAreaNewHotPoint(this);
+	} 
+	environment.sayLetter(line.charAt(0));
+	return true;
+    }
+
+    private boolean onEnd(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	final String line = getLineNotNull(hotPointY);
+	if (line.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX < line.length())
+	{
+	    hotPointX = line.length();
+	    environment.onAreaNewHotPoint(this);
+	} 
+	environment.hint(Hints.END_OF_LINE);
+	return true;
+    }
+
+    private boolean onAltHome(KeyboardEvent event)
+    {
+	if (hotPointX >= 1 || hotPointY >= 1)
+	{
+	    hotPointX = 0;
+	    hotPointY = 0;
+	    environment.onAreaNewHotPoint(this);
+	}
+	environment.hint(Hints.BEGIN_OF_TEXT);
+	return true;
+    }
+
+    private boolean onAltEnd(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	final String line = getLineNotNull(hotPointY);
+	hotPointX = hotPointX <= line.length()?hotPointX:line.length();
+	if (hotPointY + 1 < count || hotPointX < line.length())
+	{
+	    final String lastLine = getLineNotNull(count - 1);
+	    hotPointX = lastLine.length();
+	    hotPointY = count - 1;
+	    environment.onAreaNewHotPoint(this);
+	}
+	environment.hint(Hints.END_OF_TEXT);
+	return true;
+    }
+
+    private boolean onArrowDown(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	if (hotPointY + 1 >= count)
+	{
+	    environment.hint(Hints.NO_LINES_BELOW);
+	    return true;
+	}
+	++hotPointY;
+	final String nextLine = getLineNotNull(hotPointY);
+	//FIXME:do proper next line transition according to possible tab shifts;hotPointX = proper new position respecting tab sequences;
+	hotPointX = hotPointX <= nextLine.length()?hotPointX:nextLine.length();
+	environment.onAreaNewHotPoint(this);
+	introduceLine(hotPointY, nextLine);
+	return true;
+    }
+
+    private boolean onArrowUp(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	if (hotPointY == 0)
+	{
+	    environment.hint(Hints.NO_LINES_ABOVE);
+	    return true;
+	}
+	--hotPointY;
+	final String prevLine = getLineNotNull(hotPointY);
+	//FIXME:do proper next line transition according to possible tab shifts;hotPointX = proper new position respecting tab sequences;
+	hotPointX = hotPointX <= prevLine.length()?hotPointX:prevLine.length();
+	environment.onAreaNewHotPoint(this);
+	introduceLine(hotPointY, prevLine);
+	return true;
+    }
+
+    private boolean onArrowRight(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	final String line = getLineNotNull(hotPointY);
+	hotPointX = hotPointX <= line.length()?hotPointX:line.length();
+	if (hotPointX == line.length())
+	{
+	    if (hotPointY + 1 >= count)
+	    {
+		environment.hint(Hints.END_OF_TEXT);
+		return true;
+	    }
+	    ++hotPointY;
+	    hotPointX = 0;
+	} else
+	    ++hotPointX;
+	environment.onAreaNewHotPoint(this);
+	final 	    String newLine = getLineNotNull(hotPointY);
+	if (hotPointX == line.length())
+	    environment.hint(hotPointY + 1 == count?Hints.END_OF_TEXT:Hints.END_OF_LINE); else
+	    environment.sayLetter(newLine.charAt(hotPointX));
+	return true;
+    }
+
+    private boolean onArrowLeft(KeyboardEvent event )
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	final String line = getLineNotNull(hotPointY);
+	hotPointX = hotPointX <= line.length()?hotPointX:line.length();
+	if (hotPointX == 0)
+	{
+	    if (hotPointY == 0)
+	    {
+		environment.hint(Hints.BEGIN_OF_TEXT);
+		return true;
+	    }
+	    --hotPointY;
+	    final String newLine = getLineNotNull(hotPointY);
+	    hotPointX = line.length();
+	} else
+	    --hotPointX;
+	environment.onAreaNewHotPoint(this);
+	final String newLine = getLineNotNull(hotPointY);
+	if (hotPointX == line.length())
+	    environment.hint(Hints.END_OF_LINE); else
+	    environment.sayLetter(line.charAt(hotPointX));
+	return true;
+    }
+
+    public void introduceLine(int index, String line)
+    {
 	if (line == null || line.isEmpty())
-	    environment.say(Langs.staticValue(Langs.EMPTY_LINE)); else
+	    environment.hint(Hints.EMPTY_LINE); else
 	    environment.say(line);
     }
 
@@ -297,6 +286,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	return hotPointY;
     }
 
+    /*
     protected void fixHotPoint()
     {
 	int x = hotPointX, y = hotPointY;
@@ -311,20 +301,21 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    x = line.length();
 	setHotPoint(x, y);
     }
+    */
 
     @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
-	if (toY >= getLineCount())
+	if (toY >= getValidLineCount())
 	    return false;
 	if (fromY == toY)
 	{
-	    final String line = getLine(fromY);
-	    if (line == null || line.isEmpty())
+	    final String line = getLineNotNull(fromY);
+	    if (line.isEmpty())
 		return false;
-	    int fromPos = fromX < line.length()?fromX:line.length();
-	    int toPos = toX < line.length()?toX:line.length();
+	    final int fromPos = fromX < line.length()?fromX:line.length();
+	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
-		return false;
+		throw new IllegalArgumentException("fromPos should be less than toPos");
 	    String[] res = new String[1];
 	    res[0] = line.substring(fromPos, toPos);
 	    environment.say(res[0]);
@@ -332,22 +323,13 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    return true;
 	}
 	Vector<String> res = new Vector<String>();
-	String line = getLine(fromY);
-	if (line == null)
-	    return false;
+	String line = getLineNotNull(fromY);
 	res.add(line.substring(fromX < line.length()?fromX:line.length()));
 	for(int i = fromY + 1;i < toY;++i)
-	{
-	    line = getLine(i);
-	    if (line == null)
-		return false;
-	    res.add(line);
-	}
-	line = getLine(toY);
-	if (line == null)
-	    return false;
+	    res.add(getLineNotNull(i));
+	line = getLineNotNull(toY);
 	res.add(line.substring(0, toX <line.length()?toX:line.length()));
-	environment.say(Langs.staticValue(Langs.COPIED_LINES) + res.size());
+	environment.say(environment.langStaticString(Langs.COPIED_LINES) + res.size());
 	environment.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }
@@ -356,4 +338,16 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
     {
 	return false;
     }
+
+    private int getValidLineCount()
+    {
+	final int count = getLineCount();
+	return count >= 1?count:1;
+    }
+
+private String getLineNotNull(int index)
+{
+    final String line = getLine(index);
+    return line != null?line:"";
+}
 }

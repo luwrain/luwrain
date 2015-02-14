@@ -17,11 +17,17 @@
 package org.luwrain.mainmenu;
 
 import org.luwrain.core.*; 
-import org.luwrain.sounds.EnvironmentSounds;
 
 class EmptyItem implements Item
 {
     private Luwrain luwrain;
+
+    public EmptyItem(Luwrain luwrain)
+    {
+	this.luwrain = luwrain;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+    }
 
     @Override public String getText()
     {
@@ -31,7 +37,7 @@ class EmptyItem implements Item
     @Override public void introduce()
     {
 	luwrain.silence();
-	EnvironmentSounds.play(Sounds.MAIN_MENU_EMPTY_LINE);
+	luwrain.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
     }
 
     @Override public boolean isAction()

@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.util.jar.*;
 import java.io.*;
 
 import org.luwrain.speech.BackEnd;
@@ -223,6 +224,36 @@ if (!initOs())
     {
 	shutdown();
 	System.exit(0);
+    }
+
+    private String[] getExtensionsList()
+    {
+	Vector<String> res = new Vector<String>();
+	try {
+	    Enumeration<java.net.URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+	    while (resources.hasMoreElements())
+	    {                                                                                                         
+		try {
+		    Manifest manifest = new Manifest(resources.nextElement().openStream());
+		    Attributes attr = manifest.getAttributes("org/luwrain");
+		    if (attr == null)
+			continue;
+		    final String value = attr.getValue("Luwrain-Extensions");
+		    System.out.println("" + value);
+		    if (value != null)
+			res.add(value);
+		}
+		catch (IOException e)
+		{                                                                                                                 
+		    e.printStackTrace();
+		}
+	    }
+	}
+	catch (IOException ee)
+	{
+	    ee.printStackTrace();
+	}
+	return res.toArray(new String[res.size()]);
     }
 
     private String getFirstCmdLineOption(String prefix)

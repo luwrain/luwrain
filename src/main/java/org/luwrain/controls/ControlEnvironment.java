@@ -23,6 +23,8 @@ public interface ControlEnvironment
     void say(String text);
     void sayLetter(char letter);
     void hint(String text); 
+    void hint(String text, int code);
+    void hint(int code);
     void hintStaticString(int id);
     void onAreaNewContent(Area area);
     void onAreaNewName(Area area);

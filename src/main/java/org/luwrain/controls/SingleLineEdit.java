@@ -22,9 +22,9 @@ import org.luwrain.util.*;
 
 public class SingleLineEdit implements CopyCutRequest
 {
-    private final String tabMessage = Langs.staticValue(Langs.TAB);
-    private final String textBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
-    private final String textEndMessage = Langs.staticValue(Langs.AREA_END);
+    //    private final String tabMessage = Langs.staticValue(Langs.TAB);
+    //    private final String textBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
+    //    private final String textEndMessage = Langs.staticValue(Langs.AREA_END);
 
     private ControlEnvironment environment;
     private SingleLineEditModel model;
@@ -34,111 +34,38 @@ public class SingleLineEdit implements CopyCutRequest
     {
 	this.environment = environment;
 	this.model = model;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
 	this.copyCutInfo = new CopyCutInfo(this);
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	if (event.withControl() || event.withAlt())
 	    return false;
-	String line = model.getLine();
-	if (line == null)
-	    return false;
-	final int pos = model.getHotPointX();
-	if (pos > line.length())
-	    return false;
-
 	if (event.isCommand())
-	{
-
-	    //Backspace;
-	    if (event.getCommand() == KeyboardEvent.BACKSPACE)
+	    switch (event.getCommand())
 	    {
-		if (pos < 1)
-		{
-		    environment.say(textBeginMessage);
-		    return true;
-		}
-		String newLine = new String(line.substring(0, pos - 1) + line.substring(pos));
-		model.setLine(newLine);
-		model.setHotPointX(pos - 1);
-		environment.sayLetter(line.charAt(pos - 1));
-		return true;
+	    case KeyboardEvent.BACKSPACE:
+		return onBackspace(event);
+	    case KeyboardEvent.DELETE:
+		return onDelete(event);
+	    case KeyboardEvent.TAB:
+		return onTab(event);
+	    default:
+		return false;
 	    }
-
-	    //Delete;
-	    if (event.getCommand() == KeyboardEvent.DELETE)
-	    {
-		if (pos >= line.length())
-		{
-		    environment.say(textEndMessage);
-		    return true;
-		}
-		if (pos == line.length() - 1)
-		{
-		    model.setLine(line.substring(0, pos));
-		    environment.sayLetter(line.charAt(pos));
-		    return true;
-		}
-		String newLine = new String(line.substring(0, pos) + line.substring(pos + 1));
-		model.setLine(newLine);
-		environment.sayLetter(line.charAt(pos));
-		return true;
-	    }
-
-	    //Tab;
-	    if (event.getCommand() == KeyboardEvent.TAB)
-	    {
-		String tabSeq = model.getTabSeq();
-		if (tabSeq == null)
-		    return false;
-		if (pos == line.length())
-		{
-	    model.setLine(line + tabSeq);
-	    environment.say(tabMessage);
-	    model.setHotPointX(pos + tabSeq.length());
-	    return true;
-	}
-	String newLine = new String(line.substring(0, pos) + tabSeq + line.substring(pos));
-	model.setLine(newLine);
-	model.setHotPointX(pos + tabSeq.length());
-	environment.say(tabMessage);
-	    return true;
-	    }
-	    return false;
-	}
-
-	//Character;
-	if (pos == line.length())
-	{
-	    model.setLine(line + event.getCharacter());
-	    model.setHotPointX(pos + 1);
-	    if (event.getCharacter() == ' ')
-	    {
-		String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
-		if (lastWord != null && !lastWord.isEmpty())
-		    environment.say(lastWord); else
-		    environment.sayLetter(' ');
-		    } else
-		environment.sayLetter(event.getCharacter());
-	    return true;
-	}
-	String newLine = new String(line.substring(0, pos) + event.getCharacter() + line.substring(pos));
-	model.setLine(newLine);
-	model.setHotPointX(pos + 1);
-	if (event.getCharacter() == ' ')
-	{
-	    String lastWord = TextUtils.getLastWord(newLine, pos + 1);
-	    if (lastWord != null && !lastWord.isEmpty())
-		environment.say(lastWord); else
-		environment.sayLetter(' ');
-	} else
-	    environment.sayLetter(event.getCharacter());
-	return true;
+	return onCharacter(event);
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.COPY_CUT_POINT:
@@ -156,32 +83,135 @@ public class SingleLineEdit implements CopyCutRequest
 	}
     }
 
-    public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    private boolean onBackspace(KeyboardEvent event)
+    {
+	final String line = model.getLine();
+	if (line == null)
+	    return false;
+	final int pos = model.getHotPointX();
+	if (pos < 0 || pos > line.length())
+	    return false;
+	if (pos < 1)
+	{
+	    environment.hint(Hints.BEGIN_OF_TEXT);
+	    return true;
+	}
+	final String newLine = new String(line.substring(0, pos - 1) + line.substring(pos));
+	model.setLine(newLine);
+	model.setHotPointX(pos - 1);
+	environment.sayLetter(line.charAt(pos - 1));
+	return true;
+    }
+
+    private boolean onDelete(KeyboardEvent event)
+    {
+	final String line = model.getLine();
+	if (line == null)
+	    return false;
+	final int pos = model.getHotPointX();
+	if (pos < 0 || pos > line.length())
+	    return false;
+	if (pos >= line.length())
+	{
+	    environment.hint(Hints.END_OF_TEXT);
+	    return true;
+	}
+	if (pos == line.length() - 1)
+	{
+	    model.setLine(line.substring(0, pos));
+	    environment.sayLetter(line.charAt(pos));
+	    return true;
+	}
+	final String newLine = new String(line.substring(0, pos) + line.substring(pos + 1));
+	model.setLine(newLine);
+	environment.sayLetter(line.charAt(pos));
+	return true;
+    }
+
+    private boolean onTab(KeyboardEvent event)
+    {
+	final String line = model.getLine();
+	if (line == null)
+	    return false;
+	final int pos = model.getHotPointX();
+	if (pos < 0 || pos > line.length())
+	    return false;
+	final String tabSeq = model.getTabSeq();
+	if (tabSeq == null)
+	    return false;
+	if (pos < line.length())
+	{
+	    final String newLine = new String(line.substring(0, pos) + tabSeq + line.substring(pos));
+	    model.setLine(newLine);
+	} else
+	    model.setLine(line + tabSeq);
+	environment.hint(Hints.TAB);
+	model.setHotPointX(pos + tabSeq.length());
+	return true;
+    }
+
+    private boolean onCharacter(KeyboardEvent event)
+    {
+	String line = model.getLine();
+	if (line == null)
+	    return false;
+	final int pos = model.getHotPointX();
+	if (pos < 0 || pos > line.length())
+	    return false;
+	if (pos == line.length())
+	{
+	    model.setLine(line + event.getCharacter());
+	    model.setHotPointX(pos + 1);
+	    if (event.getCharacter() == ' ')
+	    {
+		final String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
+		if (lastWord != null && !lastWord.isEmpty())
+		    environment.say(lastWord); else
+		    environment.hint(Hints.SPACE);
+	    } else
+		environment.sayLetter(event.getCharacter());
+	    return true;
+	}
+	final String newLine = new String(line.substring(0, pos) + event.getCharacter() + line.substring(pos));
+	model.setLine(newLine);
+	model.setHotPointX(pos + 1);
+	if (event.getCharacter() == ' ')
+	{
+	    final String lastWord = TextUtils.getLastWord(newLine, pos + 1);
+	    if (lastWord != null && !lastWord.isEmpty())
+		environment.say(lastWord); else
+		environment.hint(Hints.SPACE);
+	} else
+	    environment.sayLetter(event.getCharacter());
+	return true;
+    }
+
+    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
 	final String line = model.getLine();
 	if (line == null || line.isEmpty())
 	    return false;
-	int fromPos = fromX < line.length()?fromX:line.length();
-	int toPos = toX < line.length()?toX:line.length();
+	final int fromPos = fromX < line.length()?fromX:line.length();
+	final int toPos = toX < line.length()?toX:line.length();
 	if (fromPos >= toPos)
-	    return false;
-	String[] res = new String[1];
+	    throw new IllegalArgumentException("fromPos should be less than toPos");
+	final String[] res = new String[1];
 	res[0] = line.substring(fromPos, toPos);
 	environment.say(res[0]);
 	environment.setClipboard(res);
 	return true;
     }
 
-    public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
     {
 	final String line = model.getLine();
 	if (line == null || line.isEmpty())
 	    return false;
-	int fromPos = fromX < line.length()?fromX:line.length();
-	int toPos = toX < line.length()?toX:line.length();
+	final int fromPos = fromX < line.length()?fromX:line.length();
+	final int toPos = toX < line.length()?toX:line.length();
 	if (fromPos >= toPos)
-	    return false;
-	String[] res = new String[1];
+	    throw new IllegalArgumentException("fromPos should be less than toPos");
+	final String[] res = new String[1];
 	res[0] = line.substring(fromPos, toPos);
 	environment.say(res[0]);
 	environment.setClipboard(res);
@@ -200,8 +230,8 @@ public class SingleLineEdit implements CopyCutRequest
 	String text = lines[0];
 	for(int i = 1;i < lines.length;++i)
 	    text += " " + lines[i];
-	String line = model.getLine();
-	int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
+	final String line = model.getLine();
+	final int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
 	model.setLine(line.substring(0, pos) + text + line.substring(pos));
 	environment.say(text);
 	model.setHotPointX(pos + text.length());

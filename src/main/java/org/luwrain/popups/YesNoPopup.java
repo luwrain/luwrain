@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:ControlEnvironment interface support;
-
 package org.luwrain.popups;
 
 import org.luwrain.core.*;
@@ -25,7 +23,6 @@ import org.luwrain.util.*;
 public class YesNoPopup implements Area, Popup, PopupClosingRequest
 {
     public PopupClosing closing = new PopupClosing(this);
-    private Object instance;//FIXME:
     private Luwrain luwrain;
     private String name = "";
     private String text = "";
@@ -33,55 +30,66 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
     private boolean defaultRes;
     private boolean noMultipleCopies = false;
 
-    public YesNoPopup(Object instance,
+    public YesNoPopup(Luwrain luwrain,
 		      String name,
 		      String text,
 		      boolean defaultRes)
     {
-	this.instance = instance;
-	this.name = name != null?name:"";
-	this.text = text != null?text:"";
+	this.luwrain = luwrain;
+	this.name = name;
+	this.text = text;
 	this.defaultRes = defaultRes;
 	this.res = defaultRes;
 	this.noMultipleCopies = false;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	if (text == null)
+	    throw new NullPointerException("text may not be null");
     }
 
-    public YesNoPopup(Object instance,
+    public YesNoPopup(Luwrain luwrain,
 		      String name,
 		      String text,
 		      boolean defaultRes,
 		      boolean noMultipleCopies)
     {
-	this.instance = instance;
-	this.name = name != null?name:"";
-	this.text = text != null?text:"";
+	this.luwrain = luwrain;
+	this.name = name;
+	this.text = text;
 	this.defaultRes = defaultRes;
 	this.res = defaultRes;
-	this.noMultipleCopies = false;
 	this.noMultipleCopies = noMultipleCopies;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	if (text == null)
+	    throw new NullPointerException("text may not be null");
     }
 
-    public int getLineCount()
+    @Override public int getLineCount()
     {
 	return 1;
     }
 
-    public String getLine(int index)
+    @Override public String getLine(int index)
     {
 	return index == 0?text:"";
     }
 
-    public int getHotPointX()
+    @Override public int getHotPointX()
     {
 	return text.length();
     }
 
-    public int getHotPointY()
+    @Override public int getHotPointY()
     {
 	return 0;
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	if (closing.onKeyboardEvent(event))
 	    return true;
@@ -121,7 +129,7 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 	return false;
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	switch (event.getCode())
 	{
@@ -133,7 +141,7 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 	}
     }
 
-    public String getName()
+    @Override public String getName()
     {
 	return name;
     }
@@ -143,19 +151,19 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 	return res;
     }
 
-    public boolean onOk()
+    @Override public boolean onOk()
     {
 	return true;
     }
 
-    public boolean onCancel()
+    @Override public boolean onCancel()
     {
 	return true;
     }
 
     @Override public Object getInstance()
     {
-	return instance;
+	return luwrain;
     }
 
     @Override public EventLoopStopCondition getStopCondition()

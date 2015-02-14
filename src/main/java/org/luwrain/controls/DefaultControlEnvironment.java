@@ -37,9 +37,19 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	luwrain.sayLetter(letter);
     }
 
-    public void hint(String text)
+    @Override public void hint(String text)
     {
-	luwrain.say(text);
+	luwrain.hint(text);
+    }
+
+    @Override public void hint(String text, int code)
+    {
+	luwrain.hint(text, code);
+    }
+
+    @Override public void hint(int code)
+    {
+	luwrain.hint(code);
     }
 
     public void hintStaticString(int id)

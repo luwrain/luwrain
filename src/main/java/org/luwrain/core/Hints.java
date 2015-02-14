@@ -19,12 +19,14 @@ package org.luwrain.core;
 public class Hints
 {
     public static final int SPACE = 1;
-    public static final int EMPTY_LINE = 2;
-    public static final int BEGIN_OF_LINE = 3;
-    public static final int END_OF_LINE = 4;
-    public static final int END_OF_TEXT = 5;
-    public static final int NO_LINES_ABOVE = 6;
-    public static final int NO_LINES_BELOW = 7;
-    public static final int NO_ITEMS_ABOVE = 8;
-    public static final int NO_ITEMS_BELOW = 9;
+    public static final int TAB = 2;
+    public static final int EMPTY_LINE = 3;
+    public static final int BEGIN_OF_LINE = 4;
+    public static final int END_OF_LINE = 5;
+    public static final int BEGIN_OF_TEXT = 6;
+    public static final int END_OF_TEXT = 7;
+    public static final int NO_LINES_ABOVE = 8;
+    public static final int NO_LINES_BELOW = 9;
+    public static final int NO_ITEMS_ABOVE = 10;
+    public static final int NO_ITEMS_BELOW = 11;
 } 

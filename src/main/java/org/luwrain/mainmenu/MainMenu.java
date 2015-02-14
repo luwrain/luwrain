@@ -17,28 +17,38 @@
 package org.luwrain.mainmenu;
 
 import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.controls.*;
+//import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
 public class MainMenu  implements Area, PopupClosingRequest
 {
-    private ControlEnvironment environment;
+    private Luwrain luwrain;
     public PopupClosing closing = new PopupClosing(this);
-    private StringConstructor stringConstructor;
+    private Strings strings;
     private Item[] items;
     private Item selectedItem;
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public MainMenu(ControlEnvironment environment,
-			StringConstructor stringConstructor,
+    public MainMenu(Luwrain luwrain,
+		    Strings strings,
 			Item[] items)
     {
-	this.environment = environment;
-	this.stringConstructor = stringConstructor;
-	this.items = items != null?items:new Item[0];
+	this.luwrain = luwrain;
+	this.strings = strings;
+	this.items = items;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (strings == null)
+	    throw new NullPointerException("strings may not be null");
+	if (items == null)
+	    throw new NullPointerException("items may not be null");
+	for(int i = 0;i < items.length;++i)
+	    if (items[i] == null)
+		throw new NullPointerException("items[" + i + "] may not be null");
 	hotPointX = 0;
 	hotPointY = 0;
 	while(hotPointY < items.length && !isDefaultSeparator(items[hotPointY]))
@@ -54,6 +64,8 @@ public class MainMenu  implements Area, PopupClosingRequest
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	if (closing.onKeyboardEvent(event))
 	    return true;
 	if (!event.isCommand())
@@ -103,7 +115,7 @@ public class MainMenu  implements Area, PopupClosingRequest
 
     @Override public String getName()
     {
-	return stringConstructor.mainMenuTitle();
+	return strings.areaName();
     }
 
     @Override public int getHotPointX()
@@ -122,13 +134,17 @@ public class MainMenu  implements Area, PopupClosingRequest
 	    return false;
 	if (hotPointY >= items.length)
 	{
-	    environment.hint(stringConstructor.mainMenuNoItemsBelow());
+	    luwrain.hint(Hints.NO_ITEMS_BELOW);
 	    return true;
 	}
 	++hotPointY;
 	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
-	if (hotPointY < items.length)
+	luwrain.onAreaNewHotPoint(this);
+	if (hotPointY >= items.length)
+	{
+	    luwrain.silence();
+	    luwrain.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
+	} else
 	    items[hotPointY].introduce();
 	return true;
     }
@@ -139,12 +155,12 @@ public class MainMenu  implements Area, PopupClosingRequest
 	    return false;
 	if (hotPointY <= 0)
 	{
-	    environment.hint(stringConstructor.mainMenuNoItemsAbove());
+	    luwrain.hint(Hints.NO_ITEMS_ABOVE);
 	    return true;
 	}
 	--hotPointY;
 	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	if (hotPointY < items.length)
 	    items[hotPointY].introduce();
 	return true;
@@ -155,29 +171,27 @@ public class MainMenu  implements Area, PopupClosingRequest
 	//FIXME:Words jump;
 	if (event.isModified())
 	    return false;
-	if (hotPointY < 0 ||
-	    hotPointY >= items.length ||
-	    items[hotPointY] == null)
+	if (hotPointY >= items.length)
 	{
-	    environment.hintStaticString(Langs.EMPTY_LINE);
+	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final String line = items[hotPointY].getText();
 	if (line == null || line.isEmpty())
 	{
-	    environment.hintStaticString(Langs.EMPTY_LINE);
+	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	if (hotPointX >= line.length())
 	{
-	    environment.hintStaticString(Langs.END_OF_LINE);
+	    luwrain.hint(Hints.END_OF_LINE);
 	    return true;
 	}
 	++hotPointX;
-	environment.onAreaNewHotPoint(this);
+	luwrain.onAreaNewHotPoint(this);
 	if (hotPointX >= line.length())
-	    environment.hintStaticString(Langs.END_OF_LINE); else
-	    environment.sayLetter(line.charAt(hotPointX));
+	    luwrain.hint(Hints.END_OF_LINE); else
+luwrain.sayLetter(line.charAt(hotPointX));
 	return true;
     }
 
@@ -186,28 +200,26 @@ public class MainMenu  implements Area, PopupClosingRequest
 	//FIXME:Words jump;
 	if (event.isModified())
 	    return false;
-	if (hotPointY < 0 ||
-	    hotPointY >= items.length ||
-	    items[hotPointY] == null)
+	if (hotPointY >= items.length)
 	{
-	    environment.hintStaticString(Langs.EMPTY_LINE);
+	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final String line = items[hotPointY].getText();
 	if (line == null || line.isEmpty())
 	{
-	    environment.hintStaticString(Langs.EMPTY_LINE);
+	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	if (hotPointX <= 0)
 	{
-	    environment.hintStaticString(Langs.BEGIN_OF_LINE);
+	    luwrain.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
 	--hotPointX;
-	    environment.onAreaNewHotPoint(this);
+luwrain.onAreaNewHotPoint(this);
 	    if (hotPointX < line.length())
-		environment.sayLetter(line.charAt(hotPointX));
+luwrain.sayLetter(line.charAt(hotPointX));
 	    return true;
 	}
 
@@ -237,9 +249,9 @@ public class MainMenu  implements Area, PopupClosingRequest
 
     @Override public boolean onOk()
     {
-	if (items == null ||
-	    hotPointY >= items.length ||
-	    !items[hotPointY].isAction())
+	if (hotPointY >= items.length)
+	    return false;
+	if (!items[hotPointY].isAction())
 	    return false;
 	selectedItem = items[hotPointY];
 	return true;
@@ -252,7 +264,7 @@ public class MainMenu  implements Area, PopupClosingRequest
 
     private boolean isDefaultSeparator(Item item)
     {
-	if (item == null || !(item instanceof Item))
+	if (!(item instanceof Separator))
 	    return false;
 	Separator sep = (Separator)item;
 	return sep.isDefaultSeparator();

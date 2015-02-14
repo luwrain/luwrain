@@ -37,6 +37,7 @@ class Environment implements EventConsumer
     private RegistryKeys registryKeys;
     private org.luwrain.speech.BackEnd speech;
     private Interaction interaction;
+    private Lang lang = new org.luwrain.langs.ru.Lang();
     private LaunchContext launchContext;
     private EventQueue eventQueue = new EventQueue();
     private InstanceManager appInstances;
@@ -103,7 +104,7 @@ class Environment implements EventConsumer
 
     public void quit()
     {
-	YesNoPopup popup = new YesNoPopup(null, Langs.staticValue(Langs.QUIT_CONFIRM_NAME), Langs.staticValue(Langs.QUIT_CONFIRM), true);
+	YesNoPopup popup = new YesNoPopup(new Luwrain(this), Langs.staticValue(Langs.QUIT_CONFIRM_NAME), Langs.staticValue(Langs.QUIT_CONFIRM), true);
 	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true);
 	if (popup.closing.cancelled() || !popup.getResult())
 	    return;
@@ -435,8 +436,7 @@ boolean noMultipleCopies)
 
     public void mainMenu()
     {
-	//FIXME:MainMenuBuilder;
-	MainMenu mainMenu = new MainMenu(null, null, null);//FIXME:
+	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(new Luwrain(this)).build();
 	EnvironmentSounds.play(Sounds.MAIN_MENU);
 	goIntoPopup(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true);
 	if (mainMenu.closing.cancelled())
@@ -446,26 +446,6 @@ boolean noMultipleCopies)
 	if (!actions.run(mainMenu.getSelectedActionName()))
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
 	*/
-    }
-
-    private String[] getMainMenuItems()
-    {
-	final String content = registryAutoCheck.stringNotEmpty(registryKeys.mainMenuContent(), DEFAULT_MAIN_MENU_CONTENT);
-	ArrayList<String> a = new ArrayList<String>();
-	String s = "";
-	if (content.trim().isEmpty())
-	    return new String[0];
-	for(int i = 0;i < content.length();i++)
-	{
-	    if (content.charAt(i) == ':')
-	    {
-		a.add(s.trim());
-		s = "";
-	    } else
-		s += content.charAt(i);
-	}
-	a.add(s.trim());
-	return a.toArray(new String[a.size()]);
     }
 
     public void introduceActiveArea()
@@ -630,5 +610,15 @@ boolean noMultipleCopies)
     public boolean onStandardHint(int code)
     {
 	return true;
+    }
+
+    public Lang lang()
+    {
+	return lang;
+    }
+
+    public void playSound(int code)
+    {
+	EnvironmentSounds.play(code);
     }
 }

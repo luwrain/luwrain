@@ -16,24 +16,73 @@
 
 package org.luwrain.mainmenu;
 
-import org.luwrain.mainmenu.StringConstructor;
+import java.util.*;
+
+import org.luwrain.core.*;
 
 public class Builder
 {
-    private StringConstructor stringConstructor;
-    private StandardBuilderPart standardPart;
+    private Strings strings;
+    private Luwrain luwrain;
+    private Registry registry;
 
-    public Builder(StringConstructor stringConstructor)
+    public Builder(Luwrain luwrain)
     {
-	this.stringConstructor = stringConstructor;
-	this.standardPart = new StandardBuilderPart(stringConstructor, new String[0]);
+	this.luwrain = luwrain;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	this.strings = (Strings)luwrain.lang().strings("main-menu");
+	this.registry = luwrain.getRegistry();
     }
 
-    public Item[] buildItems(String[] actionsList)
+    public MainMenu build()
     {
-	if (actionsList != null)
-	    standardPart.setContent(actionsList);
-	//FIXME:Optional parts;
-	return standardPart.buildItems();
+	return new MainMenu(luwrain, strings, constructItems());
+    }
+
+    private Item[] constructItems()
+    {
+	Vector<Item> items = new Vector<Item>();
+	items.add(new EmptyItem(luwrain));
+	items.add(new DateTimeItem(luwrain, strings));
+	items.add(new Separator(luwrain, true, "Main commands"));//FIXME:
+	Item[] commands = commandItems(getCommandsList());
+	for(Item i: commands)
+	    items.add(i);
+	return items.toArray(new Item[items.size()]);
+	//FIXME:
+    }
+
+    private Item[] commandItems(String[] commandsList)
+    {
+	if (commandsList == null)
+	    throw new NullPointerException("commandsList may not be null");
+	Item[] items = new Item[commandsList.length];
+	for(int i = 0;i < commandsList.length;++i)
+	{
+	    if (commandsList[i] == null)
+		throw new NullPointerException("commandsList[" + i + "] may not be null");
+	    items[i] = new CommandItem(luwrain, commandsList[i], luwrain.lang().commandTitle(commandsList[i]));
+	}
+	return items;
+    }
+
+    private String[] getCommandsList()
+    {
+	if (registry.getTypeOf("/org/luwrain/main-menu/content") != Registry.STRING)
+	{
+	    Log.warning("main-menu", "no registry value /org/luwrain/main-menu/content or its type is not a string");
+	    String res[] = new String[1];
+	    res[0] = "quit";
+	    return res;
+	}
+	final String value = registry.getString("/org/luwrain/main-menu/content");
+	if (value.trim().isEmpty())
+	{
+	    String res[] = new String[1];
+	    res[0] = "quit";
+	    return res;
+	}
+	return value.split(":");
     }
 }

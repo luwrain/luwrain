@@ -18,16 +18,27 @@ package org.luwrain.mainmenu;
 
 import org.luwrain.core.*;
 
-class ActionItem implements Item
+class CommandItem implements Item
 {
     private Luwrain luwrain;
-    private String action;
+    private String command;
     private String title;
 
-    public ActionItem(String action, String title)
+    public CommandItem(Luwrain luwrain,
+		       String command, 
+		      String title)
     {
-	this.action = action;
+	this.luwrain = luwrain;
+	this.command = command;
 	this.title = title;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (command == null)
+	    throw new NullPointerException("command may not be null");
+	if (command.isEmpty())
+	    throw new IllegalArgumentException("command may not be empty");
+	if (title == null)
+	    throw new NullPointerException("title may not be null");
     }
 
     @Override public String getText()

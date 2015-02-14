@@ -19,18 +19,24 @@
 package org.luwrain.mainmenu;
 
 import org.luwrain.core.*;
-import org.luwrain.mainmenu.StringConstructor;
+import org.luwrain.mainmenu.Strings;
 
 class DateTimeItem implements Item
 {
-    private StringConstructor stringConstructor;
     private Luwrain luwrain;
+    private Strings strings;
+
     private String value;
 
-    public DateTimeItem(StringConstructor stringConstructor)
+    public DateTimeItem(Luwrain luwrain, Strings strings)
     {
-	this.stringConstructor = stringConstructor;
-	value = stringConstructor.currentDateTime();
+	this.luwrain = luwrain;
+	this.strings = strings;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (strings == null)
+	    throw new NullPointerException("strings may not be null");
+	value = strings.currentDateTime();
     }
 
     @Override public String getText()

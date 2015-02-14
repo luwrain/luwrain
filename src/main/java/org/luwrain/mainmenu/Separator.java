@@ -16,8 +16,54 @@
 
 package org.luwrain.mainmenu;
 
-public interface Separator extends Item 
+import org.luwrain.core.*;
+
+class Separator implements Item 
 {
-    boolean isDefaultSeparator();
-    String getSeparatorText();
+    private Luwrain luwrain;
+    private boolean isDefault = false;
+    private String text = "";
+
+    public Separator(Luwrain luwrain,
+		     boolean isDefault,
+		     String text)
+    {
+	this.luwrain = luwrain;
+	this.isDefault = isDefault;
+	this.text = text;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (text == null)
+	    throw new NullPointerException("text may not be null");
+    }
+
+    public boolean isDefaultSeparator()
+    {
+	return isDefault;
+    }
+
+    public String getSeparatorText()
+    {
+	return text;
+    }
+
+    @Override public String getText()
+    {
+	return "";
+    }
+
+    @Override public void introduce()
+    {
+	luwrain.silence();
+	luwrain.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
+    }
+
+    @Override public boolean isAction()
+    {
+	return false;
+    }
+
+    @Override public void doAction()
+    {
+    }
 }

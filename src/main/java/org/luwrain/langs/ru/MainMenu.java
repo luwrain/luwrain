@@ -18,42 +18,21 @@ package org.luwrain.langs.ru;
 
 import java.util.*;
 
-public class SystemAppStringConstructor implements org.luwrain.mainmenu.Strings
+class MainMenu implements org.luwrain.mainmenu.Strings
 {
     private Language lang;
 
-    @Override public String areaName()
-    {
-	return "Main menu";
-        }
-
-    public SystemAppStringConstructor(Language lang)
+    public MainMenu(Language lang)
     {
 	this.lang = lang;
     }
 
-    public String mainMenuTitle()
+    @Override public String areaName()
     {
 	return "Главное меню";
-    }
+        }
 
-    public String runActionTitle()
-    {
-	return "Выполнить команду";
-    }
-
-    public String runAction()
-    {
-	return "Команда:";
-    }
-
-
-    public String actionTitle(String action)
-    {
-	return action != null?lang.getActionTitle(action):"";
-    }
-
-    public String currentDateTime()
+    @Override public String currentDateTime()
     {
 	Calendar c = new GregorianCalendar();
 	String value = "";
@@ -61,7 +40,6 @@ public class SystemAppStringConstructor implements org.luwrain.mainmenu.Strings
 	value += ":";
 	value += withZeroes(c.get(Calendar.MINUTE), 2);
 	value += ", ";
-
 	value += dayOfWeek(c.get(Calendar.DAY_OF_WEEK));
 	value += ",";
 	value += c.get(Calendar.DAY_OF_MONTH);
@@ -69,19 +47,6 @@ public class SystemAppStringConstructor implements org.luwrain.mainmenu.Strings
 	value += month(c.get(Calendar.MONTH));
 	return value;
     }
-
-    public String mainMenuNoItemsAbove()
-    {
-	return "Начало главного меню";
-    }
-
-    public String mainMenuNoItemsBelow()
-    {
-	return "Конец главного меню";
-    }
-
-
-
 
     private String dayOfWeek(int index)
     {
@@ -145,11 +110,4 @@ public class SystemAppStringConstructor implements org.luwrain.mainmenu.Strings
 	    s = "0" + s;
 	return s;
     }
-
-    /*
-    @Override public String mainMenuStandardPart()
-    {
-	return "Основные приложения";
-    }
-    */
 }

@@ -17,10 +17,15 @@
 package org.luwrain.langs.en;
 
 import java.util.*;
-import org.luwrain.mainmenu.StringConstructor;
+import org.luwrain.mainmenu.Strings;
 
-public class SystemAppStringConstructor implements org.luwrain.mainmenu.StringConstructor
+public class SystemAppStringConstructor implements org.luwrain.mainmenu.Strings
 {
+    @Override public String areaName()
+    {
+	return "Main menu";
+    }
+
     private Language lang;
 
     public SystemAppStringConstructor(Language lang)
@@ -137,9 +142,10 @@ public class SystemAppStringConstructor implements org.luwrain.mainmenu.StringCo
 	    s = "0" + s;
 	return s;
     }
-
+    /*
     @Override public String mainMenuStandardPart()
     {
 	return "Main applications";
     }
+    */
 }
