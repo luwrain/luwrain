@@ -14,109 +14,109 @@
    General Public License for more details.
 */
 
-package org.luwrain.langs.en;
+package org.luwrain.langs.ru;
 
 import java.util.*;
 
-public class RegistryStringConstructor implements org.luwrain.app.registry.StringConstructor
+class Registry implements org.luwrain.app.registry.StringConstructor
 {
     public String dirsAreaName()
     {
-	return "Directories tree";
+	return "Каталоги параметров реестра";
     }
 
     public String valuesAreaName()
     {
-	return "List of values";
+	return "Список параметров";
     }
 
     public String rootItemTitle()
     {
-	return "Luwrain registry";
+	return "Реестр Luwrain";
     }
 
     public String introduceStringValue(String name, String value)
     {
-	return "String parameter " + name + " equals " + value;
+	return "Строковый параметр " + name + " равен " + value;
     }
 
     public String introduceIntegerValue(String name, String value)
     {
-	return "Integer parameter " + name + " equals " + value;
+	return "Целочисленный параметр " + name + " равен " + value;
     }
 
     public String introduceBooleanValue(String name, boolean value)
     {
-	return "String parameter " + name + " equals " + (value?"true":"false");
+	return "Булевый параметр " + name + " равен " + (value?"да":"нет");
     }
 
     public String yes()
     {
-	return "Yes";
+	return "Да";
     }
 
     public String no()
     {
-	return "No";
+	return "Нет";
     }
 
     public String newDirectoryTitle()
     {
-	return "New registry directory";
+	return "Новый каталог реестра";
     }
 
     public String newDirectoryPrefix(String parentName)
     {
-	return "Name of the subdirectory for \"" + parentName + "\":";
+	return "Имя нового каталога в \"" + parentName + "\":";
     }
 
     public String directoryNameMayNotBeEmpty()
     {
-	return "Registry directory name may not be empty";
+	return "Имя каталога реестра не может быть пустым";
     }
 
     public String directoryInsertionRejected(String parentName, String dirName)
     {
-	return "Insertion of the registry directory with name \"" + dirName + "\" rejected";
+	return "В создании каталога реестра с именем \"" + dirName + "\" отказано";
     }
 
     public String newParameterTitle()
     {
-    return "New registry parameter";
+    return "Добавление нового параметра";
     }
 
     public String newParameterName()
     {
-	return "Name of the new parameter:";
+	return "Имя нового параметра реестра:";
     }
 
     public String 	newParameterType()
     {
-	return "Type of the new parameter:";
+	return "Тип нового параметра реестра:";
     }
 
     public String parameterNameMayNotBeEmpty()
     {
-	return "Parameter name may not be empty";
+	return "Имя параметра не может быть пустым";
     }
 
     public String invalidParameterType(String type)
     {
-	return "\"" + type + "\" is not a valid parameter type";
+	return "\"" + type + "\" не является допустимым типом параметра";
     }
 
     public String parameterInsertionFailed()
     {
-	return "Insertion of a new registry parameter failed";
+	return "В добавлении нового параметра отказано";
     }
 
     public String savingOk()
     {
-	return "All changes saved successfully!";
+	return "Все изменения успешно сохранены!";
     }
 
     public String savingFailed()
     {
-	return "Some of the changes cannot be saved";
+	return "Некоторые из изменений не могут быть сохранены";
     }
 }

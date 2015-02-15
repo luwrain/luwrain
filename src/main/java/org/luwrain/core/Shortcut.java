@@ -19,5 +19,5 @@ package org.luwrain.core;
 public interface Shortcut
 {
     String getName();
-    void launch(String[] args);
+    Application[] prepareApp(String[] args);
 }

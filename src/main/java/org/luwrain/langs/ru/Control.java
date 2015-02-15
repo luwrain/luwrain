@@ -18,7 +18,7 @@ package org.luwrain.langs.ru;
 
 import java.util.*;
 
-public class ControlStringConstructor implements org.luwrain.app.control.StringConstructor
+class Control implements org.luwrain.app.control.StringConstructor
 {
     public String groupsAreaName()
     {

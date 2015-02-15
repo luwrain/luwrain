@@ -68,7 +68,7 @@ public class Langs
     public static final int OPEN_POPUP_NAME = 111;
     public static final int OPEN_POPUP_PREFIX = 112;
 
-    private static Language currentLang = new org.luwrain.langs.en.Language();
+    private static Language currentLang;
 
     public static void setCurrentLang(Language lang)
     {

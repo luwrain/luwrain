@@ -36,15 +36,19 @@ public class FileTypes
 	String ext = extension(fileNames[0]);
 	if (ext.equals("txt") || ext.equals("TXT"))
 	{
+	    /*
 	    if (!shortcuts.launch("notepad", fileNames))
 		Log.warning("file-types", "could not launch the application by wrapper with name \'notepad\'");
+	    */
 	    return;
 	}
 
 	if (ext.equals("doc") || ext.equals("DOC"))
 	{
+	    /*
 	    if (!shortcuts.launch("preview", fileNames))
 		Log.warning("file-types", "could not launch the application by wrapper with name \'preview\'");
+	    */
 	    return;
 	}
 

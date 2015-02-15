@@ -41,6 +41,7 @@ public final class Luwrain
     public static final int PITCH_HIGH = org.luwrain.speech.BackEnd.HIGH;
     public static final int PITCH_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
     public static final int PITCH_LOW = org.luwrain.speech.BackEnd.LOW;
+    public static final int PITCH_HINT = 25;
     public static final int RATE_HIGH = org.luwrain.speech.BackEnd.HIGH;
     public static final int RATE_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
     public static final int RATE_LOW = org.luwrain.speech.BackEnd.LOW;
@@ -62,6 +63,16 @@ public final class Luwrain
     public void launchApp(Application app)
     {
 	environment.launchApp(app);
+    }
+
+    public void launchApp(String shortcutName)
+    {
+	//FIXME:
+    }
+
+    public void launchApp(String shortcutName, String[] args)
+    {
+	//FIXME:
     }
 
 public     void closeApp()
@@ -240,7 +251,7 @@ public     void closeApp()
 
     public void hint(String text)
     {
-	say(text, PITCH_LOW);
+	say(text, PITCH_HINT);
     }
 
     public void hint(String text, int code)
@@ -312,5 +323,10 @@ public     void closeApp()
     public void playSound(int code)
     {
 	environment.playSound(code);
+    }
+
+    public LaunchContext launchContext()
+    {
+	return environment.launchContext();
     }
 }

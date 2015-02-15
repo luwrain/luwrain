@@ -35,6 +35,7 @@ class ShortcutManager
 	    shortcuts.add(shortcut);
     }
 
+    /*
     public boolean launch(String name, String[] args)
     {
 	if (name == null || name.trim().isEmpty())
@@ -50,6 +51,7 @@ class ShortcutManager
 	}
 	return false;
     }
+    */
 
     public void fillWithStandardShortcuts()
     {

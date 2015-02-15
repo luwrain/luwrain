@@ -30,9 +30,9 @@ public class Language implements org.luwrain.core.Language
 	if (id.equals("system-application"))
 	    return new SystemAppStringConstructor(this);
 	if (id.equals("control"))
-	    return new ControlStringConstructor();
+	    return new Control();
 	if (id.equals("registry"))
-	    return new RegistryStringConstructor();
+	    return new Registry();
 	return null;
     }
 

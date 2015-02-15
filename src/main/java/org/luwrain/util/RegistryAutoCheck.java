@@ -133,22 +133,40 @@ public class RegistryAutoCheck
 	    throw new NullPointerException("Path may not be null");
 	if (path.isEmpty())
 	    throw new IllegalArgumentException("path:may not be empty");
-if (defaultValue == null)
-throw new NullPointerException("defaultValue  may not be null");
-final int type = registry.getTypeOf(path);
-if (type != Registry.STRING)
-{
-typeMismatchLogMessage(path, Registry.STRING, type);
-return defaultValue;
-}
-final String value = registry.getString(path);
-if (value == null)
-{
-if (writeLog)
-Log.warning(loggingFacility, "expecting the registry value " + path + " be a non-empty string but it is empty, using default value \'" + defaultValue + "\'");
-return defaultValue;
-}
-return value;
+	if (defaultValue == null)
+	    throw new NullPointerException("defaultValue  may not be null");
+	final int type = registry.getTypeOf(path);
+	if (type != Registry.STRING)
+	{
+	    typeMismatchLogMessage(path, Registry.STRING, type);
+	    return defaultValue;
+	}
+	final String value = registry.getString(path);
+	if (value == null || value.isEmpty())
+	{
+	    if (writeLog)
+		Log.warning(loggingFacility, "expecting the registry value " + path + " be a non-empty string but it is empty, using default value \'" + defaultValue + "\'");
+	    return defaultValue;
+	}
+	return value;
+    }
+
+    public String stringAny(String path, String defaultValue)
+    {
+	if (path == null)
+	    throw new NullPointerException("Path may not be null");
+	if (path.isEmpty())
+	    throw new IllegalArgumentException("path:may not be empty");
+	if (defaultValue == null)
+	    throw new NullPointerException("defaultValue  may not be null");
+	final int type = registry.getTypeOf(path);
+	if (type != Registry.STRING)
+	{
+	    typeMismatchLogMessage(path, Registry.STRING, type);
+	    return defaultValue;
+	}
+	final String value = registry.getString(path);
+	return value != null?value:"";
     }
 
     private void typeMismatchLogMessage(String path,

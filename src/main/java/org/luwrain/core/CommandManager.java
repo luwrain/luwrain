@@ -31,13 +31,13 @@ class CommandManager
 	    commands.add(command);
     }
 
-    public boolean run(String name)
+    public boolean run(String name, Luwrain luwrain)
     {
 	for(Command cmd: commands)
 	{
 	    if (!cmd.getName().trim().equals(name.trim()))
 		continue;
-	    cmd.onCommand();
+	    cmd.onCommand(luwrain);
 	    return true;
 	}
 	return false;
@@ -67,7 +67,7 @@ class CommandManager
 		{
 		    return "main-menu";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.mainMenu();
 		}
@@ -80,7 +80,7 @@ class CommandManager
 		{
 		    return "quit";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.quit();
 		}
@@ -93,7 +93,7 @@ class CommandManager
 		{
 		    return "ok";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.OK));
 		}
@@ -106,7 +106,7 @@ class CommandManager
 		{
 		    return "cancel";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CANCEL));
 		}
@@ -119,7 +119,7 @@ class CommandManager
 		{
 		    return "close";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CLOSE));
 		}
@@ -132,7 +132,7 @@ class CommandManager
 		{
 		    return "save";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.SAVE));
 		}
@@ -145,7 +145,7 @@ class CommandManager
 		{
 		    return "open";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.OPEN));
 		}
@@ -158,7 +158,7 @@ class CommandManager
 		{
 		    return "refresh";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REFRESH));
 		}
@@ -171,7 +171,7 @@ class CommandManager
 		{
 		    return "copy-cut-point";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.COPY_CUT_POINT));
 		}
@@ -184,7 +184,7 @@ class CommandManager
 		{
 		    return "copy";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.COPY));
 		}
@@ -197,7 +197,7 @@ class CommandManager
 		{
 		    return "cut";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CUT));
 		}
@@ -210,7 +210,7 @@ class CommandManager
 		{
 		    return "paste";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.PASTE));
 		}
@@ -223,7 +223,7 @@ class CommandManager
 		{
 		    return "describe";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.DESCRIBE));
 		}
@@ -236,7 +236,7 @@ class CommandManager
 		{
 		    return "help";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.HELP));
 		}
@@ -249,7 +249,7 @@ class CommandManager
 		{
 		    return "switch-next-app";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.switchNextApp();
 		}
@@ -262,7 +262,7 @@ class CommandManager
 		{
 		    return "switch-next-area";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.switchNextArea();
 		}
@@ -275,7 +275,7 @@ class CommandManager
 		{
 		    return "increase-font-size";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.increaseFontSize();
 		}
@@ -288,7 +288,7 @@ class CommandManager
 		{
 		    return "decrease-font-size";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    e.decreaseFontSize();
 		}
@@ -301,7 +301,7 @@ class CommandManager
 		{
 		    return "control";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    Application app = new org.luwrain.app.control.ControlApp();
 		    e.launchApp(app);
@@ -315,7 +315,7 @@ class CommandManager
 		{
 		    return "registry";
 		}
-		public void onCommand()
+		public void onCommand(Luwrain luwrain)
 		{
 		    Application app = new org.luwrain.app.registry.RegistryApp();
 		    e.launchApp(app);

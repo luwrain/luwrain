@@ -14,39 +14,15 @@
    General Public License for more details.
 */
 
-package org.luwrain.langs.en;
+package org.luwrain.core;
 
-import java.util.*;
-
-public class ControlStringConstructor implements org.luwrain.app.control.StringConstructor
+public interface Extension
 {
-    public String groupsAreaName()
-    {
-	return "Configuration groups";
-    }
-
-    public String optionsAreaName()
-    {
-	return "Changing options";
-    }
-
-    public String rootItemName()
-    {
-	return "Luwrain configuration";
-    }
-
-    public String interactionItemName()
-    {
-	return "Interaction";
-    }
-
-    public String mailItemName()
-    {
-	return "E-mail";
-    }
-
-    public String newsItemName()
-    {
-	return "News";
-    }
+    String init(String[] cmdLine, Registry registry);
+    Command[] getCommands();
+    Shortcut[] getShortcuts();
+    //Workers;
+    //Shared values;
+    //Main menu items;
+    //Control panel extensions;
 }

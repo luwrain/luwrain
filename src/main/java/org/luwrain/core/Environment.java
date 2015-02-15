@@ -230,7 +230,7 @@ class Environment implements EventConsumer
 	String commandName = globalKeys.getActionName(event);
 	if (commandName != null)
 	{
-	    if (!commands.run(commandName))
+	    if (!commands.run(commandName, new Luwrain(this)))//FIXME:
 		message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));//FIXME:sound;
 	    return;
 	}
@@ -379,7 +379,7 @@ boolean noMultipleCopies)
 	if (popup.closing.cancelled())
 	    return;
 	    Log.debug("environment", "popup " + popup.getText());
-	if (!commands.run(popup.getText().trim()))
+	    if (!commands.run(popup.getText().trim(), new Luwrain(this)))
 	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
     }
 
@@ -620,5 +620,10 @@ boolean noMultipleCopies)
     public void playSound(int code)
     {
 	EnvironmentSounds.play(code);
+    }
+
+    public LaunchContext launchContext()
+    {
+	return launchContext;
     }
 }
