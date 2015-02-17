@@ -67,26 +67,26 @@ public class LanguageStaticStrings implements org.luwrain.core.LanguageStaticStr
 	    return "Нет активного объекта";
 	case Langs.APPLICATION_INTERNAL_ERROR:
 	    return "Выполнение операции было прервано из-за внутренней ошибки приложения";
-	case Langs.APPLICATION_CLOSE_ERROR_HAS_POPUP:
-	    return "Перед закрытием приложения необходимо закрыть его всплывающие окна";
-	case Langs.INSUFFICIENT_MEMORY_FOR_APP_LAUNCH:
-	    return "Недостаточно памяти для запуска приложения";
-	case Langs.UNEXPECTED_ERROR_AT_APP_LAUNCH:
-	    return "Запуск прерван из-за внутренней ошибки приложения";
-	case Langs.START_WORK_FROM_MAIN_MENU:
-	    return "Начните работу с главного меню";
+	    //	case Langs.APPLICATION_CLOSE_ERROR_HAS_POPUP:
+	    //	    return "Перед закрытием приложения необходимо закрыть его всплывающие окна";
+	    //	case Langs.INSUFFICIENT_MEMORY_FOR_APP_LAUNCH:
+	    //	    return "Недостаточно памяти для запуска приложения";
+	    //	case Langs.UNEXPECTED_ERROR_AT_APP_LAUNCH:
+	    //	    return "Запуск прерван из-за внутренней ошибки приложения";
+	    //	case Langs.START_WORK_FROM_MAIN_MENU:
+	    //	    return "Начните работу с главного меню";
 	case Langs.NO_LAUNCHED_APPS:
 	    return "Все приложения закрыты";
 	case Langs.LIST_NO_ITEMS:
 	    return "Элементы в списке отсутствуют";
-	case Langs.FONT_SIZE:
-	    return "Размер шрифта:";
-	case Langs.QUIT_CONFIRM_NAME:
-	    return "Завершение работы";
-	case Langs.QUIT_CONFIRM:
-	    return "Вы действительно хотите завершить работу в Luwrain?";
-	case Langs.OPEN_POPUP_NAME:
-	    return "Открытие файла";
+	    //	case Langs.FONT_SIZE:
+	    //	    return "Размер шрифта:";
+	    //	case Langs.QUIT_CONFIRM_NAME:
+	    //	    return "Завершение работы";
+	    //	case Langs.QUIT_CONFIRM:
+	    //	    return "Вы действительно хотите завершить работу в Luwrain?";
+	    //	case Langs.OPEN_POPUP_NAME:
+	    //	    return "Открытие файла";
 	case Langs.OPEN_POPUP_PREFIX:
 	    return "Введите имя файла для открытия:";
 	case Langs.NO_TABLE_ROWS:

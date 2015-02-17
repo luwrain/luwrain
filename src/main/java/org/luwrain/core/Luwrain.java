@@ -206,7 +206,7 @@ public     void closeApp()
 	    hint(Hints.TAB);
 	    return;
 	}
-	final String value = lang().hasSpecialNameOfChar(letter);
+	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
 	{
 	    silence();
@@ -266,37 +266,37 @@ public     void closeApp()
 	switch (code)
 	{
 	case Hints.SPACE:
-	    msg = lang().staticStr(LangStatic.SPACE);
+	    msg = i18n().staticStr(LangStatic.SPACE);
 	    break;
 	case Hints.TAB:
-	    msg = lang().staticStr(LangStatic.TAB);
+	    msg = i18n().staticStr(LangStatic.TAB);
 	    break;
 	case Hints.EMPTY_LINE:
-	    msg = lang().staticStr(LangStatic.EMPTY_LINE);
+	    msg = i18n().staticStr(LangStatic.EMPTY_LINE);
 	    break;
 	case Hints.BEGIN_OF_LINE:
-	    msg = lang().staticStr(LangStatic.BEGIN_OF_LINE);
+	    msg = i18n().staticStr(LangStatic.BEGIN_OF_LINE);
 	    break;
 	case Hints.END_OF_LINE:
-	    msg = lang().staticStr(LangStatic.END_OF_LINE);
+	    msg = i18n().staticStr(LangStatic.END_OF_LINE);
 	    break;
 	case Hints.BEGIN_OF_TEXT:
-	    msg = lang().staticStr(LangStatic.BEGIN_OF_TEXT);
+	    msg = i18n().staticStr(LangStatic.BEGIN_OF_TEXT);
 	    break;
 	case Hints.END_OF_TEXT:
-	    msg = lang().staticStr(LangStatic.END_OF_TEXT);
+	    msg = i18n().staticStr(LangStatic.END_OF_TEXT);
 	    break;
 	case Hints.NO_LINES_ABOVE:
-	    msg = lang().staticStr(LangStatic.NO_LINES_ABOVE);
+	    msg = i18n().staticStr(LangStatic.NO_LINES_ABOVE);
 	    break;
 	case Hints.NO_LINES_BELOW:
-	    msg = lang().staticStr(LangStatic.NO_LINES_BELOW);
+	    msg = i18n().staticStr(LangStatic.NO_LINES_BELOW);
 	    break;
 	case Hints.NO_ITEMS_ABOVE:
-	    msg = lang().staticStr(LangStatic.NO_ITEMS_ABOVE);
+	    msg = i18n().staticStr(LangStatic.NO_ITEMS_ABOVE);
 	    break;
 	case Hints.NO_ITEMS_BELOW:
-	    msg = lang().staticStr(LangStatic.NO_ITEMS_BELOW);
+	    msg = i18n().staticStr(LangStatic.NO_ITEMS_BELOW);
 	    break;
 	default:
 	    return false;
@@ -312,12 +312,12 @@ public     void closeApp()
 
     public String staticString(int code)
     {
-	return lang().staticStr(code);
+	return i18n().staticStr(code);
     }
 
-    public Lang lang()
+    public I18n i18n()
     {
-	return environment.lang();
+	return environment.i18n();
     }
 
     public void playSound(int code)

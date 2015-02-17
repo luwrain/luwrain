@@ -31,7 +31,7 @@ public class Builder
 	this.luwrain = luwrain;
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
-	this.strings = (Strings)luwrain.lang().strings("main-menu");
+	this.strings = (Strings)luwrain.i18n().getStrings("main-menu");
 	this.registry = luwrain.getRegistry();
     }
 
@@ -62,7 +62,7 @@ public class Builder
 	{
 	    if (commandsList[i] == null)
 		throw new NullPointerException("commandsList[" + i + "] may not be null");
-	    items[i] = new CommandItem(luwrain, commandsList[i], luwrain.lang().commandTitle(commandsList[i]));
+	    items[i] = new CommandItem(luwrain, commandsList[i], luwrain.i18n().commandTitle(commandsList[i]));
 	}
 	return items;
     }

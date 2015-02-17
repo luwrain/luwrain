@@ -20,12 +20,6 @@ import org.luwrain.core.LangStatic;
 
 public class Lang extends org.luwrain.core.Lang
 {
-    public Lang()
-    {
-	addCommandTitle("quit", "Завершить работу в Luwrain");
-	addStrings("main-menu", new MainMenu(new Language()));
-    }
-
     @Override public String staticStr(int code)
     {
 	switch (code)
@@ -174,7 +168,7 @@ public class Lang extends org.luwrain.core.Lang
 	    return "левая фигурная скобка";
 	case '}':
 	    return "правая фигурная скобка";
-case ':':
+	case ':':
     return "двоеточие";
 	case ';':
 	    return "точка с запятой";
@@ -198,8 +192,8 @@ case ':':
 	    return "запятая";
 	case '.':
 	    return "точка";
-default:
-	return Character.getName(ch);
-}
+	default:
+	    return Character.getName(ch);
+	}
     }
 }

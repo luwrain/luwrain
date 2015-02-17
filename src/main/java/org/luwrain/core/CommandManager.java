@@ -21,47 +21,75 @@ import org.luwrain.core.events.*;
 
 class CommandManager
 {
-    private Vector<Command> commands = new Vector<Command>();
-
-    public void add(Command command)
+    class Entry 
     {
-	if (command != null &&
-	    command.getName() != null &&
-	    !command.getName().trim().isEmpty())
-	    commands.add(command);
+	public Extension extension;
+	public String name = "";
+	public Command command;
+
+	public Entry(Extension extension,
+		     String name,
+		     Command command)
+	{
+	    this.extension = extension;
+	    this.name = name;
+	    this.command = command;
+	    //extension may be null meaning it is a basic command;
+	    if (name == null)
+		throw new NullPointerException("name may not be null");
+	    if (name.trim().isEmpty())
+		throw new IllegalArgumentException("name may not be empty");
+	    if (command == null)
+		throw new NullPointerException("command may not be null");
+	}
+    }
+
+    private TreeMap<String, Entry> commands = new TreeMap<String, Entry>();
+
+    public boolean add(Extension extension, Command command)
+    {
+	if (command == null)
+	    throw new NullPointerException("command may not be null");
+	final String name = command.getName();
+	if (name == null || name.trim().isEmpty())
+	    return false;
+	if (commands.containsKey(name))
+	    return false;
+	commands.put(name, new Entry(extension, name, command));
+	return true;
     }
 
     public boolean run(String name, Luwrain luwrain)
     {
-	for(Command cmd: commands)
-	{
-	    if (!cmd.getName().trim().equals(name.trim()))
-		continue;
-	    cmd.onCommand(luwrain);
-	    return true;
-	}
-	return false;
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	if (name.trim().isEmpty())
+	    throw new IllegalArgumentException("name may not be empty");
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (!commands.containsKey(name))
+	    return false;
+	commands.get(name).command.onCommand(luwrain);
+	return true;
     }
 
     public String[] getCommandsName()
     {
-	if (commands == null)
-	    return new String[0];
 	Vector<String> res = new Vector<String>();
-	for(Command c: commands)
-	    res.add(c.getName());
+	for(Map.Entry<String, Entry> e: commands.entrySet())
+	    res.add(e.getKey());
 	String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);
 	return str;
     }
 
-    public void fillWithStandardCommands(Environment env)
+    public void addBasicCommands(Environment env)
     {
 	if (env == null)
-	    return;
+	    throw new NullPointerException("env may not be null");
 	final Environment environment = env;
 	//Main menu;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -74,7 +102,7 @@ class CommandManager
 	    });
 
 	//Quit;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -87,7 +115,7 @@ class CommandManager
 	    });
 
 	//OK;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -100,7 +128,7 @@ class CommandManager
 	    });
 
 	//Cancel;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -113,7 +141,7 @@ class CommandManager
 	    });
 
 	//Close;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -126,7 +154,7 @@ class CommandManager
 	    });
 
 	//Save;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -139,7 +167,7 @@ class CommandManager
 	    });
 
 	//open;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -152,7 +180,7 @@ class CommandManager
 	    });
 
 	//Refresh;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -165,7 +193,7 @@ class CommandManager
 	    });
 
 	//copy-cut-point;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -178,7 +206,7 @@ class CommandManager
 	    });
 
 	//copy;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -191,7 +219,7 @@ class CommandManager
 	    });
 
 	//cut;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -204,7 +232,7 @@ class CommandManager
 	    });
 
 	//paste;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -217,7 +245,7 @@ class CommandManager
 	    });
 
 	//Describe;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -230,7 +258,7 @@ class CommandManager
 	    });
 
 	//Help;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -243,7 +271,7 @@ class CommandManager
 	    });
 
 	//Switch to next App;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -256,7 +284,7 @@ class CommandManager
 	    });
 
 	//Switch to next area;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -269,7 +297,7 @@ class CommandManager
 	    });
 
 	//Increase font size;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -282,7 +310,7 @@ class CommandManager
 	    });
 
 	//Decrease font size;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -295,7 +323,7 @@ class CommandManager
 	    });
 
 	//control;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -309,7 +337,7 @@ class CommandManager
 	    });
 
 	//registry;
-	add(new Command() {
+	add(null, new Command() {
 		private Environment e = environment;
 		public String getName()
 		{
@@ -321,6 +349,5 @@ class CommandManager
 		    e.launchApp(app);
 		}
 	    });
-
     }
 }

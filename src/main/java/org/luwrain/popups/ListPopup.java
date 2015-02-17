@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:ControlEnvironment interface support;
-
 package org.luwrain.popups;
 
 import org.luwrain.core.*;
@@ -25,7 +23,7 @@ public class ListPopup extends SimpleLinePopup
 {
     private final static int MAX_ALTERNATIVES_TO_SAY = 100;
 
-    private Luwrain luwrain;//FIXME:
+    private Luwrain luwrain;
     private ListPopupModel model;
 
     public ListPopup(Luwrain luwrain,
@@ -35,7 +33,12 @@ public class ListPopup extends SimpleLinePopup
 		     String text)
     {
 	super(luwrain, name, prefix, text);
+	this.luwrain = luwrain;
 	this.model = model;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
     }
 
     public ListPopup(Luwrain luwrain,
@@ -46,11 +49,18 @@ public class ListPopup extends SimpleLinePopup
 		     boolean noMultipleCopies)
     {
 	super(luwrain, name, prefix, text, noMultipleCopies);
+	this.luwrain = luwrain;
 	this.model = model;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	if (event.isCommand() && !event.isModified())
 	    switch(event.getCommand())
 	    {
@@ -69,8 +79,10 @@ public class ListPopup extends SimpleLinePopup
 	return super.onKeyboardEvent(event);
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	return super.onEnvironmentEvent(event);
     }
 
@@ -101,14 +113,13 @@ public class ListPopup extends SimpleLinePopup
     private void onKeyUp()
     {
 	final String item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
-
 	if (item == null)
 	{
-	    luwrain.say(Langs.staticValue(Langs.BEGIN_OF_LIST));
+	    luwrain.hint(Hints.NO_ITEMS_ABOVE);
 	    return;
 	}
 	if (item.isEmpty())
-	    luwrain.say(Langs.staticValue(Langs.EMPTY_LINE)); else
+	    luwrain.hint(Hints.EMPTY_LINE); else
 	    luwrain.say(item);
 	setText(item, "");
     }
@@ -118,11 +129,11 @@ public class ListPopup extends SimpleLinePopup
 	final String item = model.getListPopupNextItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
-	    luwrain.say(Langs.staticValue(Langs.END_OF_LIST));
+	    luwrain.hint(Hints.NO_ITEMS_BELOW);
 	    return;
 	}
 	if (item.isEmpty())
-	    luwrain.say(Langs.staticValue(Langs.EMPTY_LINE)); else
+	    luwrain.hint(Hints.EMPTY_LINE); else
 	    luwrain.say(item);
 	setText(item, "");
     }

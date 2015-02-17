@@ -34,6 +34,7 @@ class Init
 
     private String[] cmdLine;
     private Registry registry;
+    private Extension[] extensions;
     private Interaction interaction;
     private OperatingSystem os;
     private org.luwrain.speech.BackEnd speech;
@@ -46,7 +47,7 @@ class Init
 	for(String s: cmdLine)
 	    Log.debug("init", s);
 	if (init())
-	    new Environment(cmdLine, registry, speech, interaction, launchContext).run();
+	    new Environment(cmdLine, registry, speech, interaction, extensions, launchContext).run();
 	exit();
     }
 
@@ -66,6 +67,8 @@ class Init
 	    return false;
 	}
 	registry = new org.luwrain.registry.fsdir.RegistryImpl(regDir.getAbsolutePath());
+
+	loadExtensions();
 
 	//Launch context;
 	final String dataDirPath = getFirstCmdLineOption(PREFIX_DATA_DIR);
@@ -96,9 +99,9 @@ class Init
 	if (lang == null || lang.isEmpty())
 	{
 	    Log.fatal("init", "no chosen language, use command line option \'" + PREFIX_LANG + "\'");
-return false;
+	    return false;
 	}
-launchContext = new LaunchContext(dataDir.getAbsolutePath(), userHomeDir.getAbsolutePath(), lang);
+	launchContext = new LaunchContext(dataDir.getAbsolutePath(), userHomeDir.getAbsolutePath(), lang);
 
 if (!initOs())
     return false;
@@ -121,6 +124,57 @@ if (!initOs())
 	}
 
 	return true;
+    }
+
+    private void loadExtensions()
+    {
+	Vector<Extension> res = new Vector<Extension>();
+	final String[] extensionsList = getExtensionsList();
+	if (extensionsList == null || extensionsList.length < 1)
+	    return;
+	for(String s: extensionsList)
+	{
+	    if (s == null || s.trim().isEmpty())
+		continue;
+	    Log.debug("init", "loading extension " + s);
+	    Object o;
+	    try {
+		o = Class.forName(s).newInstance();
+	    }
+	    catch (InstantiationException e)
+	    {
+		Log.info("init", "loading of extension " + s + " failed:instantiation problem:" + e.getMessage());
+		//e.printStackTrace();
+		continue;
+	    }
+	    catch (IllegalAccessException e)
+	    {
+		Log.info("init", "loading of extension " + s + " failed:illegal access:" + e.getMessage());
+		//e.printStackTrace();
+		continue;
+	    }
+	    catch (ClassNotFoundException e)
+	    {
+		Log.info("init", "loading of extension " + s + " failed:class not found:" + e.getMessage());
+		//e.printStackTrace();
+		continue;
+	    }
+	    if (!(o instanceof Extension))
+	    {
+		Log.info("init", "loading of extension " + s + "failed: this object isn\'t an instance of org.luwrain.core.Extension");
+		continue;
+	    }
+	    final Extension ext = (Extension)o;
+	    final String message = ext.init(cmdLine, registry);
+	    if (message != null)
+	    {
+		Log.info("init", "loading of extension " + s + "failed: " + message);
+		continue;
+	    }
+	    res.add(ext);
+	}
+	extensions = res.toArray(new Extension[res.size()]);
+	Log.debug("init", "loaded " + extensions.length + " extensions");
     }
 
     private boolean initSpeech()
@@ -238,8 +292,7 @@ if (!initOs())
 		    Attributes attr = manifest.getAttributes("org/luwrain");
 		    if (attr == null)
 			continue;
-		    final String value = attr.getValue("Luwrain-Extensions");
-		    System.out.println("" + value);
+		    final String value = attr.getValue("Extensions");
 		    if (value != null)
 			res.add(value);
 		}

@@ -29,6 +29,7 @@ import org.luwrain.util.RegistryAutoCheck;
 
 class Environment implements EventConsumer
 {
+    private final static String STRINGS_OBJECT_NAME = "luwrain.environment";
     private static final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
     private String[] cmdLine;
@@ -36,8 +37,10 @@ class Environment implements EventConsumer
     private RegistryAutoCheck registryAutoCheck;
     private RegistryKeys registryKeys;
     private org.luwrain.speech.BackEnd speech;
+    private Extension[] extensions;
     private Interaction interaction;
-    private Lang lang = new org.luwrain.langs.ru.Lang();
+    private I18nImpl i18n;
+    private Strings strings;
     private LaunchContext launchContext;
     private EventQueue eventQueue = new EventQueue();
     private InstanceManager appInstances;
@@ -57,12 +60,14 @@ class Environment implements EventConsumer
 		       Registry registry,
 		       org.luwrain.speech.BackEnd speech,
 		       Interaction interaction,
+		       Extension[] extensions,
 		       LaunchContext launchContext)
     {
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	this.speech = speech;
 	this.interaction = interaction;
+	this.extensions = extensions;
 	this.launchContext = launchContext;
 	if (cmdLine == null)
 	    throw new NullPointerException("cmdLine may not be null");
@@ -75,6 +80,11 @@ class Environment implements EventConsumer
 	    throw new NullPointerException("speech may not be null");
 	if (interaction == null)
 	    throw new NullPointerException("interaction may not be null");
+	if (extensions == null)
+	    throw new NullPointerException("exceptions may not be null");
+	for(int i = 0;i < extensions.length;++i)
+	    if (extensions[i] == null)
+		throw new NullPointerException("extensions[" + i + "] may not be null");
 	if (launchContext == null)
 	    throw new NullPointerException("launchContext may not be null");
     }
@@ -83,18 +93,42 @@ class Environment implements EventConsumer
     {
 	registryKeys = new RegistryKeys();
 	registryAutoCheck = new RegistryAutoCheck(registry, "environment");
+	i18n = new I18nImpl();
 	EnvironmentSounds.init(registry, launchContext);
 	appInstances = new InstanceManager(this);
 	shortcuts = new ShortcutManager(this);
 	screenContentManager = new ScreenContentManager(apps, popups);
 	windowManager = new WindowManager(interaction, screenContentManager);
 
+	for(Extension e: extensions)
+	    e.i18nExtension(i18n);
+	if (!i18n.chooseLang(launchContext.lang()))
+	{
+	    Log.fatal("environment", "unable to choose matching language for i18n, requested language is \'" + launchContext.lang() + "\'");
+	    return;
+	}
+	strings = (Strings)i18n.getStrings(STRINGS_OBJECT_NAME);
+
 	if (launchContext.lang().equals("ru"))//FIXME:
 	    Langs.setCurrentLang(new org.luwrain.langs.ru.Language());
 
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
-	commands.fillWithStandardCommands(this);
+
+	commands.addBasicCommands(this);
+	for(Extension e: extensions)
+	{
+	    Command[] cmds = e.getCommands();
+	    if (cmds != null)
+		for(Command c: cmds)
+		    if (c != null)
+		    {
+			if (!commands.add(e, c))
+			    Log.warning("environment", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " refused by  the commands manager to be registered");
+		    }
+	}
+
+
 	shortcuts.fillWithStandardShortcuts();
 	interaction.startInputEventsAccepting(this);
 	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
@@ -104,7 +138,7 @@ class Environment implements EventConsumer
 
     public void quit()
     {
-	YesNoPopup popup = new YesNoPopup(new Luwrain(this), Langs.staticValue(Langs.QUIT_CONFIRM_NAME), Langs.staticValue(Langs.QUIT_CONFIRM), true);
+	YesNoPopup popup = new YesNoPopup(new Luwrain(this), strings.quitPopupName(), strings.quitPopupText(), true);
 	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true);
 	if (popup.closing.cancelled() || !popup.getResult())
 	    return;
@@ -129,7 +163,7 @@ class Environment implements EventConsumer
 	catch (OutOfMemoryError e)
 	{
 	    appInstances.releaseInstance(o);
-	    message(Langs.staticValue(Langs.INSUFFICIENT_MEMORY_FOR_APP_LAUNCH));
+	    message(strings.appLaunchNoEnoughMemory());
 	    return;
 	}
 	catch (Throwable e)
@@ -137,7 +171,7 @@ class Environment implements EventConsumer
 	    appInstances.releaseInstance(o);
 	    e.printStackTrace();
 	    //FIXME:Log warning;
-	    message(Langs.staticValue(Langs.UNEXPECTED_ERROR_AT_APP_LAUNCH));
+	    message(strings.appLaunchUnexpectedError());
 	    return;
 	}
 	AreaLayout layout = app.getAreasToShow();
@@ -167,7 +201,7 @@ class Environment implements EventConsumer
 	    return;
 	if (popups.hasPopupOfApp(app))
 	{
-	    message(Langs.staticValue(Langs.APPLICATION_CLOSE_ERROR_HAS_POPUP));
+	    message(strings.appCloseHasPopup());
 	    return;
 	}
 	apps.releaseApp(app);
@@ -230,8 +264,8 @@ class Environment implements EventConsumer
 	String commandName = globalKeys.getActionName(event);
 	if (commandName != null)
 	{
-	    if (!commands.run(commandName, new Luwrain(this)))//FIXME:
-		message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));//FIXME:sound;
+	    if (!commands.run(commandName, new Luwrain(this)))
+		message(strings.noCommand());//FIXME:Error mark;
 	    return;
 	}
 	if (event.isCommand())
@@ -247,7 +281,7 @@ class Environment implements EventConsumer
 	    event.getCharacter() == 'x' &&
 	    event.withLeftAltOnly())
 	{
-	    runActionPopup();
+	    runCommandPopup();
 	    return;
 	}
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
@@ -268,7 +302,7 @@ class Environment implements EventConsumer
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
 	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
-	    message(Langs.staticValue(Langs.START_WORK_FROM_MAIN_MENU));
+	    message(strings.startWorkFromMainMenu());
 	    break;
 	}
     }
@@ -321,7 +355,7 @@ class Environment implements EventConsumer
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
 	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
-	    message(Langs.staticValue(Langs.START_WORK_FROM_MAIN_MENU));
+	    message(strings.startWorkFromMainMenu());
 	    break;
 	}
     }
@@ -369,18 +403,17 @@ boolean noMultipleCopies)
 	windowManager.redraw();
     }
 
-    public void runActionPopup()
+    public void runCommandPopup()
     {
-	Log.debug("environment", "opening command line");
 	ListPopup popup = new ListPopup(new Luwrain(this), new FixedListPopupModel(commands.getCommandsName()),
-					"FIXME:runActionTitle()", "FIXME:runAction()", "");
+					strings.commandPopupName(), strings.commandPopupPrefix(), "");
 	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true);
 	    Log.debug("environment", "after popup");
 	if (popup.closing.cancelled())
 	    return;
 	    Log.debug("environment", "popup " + popup.getText());
 	    if (!commands.run(popup.getText().trim(), new Luwrain(this)))
-	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
+		message(strings.noCommand());
     }
 
     public void setActiveArea(Object instance, Area area)
@@ -455,7 +488,7 @@ boolean noMultipleCopies)
 	if (activeArea == null)
 	{
 	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
-	    speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
+	    speech.say(strings.noLaunchedApps());
 	    return;
 	}
 	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
@@ -470,7 +503,7 @@ boolean noMultipleCopies)
 	if (activeArea == null)
 	{
 	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
-	    speech.say(Langs.staticValue(Langs.NO_LAUNCHED_APPS));
+	    speech.say(strings.noLaunchedApps());
 	    return;
 	}
 	speech.say(activeArea.getName());
@@ -480,14 +513,14 @@ boolean noMultipleCopies)
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() * 2); 
 	windowManager.redraw();
-	message(Langs.staticValue(Langs.FONT_SIZE) + " " + interaction.getFontSize());
+	message(strings.fontSize(interaction.getFontSize()));
     }
 
     public void decreaseFontSize()
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() / 2); 
 	windowManager.redraw();
-	message(Langs.staticValue(Langs.FONT_SIZE) + " " + interaction.getFontSize());
+	message(strings.fontSize(interaction.getFontSize()));
     }
 
     public void openFiles(String[] fileNames)
@@ -586,8 +619,8 @@ boolean noMultipleCopies)
     {
 	if (app == null)
 	    return null;
-	final String chosenName = (name != null && !name.trim().isEmpty())?name.trim():Langs.staticValue(Langs.OPEN_POPUP_NAME);
-	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():Langs.staticValue(Langs.OPEN_POPUP_PREFIX);
+	final String chosenName = (name != null && !name.trim().isEmpty())?name.trim():strings.openPopupName();
+	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():strings.openPopupPrefix();
 	File chosenDefaultValue = null;
 	if (defaultValue == null)
 		chosenDefaultValue = launchContext.userHomeDirAsFile(); else
@@ -612,9 +645,9 @@ boolean noMultipleCopies)
 	return true;
     }
 
-    public Lang lang()
+    public I18n i18n()
     {
-	return lang;
+	return i18n;
     }
 
     public void playSound(int code)

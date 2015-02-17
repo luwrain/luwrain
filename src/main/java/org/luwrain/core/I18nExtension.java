@@ -16,13 +16,14 @@
 
 package org.luwrain.core;
 
-public interface Extension
+public interface I18nExtension
 {
-    String init(String[] cmdLine, Registry registry);
-    Command[] getCommands();
-    Shortcut[] getShortcuts();
-    Worker[] getWorkers();
-    SharedObject[] getSharedObjects();
-    void i18nExtension(I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems();
+    void addCommandTitle(String lang,
+			 String command,
+			 String title);
+    void addStrings(String lang,
+		    String component,
+		    Object obj);
+
+    void addLang(String name, Lang lang);
 }

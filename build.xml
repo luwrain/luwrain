@@ -20,6 +20,9 @@
     <jar jarfile="jar/luwrain.jar">
       <manifest>
         <attribute name="Main-Class" value="org.luwrain.core.Init"/>
+        <section name="org/luwrain">
+          <attribute name="Extensions" value="org.luwrain.langs.ru.Extension"/>
+        </section>
       </manifest>
       <fileset dir="./build">
         <include name="**/*.class"/>

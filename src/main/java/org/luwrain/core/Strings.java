@@ -16,13 +16,19 @@
 
 package org.luwrain.core;
 
-public interface Extension
+public interface Strings
 {
-    String init(String[] cmdLine, Registry registry);
-    Command[] getCommands();
-    Shortcut[] getShortcuts();
-    Worker[] getWorkers();
-    SharedObject[] getSharedObjects();
-    void i18nExtension(I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems();
+    String quitPopupName();
+    String quitPopupText();
+    String appLaunchNoEnoughMemory();
+    String appLaunchUnexpectedError();
+    String appCloseHasPopup();
+    String noCommand();
+    String startWorkFromMainMenu();
+    String noLaunchedApps();
+    String fontSize(int size);
+    String openPopupName();
+    String openPopupPrefix();
+    String commandPopupName();
+    String commandPopupPrefix();
 }
