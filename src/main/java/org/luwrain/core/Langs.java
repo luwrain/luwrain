@@ -68,35 +68,28 @@ public class Langs
     public static final int OPEN_POPUP_NAME = 111;
     public static final int OPEN_POPUP_PREFIX = 112;
 
-    private static Language currentLang;
-
-    public static void setCurrentLang(Language lang)
-    {
-	if (lang != null)
-	currentLang = lang;
-    }
+    //    private static Language currentLang;
 
     public static String staticValue(int id)
     {
-	if (currentLang == null)
-	    return "#NO LANGUAGE#";
-	String value = currentLang.getStaticStrings().getString(id);
-	if (value == null || value.isEmpty())
-	    return "#NO VALUE#";
-	return value;
+	return "FIXME";
     }
 
+    /*
     public static     Object requestStringConstructor(String id)
     {
 	if (currentLang == null)
 	    return null;
 	return currentLang.requestStringConstructor(id);
     }
+    */
 
+    /*
     public static String getActionTitle(String actionName)
     {
 	if (currentLang == null)
 	    return null;
 	return currentLang.getActionTitle(actionName);
     }
+    */
 }

@@ -54,17 +54,17 @@ public interface LangStatic
     public static final int COPIED_LINES = 40;
     public static final int CUT_LINES = 41;
 
-    public static final int NO_REQUESTED_ACTION = 100;
-    public static final int NO_ACTIVE_AREA = 101;
-    public static final int APPLICATION_INTERNAL_ERROR = 102;
-    public static final int APPLICATION_CLOSE_ERROR_HAS_POPUP = 103;
-    public static final int INSUFFICIENT_MEMORY_FOR_APP_LAUNCH = 104;
-    public static final int UNEXPECTED_ERROR_AT_APP_LAUNCH = 105;
-    public static final int START_WORK_FROM_MAIN_MENU = 106;
-    public static final int NO_LAUNCHED_APPS = 107;
+    //    public static final int NO_REQUESTED_ACTION = 100;
+    //    public static final int NO_ACTIVE_AREA = 101;
+    //    public static final int APPLICATION_INTERNAL_ERROR = 102;
+    //    public static final int APPLICATION_CLOSE_ERROR_HAS_POPUP = 103;
+    //    public static final int INSUFFICIENT_MEMORY_FOR_APP_LAUNCH = 104;
+    //    public static final int UNEXPECTED_ERROR_AT_APP_LAUNCH = 105;
+    //    public static final int START_WORK_FROM_MAIN_MENU = 106;
+    //    public static final int NO_LAUNCHED_APPS = 107;
     public static final int LIST_NO_ITEMS = 108;
-    public static final int QUIT_CONFIRM_NAME = 109;
-    public static final int QUIT_CONFIRM = 110;
-    public static final int OPEN_POPUP_NAME = 111;
-    public static final int OPEN_POPUP_PREFIX = 112;
+    //    public static final int QUIT_CONFIRM_NAME = 109;
+    //    public static final int QUIT_CONFIRM = 110;
+    //    public static final int OPEN_POPUP_NAME = 111;
+    //    public static final int OPEN_POPUP_PREFIX = 112;
 }

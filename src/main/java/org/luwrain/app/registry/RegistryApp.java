@@ -37,7 +37,7 @@ public class RegistryApp implements Application, RegistryActions
 
     public boolean onLaunch(Luwrain luwrain)
     {
-	Object str = Langs.requestStringConstructor("registry");
+	Object str = luwrain.i18n().getStrings("luwrain.registry");
 	if (str == null)
 	    return false;
 	stringConstructor = (StringConstructor)str;

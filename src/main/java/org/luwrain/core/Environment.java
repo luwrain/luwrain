@@ -109,8 +109,11 @@ class Environment implements EventConsumer
 	}
 	strings = (Strings)i18n.getStrings(STRINGS_OBJECT_NAME);
 
+
+	/*
 	if (launchContext.lang().equals("ru"))//FIXME:
 	    Langs.setCurrentLang(new org.luwrain.langs.ru.Language());
+	*/
 
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();

@@ -61,34 +61,34 @@ public class Lang extends org.luwrain.core.Lang
 	case LangStatic.TREE_LEVEL:
 	    return "Уровень";
 
-	case LangStatic.NO_REQUESTED_ACTION:
-	    return "Выбранное Вами действие недоступно в системе";
-	case LangStatic.NO_ACTIVE_AREA:
-	    return "Нет активного объекта";
-	case LangStatic.APPLICATION_INTERNAL_ERROR:
-	    return "Выполнение операции было прервано из-за внутренней ошибки приложения";
-	case LangStatic.APPLICATION_CLOSE_ERROR_HAS_POPUP:
-	    return "Перед закрытием приложения необходимо закрыть его всплывающие окна";
-	case LangStatic.INSUFFICIENT_MEMORY_FOR_APP_LAUNCH:
-	    return "Недостаточно памяти для запуска приложения";
-	case LangStatic.UNEXPECTED_ERROR_AT_APP_LAUNCH:
-	    return "Запуск прерван из-за внутренней ошибки приложения";
-	case LangStatic.START_WORK_FROM_MAIN_MENU:
-	    return "Начните работу с главного меню";
-	case LangStatic.NO_LAUNCHED_APPS:
-	    return "Все приложения закрыты";
+	    //	case LangStatic.NO_REQUESTED_ACTION:
+	    //	    return "Выбранное Вами действие недоступно в системе";
+	    //	case LangStatic.NO_ACTIVE_AREA:
+	    //	    return "Нет активного объекта";
+	    //	case LangStatic.APPLICATION_INTERNAL_ERROR:
+	    //	    return "Выполнение операции было прервано из-за внутренней ошибки приложения";
+	    //	case LangStatic.APPLICATION_CLOSE_ERROR_HAS_POPUP:
+	    //	    return "Перед закрытием приложения необходимо закрыть его всплывающие окна";
+	    //	case LangStatic.INSUFFICIENT_MEMORY_FOR_APP_LAUNCH:
+	    //	    return "Недостаточно памяти для запуска приложения";
+	    //	case LangStatic.UNEXPECTED_ERROR_AT_APP_LAUNCH:
+	    //	    return "Запуск прерван из-за внутренней ошибки приложения";
+	    //	case LangStatic.START_WORK_FROM_MAIN_MENU:
+	    //	    return "Начните работу с главного меню";
+	    //	case LangStatic.NO_LAUNCHED_APPS:
+	    //	    return "Все приложения закрыты";
 	case LangStatic.LIST_NO_ITEMS:
 	    return "Элементы в списке отсутствуют";
-	case LangStatic.FONT_SIZE:
-	    return "Размер шрифта:";
-	case LangStatic.QUIT_CONFIRM_NAME:
-	    return "Завершение работы";
-	case LangStatic.QUIT_CONFIRM:
-	    return "Вы действительно хотите завершить работу в Luwrain?";
-	case LangStatic.OPEN_POPUP_NAME:
-	    return "Открытие файла";
-	case LangStatic.OPEN_POPUP_PREFIX:
-	    return "Введите имя файла для открытия:";
+	    //	case LangStatic.FONT_SIZE:
+	    //	    return "Размер шрифта:";
+	    //	case LangStatic.QUIT_CONFIRM_NAME:
+	    //	    return "Завершение работы";
+	    //	case LangStatic.QUIT_CONFIRM:
+	    //	    return "Вы действительно хотите завершить работу в Luwrain?";
+	    //	case LangStatic.OPEN_POPUP_NAME:
+	    //	    return "Открытие файла";
+	    //	case LangStatic.OPEN_POPUP_PREFIX:
+	    //	    return "Введите имя файла для открытия:";
 	case LangStatic.NO_TABLE_ROWS:
 	    return "Строки в таблице отсутствуют"; 
 	case LangStatic.NO_TABLE_ROWS_ABOVE:

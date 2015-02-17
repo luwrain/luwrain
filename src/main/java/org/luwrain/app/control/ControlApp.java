@@ -29,7 +29,7 @@ public class ControlApp implements Application, ControlActions
 
     public boolean onLaunch(Luwrain luwrain)
     {
-	Object str = Langs.requestStringConstructor("control");
+	Object str = luwrain.i18n().getStrings("luwrain.control");
 	if (str == null)
 	    return false;
 	this.luwrain = luwrain;

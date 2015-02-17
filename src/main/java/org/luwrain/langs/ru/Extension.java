@@ -49,7 +49,7 @@ public class Extension implements org.luwrain.core.Extension
     {
 	i18nExt.addLang("ru", new org.luwrain.langs.ru.Lang());
 	i18nExt.addCommandTitle("ru", "quit", "Завершить работу в Luwrain");
-	i18nExt.addStrings("ru", "main-menu", new MainMenu(new Language()));
+	i18nExt.addStrings("ru", "main-menu", new MainMenu());
 	i18nExt.addStrings("ru", "luwrain.environment", new Environment());
     }
 

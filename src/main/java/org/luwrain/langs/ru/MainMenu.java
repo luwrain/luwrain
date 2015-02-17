@@ -20,13 +20,6 @@ import java.util.*;
 
 class MainMenu implements org.luwrain.mainmenu.Strings
 {
-    private Language lang;
-
-    public MainMenu(Language lang)
-    {
-	this.lang = lang;
-    }
-
     @Override public String areaName()
     {
 	return "Главное меню";
