@@ -31,7 +31,8 @@ package org.luwrain.core;
  */
 public interface Popup extends Area
 {
-    Object getInstance();
+    Luwrain getLuwrainObject();
     EventLoopStopCondition getStopCondition();
     boolean noMultipleCopies();
+    boolean isWeakPopup();
 }

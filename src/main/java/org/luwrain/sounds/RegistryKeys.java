@@ -82,6 +82,12 @@ class RegistryKeys
 	return getProperty("sounds.MainMenuEmptyItem");
     }
 
+    public String generalError()
+    {
+	return getProperty("sounds.GeneralError");
+    }
+
+
     private String getProperty(String name)
     {
 	if (name == null)

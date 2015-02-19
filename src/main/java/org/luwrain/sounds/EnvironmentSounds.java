@@ -59,6 +59,7 @@ return;
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.mainMenu(), ""), Sounds.MAIN_MENU);
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.mainMenuItem(), ""), Sounds.MAIN_MENU_ITEM);
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.mainMenuEmptyItem(), ""), Sounds.MAIN_MENU_EMPTY_LINE);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.generalError(), ""), Sounds.GENERAL_ERROR);
     }
 
     private static void setSoundFile(File dataDir,

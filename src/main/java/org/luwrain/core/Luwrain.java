@@ -42,9 +42,14 @@ public final class Luwrain
     public static final int PITCH_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
     public static final int PITCH_LOW = org.luwrain.speech.BackEnd.LOW;
     public static final int PITCH_HINT = 25;
+    public static final int PITCH_MESSAGE = 25;
     public static final int RATE_HIGH = org.luwrain.speech.BackEnd.HIGH;
     public static final int RATE_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
     public static final int RATE_LOW = org.luwrain.speech.BackEnd.LOW;
+
+    public static final int MESSAGE_REGULAR = 0;
+    public static final int MESSAGE_OK = 1;
+    public static final int MESSAGE_ERROR = 2;
 
     private Environment environment;
 
@@ -67,12 +72,12 @@ public final class Luwrain
 
     public void launchApp(String shortcutName)
     {
-	//FIXME:
+	environment.launchApp(shortcutName, new String[0]);
     }
 
     public void launchApp(String shortcutName, String[] args)
     {
-	//FIXME:
+	environment.launchApp(shortcutName, args != null?args:new String[0]);
     }
 
 public     void closeApp()
@@ -118,19 +123,12 @@ public     void closeApp()
 
     public void message(String text)
     {
-	environment.message(text);
+	environment.message(text, MESSAGE_REGULAR);
     }
 
-    /**
-     * @param name The desired popup name, can be null if default value is required
-     * @param prefix The desired input prefix, can be null if default value is required
-     * @param defaultValue The desired default value, can be null to use the user home directory path
-     */
-    public File openPopup(String name,
-			  String prefix,
-			  File defaultValue)
+    public void message(String text, int semantic)
     {
-	return environment.openPopup(this, name, prefix, defaultValue);
+	environment.message(text, semantic);
     }
 
     public void openFile(String fileName)

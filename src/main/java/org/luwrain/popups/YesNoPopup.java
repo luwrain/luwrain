@@ -161,7 +161,7 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 	return true;
     }
 
-    @Override public Object getInstance()
+    @Override public Luwrain getLuwrainObject()
     {
 	return luwrain;
     }
@@ -174,5 +174,10 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
     @Override public boolean noMultipleCopies()
     {
 	return noMultipleCopies;
+    }
+
+    @Override public boolean isWeakPopup()
+    {
+	return true;
     }
 }

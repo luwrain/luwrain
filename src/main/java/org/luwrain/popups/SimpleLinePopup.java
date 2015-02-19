@@ -230,7 +230,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	luwrain.onAreaNewHotPoint(this);
     }
 
-    @Override public Object getInstance()
+    @Override public Luwrain getLuwrainObject()
     {
 	return luwrain;
     }
@@ -243,5 +243,10 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
     @Override public boolean noMultipleCopies()
     {
 	return noMultipleCopies;
+    }
+
+    @Override public boolean isWeakPopup()
+    {
+	return true;
     }
 }

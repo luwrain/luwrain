@@ -96,7 +96,7 @@ class Environment implements EventConsumer
 	i18n = new I18nImpl();
 	EnvironmentSounds.init(registry, launchContext);
 	appInstances = new InstanceManager(this);
-	shortcuts = new ShortcutManager(this);
+	shortcuts = new ShortcutManager();
 	screenContentManager = new ScreenContentManager(apps, popups);
 	windowManager = new WindowManager(interaction, screenContentManager);
 
@@ -109,16 +109,24 @@ class Environment implements EventConsumer
 	}
 	strings = (Strings)i18n.getStrings(STRINGS_OBJECT_NAME);
 
-
-	/*
-	if (launchContext.lang().equals("ru"))//FIXME:
-	    Langs.setCurrentLang(new org.luwrain.langs.ru.Language());
-	*/
-
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 
+	shortcuts.addBasicShortcuts();
 	commands.addBasicCommands(this);
+
+	for(Extension e: extensions)
+	{
+	    Shortcut[] s = e.getShortcuts();
+	    if (s != null)
+		for(Shortcut ss: s)
+		    if (ss != null)
+		    {
+			if (!shortcuts.add(e, ss))
+			    Log.warning("environment", "shortcut \'" + ss.getName() + "\' of extension " + e.getClass().getName() + " refused by  the shortcuts manager to be registered");
+		    }
+	}
+
 	for(Extension e: extensions)
 	{
 	    Command[] cmds = e.getCommands();
@@ -131,8 +139,6 @@ class Environment implements EventConsumer
 		    }
 	}
 
-
-	shortcuts.fillWithStandardShortcuts();
 	interaction.startInputEventsAccepting(this);
 	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
 		eventLoop(new InitialEventLoopStopCondition());
@@ -150,6 +156,24 @@ class Environment implements EventConsumer
 
     //Application management;
 
+    public void launchApp(String shortcutName, String[] args)
+    {
+	if (shortcutName == null)
+	    throw new NullPointerException("shortcutName may not be null");
+	if (shortcutName.trim().isEmpty())
+	    throw new IllegalArgumentException("shortcutName may not be emptyL");
+	if (args == null)
+	    throw new NullPointerException("args may not be null");
+	for(int i = 0;i < args.length;++i)
+	    if (args[i] == null)
+		throw new NullPointerException("args[" + i + "] may not be null");
+	Application[] app = shortcuts.prepareApp(shortcutName, args);
+	if (app != null)
+	    for(Application a: app)
+		if (a != null)
+		    launchApp(a);
+    }
+
     //Always full screen;
     public void launchApp(Application app)
     {
@@ -166,7 +190,7 @@ class Environment implements EventConsumer
 	catch (OutOfMemoryError e)
 	{
 	    appInstances.releaseInstance(o);
-	    message(strings.appLaunchNoEnoughMemory());
+	    message(strings.appLaunchNoEnoughMemory(), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
 	catch (Throwable e)
@@ -174,7 +198,7 @@ class Environment implements EventConsumer
 	    appInstances.releaseInstance(o);
 	    e.printStackTrace();
 	    //FIXME:Log warning;
-	    message(strings.appLaunchUnexpectedError());
+	    message(strings.appLaunchUnexpectedError(), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
 	AreaLayout layout = app.getAreasToShow();
@@ -204,7 +228,7 @@ class Environment implements EventConsumer
 	    return;
 	if (popups.hasPopupOfApp(app))
 	{
-	    message(strings.appCloseHasPopup());
+	    message(strings.appCloseHasPopup(), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
 	apps.releaseApp(app);
@@ -268,7 +292,7 @@ class Environment implements EventConsumer
 	if (commandName != null)
 	{
 	    if (!commands.run(commandName, new Luwrain(this)))
-		message(strings.noCommand());//FIXME:Error mark;
+		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
 	if (event.isCommand())
@@ -305,7 +329,7 @@ class Environment implements EventConsumer
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
 	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
-	    message(strings.startWorkFromMainMenu());
+	    message(strings.startWorkFromMainMenu(), Luwrain.MESSAGE_REGULAR);
 	    break;
 	}
     }
@@ -327,7 +351,7 @@ class Environment implements EventConsumer
 	    {
 		if (screenContentManager.onEnvironmentEvent(event) == ScreenContentManager.EVENT_PROCESSED)
 		    return;
-		File f = openPopupByApp(null, null, null, null);
+		final File f = openPopup();
 		if (f == null)
 		    return;
 		String[] fileNames = new String[1];
@@ -358,7 +382,7 @@ class Environment implements EventConsumer
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
 	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
-	    message(strings.startWorkFromMainMenu());
+	    message(strings.startWorkFromMainMenu(), Luwrain.MESSAGE_REGULAR);
 	    break;
 	}
     }
@@ -416,7 +440,7 @@ boolean noMultipleCopies)
 	    return;
 	    Log.debug("environment", "popup " + popup.getText());
 	    if (!commands.run(popup.getText().trim(), new Luwrain(this)))
-		message(strings.noCommand());
+		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
     }
 
     public void setActiveArea(Object instance, Area area)
@@ -456,32 +480,26 @@ boolean noMultipleCopies)
 	return windowManager.getAreaVisibleHeight(area);
     }
 
-    public void message(String text)
+    public void message(String text, int semantic)
     {
 	if (text == null || text.trim().isEmpty())
 	    return;
 	needForIntroduction = false;
-	//FIXME:Message class for message collecting;
+	switch(semantic)
+	{
+	case Luwrain.MESSAGE_ERROR:
+	    playSound(Sounds.GENERAL_ERROR);
+	    break;
+	case Luwrain.MESSAGE_OK:
+	    //FIXME:
+	    break;
+	}
 	speech.silence();
-	speech.say(text);//, BackEnd.LOW);
+	speech.say(text, Luwrain.PITCH_MESSAGE);
 	interaction.startDrawSession();
 	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
 	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text);
 	interaction.endDrawSession();
-    }
-
-    public void mainMenu()
-    {
-	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(new Luwrain(this)).build();
-	EnvironmentSounds.play(Sounds.MAIN_MENU);
-	goIntoPopup(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true);
-	if (mainMenu.closing.cancelled())
-	    return;
-	EnvironmentSounds.play(Sounds.MAIN_MENU_ITEM);
-	/*
-	if (!actions.run(mainMenu.getSelectedActionName()))
-	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
-	*/
     }
 
     public void introduceActiveArea()
@@ -516,14 +534,14 @@ boolean noMultipleCopies)
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() * 2); 
 	windowManager.redraw();
-	message(strings.fontSize(interaction.getFontSize()));
+	message(strings.fontSize(interaction.getFontSize()), Luwrain.MESSAGE_REGULAR);
     }
 
     public void decreaseFontSize()
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() / 2); 
 	windowManager.redraw();
-	message(strings.fontSize(interaction.getFontSize()));
+	message(strings.fontSize(interaction.getFontSize()), Luwrain.MESSAGE_REGULAR);
     }
 
     public void openFiles(String[] fileNames)
@@ -548,17 +566,18 @@ boolean noMultipleCopies)
 
     public void popup(Popup popup)
     {
-	if (popup == null ||
-	    popup.getInstance() == null ||
-	    popup.getStopCondition() == null)
-	    return;
-	Application app = appInstances.getAppByInstance(popup.getInstance());
+	if (popup == null)
+	    throw new NullPointerException("popup may not be null");
+	final Object instance = popup.getLuwrainObject();
+	final EventLoopStopCondition stopCondition = popup.getStopCondition();
+	if (instance == null)
+	    throw new NullPointerException("instance may not be null");
+	if (stopCondition == null)
+	    throw new NullPointerException("stopCondition may not be null");
+	final Application app = appInstances.getAppByInstance(instance);
 	if (app == null)
-	{
-	    Log.warning("environment", "somebody tries to launch a popup with fake application instance");
-	    return;
-	}
-	goIntoPopup(app, popup, PopupManager.BOTTOM, popup.getStopCondition(), popup.noMultipleCopies());
+	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
+	goIntoPopup(app, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies());
     }
 
     public void setClipboard(String[] value)
@@ -602,39 +621,6 @@ boolean noMultipleCopies)
 	}
     }
 
-    public File openPopup(Object instance,
-			    String name,
-			    String prefix,
-			    File defaultValue)
-    {
-	if (instance == null)
-	    return null;
-	Application app = appInstances.getAppByInstance(instance);
-	if (app == null)
-	    return null;
-	return openPopupByApp(app, name, prefix, defaultValue);
-    }
-
-    private File openPopupByApp(Application app,
-			    String name,
-			    String prefix,
-			    File defaultValue)
-    {
-	if (app == null)
-	    return null;
-	final String chosenName = (name != null && !name.trim().isEmpty())?name.trim():strings.openPopupName();
-	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():strings.openPopupPrefix();
-	File chosenDefaultValue = null;
-	if (defaultValue == null)
-		chosenDefaultValue = launchContext.userHomeDirAsFile(); else
-	    chosenDefaultValue = defaultValue;
-	FilePopup popup = new FilePopup(null, chosenName, chosenPrefix, chosenDefaultValue);
-	goIntoPopup(app, popup, PopupManager.BOTTOM, popup.closing, true);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.getFile();
-    }
-
     public BackEnd speech()
     {
 	return speech;
@@ -661,5 +647,31 @@ boolean noMultipleCopies)
     public LaunchContext launchContext()
     {
 	return launchContext;
+    }
+
+    public void mainMenu()
+    {
+	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(new Luwrain(this)).build();
+	EnvironmentSounds.play(Sounds.MAIN_MENU);
+	goIntoPopup(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true);
+	if (mainMenu.closing.cancelled())
+	    return;
+	EnvironmentSounds.play(Sounds.MAIN_MENU_ITEM);
+	/*
+	if (!actions.run(mainMenu.getSelectedActionName()))
+	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
+	*/
+    }
+
+    private File openPopup()
+    {
+	final FilePopup popup = new FilePopup(new Luwrain(this),//FIXME:specialLuwrain;
+					      strings.openPopupName(),
+					      strings.openPopupPrefix(),
+					      launchContext.userHomeDirAsFile());
+	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.getFile();
     }
 }

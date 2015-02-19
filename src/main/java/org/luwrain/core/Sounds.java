@@ -25,4 +25,5 @@ public interface Sounds
     public static final int MAIN_MENU = 4;
     public static final int MAIN_MENU_ITEM = 5;
     public static final int MAIN_MENU_EMPTY_LINE = 6;
+    public static final int GENERAL_ERROR = 7;
 }

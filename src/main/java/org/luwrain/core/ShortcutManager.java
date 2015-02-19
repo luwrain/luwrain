@@ -21,40 +21,78 @@ import org.luwrain.core.events.*;
 
 class ShortcutManager
 {
-    private Environment environment;
-    private Vector<Shortcut> shortcuts = new Vector<Shortcut>();
-
-    public ShortcutManager(Environment environment)
+    class Entry 
     {
-	this.environment = environment;
+	public Extension extension;
+	public String name = "";
+	public Shortcut shortcut;
+
+	public Entry(Extension extension,
+		     String name,
+		     Shortcut shortcut)
+	{
+	    this.extension = extension;
+	    this.name = name;
+	    this.shortcut = shortcut;
+	    //extension may be null, meaning it is a shortcut from environment itself
+	    if (name == null)
+		throw new NullPointerException("name may not be null");
+	    if (name.trim().isEmpty())
+		throw new IllegalArgumentException("name may not be empty");
+	    if (shortcut == null)
+		throw new NullPointerException("shortcut may not be null");
+	}
     }
 
-    public void add(Shortcut shortcut)
-    {
-	if (shortcut != null)
-	    shortcuts.add(shortcut);
-    }
+    private TreeMap<String, Entry> shortcuts = new TreeMap<String, Entry>();
 
-    /*
-    public boolean launch(String name, String[] args)
+    public boolean add(Extension extension, Shortcut shortcut)
     {
+	if (shortcut == null)
+	    throw new NullPointerException("shortcut may not be null");
+	final String name = shortcut.getName();
 	if (name == null || name.trim().isEmpty())
 	    return false;
-	Iterator<Shortcut> it = shortcuts.iterator();
-	while(it.hasNext())
-	{
-	    Shortcut s = it.next();
-	    if (!s.getName().equals(name))
-		continue;
-	    s.launch(args);
-	    return true;
-	}
-	return false;
+	if (shortcuts.containsKey(name))
+	    return false;
+	shortcuts.put(name, new Entry(extension, name, shortcut));
+	return true;
     }
-    */
 
-    public void fillWithStandardShortcuts()
+    public Application[] prepareApp(String name, String[] args)
     {
-	//FIXME:
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	if (name.trim().isEmpty())
+	    throw new IllegalArgumentException("name may not be empty");
+	if (!shortcuts.containsKey(name))
+	    return null;
+	return shortcuts.get(name).shortcut.prepareApp(args != null?args:new String [0]);
+    }
+
+    public String[] getShortcutNames()
+    {
+	Vector<String> res = new Vector<String>();
+	for(Map.Entry<String, Entry> e: shortcuts.entrySet())
+	    res.add(e.getKey());
+	String[] str = res.toArray(new String[res.size()]);
+	Arrays.sort(str);
+	return str;
+    }
+
+    public void addBasicShortcuts()
+    {
+	add(null, new Shortcut(){
+		@Override public String getName()
+		{
+		    return "registry";
+		}
+		@Override public Application[] prepareApp(String[] args)
+		{
+		    Application[] res = new Application[1];
+		    res[0] = new org.luwrain.app.registry.RegistryApp();
+		    return res;
+		}
+	    });
     }
 }
