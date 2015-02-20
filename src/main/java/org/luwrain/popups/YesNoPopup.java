@@ -178,6 +178,6 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 
     @Override public boolean isWeakPopup()
     {
-	return true;
+	return false;
     }
 }

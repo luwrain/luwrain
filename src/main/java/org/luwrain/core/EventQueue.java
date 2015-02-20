@@ -21,6 +21,7 @@ import java.util.concurrent.*;
 public class EventQueue
 {
     private LinkedBlockingQueue<Event> events = new LinkedBlockingQueue<Event>(1024);
+    private Event again = null;
 
     void putEvent(Event e)
     {
@@ -33,8 +34,26 @@ public class EventQueue
 	}
     }
 
+    public void onceAgain(Event event)
+    {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
+	if (again != null)
+	{
+	    Log.warning("queue", "adding the event to try it once again but there is already one");
+	    return;
+	}
+	again = event;
+    }
+
     Event takeEvent()
     {
+	if (again != null)
+	{
+	    Event event = again;
+	    again = null;
+	    return event;
+	}
 	try {
 	    return events.take();
 	}

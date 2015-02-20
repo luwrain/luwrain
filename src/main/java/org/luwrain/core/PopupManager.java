@@ -33,35 +33,39 @@ class PopupManager
 	public int position;
 	public PopupEventLoopStopCondition stopCondition;
 	public boolean noMultipleCopies;
+	public boolean isWeak; 
 
 	public Wrapper(Application app,
 		       Area area,
 		       int position,
 		       PopupEventLoopStopCondition stopCondition,
-		       boolean noMultipleCopies)
+		       boolean noMultipleCopies,
+		       boolean isWeak)
 	{
 	    this.app = app;
 	    this.area = area;
 	    this.position = position;
 	    this.stopCondition = stopCondition;
 	    this.noMultipleCopies = noMultipleCopies;
+	    this.isWeak = isWeak;
 	}
     }
 
     private Vector<Wrapper> wrappers = new Vector<Wrapper>();
 
     //null app means environment popup;
-    public void addNewP(Application app,
+    public void addNew(Application app,
 			    Area area,
 			    int position,
 			    PopupEventLoopStopCondition stopCondition,
-			    boolean noMultipleCopies)
+		       boolean noMultipleCopies,
+		       boolean isWeak)
     {
 	if (area == null)
 	    throw new NullPointerException("area may not be null");
 	if (stopCondition == null)
 	    throw new NullPointerException("stopCondition may not be null");
-	wrappers.add(new Wrapper(app, area, position, stopCondition, noMultipleCopies));
+	wrappers.add(new Wrapper(app, area, position, stopCondition, noMultipleCopies, isWeak));
     }
 
     public void removeLast()
@@ -120,6 +124,20 @@ class PopupManager
     {
 	for(Wrapper w: wrappers)
 	    if (w.noMultipleCopies && app == w.app && w.area.getClass().equals(newCopyClass))
-		w.stopCondition.onNewCopyLaunch();
+		w.stopCondition.cancel();
     }
+
+    public boolean isWeakLastPopup()
+    {
+	if (wrappers.isEmpty())
+	    return false;
+	return wrappers.lastElement().isWeak;
+    }
+
+    public void cancelLastPopup()
+    {
+	if (wrappers.isEmpty())
+	    return;
+	wrappers.lastElement().stopCondition.cancel();
+}
 }

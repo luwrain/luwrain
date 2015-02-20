@@ -31,4 +31,5 @@ public interface Strings
     String openPopupPrefix();
     String commandPopupName();
     String commandPopupPrefix();
+    String appBlockedByPopup();
 }

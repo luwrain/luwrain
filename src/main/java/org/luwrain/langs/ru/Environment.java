@@ -82,4 +82,9 @@ class Environment implements org.luwrain.core.Strings
     {
 	return "Команда:";
     }
+
+@Override public String appBlockedByPopup()
+    {
+	return "Приложение недоступно из-за открытой всплывающей области";
+    }
 }

@@ -41,7 +41,7 @@ class GlobalKeys
 	this.registry = registry;
     }
 
-    public String getActionName(KeyboardEvent event )
+    public String getCommandName(KeyboardEvent event )
     {
 	if (event == null)
 	    return null;
@@ -72,7 +72,7 @@ class GlobalKeys
     {
 	if (event == null || actionName == null)
 	    return;
-	if (getActionName(event) != null)
+	if (getCommandName(event) != null)
 	    return;
 	items.add(new Item(event, actionName));
     }
