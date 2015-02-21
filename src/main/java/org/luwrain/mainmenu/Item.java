@@ -16,10 +16,12 @@
 
 package org.luwrain.mainmenu;
 
+import org.luwrain.core.CommandEnvironment;
+
 public interface Item 
 {
     String getText();
-    void introduce();
+    void introduce(CommandEnvironment env);
     boolean isAction();
-    void doAction();
+    void doAction(CommandEnvironment env);
 }

@@ -24,6 +24,7 @@ public class Builder
 {
     private Strings strings;
     private Luwrain luwrain;
+    private CommandEnvironment commandEnv;
     private Registry registry;
 
     public Builder(Luwrain luwrain)
@@ -31,21 +32,22 @@ public class Builder
 	this.luwrain = luwrain;
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
+	this.commandEnv = commandEnv;//FIXME:
 	this.strings = (Strings)luwrain.i18n().getStrings("main-menu");
 	this.registry = luwrain.getRegistry();
     }
 
     public MainMenu build()
     {
-	return new MainMenu(luwrain, strings, constructItems());
+	return new MainMenu(luwrain, commandEnv, strings, constructItems());
     }
 
     private Item[] constructItems()
     {
 	Vector<Item> items = new Vector<Item>();
-	items.add(new EmptyItem(luwrain));
-	items.add(new DateTimeItem(luwrain, strings));
-	items.add(new Separator(luwrain, true, "Main commands"));//FIXME:
+	items.add(new EmptyItem());
+	items.add(new DateTimeItem(strings));
+	items.add(new Separator(true, "Main commands"));//FIXME:
 	Item[] commands = commandItems(getCommandsList());
 	for(Item i: commands)
 	    items.add(i);
@@ -57,14 +59,14 @@ public class Builder
     {
 	if (commandsList == null)
 	    throw new NullPointerException("commandsList may not be null");
-	Item[] items = new Item[commandsList.length];
-	for(int i = 0;i < commandsList.length;++i)
-	{
-	    if (commandsList[i] == null)
-		throw new NullPointerException("commandsList[" + i + "] may not be null");
-	    items[i] = new CommandItem(luwrain, commandsList[i], luwrain.i18n().commandTitle(commandsList[i]));
-	}
-	return items;
+	Vector<Item> items = new Vector<Item>();
+	for(String s: commandsList)
+	    if (s == null || s.trim().isEmpty())
+		items.add(new EmptyItem()); else
+		items.add(new CommandItem(strings, s, luwrain.i18n().commandTitle(s)));
+	items.add(new EmptyItem());
+	items.add(new CommandItem(strings, "quit", luwrain.i18n().commandTitle("quit")));
+	return items.toArray(new Item[items.size()]);
     }
 
     private String[] getCommandsList()
@@ -72,17 +74,11 @@ public class Builder
 	if (registry.getTypeOf("/org/luwrain/main-menu/content") != Registry.STRING)
 	{
 	    Log.warning("main-menu", "no registry value /org/luwrain/main-menu/content or its type is not a string");
-	    String res[] = new String[1];
-	    res[0] = "quit";
-	    return res;
+	    return new String [0];
 	}
 	final String value = registry.getString("/org/luwrain/main-menu/content");
 	if (value.trim().isEmpty())
-	{
-	    String res[] = new String[1];
-	    res[0] = "quit";
-	    return res;
-	}
+	    return new String[0];
 	return value.split(":");
     }
 }

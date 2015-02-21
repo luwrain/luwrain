@@ -23,17 +23,13 @@ import org.luwrain.mainmenu.Strings;
 
 class DateTimeItem implements Item
 {
-    private Luwrain luwrain;
     private Strings strings;
 
     private String value;
 
-    public DateTimeItem(Luwrain luwrain, Strings strings)
+    public DateTimeItem(Strings strings)
     {
-	this.luwrain = luwrain;
 	this.strings = strings;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
 	if (strings == null)
 	    throw new NullPointerException("strings may not be null");
 	value = strings.currentDateTime();
@@ -44,9 +40,9 @@ class DateTimeItem implements Item
 	return value;
     }
 
-    @Override public void introduce()
+    @Override public void introduce(CommandEnvironment env)
     {
-	luwrain.say(value);
+	env.say(value);
     }
 
     @Override public boolean isAction()
@@ -54,7 +50,7 @@ class DateTimeItem implements Item
 	return false;
     }
 
-    @Override public void doAction()
+    @Override public void doAction(CommandEnvironment env)
     {
     }
 }

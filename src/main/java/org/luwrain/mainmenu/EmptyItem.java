@@ -20,24 +20,15 @@ import org.luwrain.core.*;
 
 class EmptyItem implements Item
 {
-    private Luwrain luwrain;
-
-    public EmptyItem(Luwrain luwrain)
-    {
-	this.luwrain = luwrain;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-    }
-
     @Override public String getText()
     {
 	return "";
     }
 
-    @Override public void introduce()
+    @Override public void introduce(CommandEnvironment env)
     {
-	luwrain.silence();
-	luwrain.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
+	env.silence();
+	env.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
     }
 
     @Override public boolean isAction()
@@ -45,7 +36,7 @@ class EmptyItem implements Item
 	return false;
     }
 
-    @Override public void doAction()
+    @Override public void doAction(CommandEnvironment env)
     {
     }
 }

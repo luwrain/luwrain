@@ -25,7 +25,7 @@ public class Extension implements org.luwrain.core.Extension
 	return null;
     }
 
-    @Override public Command[] getCommands()
+    @Override public Command[] getCommands(CommandEnvironment env)
     {
 	return new Command[0];
     }
@@ -53,7 +53,7 @@ public class Extension implements org.luwrain.core.Extension
 	i18nExt.addStrings("ru", "luwrain.environment", new Environment());
     }
 
-    @Override public org.luwrain.mainmenu.Item[] getMainMenuItems()
+    @Override public org.luwrain.mainmenu.Item[] getMainMenuItems(CommandEnvironment env)
     {
 	return new org.luwrain.mainmenu.Item[0];
     }

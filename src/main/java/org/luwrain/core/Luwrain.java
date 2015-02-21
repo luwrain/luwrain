@@ -36,7 +36,7 @@ import java.io.File;
  * identification function and applications should try to keep the reference
  * to this class in secret.
  */
-public final class Luwrain
+public final class Luwrain implements CommandEnvironment,EventConsumer
 {
     public static final int PITCH_HIGH = org.luwrain.speech.BackEnd.HIGH;
     public static final int PITCH_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
@@ -60,54 +60,14 @@ public final class Luwrain
 	    throw new NullPointerException("environment may not be null");
     }
 
-    public void enqueueEvent(Event e)
+    @Override public void enqueueEvent(Event e)
     {
 	environment.enqueueEvent(e);
     }
 
-    public void launchApp(Application app)
-    {
-	environment.launchApp(app);
-    }
-
-    public void launchApp(String shortcutName)
-    {
-	environment.launchApp(shortcutName, new String[0]);
-    }
-
-    public void launchApp(String shortcutName, String[] args)
-    {
-	environment.launchApp(shortcutName, args != null?args:new String[0]);
-    }
-
-public     void closeApp()
+    public     void closeApp()
     {
 	environment.closeApp(this);
-    }
-
-    //Not for popup areas, only standard areas of applications;
-    //Introduces new area in contrast with onAreaNewContent, onAreaNewHotPoint and onAreaNewName  
-    public void setActiveArea(Area area)
-    {
-	environment.setActiveArea(this, area);
-    }
-
-    //Never produces any speech output automatically;
-    public void onAreaNewHotPoint(Area area)
-    {
-	environment.onAreaNewHotPoint(area);
-    }
-
-    //Never produces any speech output automatically;
-    public void onAreaNewContent(Area area)
-    {
-	environment.onAreaNewContent(area);
-    }
-
-    //Never produces any speech output automatically;
-    public void onAreaNewName(Area area)
-    {
-	environment.onAreaNewName(area);
     }
 
     //May return -1 if area is not shown on the screen;
@@ -116,149 +76,28 @@ public     void closeApp()
 	return environment.getAreaVisibleHeight(area);
     }
 
-    public void quit()
-    {
-	environment.quit();
-    }
-
-    public void message(String text)
-    {
-	environment.message(text, MESSAGE_REGULAR);
-    }
-
-    public void message(String text, int semantic)
-    {
-	environment.message(text, semantic);
-    }
-
-    public void openFile(String fileName)
-    {
-	String[] s = new String[1];
-	s[0] = fileName;
-	environment.openFiles(s);
-    }
-
-    public void openFiles(String[] fileNames)
-    {
-	environment.openFiles(fileNames);
-    }
-
-    public void popup(Popup popup)
-    {
-	environment.popup(popup);
-    }
-
-    public Registry getRegistry()
-    {
-	return environment.registry();
-    }
-
-    /*
-    public Object getPimManager()
-    {
-	return environment.getPimManager();
-    }
-    */
-
-    public void setClipboard(String[] value)
-    {
-	environment.setClipboard(value);
-    }
-
-    public String[] getClipboard()
+    @Override public String[] getClipboard()
     {
 	return environment.getClipboard();
     }
 
-    public void say(String text)
+    @Override public Registry getRegistry()
     {
-	silence();
-	if (text != null)
-	    environment.speech().say(text);
+	return environment.registry();
     }
 
-    public void say(String text, int pitch)
-    {
-	silence();
-	if (text != null)
-	    environment.speech().say(text, pitch);
-    }
-
-    public void say(String text,
-		    int pitch,
-		    int rate)
-    {
-	silence();
-	if (text != null)
-	    environment.speech().say(text, pitch, rate);
-    }
-
-    public void sayLetter(char letter)
-    {
-	switch(letter)
-	{
-	case ' ':
-	    hint(Hints.SPACE);
-	    return;
-	case '\t':
-	    hint(Hints.TAB);
-	    return;
-	}
-	final String value = i18n().hasSpecialNameOfChar(letter);
-	if (value == null)
-	{
-	    silence();
-	    environment.speech().sayLetter(letter);
-	} else
-	    hint(value); 
-    }
-
-    public void sayLetter(char letter, int pitch)
-    {
-	switch(letter)
-	{
-	case ' ':
-	    hint(Hints.SPACE);
-	    return;
-	case '\t':
-	    hint(Hints.TAB);
-	    return;
-	default:
-	    silence();
-	    environment.speech().sayLetter(letter, pitch);
-	}
-    }
-
-    public void sayLetter(char letter,
-			  int pitch,
-			  int rate)
-    {
-	switch(letter)
-	{
-	case ' ':
-	    hint(Hints.SPACE);
-	    return;
-	case '\t':
-	    hint(Hints.TAB);
-	    return;
-	default:
-	    silence();
-	    environment.speech().sayLetter(letter, pitch, rate);
-	}
-    }
-
-    public void hint(String text)
+    @Override public void hint(String text)
     {
 	say(text, PITCH_HINT);
     }
 
-    public void hint(String text, int code)
+    @Override public void hint(String text, int code)
     {
 	if (environment.onStandardHint(code))
 	    hint(text);
     }
 
-    public boolean hint(int code)
+    @Override public boolean hint(int code)
     {
 	String msg = "";
 	switch (code)
@@ -303,28 +142,219 @@ public     void closeApp()
 	return true;
     }
 
-    public void silence()
-    {
-	environment.speech().silence();
-    }
-
-    public String staticString(int code)
-    {
-	return i18n().staticStr(code);
-    }
-
-    public I18n i18n()
+    @Override public I18n i18n()
     {
 	return environment.i18n();
     }
 
-    public void playSound(int code)
+    @Override public void launchApp(String shortcutName)
+    {
+	environment.launchApp(shortcutName, new String[0]);
+    }
+
+    @Override public void launchApp(String shortcutName, String[] args)
+    {
+	environment.launchApp(shortcutName, args != null?args:new String[0]);
+    }
+
+    @Override public LaunchContext launchContext()
+    {
+	return environment.launchContext();
+    }
+
+    @Override public void message(String text)
+    {
+	environment.message(text, MESSAGE_REGULAR);
+    }
+
+    @Override public void message(String text, int semantic)
+    {
+	environment.message(text, semantic);
+    }
+
+    /**
+     * Notifies the environment that the area gets new position of the hot
+     * point. This method causes updating of the visual position of the hot
+     * point on the screen for low vision users.  Please keep in mind that
+     * this method doesn't produce any speech announcement of the new
+     * position and you should do that on your own, depending on the
+     * behaviour of your application.
+     *
+     * @param area The area which gets new position of the hot point
+     */
+    public void onAreaNewHotPoint(Area area)
+    {
+	environment.onAreaNewHotPoint(area);
+    }
+
+    /**
+     * Notifies the environment that the area gets new content. This method
+     * causes updating of the visual representation of the area content on
+     * the screen for low vision users.  Please keep in mind that this method
+     * doesn't produce any speech announcement of the changes and you should
+     * do that on your own, depending on the behaviour of your application.
+     *
+     * @param area The area which gets new content
+     */
+    public void onAreaNewContent(Area area)
+    {
+	environment.onAreaNewContent(area);
+    }
+
+    /**
+     * Notifies the environment that the area gets new name. This method
+     * causes updating of the visual title of the area on the screen for low
+     * vision users.  Please keep in mind that this method doesn't produce
+     * any speech announcement of name changes and you should do that on your
+     * own, depending on the behaviour of your application.
+     *
+     * @param area The area which gets new name
+     */
+    public void onAreaNewName(Area area)
+    {
+	environment.onAreaNewName(area);
+    }
+
+    @Override public void openFile(String fileName)
+    {
+	String[] s = new String[1];
+	s[0] = fileName;
+	environment.openFiles(s);
+    }
+
+    @Override public void openFiles(String[] fileNames)
+    {
+	environment.openFiles(fileNames);
+    }
+
+    @Override public void playSound(int code)
     {
 	environment.playSound(code);
     }
 
-    public LaunchContext launchContext()
+    public void popup(Popup popup)
     {
-	return environment.launchContext();
+	environment.popup(popup);
+    }
+
+    @Override public boolean runCommand(String command)
+    {
+	return environment.runCommand(command);
+    }
+
+    @Override public void say(String text)
+    {
+	silence();
+	if (text != null)
+	    environment.speech().say(text);
+    }
+
+    @Override public void say(String text, int pitch)
+    {
+	silence();
+	if (text != null)
+	    environment.speech().say(text, pitch);
+    }
+
+    @Override public void say(String text,
+			      int pitch,
+			      int rate)
+    {
+	silence();
+	if (text != null)
+	    environment.speech().say(text, pitch, rate);
+    }
+
+    @Override public void sayLetter(char letter)
+    {
+	switch(letter)
+	{
+	case ' ':
+	    hint(Hints.SPACE);
+	    return;
+	case '\t':
+	    hint(Hints.TAB);
+	    return;
+	}
+	final String value = i18n().hasSpecialNameOfChar(letter);
+	if (value == null)
+	{
+	    silence();
+	    environment.speech().sayLetter(letter);
+	} else
+	    hint(value); 
+    }
+
+    @Override public void sayLetter(char letter, int pitch)
+    {
+	switch(letter)
+	{
+	case ' ':
+	    hint(Hints.SPACE);
+	    return;
+	case '\t':
+	    hint(Hints.TAB);
+	    return;
+	}
+	final String value = i18n().hasSpecialNameOfChar(letter);
+	if (value == null)
+	{
+	    silence();
+	    environment.speech().sayLetter(letter, pitch);
+	} else
+	    hint(value); 
+    }
+
+    @Override public void sayLetter(char letter,
+				    int pitch,
+				    int rate)
+    {
+	switch(letter)
+	{
+	case ' ':
+	    hint(Hints.SPACE);
+	    return;
+	case '\t':
+	    hint(Hints.TAB);
+	    return;
+	}
+	final String value = i18n().hasSpecialNameOfChar(letter);
+	if (value == null)
+	{
+	    silence();
+	    environment.speech().sayLetter(letter, pitch, rate);
+	} else
+	    hint(value); 
+    }
+
+    @Override public void silence()
+    {
+	environment.speech().silence();
+    }
+
+    /**
+     * Sets the new active area of the application. This method asks the
+     * environment to choose another visible area as an active area of the
+     * application. This operation is applicable only to regular areas, not
+     * for popup areas, for which it is pointless. In contrast to
+     * {@code onAreaNewHotPoint()}, {@code onAreaNewName()} and 
+     * {@code onAreaNewContent()} methods, this one produces proper introduction of
+     * the area being activated.
+     *
+     * @param area The area to choose as an active
+     */
+    public void setActiveArea(Area area)
+    {
+	environment.setActiveArea(this, area);
+    }
+
+    @Override public void setClipboard(String[] value)
+    {
+	environment.setClipboard(value);
+    }
+
+    private String staticString(int code)
+    {
+	return i18n().staticStr(code);
     }
 }

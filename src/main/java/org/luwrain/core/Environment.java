@@ -44,6 +44,7 @@ class Environment implements EventConsumer
     private LaunchContext launchContext;
     private EventQueue eventQueue = new EventQueue();
     private InstanceManager appInstances;
+    private Luwrain specialLuwrain = new Luwrain(this);
     private ApplicationRegistry apps = new ApplicationRegistry();
     private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
@@ -129,7 +130,7 @@ class Environment implements EventConsumer
 
 	for(Extension e: extensions)
 	{
-	    Command[] cmds = e.getCommands();
+	    Command[] cmds = e.getCommands(specialLuwrain);
 	    if (cmds != null)
 		for(Command c: cmds)
 		    if (c != null)
@@ -758,15 +759,12 @@ class Environment implements EventConsumer
     public void mainMenu()
     {
 	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(new Luwrain(this)).build();
-	EnvironmentSounds.play(Sounds.MAIN_MENU);
+	playSound(Sounds.MAIN_MENU);
 	goIntoPopup(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
-	EnvironmentSounds.play(Sounds.MAIN_MENU_ITEM);
-	/*
-	if (!actions.run(mainMenu.getSelectedActionName()))
-	    message(Langs.staticValue(Langs.NO_REQUESTED_ACTION));
-	*/
+	playSound(Sounds.MAIN_MENU_ITEM);
+	mainMenu.getSelectedItem().doAction(specialLuwrain);
     }
 
     private File openPopup()
@@ -789,6 +787,15 @@ class Environment implements EventConsumer
 	final String[] fileNames = new String[1];
 	fileNames[0] = f.getAbsolutePath();
 	openFiles(fileNames);
+    }
+
+    public boolean runCommand(String command)
+    {
+	if (command == null)
+	    throw new NullPointerException("command may not be null");
+	if (command.trim().isEmpty())
+	    return false;
+	return commands.run(command.trim(), specialLuwrain);
     }
 
     private void showCommandPopup()

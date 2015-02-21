@@ -19,11 +19,6 @@ package org.luwrain.mainmenu;
 public interface Strings
 {
     String areaName();
-    //    String runActionTitle();
-    //    String runAction();
-    //    String actionTitle(String actionName);
     String currentDateTime();
-    //    String mainMenuNoItemsAbove();
-    //    String mainMenuNoItemsBelow();
-    //    String mainMenuStandardPart();
+    String noCommand();
 }

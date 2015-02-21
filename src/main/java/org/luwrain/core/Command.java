@@ -19,5 +19,5 @@ package org.luwrain.core;
 public interface Command
 {
     String getName();
-    void onCommand(Luwrain luwrain);
+    void onCommand(CommandEnvironment env);
 }

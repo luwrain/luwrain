@@ -20,12 +20,12 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-//import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
 public class MainMenu  implements Area, PopupClosingRequest
 {
     private Luwrain luwrain;
+    private CommandEnvironment commandEnv;
     public PopupClosing closing = new PopupClosing(this);
     private Strings strings;
     private Item[] items;
@@ -34,14 +34,18 @@ public class MainMenu  implements Area, PopupClosingRequest
     private int hotPointY = 0;
 
     public MainMenu(Luwrain luwrain,
+		    CommandEnvironment commandEnv,
 		    Strings strings,
 			Item[] items)
     {
 	this.luwrain = luwrain;
+	this.commandEnv = commandEnv;
 	this.strings = strings;
 	this.items = items;
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
+	if (commandEnv == null)
+	    throw new NullPointerException("commandEnv may not be null");
 	if (strings == null)
 	    throw new NullPointerException("strings may not be null");
 	if (items == null)
@@ -93,6 +97,14 @@ public class MainMenu  implements Area, PopupClosingRequest
 	    return onPageDown(event);
 	case KeyboardEvent.PAGE_UP:
 	    return onPageUp(event);
+	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
+	    return onAltRight(event);
+	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+	    return onAltLeft(event);
+	case KeyboardEvent.ALTERNATIVE_HOME:
+	    return onAltHome(event);
+	case KeyboardEvent.ALTERNATIVE_END:
+	    return onAltEnd(event);
 	default:
 	return false;
 	}
@@ -145,7 +157,7 @@ public class MainMenu  implements Area, PopupClosingRequest
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
 	} else
-	    items[hotPointY].introduce();
+	    items[hotPointY].introduce(commandEnv);
 	return true;
     }
 
@@ -162,7 +174,7 @@ public class MainMenu  implements Area, PopupClosingRequest
 	hotPointX = 0;
 	luwrain.onAreaNewHotPoint(this);
 	if (hotPointY < items.length)
-	    items[hotPointY].introduce();
+	    items[hotPointY].introduce(commandEnv);
 	return true;
     }
 
@@ -191,13 +203,46 @@ public class MainMenu  implements Area, PopupClosingRequest
 	luwrain.onAreaNewHotPoint(this);
 	if (hotPointX >= line.length())
 	    luwrain.hint(Hints.END_OF_LINE); else
-luwrain.sayLetter(line.charAt(hotPointX));
+	    luwrain.sayLetter(line.charAt(hotPointX));
+	return true;
+    }
+
+    private boolean onAltRight(KeyboardEvent event)
+    {
+	if (event.isModified())
+	    return false;
+	if (hotPointY >= items.length)
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String line = items[hotPointY].getText();
+	if (line == null || line.isEmpty())
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX >= line.length())
+	{
+	    luwrain.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	WordIterator it = new WordIterator(line, hotPointX);
+	if (!it.stepForward())
+	{
+	    luwrain.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos();
+	if (it.announce().length() > 0)
+	    luwrain.say(it.announce()); else
+	    luwrain.hint(Hints.END_OF_LINE);
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
     private boolean onArrowLeft(KeyboardEvent event)
     {
-	//FIXME:Words jump;
 	if (event.isModified())
 	    return false;
 	if (hotPointY >= items.length)
@@ -217,23 +262,110 @@ luwrain.sayLetter(line.charAt(hotPointX));
 	    return true;
 	}
 	--hotPointX;
-luwrain.onAreaNewHotPoint(this);
-	    if (hotPointX < line.length())
-luwrain.sayLetter(line.charAt(hotPointX));
+	luwrain.onAreaNewHotPoint(this);
+	if (hotPointX < line.length())
+	    luwrain.sayLetter(line.charAt(hotPointX));
+	return true;
+    }
+
+    private boolean onAltLeft(KeyboardEvent event)
+    {
+	if (event.isModified())
+	    return false;
+	if (hotPointY >= items.length)
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
+	final String line = items[hotPointY].getText();
+	if (line == null || line.isEmpty())
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	WordIterator it = new WordIterator(line, hotPointX);
+	if (!it.stepBackward())
+	{
+	    luwrain.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos();
+	luwrain.say(it.announce());
+	luwrain.onAreaNewHotPoint(this);
+	    return true;
+    }
 
     private boolean onHome(KeyboardEvent event)
     {
-	//FIXME:
-	return false;
+	hotPointX = 0;
+	hotPointY = 0;
+	if (hotPointY >= items.length)
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final Item item = items[hotPointY];
+	if (item == null || item.getText() == null || item.getText().isEmpty())
+	    luwrain.hint(Hints.EMPTY_LINE); else
+	    luwrain.say(item.getText());
+	return true;
+    }
+
+    private boolean onAltHome(KeyboardEvent event)
+    {
+	if (event.isModified())
+	    return false;
+	if (hotPointY >= items.length)
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String line = items[hotPointY].getText();
+	if (line == null || line.isEmpty())
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	hotPointX = 0;
+	if (!line.isEmpty())
+	    luwrain.sayLetter(line.charAt(0)); else
+	    luwrain.hint(Hints.END_OF_LINE);//Actually never happens;
+	luwrain.onAreaNewHotPoint(this);
+	return true;
     }
 
     private boolean onEnd(KeyboardEvent event)
     {
-	//FIXME:
-	return false;
+	if (event.isModified())
+	    return false;
+	hotPointY = items.length;
+	hotPointX = 0;
+	luwrain.hint(Hints.EMPTY_LINE);
+	luwrain.onAreaNewHotPoint(this);
+	return true;
     }
+
+    private boolean onAltEnd(KeyboardEvent event)
+    {
+	if (event.isModified())
+	    return false;
+	if (hotPointY >= items.length)
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String line = items[hotPointY].getText();
+	if (line == null || line.isEmpty())
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	hotPointX = line.length();
+	luwrain.hint(Hints.END_OF_LINE);
+	luwrain.onAreaNewHotPoint(this);
+	    return true;
+    }
+
 
     private boolean onPageDown(KeyboardEvent event)
     {

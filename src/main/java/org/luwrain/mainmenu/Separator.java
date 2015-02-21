@@ -20,19 +20,13 @@ import org.luwrain.core.*;
 
 class Separator implements Item 
 {
-    private Luwrain luwrain;
     private boolean isDefault = false;
     private String text = "";
 
-    public Separator(Luwrain luwrain,
-		     boolean isDefault,
-		     String text)
+    public Separator(boolean isDefault, String text)
     {
-	this.luwrain = luwrain;
 	this.isDefault = isDefault;
 	this.text = text;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
 	if (text == null)
 	    throw new NullPointerException("text may not be null");
     }
@@ -52,10 +46,10 @@ class Separator implements Item
 	return "";
     }
 
-    @Override public void introduce()
+    @Override public void introduce(CommandEnvironment env)
     {
-	luwrain.silence();
-	luwrain.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
+	env.silence();
+	env.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
     }
 
     @Override public boolean isAction()
@@ -63,7 +57,7 @@ class Separator implements Item
 	return false;
     }
 
-    @Override public void doAction()
+    @Override public void doAction(CommandEnvironment env)
     {
     }
 }

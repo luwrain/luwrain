@@ -19,10 +19,10 @@ package org.luwrain.core;
 public interface Extension
 {
     String init(String[] cmdLine, Registry registry);
-    Command[] getCommands();
+    Command[] getCommands(CommandEnvironment env);
     Shortcut[] getShortcuts();
     Worker[] getWorkers();
     SharedObject[] getSharedObjects();
     void i18nExtension(I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems();
+    org.luwrain.mainmenu.Item[] getMainMenuItems(CommandEnvironment env);
 }

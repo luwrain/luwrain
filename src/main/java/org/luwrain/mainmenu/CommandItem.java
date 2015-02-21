@@ -20,19 +20,19 @@ import org.luwrain.core.*;
 
 class CommandItem implements Item
 {
-    private Luwrain luwrain;
+    private Strings strings;
     private String command;
     private String title;
 
-    public CommandItem(Luwrain luwrain,
+    public CommandItem(Strings strings,
 		       String command, 
 		      String title)
     {
-	this.luwrain = luwrain;
+	this.strings = strings;
 	this.command = command;
 	this.title = title;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
+	if (strings == null)
+	    throw new NullPointerException("strings may not be null");
 	if (command == null)
 	    throw new NullPointerException("command may not be null");
 	if (command.isEmpty())
@@ -46,9 +46,9 @@ class CommandItem implements Item
 	return title;
     }
 
-    @Override public void introduce()
+    @Override public void introduce(CommandEnvironment env)
     {
-	luwrain.say(title);
+	env.say(title);
     }
 
     @Override public boolean isAction()
@@ -56,8 +56,9 @@ class CommandItem implements Item
 	return true;
     }
 
-    @Override public void doAction()
+    @Override public void doAction(CommandEnvironment env)
     {
-	//FIXME:
+	if (!env.runCommand(command))
+	    env.message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
     }
 }

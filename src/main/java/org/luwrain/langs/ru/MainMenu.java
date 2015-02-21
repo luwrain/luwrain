@@ -103,4 +103,9 @@ class MainMenu implements org.luwrain.mainmenu.Strings
 	    s = "0" + s;
 	return s;
     }
+
+    @Override public String noCommand()
+    {
+	return "Для выбранного пункта главного меню в системе нет команды";
+    }
 }
