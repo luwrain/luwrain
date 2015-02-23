@@ -47,7 +47,7 @@ class Init
 	for(String s: cmdLine)
 	    Log.debug("init", s);
 	if (init())
-	    new Environment(cmdLine, registry, speech, interaction, extensions, launchContext).run();
+	    new Environment(cmdLine, registry, speech, os, interaction, extensions, launchContext).run();
 	exit();
     }
 

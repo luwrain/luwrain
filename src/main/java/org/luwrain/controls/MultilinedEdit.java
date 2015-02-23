@@ -353,7 +353,7 @@ return res;
 	if (line == null)
 	    return false;
 	res.add(line.substring(0, toX <line.length()?toX:line.length()));
-	environment.hint(environment.langStaticString(Langs.COPIED_LINES) + res.size());
+	environment.hint(environment.staticStr(Langs.COPIED_LINES) + res.size());
 	environment.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }
@@ -399,7 +399,7 @@ return res;
 	model.setLine(fromY, firstLine.substring(0, fromPos) + endingLine.substring(toPos));
 	for(int i = fromY + 1;i <= toY;++i)
 	    model.removeLine(fromY + 1);
-	environment.hint(environment.langStaticString(Langs.CUT_LINES) + res.size());
+	environment.hint(environment.staticStr(Langs.CUT_LINES) + res.size());
 	environment.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }

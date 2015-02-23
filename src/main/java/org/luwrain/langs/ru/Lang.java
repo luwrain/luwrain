@@ -117,6 +117,18 @@ public class Lang extends org.luwrain.core.Lang
 	    return "Скопировано строк:";
 	case LangStatic.CUT_LINES:
 	    return "Вырезано строк:";
+	case LangStatic.COMMANDER_INACCESSIBLE_DIRECTORY_CONTENT:
+	    return "Содержимое каталога недоступно";
+	case LangStatic.COMMANDER_SELECTED_DIRECTORY:
+	    return "выделенный каталог";
+	case LangStatic.COMMANDER_SELECTED:
+	    return "выделено";
+	case LangStatic.COMMANDER_DIRECTORY:
+	    return "Каталог";
+	case LangStatic.COMMANDER_PARENT_DIRECTORY:
+	    return "На уровень вверх";
+	case LangStatic.COMMANDER_USER_HOME:
+	    return "Домашний каталог";
 	default:
 	    return "#Неизвестный идентификатор строки?#";
 	}

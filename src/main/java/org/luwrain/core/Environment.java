@@ -20,10 +20,11 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.luwrain.os.OperatingSystem;
 import org.luwrain.speech.BackEnd;
-import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.core.events.*;
 import org.luwrain.popups.*;
+import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.sounds.EnvironmentSounds;
 import org.luwrain.util.RegistryAutoCheck;
 
@@ -38,6 +39,7 @@ class Environment implements EventConsumer
     private RegistryKeys registryKeys;
     private org.luwrain.speech.BackEnd speech;
     private Extension[] extensions;
+    private OperatingSystem os;
     private Interaction interaction;
     private I18nImpl i18n;
     private Strings strings;
@@ -52,14 +54,15 @@ class Environment implements EventConsumer
     private GlobalKeys globalKeys;
     private CommandManager commands = new CommandManager();
     private ShortcutManager shortcuts;
-
     private FileTypes fileTypes = new FileTypes(shortcuts);
+
     private boolean needForIntroduction = false;
     private String[] clipboard = null;
 
     public Environment(String[] cmdLine,
 		       Registry registry,
 		       org.luwrain.speech.BackEnd speech,
+		       OperatingSystem os,
 		       Interaction interaction,
 		       Extension[] extensions,
 		       LaunchContext launchContext)
@@ -67,6 +70,7 @@ class Environment implements EventConsumer
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	this.speech = speech;
+	this.os = os;
 	this.interaction = interaction;
 	this.extensions = extensions;
 	this.launchContext = launchContext;
@@ -79,6 +83,8 @@ class Environment implements EventConsumer
 	    throw new NullPointerException("registry may not be null");
 	if (speech == null)
 	    throw new NullPointerException("speech may not be null");
+	if (os == null)
+	    throw new NullPointerException("os may not be null");
 	if (interaction == null)
 	    throw new NullPointerException("interaction may not be null");
 	if (extensions == null)
@@ -758,7 +764,7 @@ class Environment implements EventConsumer
 
     public void mainMenu()
     {
-	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(new Luwrain(this)).build();
+	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(specialLuwrain, specialLuwrain).build();
 	playSound(Sounds.MAIN_MENU);
 	goIntoPopup(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
@@ -807,5 +813,10 @@ class Environment implements EventConsumer
 	    return;
 	    if (!commands.run(popup.getText().trim(), new Luwrain(this)))
 		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
+    }
+
+    public OperatingSystem os()
+    {
+	return os;
     }
 }

@@ -18,6 +18,8 @@ package org.luwrain.core;
 
 import java.io.File;
 
+import org.luwrain.os.OperatingSystem;
+
 /**
  * The main gate to Luwrain core for applications. This class is the
  * single point which all applications have for the access to system
@@ -225,6 +227,11 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
     @Override public void openFiles(String[] fileNames)
     {
 	environment.openFiles(fileNames);
+    }
+
+    public OperatingSystem os()
+    {
+	return environment.os();
     }
 
     @Override public void playSound(int code)

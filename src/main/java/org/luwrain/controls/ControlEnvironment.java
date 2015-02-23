@@ -16,11 +16,14 @@
 
 package org.luwrain.controls;
 
+import java.io.File;
+
 import org.luwrain.core.*;
 
 public interface ControlEnvironment
 {
     void say(String text);
+    void sayStaticStr(int code);
     void sayLetter(char letter);
     void hint(String text); 
     void hint(String text, int code);
@@ -30,8 +33,10 @@ public interface ControlEnvironment
     void onAreaNewName(Area area);
     void onAreaNewHotPoint(Area area);
 int getAreaVisibleHeight(Area area);
-    String langStaticString(int id);
     void popup(Popup popupObj);
     void setClipboard(String[] value);
     String[] getClipboard();
+    LaunchContext launchContext();
+    String staticStr(int code);
+    File getFsRoot(File relativeTo);
 }

@@ -329,7 +329,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    res.add(getLineNotNull(i));
 	line = getLineNotNull(toY);
 	res.add(line.substring(0, toX <line.length()?toX:line.length()));
-	environment.say(environment.langStaticString(Langs.COPIED_LINES) + res.size());
+	environment.say(environment.staticStr(Langs.COPIED_LINES) + res.size());
 	environment.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }

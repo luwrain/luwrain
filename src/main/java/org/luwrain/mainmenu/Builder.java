@@ -27,12 +27,14 @@ public class Builder
     private CommandEnvironment commandEnv;
     private Registry registry;
 
-    public Builder(Luwrain luwrain)
+    public Builder(Luwrain luwrain, CommandEnvironment commandEnv)
     {
 	this.luwrain = luwrain;
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
-	this.commandEnv = commandEnv;//FIXME:
+	this.commandEnv = commandEnv;
+	if (commandEnv == null)
+	    throw new NullPointerException("commandEnv may not be null");
 	this.strings = (Strings)luwrain.i18n().getStrings("main-menu");
 	this.registry = luwrain.getRegistry();
     }

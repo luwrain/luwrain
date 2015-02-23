@@ -18,114 +18,293 @@ package org.luwrain.controls;
 
 import java.io.*;
 import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
 public class CommanderArea implements Area
 {
-    public static final int LEFT = 1;
-    public static final int RIGHT = 2;
-
-    public static final int INITIAL_HOT_POINT_X = 2;
-
-    public static final String ROOT_DIR = "/";//Yes, it is really for UNIX;
     public static final String PARENT_DIR = "..";
 
-    private File current = null;
-    private Vector items = null;//null means directory content is inaccessible;
+    class Entry
+    {
+	public static final int REGULAR = 0;
+	public static final int DIRECTORY = 1;
 
-    private Luwrain luwrain;//FIXME:
+	private File file;
+	private int type;
+	boolean selected;
+
+	public Entry(File file,
+		     int type,
+		     boolean selected)
+	{
+	    this.file = file;
+	    this.type = type;
+	    this.selected = selected;
+	    if (file == null)
+		throw new NullPointerException("file may not be null");
+	}
+
+	public File file()
+	{
+	    if (file == null)
+		throw new NullPointerException("file may not be null");
+	    return file;
+	}
+
+	public int type()
+	{
+	    return type;
+	}
+
+	public boolean selected()
+	{
+	    return selected;
+	}
+    }
+
+    private File current;
+    private Vector<Entry> entries;//null means the content is inaccessible;
     private ControlEnvironment environment;
+    private CommanderFilter filter;
+    private Comparator comparator;
+    private boolean selecting;
+    protected int visualShift = 2;
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public CommanderArea(Luwrain luwrain)
+    public CommanderArea(ControlEnvironment environment)
     {
-	this.luwrain = luwrain;
-	Registry registry = luwrain.getRegistry();
-	if (registry.getTypeOf("FIXME:RegistryKeys.INSTANCE_USER_HOME_DIR") != Registry.STRING)
-	{
-	    Log.warning("commander", "registry hasn\'t value with user home directory");
-	openByPath(ROOT_DIR);
-	} else
-	    openByPath(registry.getString("FIXME:RegistryKeys.INSTANCE_USER_HOME_DIR"));
+	this.environment = environment;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	current = environment.launchContext().userHomeDirAsFile();
+	filter = new NoHiddenCommanderFilter();
+	comparator = new ByNameCommanderComparator();
+	selecting = false;
+	refresh();
     }
 
-    public File[] getSelected()
+    public CommanderArea(ControlEnvironment environment, File current)
     {
-	/*
-	if (items == null)
-	    return null;
+	this.environment = environment;
+	this.current = current;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (current == null)
+	    throw new NullPointerException("current may not be null");
+	filter = new NoHiddenCommanderFilter();
+	comparator = new ByNameCommanderComparator();
+	selecting = false;
+	refresh();
+    }
+
+    public CommanderArea(ControlEnvironment environment, 
+			 File current,
+			 boolean selecting,
+			 CommanderFilter filter,
+Comparator comparator)
+    {
+	this.environment = environment;
+	this.current = current;
+	this.selecting = selecting;
+	this.filter = filter;
+	this.comparator = comparator;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (current == null)
+	    throw new NullPointerException("current may not be null");
+	if (comparator == null)
+	    throw new NullPointerException("comparator may not be null");
+	refresh();
+    }
+
+    /*
+     * Returns the list of currently selected files. If user marked some
+     * files or directories this method returns their list, regardless what
+     * entry is under the cursor. Otherwise, this method returns exactly the
+     * entry under the current cursor position or an empty array if the cursor is at
+     * the empty string in the bottom of the area.
+     *
+     * @return The list of currently selected entries 
+     */
+    public File[] selected()
+    {
+	if (entries == null)
+	    return new File[0];
 	Vector<File> files = new Vector<File>();
-	for(DirItem i: items)
-	    if (i.isSelected())
-		files.add(i.getFileObject());
-	if (files.size() > 0)
+	for(Entry e: entries)
+	    if (e.selected())
+		files.add(e.file());
+	if (!files.isEmpty())
 	    return files.toArray(new File[files.size()]);
-	if (hotPointY >= items.size())
-	    return null;
-	File[] f = new File[1];
-	f[0] = items.get(hotPointY).getFileObject();
-	return f;
-	*/
-	return null;
+	final File f = cursorAt();
+	if (f == null)
+	    return new File[0];
+	File[] ff = new File[1];
+	ff[0] = f;
+	return ff;
     }
 
-    public File getCurrentDir()
+    /**
+     * Returns the location being currently observed.  In general, this
+     * method may return null if the object isn't associated with any
+     * particular location but in practice this should happen quite rarely.  
+     *
+     * @return The location being observed
+     */
+    public File opened()
     {
 	return current;
     }
 
+    /**
+     * Returns the entry exactly under the cursor. This method returns the
+     * entry without taking into account where there are the user marks. If the cursor is at
+     * the empty line in the bottom of the area this method returns null. 
+     *
+     * @return The entry under the cursor
+     */
+    public File cursorAt()
+    {
+	return entries != null && hotPointY < entries.size()?entries.get(hotPointY).file():null;
+    }
+
+    /**
+     * Updates the content of the current location. This method just rereads 
+     * list of files from the disk.
+     */
     public void refresh()
     {
-	/*
-	if (current == null)
-	    return;
-	if (items == null || hotPointY >= items.size())
+	if (current == null)//What is very strange;
 	{
-	    openByFile(current);
+	    entries = null;
 	    return;
 	}
-	openByFile(current, items.get(hotPointY).getFileName());
-	*/
+	final File c = cursorAt();
+	open(current, c != null?cursorAt().getName():null);
+    }
+
+    protected void introduceEntry(Entry entry, boolean brief)
+    {
+	if (entry == null)
+	    return;
+	if (brief)
+	{
+	    final String name = entry.file().getName();
+	    if (name.equals(PARENT_DIR))
+		environment.hint(environment.staticStr(LangStatic.COMMANDER_PARENT_DIRECTORY)); else
+		if (name.trim().isEmpty())
+		    environment.hint(Hints.EMPTY_LINE); else
+		    environment.say(entry.file().getName());
+	    return;
+	}
+	final boolean selected = entry.selected();
+	final boolean dir = entry.type() == Entry.DIRECTORY;
+	final String name = entry.file().getName();
+	if (name.equals(PARENT_DIR))
+	{
+	    environment.hint(environment.staticStr(LangStatic.COMMANDER_PARENT_DIRECTORY));
+	    return;
+	}
+	if (selected && dir)
+	    environment.say(environment.staticStr(LangStatic.COMMANDER_SELECTED_DIRECTORY) + " " + name); else
+	    if (selected)
+		environment.say(environment.staticStr(LangStatic.COMMANDER_SELECTED) + " " + name); else
+		if (dir)
+		    environment.say(environment.staticStr(LangStatic.COMMANDER_DIRECTORY) + " " + name); else
+		{
+		    if (name.trim().isEmpty())
+			environment.hint(Hints.EMPTY_LINE); else
+			environment.say(name);
+		}
+    }
+
+    protected void introduceLocation(File file)
+    {
+	if (file == null)
+	    return;
+	    environment.say(file.getName());
+    }
+
+    protected String getScreenLine(Entry entry)
+    {
+	if (entry == null)
+	    throw new NullPointerException("entry may not be null");
+	final boolean selected = entry.selected();
+	final boolean dir = entry.type() == Entry.DIRECTORY;
+	if (selected && dir)
+	    return "*[" + entry.file().getName() + "]";
+	if (selected)
+	    return "* " + entry.file().getName();
+	if (dir)
+	    return " [" + entry.file().getName() + "]";
+	return "  " + entry.file().getName();
+    }
+
+    protected boolean onClick(File current, File[] selected)
+    {
+	return false;
     }
 
     @Override public int getLineCount()
     {
-	if (items == null || items.isEmpty())
-	    return 1;
-	return items.size() + 1;
+	return entries != null && !entries.isEmpty()?entries.size() + 1:1;
     }
 
     @Override public String getLine(int index)
     {
-	if (items == null)
-	    return "FIXME:stringConstructor.inaccessibleDirectoryContent()";
-	if (index >= items.size())
-	    return new String();
-	return "FIXME:items.get(index).getScreenTitle()";
+	if (entries == null)
+	    return environment.staticStr(LangStatic.COMMANDER_INACCESSIBLE_DIRECTORY_CONTENT);
+	return index < entries.size()?getScreenLine(entries.get(index)):"";
     }
 
     @Override public int getHotPointX()
     {
-	return hotPointX >= 0?hotPointX:0;
+	if (entries == null)
+	    return 0;
+	if (hotPointY > entries.size())
+	    return 0;
+	return hotPointX >= 0?hotPointX + visualShift:visualShift;
     }
 
     @Override public int getHotPointY()
     {
+	if (entries == null)
+	    return 0;
 	return hotPointY >= 0?hotPointY:0;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event.isModified() || !event.isCommand())
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
+	//	Log.debug("commander", "char");
+	if (!event.isCommand())
+	{
+	    switch(event.getCharacter())
+	    {
+	    case '~':
+		open(environment.launchContext().userHomeDirAsFile(), null);
+		environment.sayStaticStr(LangStatic.COMMANDER_USER_HOME);
+		return true;
+	    case '/':
+		open(environment.getFsRoot(current != null?current:environment.launchContext().userHomeDirAsFile()), null);
+		return true;
+	    default:
+		return false;
+	    }
+	}
+
+	if (event.isModified())
 	    return false;
 	switch(event.getCommand())
 	{
 	case KeyboardEvent.BACKSPACE:
 	    return onBackspace(event);
 	case KeyboardEvent.ENTER:
-	    return onEnter();
+	    return onEnter(event);
 	case KeyboardEvent.ARROW_DOWN:
 	    return onArrowDown(event, false);
 	case KeyboardEvent.ARROW_UP:
@@ -138,25 +317,29 @@ public class CommanderArea implements Area
 	    return onArrowLeft(event);
 	case KeyboardEvent.ARROW_RIGHT:
 	    return onArrowRight(event);
-	    //FIXME:ALTERNATIVE_ARROW_LEFT;
-	    //FIXME:ALTERNATIVE_ARROW_RIGHT;
+
+	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+	    return onAltLeft(event);
+	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
+	    return onAltRight(event);
 	case KeyboardEvent.PAGE_DOWN:
 	    return onPageDown(event, false);
 	case KeyboardEvent.PAGE_UP:
 	    return onPageUp(event, false);
-	case KeyboardEvent.HOME:
-	    return onHome(event);
-	case KeyboardEvent.END:
-	    return onEnd(event);
 	case KeyboardEvent.ALTERNATIVE_PAGE_DOWN:
 	    return onPageDown(event, true);
 	case KeyboardEvent.ALTERNATIVE_PAGE_UP:
 	    return onPageUp(event, true);
+	case KeyboardEvent.HOME:
+	    return onHome(event);
+	case KeyboardEvent.END:
+	    return onEnd(event);
 	case KeyboardEvent.ALTERNATIVE_HOME:
-	    return onAlternativeHome(event);
+	    return onAltHome(event);
 	case KeyboardEvent.ALTERNATIVE_END:
-	    return onAlternativeEnd(event);
-	    //FIXME:case KeyboardEvent.INSERT:
+	    return onAltEnd(event);
+	case KeyboardEvent.INSERT:
+	    return onInsert(event);
 	default:
 	    return false;
 	}
@@ -164,17 +347,17 @@ public class CommanderArea implements Area
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
-    environment.say("FIXME:stringConstructor.appName() +  + getName()");
+	    return onIntroduce(event);
 	case EnvironmentEvent.OK:
-	    return onEnter();
+	    return onOk(event);
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
-	case EnvironmentEvent.OPEN:
-	    return onOpen(event);
 	default:
 	    return false;
 	}
@@ -182,48 +365,34 @@ public class CommanderArea implements Area
 
     @Override public String getName()
     {
-return current.getAbsolutePath();
+	return current != null?current.getAbsolutePath():"-";
     }
 
-    private boolean onEnter()
+    private boolean onEnter(KeyboardEvent event)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say("FIXME:stringConstructor.inaccessibleDirectoryContent()");
+	    noContentHint();
 	    return true;
 	}
-	if (hotPointY >= items.size())
-	    return false;
-	final DirItem item = items.get(hotPointY);
-	if (item == null)
+	if (hotPointY >= entries.size())
 	{
-	    Log.warning("commander", "the panel has null director item");
-	    return false;
+	    File[] selected = selected();
+	    if (selected == null || selected.length < 1)
+		return false;
+	    return onClick(null, selected);
 	}
-	if (item.getType() == DirItem.DIRECTORY)
+	final Entry entry = entries.get(hotPointY);
+	if (entry.type() == Entry.DIRECTORY)
 	{
 	    File parent = current.getParentFile();
-	    if (item.getFileName().equals(PARENT_DIR) && parent != null)
-		openByFile(parent, current.getName()); else
-		openByFile(item.getFileObject());
+	    if (entry.file().getName().equals(PARENT_DIR) && parent != null)
+		open(parent, current.getName()); else
+		open(entry.file(), null);
 	    introduceLocation(current);
 	    return true;
 	}
-	File[] selected = getSelected();
-	if (selected != null && selected.length > 0)
-	{
-	    String[] fileNames = new String[selected.length];
-	    for(int i = 0;i < selected.length;++i)
-		fileNames[i] = selected[i].getAbsolutePath();
-	    actions.openFiles(fileNames);
-	    return true;
-	}
-	String fileNames[] = new String[1];
-	fileNames[0] = item.getFileObject().getAbsolutePath();
-	actions.openFiles(fileNames);
-	*/
-	return true;
+	return onClick(entry.file(), selected());
     }
 
     private boolean onBackspace(KeyboardEvent event)
@@ -233,242 +402,235 @@ return current.getAbsolutePath();
 	File parent = current.getParentFile();
 	if (parent == null)
 	    return false;
-	openByFile(parent, current.getName());
+	open(parent, current.getName());
 	introduceLocation(current);
 	return true;
     }
 
     private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
-	if (hotPointY + 1> items.size())
+	if (hotPointY + 1> entries.size())
 	{
-	    environment.say(stringConstructor.noItemsBelow());
+	    environment.hint(Hints.NO_ITEMS_BELOW);
 	    return true;
 	}
-	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
-	hotPointY++;
-	luwrain.onAreaNewHotPoint(this);
-	introduceItem(hotPointY, briefIntroduction);
-	*/
+	hotPointX = 0;
+	++hotPointY;
+	environment.onAreaNewHotPoint(this);
+	if (hotPointY < entries.size())
+	    introduceEntry(entries.get(hotPointY), briefIntroduction); else
+	    environment.hint(Hints.EMPTY_LINE);
 	return true;
     }
 
     private boolean onArrowUp(KeyboardEvent event, boolean briefIntroduction)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
 	if (hotPointY < 1)
 	{
-	    environment.say(stringConstructor.noItemsAbove());
+	    environment.hint(Hints.NO_ITEMS_ABOVE);
 	    return true;
 	}
-	hotPointX = INITIAL_HOT_POINT_X;
+	hotPointX = 0;
 	hotPointY--;
-	luwrain.onAreaNewHotPoint(this);
-	introduceItem(hotPointY, briefIntroduction);
-	*/
+	environment.onAreaNewHotPoint(this);
+	introduceEntry(entries.get(hotPointY), briefIntroduction);
 	return true;
     }
 
     private boolean onArrowRight(KeyboardEvent event)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
-	if (hotPointY >= items.size())
+	if (hotPointY >= entries.size())
 	{
-	    environment.say(Langs.staticValue(Langs.EMPTY_LINE));
+	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	if (items.get(hotPointY) == null ||
-	    items.get(hotPointY).getFileObject() == null)
-	    return true;
-	final String name = items.get(hotPointY).getFileName();
+	final String name = entries.get(hotPointY).file().getName();
 	if (name == null)
 	    return true;
-	if (hotPointX >= name.length() + INITIAL_HOT_POINT_X)
+	if (hotPointX >= name.length())
 	{
-	    environment.say(Langs.staticValue(Langs.END_OF_LINE));
+	    environment.hint(Hints.END_OF_LINE);
 	    return true;
 	}
-	hotPointX++;
-	if (hotPointX < INITIAL_HOT_POINT_X)
-	    hotPointX = INITIAL_HOT_POINT_X;
-	luwrain.onAreaNewHotPoint(this);
-	if (hotPointX < name.length() + 2)
-	    environment.sayLetter(name.charAt(hotPointX - 2)); else
-	    environment.say(Langs.staticValue(Langs.END_OF_LINE));
-	*/
+	++hotPointX;
+	if (hotPointX < 0)
+	    hotPointX = 0;
+	environment.onAreaNewHotPoint(this);
+	if (hotPointX < name.length())
+	    environment.sayLetter(name.charAt(hotPointX)); else
+	    environment.hint(Hints.END_OF_LINE);
 	return true;
     }
 
     private boolean onArrowLeft(KeyboardEvent event)
     {
-	/*
-
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
-
-	if (hotPointY >= items.size())
+	if (hotPointY >= entries.size())
 	{
-	    environment.say(Langs.staticValue(Langs.EMPTY_LINE));
+	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	if (items.get(hotPointY) == null ||
-	    items.get(hotPointY).getFileObject() == null)
-	    return true;
-	final String name = items.get(hotPointY).getFileName();
+	final String name = entries.get(hotPointY).file().getName();
 	if (name == null)
-	    return true;
-	if (hotPointX <= INITIAL_HOT_POINT_X)
+	    return false;
+	if (hotPointX > name.length())
+	    hotPointX = name.length();
+	if (hotPointX <= 0)
 	{
-	    environment.say(Langs.staticValue(Langs.BEGIN_OF_LINE));
+	    environment.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
-	hotPointX--;
-	if (hotPointX > name.length()  + INITIAL_HOT_POINT_X)
-	    hotPointX = name.length() + INITIAL_HOT_POINT_X;
-	luwrain.onAreaNewHotPoint(this);
-	environment.sayLetter(name.charAt(hotPointX - 2));
-	*/
+	--hotPointX;
+	environment.onAreaNewHotPoint(this);
+	environment.sayLetter(name.charAt(hotPointX));
+	return true;
+    }
+
+    private boolean onAltRight(KeyboardEvent event)
+    {
+	//FIXME:
+	return false;
+    }
+
+    private boolean onAltLeft(KeyboardEvent event)
+    {
+	//FIXME:
 	return true;
     }
 
     private boolean onPageDown(KeyboardEvent event, boolean briefIntroduction)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
-	final int visibleHeight = luwrain.getAreaVisibleHeight(this);
+	final int visibleHeight = environment.getAreaVisibleHeight(this);
 	if (visibleHeight < 1)
-	{
-	    Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page down key");
 	    return false;
-	}
-	if (hotPointY + visibleHeight > items.size())
-	    hotPointY = items.size(); else
+	if (hotPointY + visibleHeight > entries.size())
+	    hotPointY = entries.size(); else
 	    hotPointY += visibleHeight;
-	luwrain.onAreaNewHotPoint(this);
-	introduceItem(hotPointY, briefIntroduction);
-	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
-	*/
+	hotPointX = 0;
+	environment.onAreaNewHotPoint(this);
+	if (hotPointY < entries.size())
+	    introduceEntry(entries.get(hotPointY), briefIntroduction); else
+	    environment.hint(Hints.EMPTY_LINE);
 	return true;
     }
 
     private boolean onPageUp(KeyboardEvent event, boolean briefIntroduction)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
-	final int visibleHeight = luwrain.getAreaVisibleHeight(this);
+	final int visibleHeight = environment.getAreaVisibleHeight(this);
 	if (visibleHeight < 1)
-	{
-	    Log.warning("commander", "panel area visible height is " + visibleHeight + ", cannot process page up key");
 	    return false;
-	}
 	if (hotPointY < visibleHeight)
 	    hotPointY = 0; else
 		hotPointY -= visibleHeight;
-	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
-	luwrain.onAreaNewHotPoint(this);
-	introduceItem(hotPointY, briefIntroduction);
-	*/
+	hotPointX = 0;
+	environment.onAreaNewHotPoint(this);
+	if (hotPointY < entries.size())
+    introduceEntry(entries.get(hotPointY), briefIntroduction); else
+    environment.hint(Hints.EMPTY_LINE);
 	return true;
     }
 
     private boolean onHome(KeyboardEvent event)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
 	hotPointY = 0;
-	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
-	introduceItem(hotPointY, false);
-	luwrain.onAreaNewHotPoint(this);
-	*/
+	hotPointX = 0;
+	if (hotPointY < entries.size())
+	    introduceEntry(entries.get(hotPointY), false); else
+	    environment.hint(Hints.EMPTY_LINE);
+environment.onAreaNewHotPoint(this);
 	return true;
     }
 
-    private boolean onAlternativeHome(KeyboardEvent event)
+    private boolean onAltHome(KeyboardEvent event)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
-	hotPointX = hotPointY < items.size()?INITIAL_HOT_POINT_X:0;
-	if (hotPointY >= items.size() || hotPointX >= items.get(hotPointY).getFileName().length() + INITIAL_HOT_POINT_X)
-	    environment.say(Langs.staticValue(Langs.EMPTY_LINE)); else
-	    environment.sayLetter(items.get(hotPointY).getFileName().charAt(hotPointX - 2));
-	*/
+	hotPointX = 0;
+	if (hotPointY >= entries.size() || entries.get(hotPointY).file().getName().isEmpty())
+	    environment.hint(Hints.EMPTY_LINE); else
+	    environment.sayLetter(entries.get(hotPointY).file().getName().charAt(hotPointX));
+	environment.onAreaNewHotPoint(this);
 	return true;
     }
 
     private boolean onEnd(KeyboardEvent event)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
-	hotPointY = items.size();
+	hotPointY = entries.size();
 	hotPointX = 0;
-	environment.say(Langs.staticValue(Langs.EMPTY_LINE));
-	luwrain.onAreaNewHotPoint(this);
-	*/
+	environment.hint(Hints.EMPTY_LINE);
+	environment.onAreaNewHotPoint(this);
 	return true;
     }
 
-    private boolean onAlternativeEnd(KeyboardEvent event)
+    private boolean onAltEnd(KeyboardEvent event)
     {
-	/*
-	if (items == null)
+	if (entries == null)
 	{
-	    environment.say(stringConstructor.inaccessibleDirectoryContent());
+	    noContentHint();
 	    return true;
 	}
-	if (hotPointY < items.size())
+	if (hotPointY < entries.size())
 	{
-	    hotPointX = items.get(hotPointY).getFileName().length() + INITIAL_HOT_POINT_X;
-	    environment.say(Langs.staticValue(Langs.END_OF_LINE));
+	    hotPointX = entries.get(hotPointY).file().getName().length();
+	    environment.hint(Hints.END_OF_LINE);
 	} else
 	{
 	    hotPointX = 0;
-	    environment.say(Langs.staticValue(Langs.EMPTY_LINE));
+	    environment.hint(Hints.EMPTY_LINE);
 	}
-	luwrain.onAreaNewHotPoint(this);
-	*/
+environment.onAreaNewHotPoint(this);
 	return true;
     }
 
-    private boolean onOpen(EnvironmentEvent event)
+    private boolean onInsert(KeyboardEvent event)
+    {
+	//FIXME:
+	return false;
+    }
+
+    private boolean onOk(EnvironmentEvent event)
     {
 	/*
 	if (current == null || !current.isDirectory())
@@ -483,130 +645,74 @@ return current.getAbsolutePath();
 	return true;
     }
 
-    private void introduceItem(int index, boolean brief)
+    private boolean onIntroduce(EnvironmentEvent event)
     {
-	/*
-	if (items == null)
-	    return;
-	if (index >= items.size())
-	{
-	    environment.say(Langs.staticValue(Langs.EMPTY_LINE));
-	    return;
-	}
-	environment.say(stringConstructor.dirItemIntroduction(items.get(index), brief));
-	*/
+	//FIXME:
+	return false;
     }
 
-    private void introduceLocation(File file)
+    //Doesn't produce any speech announcement;
+    private void open(File file, String desiredSelected)
     {
-	/*
 	if (file == null)
-	    return;
-	if (file.getAbsolutePath().equals(ROOT_DIR))
-	{
-	    environment.say(stringConstructor.rootDirectory());
-	    return;
-	}
-	environment.say(file.getName());
-	*/
-    }
-
-    private void openByPath(String path)
-    {
-	if (path != null)
-	    openByFile(new File(path));
-    }
-
-    private void openByFile(File file)
-    {
-	openByFile(file, null);
-    }
-
-    private void openByFile(File file, String desiredSelected)
-    {
-	/*
-	if (file == null || !file.isDirectory())
-	    return;
+	    throw new NullPointerException("file may not be null");
+	if (!file.isDirectory())
+	    throw new IllegalArgumentException("File must address a directory");
 	current = file;
-	items = constructDirItems(current);
-	if (items == null || items.isEmpty())
+	entries = constructEntries(current);
+	hotPointX = 0;
+	hotPointY = 0;
+	if (entries == null || entries.isEmpty())
 	{
-	    hotPointX = 0;
-	    hotPointY = 0;
-	} else
-	{
-	    hotPointX = 2;
-	    hotPointY = 0;
-	    if (desiredSelected != null)
-		for(hotPointY = 0;hotPointY < items.size();hotPointY++)
-		    if (items.get(hotPointY).getFileName().equals(desiredSelected))
-			break;
-	    if (hotPointY >= items.size())
-		hotPointY = 0;
+	    environment.onAreaNewContent(this);
+	    environment.onAreaNewHotPoint(this);
+	    environment.onAreaNewName(this);
+	    return;
 	}
-	luwrain.onAreaNewContent(this);
-	luwrain.onAreaNewHotPoint(this);
-	luwrain.onAreaNewName(this);
-	*/
+	if (desiredSelected != null)
+	    for(hotPointY = 0;hotPointY < entries.size();++hotPointY)
+		if (entries.get(hotPointY).file().getName().equals(desiredSelected))
+		    break;
+	if (hotPointY >= entries.size())
+	    hotPointY = 0;
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+	environment.onAreaNewName(this);
     }
 
-    static private Vector constructDirItems(File f)
+    private Vector<Entry> constructEntries(File f)
     {
-	return null;
-	/*FIXME:
 	if (f == null)
-	    return null;
+	    throw new NullPointerException("f may not be null");
 	File[] files = f.listFiles();
 	if (files == null)
 	    return null;
-	Vector<DirItem> items = new Vector<DirItem>();
+	Vector<Entry> res = new Vector<Entry>();
 	if (f.getParent() != null)
-	    items.add(new DirItem(new File(f, "..")));
-	for(int i = 0;i < files.length;i++)
-	    items.add(new DirItem(files[i]));
-	sortByNameDirSplitting(items);
-	return items;
-	*/
+	    res.add(new Entry(new File(f, PARENT_DIR), Entry.DIRECTORY, false));
+	for(File ff: files)
+	    res.add(new Entry(ff, ff.isDirectory()?Entry.DIRECTORY:Entry.REGULAR, false));
+	if (filter == null)
+	{
+	    Entry[] toSort = res.toArray(new Entry[res.size()]);
+	    Arrays.sort(toSort, comparator);
+	    for(int i = 0;i < toSort.length;++i)
+		res.set(i, toSort[i]);
+	    return res;
+	}
+	Vector<Entry> filtered = new Vector<Entry>();
+	for (Entry ee: res)
+	    if (filter.commanderEntrySuits(ee))
+		filtered.add(ee);
+	Entry[] toSort = filtered.toArray(new Entry[filtered.size()]);
+	Arrays.sort(toSort, comparator);
+	for(int i = 0;i < toSort.length;++i)
+	    filtered.set(i, toSort[i]);
+	return filtered;
     }
 
-    private static void sortByNameDirSplitting(Vector items)
+    private void noContentHint()
     {
-	/*
-	//FIXME:Parent directory always on top;
-	if (items == null || items.size() < 2)
-	    return;
-	int dirCount = 0;
-	for(int i = 0;i < items.size();i++)
-	    if (items.get(i).getType() == DirItem.DIRECTORY)
-		dirCount++;
-	final int fileCount = items.size() - dirCount;
-	DirItem[] v1 = new DirItem[dirCount];
-	DirItem[] v2 = new DirItem[fileCount];
-	int k1 = 0, k2 = 0;
-	for(int i = 0;i < items.size();i++)
-	    if (items.get(i).getType() == DirItem.DIRECTORY)
-		v1[k1++] = items.get(i); else
-		v2[k2++] = items.get(i);
-	sortByName(v1);
-	sortByName(v2);
-	for(int i = 0;i < dirCount;i++)
-	    items.set(i, v1[i]);
-	for(int i = 0;i < fileCount;i++)
-	    items.set(dirCount + i, v2[i]);
-	*/
-    }
-
-    private static void sortByName(Object[] items)
-    {
-	/*
-	Arrays.sort(items, new Comparator() {
-		public int compare(Object o1, Object o2)
-		{
-		    DirItem i1 = (DirItem)o1;
-		    DirItem i2 = (DirItem)o2;
-		    return i1.getFileName().compareTo(i2.getFileName());
-		}
-	    });
-	*/
+	environment.hint("no content");
     }
 }

@@ -16,6 +16,8 @@
 
 package org.luwrain.controls;
 
+import java.io.File;
+
 import org.luwrain.core.*;
 
 public class DefaultControlEnvironment implements ControlEnvironment
@@ -30,6 +32,11 @@ public class DefaultControlEnvironment implements ControlEnvironment
     public void say(String text)
     {
 	luwrain.say(text);
+    }
+
+    @Override public void sayStaticStr(int code)
+    {
+	say(staticStr(code));
     }
 
     public void sayLetter(char letter)
@@ -54,7 +61,7 @@ public class DefaultControlEnvironment implements ControlEnvironment
 
     public void hintStaticString(int id)
     {
-	hint(langStaticString(id));
+	hint(staticStr(id));
     }
 
     public void onAreaNewName(Area area)
@@ -77,11 +84,6 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	return luwrain.getAreaVisibleHeight(area);
     }
 
-    public String langStaticString(int id)
-    {
-	return Langs.staticValue(id);
-    }
-
     public void setClipboard(String[] value)
     {
 	luwrain.setClipboard(value);
@@ -95,5 +97,22 @@ public class DefaultControlEnvironment implements ControlEnvironment
     public void popup(Popup popupObj)
     {
 	luwrain.popup(popupObj);
+    }
+
+    @Override public LaunchContext launchContext()
+    {
+	return luwrain.launchContext();
+    }
+
+    @Override public String staticStr(int code)
+    {
+	return luwrain.i18n().staticStr(code);
+    }
+
+    @Override public File getFsRoot(File relativeTo)
+    {
+	if (relativeTo == null)
+	    throw new NullPointerException("relativeTo may not be null");
+	return luwrain.os().getRoot(relativeTo);
     }
 }

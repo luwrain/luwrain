@@ -233,7 +233,7 @@ public class TableArea  implements Area, CopyCutRequest
     @Override public String getLine(int index)
     {
 	if (noProperContent())
-	    return index <= 0?environment.langStaticString(Langs.NO_TABLE_ROWS):"";
+	    return index <= 0?environment.staticStr(Langs.NO_TABLE_ROWS):"";
 	if (index < 0 ||
 	    index >= model.getRowCount())
 	    return "";
@@ -300,7 +300,7 @@ public class TableArea  implements Area, CopyCutRequest
     {
 	if (noProperContent())
 	{
-	    environment.hint(environment.langStaticString(Langs.NO_TABLE_ROWS));
+	    environment.hint(environment.staticStr(Langs.NO_TABLE_ROWS));
 	    return true;
 	}
 	final int count = model.getRowCount();
@@ -634,6 +634,6 @@ colWidth == null || colWidth.length <= 0;
 
     private String colEndMessage(int index)
     {
-	return environment.langStaticString(Langs.END_OF_TABLE_COL);
+	return environment.staticStr(Langs.END_OF_TABLE_COL);
     }
 }

@@ -51,10 +51,10 @@ public class MessageArea extends FormArea
 	super(environment);
 	this.luwrain = luwrain;
 	this.environment = environment;
-	addEdit(TO_NAME, environment.langStaticString(Langs.MESSAGE_TO), "", null, true);
-	addEdit(CC_NAME, environment.langStaticString(Langs.MESSAGE_CC), "", null, true);
-	addEdit(SUBJECT_NAME, environment.langStaticString(Langs.MESSAGE_SUBJECT), "", null, true);
-	activateMultilinedEdit(environment.langStaticString(Langs.MESSAGE_TEXT), new String[0], true);
+	addEdit(TO_NAME, environment.staticStr(Langs.MESSAGE_TO), "", null, true);
+	addEdit(CC_NAME, environment.staticStr(Langs.MESSAGE_CC), "", null, true);
+	addEdit(SUBJECT_NAME, environment.staticStr(Langs.MESSAGE_SUBJECT), "", null, true);
+	activateMultilinedEdit(environment.staticStr(Langs.MESSAGE_TEXT), new String[0], true);
     }
 
     public MessageArea(Luwrain luwrain,
@@ -68,10 +68,10 @@ public class MessageArea extends FormArea
 	super(environment);
 	this.luwrain = luwrain;
 	this.environment = environment;
-	addEdit(TO_NAME, environment.langStaticString(Langs.MESSAGE_TO), initialTo != null?initialTo:"", null, true);
-	addEdit(CC_NAME, environment.langStaticString(Langs.MESSAGE_CC), initialCC != null?initialCC:"", null, true);
-	addEdit(SUBJECT_NAME, environment.langStaticString(Langs.MESSAGE_SUBJECT), initialSubject != null?initialSubject:"", null, true);
-	activateMultilinedEdit(environment.langStaticString(Langs.MESSAGE_TEXT), initialText != null?initialText:new String[0], true);
+	addEdit(TO_NAME, environment.staticStr(Langs.MESSAGE_TO), initialTo != null?initialTo:"", null, true);
+	addEdit(CC_NAME, environment.staticStr(Langs.MESSAGE_CC), initialCC != null?initialCC:"", null, true);
+	addEdit(SUBJECT_NAME, environment.staticStr(Langs.MESSAGE_SUBJECT), initialSubject != null?initialSubject:"", null, true);
+	activateMultilinedEdit(environment.staticStr(Langs.MESSAGE_TEXT), initialText != null?initialText:new String[0], true);
     }
 
 
@@ -126,14 +126,14 @@ public class MessageArea extends FormArea
 
     @Override public String getName()
     {
-	return environment.langStaticString(Langs.MESSAGE);
+	return environment.staticStr(Langs.MESSAGE);
     }
 
     private void insertAttachment()
     {
 	FilePopup popup = new FilePopup(luwrain, 
-					environment.langStaticString(Langs.MESSAGE_ATTACHMENT_POPUP_TITLE),
-					environment.langStaticString(Langs.MESSAGE_ATTACHMENT_POPUP_PREFIX),
+					environment.staticStr(Langs.MESSAGE_ATTACHMENT_POPUP_TITLE),
+					environment.staticStr(Langs.MESSAGE_ATTACHMENT_POPUP_PREFIX),
 					new File("/"));//FIXME:
 	environment.popup(popup);
 	if (popup.closing.cancelled())
@@ -141,7 +141,7 @@ public class MessageArea extends FormArea
 	Attachment a = new Attachment(ATTACHMENT + attachmentCounter, popup.getFile());
 	++attachmentCounter;
 	attachments.add(a);
-	addStatic(a.name, environment.langStaticString(Langs.MESSAGE_ATTACHMENT) + " " + popup.getFile().getName() + " (" + popup.getFile().getAbsolutePath() + ")", a);
+	addStatic(a.name, environment.staticStr(Langs.MESSAGE_ATTACHMENT) + " " + popup.getFile().getName() + " (" + popup.getFile().getAbsolutePath() + ")", a);
     }
 
     private boolean removeAttachment()
