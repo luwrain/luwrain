@@ -14,25 +14,20 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.popups;
 
-import org.luwrain.os.Location;
+import org.luwrain.core.*;
+import org.luwrain.controls.*;
 
-public interface Strings
+public class ImportantLocationsPopup extends List1
 {
-    String quitPopupName();
-    String quitPopupText();
-    String appLaunchNoEnoughMemory();
-    String appLaunchUnexpectedError();
-    String appCloseHasPopup();
-    String noCommand();
-    String startWorkFromMainMenu();
-    String noLaunchedApps();
-    String fontSize(int size);
-    String openPopupName();
-    String openPopupPrefix();
-    String commandPopupName();
-    String commandPopupPrefix();
-    String appBlockedByPopup();
-    String locationTitle(Location location);
+    public ImportantLocationsPopup(Luwrain luwrain,
+int popupFlags)
+    {
+	super(luwrain,
+	      "Выберите положение",//FIXME:
+	      new ImportantLocationsListModel(luwrain),
+	      new ImportantLocationsAppearance(luwrain),
+	      popupFlags);
+	}
 }

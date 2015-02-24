@@ -18,13 +18,11 @@ package org.luwrain.controls;
 
 public interface ListItemAppearance
 {
-    void introduceItem(ListModel model,
-		       int index,
-		       Object item,
-		       int flags);
+    static final public int BRIEF = 1;
+    static final public int FOR_CLIPBOARD = 2;
 
-    String getScreenAppearance(ListModel model,
-			       int index,
-			       Object item,
-			       int flags);
+    void introduceItem(Object item, int flags);
+    String getScreenAppearance(Object item, int flags);
+    int getObservableLeftBound(Object item);
+    int getObservableRightBound(Object item);
 }

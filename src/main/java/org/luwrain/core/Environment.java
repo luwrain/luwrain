@@ -47,6 +47,7 @@ class Environment implements EventConsumer
     private EventQueue eventQueue = new EventQueue();
     private InstanceManager appInstances;
     private Luwrain specialLuwrain = new Luwrain(this);
+    private Luwrain privilegedLuwrain = new Luwrain(this);
     private ApplicationRegistry apps = new ApplicationRegistry();
     private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
@@ -687,6 +688,13 @@ class Environment implements EventConsumer
 	    throw new NullPointerException("instance may not be null");
 	if (stopCondition == null)
 	    throw new NullPointerException("stopCondition may not be null");
+	if (instance == specialLuwrain)
+	    throw new IllegalArgumentException("popup has provided the luwrain object which hasn\'t enough permission to open a popup");
+	if (instance == privilegedLuwrain)
+	{
+	    goIntoPopup(null, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
+	return;
+	}
 	final Application app = appInstances.getAppByInstance(instance);
 	if (app == null)
 	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
@@ -775,7 +783,7 @@ class Environment implements EventConsumer
 
     private File openPopup()
     {
-	final FilePopup popup = new FilePopup(new Luwrain(this),//FIXME:specialLuwrain;
+	final FilePopup popup = new FilePopup(privilegedLuwrain,
 					      strings.openPopupName(),
 					      strings.openPopupPrefix(),
 					      launchContext.userHomeDirAsFile());

@@ -94,6 +94,8 @@ public class CommanderArea implements Area
 	    throw new NullPointerException("environment may not be null");
 	if (current == null)
 	    throw new NullPointerException("current may not be null");
+	if (!current.isDirectory())
+	    throw new IllegalArgumentException("current must address a directory");
 	filter = new NoHiddenCommanderFilter();
 	comparator = new ByNameCommanderComparator();
 	selecting = false;
@@ -104,7 +106,7 @@ public class CommanderArea implements Area
 			 File current,
 			 boolean selecting,
 			 CommanderFilter filter,
-Comparator comparator)
+			 Comparator comparator)
     {
 	this.environment = environment;
 	this.current = current;
@@ -117,6 +119,8 @@ Comparator comparator)
 	    throw new NullPointerException("current may not be null");
 	if (comparator == null)
 	    throw new NullPointerException("comparator may not be null");
+	if (!current.isDirectory())
+	    throw new IllegalArgumentException("current must address a directory");
 	refresh();
     }
 

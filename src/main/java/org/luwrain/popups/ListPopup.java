@@ -23,7 +23,7 @@ public class ListPopup extends SimpleLinePopup
 {
     private final static int MAX_ALTERNATIVES_TO_SAY = 100;
 
-    private Luwrain luwrain;
+    protected Luwrain luwrain;
     private ListPopupModel model;
 
     public ListPopup(Luwrain luwrain,

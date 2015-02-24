@@ -26,14 +26,11 @@ import org.luwrain.util.*;
 
 public class ListArea  implements Area, CopyCutRequest
 {
-    static final public int BRIEF_VALUE = 1;
-    static final public int CLIPBOARD_VALUE = 2;
-
     private ControlEnvironment environment;
     private String name = "";
-    private ListModel model = null;
-    private ListItemAppearance appearance = null;
-    private ListClickHandler clickHandler = null;
+    private ListModel model;
+    private ListItemAppearance appearance;
+    private ListClickHandler clickHandler;
     private int initialHotPointX = 0;
     private int hotPointX = 0;
     private int hotPointY = 0;
@@ -267,7 +264,7 @@ public class ListArea  implements Area, CopyCutRequest
     {
 	if (appearance != null)
 	{
-	    appearance.introduceItem(model, index, item, flags);
+	    appearance.introduceItem(item, flags);
 	    return;
 	}
 	String value = item != null?item.toString():"";
@@ -284,7 +281,7 @@ public class ListArea  implements Area, CopyCutRequest
 					 int flags)
     {
 	if (appearance != null)
-	    return appearance.getScreenAppearance(model, index, item, flags);
+	    return appearance.getScreenAppearance(item, flags);
 	String value = item != null?item.toString():"";
 	return value != null?value:"";
     }
@@ -309,7 +306,7 @@ public class ListArea  implements Area, CopyCutRequest
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
 	environment.onAreaNewHotPoint(this);
 	if (hotPointY < model.getItemCount())
-	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0); else
+	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?ListItemAppearance.BRIEF:0); else
 		environment.say(emptyLine);
 	return true;
     }
@@ -335,7 +332,7 @@ public class ListArea  implements Area, CopyCutRequest
 	    line = "";
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
 	environment.onAreaNewHotPoint(this);
-	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0);
+	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?ListItemAppearance.BRIEF:0);
 	return true;
     }
 
@@ -361,7 +358,7 @@ public class ListArea  implements Area, CopyCutRequest
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
 	environment.onAreaNewHotPoint(this);
 	if (hotPointY < model.getItemCount())
-	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0); else
+	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?ListItemAppearance.BRIEF:0); else
 		environment.say(emptyLine);
 	return true;
     }
@@ -387,7 +384,7 @@ public class ListArea  implements Area, CopyCutRequest
 	    line = "";
 	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
 	environment.onAreaNewHotPoint(this);
-	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?BRIEF_VALUE:0);
+	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?ListItemAppearance.BRIEF:0);
 	return true;
     }
 
@@ -587,7 +584,7 @@ public class ListArea  implements Area, CopyCutRequest
 	Vector<String> res = new Vector<String>();
 	for(int i = fromY;i < toY;++i)
 	{
-	    final String line = getScreenAppearance(model, i, model.getItem(i), CLIPBOARD_VALUE);
+	    final String line = getScreenAppearance(model, i, model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
 	    if (line != null)
 		res.add(line); else
 		res.add("");
@@ -611,7 +608,7 @@ public class ListArea  implements Area, CopyCutRequest
 	{
 	    for(int i = 0;i < model.getItemCount();++i)
 	    {
-		String line = getScreenAppearance(model, i, model.getItem(i), CLIPBOARD_VALUE);
+		String line = getScreenAppearance(model, i, model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
 		if (line == null)
 		    line = "";
 		lines.add(line);

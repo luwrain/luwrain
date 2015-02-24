@@ -3,8 +3,51 @@ package org.luwrain.popups;
 
 import java.io.*;
 
+import org.luwrain.core.*;
+
 public class Popups
 {
+    static public File[] commanderMultiple(Luwrain luwrain,
+					   String name,
+					   File file,
+					   int flags,
+					   int popupFlags)
+    {
+	CommanderPopup popup = new CommanderPopup(luwrain, name, file, flags | CommanderPopup.ACCEPT_MULTIPLE_SELECTION, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.selected();
+    }
+
+    static public File commanderSingle(Luwrain luwrain,
+					   String name,
+					   File file,
+					   int flags,
+					   int popupFlags)
+    {
+	CommanderPopup popup = new CommanderPopup(luwrain, name, file, flags, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	final File[] res = popup.selected();
+	if (res == null || res.length != 1)
+	    return null;
+	return res[0];
+    }
+
+    static public File importantLocationsAsFile(Luwrain luwrain, int popupFlags)
+    {
+	ImportantLocationsPopup popup = new ImportantLocationsPopup(luwrain, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	Object res = popup.selected();
+	if (res == null)
+	    return null;
+	return new File((String)res);//FIXME:
+    }
+
     public static File open()
     {/*
 

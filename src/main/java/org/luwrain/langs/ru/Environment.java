@@ -16,6 +16,8 @@
 
 package org.luwrain.langs.ru;
 
+import org.luwrain.os.Location;
+
 class Environment implements org.luwrain.core.Strings
 {
     @Override public String quitPopupName()
@@ -86,5 +88,27 @@ class Environment implements org.luwrain.core.Strings
 @Override public String appBlockedByPopup()
     {
 	return "Приложение недоступно из-за открытой всплывающей области";
+    }
+
+    @Override public String locationTitle(Location location)
+    {
+	if (location == null)
+	    return null;
+	switch(location.type())
+	{
+	case Location.ROOT:
+	    return "Корневой каталог";
+	case Location.USER_HOME:
+	    return "Домашний каталог";
+	case Location.REGULAR:
+	    return "Локальный диск " + location.name();
+
+	case Location.REMOTE:
+	    return "Сетевое подключение " + location.name();
+	case Location.REMOVABLE:
+	    return "Съёмный диск " + location.name();
+	default:
+	    return "";
+	}
     }
 }

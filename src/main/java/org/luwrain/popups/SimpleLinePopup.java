@@ -185,12 +185,12 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	//Nothing here;
     }
 
-    public boolean onOk()
+    @Override public boolean onOk()
     {
 	return true;
     }
 
-    public boolean onCancel()
+    @Override public boolean onCancel()
     {
 	return true;
     }
