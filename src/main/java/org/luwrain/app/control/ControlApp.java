@@ -39,6 +39,11 @@ public class ControlApp implements Application, ControlActions
 	return true;
     }
 
+    @Override public String getAppName()
+    {
+	return "control";
+    }
+
     public AreaLayout getAreasToShow()
     {
 	//	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);

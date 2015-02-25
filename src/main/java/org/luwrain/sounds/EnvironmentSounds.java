@@ -60,6 +60,21 @@ return;
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.mainMenuItem(), ""), Sounds.MAIN_MENU_ITEM);
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.mainMenuEmptyItem(), ""), Sounds.MAIN_MENU_EMPTY_LINE);
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.generalError(), ""), Sounds.GENERAL_ERROR);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.generalOk(), ""), Sounds.GENERAL_OK);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.introRegular(), ""), Sounds.INTRO_REGULAR);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.introPopup(), ""), Sounds.INTRO_POPUP);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.introApp(), ""), Sounds.INTRO_APP);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noItemsAbove(), ""), Sounds.NO_ITEMS_ABOVE);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noItemsBelow(), ""), Sounds.NO_ITEMS_BELOW);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noLinesAbove(), ""), Sounds.NO_LINES_ABOVE);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noLinesBelow(), ""), Sounds.NO_LINES_BELOW);
+
+
+
+
+
+
+
     }
 
     private static void setSoundFile(File dataDir,

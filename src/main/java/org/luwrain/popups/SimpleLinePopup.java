@@ -143,6 +143,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
+	    luwrain.playSound(Sounds.INTRO_POPUP);
 	    luwrain.say(prefix + text);
 	    return true;
 	default:

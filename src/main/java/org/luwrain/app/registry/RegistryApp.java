@@ -35,7 +35,7 @@ public class RegistryApp implements Application, RegistryActions
     private ValuesArea valuesArea;
     private Registry registry;
 
-    public boolean onLaunch(Luwrain luwrain)
+    @Override public boolean onLaunch(Luwrain luwrain)
     {
 	Object str = luwrain.i18n().getStrings("luwrain.registry");
 	if (str == null)
@@ -48,7 +48,12 @@ public class RegistryApp implements Application, RegistryActions
 	return true;
     }
 
-    public AreaLayout getAreasToShow()
+    @Override public String getAppName()
+    {
+	return "registry";
+    }
+
+    @Override public AreaLayout getAreasToShow()
     {
 	//	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);
 	return new AreaLayout(AreaLayout.LEFT_RIGHT, dirsArea, valuesArea);

@@ -58,6 +58,7 @@ class Environment implements EventConsumer
     private FileTypes fileTypes = new FileTypes(shortcuts);
 
     private boolean needForIntroduction = false;
+    private boolean introduceApp = false;
     private String[] clipboard = null;
 
     public Environment(String[] cmdLine,
@@ -224,16 +225,20 @@ class Environment implements EventConsumer
 	apps.registerAppSingleVisible(app, activeArea);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
-	introduceActiveArea();
+	//	introduceActiveArea();
+	needForIntroduction = true;
+	introduceApp = true;
     }
 
     public void closeApp(Object instance)
     {
 	if (instance == null)
-	    return;
+	    throw new NullPointerException("instance may not be null");
+	if (instance == specialLuwrain || instance == privilegedLuwrain)
+	    throw new IllegalArgumentException("trying to close an application through specialLuwrain or privilegedLuwrain objects");
 	Application app = appInstances.getAppByInstance(instance);
 	if (app == null)
-	    return;
+	    throw new NullPointerException("trying to close an application through an unknown instance object");
 	if (popups.hasPopupOfApp(app))
 	{
 	    message(strings.appCloseHasPopup(), Luwrain.MESSAGE_ERROR);
@@ -243,20 +248,26 @@ class Environment implements EventConsumer
 	appInstances.releaseInstance(instance);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
-	introduceActiveArea();
+	//	introduceActiveArea();
+	needForIntroduction = true;
+	introduceApp = true;
     }
 
     public void switchNextApp()
     {
+	/*
 	if (screenContentManager.isPopupAreaActive())
 	{
 	    EnvironmentSounds.play(Sounds.EVENT_NOT_PROCESSED);//FIXME:Probably not well suited sound; 
 	    return;
 	}
+	*/
 	apps.switchNextInvisible();
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
-	introduceActiveArea();
+	//	introduceActiveArea();
+	needForIntroduction = true;
+	introduceApp = true;
     }
 
     public void switchNextArea()
@@ -305,8 +316,13 @@ class Environment implements EventConsumer
 	if (stopCondition == null)
 	    throw new NullPointerException("stopCondition may not be null");
 	if (needForIntroduction && stopCondition.continueEventLoop())
-	    introduceActiveArea();
+	{
+	    if (introduceApp)
+		introduceActiveApp(); else
+		introduceActiveArea();
+	}
 	needForIntroduction = false;
+	introduceApp = false;
     }
 
     private boolean onKeyboardEvent(KeyboardEvent event)
@@ -557,14 +573,21 @@ class Environment implements EventConsumer
 
     public void setActiveArea(Object instance, Area area)
     {
-	if (instance == null || area == null)
-	    return;
-	Application app = appInstances.getAppByInstance(instance);
+	if (instance == null)
+	    throw new NullPointerException("instance may not be null");
+	if (area == null)
+	    throw new NullPointerException("area may not be null");
+	if (instance == specialLuwrain)
+	    throw new IllegalArgumentException("instance doesn\'t have enough privilege to change active areas");
+	if (instance == privilegedLuwrain)
+	    throw new NullPointerException("using of privilegedLuwrain object doesn\'t allow changing of active area");
+	final Application app = appInstances.getAppByInstance(instance);
 	if (app == null)
-	    return;//FIXME:Log message;
+	    throw new IllegalArgumentException("an unknown application instance is provided");
 	apps.setActiveAreaOfApp(app, area);
 	if (apps.isActiveApp(app) && !screenContentManager.isPopupAreaActive())
-	    introduceActiveAreaNoEvent();
+	    needForIntroduction = true;
+	    //	    introduceActiveArea();
 	windowManager.redraw();
     }
 
@@ -614,35 +637,57 @@ class Environment implements EventConsumer
 	interaction.endDrawSession();
     }
 
-    private void introduceActiveArea()
+    private void introduceActiveApp()
     {
-	needForIntroduction = false;
-	Area activeArea = screenContentManager.getActiveArea();
-	if (activeArea == null)
+	final Application app = apps.getActiveApp();
+	if (app == null)
 	{
 	    playSound(Sounds.NO_APPLICATIONS);
 	    speech.silence(); 
 	    speech.say(strings.noLaunchedApps());
 	    return;
 	}
+	final String name = app.getAppName();
+	speech.silence();
+	playSound(Sounds.INTRO_APP);
+	if (name != null && !name.trim().isEmpty())
+	    speech.say(name); else
+	    speech.say(app.getClass().getName());
+    }
+
+    private void introduceActiveArea()
+    {
+	//	needForIntroduction = false;
+	Area activeArea = screenContentManager.getActiveArea();
+	if (activeArea == null)
+	{
+	    speech.silence(); 
+	    playSound(Sounds.NO_APPLICATIONS);
+	    speech.say(strings.noLaunchedApps());
+	    return;
+	}
 	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
 	    return;
 	speech.silence();
+	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
 	speech.say(activeArea.getName());
     }
 
-    public void introduceActiveAreaNoEvent()
+    /*
+    private void introduceActiveAreaNoEvent()
     {
 	needForIntroduction = false;
 	Area activeArea = screenContentManager.getActiveArea();
 	if (activeArea == null)
 	{
 	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
+	    speech.silence();
 	    speech.say(strings.noLaunchedApps());
 	    return;
 	}
 	speech.say(activeArea.getName());
     }
+    */
 
     public void increaseFontSize()
     {

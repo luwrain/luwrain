@@ -19,5 +19,6 @@ package org.luwrain.core;
 public interface Application
 {
     boolean onLaunch(Luwrain luwrain);
+    String getAppName();
     AreaLayout getAreasToShow();
 }

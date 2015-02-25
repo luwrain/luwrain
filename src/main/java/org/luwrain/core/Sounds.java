@@ -26,4 +26,13 @@ public interface Sounds
     public static final int MAIN_MENU_ITEM = 5;
     public static final int MAIN_MENU_EMPTY_LINE = 6;
     public static final int GENERAL_ERROR = 7;
+
+    public static final int GENERAL_OK = 8;
+    public static final int INTRO_REGULAR = 9;
+    public static final int INTRO_POPUP = 10;
+    public static final int INTRO_APP = 11;
+    public static final int NO_ITEMS_BELOW = 12;
+    public static final int NO_ITEMS_ABOVE = 13;
+    public static final int NO_LINES_BELOW = 14;
+    public static final int NO_LINES_ABOVE = 15;
 }

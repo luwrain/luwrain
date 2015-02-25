@@ -134,6 +134,8 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
+	    luwrain.silence();
+	    luwrain.playSound(Sounds.INTRO_POPUP);
 	    luwrain.say(text);
 	    return true;
 	default:

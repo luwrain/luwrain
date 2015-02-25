@@ -112,7 +112,14 @@ public class MainMenu  implements Area, PopupClosingRequest
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	return closing.onEnvironmentEvent(event);
+	switch(event.getCode())
+	{
+	case EnvironmentEvent.INTRODUCE:
+	    luwrain.say(getName());
+	    return true;
+	default:
+	    return closing.onEnvironmentEvent(event);
+	}
     }
 
     @Override public int getLineCount()

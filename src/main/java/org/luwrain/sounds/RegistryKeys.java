@@ -87,6 +87,45 @@ class RegistryKeys
 	return getProperty("sounds.GeneralError");
     }
 
+    public String generalOk()
+    {
+	return getProperty("sounds.GeneralOk");
+    }
+
+    public String introRegular()
+    {
+	return getProperty("sounds.IntroRegular");
+    }
+
+    public String introPopup()
+    {
+	return getProperty("sounds.IntroPopup");
+    }
+
+    public String introApp()
+    {
+	return getProperty("sounds.IntroApp");
+    }
+
+    public String noItemsAbove()
+    {
+	return getProperty("sounds.NoItemsAbove");
+    }
+
+    public String noItemsBelow()
+    {
+	return getProperty("sounds.NoItemsBelow");
+    }
+
+    public String noLinesAbove()
+    {
+	return getProperty("sounds.NoLinesAbove");
+    }
+
+    public String noLinesBelow()
+    {
+	return getProperty("sounds.NoLinesBelow");
+    }
 
     private String getProperty(String name)
     {
