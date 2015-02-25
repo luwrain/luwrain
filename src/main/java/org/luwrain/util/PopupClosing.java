@@ -30,12 +30,13 @@ public class PopupClosing implements EventLoopStopCondition
 	this.request = request;
     }
 
-    public void doOk()
+    public boolean doOk()
     {
 	if (!request.onOk())
-	    return;
+	    return false;
 	cancelled = false;
 	shouldContinue = false;
+	return true;
     }
 
     public void doCancel()

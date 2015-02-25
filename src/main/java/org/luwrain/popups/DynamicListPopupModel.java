@@ -18,7 +18,7 @@ package org.luwrain.popups;
 
 import java.util.*;
 
-public abstract class DynamicListPopupModel implements ListPopupModel
+public abstract class DynamicListPopupModel implements EditListPopupModel
 {
     protected abstract String[] getItems(String context);
     protected abstract String getEmptyItem(String context);

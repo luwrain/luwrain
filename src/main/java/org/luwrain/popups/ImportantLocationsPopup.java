@@ -18,16 +18,25 @@ package org.luwrain.popups;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
+import org.luwrain.os.Location;
 
-public class ImportantLocationsPopup extends List1
+public class ImportantLocationsPopup extends ListPopup
 {
     public ImportantLocationsPopup(Luwrain luwrain,
-int popupFlags)
+				   int popupFlags)
     {
 	super(luwrain,
-	      "Выберите положение",//FIXME:
+	      luwrain.i18n().staticStr(LangStatic.POPUP_IMPORTANT_LOCATIONS_NAME),
 	      new ImportantLocationsListModel(luwrain),
 	      new ImportantLocationsAppearance(luwrain),
 	      popupFlags);
 	}
+
+    public Location selectedLocation()
+    {
+	final Object o = selected();
+	if (o == null || !(o instanceof Location))
+	    return null;
+	return (Location)o;
+    }
 }

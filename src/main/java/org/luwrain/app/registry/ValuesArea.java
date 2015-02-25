@@ -252,7 +252,7 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	types[0] = "integer";
 	types[1] = "string";
 	types[2] = "boolean";
-	SimpleLinePopup linePopup = new SimpleLinePopup(luwrain, stringConstructor.newParameterTitle(), stringConstructor.newParameterName(), "");
+	SimpleEditPopup linePopup = new SimpleEditPopup(luwrain, stringConstructor.newParameterTitle(), stringConstructor.newParameterName(), "");
 	luwrain.popup(linePopup);
 	if (linePopup.closing.cancelled())//FIXME:Validator if not empty
 	    return true;
@@ -261,7 +261,7 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	    luwrain.message(stringConstructor.parameterNameMayNotBeEmpty());
 	    return true;
 	}
-	ListPopup listPopup = new ListPopup(luwrain, new FixedListPopupModel(types), stringConstructor.newParameterTitle(), stringConstructor.newParameterType(), "string");//FIXME:Validator if not from the list;;
+	EditListPopup listPopup = new EditListPopup(luwrain, new FixedListPopupModel(types), stringConstructor.newParameterTitle(), stringConstructor.newParameterType(), "string");//FIXME:Validator if not from the list;;
 	luwrain.popup(listPopup);
 	if (listPopup.closing.cancelled())
 	    return true;

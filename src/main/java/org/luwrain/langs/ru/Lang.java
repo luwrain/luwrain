@@ -129,6 +129,8 @@ public class Lang extends org.luwrain.core.Lang
 	    return "На уровень вверх";
 	case LangStatic.COMMANDER_USER_HOME:
 	    return "Домашний каталог";
+	case LangStatic.POPUP_IMPORTANT_LOCATIONS_NAME:
+	    return "Выберите местоположение";
 	default:
 	    return "#Неизвестный идентификатор строки?#";
 	}

@@ -60,4 +60,6 @@ public interface LangStatic
     public static final int COMMANDER_DIRECTORY = 112;
     public static final int COMMANDER_PARENT_DIRECTORY = 113;
     public static final int COMMANDER_USER_HOME = 114;
+
+    public static final int POPUP_IMPORTANT_LOCATIONS_NAME = 120;
 }

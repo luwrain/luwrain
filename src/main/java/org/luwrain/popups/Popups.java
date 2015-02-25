@@ -4,6 +4,7 @@ package org.luwrain.popups;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.os.Location;
 
 public class Popups
 {
@@ -36,16 +37,24 @@ public class Popups
 	return res[0];
     }
 
+    static public Location importantLocations(Luwrain luwrain, int popupFlags)
+    {
+	ImportantLocationsPopup popup = new ImportantLocationsPopup(luwrain, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	final Location l = popup.selectedLocation();
+	return l;
+    }
+
     static public File importantLocationsAsFile(Luwrain luwrain, int popupFlags)
     {
 	ImportantLocationsPopup popup = new ImportantLocationsPopup(luwrain, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	Object res = popup.selected();
-	if (res == null)
-	    return null;
-	return new File((String)res);//FIXME:
+	final Location l = popup.selectedLocation();
+	return l != null?l.file():null;
     }
 
     public static File open()

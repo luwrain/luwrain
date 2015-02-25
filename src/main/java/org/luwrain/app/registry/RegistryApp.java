@@ -95,7 +95,7 @@ public class RegistryApp implements Application, RegistryActions
 
     public void insertDir(RegistryDir parent)
     {
-	SimpleLinePopup popup = new SimpleLinePopup(luwrain, stringConstructor.newDirectoryTitle(), stringConstructor.newDirectoryPrefix(parent.toString()), "");//FIXME:Validator if not empty;
+	SimpleEditPopup popup = new SimpleEditPopup(luwrain, stringConstructor.newDirectoryTitle(), stringConstructor.newDirectoryPrefix(parent.toString()), "");//FIXME:Validator if not empty;
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return;

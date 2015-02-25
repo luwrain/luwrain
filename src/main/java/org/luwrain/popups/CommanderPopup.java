@@ -59,6 +59,10 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
     {
 	if (closing.onKeyboardEvent(event))
 	    return true;
+	if (event.isCommand() &&
+	    event.getCommand() == KeyboardEvent.ENTER &&
+	    event.withControlOnly())
+	    return openImportantLocations();
 	return super.onKeyboardEvent(event);
     }
 
@@ -105,5 +109,14 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
     @Override public boolean isWeakPopup()
     {
 	return (popupFlags & Popup.WEAK) != 0;
+    }
+
+    private boolean openImportantLocations()
+    {
+	final File f = Popups.importantLocationsAsFile(luwrain, popupFlags);
+	if (f == null)
+	    return true;
+	open(f, null);
+	return true;
     }
 }

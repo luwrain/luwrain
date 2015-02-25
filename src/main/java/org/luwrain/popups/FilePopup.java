@@ -22,7 +22,7 @@ import java.io.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class FilePopup extends ListPopup
+public class FilePopup extends EditListPopup
 {
     private File file;
 

@@ -16,7 +16,7 @@
 
 package org.luwrain.popups;
 
-public interface ListPopupModel
+public interface EditListPopupModel
 {
     String getCompletion(String beginning);
     String[] getAlternatives(String beginning);

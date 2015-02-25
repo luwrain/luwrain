@@ -38,14 +38,18 @@ class ImportantLocationsListModel implements ListModel
 
     @Override public int getItemCount()
     {
-	return locations != null?locations.length:0;
+	return locations != null?locations.length + 1:1;
     }
 
     @Override public Object getItem(int index)
     {
-	if (locations == null || index >= locations.length)
+	if (index < 0)
 	    return null;
-return locations[index];
+	if (index == 00)
+	    return new Location(Location.USER_HOME, luwrain.launchContext().userHomeDirAsFile(), luwrain.launchContext().userHomeDir());
+	if (locations == null || index > locations.length)
+	    return null;
+	return locations[index - 1];
     }
 
     @Override public void refresh()

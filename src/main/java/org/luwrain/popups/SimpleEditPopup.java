@@ -24,7 +24,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
+public class SimpleEditPopup implements Area, Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
 {
     public PopupClosing closing = new PopupClosing(this);
     private Luwrain luwrain;
@@ -35,7 +35,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
     private int pos;
     private boolean noMultipleCopies = false;
 
-    public SimpleLinePopup(Luwrain luwrain,
+    public SimpleEditPopup(Luwrain luwrain,
 			    String name,
 			    String prefix,
 			    String text)
@@ -49,7 +49,7 @@ public class SimpleLinePopup implements Area, Popup, PopupClosingRequest, HotPoi
 	this.noMultipleCopies = false;
     }
 
-    public SimpleLinePopup(Luwrain luwrain,
+    public SimpleEditPopup(Luwrain luwrain,
 			    String name,
 			    String prefix,
 			   String text,

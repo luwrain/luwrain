@@ -656,7 +656,7 @@ environment.onAreaNewHotPoint(this);
     }
 
     //Doesn't produce any speech announcement;
-    private void open(File file, String desiredSelected)
+    public void open(File file, String desiredSelected)
     {
 	if (file == null)
 	    throw new NullPointerException("file may not be null");

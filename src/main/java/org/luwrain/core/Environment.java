@@ -859,7 +859,7 @@ class Environment implements EventConsumer
 
     private void showCommandPopup()
     {
-	ListPopup popup = new ListPopup(new Luwrain(this), new FixedListPopupModel(commands.getCommandsName()),
+	EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedListPopupModel(commands.getCommandsName()),
 					strings.commandPopupName(), strings.commandPopupPrefix(), "");
 	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
