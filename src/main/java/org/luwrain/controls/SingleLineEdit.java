@@ -54,6 +54,8 @@ public class SingleLineEdit implements CopyCutRequest
 		return onBackspace(event);
 	    case KeyboardEvent.DELETE:
 		return onDelete(event);
+	    case KeyboardEvent.ALTERNATIVE_DELETE:
+		return onAltDelete(event);
 	    case KeyboardEvent.TAB:
 		return onTab(event);
 	    default:
@@ -125,6 +127,14 @@ public class SingleLineEdit implements CopyCutRequest
 	final String newLine = new String(line.substring(0, pos) + line.substring(pos + 1));
 	model.setLine(newLine);
 	environment.sayLetter(line.charAt(pos));
+	return true;
+    }
+
+    private boolean onAltDelete(KeyboardEvent event)
+    {
+	model.setHotPointX(0);
+	model.setLine("");
+	environment.hint(Hints.EMPTY_LINE);
 	return true;
     }
 

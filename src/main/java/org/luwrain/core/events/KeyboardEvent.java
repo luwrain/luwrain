@@ -68,6 +68,7 @@ public class KeyboardEvent extends Event
     public static final int ALTERNATIVE_END = 75;
     public static final int ALTERNATIVE_PAGE_UP = 76;
     public static final int ALTERNATIVE_PAGE_DOWN = 77;
+    public static final int ALTERNATIVE_DELETE = 78;
 
     private boolean cmd = false;
     private int cmdCode = 0;

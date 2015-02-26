@@ -766,14 +766,12 @@ class Environment implements EventConsumer
 	{
 	case KeyboardEvent.ARROW_UP:
 	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_UP, ' ');
-
 	case KeyboardEvent.ARROW_DOWN:
 	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_DOWN, ' ');
 	case KeyboardEvent.ARROW_LEFT:
 	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_LEFT, ' ');
 	case KeyboardEvent.ARROW_RIGHT:
 	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_RIGHT, ' ');
-
 	case KeyboardEvent.PAGE_DOWN:
 	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_PAGE_DOWN, ' ');
 	case KeyboardEvent.PAGE_UP:
@@ -782,6 +780,8 @@ class Environment implements EventConsumer
 	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_HOME, ' ');
 	case KeyboardEvent.END:
 	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_END, ' ');
+	case KeyboardEvent.DELETE:
+	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_DELETE, ' ');
 	default:
 	    return event;
 	}
@@ -864,7 +864,7 @@ class Environment implements EventConsumer
 	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
-	    if (!commands.run(popup.getText().trim(), new Luwrain(this)))
+	    if (!commands.run(popup.text().trim(), specialLuwrain))
 		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
     }
 

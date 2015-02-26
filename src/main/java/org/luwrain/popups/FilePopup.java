@@ -41,9 +41,9 @@ public class FilePopup extends EditListPopup
 			   String name,
 			   String prefix,
 		     File file,
-		     boolean noMultipleCopies)
+		     int popupFlags)
     {
-	super(luwrain, new FileListPopupModel(), name, prefix, file.getAbsolutePath(), noMultipleCopies);
+	super(luwrain, new FileListPopupModel(), name, prefix, file.getAbsolutePath(), popupFlags);
 	this.file = file;
 	if (file == null)
 	    throw new NullPointerException("file may not be null");
@@ -51,7 +51,7 @@ public class FilePopup extends EditListPopup
 
     public File getFile()
     {
-	return new File(getText());
+	return new File(text());
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -67,8 +67,7 @@ public class FilePopup extends EditListPopup
 
     @Override public boolean onOk()
     {
-	luwrain.message("Облом", Luwrain.MESSAGE_ERROR);
-	return false;
+	return true;
     }
 
     private boolean openCommanderPopup()

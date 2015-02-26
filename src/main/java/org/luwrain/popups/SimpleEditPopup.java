@@ -14,9 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:ControlEnvironment interface support;
-//FIXME:Improper behaviour on backspace;
-
 package org.luwrain.popups;
 
 import org.luwrain.core.*;
@@ -24,16 +21,16 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class SimpleEditPopup implements Area, Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
+public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
 {
     public PopupClosing closing = new PopupClosing(this);
-    private Luwrain luwrain;
+    protected Luwrain luwrain;
     private EmbeddedSingleLineEdit edit;
     private String name;
     private String prefix;
     private String text;
     private int pos;
-    private boolean noMultipleCopies = false;
+    private int popupFlags;
 
     public SimpleEditPopup(Luwrain luwrain,
 			    String name,
@@ -41,139 +38,236 @@ public class SimpleEditPopup implements Area, Popup, PopupClosingRequest, HotPoi
 			    String text)
     {
 	this.luwrain = luwrain;
-	this.name = name != null?name:"";
-	this.prefix = prefix != null?prefix:"";
-	this.text = text != null?text:"";
+	this.name = name;
+	this.prefix = prefix;
+	this.text = text;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	if (prefix == null)
+	    throw new NullPointerException("prefix may not be null");
+	if (text == null)
+	    throw new NullPointerException("text may not be null");
 	this.pos = prefix.length() + text.length();
 	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, prefix.length(), 0);
-	this.noMultipleCopies = false;
+	this.popupFlags = 0;
     }
 
     public SimpleEditPopup(Luwrain luwrain,
 			    String name,
 			    String prefix,
 			   String text,
-			   boolean noMultipleCopies)
+			   int popupFlags)
     {
 	this.luwrain = luwrain;
-	this.name = name != null?name:"";
-	this.prefix = prefix != null?prefix:"";
-	this.text = text != null?text:"";
+	this.name = name ;
+	this.prefix = prefix;
+	this.text = text;
+	this.popupFlags = popupFlags;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	if (prefix == null)
+	    throw new NullPointerException("prefix may not be null");
+	if (text == null)
+	    throw new NullPointerException("text may not be null");
 	this.pos = prefix.length() + text.length();
 	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, prefix.length(), 0);
-	this.noMultipleCopies = noMultipleCopies;
     }
 
-
-    public int getLineCount()
+    @Override public int getLineCount()
     {
 	return 1;
     }
 
-    public String getLine(int index)
+    @Override public String getLine(int index)
     {
 	return index == 0?(prefix + text):"";
     }
 
-    public int getHotPointX()
+    @Override public int getHotPointX()
     {
 	return pos;
     }
 
-    public int getHotPointY()
+    @Override public int getHotPointY()
     {
 	return 0;
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	if (closing.onKeyboardEvent(event))
 	    return true;
 	if (edit.isPosCovered(pos, 0) && edit.onKeyboardEvent(event))
 	    return true;
 	if (!event.isCommand() || event.isModified())
 	    return false;
-	final String line = prefix + text;
 	switch (event.getCommand())
 	{
 	case KeyboardEvent.ARROW_LEFT:
-	    if (pos == 0)
-	    {
-		luwrain.say(Langs.staticValue(Langs.AREA_BEGIN));
-		return true;
-	    }
-	    pos--;
-	    if (pos < line.length())
-		luwrain.sayLetter(line.charAt(pos)); else
-		luwrain.sayLetter(' ');
-	    luwrain.onAreaNewHotPoint(this);
-	    return true;
+	    return onArrowLeft(event);
 	case KeyboardEvent.ARROW_RIGHT:
-	    if (pos >= line.length())
-	    {
-		luwrain.say(Langs.staticValue(Langs.AREA_END));
-		return true;
-	    }
-	    pos++;
-	    if (pos < line.length())
-		luwrain.sayLetter(line.charAt(pos)); else
-		luwrain.say(Langs.staticValue(Langs.AREA_END));
-	    luwrain.onAreaNewHotPoint(this);
-	    return true;
+	    return onArrowRight(event);
+
+	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+	    return onAltLeft(event);
+	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
+	    return onAltRight(event);
+
+
 	case KeyboardEvent.HOME:
-	    pos = prefix.length();
-	    if (pos >= line.length())
-		luwrain.say(Langs.staticValue(Langs.EMPTY_LINE)); else
-		luwrain.sayLetter(prefix.charAt(pos));
-	    return true;
+	    return onHome(event);
 	case KeyboardEvent.END:
-	    pos = line.length();
-	    luwrain.say(Langs.staticValue(Langs.AREA_END));
-	    luwrain.onAreaNewHotPoint(this);
-	    return true;
+	    return onEnd(event);
 	case KeyboardEvent.ENTER:
-	    closing.doOk();
-	    return true;
+	    return closing.doOk();
+	default:
+	    return false;
 	}
-	return false;
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("null may not be null");
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
 	    luwrain.playSound(Sounds.INTRO_POPUP);
 	    luwrain.say(prefix + text);
 	    return true;
-	default:
-	    //FIXME:Transmit event to edit
-	return closing.onEnvironmentEvent(event);
 	}
+
+	if (edit.isPosCovered(pos, 0) && edit.onEnvironmentEvent(event))
+	    return true;
+	return closing.onEnvironmentEvent(event);
     }
 
-    public String getName()
+    @Override public String getName()
     {
 	return name;
     }
 
-    public String getText()
+    public String text()
     {
 	return text;
     }
 
-    public String getEmbeddedEditLine(int editPosX, int editPosY)
+    private boolean onArrowLeft(KeyboardEvent event)
+    {
+	if (pos == 0)
+	{
+	    luwrain.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	    }
+	--pos;
+	final String line = prefix + text;
+	if (pos < line.length())
+	    luwrain.sayLetter(line.charAt(pos)); else
+	    luwrain.hint(Hints.END_OF_LINE);
+	luwrain.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onArrowRight(KeyboardEvent event)
+    {
+	final String line = prefix + text;
+	if (pos >= line.length())
+	{
+	    luwrain.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	++pos;
+	if (pos < line.length())
+	    luwrain.sayLetter(line.charAt(pos)); else
+	    luwrain.hint(Hints.END_OF_LINE);
+	luwrain.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onHome(KeyboardEvent event)
+    {
+	pos = prefix.length();
+	final String line = prefix + text;
+	if (pos >= line.length())
+	    luwrain.hint(Hints.EMPTY_LINE); else
+	    luwrain.sayLetter(line.charAt(pos));
+	return true;
+    }
+
+    private boolean onEnd(KeyboardEvent event)
+    {
+	final String line = prefix + text;
+	pos = line.length();
+	luwrain.hint(Hints.END_OF_LINE);
+	luwrain.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onAltRight(KeyboardEvent event)
+    {
+	final String line = prefix + text;
+	if (line.isEmpty())
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (pos >= line.length())
+	{
+	    luwrain.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	WordIterator it = new WordIterator(line, pos);
+	if (!it.stepForward())
+	{
+	    luwrain.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	pos = it.pos();
+	if (it.announce().length() > 0)
+	    luwrain.say(it.announce()); else
+	    luwrain.hint(Hints.END_OF_LINE);
+	luwrain.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onAltLeft(KeyboardEvent event)
+    {
+	final String line = prefix + text;
+	if (line.isEmpty())
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	WordIterator it = new WordIterator(line, pos);
+	if (!it.stepBackward())
+	{
+	    luwrain.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	pos = it.pos();
+	luwrain.say(it.announce());
+	luwrain.onAreaNewHotPoint(this);
+	    return true;
+    }
+
+    @Override public String getEmbeddedEditLine(int editPosX, int editPosY)
     {
 	return text;
     }
 
-    public void setEmbeddedEditLine(int editPosX, int editPosY, String value)
+    @Override public void setEmbeddedEditLine(int editPosX, int editPosY, String value)
     {
 	text = value != null?value:"";
 	luwrain.onAreaNewContent(this);
     }
 
-    public void setHotPointX(int value)
+    @Override public void setHotPointX(int value)
     {
 	if (value < 0)
 	    return;
@@ -181,7 +275,7 @@ public class SimpleEditPopup implements Area, Popup, PopupClosingRequest, HotPoi
 	luwrain.onAreaNewHotPoint(this);
     }
 
-    public void setHotPointY(int value)
+    @Override public void setHotPointY(int value)
     {
 	//Nothing here;
     }
@@ -243,11 +337,11 @@ public class SimpleEditPopup implements Area, Popup, PopupClosingRequest, HotPoi
 
     @Override public boolean noMultipleCopies()
     {
-	return noMultipleCopies;
+	return (popupFlags & Popup.NO_MULTIPLE_COPIES) != 0;
     }
 
     @Override public boolean isWeakPopup()
     {
-	return true;
+	return (popupFlags & Popup.WEAK) != 0;
     }
 }

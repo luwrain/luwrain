@@ -256,7 +256,7 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	luwrain.popup(linePopup);
 	if (linePopup.closing.cancelled())//FIXME:Validator if not empty
 	    return true;
-	if (linePopup.getText().trim().isEmpty())
+	if (linePopup.text().trim().isEmpty())
 	{
 	    luwrain.message(stringConstructor.parameterNameMayNotBeEmpty());
 	    return true;
@@ -266,17 +266,17 @@ class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
 	if (listPopup.closing.cancelled())
 	    return true;
 	int type;
-	if (listPopup.getText().trim().equals("string"))
+	if (listPopup.text().trim().equals("string"))
 	    type = Registry.STRING; else
-	    if (listPopup.getText().trim().equals("integer"))
+	    if (listPopup.text().trim().equals("integer"))
 		type = Registry.INTEGER; else
-		if (listPopup.getText().trim().equals("boolean"))
+		if (listPopup.text().trim().equals("boolean"))
 		    type = Registry.BOOLEAN; else
 		{
-		    luwrain.message(stringConstructor.invalidParameterType(listPopup.getText()));
+		    luwrain.message(stringConstructor.invalidParameterType(listPopup.text()));
 		    return true;
 		}
-	if (!insertValue(linePopup.getText(), type))
+	if (!insertValue(linePopup.text(), type))
 	    luwrain.message(stringConstructor.parameterInsertionFailed());
 	return true;
     }

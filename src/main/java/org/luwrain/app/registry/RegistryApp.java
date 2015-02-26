@@ -99,19 +99,19 @@ public class RegistryApp implements Application, RegistryActions
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return;
-	if (popup.getText().trim().isEmpty())
+	if (popup.text().trim().isEmpty())
 	{
 	    luwrain.message(stringConstructor.directoryNameMayNotBeEmpty());
 	    return;
 	}
-	if (popup.getText().indexOf("/") >= 0)
+	if (popup.text().indexOf("/") >= 0)
 	{
-	    luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.getText()));
+	    luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.text()));
 	    return;
 	}
-	if (!registry.addDirectory(parent.getPath() + "/" + popup.getText()))
+	if (!registry.addDirectory(parent.getPath() + "/" + popup.text()))
 	{
-	    luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.getText()));
+	    luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.text()));
 	    return;
 	}
 	    dirsArea.refresh();

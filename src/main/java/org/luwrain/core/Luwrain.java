@@ -95,6 +95,24 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 
     @Override public void hint(String text, int code)
     {
+	switch (code)
+	{
+	case Hints.NO_ITEMS_ABOVE:
+	    playSound(Sounds.NO_ITEMS_ABOVE);
+	    break;
+	case Hints.NO_ITEMS_BELOW:
+	    playSound(Sounds.NO_ITEMS_BELOW);
+	    break;
+	case Hints.NO_LINES_ABOVE:
+	    playSound(Sounds.NO_LINES_ABOVE);
+	    break;
+	case Hints.NO_LINES_BELOW:
+	    playSound(Sounds.NO_LINES_BELOW);
+	    break;
+
+
+
+	}
 	if (environment.onStandardHint(code))
 	    hint(text);
     }

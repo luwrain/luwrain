@@ -23,7 +23,7 @@ public class EditListPopup extends SimpleEditPopup
 {
     private final static int MAX_ALTERNATIVES_TO_SAY = 100;
 
-    protected Luwrain luwrain;
+    //    protected Luwrain luwrain;
     private EditListPopupModel model;
 
     public EditListPopup(Luwrain luwrain,
@@ -33,10 +33,10 @@ public class EditListPopup extends SimpleEditPopup
 		     String text)
     {
 	super(luwrain, name, prefix, text);
-	this.luwrain = luwrain;
+	//	this.luwrain = luwrain;
 	this.model = model;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
+	//	if (luwrain == null)
+	//	    throw new NullPointerException("luwrain may not be null");
 	if (model == null)
 	    throw new NullPointerException("model may not be null");
     }
@@ -46,13 +46,13 @@ public class EditListPopup extends SimpleEditPopup
 		     String name,
 		     String prefix,
 		     String text,
-		     boolean noMultipleCopies)
+		     int popupFlags)
     {
-	super(luwrain, name, prefix, text, noMultipleCopies);
-	this.luwrain = luwrain;
+	super(luwrain, name, prefix, text, popupFlags);
+	//	this.luwrain = luwrain;
 	this.model = model;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
+	//	if (luwrain == null)
+	//	    throw new NullPointerException("luwrain may not be null");
 	if (model == null)
 	    throw new NullPointerException("model may not be null");
     }

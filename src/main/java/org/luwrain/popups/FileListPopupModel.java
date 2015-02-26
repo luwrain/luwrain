@@ -84,4 +84,16 @@ class FileListPopupModel extends DynamicListPopupModel
     {
 	return '/';
     }
+
+    //Just to add slashes to directories;
+    @Override public String getCompletion(String beginning)
+    {
+	final String res = super.getCompletion(beginning);
+	final String path = beginning + (res != null?res:"");
+	if (!path.isEmpty() && path.charAt(path.length() - 1) == pathDelimiter())
+	    return res;
+	if (new File(path).isDirectory())
+	    return res + pathDelimiter(); else
+	    return res;
+    }
 }

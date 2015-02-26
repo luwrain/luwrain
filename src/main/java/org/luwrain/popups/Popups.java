@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
+
+   This file is part of the Luwrain.
+
+   Luwrain is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   Luwrain is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.popups;
 
@@ -57,33 +72,32 @@ public class Popups
 	return l != null?l.file():null;
     }
 
-    public static File open()
-    {/*
+    public static File open(Luwrain luwrain, int popupFlags)
+    {
+	return open(luwrain, null, null, null, popupFlags);
+    }
 
+    public static File open(Luwrain luwrain,
+			    File startWith,
+			    int popupFlags)
+    {
+	return open(luwrain, null, null, startWith, popupFlags);
+    }
 
-
-    private File openPopupByApp(Application app,
+    public static File open(Luwrain luwrain,
 			    String name,
 			    String prefix,
-			    File defaultValue)
+			    File startWith,
+			    int popupFlags)
     {
-	if (app == null)
-	    return null;
+	org.luwrain.core.Strings strings = (org.luwrain.core.Strings)luwrain.i18n().getStrings("luwrain.environment");
 	final String chosenName = (name != null && !name.trim().isEmpty())?name.trim():strings.openPopupName();
 	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():strings.openPopupPrefix();
-	File chosenDefaultValue = null;
-	if (defaultValue == null)
-		chosenDefaultValue = launchContext.userHomeDirAsFile(); else
-	    chosenDefaultValue = defaultValue;
-	FilePopup popup = new FilePopup(null, chosenName, chosenPrefix, chosenDefaultValue);
-	goIntoPopup(app, popup, PopupManager.BOTTOM, popup.closing, true);
+	final File chosenStartWith = startWith != null?startWith:luwrain.launchContext().userHomeDirAsFile();
+	FilePopup popup = new FilePopup(luwrain, chosenName, chosenPrefix, chosenStartWith, popupFlags);
+	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
 	return popup.getFile();
     }
-     */
-	return null;
-    }
 }
-
-
