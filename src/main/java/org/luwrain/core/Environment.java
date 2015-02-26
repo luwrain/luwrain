@@ -158,7 +158,7 @@ class Environment implements EventConsumer
     {
 	YesNoPopup popup = new YesNoPopup(new Luwrain(this), strings.quitPopupName(), strings.quitPopupText(), true);
 	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
-	if (popup.closing.cancelled() || !popup.getResult())
+	if (popup.closing.cancelled() || !popup.result())
 	    return;
 	InitialEventLoopStopCondition.shouldContinue = false;
     }

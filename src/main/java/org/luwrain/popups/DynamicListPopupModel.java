@@ -20,21 +20,26 @@ import java.util.*;
 
 public abstract class DynamicListPopupModel implements EditListPopupModel
 {
-    protected abstract String[] getItems(String context);
-    protected abstract String getEmptyItem(String context);
+    //Items must be ordered and all of them should be greater than an empty item;
+    protected abstract EditListPopupItem[] getItems(String context);
+    protected abstract EditListPopupItem getEmptyItem(String context);
 
-    public String getCompletion(String beginning)
+    @Override public String getCompletion(String beginning)
     {
-	String[] items = getItems(beginning);
-	if (items == null || items.length < 1)
-	    return "";
 	if (beginning == null)
 	    return "";
-	ArrayList<String> m = new ArrayList<String>();
+	final EditListPopupItem[] fullItems = getItems(beginning);
+	if (fullItems == null || fullItems.length < 1)
+	    return "";
+	final String[] items = new String[fullItems.length];
+	for(int i = 0;i < fullItems.length;++i)
+	    items[i] = fullItems[i].value();
+	Vector<String> m = new Vector<String>();
 	for(String s: items)
-	    if (beginning.isEmpty() || s.indexOf(beginning) == 0)
+	    //	    if (beginning.isEmpty() || s.indexOf(beginning) == 0)
+	    if (beginning.isEmpty() || s.startsWith(beginning))
 		m.add(s);
-	if (m.size() == 0)
+	if (m.isEmpty())
 	    return "";
 	String[] matching = m.toArray(new String[m.size()]);
 	String res = "";
@@ -55,46 +60,54 @@ public abstract class DynamicListPopupModel implements EditListPopupModel
 	return res;
     }
 
-    public String[] getAlternatives(String beginning)
+    @Override public String[] getAlternatives(String beginning)
     {
-	String[] items = getItems(beginning);
-	if (items == null || items.length < 1)
+	final EditListPopupItem[] fullItems = getItems(beginning);
+	if (fullItems == null || fullItems.length < 1)
 	    return new String[0];
+	final String[] items = new String[fullItems.length];
+	for(int i = 0;i < fullItems.length;++i)
+	    items[i] = fullItems[i].value();
 	if (beginning == null || beginning.isEmpty())
 	    return items;
-	ArrayList<String> matching = new ArrayList<String>();
+	Vector<String> matching = new Vector<String>();
 	for(String s: items)
-	    if (s.indexOf(beginning) == 0)
+	    if (s.startsWith(beginning))
 		matching.add(s);
 	return matching.toArray(new String[matching.size()]);
     }
 
-    public String getListPopupPreviousItem(String text)
+    @Override public EditListPopupItem getListPopupPreviousItem(String text)
     {
 	if (text == null || text.isEmpty())
 	    return null;
-	String[] items = getItems(text);
+	final EditListPopupItem emptyItem = getEmptyItem(text);
+	if (emptyItem == null)
+	    return null;
+	if (text.compareTo(emptyItem.value()) <= 0)
+	    return null;
+	final EditListPopupItem[] items = getItems(text);
 	if (items == null || items.length <= 1)
 	    return null;
-	if (text.compareTo(items[0]) <= 0)
-	    return getEmptyItem(text);
+	if (text.compareTo(items[0].value()) <= 0)
+	    return emptyItem;
 	for(int i = 1;i < items.length;++i)
-	    if (text.compareTo(items[i]) <= 0)
+	    if (text.compareTo(items[i].value()) <= 0)
 		return items[i - 1];
 	return items[items.length - 1];
     }
 
-    public String getListPopupNextItem(String text)
+    @Override public EditListPopupItem getListPopupNextItem(String text)
     {
-	String[] items = getItems(text);
+	final EditListPopupItem[] items = getItems(text);
 	if (text == null || text.isEmpty())
 	    return (items != null && items.length > 0)?items[0]:null;
 	if (items == null || items.length <= 1)
 	    return null;
-	if (text.compareTo(items[items.length - 1]) >= 0)
+	if (text.compareTo(items[items.length - 1].value()) >= 0)
 	    return null;
 	for(int i = items.length - 2;i >= 0;--i)
-	    if (text.compareTo(items[i]) >= 0)
+	    if (text.compareTo(items[i].value()) >= 0)
 		return items[i + 1];
 	return items[0];
     }

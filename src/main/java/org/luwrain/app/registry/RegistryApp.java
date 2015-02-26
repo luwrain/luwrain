@@ -83,7 +83,7 @@ public class RegistryApp implements Application, RegistryActions
 	{
 	    YesNoPopup popup = new YesNoPopup(luwrain, "Saving values", "Are you want to loose changes?", true);//FIXME:
 	    luwrain.popup(popup);
-	    if (popup.closing.cancelled() || !popup.getResult())
+	    if (popup.closing.cancelled() || !popup.result())
 	    {
 		gotoValues();
 		return;

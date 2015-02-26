@@ -68,11 +68,18 @@ public class EditListPopup extends SimpleEditPopup
 		onTab();
 		return true;
 	    case KeyboardEvent.ARROW_DOWN:
-		onKeyDown();
+		onKeyDown(false);
 		return true;
 	    case KeyboardEvent.ARROW_UP:
-		onKeyUp();
+		onKeyUp(false);
 		return true;
+	    case KeyboardEvent.ALTERNATIVE_ARROW_DOWN:
+		onKeyDown(true);
+		return true;
+	    case KeyboardEvent.ALTERNATIVE_ARROW_UP:
+		onKeyUp(true);
+		return true;
+
 	    default:
 		return super.onKeyboardEvent(event);
 	    }
@@ -110,31 +117,33 @@ public class EditListPopup extends SimpleEditPopup
 	luwrain.say(res);
     }
 
-    private void onKeyUp()
+    private void onKeyUp(boolean briefIntroduction)
     {
-	final String item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
+	final EditListPopupItem item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
 	    luwrain.hint(Hints.NO_ITEMS_ABOVE);
 	    return;
 	}
-	if (item.isEmpty())
+	final String value = briefIntroduction?item.introduction():item.value();
+	if (value.isEmpty())
 	    luwrain.hint(Hints.EMPTY_LINE); else
-	    luwrain.say(item);
-	setText(item, "");
+	    luwrain.say(value);
+	setText(item.value(), "");
     }
 
-    private void onKeyDown()
+    private void onKeyDown(boolean briefIntroduction)
     {
-	final String item = model.getListPopupNextItem(getTextBeforeHotPoint());
+	final EditListPopupItem item = model.getListPopupNextItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
 	    luwrain.hint(Hints.NO_ITEMS_BELOW);
 	    return;
 	}
-	if (item.isEmpty())
+	final String value = briefIntroduction?item.introduction():item.value();
+	if (value.isEmpty())
 	    luwrain.hint(Hints.EMPTY_LINE); else
-	    luwrain.say(item);
-	setText(item, "");
+	    luwrain.say(value);
+	setText(item.value(), "");
     }
 }

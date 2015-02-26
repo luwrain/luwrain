@@ -22,9 +22,8 @@ public interface EditListPopupModel
     String[] getAlternatives(String beginning);
     //May return null, that means no item
     //Empty value is a usual valid value
-
-    String getListPopupPreviousItem(String text);
+    EditListPopupItem getListPopupPreviousItem(String text);
     //May return null, that means no item
     //Empty value is a usual valid value
-    String getListPopupNextItem(String text);
+    EditListPopupItem getListPopupNextItem(String text);
 }

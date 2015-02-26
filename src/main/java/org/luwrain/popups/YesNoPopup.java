@@ -20,15 +20,15 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
-public class YesNoPopup implements Area, Popup, PopupClosingRequest
+public class YesNoPopup implements Popup, PopupClosingRequest
 {
     public PopupClosing closing = new PopupClosing(this);
-    private Luwrain luwrain;
+    protected Luwrain luwrain;
     private String name = "";
     private String text = "";
     private boolean res;
     private boolean defaultRes;
-    private boolean noMultipleCopies = false;
+    private int popupFlags;
 
     public YesNoPopup(Luwrain luwrain,
 		      String name,
@@ -40,7 +40,7 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 	this.text = text;
 	this.defaultRes = defaultRes;
 	this.res = defaultRes;
-	this.noMultipleCopies = false;
+	this.popupFlags = 0;
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
 	if (name == null)
@@ -53,14 +53,14 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 		      String name,
 		      String text,
 		      boolean defaultRes,
-		      boolean noMultipleCopies)
+		      int popupFlags)
     {
 	this.luwrain = luwrain;
 	this.name = name;
 	this.text = text;
 	this.defaultRes = defaultRes;
 	this.res = defaultRes;
-	this.noMultipleCopies = noMultipleCopies;
+	this.popupFlags = popupFlags;
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
 	if (name == null)
@@ -148,7 +148,7 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 	return name;
     }
 
-    public boolean getResult()
+    public boolean result()
     {
 	return res;
     }
@@ -175,11 +175,11 @@ public class YesNoPopup implements Area, Popup, PopupClosingRequest
 
     @Override public boolean noMultipleCopies()
     {
-	return noMultipleCopies;
+	return (popupFlags & Popup.NO_MULTIPLE_COPIES) != 0;
     }
 
     @Override public boolean isWeakPopup()
     {
-	return false;
+	return (popupFlags & Popup.WEAK) != 0;
     }
 }

@@ -20,28 +20,30 @@ import java.util.*;
 
 public class FixedListPopupModel extends DynamicListPopupModel
 {
-    private String[] fixedItems;
+    private EditListPopupItem[] fixedItems;
 
-    public FixedListPopupModel(String[] fixedItems)
+    public FixedListPopupModel(String[] items)
     {
-	if (fixedItems != null)
-	{
-	    this.fixedItems = new String[fixedItems.length];
-	    for(int i = 0;i < fixedItems.length;++i)
-		this.fixedItems[i] = fixedItems[i];
-	    Arrays.sort(this.fixedItems);
-	} else
-	    this.fixedItems = new String[0];
+	if (items == null)
+	    throw new NullPointerException("items may not be null");
+	Vector<EditListPopupItem> v = new Vector<EditListPopupItem>();
+	for(String s: items)
+	    if (s != null && !s.isEmpty())
+		v.add(new EditListPopupItem(s));
+	fixedItems = new EditListPopupItem[v.size()];
+	for(int i = 0;i < v.size();++i)
+	    fixedItems[i] = new EditListPopupItem(items[i]);
+	    Arrays.sort(fixedItems);
     }
 
-    protected String[] getItems(String context)
+    @Override protected EditListPopupItem[] getItems(String context)
     {
 	//Returning every time the same items regardless the context;
 	return fixedItems;
     }
 
-    protected String getEmptyItem(String context)
+    @Override protected EditListPopupItem getEmptyItem(String context)
     {
-	return "";
+	return new EditListPopupItem();
     }
 }

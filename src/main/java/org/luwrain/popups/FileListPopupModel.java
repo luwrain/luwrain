@@ -21,12 +21,12 @@ import java.io.*;
 
 class FileListPopupModel extends DynamicListPopupModel
 {
-    protected String[] getItems(String context)
+    protected EditListPopupItem[] getItems(String context)
     {
 	if (context == null || context.isEmpty())
-	    return new String[0];
+	    return new EditListPopupItem[0];
 	File current = new File(context);
-	if (context.charAt(context.length() - 1) == '/' && current.exists() && current.isDirectory())//FIXME:System dependent slash;
+	if (context.charAt(context.length() - 1) == pathDelimiter() && current.exists() && current.isDirectory())
 	{
 	    File[] items = null;
 	    try {
@@ -38,16 +38,16 @@ class FileListPopupModel extends DynamicListPopupModel
 	    }
 	    if (items != null && items.length > 0)
 	    {
-		String[] res = new String[items.length];
+		EditListPopupItem[] res = new EditListPopupItem[items.length];
 		for(int i = 0;i < items.length;++i)
-		    res[i] = items[i].getAbsolutePath();
+		    res[i] = new EditListPopupItem(items[i].getAbsolutePath(), items[i].getName());
 		Arrays.sort(res);
 		return res;
 	    }
 	}
 	File parent = current.getParentFile();
 	if (parent == null || !parent.exists())
-	    return new String[0];
+	    return new EditListPopupItem[0];
 	File[] items = null;
 	try {
 	    items = parent.listFiles();
@@ -58,25 +58,30 @@ class FileListPopupModel extends DynamicListPopupModel
 	}
 	if (items != null && items.length > 0)
 	{
-	    String[] res = new String[items.length];
+	    EditListPopupItem[] res = new EditListPopupItem[items.length];
 	    for(int i = 0;i < items.length;++i)
-		res[i] = items[i].getAbsolutePath();
+		res[i] = new EditListPopupItem(items[i].getAbsolutePath(), items[i].getName());
 	    Arrays.sort(res);
 	    return res;
 	}
-	return new String[0];
+	return new EditListPopupItem[0];
     }
 
-    protected String getEmptyItem(String context)
+    protected EditListPopupItem getEmptyItem(String context)
     {
 	if (context == null || context.isEmpty())
-	    return "";
+	    return new EditListPopupItem();
 	File current = new File(context);
-	if (context.charAt(context.length() - 1) == '/' && current.exists() && current.isDirectory())//FIXME:System dependent slash;
-	    return context;
+	if (context.charAt(context.length() - 1) == pathDelimiter() && current.exists() && current.isDirectory())
+	    return new EditListPopupItem(context);
 	File parent = current.getParentFile();
 	if (parent != null)
-	    return parent.getAbsolutePath() + "/";//FIXME:System dependent slash;
-	return context;
+	    return new EditListPopupItem(parent.getAbsolutePath() + pathDelimiter());
+	return new EditListPopupItem(context);
+    }
+
+    private char pathDelimiter()
+    {
+	return '/';
     }
 }
