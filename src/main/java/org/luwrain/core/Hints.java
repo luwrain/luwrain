@@ -29,4 +29,5 @@ public class Hints
     public static final int NO_LINES_BELOW = 9;
     public static final int NO_ITEMS_ABOVE = 10;
     public static final int NO_ITEMS_BELOW = 11;
+    public static final int NO_CONTENT = 12;
 } 

@@ -55,6 +55,7 @@ class Environment implements EventConsumer
     private GlobalKeys globalKeys;
     private CommandManager commands = new CommandManager();
     private ShortcutManager shortcuts;
+    private SharedObjectManager sharedObjects;
     private FileTypes fileTypes = new FileTypes(shortcuts);
 
     private boolean needForIntroduction = false;
@@ -106,11 +107,19 @@ class Environment implements EventConsumer
 	EnvironmentSounds.init(registry, launchContext);
 	appInstances = new InstanceManager(this);
 	shortcuts = new ShortcutManager();
+	sharedObjects = new SharedObjectManager();
 	screenContentManager = new ScreenContentManager(apps, popups);
 	windowManager = new WindowManager(interaction, screenContentManager);
 
 	for(Extension e: extensions)
-	    e.i18nExtension(i18n);
+	    try {
+		e.i18nExtension(i18n);
+	    }
+	    catch (Exception ee)
+	    {
+		Log.error("environment", "extension " + e.getClass().getName() + " has thrown an exception on i18n:" + ee.getMessage());
+		ee.printStackTrace();
+	    }
 	if (!i18n.chooseLang(launchContext.lang()))
 	{
 	    Log.fatal("environment", "unable to choose matching language for i18n, requested language is \'" + launchContext.lang() + "\'");
@@ -119,6 +128,7 @@ class Environment implements EventConsumer
 	strings = (Strings)i18n.getStrings(STRINGS_OBJECT_NAME);
 
 	globalKeys = new GlobalKeys(registry);
+
 	globalKeys.loadFromRegistry();
 
 	shortcuts.addBasicShortcuts();
@@ -126,7 +136,16 @@ class Environment implements EventConsumer
 
 	for(Extension e: extensions)
 	{
-	    Shortcut[] s = e.getShortcuts();
+	    Shortcut[] s;
+	    try { 
+		s = e.getShortcuts();
+	    }
+	    catch (Exception ee)
+	    {
+		Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shortcuts:" + ee.getMessage());
+		ee.printStackTrace();
+		continue;
+	    }
 	    if (s != null)
 		for(Shortcut ss: s)
 		    if (ss != null)
@@ -138,7 +157,38 @@ class Environment implements EventConsumer
 
 	for(Extension e: extensions)
 	{
-	    Command[] cmds = e.getCommands(specialLuwrain);
+	    SharedObject[] s;
+	    try { 
+		s = e.getSharedObjects();
+	    }
+	    catch (Exception ee)
+	    {
+		Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shared objects:" + ee.getMessage());
+		ee.printStackTrace();
+		continue;
+	    }
+	    if (s != null)
+		for(SharedObject ss: s)
+		    if (ss != null)
+		    {
+			if (sharedObjects.add(e, ss))
+			    Log.debug("environment", "shared object " + ss.getName() + " registered"); else
+			    Log.warning("environment", "the shared object \'" + ss.getName() + "\' of extension " + e.getClass().getName() + " refused by  the shared objects manager to be registered");
+		    }
+	}
+
+	for(Extension e: extensions)
+	{
+	    Command[] cmds;
+	    try {
+		cmds = e.getCommands(specialLuwrain);
+	    }
+	    catch (Exception ee)
+	    {
+		Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of commands:" + ee.getMessage());
+		ee.printStackTrace();
+		continue;
+	    }
 	    if (cmds != null)
 		for(Command c: cmds)
 		    if (c != null)
@@ -285,6 +335,8 @@ class Environment implements EventConsumer
 	    throw new NullPointerException("stopCondition may not be null");
 	while(stopCondition.continueEventLoop())
 	{
+	    needForIntroduction = false;
+	    introduceApp = false;
 	    final Event event = eventQueue.takeEvent();
 	    if (event == null)
 		continue;
@@ -307,7 +359,8 @@ class Environment implements EventConsumer
 	    default:
 		Log.warning("environment", "the event of an unknown type:" + event.type());
 	    }
-	    introduce(stopCondition);
+	    if (!eventQueue.hasAgain())
+		introduce(stopCondition);
 		}
     }
 
@@ -871,5 +924,14 @@ class Environment implements EventConsumer
     public OperatingSystem os()
     {
 	return os;
+    }
+
+    public Object getSharedObject(String id)
+    {
+	if (id == null)
+	    throw new NullPointerException("id may not be null");
+	if (id.trim().isEmpty())
+	    throw new IllegalArgumentException("id may not be empty");
+	return sharedObjects.getSharedObject(id);
     }
 }

@@ -161,14 +161,23 @@ if (!initOs())
 	    }
 	    if (!(o instanceof Extension))
 	    {
-		Log.info("init", "loading of extension " + s + "failed: this object isn\'t an instance of org.luwrain.core.Extension");
+		Log.info("init", "loading of extension " + s + " failed: this object isn\'t an instance of org.luwrain.core.Extension");
 		continue;
 	    }
 	    final Extension ext = (Extension)o;
-	    final String message = ext.init(cmdLine, registry);
+	    String message = null;
+	    try {
+		message = ext.init(cmdLine, registry);
+	    }
+	    catch (Exception ee)
+	    {
+		Log.info("init", "loading of extension " + s + " failed: unexpected exception:" + ee.getMessage());
+		ee.printStackTrace();
+		continue;
+	    }
 	    if (message != null)
 	    {
-		Log.info("init", "loading of extension " + s + "failed: " + message);
+		Log.info("init", "loading of extension " + s + " failed: " + message);
 		continue;
 	    }
 	    res.add(ext);

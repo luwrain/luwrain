@@ -88,6 +88,11 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	return environment.registry();
     }
 
+    public Object getSharedObject(String id)
+    {
+	return environment.getSharedObject(id);
+    }
+
     @Override public void hint(String text)
     {
 	say(text, PITCH_HINT);

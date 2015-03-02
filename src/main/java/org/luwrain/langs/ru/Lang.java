@@ -77,7 +77,7 @@ public class Lang extends org.luwrain.core.Lang
 	    //	    return "Начните работу с главного меню";
 	    //	case LangStatic.NO_LAUNCHED_APPS:
 	    //	    return "Все приложения закрыты";
-	case LangStatic.LIST_NO_ITEMS:
+	case LangStatic.LIST_NO_CONTENT:
 	    return "Элементы в списке отсутствуют";
 	    //	case LangStatic.FONT_SIZE:
 	    //	    return "Размер шрифта:";

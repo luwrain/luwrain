@@ -31,10 +31,9 @@ public class ListArea  implements Area, CopyCutRequest
     private ListModel model;
     private ListItemAppearance appearance;
     private ListClickHandler clickHandler;
-    private int initialHotPointX = 0;
     private int hotPointX = 0;
     private int hotPointY = 0;
-    private CopyCutInfo copyCutInfo;
+    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     private String noItemsAbove = Langs.staticValue(Langs.BEGIN_OF_LIST);
     private String noItemsBelow = Langs.staticValue(Langs.END_OF_LIST);
@@ -47,7 +46,11 @@ public class ListArea  implements Area, CopyCutRequest
     {
 	this.environment = environment;
 	this.model = model;
-	this.copyCutInfo = new CopyCutInfo(this);
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
+	appearance = new DefaultListItemAppearance(environment);
     }
 
     public ListArea(ControlEnvironment environment,
@@ -56,88 +59,107 @@ public class ListArea  implements Area, CopyCutRequest
     {
 	this.environment = environment;
 	this.model = model;
-	this.name = name != null?name:"";
-	this.copyCutInfo = new CopyCutInfo(this);
+	this.name = name;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	appearance = new DefaultListItemAppearance(environment);
     }
 
     public ListArea(ControlEnvironment environment,
 		    ListModel model,
-		    String name,
 		    ListItemAppearance appearance,
-		    ListClickHandler clickHandler,
-		    int initialHotPointX)
+		    String name)
     {
 	this.environment = environment;
 	this.model = model;
-	this.name = name != null?name:"";
 	this.appearance = appearance;
-	this.clickHandler = clickHandler;
-	this.initialHotPointX = initialHotPointX;
-	this.copyCutInfo = new CopyCutInfo(this);
-	if (initialHotPointX > 0 && model != null &&
-	    model.getItemCount() > 0)
-	{
-	    String line = getScreenAppearance(model, 0, model.getItem(0), 0);
-	    if (line == null)
-		line = "";
-	    hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	}
+	this.name = name;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
+	if (appearance == null)
+	    throw new NullPointerException("appearance may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
     }
 
-    public Object getSelectedObject()
+    public ListArea(ControlEnvironment environment,
+		    ListModel model,
+		    ListItemAppearance appearance,
+		    ListClickHandler clickHandler,
+		    String name)
+    {
+	this.environment = environment;
+	this.model = model;
+	this.appearance = appearance;
+	this.clickHandler = clickHandler;
+	this.name = name;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
+	if (appearance == null)
+	    throw new NullPointerException("appearance may not be null");
+	if (clickHandler == null)
+	    throw new NullPointerException("clickHandler may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+    }
+
+    public ListModel model()
+    {
+	return model;
+    }
+
+    public Object selected()
     {
 	return hotPointY < model.getItemCount()?model.getItem(hotPointY):null;
     }
 
-    public int getSelectedIndex()
+    public int selectedIndex()
     {
-	if (model == null ||
-	    model.getItemCount() < 1 &&
+	final int count = model.getItemCount();
+	if (count < 1 &&
 	    hotPointY < 0 ||
-	    hotPointY >= model.getItemCount())
+	    hotPointY >= count)
 	    return -1;
 	return hotPointY;
     }
 
-    public void setSelectedIndex(int index, boolean introduce)
+    public boolean setSelectedByIndex(int index, boolean introduce)
     {
-	if (model == null)
-	    return;
-	if (index < 0)
-	    hotPointY = 0; else
-	    if (index >= model.getItemCount())
-		hotPointY = model.getItemCount(); else
-		hotPointY = index;
-	if (hotPointY >= 0 && hotPointY < model.getItemCount())
+	if (index < 0 || index >= model.getItemCount())
+	    return false;
+	hotPointY = index;
+	final Object item = model.getItem(hotPointY);
+	if (item != null)
 	{
-	    String line = getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0);
-	    if (line == null)
-		line = "";
-	    hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	    hotPointX = appearance.getObservableLeftBound(item);
 	    if (introduce)
-		introduceItem(model, hotPointY, model.getItem(hotPointY), 0);
+		appearance.introduceItem(item, 0);
 	} else
 	{
 	    hotPointX = 0;
 	    if (introduce)
-		environment.say(emptyLine);
+		environment.hint(Hints.EMPTY_LINE);
 	}
 	environment.onAreaNewHotPoint(this);
+	return true;
     }
 
     public void refresh()
     {
-	if (model == null)
-	    return;
 	model.refresh();
-	hotPointY = hotPointY < model.getItemCount()?hotPointY:model.getItemCount();
-	if (hotPointY >= 0 && hotPointY < model.getItemCount())
-	{
-	    String line = getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0);
-	    if (line == null)
-		line = "";
-	    hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	} else
+	final int count = model.getItemCount();
+	hotPointY = hotPointY < count?hotPointY:count;
+	final Object item = model.getItem(hotPointY);
+	if (item != null)
+	    hotPointX = appearance.getObservableLeftBound(item); else
 	    hotPointX = 0;
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
@@ -145,6 +167,8 @@ public class ListArea  implements Area, CopyCutRequest
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	if (!event.isCommand() || event.isModified())
 	    return false;
 	switch(event.getCommand())
@@ -161,16 +185,19 @@ public class ListArea  implements Area, CopyCutRequest
 	    return onArrowDown(event, true);
 	case KeyboardEvent.ALTERNATIVE_ARROW_UP:
 	    return onArrowUp(event, true);
-	    //FIXME:case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
-	    //FIXME:case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+
+	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
+	    return onAltRight(event);
+	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+	    return onAltLeft(event);
 	case KeyboardEvent.HOME:
 	    return onHome(event);
 	case KeyboardEvent.END:
 	    return onEnd(event);
 	case KeyboardEvent.ALTERNATIVE_HOME:
-	    return onLineHome(event);
+	    return onAltHome(event);
 	case KeyboardEvent.ALTERNATIVE_END:
-	    return onLineEnd(event);
+	    return onAltEnd(event);
 	case KeyboardEvent.PAGE_DOWN:
 	    return onPageDown(event, false);
 	case KeyboardEvent.PAGE_UP:
@@ -180,10 +207,7 @@ public class ListArea  implements Area, CopyCutRequest
 	case KeyboardEvent.ALTERNATIVE_PAGE_UP:
 	    return onPageUp(event, true);
 	case KeyboardEvent.ENTER:
-	    if (model == null || 
-		hotPointY < 0 || hotPointY >= model.getItemCount())
-		return false;
-	    return onClick(model, hotPointY, model.getItem(hotPointY));
+	    return onEnter(event);
 	default:
 	    return false;
 	}
@@ -191,11 +215,15 @@ public class ListArea  implements Area, CopyCutRequest
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
+	case EnvironmentEvent.OK:
+	    return onOk(event);
 	case EnvironmentEvent.COPY_CUT_POINT:
 	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
@@ -209,31 +237,20 @@ public class ListArea  implements Area, CopyCutRequest
 
     @Override public int getLineCount()
     {
-	if (model == null || model.getItemCount() <= 0)
+	if (model.getItemCount() <= 0)
 	    return 2;
 	return model.getItemCount() + 1;
     }
 
     @Override public String getLine(int index)
     {
-	if (model == null || 
-	    model.getItemCount() < 1)
-	    return index == 0?noItems:"";
-	if (index < 0 ||
-	    index >= model.getItemCount() ||
-	    model.getItem(index) == null ||
-	    model.getItem(index).toString() == null)
+	final int count = model.getItemCount();
+	if (count < 1)
+	    return index == 0?environment.staticStr(LangStatic.LIST_NO_CONTENT):"";
+	if (index < 0 || index >= count)
 	    return "";
-	return model.getItem(index).toString();
-    }
-
-    protected boolean onClick(ListModel model,
-				     int index,
-				     Object item)
-    {
-	if (clickHandler != null)
-	    return clickHandler.onClick(model, index, item);
-	return false;
+	final Object item = model.getItem(index);
+	return item != null?appearance.getScreenAppearance(item, 0):"";
     }
 
     @Override public int getHotPointX()
@@ -248,331 +265,421 @@ public class ListArea  implements Area, CopyCutRequest
 
     @Override public String getName()
     {
-	return name != null?name:"";
+	return name;
     }
 
     public void setName(String value)
     {
+	if (value == null)
+	    throw new NullPointerException("name must not be null");
 	name = value != null?value:"";
 	environment.onAreaNewName(this);
     }
 
-    protected void introduceItem(ListModel model,
-				 int index,
-				 Object item,
-				 int flags)
-    {
-	if (appearance != null)
-	{
-	    appearance.introduceItem(item, flags);
-	    return;
-	}
-	String value = item != null?item.toString():"";
-	if (value == null)
-	    value = "";
-	if (value.trim().isEmpty())
-		environment.say(emptyLine); else
-	    environment.say(value);
-    }
-
-    protected String getScreenAppearance(ListModel model,
-					 int index,
-					 Object item,
-					 int flags)
-    {
-	if (appearance != null)
-	    return appearance.getScreenAppearance(item, flags);
-	String value = item != null?item.toString():"";
-	return value != null?value:"";
-    }
-
     private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
+	if (noContentCheck())
 	    return true;
-	}
 	if (hotPointY >= model.getItemCount())
 	{
-		environment.say(noItemsBelow);
+	    environment.hint(Hints.NO_ITEMS_BELOW);
 		return true;
 	}
 	++hotPointY;
-	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
-	if (line == null)
-	    line = "";
-	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	environment.onAreaNewHotPoint(this);
-	if (hotPointY < model.getItemCount())
-	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?ListItemAppearance.BRIEF:0); else
-		environment.say(emptyLine);
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onArrowUp(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
-	    return true;
-	}
+	if (noContentCheck())
+	return true;
 	if (hotPointY <= 0)
 	{
-	    environment.say(noItemsAbove);
+	    environment.hint(Hints.NO_ITEMS_ABOVE);
 	    return true;
 	}
 	    --hotPointY;
-	    if (hotPointY >= model.getItemCount())
-		hotPointY = model.getItemCount() - 1;
-	    String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
-	if (line == null)
-	    line = "";
-	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	environment.onAreaNewHotPoint(this);
-	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?ListItemAppearance.BRIEF:0);
+	    onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onPageDown(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
+	if (noContentCheck())
 	    return true;
-	}
-	if (hotPointY >= model.getItemCount())
+	final int count = model.getItemCount();
+	if (hotPointY >= count)
 	{
-		environment.say(noItemsBelow);
+	    environment.hint(Hints.NO_ITEMS_BELOW);
 		return true;
 	}
 	hotPointY += environment.getAreaVisibleHeight(this);
-	if (hotPointY >= model.getItemCount())
-	    hotPointY = model.getItemCount();
-	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
-	if (line == null)
-	    line = "";
-	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	environment.onAreaNewHotPoint(this);
-	if (hotPointY < model.getItemCount())
-	    introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?ListItemAppearance.BRIEF:0); else
-		environment.say(emptyLine);
+	if (hotPointY >= count)
+	    hotPointY = count;
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onPageUp(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
+	if (noContentCheck())
 	    return true;
-	}
 	if (hotPointY <= 0)
 	{
-	    environment.say(noItemsAbove);
+	    environment.hint(Hints.NO_ITEMS_ABOVE);
 	    return true;
 	}
-	hotPointY -= environment.getAreaVisibleHeight(this);
-	if (hotPointY < 0)
+	final int height = environment.getAreaVisibleHeight(this);
+	if (hotPointY > height)
+	hotPointY -= height; else
 	    hotPointY = 0;
-	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
-	if (line == null)
-	    line = "";
-	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	environment.onAreaNewHotPoint(this);
-	introduceItem(model, hotPointY, model.getItem(hotPointY), briefIntroduction?ListItemAppearance.BRIEF:0);
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onEnd(KeyboardEvent event)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
+	if (noContentCheck())
 	    return true;
-	}
 	hotPointY = model.getItemCount();
-	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
-	environment.say(emptyLine);
+	onNewHotPointY(false);
 	return true;
     }
 
     private boolean onHome(KeyboardEvent event)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
+	if (noContentCheck())
 	    return true;
-	}
 	hotPointY = 0;
-	String line = getScreenAppearance(model, 0, model.getItem(0), 0);
-	if (line == null)
-	    line = "";
-	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-	environment.onAreaNewHotPoint(this);
-	introduceItem(model, 0, model.getItem(0), 0);
+	onNewHotPointY(false);
 	return true;
     }
 
     private boolean onArrowRight(KeyboardEvent event)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
+	if (noContentCheck())
 	    return true;
-	}
+	final int count = model.getItemCount();
 	if (hotPointY < 0 ||
-	    hotPointY >= model.getItemCount() ||
-	    model.getItem(hotPointY) == null)
+	    hotPointY >= count)
 	{
-	    environment.say(emptyLine);
+	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
-	if (line == null)
-	    line = "";
-	if (hotPointX >= line.length())
+	final Object item = model.getItem(hotPointY);
+	if (item == null)
 	{
-	    if (hotPointX > line.length())
-	    {
-		hotPointX = line.length();
-		environment.onAreaNewHotPoint(this);
-	    }
-	    environment.say(endOfLine);
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String line = appearance.getScreenAppearance(item, 0);
+	if (line == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	int leftBound = appearance.getObservableLeftBound(item);
+	if (leftBound < 0)
+	    leftBound = 0;
+	if (leftBound > line.length())
+	    leftBound = line.length();
+	int rightBound = appearance.getObservableRightBound(item);
+	if (rightBound < 0)
+	    rightBound = 0;
+	if (rightBound >= line.length())
+	    rightBound = line.length();
+	if (leftBound >= rightBound)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX >= rightBound)
+	{
+	    environment.hint(Hints.END_OF_LINE);
 	    return true;
 	}
 	++hotPointX;
+	if (hotPointX < rightBound)
+	    environment.sayLetter(line.charAt(hotPointX)); else
+	    environment.hint(Hints.END_OF_LINE);
 	environment.onAreaNewHotPoint(this);
-	if (hotPointX >= line.length())
-	    environment.say(endOfLine); else
-	    environment.sayLetter(line.charAt(hotPointX));
 	return true;
     }
 
     private boolean onArrowLeft(KeyboardEvent event)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
+	if (noContentCheck())
 	    return true;
-	}
+	final int count = model.getItemCount();
 	if (hotPointY < 0 ||
-	    hotPointY >= model.getItemCount() ||
-	    model.getItem(hotPointY) == null)
+	    hotPointY >= count)
 	{
-	    environment.say(emptyLine);
+	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
-	if (line == null)
-	    line = "";
-	if (hotPointX <= (initialHotPointX < line.length()?initialHotPointX:line.length()))
+	final Object item = model.getItem(hotPointY);
+	if (item == null)
 	{
-	    if (hotPointX < (initialHotPointX < line.length()?initialHotPointX:line.length()))
-	    {
-		hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
-		environment.onAreaNewHotPoint(this);
-	    }
-	    environment.say(beginOfLine);
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String line = appearance.getScreenAppearance(item, 0);
+	if (line == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	int leftBound = appearance.getObservableLeftBound(item);
+	if (leftBound < 0)
+	    leftBound = 0;
+	if (leftBound > line.length())
+	    leftBound = line.length();
+	int rightBound = appearance.getObservableRightBound(item);
+	if (rightBound < 0)
+	    rightBound = 0;
+	if (rightBound >= line.length())
+	    rightBound = line.length();
+	if (leftBound >= rightBound)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX <= leftBound)
+	{
+	    environment.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
 	--hotPointX;
-	if (hotPointX > line.length())
-	    hotPointX = line.length();
+	environment.sayLetter(line.charAt(hotPointX));
 	environment.onAreaNewHotPoint(this);
-	if (hotPointX >= line.length())
-	    environment.say(endOfLine); else
-	    environment.sayLetter(line.charAt(hotPointX));
 	return true;
     }
 
-    private boolean onLineEnd(KeyboardEvent event)
+    private boolean onAltRight(KeyboardEvent event)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
+	if (noContentCheck())
 	    return true;
-	}
+	final int count = model.getItemCount();
 	if (hotPointY < 0 ||
-	    hotPointY >= model.getItemCount() ||
-	    model.getItem(hotPointY) == null)
+	    hotPointY >= count)
 	{
-	    environment.say(emptyLine);
+	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	final Object item = model.getItem(hotPointY);
+	if (item == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String line = appearance.getScreenAppearance(item, 0);
 	if (line == null)
-	    line = "";
-	hotPointX = line.length();
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	int leftBound = appearance.getObservableLeftBound(item);
+	if (leftBound < 0)
+	    leftBound = 0;
+	if (leftBound > line.length())
+	    leftBound = line.length();
+	int rightBound = appearance.getObservableRightBound(item);
+	if (rightBound < 0)
+	    rightBound = 0;
+	if (rightBound >= line.length())
+	    rightBound = line.length();
+	if (leftBound >= rightBound)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX >= rightBound)
+	{
+	    environment.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	final String subline = line.substring(leftBound, rightBound);
+	WordIterator it = new WordIterator(subline, hotPointX - leftBound);
+	if (!it.stepForward())
+	{
+	    environment.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos() + leftBound;
+	if (it.announce().length() > 0)
+	    environment.say(it.announce()); else
+	    environment.hint(Hints.END_OF_LINE);
 	environment.onAreaNewHotPoint(this);
-	environment.say(endOfLine);
 	return true;
     }
 
-    private boolean onLineHome(KeyboardEvent event)
+    private boolean onAltLeft(KeyboardEvent event)
     {
-	if (model == null ||
-	    model.getItemCount() < 1)
-	{
-	    environment.say(noItems);
+	if (noContentCheck())
 	    return true;
-	}
+	final int count = model.getItemCount();
 	if (hotPointY < 0 ||
-	    hotPointY >= model.getItemCount() ||
-	    model.getItem(hotPointY) == null)
+	    hotPointY >= count)
 	{
-	    environment.say(emptyLine);
+	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	String line = hotPointY < model.getItemCount()?getScreenAppearance(model, hotPointY, model.getItem(hotPointY), 0):"";
+	final Object item = model.getItem(hotPointY);
+	if (item == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String line = appearance.getScreenAppearance(item, 0);
 	if (line == null)
-	    line = "";
-	hotPointX = initialHotPointX < line.length()?initialHotPointX:line.length();
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	int leftBound = appearance.getObservableLeftBound(item);
+	if (leftBound < 0)
+	    leftBound = 0;
+	if (leftBound > line.length())
+	    leftBound = line.length();
+	int rightBound = appearance.getObservableRightBound(item);
+	if (rightBound < 0)
+	    rightBound = 0;
+	if (rightBound >= line.length())
+	    rightBound = line.length();
+	if (leftBound >= rightBound)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX <= leftBound)
+	{
+	    environment.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	final String subline = line.substring(leftBound, rightBound);
+	WordIterator it = new WordIterator(subline, hotPointX - leftBound);
+	if (!it.stepBackward())
+	{
+	    environment.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos() + leftBound;
+	    environment.say(it.announce());
 	environment.onAreaNewHotPoint(this);
-	if (hotPointX >= line.length())
-	    environment.say(beginOfLine); else
-	    environment.sayLetter(line.charAt(hotPointX));
 	return true;
     }
 
-    public void setNoItemsAboveMessage(String value)
+    private boolean onAltEnd(KeyboardEvent event)
     {
-	noItemsAbove = value != null?value:"";
+	if (noContentCheck())
+	    return true;
+	final int count = model.getItemCount();
+	if (hotPointY < 0 ||
+	    hotPointY >= count)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final Object item = model.getItem(hotPointY);
+	if (item == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String line = appearance.getScreenAppearance(item, 0);
+	if (line == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	int leftBound = appearance.getObservableLeftBound(item);
+	if (leftBound < 0)
+	    leftBound = 0;
+	if (leftBound > line.length())
+	    leftBound = line.length();
+	int rightBound = appearance.getObservableRightBound(item);
+	if (rightBound < 0)
+	    rightBound = 0;
+	if (rightBound >= line.length())
+	    rightBound = line.length();
+	if (leftBound >= rightBound)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	hotPointX = rightBound;
+	environment.hint(Hints.END_OF_LINE);
+	environment.onAreaNewHotPoint(this);
+	return true;
     }
 
-    public void setNoItemsBelowMessage(String value)
+    private boolean onAltHome(KeyboardEvent event)
     {
-	noItemsBelow = value != null?value:"";
+	if (noContentCheck())
+	    return true;
+	final int count = model.getItemCount();
+	if (hotPointY < 0 ||
+	    hotPointY >= count)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final Object item = model.getItem(hotPointY);
+	if (item == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String line = appearance.getScreenAppearance(item, 0);
+	if (line == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	int leftBound = appearance.getObservableLeftBound(item);
+	if (leftBound < 0)
+	    leftBound = 0;
+	if (leftBound > line.length())
+	    leftBound = line.length();
+	int rightBound = appearance.getObservableRightBound(item);
+	if (rightBound < 0)
+	    rightBound = 0;
+	if (rightBound >= line.length())
+	    rightBound = line.length();
+	if (leftBound >= rightBound)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	hotPointX = leftBound;
+	    environment.sayLetter(line.charAt(hotPointX));
+	environment.onAreaNewHotPoint(this);
+	return true;
     }
 
-    public void setBeginOfLineMessage(String value)
+    private boolean onEnter(KeyboardEvent event)
     {
-	beginOfLine = value != null?value:"";
+	if (clickHandler == null)
+	    return false;
+	    final int count = model.getItemCount();
+	    if (count < 1)
+		return false;
+	    if (hotPointY < 0 || hotPointY >= count)
+		return false;
+	    return clickHandler.onListClick(this, hotPointY, model.getItem(hotPointY));
     }
 
-    public void setEndOfLineMessage(String value)
+    private boolean onOk(EnvironmentEvent event)
     {
-	endOfLine = value != null?value:"";
-    }
-
-    public void setNoItemsMessage(String value)
-    {
-	noItems = value != null?value:"";
-    }
-
-    public void setEmptyLineMessage(String value)
-    {
-	emptyLine = value != null?value:"";
+	if (clickHandler == null)
+	    return false;
+	    final int count = model.getItemCount();
+	    if (count < 1)
+		return false;
+	    if (hotPointY < 0 || hotPointY >= count)
+		return false;
+	    return clickHandler.onListClick(this, hotPointY, model.getItem(hotPointY));
     }
 
     @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
@@ -584,7 +691,7 @@ public class ListArea  implements Area, CopyCutRequest
 	Vector<String> res = new Vector<String>();
 	for(int i = fromY;i < toY;++i)
 	{
-	    final String line = getScreenAppearance(model, i, model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
+	    final String line = appearance.getScreenAppearance(model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
 	    if (line != null)
 		res.add(line); else
 		res.add("");
@@ -608,7 +715,7 @@ public class ListArea  implements Area, CopyCutRequest
 	{
 	    for(int i = 0;i < model.getItemCount();++i)
 	    {
-		String line = getScreenAppearance(model, i, model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
+		String line = appearance.getScreenAppearance(model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
 		if (line == null)
 		    line = "";
 		lines.add(line);
@@ -628,5 +735,47 @@ public class ListArea  implements Area, CopyCutRequest
 	res.add(dashes);
 	res.addAll(lines);
 	environment.setClipboard(res.toArray(new String[res.size()]));
+    }
+
+    private void onNewHotPointY(boolean briefIntroduction)
+    {
+	final int count = model.getItemCount();
+	if (hotPointY < 0 || hotPointY >= count)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    hotPointX = 0;
+	    environment.onAreaNewHotPoint(this);
+	    return;
+	}
+	final Object item = model.getItem(hotPointY);
+	if (item == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    hotPointX = 0;
+	    environment.onAreaNewHotPoint(this);
+	    return;
+	}
+	appearance.introduceItem(item, briefIntroduction?ListItemAppearance.BRIEF:0);
+	hotPointX = getInitialHotPointX(item);
+	environment.onAreaNewHotPoint(this);
+    }
+
+    private int getInitialHotPointX(Object item)
+    {
+	if (item == null)
+	    return 0;
+	final String line = appearance.getScreenAppearance(item, 0);
+	final int leftBound = appearance.getObservableLeftBound(item);
+	return leftBound < line.length()?leftBound:line.length();
+    }
+
+    private boolean noContentCheck()
+    {
+	if (model == null || model.getItemCount() < 1)
+	{
+	    environment.hint(environment.staticStr(LangStatic.LIST_NO_CONTENT), Hints.NO_CONTENT);
+	    return true;
+	}
+	return false;
     }
 }

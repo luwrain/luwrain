@@ -53,7 +53,7 @@ public interface LangStatic
 
     public static final int COPIED_LINES = 40;
     public static final int CUT_LINES = 41;
-    public static final int LIST_NO_ITEMS = 108;
+    public static final int LIST_NO_CONTENT = 108;
     public static final int COMMANDER_INACCESSIBLE_DIRECTORY_CONTENT = 109;
     public static final int COMMANDER_SELECTED_DIRECTORY = 110;
     public static final int COMMANDER_SELECTED = 111;

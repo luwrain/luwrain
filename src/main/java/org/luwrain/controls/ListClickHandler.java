@@ -18,7 +18,7 @@ package org.luwrain.controls;
 
 public interface ListClickHandler
 {
-    boolean onClick(ListModel model,
+    boolean onListClick(ListArea area,
 		       int index,
 		       Object item);
 }

@@ -226,8 +226,9 @@ public class RegistryImpl implements Registry
 
     @Override public String[] getValues(String path)
     {
+	//	System.out.println(path);
 	Path p = parseAsDir(path);
-	if (!p.isRoot())
+	if (p.isRoot())
 	    throw new IllegalArgumentException("root directory may not have values");
 	try {
 	    Directory d = findDirectory(p.dirItems());

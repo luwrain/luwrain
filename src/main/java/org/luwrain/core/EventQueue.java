@@ -34,6 +34,11 @@ public class EventQueue
 	}
     }
 
+    public boolean hasAgain()
+    {
+	return again != null;
+    }
+
     public void onceAgain(Event event)
     {
 	if (event == null)
