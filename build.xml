@@ -1,7 +1,13 @@
 <project name="luwrain" default="jar" basedir=".">
   <path id="classpath">
     <pathelement location="."/>
-     <fileset dir="lib">
+    <fileset dir="lib">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+  <path id="mainjar">
+    <pathelement location="."/>
+    <fileset dir="jar">
       <include name="**/*.jar"/>
     </fileset>
   </path>
@@ -11,7 +17,8 @@
   </target>
   <target name="compile" depends="clean">
     <mkdir dir="build"/>
-    <javac srcdir="src/main/java" destdir="build" source="1.7" target="1.7">
+    <mkdir dir="build/main"/>
+    <javac srcdir="src/main/java" destdir="build/main" source="1.7" target="1.7">
       <classpath refid="classpath"/>
     </javac>
   </target>
@@ -24,11 +31,28 @@
           <attribute name="Extensions" value="org.luwrain.langs.ru.Extension"/>
         </section>
       </manifest>
-      <fileset dir="./build">
+      <fileset dir="./build/main">
         <include name="**/*.class"/>
       </fileset>
       <fileset dir="./src/main/resources">
         <include name="**/*.properties"/>
+      </fileset>
+    </jar>
+  </target>
+  <target name="compile-tests" depends="jar">
+    <mkdir dir="build"/>
+    <mkdir dir="build/tests"/>
+    <javac srcdir="src/tests/java" destdir="build/tests" source="1.7" target="1.7">
+      <classpath>
+        <path refid="classpath"/>
+        <path refid="mainjar"/>
+      </classpath>
+    </javac>
+  </target>
+  <target name="jar-tests" depends="compile-tests">
+    <jar jarfile="jar/luwrain-tests.jar">
+      <fileset dir="./build/tests">
+        <include name="**/*.class"/>
       </fileset>
     </jar>
   </target>
@@ -41,5 +65,19 @@
       <doctitle><![CDATA[<h1>Accessible environment Luwrain</h1>]]></doctitle>
       <bottom><![CDATA[<i>Visit <a href="http://luwrain.org">luwrain.org</a> for more information</i>]]></bottom>
     </javadoc>
+  </target>
+  <target name="junit" depends="jar-tests">
+    <junit printsummary="yes">
+      <classpath>
+        <path refid="classpath"/>
+        <path refid="mainjar"/>
+      </classpath>
+      <formatter type="plain" usefile="false" />
+      <batchtest fork="yes">
+        <fileset dir="build/tests">
+          <include name="**/*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
   </target>
 </project>
