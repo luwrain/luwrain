@@ -25,4 +25,5 @@ public interface Extension
     SharedObject[] getSharedObjects();
     void i18nExtension(I18nExtension i18nExt);
     org.luwrain.mainmenu.Item[] getMainMenuItems(CommandEnvironment env);
+    void close();
 }

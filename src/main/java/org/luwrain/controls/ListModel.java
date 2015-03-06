@@ -20,5 +20,6 @@ public interface ListModel
 {
     int getItemCount();
     Object getItem(int index);
+    boolean toggleMark(int index);
     void refresh();
 }

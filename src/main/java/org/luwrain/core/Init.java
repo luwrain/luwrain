@@ -48,6 +48,11 @@ class Init
 	    Log.debug("init", s);
 	if (init())
 	    new Environment(cmdLine, registry, speech, os, interaction, extensions, launchContext).run();
+	for(Extension e: extensions)
+	{
+	    Log.debug("init", "closing extension " + e.getClass().getName());
+	    e.close();
+	}
 	exit();
     }
 

@@ -51,6 +51,7 @@ public class ListArea  implements Area, CopyCutRequest
 	if (model == null)
 	    throw new NullPointerException("model may not be null");
 	appearance = new DefaultListItemAppearance(environment);
+	resetHotPoint();
     }
 
     public ListArea(ControlEnvironment environment,
@@ -67,6 +68,7 @@ public class ListArea  implements Area, CopyCutRequest
 	if (name == null)
 	    throw new NullPointerException("name may not be null");
 	appearance = new DefaultListItemAppearance(environment);
+	resetHotPoint();
     }
 
     public ListArea(ControlEnvironment environment,
@@ -86,6 +88,7 @@ public class ListArea  implements Area, CopyCutRequest
 	    throw new NullPointerException("appearance may not be null");
 	if (name == null)
 	    throw new NullPointerException("name may not be null");
+	resetHotPoint();
     }
 
     public ListArea(ControlEnvironment environment,
@@ -109,6 +112,7 @@ public class ListArea  implements Area, CopyCutRequest
 	    throw new NullPointerException("clickHandler may not be null");
 	if (name == null)
 	    throw new NullPointerException("name may not be null");
+	resetHotPoint();
     }
 
     public ListModel model()
@@ -129,6 +133,13 @@ public class ListArea  implements Area, CopyCutRequest
 	    hotPointY >= count)
 	    return -1;
 	return hotPointY;
+    }
+
+    public void selectEmptyLine()
+    {
+	hotPointX = 0;
+	hotPointY = model.getItemCount();
+	environment.onAreaNewHotPoint(this);
     }
 
     public boolean setSelectedByIndex(int index, boolean introduce)
@@ -152,11 +163,48 @@ public class ListArea  implements Area, CopyCutRequest
 	return true;
     }
 
+    public void resetHotPoint()
+    {
+	hotPointY = 0;
+	final int count = model.getItemCount();
+	if (count < 1)
+	{
+	    hotPointX = 0;
+	    environment.onAreaNewHotPoint(this);
+	    return;
+	}
+	final Object item = model.getItem(0);
+	hotPointX = item != null?appearance.getObservableLeftBound(item):0;
+	environment.onAreaNewHotPoint(this);
+    }
+
+    public void introduceSelected()
+    {
+	final Object item = selected();
+	if (item != null)
+	    appearance.introduceItem(item, 0);
+    }
+
+    /**
+     * Refreshes the content of the list. This method calls {@code refresh()}
+     * method of the model and displays new items. It does not produce any
+     * speech announcement of the change. HotPointY is preserved if it is
+     * possible (meaning, the new number of lines not less than old value of
+     * hotPointY), but hotPointX is moved to the beginning of the line.
+     */
     public void refresh()
     {
 	model.refresh();
 	final int count = model.getItemCount();
-	hotPointY = hotPointY < count?hotPointY:count;
+	if (count == 0)
+	{
+	    hotPointX = 0;
+	    hotPointY = 0;
+	    environment.onAreaNewContent(this);
+	    environment.onAreaNewHotPoint(this);
+	    return;
+	}
+	hotPointY = hotPointY < count?hotPointY :count - 1;
 	final Object item = model.getItem(hotPointY);
 	if (item != null)
 	    hotPointX = appearance.getObservableLeftBound(item); else
@@ -185,7 +233,6 @@ public class ListArea  implements Area, CopyCutRequest
 	    return onArrowDown(event, true);
 	case KeyboardEvent.ALTERNATIVE_ARROW_UP:
 	    return onArrowUp(event, true);
-
 	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
 	    return onAltRight(event);
 	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
@@ -206,6 +253,8 @@ public class ListArea  implements Area, CopyCutRequest
 	    return onPageDown(event, true);
 	case KeyboardEvent.ALTERNATIVE_PAGE_UP:
 	    return onPageUp(event, true);
+	case KeyboardEvent.INSERT:
+	    return onInsert(event);
 	case KeyboardEvent.ENTER:
 	    return onEnter(event);
 	default:
@@ -655,6 +704,17 @@ public class ListArea  implements Area, CopyCutRequest
 	hotPointX = leftBound;
 	    environment.sayLetter(line.charAt(hotPointX));
 	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onInsert(KeyboardEvent event)
+    {
+	final int count = model.getItemCount();
+	if (count == 0 || hotPointY >= count)
+	    return false;
+	if (!model.toggleMark(hotPointY))
+	    return false;
+	environment.onAreaNewContent(this);
 	return true;
     }
 

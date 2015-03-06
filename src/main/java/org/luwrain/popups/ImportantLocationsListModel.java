@@ -52,6 +52,11 @@ class ImportantLocationsListModel implements ListModel
 	return locations[index - 1];
     }
 
+    @Override public boolean toggleMark(int index)
+    {
+	return false;
+    }
+
     @Override public void refresh()
     {
 	locations = os.getImportantLocations();
