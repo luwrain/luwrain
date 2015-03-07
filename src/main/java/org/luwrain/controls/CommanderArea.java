@@ -21,6 +21,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.util.*;
 import org.luwrain.os.*;
 
 public class CommanderArea implements Area
@@ -331,7 +332,7 @@ public class CommanderArea implements Area
 		    introduceLocation(current);
 		return true;
 	    default:
-		return false;
+		return onChar(event);
 	    }
 	}
 	if (event.isModified())
@@ -387,8 +388,6 @@ public class CommanderArea implements Area
 	    throw new NullPointerException("event may not be null");
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.INTRODUCE:
-	    return onIntroduce(event);
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
@@ -411,11 +410,8 @@ public class CommanderArea implements Area
 
     private boolean onEnter(KeyboardEvent event)
     {
-	if (entries == null)
-	{
-	    noContentHint();
+	if (noContentCheck())
 	    return true;
-	}
 	if (hotPointY >= entries.size())
 	{
 	    File[] selected = selected();
@@ -438,6 +434,7 @@ public class CommanderArea implements Area
 
     private boolean onBackspace(KeyboardEvent event)
     {
+	//noContentCheck() isn't applicable here, we should be able to leave the directory even if it doesn't have any content;
 	if (current == null)
 	    return false;
 	File parent = current.getParentFile();
@@ -448,121 +445,95 @@ public class CommanderArea implements Area
 	return true;
     }
 
+    private boolean onInsert(KeyboardEvent event)
+    {
+	if (!selecting)
+	    return false;
+	if (noContentCheck())
+	    return true;
+	//FIXME:
+	return false;
+    }
+
+    private boolean onOk(EnvironmentEvent event)
+    {
+	if (noContentCheck())
+	    return true;
+	/*
+	if (current == null || !current.isDirectory())
+	    return false;
+	File f = luwrain.openPopup(null, null, current);
+	if (f == null)
+	    return true;
+	if (f.isDirectory())
+	    openByFile(f); else
+	    luwrain.openFile(f.getAbsolutePath());
+	*/
+	return true;
+    }
+
+    private boolean onChar(KeyboardEvent event)
+    {
+	if (noContentCheck())
+	    return true;
+	final char c = event.getCharacter();
+	String beginning = "";
+	if (hotPointY < entries.size())
+	{
+	    final String name = entries.get(hotPointY).file().getName();
+	    final int pos = hotPointX < name.length()?hotPointX:name.length();
+	    beginning = name.substring(0, pos);
+}
+	final String mustBegin = beginning + c;
+	for(int i = 0;i < entries.size();++i)
+	{
+	    final String name = entries.get(i).file().getName();
+	    if (!name.startsWith(mustBegin))
+		continue;
+	    hotPointY = i;
+	    ++hotPointX;
+	    environment.onAreaNewHotPoint(this);
+	    introduceEntry(entries.get(hotPointY), true);
+			  return true;
+	}
+	    return false;
+    }
+
     private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (entries == null)
-	{
-	    noContentHint();
+	if (noContentCheck())
 	    return true;
-	}
 	if (hotPointY + 1> entries.size())
 	{
 	    environment.hint(Hints.NO_ITEMS_BELOW);
 	    return true;
 	}
-	hotPointX = 0;
 	++hotPointY;
-	environment.onAreaNewHotPoint(this);
-	if (hotPointY < entries.size())
-	    introduceEntry(entries.get(hotPointY), briefIntroduction); else
-	    environment.hint(Hints.EMPTY_LINE);
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onArrowUp(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (entries == null)
-	{
-	    noContentHint();
+	if (noContentCheck())
 	    return true;
-	}
 	if (hotPointY < 1)
 	{
 	    environment.hint(Hints.NO_ITEMS_ABOVE);
 	    return true;
 	}
-	hotPointX = 0;
-	hotPointY--;
-	environment.onAreaNewHotPoint(this);
-	introduceEntry(entries.get(hotPointY), briefIntroduction);
-	return true;
-    }
-
-    private boolean onArrowRight(KeyboardEvent event)
-    {
-	if (entries == null)
-	{
-	    noContentHint();
-	    return true;
-	}
-	if (hotPointY >= entries.size())
-	{
-	    environment.hint(Hints.EMPTY_LINE);
-	    return true;
-	}
-	final String name = entries.get(hotPointY).file().getName();
-	if (name == null)
-	    return true;
-	if (hotPointX >= name.length())
-	{
-	    environment.hint(Hints.END_OF_LINE);
-	    return true;
-	}
-	++hotPointX;
-	if (hotPointX < 0)
-	    hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
-	if (hotPointX < name.length())
-	    environment.sayLetter(name.charAt(hotPointX)); else
-	    environment.hint(Hints.END_OF_LINE);
-	return true;
-    }
-
-    private boolean onArrowLeft(KeyboardEvent event)
-    {
-	if (entries == null)
-	{
-	    noContentHint();
-	    return true;
-	}
-	if (hotPointY >= entries.size())
-	{
-	    environment.hint(Hints.EMPTY_LINE);
-	    return true;
-	}
-	final String name = entries.get(hotPointY).file().getName();
-	if (name == null)
-	    return false;
-	if (hotPointX > name.length())
-	    hotPointX = name.length();
-	if (hotPointX <= 0)
-	{
-	    environment.hint(Hints.BEGIN_OF_LINE);
-	    return true;
-	}
-	--hotPointX;
-	environment.onAreaNewHotPoint(this);
-	environment.sayLetter(name.charAt(hotPointX));
-	return true;
-    }
-
-    private boolean onAltRight(KeyboardEvent event)
-    {
-	//FIXME:
-	return false;
-    }
-
-    private boolean onAltLeft(KeyboardEvent event)
-    {
-	//FIXME:
+	--hotPointY;
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onPageDown(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (entries == null)
+	if (noContentCheck())
+	    return true;
+	if (hotPointY >= entries.size())
 	{
-	    noContentHint();
+	    environment.hint(Hints.NO_ITEMS_BELOW);
 	    return true;
 	}
 	final int visibleHeight = environment.getAreaVisibleHeight(this);
@@ -571,19 +542,17 @@ public class CommanderArea implements Area
 	if (hotPointY + visibleHeight > entries.size())
 	    hotPointY = entries.size(); else
 	    hotPointY += visibleHeight;
-	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
-	if (hotPointY < entries.size())
-	    introduceEntry(entries.get(hotPointY), briefIntroduction); else
-	    environment.hint(Hints.EMPTY_LINE);
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onPageUp(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (entries == null)
+	if (noContentCheck())
+	    return true;
+	if (hotPointY <= 0)
 	{
-	    noContentHint();
+	    environment.hint(Hints.NO_ITEMS_ABOVE);
 	    return true;
 	}
 	final int visibleHeight = environment.getAreaVisibleHeight(this);
@@ -602,27 +571,152 @@ public class CommanderArea implements Area
 
     private boolean onHome(KeyboardEvent event)
     {
-	if (entries == null)
+	if (noContentCheck())
+	    return true;
+	hotPointY = 0;
+	onNewHotPointY(false);
+	return true;
+    }
+
+    private boolean onEnd(KeyboardEvent event)
+    {
+	if (noContentCheck())
+	    return true;
+	hotPointY = entries.size();
+	onNewHotPointY(false);
+	return true;
+    }
+
+    private boolean onArrowRight(KeyboardEvent event)
+    {
+	if (noContentCheck())
+	    return true;
+	if (hotPointY >= entries.size())
 	{
-	    noContentHint();
+	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	hotPointY = 0;
-	hotPointX = 0;
-	if (hotPointY < entries.size())
-	    introduceEntry(entries.get(hotPointY), false); else
+	final String name = entries.get(hotPointY).file().getName();
+	if (name == null || name.isEmpty())
+	{
 	    environment.hint(Hints.EMPTY_LINE);
-environment.onAreaNewHotPoint(this);
+	    return true;
+	}
+	if (hotPointX >= name.length())
+	{
+	    environment.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	++hotPointX;
+	if (hotPointX < 0)
+	    hotPointX = 0;
+	if (hotPointX < name.length())
+	    environment.sayLetter(name.charAt(hotPointX)); else
+	    environment.hint(Hints.END_OF_LINE);
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onArrowLeft(KeyboardEvent event)
+    {
+	if (noContentCheck())
+	    return true;
+	if (hotPointY >= entries.size())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String name = entries.get(hotPointY).file().getName();
+	if (name == null || name.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX > name.length())
+	    hotPointX = name.length();
+	if (hotPointX <= 0)
+	{
+	    environment.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	--hotPointX;
+	environment.onAreaNewHotPoint(this);
+	environment.sayLetter(name.charAt(hotPointX));
+	return true;
+    }
+
+    private boolean onAltRight(KeyboardEvent event)
+    {
+	if (noContentCheck())
+	    return true;
+	if (hotPointY >= entries.size())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String name = entries.get(hotPointY).file().getName();
+	if (name == null || name.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX >= name.length())
+	{
+	    environment.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	WordIterator it = new WordIterator(name, hotPointX);
+	if (!it.stepForward())
+	{
+environment.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos();
+	if (it.announce().length() > 0)
+environment.say(it.announce()); else
+environment.hint(Hints.END_OF_LINE);
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onAltLeft(KeyboardEvent event)
+    {
+	if (noContentCheck())
+	    return true;
+	if (hotPointY >= entries.size())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final String name = entries.get(hotPointY).file().getName();
+	if (name == null || name.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX > name.length())
+	    hotPointX = name.length();
+	if (hotPointX <= 0)
+	{
+	    environment.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	WordIterator it = new WordIterator(name, hotPointX);
+	if (!it.stepBackward())
+	{
+environment.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos();
+environment.say(it.announce());
+	environment.onAreaNewHotPoint(this);
 	return true;
     }
 
     private boolean onAltHome(KeyboardEvent event)
     {
-	if (entries == null)
-	{
-	    noContentHint();
+	if (noContentCheck())
 	    return true;
-	}
 	hotPointX = 0;
 	if (hotPointY >= entries.size() || entries.get(hotPointY).file().getName().isEmpty())
 	    environment.hint(Hints.EMPTY_LINE); else
@@ -631,27 +725,10 @@ environment.onAreaNewHotPoint(this);
 	return true;
     }
 
-    private boolean onEnd(KeyboardEvent event)
-    {
-	if (entries == null)
-	{
-	    noContentHint();
-	    return true;
-	}
-	hotPointY = entries.size();
-	hotPointX = 0;
-	environment.hint(Hints.EMPTY_LINE);
-	environment.onAreaNewHotPoint(this);
-	return true;
-    }
-
     private boolean onAltEnd(KeyboardEvent event)
     {
-	if (entries == null)
-	{
-	    noContentHint();
+	if (noContentCheck())
 	    return true;
-	}
 	if (hotPointY < entries.size())
 	{
 	    hotPointX = entries.get(hotPointY).file().getName().length();
@@ -663,33 +740,6 @@ environment.onAreaNewHotPoint(this);
 	}
 environment.onAreaNewHotPoint(this);
 	return true;
-    }
-
-    private boolean onInsert(KeyboardEvent event)
-    {
-	//FIXME:
-	return false;
-    }
-
-    private boolean onOk(EnvironmentEvent event)
-    {
-	/*
-	if (current == null || !current.isDirectory())
-	    return false;
-	File f = luwrain.openPopup(null, null, current);
-	if (f == null)
-	    return true;
-	if (f.isDirectory())
-	    openByFile(f); else
-	    luwrain.openFile(f.getAbsolutePath());
-	*/
-	return true;
-    }
-
-    private boolean onIntroduce(EnvironmentEvent event)
-    {
-	//FIXME:
-	return false;
     }
 
     //Doesn't produce any speech announcement;
@@ -752,11 +802,6 @@ environment.onAreaNewHotPoint(this);
 	return filtered;
     }
 
-    private void noContentHint()
-    {
-	environment.hint("no content");
-    }
-
     private Location[] getImportantLocations()
     {
 	Vector<Location> res = new Vector<Location>();
@@ -765,5 +810,29 @@ environment.onAreaNewHotPoint(this);
 	for(Location ll: l)
 	    res.add(ll);
 	return res.toArray(new Location[res.size()]);
+    }
+
+    private void onNewHotPointY(boolean briefIntroduction)
+    {
+	hotPointX = 0;
+	if (hotPointY < entries.size())
+	{
+	    final Entry entry = entries.get(hotPointY);
+	    if (entry != null)
+		introduceEntry(entry, briefIntroduction); else
+		environment.hint(Hints.EMPTY_LINE);
+	} else
+	    environment.hint(Hints.EMPTY_LINE);
+	environment.onAreaNewHotPoint(this);
+    }
+
+    private boolean noContentCheck()
+    {
+	if (entries == null)
+	{
+	    environment.hint("no content");
+	    return true;
+	}
+	return false;
     }
 }
