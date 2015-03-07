@@ -26,6 +26,8 @@ public class ThreadSyncEvent extends EnvironmentEvent
     {
 	super(THREAD_SYNC);
 	this.destArea = destArea;
+	if (destArea == null)
+	    throw new NullPointerException("destArea may not be null");
     }
 
     public int getCode()

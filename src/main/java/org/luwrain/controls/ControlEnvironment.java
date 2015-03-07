@@ -38,5 +38,5 @@ int getAreaVisibleHeight(Area area);
     String[] getClipboard();
     LaunchContext launchContext();
     String staticStr(int code);
-    File getFsRoot(File relativeTo);
+    org.luwrain.core.Strings environmentStrings();
 }

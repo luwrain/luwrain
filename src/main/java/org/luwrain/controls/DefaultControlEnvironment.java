@@ -109,10 +109,17 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	return luwrain.i18n().staticStr(code);
     }
 
+    /*
     @Override public File getFsRoot(File relativeTo)
     {
 	if (relativeTo == null)
 	    throw new NullPointerException("relativeTo may not be null");
 	return luwrain.os().getRoot(relativeTo);
+    }
+    */
+
+    @Override public org.luwrain.core.Strings environmentStrings()
+    {
+	return (org.luwrain.core.Strings)luwrain.i18n().getStrings("luwrain.environment");
     }
 }

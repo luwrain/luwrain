@@ -100,4 +100,24 @@ public class Popups
 	    return null;
 	return popup.getFile();
     }
+
+    public static File file(Luwrain luwrain,
+			    String name,
+			    String prefix,
+			    File startWith,
+			    int acceptingFlags,
+			    int popupFlags)
+    {
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	if (prefix == null)
+	    throw new NullPointerException("prefix may not be null");
+	if (startWith == null)
+	    throw new NullPointerException("startWith may not be null");
+	FilePopup popup = new FilePopup(luwrain, name, prefix, startWith, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.getFile();
+    }
 }

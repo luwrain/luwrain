@@ -43,6 +43,7 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 			  int popupFlags)
     {
 	super(new DefaultControlEnvironment(luwrain),
+	      luwrain.os(),
 	      file != null?file:luwrain.launchContext().userHomeDirAsFile(),
 	      (flags & ACCEPT_MULTIPLE_SELECTION) != 0,
 	      new NoHiddenCommanderFilter(),

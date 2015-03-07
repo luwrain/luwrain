@@ -21,6 +21,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.os.*;
 
 public class CommanderArea implements Area
 {
@@ -66,7 +67,11 @@ public class CommanderArea implements Area
 
     private File current;
     private Vector<Entry> entries;//null means the content is inaccessible;
-    private ControlEnvironment environment;
+    protected ControlEnvironment environment;
+    protected OperatingSystem os;
+    private Location[] importantLocations;
+    private org.luwrain.core.Strings strings;
+
     private CommanderFilter filter;
     private Comparator comparator;
     private boolean selecting;
@@ -74,24 +79,34 @@ public class CommanderArea implements Area
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public CommanderArea(ControlEnvironment environment)
+    public CommanderArea(ControlEnvironment environment, OperatingSystem os)
     {
 	this.environment = environment;
+	this.os = os;
 	if (environment == null)
 	    throw new NullPointerException("environment may not be null");
+	if (os == null)
+	    throw new NullPointerException("os may not be null");
 	current = environment.launchContext().userHomeDirAsFile();
 	filter = new NoHiddenCommanderFilter();
 	comparator = new ByNameCommanderComparator();
 	selecting = false;
+	importantLocations = getImportantLocations();
+	strings = environment.environmentStrings();
 	refresh();
     }
 
-    public CommanderArea(ControlEnvironment environment, File current)
+    public CommanderArea(ControlEnvironment environment, 
+			 OperatingSystem os,
+			 File current)
     {
 	this.environment = environment;
+	this.os = os;
 	this.current = current;
 	if (environment == null)
 	    throw new NullPointerException("environment may not be null");
+	if (os == null)
+	    throw new NullPointerException("os may not be null");
 	if (current == null)
 	    throw new NullPointerException("current may not be null");
 	if (!current.isDirectory())
@@ -99,28 +114,36 @@ public class CommanderArea implements Area
 	filter = new NoHiddenCommanderFilter();
 	comparator = new ByNameCommanderComparator();
 	selecting = false;
+	importantLocations = getImportantLocations();
+	strings = environment.environmentStrings();
 	refresh();
     }
 
     public CommanderArea(ControlEnvironment environment, 
+			 OperatingSystem os,
 			 File current,
 			 boolean selecting,
 			 CommanderFilter filter,
 			 Comparator comparator)
     {
 	this.environment = environment;
+	this.os = os;
 	this.current = current;
 	this.selecting = selecting;
 	this.filter = filter;
 	this.comparator = comparator;
 	if (environment == null)
 	    throw new NullPointerException("environment may not be null");
+	if (os == null)
+	    throw new NullPointerException("os may not be null");
 	if (current == null)
 	    throw new NullPointerException("current may not be null");
 	if (comparator == null)
 	    throw new NullPointerException("comparator may not be null");
 	if (!current.isDirectory())
 	    throw new IllegalArgumentException("current must address a directory");
+	importantLocations = getImportantLocations();
+	strings = environment.environmentStrings();
 	refresh();
     }
 
@@ -129,7 +152,8 @@ public class CommanderArea implements Area
      * files or directories this method returns their list, regardless what
      * entry is under the cursor. Otherwise, this method returns exactly the
      * entry under the current cursor position or an empty array if the cursor is at
-     * the empty string in the bottom of the area.
+     * the empty string in the bottom of the area. The parent directory entry
+     * is always ignored.
      *
      * @return The list of currently selected entries 
      */
@@ -137,18 +161,19 @@ public class CommanderArea implements Area
     {
 	if (entries == null)
 	    return new File[0];
-	Vector<File> files = new Vector<File>();
-	for(Entry e: entries)
-	    if (e.selected())
-		files.add(e.file());
-	if (!files.isEmpty())
-	    return files.toArray(new File[files.size()]);
+	if (selecting)
+	{
+	    Vector<File> files = new Vector<File>();
+	    for(Entry e: entries)
+		if (e.selected() && !e.file().getName().equals(PARENT_DIR))
+		    files.add(e.file());
+	    if (!files.isEmpty())
+		return files.toArray(new File[files.size()]);
+	}
 	final File f = cursorAt();
-	if (f == null)
+	if (f == null || f.getName().equals(PARENT_DIR))
 	    return new File[0];
-	File[] ff = new File[1];
-	ff[0] = f;
-	return ff;
+	return new File[]{f};
     }
 
     /**
@@ -166,13 +191,14 @@ public class CommanderArea implements Area
     /**
      * Returns the entry exactly under the cursor. This method returns the
      * entry without taking into account where there are the user marks. If the cursor is at
-     * the empty line in the bottom of the area this method returns null. 
+     * the empty line in the bottom of the area this method returns null. The parent directory entry is returned
+     * as well.
      *
      * @return The entry under the cursor
      */
     public File cursorAt()
     {
-	return entries != null && hotPointY < entries.size()?entries.get(hotPointY).file():null;
+	return entries != null && hotPointY >= 0 && hotPointY < entries.size()?entries.get(hotPointY).file():null;
     }
 
     /**
@@ -181,13 +207,13 @@ public class CommanderArea implements Area
      */
     public void refresh()
     {
-	if (current == null)//What is very strange;
+	if (current == null)//What very strange;
 	{
 	    entries = null;
 	    return;
 	}
 	final File c = cursorAt();
-	open(current, c != null?cursorAt().getName():null);
+	open(current, c != null?c.getName():null);
     }
 
     protected void introduceEntry(Entry entry, boolean brief)
@@ -229,6 +255,12 @@ public class CommanderArea implements Area
     {
 	if (file == null)
 	    return;
+	for(Location l: importantLocations)
+	    if (l.file().equals(file))
+	    {
+		environment.say(strings.locationTitle(l));
+		return;
+	    }
 	    environment.say(file.getName());
     }
 
@@ -284,23 +316,24 @@ public class CommanderArea implements Area
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
-	//	Log.debug("commander", "char");
 	if (!event.isCommand())
 	{
 	    switch(event.getCharacter())
 	    {
 	    case '~':
 		open(environment.launchContext().userHomeDirAsFile(), null);
-		environment.sayStaticStr(LangStatic.COMMANDER_USER_HOME);
+		if (current != null)
+		    introduceLocation(current);
 		return true;
 	    case '/':
-		open(environment.getFsRoot(current != null?current:environment.launchContext().userHomeDirAsFile()), null);
+		open(os.getRoot(current != null?current:environment.launchContext().userHomeDirAsFile()), null);
+		if (current != null)
+		    introduceLocation(current);
 		return true;
 	    default:
 		return false;
 	    }
 	}
-
 	if (event.isModified())
 	    return false;
 	switch(event.getCommand())
@@ -321,7 +354,6 @@ public class CommanderArea implements Area
 	    return onArrowLeft(event);
 	case KeyboardEvent.ARROW_RIGHT:
 	    return onArrowRight(event);
-
 	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
 	    return onAltLeft(event);
 	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
@@ -357,11 +389,11 @@ public class CommanderArea implements Area
 	{
 	case EnvironmentEvent.INTRODUCE:
 	    return onIntroduce(event);
-	case EnvironmentEvent.OK:
-	    return onOk(event);
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
+	case EnvironmentEvent.OK:
+	    return onOk(event);
 	default:
 	    return false;
 	}
@@ -369,7 +401,12 @@ public class CommanderArea implements Area
 
     @Override public String getName()
     {
-	return current != null?current.getAbsolutePath():"-";
+	if (current == null)
+	    return "-";
+	for(Location l: importantLocations)
+	    if (l.file().equals(current))
+		return strings.locationTitle(l);
+	return current.getAbsolutePath();
     }
 
     private boolean onEnter(KeyboardEvent event)
@@ -718,5 +755,15 @@ environment.onAreaNewHotPoint(this);
     private void noContentHint()
     {
 	environment.hint("no content");
+    }
+
+    private Location[] getImportantLocations()
+    {
+	Vector<Location> res = new Vector<Location>();
+	final Location[] l = os.getImportantLocations();
+	res.add(new Location(Location.USER_HOME, environment.launchContext().userHomeDirAsFile(), environment.launchContext().userHomeDir()));
+	for(Location ll: l)
+	    res.add(ll);
+	return res.toArray(new Location[res.size()]);
     }
 }
