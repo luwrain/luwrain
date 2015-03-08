@@ -17,31 +17,37 @@
 package org.luwrain.controls;
 
 import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
 public class MultilinedEdit implements CopyCutRequest
 {
-    private final String tabMessage = Langs.staticValue(Langs.TAB);
-    private final String emptyLineMessage = Langs.staticValue(Langs.EMPTY_LINE);
-    private final String textBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
-    private final String textEndMessage = Langs.staticValue(Langs.AREA_END);
-    private final String lineEndMessage = Langs.staticValue(Langs.END_OF_LINE);
+    //    private final String tabMessage = Langs.staticValue(Langs.TAB);
+    //    private final String emptyLineMessage = Langs.staticValue(Langs.EMPTY_LINE);
+    //    private final String textBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
+    //    private final String textEndMessage = Langs.staticValue(Langs.AREA_END);
+    //    private final String lineEndMessage = Langs.staticValue(Langs.END_OF_LINE);
 
     private ControlEnvironment environment;
     private MultilinedEditModel model;
-    private CopyCutInfo copyCutInfo;
+    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public MultilinedEdit(ControlEnvironment environment, MultilinedEditModel model)
     {
 	this.environment = environment;
 	this.model = model;
-	this.copyCutInfo = new CopyCutInfo(this);
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	boolean res = false;
 	if (!event.isCommand())
 	{
@@ -86,6 +92,8 @@ public class MultilinedEdit implements CopyCutRequest
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	boolean res = false;
 	switch(event.getCode())
 	{
@@ -117,7 +125,7 @@ return res;
 	final int count = model.getLineCount();
 	if (count < 1)
 	{
-	    environment.say(textBeginMessage);
+	    environment.hint(Hints.BEGIN_OF_TEXT);
 	    return true;
 	}
 	if (index >= count)
@@ -125,26 +133,26 @@ return res;
 	final String line = model.getLine(index);
 	if (line == null)
 	    return false;
-	int pos = model.getHotPointX();
+	final int pos = model.getHotPointX();
 	if (pos > line.length())
-	    pos = line.length();
+	    return false;
 	//Nothing to eliminate with backspace;
 	if (pos < 1 && index < 1)
-	    environment.say(textBeginMessage); else
+	    environment.hint(Hints.BEGIN_OF_TEXT); else
 	    //Jumping to previous line;
 	    if (pos < 1)
 	    {
 		final int prevLineIndex = index - 1;
-		String prevLine = model.getLine(prevLineIndex);
+		final String prevLine = model.getLine(prevLineIndex);
 		if (prevLine == null)
-		    prevLine = "";
+		    return false;
 		final int prevLinePos = prevLine.length();
 		model.setLine(prevLineIndex, prevLine + line);
 		model.removeLine(index);
 		model.setHotPoint(prevLinePos, prevLineIndex);
-		environment.say(lineEndMessage);
+		environment.hint(Hints.END_OF_LINE);
 	    } else
-		//Eliminating just previous char;
+		//Eliminating just the previous char;
 	    {
 		final String newLine = line.substring(0, pos - 1) + line.substring(pos);
 		model.setLine(index, newLine);
@@ -163,7 +171,7 @@ return res;
 	final int count = model.getLineCount();
 	if (count < 1)
 	{
-	    environment.say(textEndMessage);
+	    environment.hint(Hints.END_OF_TEXT);
 	    return true;
 	}
 	if (index >= count)
@@ -171,22 +179,22 @@ return res;
 	final String line = model.getLine(index);
 	if (line == null)
 	    return false;
-	int pos = model.getHotPointX();
+	final int pos = model.getHotPointX();
 	if (pos > line.length())
-	    pos = line.length();
+	    return false;
 	//Nothing to eliminate with delete;
 	if (index + 1>= count && pos >= line.length())
-	    environment.say(textEndMessage); else
+	    environment.hint(Hints.END_OF_TEXT); else
 	    //Eliminating new line position;
 	    if (pos == line.length())
 	    {
 		final int nextLineIndex = index + 1;
-		String nextLine = model.getLine(nextLineIndex);
+		final String nextLine = model.getLine(nextLineIndex);
 		if (nextLine == null)
-		    nextLine = "";
+		    return false;
 		model.setLine(index, line + nextLine);
 		model.removeLine(nextLineIndex);
-		environment.say(lineEndMessage);
+		environment.hint(Hints.END_OF_LINE);
 	    } else
 		//eliminating last character of line;
 		if (pos + 1 == line.length())
@@ -209,7 +217,7 @@ return res;
     private boolean onTab(KeyboardEvent event)
     {
 	final int index = model.getHotPointY();
-	int count = model.getLineCount();
+	int count = model.getLineCount();//Should not be final;
 	if (index > count)
 	    return false;
 	if (index == count)
@@ -217,33 +225,33 @@ return res;
 	    model.addLine("");
 	    ++count;
 	}
-	String line = model.getLine(index);
+	final String line = model.getLine(index);
 	if (line == null)
-	    line = "";
-	int pos = model.getHotPointX();
+	    return false;
+	final int pos = model.getHotPointX();
 	if (pos > line.length())
-	    pos = line.length();
+	    return false;
 	final String tabSeq = model.getTabSeq();
 	if (tabSeq == null)
 	    return false;
 	if (pos == line.length())
 	{
 	    model.setLine(index, line + tabSeq);
-	    environment.say(tabMessage);
+	    environment.hint(Hints.TAB);
 	    model.setHotPoint(pos + tabSeq.length(), index);
 	    return true;
 	}
 	final String newLine = line.substring(0, pos) + tabSeq + line.substring(pos);
 	model.setLine(index, newLine);
 	model.setHotPoint(pos + tabSeq.length(), index);
-	environment.say(tabMessage);
+	environment.hint(Hints.TAB);
 	return true;
     }
 
     private boolean onEnter(KeyboardEvent event)
     {
 	final int index = model.getHotPointY();
-	int count = model.getLineCount();
+	int count = model.getLineCount();//Should not be final;
 	if (index > count)
 	    return false;
 	if (index == count)
@@ -251,17 +259,17 @@ return res;
 	    model.addLine("");
 	    ++count;
 	}
-	String line = model.getLine(index);
+	final String line = model.getLine(index);
 	if (line == null)
-	    line = "";
-	int pos = model.getHotPointX();
+	    return false;
+	final int pos = model.getHotPointX();
 	if (pos > line.length())
-	    pos = line.length();
+	    return false;
 	if (pos >= line.length())
 	{
 	    model.insertLine(index + 1, "");
 	    model.setHotPoint(0, index + 1);
-	    environment.say(emptyLineMessage);
+	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	model.setLine(index, line.substring(0, pos));
@@ -275,7 +283,7 @@ return res;
     private boolean onChar(KeyboardEvent event)
     {
 	final int index = model.getHotPointY();
-	int count = model.getLineCount();
+	int count = model.getLineCount();//Should not be final;
 	if (index > count)
 	    return false;
 	if (index == count)
@@ -283,23 +291,23 @@ return res;
 	    model.addLine("");
 	    ++count;
 	}
-	String line = model.getLine(index);
+	final String line = model.getLine(index);
 	if (line == null)
-	    line = "";
-	int pos = model.getHotPointX();
+	    return false;
+	final int pos = model.getHotPointX();
 	if (pos > line.length())
-	    pos = line.length();
+	    return false;
 	final char c = event.getCharacter();
 	if (pos == line.length())
 	{
 	    model.setLine(index, line + c);
 	    model.setHotPoint(pos + 1, index);
-	    if (c == ' ')
+	    if (Character.isSpace(c))
 	    {
 		String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
 		if (lastWord != null && !lastWord.isEmpty())
 		    environment.say(lastWord); else
-		    environment.sayLetter(' ');
+		    environment.hint(Hints.SPACE);
 	    } else
 		environment.sayLetter(c);
 	    return true;
@@ -307,12 +315,12 @@ return res;
 	final String newLine = line.substring(0, pos) + c + line.substring(pos);
 	model.setLine(index, newLine);
 	model.setHotPoint(pos + 1, index);
-	if (c == ' ')
+	if (Character.isSpace(c))
 	{
 	    String lastWord = TextUtils.getLastWord(newLine, pos + 1);
 	    if (lastWord != null && !lastWord.isEmpty())
 		environment.say(lastWord); else
-		environment.sayLetter(' ');
+		environment.hint(Hints.SPACE);
 	} else
 	    environment.sayLetter(c);
 	return true;
@@ -320,6 +328,8 @@ return res;
 
     @Override public boolean onCopyAll()
     {
+	if (model.getLineCount() < 1)
+	    return false;
 	Vector<String> res = new Vector<String>();
 	final int count = model.getLineCount();
 	for(int i = 0;i < count;++i)
@@ -338,6 +348,8 @@ return res;
 
     @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
+	if (model.getLineCount() == 0)
+	    return false;
 	if (toY >= model.getLineCount())
 	    return false;
 	if (fromY == toY)
@@ -377,6 +389,8 @@ return res;
 
     @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
     {
+	if (model.getLineCount() < 1)
+	    return false;
 	if (toY >= model.getLineCount())
 	    return false;
 	if (fromY == toY)
@@ -384,33 +398,32 @@ return res;
 	    final String line = model.getLine(fromY);
 	    if (line == null || line.isEmpty())
 		return false;
-	    int fromPos = fromX < line.length()?fromX:line.length();
-	    int toPos = toX < line.length()?toX:line.length();
+	    final int fromPos = fromX < line.length()?fromX:line.length();
+	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
 		return false;
-	    String[] res = new String[1];
-	    res[0] = line.substring(fromPos, toPos);
+	    String[] res = new String[]{line.substring(fromPos, toPos)};
 	    model.setLine(fromY, line.substring(0, fromPos) + line.substring(toPos));
 	    environment.say(res[0]);
 	    environment.setClipboard(res);
 	    return true;
 	}
 	Vector<String> res = new Vector<String>();
-	String firstLine = model.getLine(fromY);
+	final String firstLine = model.getLine(fromY);
 	if (firstLine == null)
-	    firstLine = "";
+	    return false;
 	final int fromPos = fromX < firstLine.length()?fromX:firstLine.length();
 	res.add(firstLine.substring(fromPos));
 	for(int i = fromY + 1;i < toY;++i)
 	{
-	    String line = model.getLine(i);
+	    final String line = model.getLine(i);
 	    if (line == null)
-		line = "";
+		return false;
 	    res.add(line);
 	}
-	String endingLine = model.getLine(toY);
+	final String endingLine = model.getLine(toY);
 	if (endingLine == null)
-	    endingLine = "";
+	    return false;
 	final int toPos = toX <endingLine.length()?toX:endingLine.length();
 	res.add(endingLine.substring(0, toPos));
 	model.setLine(fromY, firstLine.substring(0, fromPos) + endingLine.substring(toPos));
@@ -450,7 +463,7 @@ return res;
 	//Multilined new text;
 	int index = model.getHotPointY();
 	String line = model.getLine(index);
-	int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
+	final int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
 	model.setLine(index, line.substring(0, pos) + text[0]);
 	for(int i = 1;i < text.length - 1;++i)
 	    model.insertLine(index + i, text[i]);

@@ -14,19 +14,34 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls;
+package org.luwrain.tests;
 
-/**
- * The interface to represent multilined edit model and handle its
- * modifications. The empty state of the edit can be represented in two
- * ways: without lines at all (getLineCount() returns zero) and with
- * single empty line (getLineCount() returns 1 and getLine(0) returnes
- * an empty line). Both of these ways are equally valid.
-*/
-public interface MultilinedEditModel extends MultilinedEditContent
+import org.luwrain.core.*;
+import org.luwrain.controls.*;
+
+class TestingMultilinedEditModel extends DefaultMultilinedEditContent implements MultilinedEditModel
 {
-    int getHotPointX();
-    int getHotPointY();
-    void setHotPoint(int x, int y);
-    String getTabSeq();
+    public int hotPointX = 0;
+    public int hotPointY = 0;
+
+    @Override public int getHotPointX()
+    {
+	return hotPointX;
+    }
+
+    @Override public int getHotPointY()
+    {
+	return hotPointY;
+    }
+
+    @Override public void setHotPoint(int x, int y)
+    {
+	hotPointX = x;
+	hotPointY = y;
+    }
+
+    @Override public String getTabSeq()
+    {
+	return "\t";
+    }
 }
