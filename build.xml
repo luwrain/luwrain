@@ -75,7 +75,7 @@
       <formatter type="plain" usefile="false" />
       <batchtest fork="yes">
         <fileset dir="build/tests">
-          <include name="**/*.class"/>
+          <include name="**/*Test.class"/>
         </fileset>
       </batchtest>
     </junit>

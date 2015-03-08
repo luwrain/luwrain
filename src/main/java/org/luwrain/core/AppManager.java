@@ -18,17 +18,25 @@ package org.luwrain.core;
 
 import java.util.*;
 
-class ApplicationRegistry
+class AppManager
 {
     class Wrapper
     {
 	public Application app;
 	public Area activeArea;
+	public Application activeAppBeforeLaunch;
 
-	public Wrapper(Application app, Area activeArea)
+	public Wrapper(Application app,
+		       Area activeArea,
+		       Application activeAppBeforeLaunch)
 	{
 	    this.app = app;
 	    this.activeArea = activeArea;
+	    this.activeAppBeforeLaunch = activeAppBeforeLaunch;
+	    if (app == null)
+		throw new NullPointerException("app may not be null");
+	    if (activeArea == null)
+		throw new NullPointerException("activeArea may not be null");
 	}
     }
 
@@ -38,6 +46,8 @@ class ApplicationRegistry
 
     public boolean isVisibleApp(Application app)
     {
+	if (app == null)
+	    throw new NullPointerException("app may not be null");
 	ensureConsistent();
 	for(int i = 0;i < getVisibleWrapperCount();i++)
 	    if (getVisibleWrapper(i).app == app)
@@ -56,15 +66,19 @@ class ApplicationRegistry
 
     public boolean isActiveApp(Application app)
     {
+	if (app == null)
+	    throw new NullPointerException("app may not be null");
 	ensureConsistent();
-	if (app == null || activeAppIndex < 0)
+	if (activeAppIndex < 0)
 	    return false;
 	return getVisibleWrapper(activeAppIndex).app == app;
     }
 
-    //Only among visible;
+    //app must be already visible, free switching among non-visible apps not permitted;
     public boolean setActiveApp(Application app)
     {
+	if (app == null)
+	    throw new NullPointerException("app may not be null");
 	ensureConsistent();
 	for(int i = 0;i < getVisibleWrapperCount();i++)
 	    if (getVisibleWrapper(i).app == app)
@@ -85,29 +99,35 @@ class ApplicationRegistry
 
     public void registerAppSingleVisible(Application app, Area activeArea)
     {
-	ensureConsistent();
 	if (app == null)
-	    return;
+	    throw new NullPointerException("app may not be null");
+	if (activeArea == null)
+	    throw new NullPointerException("activeApp may not be null");
+	ensureConsistent();
+	final Application activeNow = getActiveApp();
 	int index = findAppInWrappers(app);
-	if (index == -1)
+	if (index < 0)
 	{
-	    wrappers.add(new Wrapper(app, activeArea));
+	    wrappers.add(new Wrapper(app, activeArea, activeNow));
 	    index = wrappers.size() - 1;
 	}
-	visible = new int[1];
-	visible[0] = index;
+	visible = new int[]{index};
 	activeAppIndex = 0;
     }
 
     public void releaseApp(Application app)
     {
-	ensureConsistent();
 	if (app == null)
-	    return;
+	    throw new NullPointerException("app may not be null");
+	ensureConsistent();
 	final int index = findAppInWrappers(app);
 	if (index == -1)
 	    return;
+	final Wrapper removedWrapper = wrappers.get(index);
 	wrappers.remove(index);
+	for(Wrapper w:wrappers)
+	    if (w.activeAppBeforeLaunch == app)
+		w.activeAppBeforeLaunch = null;
 	if (wrappers.isEmpty())
 	{
 	    visible = new int[0];
@@ -115,42 +135,50 @@ class ApplicationRegistry
 	    return;
 	}
 	boolean presentInVisible = false;
-	for(int i = 0;i < visible.length;i++)
+	for(int i = 0;i < visible.length;++i)
 	{
 	    if (visible[i] == index)
 	    {
-		//FIXME:warning:if (presentInVisible)
 		visible[i] = -1;
 		presentInVisible = true;
 		continue;
 	    }
 	    if (visible[i] > index)
-		visible[i]--;
+		--visible[i];
 	}
 	if (presentInVisible)
 	{
 	    int count = 0;
-	    for(int i = 0;i < visible.length;i++)
-		if (visible[i] == -1)
-		    count++;
+	    for(int i = 0;i < visible.length;++i)
+		if (visible[i] < 0)
+		    ++count;
+	    //The removed application was the only visible, trying to find something to replace it for the user;
 	    if (count == visible.length)
 	    {
 		visible = new int[1];
-		visible[0] = wrappers.size() - 1;
+		if (removedWrapper.activeAppBeforeLaunch != null)
+		{
+		    //Trying to activate the application which was active before launch of the one being removed;
+		    int previouslyActiveIndex = 0;
+		    while (previouslyActiveIndex < wrappers.size() && wrappers.get(previouslyActiveIndex).app != removedWrapper.activeAppBeforeLaunch)
+			++previouslyActiveIndex;
+		    visible[0] = previouslyActiveIndex >= wrappers.size()?wrappers.size() - 1:previouslyActiveIndex;
+		} else
+		    visible[0] = wrappers.size() - 1;
 		activeAppIndex = 0;
 		return;
 	    }
 	    int[] v = new int[visible.length - count];
 	    int k = 0;
-	    for(int i = 0;i < visible.length;i++)
-		if (visible[i] != -1)
+	    for(int i = 0;i < visible.length;++i)
+		if (visible[i] >= 0)
 		{
 		    if (activeAppIndex == i)
 			activeAppIndex = k;
 		    v[k++] = visible[i];
 		} else
 		    if (activeAppIndex == i)
-			activeAppIndex++;
+			++activeAppIndex;
 	    visible = v;
 	    if (activeAppIndex >= visible.length)
 		activeAppIndex = visible.length - 1;
@@ -162,7 +190,7 @@ class ApplicationRegistry
 	ensureConsistent();
 	if (visible.length == 0)
 	    return;
-	activeAppIndex++;
+	++activeAppIndex;
 	if (activeAppIndex >= visible.length)
 	    activeAppIndex = 0;
     }
@@ -173,10 +201,10 @@ class ApplicationRegistry
 	if (activeAppIndex == -1)
 	    return false;
 	final int current = visible[activeAppIndex];
-	for(int i = current + 1;i < wrappers.size();i++)
+	for(int i = current + 1;i < wrappers.size();++i)
 	{
 	    int j;
-	    for(j = 0;j < visible.length;j++)
+	    for(j = 0;j < visible.length;++j)
 		if (visible[j] == i)
 		    break;
 	    if (j < visible.length)
@@ -187,7 +215,7 @@ class ApplicationRegistry
 	for(int i = 0;i < current;i++)
 	{
 	    int j;
-	    for(j = 0;j < visible.length;j++)
+	    for(j = 0;j < visible.length;++j)
 		if (visible[j] == i)
 		    break;
 	    if (j < visible.length)
@@ -200,9 +228,11 @@ class ApplicationRegistry
 
     public boolean setActiveAreaOfApp(Application app, Area area)
     {
+	if (app == null)
+	    throw new NullPointerException("app may not be null");
+	if (area == null)
+	    throw new NullPointerException("area may not be null");
 	ensureConsistent();
-	if (app == null || area == null)
-	    return false;
 	//FIXME:Check new active area is in known area set;
 	final int index = findAppInWrappers(app);
 	if (index == -1)
@@ -213,9 +243,9 @@ class ApplicationRegistry
 
     public Area getActiveAreaOfApp(Application app)
     {
-	ensureConsistent();
 	if (app == null)
-	    return null;
+	    throw new NullPointerException("app may not be null");
+	ensureConsistent();
 	final int index = findAppInWrappers(app);
 	if (index == -1)
 	    return null;
@@ -225,7 +255,7 @@ class ApplicationRegistry
     public Area getActiveAreaOfActiveApp()
     {
 	ensureConsistent();
-	if (activeAppIndex == -1)
+	if (activeAppIndex < 0)
 	    return null;
 	return wrappers.get(visible[activeAppIndex]).activeArea;
     }
@@ -242,46 +272,50 @@ class ApplicationRegistry
 	    return;
 	}
 	int offset = 0;
-	for(int i = 0;i < wrappers.size();i++)
+	for(int i = 0;i < wrappers.size();++i)
 	{
 	    if (wrappers.get(i) == null || wrappers.get(i).app == null || wrappers.get(i).activeArea == null)
 	    {
-		offset++;
+		Log.warning("applications", "found an inconsistent application");
+		++offset;
 		continue;
 	    }
 	    int j;
-	    for(j = 0;j < i;j++)
+	    for(j = 0;j < i;++j)
 		if (wrappers.get(i).app == wrappers.get(j).app)
 		    break;
 	    if (j < i)
 	    {
-		offset++;
+		Log.warning("applications", "found the doubled application enter");
+		++offset;
 		continue;
 	    }
 	    wrappers.set(i - offset, wrappers.get(i));
 	}
 	wrappers.setSize(wrappers.size() - offset);
-	if (visible == null)
+	if (visible == null || visible.length < 1)
 	{
 	    visible = new int[1];
 	    visible[0] = wrappers.size() - 1;
 	    activeAppIndex = 0;
 	}
 	offset = 0;
-	for(int i = 0;i < visible.length;i++)
+	for(int i = 0;i < visible.length;++i)
 	{
 	    if (visible[i] >= wrappers.size() || visible[i] < 0)
 	    {
-		offset++;
+		Log.warning("applications", "found the visible entry with index exceeding bounds of wrappers vector");
+		++offset;
 		continue;
 	    }
 	    int j;
-	    for(j = 0;j < i;j++)
+	    for(j = 0;j < i;++j)
 		if (visible[i] == visible[j])
 		    break;
 	    if (j < i)
 	    {
-		offset++;
+		Log.warning("applications", "found the doubled visible entries");
+		++offset;
 		continue;
 	    }
 	    visible[i - offset] = visible[i];
@@ -289,7 +323,7 @@ class ApplicationRegistry
 	if (offset > 0)
 	{
 	    int[] v = new int[visible.length - offset];
-	    for(int i = 0;i < v.length;i++)
+	    for(int i = 0;i < v.length;++i)
 		v[i] = visible[i];
 	    visible = v;
 	}
@@ -299,6 +333,8 @@ class ApplicationRegistry
 
     private int findAppInWrappers(Application app)
     {
+	if (app == null)
+	    throw new NullPointerException("app may not be null");
 	for(int i = 0;i < wrappers.size();i++)
 	    if (wrappers.get(i).app == app)
 		return i;

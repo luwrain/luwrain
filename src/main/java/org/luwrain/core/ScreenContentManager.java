@@ -25,11 +25,11 @@ class ScreenContentManager
     public static final int EVENT_NOT_PROCESSED = 1;
     public static final int EVENT_PROCESSED = 2;
 
-    private ApplicationRegistry applications;
+    private AppManager applications;
     private PopupManager popups;
     private boolean activePopup = false;
 
-    public ScreenContentManager(ApplicationRegistry applications,
+    public ScreenContentManager(AppManager applications,
 				PopupManager popups)
     {
 	this.applications = applications;

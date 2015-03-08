@@ -48,7 +48,7 @@ class Environment implements EventConsumer
     private InstanceManager appInstances;
     private Luwrain specialLuwrain = new Luwrain(this);
     private Luwrain privilegedLuwrain = new Luwrain(this);
-    private ApplicationRegistry apps = new ApplicationRegistry();
+    private AppManager apps = new AppManager();
     private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
