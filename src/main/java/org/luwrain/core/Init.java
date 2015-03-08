@@ -48,12 +48,19 @@ class Init
 	    Log.debug("init", s);
 	if (init())
 	    new Environment(cmdLine, registry, speech, os, interaction, extensions, launchContext).run();
+	interaction.close();
 	for(Extension e: extensions)
 	{
 	    Log.debug("init", "closing extension " + e.getClass().getName());
-	    e.close();
+	    try {
+		e.close();
+	    }
+	    catch (Throwable t)
+	    {
+		t.printStackTrace();
+	    }
 	}
-	exit();
+	System.exit(0);
     }
 
     private boolean init()
@@ -108,8 +115,8 @@ class Init
 	}
 	launchContext = new LaunchContext(dataDir.getAbsolutePath(), userHomeDir.getAbsolutePath(), lang);
 
-if (!initOs())
-    return false;
+	if (!initOs())
+	    return false;
 	if (!initSpeech())
 	    return false;
 
@@ -283,17 +290,6 @@ if (!initOs())
 	return true;
     }
 
-    private void shutdown()
-    {
-	interaction.close();
-    }
-
-    public void exit()
-    {
-	shutdown();
-	System.exit(0);
-    }
-
     private String[] getExtensionsList()
     {
 	Vector<String> res = new Vector<String>();
@@ -343,7 +339,6 @@ if (!initOs())
 
     public static void main(String[] args)
     {                    
-	Init init = new Init();
-	init.go(args);
+	new Init().go(args);
     }
 }

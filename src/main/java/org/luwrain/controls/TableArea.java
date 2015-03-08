@@ -213,9 +213,9 @@ public class TableArea  implements Area, CopyCutRequest
 	    refresh();
 	    return true;
 	case EnvironmentEvent.COPY_CUT_POINT:
-	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
-	    if (!copyCutInfo.doCopy(hotPointX, hotPointY))
+	    if (!copyCutInfo.copy(hotPointX, hotPointY))
 		copyEntireContent();
 	    return true;
 	default:

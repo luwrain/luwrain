@@ -29,7 +29,7 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	this.luwrain = luwrain;
     }
 
-    public void say(String text)
+    @Override public void say(String text)
     {
 	luwrain.say(text);
     }
@@ -39,7 +39,7 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	say(staticStr(code));
     }
 
-    public void sayLetter(char letter)
+    @Override public void sayLetter(char letter)
     {
 	luwrain.sayLetter(letter);
     }
@@ -59,42 +59,42 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	luwrain.hint(code);
     }
 
-    public void hintStaticString(int id)
+    @Override public void hintStaticString(int id)
     {
 	hint(staticStr(id));
     }
 
-    public void onAreaNewName(Area area)
+    @Override public void onAreaNewName(Area area)
     {
 	luwrain.onAreaNewName(area);
     }
 
-    public void onAreaNewContent(Area area)
+    @Override public void onAreaNewContent(Area area)
     {
 	luwrain.onAreaNewContent(area);
     }
 
-    public void onAreaNewHotPoint(Area area)
+    @Override public void onAreaNewHotPoint(Area area)
     {
 	luwrain.onAreaNewHotPoint(area);
     }
 
-    public int getAreaVisibleHeight(Area area)
+    @Override public int getAreaVisibleHeight(Area area)
     {
 	return luwrain.getAreaVisibleHeight(area);
     }
 
-    public void setClipboard(String[] value)
+    @Override public void setClipboard(String[] value)
     {
 	luwrain.setClipboard(value);
     }
 
-    public String[] getClipboard()
+    @Override public String[] getClipboard()
     {
 	return luwrain.getClipboard();
     }
 
-    public void popup(Popup popupObj)
+    @Override public void popup(Popup popupObj)
     {
 	luwrain.popup(popupObj);
     }
@@ -108,15 +108,6 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	return luwrain.i18n().staticStr(code);
     }
-
-    /*
-    @Override public File getFsRoot(File relativeTo)
-    {
-	if (relativeTo == null)
-	    throw new NullPointerException("relativeTo may not be null");
-	return luwrain.os().getRoot(relativeTo);
-    }
-    */
 
     @Override public org.luwrain.core.Strings environmentStrings()
     {

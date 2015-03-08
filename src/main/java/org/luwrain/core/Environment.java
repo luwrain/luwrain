@@ -56,7 +56,7 @@ class Environment implements EventConsumer
     private CommandManager commands = new CommandManager();
     private ShortcutManager shortcuts;
     private SharedObjectManager sharedObjects;
-    private FileTypes fileTypes = new FileTypes(shortcuts);
+    private FileTypes fileTypes = new FileTypes();
 
     private boolean needForIntroduction = false;
     private boolean introduceApp = false;
@@ -708,7 +708,7 @@ class Environment implements EventConsumer
 	    speech.say(app.getClass().getName());
     }
 
-    private void introduceActiveArea()
+    public void introduceActiveArea()
     {
 	//	needForIntroduction = false;
 	Area activeArea = screenContentManager.getActiveArea();
@@ -763,7 +763,11 @@ class Environment implements EventConsumer
 	for(String s: fileNames)
 	    if (s == null)
 		return;
-	fileTypes.openFileNames(fileNames);
+	final String[] shortcuts = fileTypes.chooseShortcuts(fileNames);
+	if (shortcuts.length != fileNames.length)
+	    return;
+	for(int i = 0;i < shortcuts.length;++i)
+	    launchApp(shortcuts[i], new String[]{fileNames[i]});
     }
 
     public Registry  registry()

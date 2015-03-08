@@ -29,14 +29,14 @@ public class CopyCutInfo
 	    throw new NullPointerException("request may not be null");
     }
 
-    public boolean doCopyCutPoint(int hotPointX, int hotPointY)
+    public boolean copyCutPoint(int hotPointX, int hotPointY)
     {
 	fromX = hotPointX;
 	fromY = hotPointY;
 	return true;
     }
 
-    public boolean doCopy(int hotPointX, int hotPointY)
+    public boolean copy(int hotPointX, int hotPointY)
     {
 	if (fromX < 0 || fromY < 0)
 	    return request.onCopyAll();
@@ -51,7 +51,7 @@ public class CopyCutInfo
 	return request.onCopyAll();
     }
 
-    public boolean doCut(int hotPointX, int hotPointY)
+    public boolean cut(int hotPointX, int hotPointY)
     {
 	if (fromX < 0 || fromY < 0)
 	    return false;

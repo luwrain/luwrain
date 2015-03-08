@@ -72,8 +72,15 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    return onArrowRight(event);
 	case KeyboardEvent.ARROW_LEFT:
 	    return onArrowLeft(event);
-	//FIXME:PageUp;
-	//FIXME:PageDown;
+
+	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
+	    return onAltRight(event);
+	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+	    return onAltLeft(event);
+	case KeyboardEvent.PAGE_DOWN:
+	    return onPageDown(event);
+	case KeyboardEvent.PAGE_UP:
+	    return onPageUp(event);
 	}
 	return false;
     }
@@ -85,9 +92,9 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.COPY_CUT_POINT:
-	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
-	    return copyCutInfo.doCopy(hotPointX, hotPointY);
+	    return copyCutInfo.copy(hotPointX, hotPointY);
 	default:
 	    return false;
 	}
@@ -244,6 +251,102 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	if (hotPointX == line.length())
 	    environment.hint(Hints.END_OF_LINE); else
 	    environment.sayLetter(line.charAt(hotPointX));
+	return true;
+    }
+
+    private boolean onPageDown(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	if (hotPointY + 1 >= count)
+	{
+	    environment.hint(Hints.NO_LINES_BELOW);
+	    return true;
+	}
+	final int height = environment.getAreaVisibleHeight(this);
+	if (hotPointY + height >= count)
+	    hotPointY = count - 1; else
+	    hotPointY  += height;
+	hotPointX = 0;
+	environment.onAreaNewHotPoint(this);
+	introduceLine(hotPointY, getLineNotNull(hotPointY));
+	return true;
+    }
+
+    private boolean onPageUp(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	if (hotPointY == 0)
+	{
+	    environment.hint(Hints.NO_LINES_ABOVE);
+	    return true;
+	}
+	final int height = environment.getAreaVisibleHeight(this);
+	if (hotPointY > height)
+	    hotPointY -= height; else
+	    hotPointY = 0;
+	hotPointX = 0;
+	environment.onAreaNewHotPoint(this);
+	introduceLine(hotPointY, getLineNotNull(hotPointY));
+	return true;
+    }
+
+    private boolean onAltRight(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	final String line = getLineNotNull(hotPointY);
+	if (line.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	hotPointX = hotPointX <= line.length()?hotPointX:line.length();
+	if (hotPointX >= line.length())
+	{
+	    environment.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	WordIterator it = new WordIterator(line, hotPointX);
+	if (!it.stepForward())
+	{
+	    environment.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos();
+	if (it.announce().length() > 0)
+	    environment.say(it.announce()); else
+	    environment.hint(Hints.END_OF_LINE);
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onAltLeft(KeyboardEvent event )
+    {
+	final int count = getValidLineCount();
+	hotPointY = hotPointY < count?hotPointY:count - 1;
+	final String line = getLineNotNull(hotPointY);
+	if (line.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	hotPointX = hotPointX <= line.length()?hotPointX:line.length();
+	if (hotPointX <= 0)
+	{
+	    environment.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	WordIterator it = new WordIterator(line, hotPointX);
+	if (!it.stepBackward())
+	{
+	    environment.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos();
+	environment.say(it.announce());
+	environment.onAreaNewHotPoint(this);
 	return true;
     }
 

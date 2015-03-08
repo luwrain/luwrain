@@ -171,9 +171,9 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.COPY_CUT_POINT:
-	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
-	    return copyCutInfo.doCopy(hotPointX, hotPointY);
+	    return copyCutInfo.copy(hotPointX, hotPointY);
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;

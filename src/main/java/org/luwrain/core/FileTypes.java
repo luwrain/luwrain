@@ -16,93 +16,36 @@
 
 package org.luwrain.core;
 
-public class FileTypes
+import java.util.*;
+import java.io.*;
+
+class FileTypes
 {
-    private ShortcutManager shortcuts;
-
-    public FileTypes(ShortcutManager shortcuts)
+    public String[] chooseShortcuts(String[] fileNames)
     {
-	this.shortcuts = shortcuts;
-    }
-
-    public void openFileNames(String[] fileNames)
-    {
-	//FIXME:
-	if (fileNames == null || fileNames.length!= 1 || fileNames[0] == null )
+	if (fileNames == null)
+	    throw new NullPointerException("fileNames may not be null");
+	Vector<String> res = new Vector<String>();
+	for(String s: fileNames)
 	{
-	    Log.error("file-types", "files could not be properly processed due to incomplete implementation");
-	    return;
-	}
-	String ext = extension(fileNames[0]);
-	if (ext.equals("txt") || ext.equals("TXT"))
-	{
-	    /*
-	    if (!shortcuts.launch("notepad", fileNames))
-		Log.warning("file-types", "could not launch the application by wrapper with name \'notepad\'");
-	    */
-	    return;
-	}
-
-	if (ext.equals("doc") || ext.equals("DOC"))
-	{
-	    /*
-	    if (!shortcuts.launch("preview", fileNames))
-		Log.warning("file-types", "could not launch the application by wrapper with name \'preview\'");
-	    */
-	    return;
-	}
-
-	if (ext.equals("avi") || ext.equals("AVI"))
-	{
-	    run("/usr/bin/mplayer -fs -slave -quiet \'" + fileNames[0] + "\'");
-	    return;
-	}
-
-	if (ext.equals("pdf") || ext.equals("PDF"))
-	{
-	    run("/usr/bin/xpdf -fullscreen \'" + fileNames[0] + "\' &> /tmp/output");
-	    return;
-	}
-
-
-    }
-
-    private static String extension(String path)
-    {
-	if (path == null || path.trim().isEmpty())
-	    return "";
-	int pos = -1;
-	for(int i = 0;i < path.length();i++)
-	    switch(path.charAt(i))
+	    if (s == null)
 	    {
-	    case '/'://FIXME:UNIX style!
-		pos = -1;
-		break;
-	    case '.':
-		pos = i;
-		break;
+		res.add("");
+		continue;
 	    }
-	if (pos < 0 || pos + 1 >= path.length())
-	    return "";
-	return path.substring(pos + 1).trim();
-    }
-
-    private static void run(String cmd)
-    {
-	if (cmd == null || cmd.trim().isEmpty())
-	    return;
-	Log.debug("file-types", "executing:" + cmd);
-	String[] args = new String[3];
-	args[0] = "/bin/sh";
-	args[1] = "-c";
-	args[2] = cmd;
-	try {
-	    Process process = Runtime.getRuntime().exec(args);
+	    File f = new File(s);
+	    if (!f.exists())
+	    {
+		res.add("notepad");
+		continue;
+	    }
+	    if (f.isDirectory())
+	    {
+		res.add("commander");
+		continue;
+	    }
+	    res.add("notepad");
 	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	    Log.error("file-types", e.getMessage());
-	}
+	return res.toArray(new String[res.size()]);
     }
 }

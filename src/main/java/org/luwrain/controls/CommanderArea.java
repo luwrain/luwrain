@@ -402,9 +402,9 @@ public class CommanderArea implements Area, CopyCutRequest
 	case EnvironmentEvent.OK:
 	    return onOk(event);
 	case EnvironmentEvent.COPY_CUT_POINT:
-	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
-	    return copyCutInfo.doCopy(hotPointX, hotPointY);
+	    return copyCutInfo.copy(hotPointX, hotPointY);
 	default:
 	    return false;
 	}

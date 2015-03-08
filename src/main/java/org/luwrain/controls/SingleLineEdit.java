@@ -70,11 +70,11 @@ public class SingleLineEdit implements CopyCutRequest
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.COPY_CUT_POINT:
-	    return copyCutInfo.doCopyCutPoint(model.getHotPointX(), 0);
+	    return copyCutInfo.copyCutPoint(model.getHotPointX(), 0);
 	case EnvironmentEvent.COPY:
-	    return copyCutInfo.doCopy(model.getHotPointX(), 0);
+	    return copyCutInfo.copy(model.getHotPointX(), 0);
 	case EnvironmentEvent.CUT:
-	    return copyCutInfo.doCut(model.getHotPointX(), 0);
+	    return copyCutInfo.cut(model.getHotPointX(), 0);
 	case EnvironmentEvent.INSERT:
 	    if (event instanceof InsertEvent)
 		return onInsert((InsertEvent)event);

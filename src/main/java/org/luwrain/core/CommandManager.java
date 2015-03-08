@@ -179,6 +179,19 @@ class CommandManager
 		}
 	    });
 
+	//Introduce;
+	add(null, new Command() {
+		private Environment e = environment;
+		public String getName()
+		{
+		    return "introduce";
+		}
+		public void onCommand(CommandEnvironment env)
+		{
+		    e.introduceActiveArea();
+		}
+	    });
+
 	//Refresh;
 	add(null, new Command() {
 		private Environment e = environment;

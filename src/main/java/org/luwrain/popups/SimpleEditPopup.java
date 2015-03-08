@@ -144,9 +144,9 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.COPY_CUT_POINT:
-	    return copyCutInfo.doCopyCutPoint(pos, 0);
+	    return copyCutInfo.copyCutPoint(pos, 0);
 	case EnvironmentEvent.COPY:
-	    return copyCutInfo.doCopy(pos, 0);
+	    return copyCutInfo.copy(pos, 0);
 	default:
 	    return closing.onEnvironmentEvent(event);
 	}

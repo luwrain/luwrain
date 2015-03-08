@@ -90,13 +90,13 @@ public class MultilinedEdit implements CopyCutRequest
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.COPY_CUT_POINT:
-	    return copyCutInfo.doCopyCutPoint(model.getHotPointX(), model.getHotPointY());
+	    return copyCutInfo.copyCutPoint(model.getHotPointX(), model.getHotPointY());
 	case EnvironmentEvent.COPY:
-	    return copyCutInfo.doCopy(model.getHotPointX(), model.getHotPointY());
+	    return copyCutInfo.copy(model.getHotPointX(), model.getHotPointY());
 	case EnvironmentEvent.CUT:
 	    if (!model.beginEditTrans())
 		return false;
-	    res = copyCutInfo.doCut(model.getHotPointX(), model.getHotPointY());
+	    res = copyCutInfo.cut(model.getHotPointX(), model.getHotPointY());
 	    model.endEditTrans();
 	    return res;
 	case EnvironmentEvent.INSERT:

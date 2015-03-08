@@ -121,9 +121,9 @@ public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
 	    luwrain.say(getName());
 	    return true;
 	case EnvironmentEvent.COPY_CUT_POINT:
-	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
-	    return copyCutInfo.doCopy(hotPointX, hotPointY);
+	    return copyCutInfo.copy(hotPointX, hotPointY);
 	default:
 	    return closing.onEnvironmentEvent(event);
 	}
