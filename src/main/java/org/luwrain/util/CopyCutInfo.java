@@ -25,6 +25,8 @@ public class CopyCutInfo
     public CopyCutInfo(CopyCutRequest request)
     {
 	this.request = request;
+	if (request == null)
+	    throw new NullPointerException("request may not be null");
     }
 
     public boolean doCopyCutPoint(int hotPointX, int hotPointY)
@@ -37,7 +39,7 @@ public class CopyCutInfo
     public boolean doCopy(int hotPointX, int hotPointY)
     {
 	if (fromX < 0 || fromY < 0)
-	    return false;
+	    return request.onCopyAll();
 	if (fromY < hotPointY)
 	    return request.onCopy(fromX, fromY, hotPointX, hotPointY);
 	if (fromY > hotPointY)
@@ -46,7 +48,7 @@ public class CopyCutInfo
 	    return request.onCopy(fromX, fromY, hotPointX, hotPointY);
 	if (fromX > hotPointX)
 	    return request.onCopy(hotPointX, hotPointY, fromX, fromY);
-	return false;
+	return request.onCopyAll();
     }
 
     public boolean doCut(int hotPointX, int hotPointY)

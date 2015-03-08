@@ -18,6 +18,7 @@ package org.luwrain.util;
 
 public interface CopyCutRequest
 {
+    boolean onCopyAll();
     boolean onCopy(int fromX, int fromY, int toX, int toY);
     boolean onCut(int fromX, int fromY, int toX, int toY);
 }

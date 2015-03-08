@@ -23,17 +23,21 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain .util.*;
 
+/**
+ * The area with basic navigation operations. This abstract class
+ * implements the proper behaviour for navigation over the static content
+ * of the area. There is no data container and it is implied that the
+ * user should implement method {@code getLine()} and {@code
+ * getLineCount()}. Supported operations include arrow keys, Page up/Page
+ * down and Home/End. The copy to clipboard operation is supported as
+ * well.
+ *
+ * @see SimpleArea
+ */
 public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 {
     private ControlEnvironment environment;
-    //    private final String areaBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
-    //    private final String areaEndMessage = Langs.staticValue(Langs.AREA_END);
-    ///    private final String firstLineMessage = Langs.staticValue(Langs.THE_FIRST_LINE);
-    //    private final String lastLineMessage = Langs.staticValue(Langs.THE_LAST_LINE);
-    //    private final String lineEndMessage = Langs.staticValue(Langs.END_OF_LINE);
-    //    private final String emptyLineMessage  = Langs.staticValue(Langs.EMPTY_LINE);
-
-    private CopyCutInfo copyCutInfo;
+    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
     private int hotPointX = 0;
     private int hotPointY = 0;
 
@@ -42,7 +46,6 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	this.environment = environment;
 	if (environment == null)
 	    throw new NullPointerException("environment may not be null");
-	this.copyCutInfo = new CopyCutInfo(this);
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -251,28 +254,50 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    environment.say(line);
     }
 
+    /**
+     * Sets the hot point to a new position. The provided coordinates are
+     * adjusted to real area size and the user may not take care about
+     * exceeding area bounds.
+     *
+     * @param x The x coordinate of the new position
+     * @param y The y coordinate of the new position
+     */
     public void setHotPoint(int x,int y)
     {
-	if (x >= 0)
-	    hotPointX = x;
-	if (y >= 0)
-	    hotPointY = y;
+	final int count = getValidLineCount();
+	if (y < 0)
+	    hotPointY = 0; else
+	    if (y >= count)
+		hotPointY = count - 1; else
+		hotPointY = y;
+	final String line = getLineNotNull(hotPointY);
+	if (x < 0)
+	    hotPointX = 0; else
+	    if (x >= line.length())
+		hotPointX = line.length(); else
+		hotPointX = x;
 	environment.onAreaNewHotPoint(this);
     }
 
     @Override public void setHotPointX(int value)
     {
+	final String line = getLineNotNull(hotPointY);
 	if (value < 0)
-	    return;
-	hotPointX = value;
+	    hotPointX = 0; else
+	    if (value >= line.length())
+		hotPointX = line.length(); else
+		hotPointX = value;
 	environment.onAreaNewHotPoint(this);
     }
 
     @Override public void setHotPointY(int value)
     {
+	final int count = getValidLineCount();
 	if (value < 0)
-	    return;
-	hotPointY = value;
+	    hotPointY = 0; else
+	    if (value >= count)
+		hotPointY = count - 1; else
+		hotPointY = value;
 	environment.onAreaNewHotPoint(this);
     }
 
@@ -286,22 +311,18 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	return hotPointY;
     }
 
-    /*
-    protected void fixHotPoint()
+    @Override public boolean onCopyAll()
     {
-	int x = hotPointX, y = hotPointY;
-	if (y >= getLineCount())
-	    y = getLineCount() - 1;
-	if (y < 0)
-	    y = 0;
-	String line = getLine(y);
-	if (line == null)
-	    line = new String();
-	if (x > line.length())
-	    x = line.length();
-	setHotPoint(x, y);
+	Vector<String> res = new Vector<String>();
+	final int count = getValidLineCount();
+	for(int i = 0;i < count;++i)
+	    res.add(getLineNotNull(i));
+	if (res.size() == 2)
+	    environment.say(res.get(0)); else
+	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
+	environment.setClipboard(res.toArray(new String[res.size()]));
+	return true;
     }
-    */
 
     @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
@@ -316,10 +337,8 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
 		throw new IllegalArgumentException("fromPos should be less than toPos");
-	    String[] res = new String[1];
-	    res[0] = line.substring(fromPos, toPos);
-	    environment.say(res[0]);
-	    environment.setClipboard(res);
+	    environment.say(line.substring(fromPos, toPos));
+	    environment.setClipboard(new String[]{line.substring(fromPos, toPos)});
 	    return true;
 	}
 	Vector<String> res = new Vector<String>();
@@ -339,13 +358,13 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	return false;
     }
 
-    private int getValidLineCount()
+    protected int getValidLineCount()
     {
 	final int count = getLineCount();
 	return count >= 1?count:1;
     }
 
-private String getLineNotNull(int index)
+protected String getLineNotNull(int index)
 {
     final String line = getLine(index);
     return line != null?line:"";

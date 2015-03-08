@@ -24,7 +24,15 @@ import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 import org.luwrain.os.*;
 
-public class CommanderArea implements Area
+/**
+ * The area for directory browsing.  This class behaves as a panel in
+ * old-style file commander. The user can explore directory content and
+ * move around it traversing over near directories. Custom filters and
+ * comparators are supported.
+ *
+ * @see CommanderPopup
+ */
+public class CommanderArea implements Area, CopyCutRequest
 {
     public static final String PARENT_DIR = "..";
 
@@ -72,7 +80,7 @@ public class CommanderArea implements Area
     protected OperatingSystem os;
     private Location[] importantLocations;
     private org.luwrain.core.Strings strings;
-
+    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
     private CommanderFilter filter;
     private Comparator comparator;
     private boolean selecting;
@@ -262,7 +270,7 @@ public class CommanderArea implements Area
 		environment.say(strings.locationTitle(l));
 		return;
 	    }
-	    environment.say(file.getName());
+	environment.say(file.getName());
     }
 
     protected String getScreenLine(Entry entry)
@@ -393,6 +401,10 @@ public class CommanderArea implements Area
 	    return true;
 	case EnvironmentEvent.OK:
 	    return onOk(event);
+	case EnvironmentEvent.COPY_CUT_POINT:
+	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	case EnvironmentEvent.COPY:
+	    return copyCutInfo.doCopy(hotPointX, hotPointY);
 	default:
 	    return false;
 	}
@@ -406,6 +418,53 @@ public class CommanderArea implements Area
 	    if (l.file().equals(current))
 		return strings.locationTitle(l);
 	return current.getAbsolutePath();
+    }
+
+    @Override public boolean onCopyAll()
+    {
+	if (entries == null || entries.isEmpty())
+	    return false;
+	Vector<String> res = new Vector<String>();
+	for(Entry e: entries)
+	{
+	    final String line = getScreenLine(e);
+	    if (line != null)
+		res.add(line); else
+		res.add("");
+	}
+	res.add("");
+	if (res.size() == 2)
+	    environment.say(res.get(0)); else
+	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
+	environment.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
+    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    {
+	if (entries == null || entries.isEmpty())
+	    return false;
+	if (fromY >= entries.size() || toY > entries.size())
+	    return false;
+	Vector<String> res = new Vector<String>();
+	for(int i = fromY;i < toY;++i)
+	{
+	    final String line = getScreenLine(entries.get(i));
+	    if (line != null)
+		res.add(line); else
+		res.add("");
+	}
+	res.add("");
+	if (res.size() == 2)
+	    environment.say(res.get(0)); else
+	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
+	environment.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
+    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    {
+	return false;
     }
 
     private boolean onEnter(KeyboardEvent event)
@@ -451,8 +510,15 @@ public class CommanderArea implements Area
 	    return false;
 	if (noContentCheck())
 	    return true;
-	//FIXME:
-	return false;
+	if (hotPointY >= entries.size())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	entries.get (hotPointY).selected = !entries.get(hotPointY).selected;
+	++hotPointY;
+	onNewHotPointY(false);
+	return true;
     }
 
     private boolean onOk(EnvironmentEvent event)
@@ -461,13 +527,13 @@ public class CommanderArea implements Area
 	    return true;
 	/*
 	if (current == null || !current.isDirectory())
-	    return false;
+	return false;
 	File f = luwrain.openPopup(null, null, current);
 	if (f == null)
-	    return true;
+	return true;
 	if (f.isDirectory())
-	    openByFile(f); else
-	    luwrain.openFile(f.getAbsolutePath());
+	openByFile(f); else
+	luwrain.openFile(f.getAbsolutePath());
 	*/
 	return true;
     }
@@ -483,7 +549,7 @@ public class CommanderArea implements Area
 	    final String name = entries.get(hotPointY).file().getName();
 	    final int pos = hotPointX < name.length()?hotPointX:name.length();
 	    beginning = name.substring(0, pos);
-}
+	}
 	final String mustBegin = beginning + c;
 	for(int i = 0;i < entries.size();++i)
 	{
@@ -494,9 +560,9 @@ public class CommanderArea implements Area
 	    ++hotPointX;
 	    environment.onAreaNewHotPoint(this);
 	    introduceEntry(entries.get(hotPointY), true);
-			  return true;
+	    return true;
 	}
-	    return false;
+	return false;
     }
 
     private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
@@ -560,12 +626,12 @@ public class CommanderArea implements Area
 	    return false;
 	if (hotPointY < visibleHeight)
 	    hotPointY = 0; else
-		hotPointY -= visibleHeight;
+	    hotPointY -= visibleHeight;
 	hotPointX = 0;
 	environment.onAreaNewHotPoint(this);
 	if (hotPointY < entries.size())
-    introduceEntry(entries.get(hotPointY), briefIntroduction); else
-    environment.hint(Hints.EMPTY_LINE);
+	    introduceEntry(entries.get(hotPointY), briefIntroduction); else
+	    environment.hint(Hints.EMPTY_LINE);
 	return true;
     }
 
@@ -668,13 +734,13 @@ public class CommanderArea implements Area
 	WordIterator it = new WordIterator(name, hotPointX);
 	if (!it.stepForward())
 	{
-environment.hint(Hints.END_OF_LINE);
+	    environment.hint(Hints.END_OF_LINE);
 	    return true;
 	}
 	hotPointX = it.pos();
 	if (it.announce().length() > 0)
-environment.say(it.announce()); else
-environment.hint(Hints.END_OF_LINE);
+	    environment.say(it.announce()); else
+	    environment.hint(Hints.END_OF_LINE);
 	environment.onAreaNewHotPoint(this);
 	return true;
     }
@@ -704,11 +770,11 @@ environment.hint(Hints.END_OF_LINE);
 	WordIterator it = new WordIterator(name, hotPointX);
 	if (!it.stepBackward())
 	{
-environment.hint(Hints.BEGIN_OF_LINE);
+	    environment.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
 	hotPointX = it.pos();
-environment.say(it.announce());
+	environment.say(it.announce());
 	environment.onAreaNewHotPoint(this);
 	return true;
     }
@@ -738,7 +804,7 @@ environment.say(it.announce());
 	    hotPointX = 0;
 	    environment.hint(Hints.EMPTY_LINE);
 	}
-environment.onAreaNewHotPoint(this);
+	environment.onAreaNewHotPoint(this);
 	return true;
     }
 

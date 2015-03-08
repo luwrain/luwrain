@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
-public class MainMenu  implements Area, PopupClosingRequest
+public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
 {
     private Luwrain luwrain;
     private CommandEnvironment commandEnv;
@@ -32,6 +32,7 @@ public class MainMenu  implements Area, PopupClosingRequest
     private Item selectedItem;
     private int hotPointX = 0;
     private int hotPointY = 0;
+    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public MainMenu(Luwrain luwrain,
 		    CommandEnvironment commandEnv,
@@ -112,11 +113,17 @@ public class MainMenu  implements Area, PopupClosingRequest
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
 	    luwrain.say(getName());
 	    return true;
+	case EnvironmentEvent.COPY_CUT_POINT:
+	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	case EnvironmentEvent.COPY:
+	    return copyCutInfo.doCopy(hotPointX, hotPointY);
 	default:
 	    return closing.onEnvironmentEvent(event);
 	}
@@ -383,6 +390,53 @@ public class MainMenu  implements Area, PopupClosingRequest
     private boolean onPageUp(KeyboardEvent event)
     {
 	//FIXME:
+	return false;
+    }
+
+    @Override public boolean onCopyAll()
+    {
+	if (items == null || items.length < 1)
+	    return false;
+	Vector<String> res = new Vector<String>();
+	for(Item i: items)
+	{
+	    final String line = i.getText();
+	    if (line != null)
+		res.add(line); else
+		res.add("");
+	}
+	res.add("");
+	if (res.size() == 2)
+	    luwrain.say(res.get(0)); else
+	    luwrain.say(luwrain.i18n().staticStr(Langs.COPIED_LINES) + (res.size() - 1));
+	luwrain.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
+    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    {
+	if (items == null || items.length < 1)
+	    return false;
+	if (fromY >= items.length || toY > items.length)
+	    return false;
+	Vector<String> res = new Vector<String>();
+	for(int i = fromY;i < toY;++i)
+	{
+	    final String line = items[i].getText();
+	    if (line != null)
+		res.add(line); else
+		res.add("");
+	}
+	res.add("");
+	if (res.size() == 2)
+	    luwrain.say(res.get(0)); else
+	    luwrain.say(luwrain.i18n().staticStr(Langs.COPIED_LINES) + (res.size() - 1));
+	luwrain.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
+    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    {
 	return false;
     }
 

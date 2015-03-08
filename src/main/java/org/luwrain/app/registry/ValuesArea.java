@@ -43,7 +43,7 @@ class ValueItem
     }
 } 
 
-class ValuesArea extends NavigateArea implements HotPointInfo, EmbeddedEditLines
+class ValuesArea extends NavigateArea implements EmbeddedEditLines
 {
     private Luwrain luwrain;
     private Registry registry;

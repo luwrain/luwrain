@@ -21,7 +21,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines
+public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines, CopyCutRequest
 {
     public PopupClosing closing = new PopupClosing(this);
     protected Luwrain luwrain;
@@ -31,6 +31,7 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
     private String text;
     private int pos;
     private int popupFlags;
+    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public SimpleEditPopup(Luwrain luwrain,
 			    String name,
@@ -113,13 +114,10 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 	    return onArrowLeft(event);
 	case KeyboardEvent.ARROW_RIGHT:
 	    return onArrowRight(event);
-
 	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
 	    return onAltLeft(event);
 	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
 	    return onAltRight(event);
-
-
 	case KeyboardEvent.HOME:
 	    return onHome(event);
 	case KeyboardEvent.END:
@@ -135,17 +133,23 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
     {
 	if (event == null)
 	    throw new NullPointerException("null may not be null");
-	switch (event.getCode())
+	if (event.getCode() == EnvironmentEvent.INTRODUCE)
 	{
-	case EnvironmentEvent.INTRODUCE:
 	    luwrain.playSound(Sounds.INTRO_POPUP);
 	    luwrain.say(prefix + text);
 	    return true;
 	}
-
 	if (edit.isPosCovered(pos, 0) && edit.onEnvironmentEvent(event))
 	    return true;
-	return closing.onEnvironmentEvent(event);
+	switch (event.getCode())
+	{
+	case EnvironmentEvent.COPY_CUT_POINT:
+	    return copyCutInfo.doCopyCutPoint(pos, 0);
+	case EnvironmentEvent.COPY:
+	    return copyCutInfo.doCopy(pos, 0);
+	default:
+	    return closing.onEnvironmentEvent(event);
+	}
     }
 
     @Override public String getName()
@@ -192,11 +196,12 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 
     private boolean onHome(KeyboardEvent event)
     {
-	pos = prefix.length();
+	pos = edit.isPosCovered(pos, 0)?prefix.length():0;
 	final String line = prefix + text;
 	if (pos >= line.length())
 	    luwrain.hint(Hints.EMPTY_LINE); else
 	    luwrain.sayLetter(line.charAt(pos));
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -323,6 +328,34 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 	pos = prefix.length() + beforeHotPoint.length();
 	luwrain.onAreaNewContent(this);
 	luwrain.onAreaNewHotPoint(this);
+    }
+
+    @Override public boolean onCopyAll()
+    {
+	final String line = prefix + text;
+	luwrain.say(line);
+	luwrain.setClipboard(new String[]{line});
+	return true;
+    }
+
+    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    {
+	final String line = prefix + text;
+	if (line.isEmpty())
+	    return false;
+	final int fromPos = fromX < line.length()?fromX:line.length();
+	final int toPos = toX < line.length()?toX:line.length();
+	if (fromPos >= toPos)
+	    throw new IllegalArgumentException("fromPos should be less than toPos");
+	final String res = line.substring(fromPos, toPos);
+luwrain.say(res);
+luwrain.setClipboard(new String[]{res});
+	return true;
+    }
+
+    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    {
+	return false;
     }
 
     @Override public Luwrain getLuwrainObject()

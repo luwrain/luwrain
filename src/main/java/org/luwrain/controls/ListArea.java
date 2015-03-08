@@ -276,9 +276,7 @@ public class ListArea  implements Area, CopyCutRequest
 	case EnvironmentEvent.COPY_CUT_POINT:
 	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
-	    if (!copyCutInfo.doCopy(hotPointX, hotPointY))
-		copyEntireContent();
-	    return true;
+	    return copyCutInfo.doCopy(hotPointX, hotPointY);
 	default:
 	    return false;
 	}
@@ -742,6 +740,27 @@ public class ListArea  implements Area, CopyCutRequest
 	    return clickHandler.onListClick(this, hotPointY, model.getItem(hotPointY));
     }
 
+    @Override public boolean onCopyAll()
+    {
+	if (model == null || model.getItemCount() == 0)
+	    return false;
+	Vector<String> res = new Vector<String>();
+	final int count = model.getItemCount();
+	for(int i = 0;i < count;++i)
+	{
+	    final String line = appearance.getScreenAppearance(model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
+	    if (line != null)
+		res.add(line); else
+		res.add("");
+	}
+	res.add("");
+	if (res.size() == 2)
+	    environment.say(res.get(0)); else
+	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
+	environment.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
     @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
 	if (model == null || model.getItemCount() == 0)
@@ -756,8 +775,10 @@ public class ListArea  implements Area, CopyCutRequest
 		res.add(line); else
 		res.add("");
 	}
-	if (res.isEmpty())
-	    return false;
+	res.add("");
+	if (res.size() == 2)
+	    environment.say(res.get(0)); else
+	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
 	environment.setClipboard(res.toArray(new String[res.size()]));
 	return true;
     }
@@ -767,6 +788,7 @@ public class ListArea  implements Area, CopyCutRequest
 	return false;
     }
 
+    /*
     private void copyEntireContent()
     {
 	Vector<String> lines = new Vector<String>();
@@ -796,6 +818,7 @@ public class ListArea  implements Area, CopyCutRequest
 	res.addAll(lines);
 	environment.setClipboard(res.toArray(new String[res.size()]));
     }
+    */
 
     private void onNewHotPointY(boolean briefIntroduction)
     {

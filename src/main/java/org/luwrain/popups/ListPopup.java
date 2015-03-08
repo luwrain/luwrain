@@ -16,12 +16,14 @@
 
 package org.luwrain.popups;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class ListPopup implements Popup, PopupClosingRequest
+public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 {
     protected Luwrain luwrain;
     public PopupClosing closing = new PopupClosing(this);
@@ -33,6 +35,7 @@ public class ListPopup implements Popup, PopupClosingRequest
     private int hotPointY = 0;
     private String name;
     private int popupFlags;
+    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public ListPopup(Luwrain luwrain,
 		 String name,
@@ -167,6 +170,10 @@ public class ListPopup implements Popup, PopupClosingRequest
 	    return true;
 	switch(event.getCode())
 	{
+	case EnvironmentEvent.COPY_CUT_POINT:
+	    return copyCutInfo.doCopyCutPoint(hotPointX, hotPointY);
+	case EnvironmentEvent.COPY:
+	    return copyCutInfo.doCopy(hotPointX, hotPointY);
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
@@ -447,6 +454,56 @@ public class ListPopup implements Popup, PopupClosingRequest
     private boolean onInsert(KeyboardEvent event)
     {
 	//FIXME:
+	return false;
+    }
+
+    @Override public boolean onCopyAll()
+    {
+	if (model == null || model.getItemCount() == 0)
+	    return false;
+	Vector<String> res = new Vector<String>();
+	final int count = model.getItemCount();
+	for(int i = 0;i < count;++i)
+	{
+	    final String line = appearance.getScreenAppearance(model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
+	    if (line != null)
+		res.add(line); else
+		res.add("");
+	}
+	res.add("");
+	if (res.size() == 2)
+	    luwrain.say(res.get(0)); else
+	    luwrain.say(luwrain.i18n().staticStr(Langs.COPIED_LINES) + (res.size() - 1));
+	luwrain.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
+    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    {
+	if (model == null || model.getItemCount() == 0)
+	    return false;
+	if (fromY >= model.getItemCount() || toY >= model.getItemCount())
+	    return false;
+	Vector<String> res = new Vector<String>();
+	for(int i = fromY;i <= toY;++i)
+	{
+	    if (i == 0)
+		continue;
+	    final String line = appearance.getScreenAppearance(model.getItem(i - 1), ListItemAppearance.FOR_CLIPBOARD);
+	    if (line != null)
+		res.add(line); else
+		res.add("");
+	}
+	res.add("");
+	if (res.size() == 2)
+	    luwrain.say(res.get(0)); else
+	    luwrain.say(luwrain.i18n().staticStr(Langs.COPIED_LINES) + (res.size() - 1));
+	luwrain.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
+    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    {
 	return false;
     }
 

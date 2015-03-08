@@ -540,26 +540,14 @@ public class TableArea  implements Area, CopyCutRequest
 	return false;
     }
 
+    @Override public boolean onCopyAll()
+    {
+	return false; 
+    }
+
     @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
-	/*
-	if (model == null || model.getItemCount() == 0)
-	    return false;
-	if (fromY >= model.getItemCount() || toY > model.getItemCount())
-	    return false;
-	Vector<String> res = new Vector<String>();
-	for(int i = fromY;i < toY;++i)
-	{
-	    final String line = getScreenAppearance(model, i, model.getItem(i), CLIPBOARD_VALUE);
-	    if (line != null)
-		res.add(line); else
-		res.add("");
-	}
-	if (res.isEmpty())
-	    return false;
-	Luwrain.setClipboard(res.toArray(new String[res.size()]));
-	*/
-	return true;
+	return false;
     }
 
     @Override public boolean onCut(int fromX, int fromY, int toX, int toY)

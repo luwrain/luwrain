@@ -28,7 +28,7 @@ public class SingleLineEdit implements CopyCutRequest
 
     private ControlEnvironment environment;
     private SingleLineEditModel model;
-    private CopyCutInfo copyCutInfo;
+    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public SingleLineEdit(ControlEnvironment environment, SingleLineEditModel model)
     {
@@ -38,7 +38,6 @@ public class SingleLineEdit implements CopyCutRequest
 	    throw new NullPointerException("environment may not be null");
 	if (model == null)
 	    throw new NullPointerException("model may not be null");
-	this.copyCutInfo = new CopyCutInfo(this);
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -196,6 +195,18 @@ public class SingleLineEdit implements CopyCutRequest
 	return true;
     }
 
+    @Override public boolean onCopyAll()
+    {
+	final String line = model.getLine();
+	if (line != null)
+	{
+	    environment.say(line);
+	    environment.setClipboard(new String[]{line});
+	} else
+	    environment.setClipboard(new String[]{""});
+	return true;
+    }
+
     @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
 	final String line = model.getLine();
@@ -205,10 +216,9 @@ public class SingleLineEdit implements CopyCutRequest
 	final int toPos = toX < line.length()?toX:line.length();
 	if (fromPos >= toPos)
 	    throw new IllegalArgumentException("fromPos should be less than toPos");
-	final String[] res = new String[1];
-	res[0] = line.substring(fromPos, toPos);
-	environment.say(res[0]);
-	environment.setClipboard(res);
+	final String res = line.substring(fromPos, toPos);
+	environment.say(res);
+	environment.setClipboard(new String[]{res});
 	return true;
     }
 

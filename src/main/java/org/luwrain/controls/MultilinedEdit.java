@@ -318,6 +318,24 @@ return res;
 	return true;
     }
 
+    @Override public boolean onCopyAll()
+    {
+	Vector<String> res = new Vector<String>();
+	final int count = model.getLineCount();
+	for(int i = 0;i < count;++i)
+	{
+	    final String line = model.getLine(i);
+	    if (line == null)
+		return false;
+	    res.add(line);
+	}
+	if (res.size() == 1)
+	    environment.say(res.get(0)); else
+	    environment.say(environment.staticStr(Langs.COPIED_LINES) + res.size());
+	environment.setClipboard(res.toArray(new String[res.size()]));
+	return true;
+    }
+
     @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
     {
 	if (toY >= model.getLineCount())
@@ -327,14 +345,13 @@ return res;
 	    final String line = model.getLine(fromY);
 	    if (line == null || line.isEmpty())
 		return false;
-	    int fromPos = fromX < line.length()?fromX:line.length();
-	    int toPos = toX < line.length()?toX:line.length();
+	    final int fromPos = fromX < line.length()?fromX:line.length();
+	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
 		return false;
-	    String[] res = new String[1];
-	    res[0] = line.substring(fromPos, toPos);
-	    environment.say(res[0]);
-	    environment.setClipboard(res);
+	    String res = line.substring(fromPos, toPos);
+	    environment.say(res);
+	    environment.setClipboard(new String[]{res});
 	    return true;
 	}
 	Vector<String> res = new Vector<String>();
