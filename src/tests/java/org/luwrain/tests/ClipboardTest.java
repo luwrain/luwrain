@@ -236,7 +236,7 @@ public class ClipboardTest extends Assert
 	assertTrue(model.getLineCount() == 3);
 	assertTrue(model.getLine(0).equals("1234567890"));
 	assertTrue(model.getLine(1).equals("qwertyuiop"));
-		assertTrue(model.getLine(2).equals("asdfghjkl"));
+	assertTrue(model.getLine(2).equals("asdfghjkl"));
 	assertTrue(environment.clipboard.length == 1);
 	assertTrue(environment.clipboard[0].equals("rty"));
     }
@@ -256,8 +256,8 @@ public class ClipboardTest extends Assert
 	assertTrue(model.getLine(0).equals("1234567890"));
 	assertTrue(model.getLine(1).equals("qwe123"));
 	assertTrue(model.getLine(2).equals("456"));
-		assertTrue(model.getLine(3).equals("789rtyuiop"));
-		assertTrue(model.getLine(4).equals("asdfghjkl"));
+	assertTrue(model.getLine(3).equals("789rtyuiop"));
+	assertTrue(model.getLine(4).equals("asdfghjkl"));
     }
 
     @Test public void editInsertSingle()
@@ -274,6 +274,6 @@ public class ClipboardTest extends Assert
 	assertTrue(model.getLineCount() == 3);
 	assertTrue(model.getLine(0).equals("1234567890"));
 	assertTrue(model.getLine(1).equals("qwe123rtyuiop"));
-		assertTrue(model.getLine(2).equals("asdfghjkl"));
+	assertTrue(model.getLine(2).equals("asdfghjkl"));
     }
 }
