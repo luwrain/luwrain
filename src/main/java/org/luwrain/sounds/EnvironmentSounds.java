@@ -69,12 +69,7 @@ return;
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noLinesAbove(), ""), Sounds.NO_LINES_ABOVE);
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noLinesBelow(), ""), Sounds.NO_LINES_BELOW);
 
-
-
-
-
-
-
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.commanderNewLocation(), ""), Sounds.COMMANDER_NEW_LOCATION);
     }
 
     private static void setSoundFile(File dataDir,

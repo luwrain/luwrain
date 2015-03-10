@@ -29,6 +29,8 @@ public class EditArea extends SimpleArea
     {
 	super(environment);
 	this.environment = environment;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
 	createEdit();
     }
 
@@ -36,43 +38,47 @@ public class EditArea extends SimpleArea
     {
 	super(environment, name);
 	this.environment = environment;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
 	createEdit();
     }
 
     public EditArea(ControlEnvironment environment,
 		    String name,
-String[] content)
+		    String[] content)
     {
 	super(environment, name, content);
 	this.environment = environment;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be empty");
 	createEdit();
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	modified = false;
 	if (edit.onKeyboardEvent(event))
 	{
 	    if (modified)
 		onChange();
-	    modified = false;
 	    return true;
 	}
-	modified = false;
 	return super.onKeyboardEvent(event);
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	modified = false;
 	if (edit.onEnvironmentEvent(event))
 	{
 	    if (modified)
 		onChange();
-	    modified = false;
 	    return true;
 	}
-	modified = false;
 	return super.onEnvironmentEvent(event);
     }
 

@@ -24,12 +24,6 @@ import org.luwrain.util.*;
 
 public class MultilinedEdit implements CopyCutRequest
 {
-    //    private final String tabMessage = Langs.staticValue(Langs.TAB);
-    //    private final String emptyLineMessage = Langs.staticValue(Langs.EMPTY_LINE);
-    //    private final String textBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
-    //    private final String textEndMessage = Langs.staticValue(Langs.AREA_END);
-    //    private final String lineEndMessage = Langs.staticValue(Langs.END_OF_LINE);
-
     private ControlEnvironment environment;
     private MultilinedEditModel model;
     private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
@@ -110,9 +104,9 @@ public class MultilinedEdit implements CopyCutRequest
 	case EnvironmentEvent.INSERT:
 	    if (!(event instanceof InsertEvent) || !model.beginEditTrans())
 		return false;
-res = onInsert((InsertEvent)event);
-model.endEditTrans();
-return res;
+	    res = onInsert((InsertEvent)event);
+	    model.endEditTrans();
+	    return res;
 	default:
 	    return false;
 	}

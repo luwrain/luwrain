@@ -39,4 +39,5 @@ int getAreaVisibleHeight(Area area);
     LaunchContext launchContext();
     String staticStr(int code);
     org.luwrain.core.Strings environmentStrings();
+    void playSound(int code);
 }

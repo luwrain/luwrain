@@ -1,9 +1,9 @@
 
-package org.luwrain.tests; 
+package org.luwrain.util;
 
 import org.junit.*;
 
-import org.luwrain.util.MlTagStrip;
+//import org.luwrain.util.MlTagStrip;
 
 public class TagsStripTest extends Assert
 {

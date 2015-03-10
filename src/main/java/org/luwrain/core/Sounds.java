@@ -35,4 +35,5 @@ public interface Sounds
     public static final int NO_ITEMS_ABOVE = 13;
     public static final int NO_LINES_BELOW = 14;
     public static final int NO_LINES_ABOVE = 15;
+    public static final int COMMANDER_NEW_LOCATION = 16;
 }

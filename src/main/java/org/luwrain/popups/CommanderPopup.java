@@ -60,6 +60,20 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
     {
 	if (closing.onKeyboardEvent(event))
 	    return true;
+	if (!event.isCommand() && !event.isModified())
+	    switch(event.getCharacter())
+	    {
+	    case '=':
+		setFilter(new AllFilesCommanderFilter());
+		refresh();
+		return true;
+	    case '-':
+		setFilter(new NoHiddenCommanderFilter());
+		refresh();
+		return true;
+	    default:
+		return super.onKeyboardEvent(event);
+	    }
 	if (event.isCommand() &&
 	    event.getCommand() == KeyboardEvent.ENTER &&
 	    event.withControlOnly())

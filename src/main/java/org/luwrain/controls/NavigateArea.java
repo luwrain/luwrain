@@ -222,8 +222,8 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    ++hotPointX;
 	environment.onAreaNewHotPoint(this);
 	final 	    String newLine = getLineNotNull(hotPointY);
-	if (hotPointX == line.length())
-	    environment.hint(hotPointY + 1 == count?Hints.END_OF_TEXT:Hints.END_OF_LINE); else
+	if (hotPointX == newLine.length())
+	    environment.hint(hotPointY + 1 >= count?Hints.END_OF_TEXT:Hints.END_OF_LINE); else
 	    environment.sayLetter(newLine.charAt(hotPointX));
 	return true;
     }
@@ -243,14 +243,14 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    }
 	    --hotPointY;
 	    final String newLine = getLineNotNull(hotPointY);
-	    hotPointX = line.length();
+	    hotPointX = newLine.length();
 	} else
 	    --hotPointX;
 	environment.onAreaNewHotPoint(this);
 	final String newLine = getLineNotNull(hotPointY);
-	if (hotPointX == line.length())
+	if (hotPointX == newLine.length())
 	    environment.hint(Hints.END_OF_LINE); else
-	    environment.sayLetter(line.charAt(hotPointX));
+	    environment.sayLetter(newLine.charAt(hotPointX));
 	return true;
     }
 

@@ -117,7 +117,7 @@ public class Lang extends org.luwrain.core.Lang
 	    return "Скопировано строк:";
 	case LangStatic.CUT_LINES:
 	    return "Вырезано строк:";
-	case LangStatic.COMMANDER_INACCESSIBLE_DIRECTORY_CONTENT:
+	case LangStatic.COMMANDER_NO_CONTENT:
 	    return "Содержимое каталога недоступно";
 	case LangStatic.COMMANDER_SELECTED_DIRECTORY:
 	    return "выделенный каталог";
@@ -142,6 +142,8 @@ public class Lang extends org.luwrain.core.Lang
 	    return null;
 	switch(ch)
 	{
+	case '—':
+	    return "длинное тире";
 	case '~':
 	    return "тильда";
 	case '`':

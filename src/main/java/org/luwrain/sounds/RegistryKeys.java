@@ -127,6 +127,11 @@ class RegistryKeys
 	return getProperty("sounds.NoLinesBelow");
     }
 
+    public String commanderNewLocation()
+    {
+	return getProperty("sounds.CommanderNewLocation");
+    }
+
     private String getProperty(String name)
     {
 	if (name == null)

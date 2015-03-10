@@ -679,7 +679,7 @@ class Environment implements EventConsumer
 	    playSound(Sounds.GENERAL_ERROR);
 	    break;
 	case Luwrain.MESSAGE_OK:
-	    //FIXME:
+	    playSound(Sounds.GENERAL_OK);
 	    break;
 	}
 	speech.silence();

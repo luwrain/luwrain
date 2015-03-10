@@ -113,4 +113,9 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	return (org.luwrain.core.Strings)luwrain.i18n().getStrings("luwrain.environment");
     }
+
+    @Override public void playSound(int code)
+    {
+	luwrain.playSound(code);
+    }
 }

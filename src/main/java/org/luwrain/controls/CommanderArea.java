@@ -225,6 +225,13 @@ public class CommanderArea implements Area, CopyCutRequest
 	open(current, c != null?c.getName():null);
     }
 
+    public void setFilter(CommanderFilter filter)
+    {
+	if (filter == null)
+	    throw new NullPointerException("filter may not be null");
+	this.filter = filter;
+    }
+
     protected void introduceEntry(Entry entry, boolean brief)
     {
 	if (entry == null)
@@ -264,6 +271,7 @@ public class CommanderArea implements Area, CopyCutRequest
     {
 	if (file == null)
 	    return;
+	environment.playSound(Sounds.COMMANDER_NEW_LOCATION);
 	for(Location l: importantLocations)
 	    if (l.file().equals(file))
 	    {
@@ -301,7 +309,7 @@ public class CommanderArea implements Area, CopyCutRequest
     @Override public String getLine(int index)
     {
 	if (entries == null)
-	    return environment.staticStr(LangStatic.COMMANDER_INACCESSIBLE_DIRECTORY_CONTENT);
+	    return environment.staticStr(LangStatic.COMMANDER_NO_CONTENT);
 	return index < entries.size()?getScreenLine(entries.get(index)):"";
     }
 
@@ -525,17 +533,15 @@ public class CommanderArea implements Area, CopyCutRequest
     {
 	if (noContentCheck())
 	    return true;
-	/*
-	if (current == null || !current.isDirectory())
-	return false;
-	File f = luwrain.openPopup(null, null, current);
-	if (f == null)
-	return true;
-	if (f.isDirectory())
-	openByFile(f); else
-	luwrain.openFile(f.getAbsolutePath());
-	*/
-	return true;
+	if (hotPointY >= entries.size())
+	{
+	    File[] selected = selected();
+	    if (selected == null || selected.length < 1)
+		return false;
+	    return onClick(null, selected);
+	}
+	final Entry entry = entries.get(hotPointY);
+	return onClick(entry.file(), selected());
     }
 
     private boolean onChar(KeyboardEvent event)
@@ -896,7 +902,7 @@ public class CommanderArea implements Area, CopyCutRequest
     {
 	if (entries == null)
 	{
-	    environment.hint("no content");
+	    environment.hint(environment.staticStr(LangStatic.COMMANDER_NO_CONTENT), Hints.NO_CONTENT);
 	    return true;
 	}
 	return false;
