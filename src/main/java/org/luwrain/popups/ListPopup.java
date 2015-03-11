@@ -38,10 +38,10 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
     private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public ListPopup(Luwrain luwrain,
-		 String name,
-		 ListModel model,
-		 ListItemAppearance appearance,
-		 int popupFlags)
+		     String name,
+		     ListModel model,
+		     ListItemAppearance appearance,
+		     int popupFlags)
     {
 	this.luwrain = luwrain;
 	this.name = name;
@@ -257,7 +257,7 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 	if (visibleHeight < 1)
 	    return false;
 	if (hotPointY > visibleHeight)
-	hotPointY -= visibleHeight; else
+	    hotPointY -= visibleHeight; else
 	    hotPointY = 0;
 	onNewHotPointY(briefIntroduction);
 	return true;
@@ -356,7 +356,7 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 	    return true;
 	}
 	--hotPointX;
-	    luwrain.sayLetter(line.charAt(hotPointX));
+	luwrain.sayLetter(line.charAt(hotPointX));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
@@ -484,6 +484,19 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 	    return false;
 	if (fromY >= model.getItemCount() || toY >= model.getItemCount())
 	    return false;
+	if (fromY == toY)
+	{
+	    final String line = appearance.getScreenAppearance(model.getItem(fromY - 1), ListItemAppearance.FOR_CLIPBOARD);
+	    if (line.isEmpty())
+		return false;
+	    final int fromPos = fromX < line.length()?fromX:line.length();
+	    final int toPos = toX < line.length()?toX:line.length();
+	    if (fromPos >= toPos)
+		throw new IllegalArgumentException("fromPos should be less than toPos");
+	    luwrain.say(line.substring(fromPos, toPos));
+	    luwrain.setClipboard(new String[]{line.substring(fromPos, toPos)});
+	    return true;
+	}
 	Vector<String> res = new Vector<String>();
 	for(int i = fromY;i <= toY;++i)
 	{

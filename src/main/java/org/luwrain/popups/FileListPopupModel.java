@@ -16,6 +16,8 @@
 
 package org.luwrain.popups;
 
+//FIXME:Add trailing slash if the directory is the single with such name beginning;
+
 import java.util.*;
 import java.io.*;
 
@@ -80,7 +82,7 @@ class FileListPopupModel extends DynamicListPopupModel
 	return new EditListPopupItem(context);
     }
 
-    private char pathDelimiter()
+    private static char pathDelimiter()
     {
 	return '/';
     }
@@ -95,5 +97,14 @@ class FileListPopupModel extends DynamicListPopupModel
 	if (new File(path).isDirectory())
 	    return res + pathDelimiter(); else
 	    return res;
+    }
+
+    public static String getPathWithTrailingSlash(File f)
+    {
+	if (f == null)
+	    throw new NullPointerException("f may not be null");
+	if (f.isDirectory())
+	    return f.getAbsolutePath() + pathDelimiter(); 
+	return f.getAbsolutePath();
     }
 }

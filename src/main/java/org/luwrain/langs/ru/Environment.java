@@ -97,18 +97,43 @@ class Environment implements org.luwrain.core.Strings
 	switch(location.type())
 	{
 	case Location.ROOT:
-	    return "Корневой каталог";
+	    return "Корневой каталог, " + bytesNum(location.file().getFreeSpace()) + " свободно";
 	case Location.USER_HOME:
-	    return "Домашний каталог";
+	    return "Домашний каталог, " + bytesNum(location.file().getFreeSpace()) + " свободно";
 	case Location.REGULAR:
-	    return "Локальный диск " + location.name();
-
+	    return "Локальный диск " + location.name() + ", " + bytesNum(location.file().getFreeSpace()) + " свободно";
 	case Location.REMOTE:
-	    return "Сетевое подключение " + location.name();
+	    return "Сетевое подключение " + location.name() + ", " + bytesNum(location.file().getFreeSpace()) + " свободно";
 	case Location.REMOVABLE:
-	    return "Съёмный диск " + location.name();
+	    return "Съёмный диск " + location.name() + ", " + bytesNum(location.file().getFreeSpace()) + " свободно";
 	default:
 	    return "";
 	}
+    }
+
+    private String bytesNum(long num)
+    {
+	if (num > 1024 * 1024 * 1024)
+	{
+	    final long g = num / (1024 * 1024 * 1024);
+	    long rest = num - (g * 1024 * 1024 * 1024);
+	    rest /= (102 * 1024 * 1024);
+	    return g + "," + rest + "ГБ";
+	}
+	if (num > 1024 * 1024)
+	{
+	    final long m = num / (1024 * 1024);
+	    long rest = num - (m * 1024 * 1024);
+	    rest /= (102 * 1024);
+	    return m + "," + rest + "МБ";
+	}
+	if (num > 1024)
+	{
+	    final long k = num / 1024;
+	    long rest = num - (k * 1024);
+	    rest /= 102;
+	    return k + "," + rest + "КБ";
+	}
+	return "" + num + "Б";
     }
 }

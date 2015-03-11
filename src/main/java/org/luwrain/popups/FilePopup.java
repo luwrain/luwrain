@@ -33,7 +33,7 @@ public class FilePopup extends EditListPopup
 			   String prefix,
 			   File file)
     {
-	super(luwrain, new FileListPopupModel(), name, prefix, file.getAbsolutePath());
+	super(luwrain, new FileListPopupModel(), name, prefix, FileListPopupModel.getPathWithTrailingSlash(file));
 	this.file = file;
 	if (file == null)
 	    throw new NullPointerException("file may not be null");
@@ -45,7 +45,7 @@ public class FilePopup extends EditListPopup
 		     File file,
 		     int popupFlags)
     {
-	super(luwrain, new FileListPopupModel(), name, prefix, file.getAbsolutePath(), popupFlags);
+	super(luwrain, new FileListPopupModel(), name, prefix, FileListPopupModel.getPathWithTrailingSlash(file), popupFlags);
 	this.file = file;
 	if (file == null)
 	    throw new NullPointerException("file may not be null");

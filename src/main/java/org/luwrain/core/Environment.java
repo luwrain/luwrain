@@ -744,14 +744,14 @@ class Environment implements EventConsumer
 
     public void increaseFontSize()
     {
-	interaction.setDesirableFontSize(interaction.getFontSize() * 2); 
+	interaction.setDesirableFontSize(interaction.getFontSize() + 5); 
 	windowManager.redraw();
 	message(strings.fontSize(interaction.getFontSize()), Luwrain.MESSAGE_REGULAR);
     }
 
     public void decreaseFontSize()
     {
-	interaction.setDesirableFontSize(interaction.getFontSize() / 2); 
+	interaction.setDesirableFontSize(interaction.getFontSize() - 5); 
 	windowManager.redraw();
 	message(strings.fontSize(interaction.getFontSize()), Luwrain.MESSAGE_REGULAR);
     }
@@ -897,12 +897,12 @@ class Environment implements EventConsumer
 
     private void showOpenPopup()
     {
-	final File f = openPopup();
+	File f = openPopup();
 	if (f == null)
 	    return;
-	final String[] fileNames = new String[1];
-	fileNames[0] = f.getAbsolutePath();
-	openFiles(fileNames);
+	if (!f.isAbsolute())
+	    f = new File(launchContext.userHomeDirAsFile(), f.getPath());
+	openFiles(new String[]{f.getAbsolutePath()});
     }
 
     public boolean runCommand(String command)

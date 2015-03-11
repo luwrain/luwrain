@@ -419,6 +419,19 @@ public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
 	    return false;
 	if (fromY >= items.length || toY > items.length)
 	    return false;
+	if (fromY == toY)
+	{
+	    final String line = items[fromY].getText();
+	    if (line.isEmpty())
+		return false;
+	    final int fromPos = fromX < line.length()?fromX:line.length();
+	    final int toPos = toX < line.length()?toX:line.length();
+	    if (fromPos >= toPos)
+		throw new IllegalArgumentException("fromPos should be less than toPos");
+	    luwrain.say(line.substring(fromPos, toPos));
+	    luwrain.setClipboard(new String[]{line.substring(fromPos, toPos)});
+	    return true;
+	}
 	Vector<String> res = new Vector<String>();
 	for(int i = fromY;i < toY;++i)
 	{

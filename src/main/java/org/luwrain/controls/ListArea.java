@@ -767,6 +767,19 @@ public class ListArea  implements Area, CopyCutRequest
 	    return false;
 	if (fromY >= model.getItemCount() || toY > model.getItemCount())
 	    return false;
+	if (fromY == toY)
+	{
+	    final String line = appearance.getScreenAppearance(model.getItem(fromY), ListItemAppearance.FOR_CLIPBOARD);
+	    if (line.isEmpty())
+		return false;
+	    final int fromPos = fromX < line.length()?fromX:line.length();
+	    final int toPos = toX < line.length()?toX:line.length();
+	    if (fromPos >= toPos)
+		throw new IllegalArgumentException("fromPos should be less than toPos");
+	    environment.say(line.substring(fromPos, toPos));
+	    environment.setClipboard(new String[]{line.substring(fromPos, toPos)});
+	    return true;
+	}
 	Vector<String> res = new Vector<String>();
 	for(int i = fromY;i < toY;++i)
 	{
