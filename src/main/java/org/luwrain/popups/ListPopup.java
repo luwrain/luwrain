@@ -363,13 +363,95 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 
     private boolean onAltRight(KeyboardEvent event)
     {
-	//FIXME:
-	return false;
+	if (noContentCheck())
+	    return true;
+	if (hotPointY <= 0 ||
+	    hotPointY > items.length ||
+	    items[hotPointY - 1] == null)
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final Object item = items[hotPointY - 1];
+	final String line = appearance.getScreenAppearance(item, 0);
+	int leftBound = appearance.getObservableLeftBound(item);
+	if (leftBound < 0)
+	    leftBound = 0;
+	if (leftBound > line.length())
+	    leftBound = line.length();
+	int rightBound = appearance.getObservableRightBound(item);
+	if (rightBound < 0)
+	    rightBound = 0;
+	if (rightBound >= line.length())
+	    rightBound = line.length();
+	if (leftBound >= rightBound)
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX >= rightBound)
+	{
+	    luwrain.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	final String subline = line.substring(leftBound, rightBound);
+	WordIterator it = new WordIterator(subline, hotPointX - leftBound);
+	if (!it.stepForward())
+	{
+	    luwrain.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos() + leftBound;
+	if (it.announce().length() > 0)
+	    luwrain.say(it.announce()); else
+	    luwrain.hint(Hints.END_OF_LINE);
+	luwrain.onAreaNewHotPoint(this);
+	return true;
     }
 
     private boolean onAltLeft(KeyboardEvent event)
     {
-	//FIXME:
+	if (noContentCheck())
+	    return true;
+	if (hotPointY <= 0 ||
+	    hotPointY > items.length ||
+	    items[hotPointY - 1] == null)
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	final Object item = items[hotPointY - 1];
+	final String line = appearance.getScreenAppearance(item, 0);
+	int leftBound = appearance.getObservableLeftBound(item);
+	if (leftBound < 0)
+	    leftBound = 0;
+	if (leftBound > line.length())
+	    leftBound = line.length();
+	int rightBound = appearance.getObservableRightBound(item);
+	if (rightBound < 0)
+	    rightBound = 0;
+	if (rightBound >= line.length())
+	    rightBound = line.length();
+	if (leftBound >= rightBound)
+	{
+	    luwrain.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX <= leftBound)
+	{
+	    luwrain.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	final String subline = line.substring(leftBound, rightBound);
+	WordIterator it = new WordIterator(subline, hotPointX - leftBound);
+	if (!it.stepBackward())
+	{
+	    luwrain.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	hotPointX = it.pos() + leftBound;
+	    luwrain.say(it.announce());
+	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
