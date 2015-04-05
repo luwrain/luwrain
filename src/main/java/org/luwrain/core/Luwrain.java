@@ -54,12 +54,17 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
     public static final int MESSAGE_ERROR = 2;
 
     private Environment environment;
+    private String charsToSkip = "";
 
     public Luwrain(Environment environment)
     {
 	this.environment = environment;
 	if (environment == null)
 	    throw new NullPointerException("environment may not be null");
+	Registry registry = environment.registry();
+	RegistryKeys keys = new RegistryKeys();
+	if (registry.getTypeOf(keys.speechCharsToSkip()) == Registry.STRING)
+	    charsToSkip = registry.getString(keys.speechCharsToSkip());
     }
 
     @Override public void enqueueEvent(Event e)
@@ -114,9 +119,6 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	case Hints.NO_LINES_BELOW:
 	    playSound(Sounds.NO_LINES_BELOW);
 	    break;
-
-
-
 	}
 	if (environment.onStandardHint(code))
 	    hint(text);
@@ -276,14 +278,14 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
     {
 	silence();
 	if (text != null)
-	    environment.speech().say(text);
+	    environment.speech().say(preprocess(text));
     }
 
     @Override public void say(String text, int pitch)
     {
 	silence();
 	if (text != null)
-	    environment.speech().say(text, pitch);
+	    environment.speech().say(preprocess(text), pitch);
     }
 
     @Override public void say(String text,
@@ -292,7 +294,7 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
     {
 	silence();
 	if (text != null)
-	    environment.speech().say(text, pitch, rate);
+	    environment.speech().say(preprocess(text), pitch, rate);
     }
 
     @Override public void sayLetter(char letter)
@@ -386,5 +388,21 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
     private String staticString(int code)
     {
 	return i18n().staticStr(code);
+    }
+
+    private String preprocess(String s)
+    {
+	StringBuilder b = new StringBuilder();
+	for(int i = 0;i < s.length();++i)
+	{
+	    final char c = s.charAt(i);
+	    int k;
+	    for(k = 0;k < charsToSkip.length();++k)
+		if (c == charsToSkip.charAt(k))
+		    break;
+	    if (k >= charsToSkip.length())
+		b.append(c);
+	}
+	return b.toString();
     }
 }

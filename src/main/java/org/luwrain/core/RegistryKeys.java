@@ -160,6 +160,11 @@ class RegistryKeys
 	return getProperty("interaction.FontName");
     }
 
+    public String speechCharsToSkip()
+    {
+	return getProperty("speech.CharsToSkip");
+    }
+
     private String getProperty(String name)
     {
 	if (name == null)

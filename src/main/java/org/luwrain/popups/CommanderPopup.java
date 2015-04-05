@@ -56,6 +56,11 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 	    throw new NullPointerException("name may not be null");
     }
 
+@Override     public boolean onClick(File current, File[] selected)
+    {
+	return closing.doOk();
+    }
+
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	if (closing.onKeyboardEvent(event))

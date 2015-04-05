@@ -46,8 +46,8 @@ class Environment implements EventConsumer
     private LaunchContext launchContext;
     private EventQueue eventQueue = new EventQueue();
     private InstanceManager appInstances;
-    private Luwrain specialLuwrain = new Luwrain(this);
-    private Luwrain privilegedLuwrain = new Luwrain(this);
+    private Luwrain specialLuwrain;// = new Luwrain(this);
+    private Luwrain privilegedLuwrain;// = new Luwrain(this);
     private AppManager apps = new AppManager();
     private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
@@ -101,6 +101,9 @@ class Environment implements EventConsumer
 
     public void  run()
     {
+specialLuwrain = new Luwrain(this);
+privilegedLuwrain = new Luwrain(this);
+
 	registryKeys = new RegistryKeys();
 	registryAutoCheck = new RegistryAutoCheck(registry, "environment");
 	i18n = new I18nImpl();
@@ -682,8 +685,8 @@ class Environment implements EventConsumer
 	    playSound(Sounds.GENERAL_OK);
 	    break;
 	}
-	speech.silence();
-	speech.say(text, Luwrain.PITCH_MESSAGE);
+	specialLuwrain.silence();
+	specialLuwrain.say(text, Luwrain.PITCH_MESSAGE);
 	interaction.startDrawSession();
 	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
 	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text);
@@ -696,16 +699,16 @@ class Environment implements EventConsumer
 	if (app == null)
 	{
 	    playSound(Sounds.NO_APPLICATIONS);
-	    speech.silence(); 
-	    speech.say(strings.noLaunchedApps());
+	    specialLuwrain.silence(); 
+	    specialLuwrain.say(strings.noLaunchedApps());
 	    return;
 	}
 	final String name = app.getAppName();
-	speech.silence();
+	specialLuwrain.silence();
 	playSound(Sounds.INTRO_APP);
 	if (name != null && !name.trim().isEmpty())
-	    speech.say(name); else
-	    speech.say(app.getClass().getName());
+	    specialLuwrain.say(name); else
+	    specialLuwrain.say(app.getClass().getName());
     }
 
     public void introduceActiveArea()
@@ -714,16 +717,16 @@ class Environment implements EventConsumer
 	Area activeArea = screenContentManager.getActiveArea();
 	if (activeArea == null)
 	{
-	    speech.silence(); 
+	    specialLuwrain.silence(); 
 	    playSound(Sounds.NO_APPLICATIONS);
-	    speech.say(strings.noLaunchedApps());
+	    specialLuwrain.say(strings.noLaunchedApps());
 	    return;
 	}
 	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
 	    return;
-	speech.silence();
+	specialLuwrain.silence();
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
-	speech.say(activeArea.getName());
+	specialLuwrain.say(activeArea.getName());
     }
 
     /*
@@ -734,11 +737,11 @@ class Environment implements EventConsumer
 	if (activeArea == null)
 	{
 	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
-	    speech.silence();
-	    speech.say(strings.noLaunchedApps());
+	    specialLuwrain.silence();
+	    specialLuwrain.say(strings.noLaunchedApps());
 	    return;
 	}
-	speech.say(activeArea.getName());
+	specialLuwrain.say(activeArea.getName());
     }
     */
 
