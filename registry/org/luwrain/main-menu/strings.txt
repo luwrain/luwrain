@@ -1,1 +1,1 @@
-"content" = "commander:notepad:news:fetch:control:registry"
+"content" = "commander:notepad:news:fetch"
