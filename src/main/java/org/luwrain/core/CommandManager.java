@@ -363,4 +363,29 @@ class CommandManager
 		}
 	    });
     }
+
+    public void addOsCommands(Registry registry)
+    {
+	if (registry == null)
+	    throw new NullPointerException("registry may not be null");
+	final String path = new RegistryKeys().commandsOs();
+	final String[] subdirs = registry.getDirectories(path);
+	if (subdirs == null)
+	    return;
+	for(String s: subdirs)
+	{
+	    if (s.trim().isEmpty())
+	    {
+		Log.warning("environment", "registry directory " + path + " contains a subdirectory with an empty name");
+		continue;
+	    }
+	    final String commandValue = path + "/" + s + "/command";
+	    if (registry.getTypeOf(commandValue) != Registry.STRING)
+	    {
+		Log.warning("environment", "registry value " + commandValue + " supposed to be a string but it isn\'t a string");
+		continue;
+	    }
+	    add(null, new OsCommand(s, registry.getString(commandValue)));
+	}
+    }
 }

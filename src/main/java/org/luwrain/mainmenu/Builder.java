@@ -66,8 +66,8 @@ public class Builder
 	    if (s == null || s.trim().isEmpty())
 		items.add(new EmptyItem()); else
 		items.add(new CommandItem(strings, s, luwrain.i18n().commandTitle(s)));
-	items.add(new EmptyItem());
-	items.add(new CommandItem(strings, "quit", luwrain.i18n().commandTitle("quit")));
+	//	items.add(new EmptyItem());
+	//	items.add(new CommandItem(strings, "quit", luwrain.i18n().commandTitle("quit")));
 	return items.toArray(new Item[items.size()]);
     }
 

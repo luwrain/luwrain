@@ -136,6 +136,7 @@ privilegedLuwrain = new Luwrain(this);
 
 	shortcuts.addBasicShortcuts();
 	commands.addBasicCommands(this);
+	commands.addOsCommands(registry);
 
 	for(Extension e: extensions)
 	{

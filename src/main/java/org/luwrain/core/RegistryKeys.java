@@ -165,6 +165,12 @@ class RegistryKeys
 	return getProperty("speech.CharsToSkip");
     }
 
+    public String commandsOs()
+    {
+	return getProperty("commands.OS");
+    }
+
+
     private String getProperty(String name)
     {
 	if (name == null)
