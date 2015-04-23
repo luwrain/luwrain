@@ -24,6 +24,8 @@ public class MlTagStrip
     private int pos;
     private String result = "";
 
+    private LinkedList<String> openedTagStack = new LinkedList<String>();
+
     public MlTagStrip(String text)
     {
 	this.text = text;
@@ -45,21 +47,24 @@ public class MlTagStrip
 		handleCdata();
 		continue;
 	    }
-	    //	    System.out.println("not cdata");
 
-	    newPos = checkAtPos(pos, "</");
+	    newPos = checkAtPos(pos, "<!--");
 	    if (newPos > pos)
 	    {
 		pos = newPos;
-		handleClosingTag();
+		//		System.out.println("reader:pos before comments:" + pos);
+		handleComments();
+		//		System.out.println("reader:pos after comments:" + pos);
+		//		System.out.println("reader:debug:comments:" + text.substring(newPos, pos));
 		continue;
 	    }
 
-	    if (c == '<')
+	    if (text.charAt(pos) == '<')
 	    {
-		++pos;
-		handleOpeningTag();
-		continue;
+		if (checkOpeningTag())
+		    continue;
+		if (checkClosingTag())
+		    continue;
 	    }
 
 	    if (c == '&')
@@ -73,31 +78,42 @@ public class MlTagStrip
 	}
     }
 
-    private void handleOpeningTag()
+    private boolean  checkOpeningTag()
     {
 	if (pos >= text.length())
-	    return;
-	pos = skipBlank(pos);
-	String name = "";
-	while (pos < text.length() && text.charAt(pos) != '>' && !blankChar(text.charAt(pos)))
-	    name += text.charAt(pos++);
-	onOpeningTag(name.trim());
-	while (pos < text.length() && text.charAt(pos) != '>')
-	    ++pos;
-	if (pos < text.length())
-	    ++pos;
+	    return false;
+	int p = skipBlank(pos + 1);
+	final int nameStart = p;
+	while (p < text.length() &&
+	       text.charAt(p) != '>' &&
+	       text.charAt(p) != '/' &&
+	       !blankChar(text.charAt(p)))
+	    ++p;
+	final String name = text.substring(nameStart, p);
+	if (!admissibleTag(name))
+	    return false;
+	onOpeningTag(name);
+	while (p < text.length() && text.charAt(p) != '>')
+	    ++p;
+	if (p < text.length())
+	    ++p;
+	if (tagMustBeClosed(name) && text.charAt(p - 2) != '/')
+	    openedTagStack.add(name);
+	pos = p;
+	return true;
     }
 
-    private void handleClosingTag()
+    private boolean checkClosingTag()
     {
 	if (pos > text.length())
-	    return;
-	String name = "";
-	while (pos < text.length() && text.charAt(pos) != '>')
-	    name = name + text.charAt(pos++);
-	onClosingTag(name.trim());
-	if (pos < text.length())
-	    ++pos;
+	    return false;
+	final String closingTag = constructClosingTag();
+	final int newPos = checkAtPos(pos, closingTag);
+	if (newPos <= pos)
+	    return false;
+	onClosingTag(openedTagStack.pollLast());
+	pos = newPos;
+	return true;
     }
 
     private void handleCdata()
@@ -122,6 +138,25 @@ public class MlTagStrip
 	onCdata(value);
     }
 
+    private void handleComments()
+    {
+	if (pos >= text.length())
+	    return;
+	while (pos < text.length())
+	{
+	    if (text.charAt(pos) == '-')
+	    {
+		final int newPos = checkAtPos(pos, "-->");
+		if (newPos > pos)
+		{
+		    pos = newPos;
+		    return;
+		}
+	    }
+	    ++pos;
+	}
+    }
+
     private void handleEntity()
     {
 	if (pos >= text.length())
@@ -136,22 +171,37 @@ public class MlTagStrip
 
     private void handleText()
     {
+	final int oldPos = pos;
+	++pos;
 	String res = "";
-	while (pos < text.length() && text.charAt(pos) != '<' && text.charAt(pos) != '&')
-	    res += text.charAt(pos++);
-	onText(res);
+	while (pos < text.length())
+	{
+	    final char current = text.charAt(pos);
+	    if (current == '<')
+		break;
+	    if (current == '&')
+		break;
+	    ++pos;
+	}
+	onText(text.substring(oldPos, pos));
     }
 
+    /**
+     * Checks if a substring presents at the specified position.
+     *
+     * @param posFrom The position to start checking from
+     * @param substr A substring to check
+     * @return The position immediately after the encountered substring
+     */
     private int checkAtPos(int posFrom, String substr)
     {
-	if (substr == null)
-	    throw new NullPointerException("substr may not be null");
 	if (substr.isEmpty())
 	    throw new NullPointerException("substr may not be empty");
 	int posInText = posFrom;
 	for(int i = 0;i < substr.length();++i)
 	{
 	    final char c = substr.charAt(i);
+	    //Skipping all spaces if there are any
 	    while (posInText < text.length() && blankChar(text.charAt(posInText)))
 		++posInText;
 	    if (posInText >= text.length())
@@ -192,32 +242,7 @@ public class MlTagStrip
     {
 	if (name == null || name.trim().isEmpty())
 	    return;
-	if (name.charAt(0) == '#')
-	{
-	    if (name.length() < 2)
-		return;
-	    if (Character.toLowerCase(name.charAt(1)) != 'x')//Decimal;
-	    {
-		int value;
-		try {
-		    value = Integer.parseInt(name.substring(1));
-		}
-		catch(NumberFormatException ee)
-		{
-		    return;
-		}
-		result += (char)value;
-		return;
-	    } else //Hex;
-	    {
-		final String str = name.substring(2).trim();
-		if (str.isEmpty())
-		    return;
-		//fixme:
-		return;
-	    }
-	} //By code;
-	result += (char)getCodeOfEntity(name.toLowerCase().trim());
+	onText(translateEntity(name));
     }
 
     protected void onText(String str)
@@ -240,7 +265,7 @@ public class MlTagStrip
     {
 	if (value == null || value.isEmpty())
 	    return;
-	result += value;
+	onText(value);
     }
 
     public String result()
@@ -259,6 +284,35 @@ public class MlTagStrip
 	    ml.strip();
 	    //	    System.out.println("Result \"" + ml.result() + "\"");
 	    return ml.result();
+    }
+
+    public static String translateEntity(String entity)
+    {
+	final String name = entity.trim().toLowerCase();
+	if (name.charAt(0) == '#')
+	{
+	    if (name.length() < 2)
+		return "";
+	    if (name.charAt(1) != 'x')//Decimal;
+	    {
+		int value;
+		try {
+		    value = Integer.parseInt(name.substring(1));
+		}
+		catch(NumberFormatException ee)
+		{
+		    return "";
+		}
+		return "" + (char)value;
+	    } 
+	    //Hex;
+	    final String str = name.substring(2).trim();
+	    if (str.isEmpty())
+		    return "";
+	    //fixme:
+	    return "";
+	} //By code;
+	return "" + (char)getCodeOfEntity(name.toLowerCase().trim());
     }
 
     public static int getCodeOfEntity(String name)
@@ -758,5 +812,50 @@ return 188;
 	if (name.equals("diams"))
 	    return 9830;
 	return 32;
+    }
+
+    protected int currentLine()
+    {
+	int count = 1;
+	for(int i = 0;i < pos;++i)
+	    if (text.charAt(i) == '\n')
+		++count;
+	return count;
+    }
+
+    protected boolean admissibleTag(String tag)
+    {
+	return tag != null && !tag.trim().isEmpty();
+    }
+
+    protected boolean tagMustBeClosed(String tag)
+    {
+	return true;
+    }
+
+    protected String getCurrentTag()
+    {
+	if (openedTagStack == null || openedTagStack.isEmpty())
+	    return "";
+	return openedTagStack.getLast();
+    }
+
+    protected boolean isTagOpened(String tag)
+    {
+	final String adjusted = tag.toLowerCase().trim();
+	for(String s: openedTagStack)
+	    if (s.equals(adjusted))
+		return true;
+	return false;
+    }
+
+
+
+
+    private String constructClosingTag()
+    {
+	if (openedTagStack.isEmpty())
+	    return "";
+	return "</" + openedTagStack.getLast() + ">";
     }
 }

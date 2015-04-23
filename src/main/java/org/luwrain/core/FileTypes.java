@@ -44,6 +44,24 @@ class FileTypes
 		res.add("commander");
 		continue;
 	    }
+	    final String name = f.getName();
+	    final int dotPos = name.lastIndexOf('.');
+	    if (dotPos < 0)
+	    {
+		res.add("");
+		continue;
+	    }
+	    final String ext = name.substring(dotPos);
+	    if (ext.toLowerCase().equals(".doc"))
+	    {
+		res.add("reader");
+		continue;
+	    }
+	    if (ext.toLowerCase().equals(".html"))
+	    {
+		res.add("reader");
+		continue;
+	    }
 	    res.add("notepad");
 	}
 	return res.toArray(new String[res.size()]);
