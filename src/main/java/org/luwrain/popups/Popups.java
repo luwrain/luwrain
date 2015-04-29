@@ -120,4 +120,16 @@ public class Popups
 	    return null;
 	return popup.getFile();
     }
+
+    public static String simple(Luwrain luwrain,
+				String name,
+				String prefix,
+String text)
+    {
+	SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.text ();
+    }
 }

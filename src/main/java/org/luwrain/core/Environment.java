@@ -204,8 +204,12 @@ privilegedLuwrain = new Luwrain(this);
 
 	interaction.startInputEventsAccepting(this);
 	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
-		eventLoop(new InitialEventLoopStopCondition());
-		interaction.stopInputEventsAccepting();
+	try {
+	    Thread.sleep(1000);
+	} catch (InterruptedException ie){}
+	message(strings.startWorkFromMainMenu(), Luwrain.MESSAGE_REGULAR);
+	eventLoop(new InitialEventLoopStopCondition());
+	interaction.stopInputEventsAccepting();
     }
 
     public void quit()
@@ -460,6 +464,11 @@ privilegedLuwrain = new Luwrain(this);
 	if (event.isCommand())
 	{
 	    final int code = event.getCommand();
+	    if (code == KeyboardEvent.CONTROL)
+	    {
+		speech.silence();
+		return true;
+	    }
 	    if (code == KeyboardEvent.SHIFT ||
 		code == KeyboardEvent.CONTROL ||
 		code == KeyboardEvent.LEFT_ALT ||
@@ -467,7 +476,7 @@ privilegedLuwrain = new Luwrain(this);
 		return true;
 	}
 	if (!event.isCommand() &&
-	    event.getCharacter() == 'x' &&
+	    EqualKeys.equalKeys(event.getCharacter(), 'x') &&
 	    event.withLeftAltOnly())
 	{
 	    showCommandPopup();

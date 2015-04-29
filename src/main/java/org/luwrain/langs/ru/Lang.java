@@ -118,13 +118,13 @@ public class Lang extends org.luwrain.core.Lang
 	case LangStatic.CUT_LINES:
 	    return "Вырезано строк:";
 	case LangStatic.COMMANDER_NO_CONTENT:
-	    return "Содержимое каталога недоступно";
+	    return "Содержимое папки недоступно";
 	case LangStatic.COMMANDER_SELECTED_DIRECTORY:
-	    return "выделенный каталог";
+	    return "выделенная папка";
 	case LangStatic.COMMANDER_SELECTED:
 	    return "выделено";
 	case LangStatic.COMMANDER_DIRECTORY:
-	    return "Каталог";
+	    return "Папка";
 	case LangStatic.COMMANDER_PARENT_DIRECTORY:
 	    return "На уровень вверх";
 	case LangStatic.COMMANDER_USER_HOME:

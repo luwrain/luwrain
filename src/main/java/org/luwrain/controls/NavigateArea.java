@@ -173,6 +173,8 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	hotPointY = hotPointY < count?hotPointY:count - 1;
 	if (hotPointY + 1 >= count)
 	{
+	    if (count == 1)
+		environment.hint(environment.staticStr(LangStatic.NO_LINES_BELOW) + " " + getLineNotNull(0), Hints.NO_LINES_BELOW); else
 	    environment.hint(Hints.NO_LINES_BELOW);
 	    return true;
 	}
@@ -191,7 +193,9 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	hotPointY = hotPointY < count?hotPointY:count - 1;
 	if (hotPointY == 0)
 	{
-	    environment.hint(Hints.NO_LINES_ABOVE);
+	    if (count == 1)
+		environment.hint(environment.staticStr(LangStatic.NO_LINES_ABOVE) + " " + getLineNotNull(0), Hints.NO_LINES_ABOVE); else
+		environment.hint(Hints.NO_LINES_ABOVE);
 	    return true;
 	}
 	--hotPointY;

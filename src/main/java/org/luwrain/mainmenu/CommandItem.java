@@ -48,6 +48,7 @@ class CommandItem implements Item
 
     @Override public void introduce(CommandEnvironment env)
     {
+	env.playSound(Sounds.NEW_LIST_ITEM);
 	env.say(title);
     }
 

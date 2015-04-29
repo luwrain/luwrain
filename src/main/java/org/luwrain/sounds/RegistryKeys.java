@@ -132,6 +132,17 @@ class RegistryKeys
 	return getProperty("sounds.CommanderNewLocation");
     }
 
+    public String newListItem()
+    {
+	return getProperty("sounds.NewListItem");
+    }
+
+    public String generalTime()
+    {
+	return getProperty("sounds.GeneralTime");
+    }
+
+
     private String getProperty(String name)
     {
 	if (name == null)

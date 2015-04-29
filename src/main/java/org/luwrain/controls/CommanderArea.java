@@ -236,6 +236,7 @@ public class CommanderArea implements Area, CopyCutRequest
     {
 	if (entry == null)
 	    return;
+	environment.playSound(Sounds.NEW_LIST_ITEM);
 	if (brief)
 	{
 	    final String name = entry.file().getName();

@@ -95,14 +95,14 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 	    return true;
 	if (!event.isCommand())
 	{
-	    final int c = event.getCharacter();
-	    if (c == 'y' || c == 'Y')
+	    final char c = event.getCharacter();
+	    if (EqualKeys.equalKeys(c, 'y'))
 	    {
 		res = true;
 		closing.doOk();
 		return true;
 	    }
-	    if (c == 'n' || c == 'N')
+	    if (EqualKeys.equalKeys(c, 'n'))
 	    {
 		res = false;
 		closing.doOk();

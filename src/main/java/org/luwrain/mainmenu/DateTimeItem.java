@@ -42,6 +42,7 @@ class DateTimeItem implements Item
 
     @Override public void introduce(CommandEnvironment env)
     {
+	env.playSound(Sounds.GENERAL_TIME);
 	env.say(value);
     }
 

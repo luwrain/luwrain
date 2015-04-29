@@ -110,12 +110,12 @@ public class KeyboardEvent extends Event
 	leftAltPressed = false;
 	rightAltPressed = false;
     }
-
+    /**@todo It is better to rename it to equalKeysOnKeyboard()*/
     public boolean equals(KeyboardEvent event)
     {
 	return (cmd == event.cmd &&
 		(!cmd || cmdCode == event.cmdCode) &&
-		(cmd || 		nonCmdChar == event.nonCmdChar) &&
+		(cmd || EqualKeys.equalKeys(nonCmdChar, event.nonCmdChar)) &&
 		shiftPressed == event.shiftPressed &&
 		controlPressed == event.controlPressed &&
 		leftAltPressed == event.leftAltPressed &&

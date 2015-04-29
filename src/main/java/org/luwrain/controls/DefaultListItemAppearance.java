@@ -16,6 +16,8 @@
 
 package org.luwrain.controls;
 
+import org.luwrain.core.Sounds;
+
 public class DefaultListItemAppearance implements ListItemAppearance
 {
     private ControlEnvironment environment;
@@ -31,6 +33,7 @@ public class DefaultListItemAppearance implements ListItemAppearance
     {
 	if (item == null)
 	    return;
+	environment.playSound(Sounds.NEW_LIST_ITEM);
 	environment.say(item.toString());
     }
 

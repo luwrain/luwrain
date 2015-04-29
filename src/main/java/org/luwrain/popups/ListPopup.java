@@ -650,6 +650,7 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 	    return;
 	}
 	final Object item = items[hotPointY - 1];
+	luwrain.playSound(Sounds.NEW_LIST_ITEM);
 	if (item == null)
 	{
 	    hotPointX = 0;
