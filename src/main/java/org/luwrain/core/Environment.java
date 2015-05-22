@@ -934,8 +934,11 @@ privilegedLuwrain = new Luwrain(this);
 	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
-	    if (!commands.run(popup.text().trim(), specialLuwrain))
-		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
+	    String commandName = popup.text().trim();
+        if (commandName != null && !commandName.isEmpty()) {
+            if (!commands.run(commandName, specialLuwrain))
+                message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
+        }
     }
 
     public OperatingSystem os()
