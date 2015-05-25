@@ -15,3 +15,5 @@
 "intro-popup" = "sounds/intro-popup.wav"
 "intro-app" = "sounds/intro-app.wav"
 "commander-new-location" = "sounds/commander-new-location.wav"
+"new-list-item" = "sounds/new-list-item.wav"
+"general-time" = "sounds/general-clock.wav"
