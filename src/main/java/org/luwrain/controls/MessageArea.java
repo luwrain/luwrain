@@ -124,7 +124,7 @@ public class MessageArea extends FormArea
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public String getName()
+    @Override public String getAreaName()
     {
 	return environment.staticStr(Langs.MESSAGE);
     }

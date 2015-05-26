@@ -333,7 +333,7 @@ class WindowManager
 	Area area = win.area;
 	if (win.scrolledVert < 0 || win.scrolledVert >= area.getLineCount())
 	    return;
-	String name = area.getName();
+	final String name = area.getAreaName();
 	if (name != null && !name.isEmpty())
 	    interaction.drawText(win.x, win.y, name.length() <= win.width?name:name.substring(0, win.width));
 	int count = area.getLineCount() - win.scrolledVert;

@@ -93,9 +93,9 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 	return super.onEnvironmentEvent(event);
     }
 
-    @Override public String getName()
+    @Override public String getAreaName()
     {
-	return name + super.getName();
+	return name + super.getAreaName();
     }
 
     @Override public boolean onOk()

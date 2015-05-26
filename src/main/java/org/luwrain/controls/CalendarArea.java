@@ -59,7 +59,7 @@ public class CalendarArea implements Area
 	return constructLine(index - 1);
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	if (!event.isCommand() || event.isModified())
 	    return false;
@@ -93,12 +93,17 @@ public class CalendarArea implements Area
 	return true;
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	return false;
     }
 
-    public String getName()
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
+    }
+
+    @Override public String getAreaName()
     {
 	//FIXME:Customizable behaviour;
 	//FIXME:ROOT locale;

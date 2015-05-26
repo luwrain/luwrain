@@ -100,6 +100,11 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	}
     }
 
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
+    }
+
     private boolean onHome(KeyboardEvent event)
     {
 	final int count = getValidLineCount();

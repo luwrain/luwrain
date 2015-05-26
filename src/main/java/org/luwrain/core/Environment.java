@@ -736,7 +736,7 @@ privilegedLuwrain = new Luwrain(this);
 	    return;
 	specialLuwrain.silence();
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
-	specialLuwrain.say(activeArea.getName());
+	specialLuwrain.say(activeArea.getAreaName());
     }
 
     /*

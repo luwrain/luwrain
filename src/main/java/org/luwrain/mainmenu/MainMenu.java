@@ -118,7 +118,7 @@ public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
-	    luwrain.say(getName());
+	    luwrain.say(getAreaName());
 	    return true;
 	case EnvironmentEvent.COPY_CUT_POINT:
 	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
@@ -127,6 +127,11 @@ public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
 	default:
 	    return closing.onEnvironmentEvent(event);
 	}
+    }
+
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
     }
 
     @Override public int getLineCount()
@@ -139,7 +144,7 @@ public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
 	return index < items.length?items[index].getText():"";
     }
 
-    @Override public String getName()
+    @Override public String getAreaName()
     {
 	return strings.areaName();
     }

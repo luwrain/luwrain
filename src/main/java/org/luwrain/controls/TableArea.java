@@ -223,6 +223,11 @@ public class TableArea  implements Area, CopyCutRequest
 	}
     }
 
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
+    }
+
     @Override public int getLineCount()
     {
 	if (noProperContent())
@@ -263,7 +268,7 @@ public class TableArea  implements Area, CopyCutRequest
 	return hotPointY >= 0?hotPointY:0;
     }
 
-    @Override public String getName()
+    @Override public String getAreaName()
     {
 	return name != null?name:"";
     }

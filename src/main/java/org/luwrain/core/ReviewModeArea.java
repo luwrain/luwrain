@@ -49,11 +49,11 @@ public class ReviewModeArea extends NavigateArea
 	return false;
     }
 
-    public String getName()
+    public String getAreaName()
     {
 	if (hiddenArea == null)
 	    return "FIXME";
-	return hiddenArea.getName();///FIXME:Additional info;
+	return hiddenArea.getAreaName();///FIXME:Additional info;
     }
 
     public boolean onHiddenAreaNewContent(Area area)

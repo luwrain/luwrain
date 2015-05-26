@@ -79,12 +79,10 @@ import org.luwrain.core.events.*;
  */
 public interface Area extends Lines
 {
-    //May never return 0, empty area means one empty line;
-    //    int getLineCount();
-    //    String getLine(int index);
+    String getAreaName();
     int getHotPointX();
     int getHotPointY();
     boolean onKeyboardEvent(KeyboardEvent event);
     boolean onEnvironmentEvent(EnvironmentEvent event);
-    String getName();
+    boolean onAreaQuery(AreaQuery areaQuery);
 }

@@ -81,7 +81,7 @@ public class FilePopup extends EditListPopup
 	    file = file.getParentFile();
 	if (file == null || !file.isDirectory())
 	    return false;
-	final File res = Popups.commanderSingle(luwrain, getName() + ": ", file, CommanderPopup.ACCEPT_ALL, 0);
+	final File res = Popups.commanderSingle(luwrain, getAreaName() + ": ", file, CommanderPopup.ACCEPT_ALL, 0);
 	if (res != null)
 	    setText(res.getAbsolutePath(), "");
 	return true;

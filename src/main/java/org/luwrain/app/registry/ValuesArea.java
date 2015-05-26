@@ -190,7 +190,7 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 	return constructLineForScreen(items[index]);
     }
 
-    public String getName()
+    @Override public String getAreaName()
     {
 	return stringConstructor.valuesAreaName();
     }
@@ -217,7 +217,7 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 	return super.onKeyboardEvent(event);
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	switch (event.getCode())
 	{
@@ -242,6 +242,11 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 		return true;
 	}
 	return super.onEnvironmentEvent(event);
+    }
+
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
     }
 
     public boolean onInsert()

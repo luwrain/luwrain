@@ -1,2 +1,0 @@
-"back-end"="awt"
-"font-name"="monospaced"

@@ -147,7 +147,7 @@ public class TreeArea implements Area
 	return false;
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	if (event.getCode() == EnvironmentEvent.REFRESH)
 	{
@@ -157,7 +157,12 @@ public class TreeArea implements Area
 	return false;
     }
 
-    public String getName()
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
+    }
+
+    @Override public String getAreaName()
     {
 	return name != null?name:"";
     }

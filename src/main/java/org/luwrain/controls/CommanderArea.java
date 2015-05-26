@@ -419,7 +419,12 @@ public class CommanderArea implements Area, CopyCutRequest
 	}
     }
 
-    @Override public String getName()
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
+    }
+
+    @Override public String getAreaName()
     {
 	if (current == null)
 	    return "-";

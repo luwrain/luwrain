@@ -282,6 +282,11 @@ public class ListArea  implements Area, CopyCutRequest
 	}
     }
 
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
+    }
+
     @Override public int getLineCount()
     {
 	if (model.getItemCount() <= 0)
@@ -310,7 +315,7 @@ public class ListArea  implements Area, CopyCutRequest
 	return hotPointY >= 0?hotPointY:0;
     }
 
-    @Override public String getName()
+    @Override public String getAreaName()
     {
 	return name;
     }

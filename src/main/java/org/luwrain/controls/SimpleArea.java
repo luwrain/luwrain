@@ -113,7 +113,7 @@ public class SimpleArea extends NavigateArea implements MutableLines
 	return super.onEnvironmentEvent(event);
     }
 
-    @Override public String getName()
+    @Override public String getAreaName()
     {
 	return name != null?name:"";
     }

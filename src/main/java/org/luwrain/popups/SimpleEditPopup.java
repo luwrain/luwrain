@@ -152,7 +152,12 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 	}
     }
 
-    @Override public String getName()
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
+    }
+
+    @Override public String getAreaName()
     {
 	return name;
     }
