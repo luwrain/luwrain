@@ -18,6 +18,8 @@ package org.luwrain.core;
 
 import java.util.*;
 
+import org.luwrain.core.extensions.*;
+
 class SharedObjectManager
 {
     class Entry 

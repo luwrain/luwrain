@@ -14,40 +14,42 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.core.extensions;
+
+import org.luwrain.core.*;
 
 public class EmptyExtension implements Extension
 {
-    @Override public String init(String[] cmdLine, Registry registry)
+    @Override public String init(Luwrain luwrain)
     {
 	return null;
     }
 
-    @Override public Command[] getCommands(CommandEnvironment env)
+    @Override public Command[] getCommands(Luwrain luwrain)
     {
 	return new Command[0];
     }
 
-    @Override public Shortcut[] getShortcuts()
+    @Override public Shortcut[] getShortcuts(Luwrain luwrain)
     {
 	return new Shortcut[0];
     }
 
-    @Override public Worker[] getWorkers()
+    @Override public Worker[] getWorkers(Luwrain luwrain)
     {
 	return new Worker[0];
     }
 
-    @Override public SharedObject[] getSharedObjects()
+    @Override public SharedObject[] getSharedObjects(Luwrain luwrain)
     {
 	return new SharedObject[0];
     }
 
-    @Override public void i18nExtension(I18nExtension i18nExt)
+    @Override public void i18nExtension(Luwrain luwrain, I18nExtension i18nExt)
     {
     }
 
-    @Override public org.luwrain.mainmenu.Item[] getMainMenuItems(CommandEnvironment env)
+    @Override public org.luwrain.mainmenu.Item[] getMainMenuItems(Luwrain luwrain)
     {
 	return new org.luwrain.mainmenu.Item[0];
     }

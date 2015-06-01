@@ -1,5 +1,5 @@
 
-package org.luwrain.extensions;
+package org.luwrain.core.extensions;
 
 import java.util.*;
 import java.util.jar.*;
@@ -7,10 +7,11 @@ import java.io.*;
 
 import org.luwrain.core.*;
 
-public class manager
+public class Manager
 {
     private String[] cmdLine;
     private Registry registry;
+    private InterfaceManager interfaceManager;
     private Extension[] extensions;
 
     public void load()
@@ -30,38 +31,41 @@ public class manager
 	    }
 	    catch (InstantiationException e)
 	    {
-		Log.info("extensions", "loading of extension " + s + " failed:instantiation problem:" + e.getMessage());
+		Log.error("environment", "loading of extension " + s + " failed:instantiation problem:" + e.getMessage());
 		continue;
 	    }
 	    catch (IllegalAccessException e)
 	    {
-		Log.info("extensions", "loading of extension " + s + " failed:illegal access:" + e.getMessage());
+		Log.error("extensions", "loading of extension " + s + " failed:illegal access:" + e.getMessage());
 		continue;
 	    }
 	    catch (ClassNotFoundException e)
 	    {
-		Log.info("extensions", "loading of extension " + s + " failed:class not found:" + e.getMessage());
+		Log.error("extensions", "loading of extension " + s + " failed:class not found:" + e.getMessage());
 		continue;
 	    }
 	    if (!(o instanceof Extension))
 	    {
-		Log.info("extensions", "loading of extension " + s + " failed: this object isn\'t an instance of org.luwrain.core.Extension");
+		Log.error("extensions", "loading of extension " + s + " failed: this object isn\'t an instance of org.luwrain.core.Extension");
 		continue;
 	    }
 	    final Extension ext = (Extension)o;
+	    Luwrain iface = interfaceManager.requestNew(ext);
 	    String message = null;
 	    try {
-		message = ext.init(cmdLine, registry);
+		message = ext.init(iface);
 	    }
 	    catch (Exception ee)
 	    {
-		Log.info("extensions", "loading of extension " + s + " failed: unexpected exception:" + ee.getMessage());
+		Log.error("extensions", "loading of extension " + s + " failed: unexpected exception:" + ee.getMessage());
 		ee.printStackTrace();
+		interfaceManager.release(iface);
 		continue;
 	    }
 	    if (message != null)
 	    {
-		Log.info("extensions", "loading of extension " + s + " failed: " + message);
+		Log.error("extensions", "loading of extension " + s + " failed: " + message);
+		interfaceManager.release(iface);
 		continue;
 	    }
 	    res.add(ext);
@@ -70,18 +74,19 @@ public class manager
 	Log.debug("extensions", "loaded " + extensions.length + " extensions");
     }
 
+    public LoadedExtension[] getAllLoadedExtensions()
+    {
+	return new LoadedExtension[0];
+    }
 
-
-
-
-    public Shortcut[] getShortcuts()
+    public Shortcut[] getShortcuts(Luwrain luwrain)
     {
 	LinkedList<Shortcut> res = new LinkedList<Shortcut>();
 	for(Extension e: extensions)
 	{
 	    Shortcut[] s;
 	    try { 
-		s = e.getShortcuts();
+		s = e.getShortcuts(luwrain);
 	    }
 	    catch (Exception ee)
 	    {
@@ -97,14 +102,14 @@ public class manager
 	return res.toArray(new Shortcut[res.size()]);
     }
 
-    public SharedObject[] getSharedObjects()
+    public SharedObject[] getSharedObjects(Luwrain luwrain)
     {
 	LinkedList<SharedObject> res = new LinkedList<SharedObject>();
 	for(Extension e: extensions)
 	{
 	    SharedObject[] s;
 	    try { 
-		s = e.getSharedObjects();
+		s = e.getSharedObjects(luwrain);
 	    }
 	    catch (Exception ee)
 	    {

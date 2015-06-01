@@ -14,16 +14,15 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.core.extensions;
 
-public interface Extension
+import org.luwrain.core.*;
+
+public class LoadedExtension
 {
-    String init(String[] cmdLine, Registry registry);
-    Command[] getCommands(CommandEnvironment env);
-    Shortcut[] getShortcuts();
-    Worker[] getWorkers();
-    SharedObject[] getSharedObjects();
-    void i18nExtension(I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems(CommandEnvironment env);
-    void close();
+    public Extension ext;
+    public Luwrain luwrain;
+    public Command[] commands;
+    public Shortcut[] shortcuts;
+    public SharedObject[] sharedObjects;
 }

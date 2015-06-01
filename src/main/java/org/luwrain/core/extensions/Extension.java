@@ -14,18 +14,21 @@
    General Public License for more details.
 */
 
-package org.luwrain.extensions;
+package org.luwrain.core.extensions;
 
 import org.luwrain.core.*;
 
 public interface Extension
 {
-    String init(String[] cmdLine, Registry registry);
-    Command[] getCommands(CommandEnvironment env);
-    Shortcut[] getShortcuts();
-    Worker[] getWorkers();
-    SharedObject[] getSharedObjects();
-    void i18nExtension(I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems(CommandEnvironment env);
+    String init(Luwrain luwrain);
+    Command[] getCommands(Luwrain luwrain);
+    Shortcut[] getShortcuts(Luwrain luwrain);
+    Worker[] getWorkers(Luwrain luwrain);
+    SharedObject[] getSharedObjects(Luwrain luwrain);
+    void i18nExtension(Luwrain luwrain, I18nExtension i18nExt);
+    org.luwrain.mainmenu.Item[] getMainMenuItems(Luwrain luwrain);
+    //FIXME:Control panel  entries;
+    //FIXME:Identifiers;
+
     void close();
 }

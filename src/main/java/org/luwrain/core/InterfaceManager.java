@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 
-import org.luwrain.extensions.Extension;
+import org.luwrain.core.extensions.Extension;
 
 public class InterfaceManager
 {

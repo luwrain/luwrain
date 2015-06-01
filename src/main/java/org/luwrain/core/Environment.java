@@ -23,6 +23,7 @@ import java.util.concurrent.*;
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.speech.BackEnd;
 import org.luwrain.core.events.*;
+import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.sounds.EnvironmentSounds;
@@ -34,40 +35,42 @@ class Environment implements EventConsumer
     private static final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
     private String[] cmdLine;
+    private EventQueue eventQueue = new EventQueue();
     private Registry registry;
-    private RegistryAutoCheck registryAutoCheck;
-    private RegistryKeys registryKeys;
     private org.luwrain.speech.BackEnd speech;
-    private Extension[] extensions;
     private OperatingSystem os;
     private Interaction interaction;
-    private I18nImpl i18n;
-    private Strings strings;
-    private LaunchContext launchContext;
-    private EventQueue eventQueue = new EventQueue();
-    private InstanceManager appInstances;
-    private Luwrain specialLuwrain;// = new Luwrain(this);
-    private Luwrain privilegedLuwrain;// = new Luwrain(this);
+
+    private org.luwrain.core.extensions.Manager extensions;
+    private InterfaceManager interfaces = new InterfaceManager(this);
     private AppManager apps = new AppManager();
     private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
     private GlobalKeys globalKeys;
-    private CommandManager commands = new CommandManager();
-    private ShortcutManager shortcuts;
-    private SharedObjectManager sharedObjects;
     private FileTypes fileTypes = new FileTypes();
+
+    private I18nImpl i18n = new I18nImpl();
+    private CommandManager commands = new CommandManager();
+    private ShortcutManager shortcuts = new ShortcutManager();
+    private SharedObjectManager sharedObjects = new SharedObjectManager();
+
+    private String[] clipboard = null;
+    private LaunchContext launchContext;
+    private Strings strings;
+    private RegistryAutoCheck registryAutoCheck;
+    private RegistryKeys registryKeys;
 
     private boolean needForIntroduction = false;
     private boolean introduceApp = false;
-    private String[] clipboard = null;
+    private Luwrain specialLuwrain;// = new Luwrain(this);
+    private Luwrain privilegedLuwrain;// = new Luwrain(this);
 
     public Environment(String[] cmdLine,
 		       Registry registry,
 		       org.luwrain.speech.BackEnd speech,
 		       OperatingSystem os,
 		       Interaction interaction,
-		       Extension[] extensions,
 		       LaunchContext launchContext)
     {
 	this.cmdLine = cmdLine;
@@ -75,7 +78,6 @@ class Environment implements EventConsumer
 	this.speech = speech;
 	this.os = os;
 	this.interaction = interaction;
-	this.extensions = extensions;
 	this.launchContext = launchContext;
 	if (cmdLine == null)
 	    throw new NullPointerException("cmdLine may not be null");
@@ -90,33 +92,79 @@ class Environment implements EventConsumer
 	    throw new NullPointerException("os may not be null");
 	if (interaction == null)
 	    throw new NullPointerException("interaction may not be null");
-	if (extensions == null)
-	    throw new NullPointerException("exceptions may not be null");
-	for(int i = 0;i < extensions.length;++i)
-	    if (extensions[i] == null)
-		throw new NullPointerException("extensions[" + i + "] may not be null");
 	if (launchContext == null)
 	    throw new NullPointerException("launchContext may not be null");
     }
 
-    public void  run()
+    public void run()
     {
-specialLuwrain = new Luwrain(this);
-privilegedLuwrain = new Luwrain(this);
+	init();
+	interaction.startInputEventsAccepting(this);
+	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
+	try {
+	    Thread.sleep(1000);
+	} catch (InterruptedException ie){}
+	message(strings.startWorkFromMainMenu(), Luwrain.MESSAGE_REGULAR);
+	eventLoop(new InitialEventLoopStopCondition());
+	interaction.stopInputEventsAccepting();
+    }
 
-	registryKeys = new RegistryKeys();
-	registryAutoCheck = new RegistryAutoCheck(registry, "environment");
-	i18n = new I18nImpl();
-	EnvironmentSounds.init(registry, launchContext);
-	appInstances = new InstanceManager(this);
-	shortcuts = new ShortcutManager();
-	sharedObjects = new SharedObjectManager();
+    private void init()
+    {
+	specialLuwrain = new Luwrain(this);//FIXME:
+	privilegedLuwrain = new Luwrain(this);//FIXME:
 	screenContentManager = new ScreenContentManager(apps, popups);
 	windowManager = new WindowManager(interaction, screenContentManager);
+	//	extensions = new ExtensionManager(interfaces);
+	//	extensions.load();
+	globalKeys = new GlobalKeys(registry);
+	globalKeys.loadFromRegistry();
+	initObjects();
+	initI18n();
+	EnvironmentSounds.init(registry, launchContext);
+	registryKeys = new RegistryKeys();
+	registryAutoCheck = new RegistryAutoCheck(registry, "environment");
+    }
 
-	for(Extension e: extensions)
+    private void initObjects()
+    {
+	shortcuts.addBasicShortcuts();
+	commands.addBasicCommands(this);
+	commands.addOsCommands(registry);
+	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
+	for(LoadedExtension e: allExt)
+	{
+	    final Extension ext = e.ext;
+	    //Shortcuts;
+	    for(Shortcut s: e.shortcuts)
+		if (s != null)
+		{
+		    if (!shortcuts.add(ext, s))
+			Log.warning("environment", "shortcut \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shortcuts manager to be registered");
+		}
+	    //Shared objects
+	    for(SharedObject s: e.sharedObjects)
+		if (s != null)
+		{
+		    if (!sharedObjects.add(ext, s))
+			    Log.warning("environment", "the shared object \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shared objects manager to be registered");
+		}
+	    //Commands
+	    for(Command c: e.commands)
+		if (c != null)
+		{
+		    if (!commands.add(ext, c))
+			Log.warning("environment", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
+		}
+	}
+    }
+
+    private void initI18n()
+    {
+	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
+	for(LoadedExtension e: allExt)
 	    try {
-		e.i18nExtension(i18n);
+		e.ext.i18nExtension(e.luwrain, i18n);
 	    }
 	    catch (Exception ee)
 	    {
@@ -129,87 +177,6 @@ privilegedLuwrain = new Luwrain(this);
 	    return;
 	}
 	strings = (Strings)i18n.getStrings(STRINGS_OBJECT_NAME);
-
-	globalKeys = new GlobalKeys(registry);
-
-	globalKeys.loadFromRegistry();
-
-	shortcuts.addBasicShortcuts();
-	commands.addBasicCommands(this);
-	commands.addOsCommands(registry);
-
-	for(Extension e: extensions)
-	{
-	    Shortcut[] s;
-	    try { 
-		s = e.getShortcuts();
-	    }
-	    catch (Exception ee)
-	    {
-		Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shortcuts:" + ee.getMessage());
-		ee.printStackTrace();
-		continue;
-	    }
-	    if (s != null)
-		for(Shortcut ss: s)
-		    if (ss != null)
-		    {
-			if (!shortcuts.add(e, ss))
-			    Log.warning("environment", "shortcut \'" + ss.getName() + "\' of extension " + e.getClass().getName() + " refused by  the shortcuts manager to be registered");
-		    }
-	}
-
-	for(Extension e: extensions)
-	{
-	    SharedObject[] s;
-	    try { 
-		s = e.getSharedObjects();
-	    }
-	    catch (Exception ee)
-	    {
-		Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shared objects:" + ee.getMessage());
-		ee.printStackTrace();
-		continue;
-	    }
-	    if (s != null)
-		for(SharedObject ss: s)
-		    if (ss != null)
-		    {
-			if (sharedObjects.add(e, ss))
-			    Log.debug("environment", "shared object " + ss.getName() + " registered"); else
-			    Log.warning("environment", "the shared object \'" + ss.getName() + "\' of extension " + e.getClass().getName() + " refused by  the shared objects manager to be registered");
-		    }
-	}
-
-	for(Extension e: extensions)
-	{
-	    Command[] cmds;
-	    try {
-		cmds = e.getCommands(specialLuwrain);
-	    }
-	    catch (Exception ee)
-	    {
-		Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of commands:" + ee.getMessage());
-		ee.printStackTrace();
-		continue;
-	    }
-	    if (cmds != null)
-		for(Command c: cmds)
-		    if (c != null)
-		    {
-			if (!commands.add(e, c))
-			    Log.warning("environment", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " refused by  the commands manager to be registered");
-		    }
-	}
-
-	interaction.startInputEventsAccepting(this);
-	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
-	try {
-	    Thread.sleep(1000);
-	} catch (InterruptedException ie){}
-	message(strings.startWorkFromMainMenu(), Luwrain.MESSAGE_REGULAR);
-	eventLoop(new InitialEventLoopStopCondition());
-	interaction.stopInputEventsAccepting();
     }
 
     public void quit()
@@ -220,8 +187,6 @@ privilegedLuwrain = new Luwrain(this);
 	    return;
 	InitialEventLoopStopCondition.shouldContinue = false;
     }
-
-    //Application management;
 
     public void launchApp(String shortcutName, String[] args)
     {
@@ -246,23 +211,23 @@ privilegedLuwrain = new Luwrain(this);
     {
 	if (app == null)
 	    return;
-	Luwrain o = appInstances.registerApp(app);
+	Luwrain o = interfaces.requestNew(app);
 	try {
 	    if (!app.onLaunch(o))
 	    {
-		appInstances.releaseInstance(o);
+		interfaces.release(o);
 		return;
 	    }
 	}
 	catch (OutOfMemoryError e)
 	{
-	    appInstances.releaseInstance(o);
+	    interfaces.release(o);
 	    message(strings.appLaunchNoEnoughMemory(), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
 	catch (Throwable e)
 	{
-	    appInstances.releaseInstance(o);
+	    interfaces.release(o);
 	    e.printStackTrace();
 	    //FIXME:Log warning;
 	    message(strings.appLaunchUnexpectedError(), Luwrain.MESSAGE_ERROR);
@@ -271,13 +236,13 @@ privilegedLuwrain = new Luwrain(this);
 	AreaLayout layout = app.getAreasToShow();
 	if (layout == null)
 	{
-	    appInstances.releaseInstance(o);
+	    interfaces.release(o);
 	    return;
 	}
 	Area activeArea = layout.getDefaultArea();
 	if (activeArea == null)
 	{
-	    appInstances.releaseInstance(o);
+	    interfaces.release(o);
 	    return;
 	}
 	apps.registerAppSingleVisible(app, activeArea);
@@ -288,13 +253,13 @@ privilegedLuwrain = new Luwrain(this);
 	introduceApp = true;
     }
 
-    public void closeApp(Object instance)
+    public void closeApp(Luwrain instance)
     {
 	if (instance == null)
 	    throw new NullPointerException("instance may not be null");
 	if (instance == specialLuwrain || instance == privilegedLuwrain)
 	    throw new IllegalArgumentException("trying to close an application through specialLuwrain or privilegedLuwrain objects");
-	Application app = appInstances.getAppByInstance(instance);
+	Application app = interfaces.findApp(instance);
 	if (app == null)
 	    throw new NullPointerException("trying to close an application through an unknown instance object");
 	if (popups.hasPopupOfApp(app))
@@ -303,7 +268,7 @@ privilegedLuwrain = new Luwrain(this);
 	    return;
 	}
 	apps.releaseApp(app);
-	appInstances.releaseInstance(instance);
+	interfaces.release(instance);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	//	introduceActiveArea();
@@ -637,7 +602,7 @@ privilegedLuwrain = new Luwrain(this);
 	windowManager.redraw();
     }
 
-    public void setActiveArea(Object instance, Area area)
+    public void setActiveArea(Luwrain instance, Area area)
     {
 	if (instance == null)
 	    throw new NullPointerException("instance may not be null");
@@ -647,7 +612,7 @@ privilegedLuwrain = new Luwrain(this);
 	    throw new IllegalArgumentException("instance doesn\'t have enough privilege to change active areas");
 	if (instance == privilegedLuwrain)
 	    throw new NullPointerException("using of privilegedLuwrain object doesn\'t allow changing of active area");
-	final Application app = appInstances.getAppByInstance(instance);
+	final Application app = interfaces.findApp(instance);
 	if (app == null)
 	    throw new IllegalArgumentException("an unknown application instance is provided");
 	apps.setActiveAreaOfApp(app, area);
@@ -797,7 +762,7 @@ privilegedLuwrain = new Luwrain(this);
     {
 	if (popup == null)
 	    throw new NullPointerException("popup may not be null");
-	final Object instance = popup.getLuwrainObject();
+	final Luwrain instance = popup.getLuwrainObject();
 	final EventLoopStopCondition stopCondition = popup.getStopCondition();
 	if (instance == null)
 	    throw new NullPointerException("instance may not be null");
@@ -810,7 +775,7 @@ privilegedLuwrain = new Luwrain(this);
 	    goIntoPopup(null, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
 	return;
 	}
-	final Application app = appInstances.getAppByInstance(instance);
+	final Application app = interfaces.findApp(instance);
 	if (app == null)
 	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
 	goIntoPopup(app, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());

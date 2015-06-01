@@ -23,6 +23,8 @@ import java.io.*;
 import org.luwrain.speech.BackEnd;
 import org.luwrain.os.OperatingSystem;
 
+import org.luwrain.core.extensions.*;//FIXME:
+
 class Init
 {
     private static final String  PREFIX_REGISTRY_DIR = "--registry-dir=";
@@ -47,7 +49,7 @@ class Init
 	for(String s: cmdLine)
 	    Log.debug("init", s);
 	if (init())
-	    new Environment(cmdLine, registry, speech, os, interaction, extensions, launchContext).run();
+	    new Environment(cmdLine, registry, speech, os, interaction, launchContext).run();
 	interaction.close();
 	for(Extension e: extensions)
 	{
@@ -178,6 +180,7 @@ class Init
 	    }
 	    final Extension ext = (Extension)o;
 	    String message = null;
+	    /*
 	    try {
 		message = ext.init(cmdLine, registry);
 	    }
@@ -187,6 +190,7 @@ class Init
 		ee.printStackTrace();
 		continue;
 	    }
+	    */
 	    if (message != null)
 	    {
 		Log.info("init", "loading of extension " + s + " failed: " + message);
