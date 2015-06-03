@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
+
+   This file is part of the Luwrain.
+
+   Luwrain is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   Luwrain is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.core.extensions;
 
@@ -9,14 +24,19 @@ import org.luwrain.core.*;
 
 public class Manager
 {
-    private String[] cmdLine;
-    private Registry registry;
-    private InterfaceManager interfaceManager;
-    private Extension[] extensions;
+    private InterfaceManager interfaces;
+    private LoadedExtension[] extensions;
+
+    public Manager(InterfaceManager interfaceManager)
+    {
+	this.interfaces = interfaceManager;
+	if (interfaceManager == null)
+	    throw new NullPointerException("interfaceManager may not be null");
+    }
 
     public void load()
     {
-	LinkedList<Extension> res = new LinkedList<Extension>();
+	LinkedList<LoadedExtension> res = new LinkedList<LoadedExtension>();
 	final String[] extensionsList = getExtensionsList();
 	if (extensionsList == null || extensionsList.length < 1)
 	    return;
@@ -50,7 +70,7 @@ public class Manager
 		continue;
 	    }
 	    final Extension ext = (Extension)o;
-	    Luwrain iface = interfaceManager.requestNew(ext);
+	    Luwrain iface = interfaces.requestNew(ext);
 	    String message = null;
 	    try {
 		message = ext.init(iface);
@@ -59,93 +79,88 @@ public class Manager
 	    {
 		Log.error("extensions", "loading of extension " + s + " failed: unexpected exception:" + ee.getMessage());
 		ee.printStackTrace();
-		interfaceManager.release(iface);
+		interfaces.release(iface);
 		continue;
 	    }
 	    if (message != null)
 	    {
 		Log.error("extensions", "loading of extension " + s + " failed: " + message);
-		interfaceManager.release(iface);
+		interfaces.release(iface);
 		continue;
 	    }
-	    res.add(ext);
+	    final LoadedExtension loadedExt = new LoadedExtension();
+	    loadedExt.ext = ext;
+	    loadedExt.luwrain = iface;
+	    loadedExt.commands = getCommands(ext, iface);
+	    loadedExt.shortcuts = getShortcuts(ext, iface);
+	    loadedExt.sharedObjects = getSharedObjects(ext, iface);
+	    res.add(loadedExt);
 	}
-	extensions = res.toArray(new Extension[res.size()]);
+	extensions = res.toArray(new LoadedExtension[res.size()]);
 	Log.debug("extensions", "loaded " + extensions.length + " extensions");
+    }
+
+    public void close()
+    {
+	for(LoadedExtension e: extensions)
+	{
+	    try {
+		e.ext.close();
+	    }
+	    catch (Throwable t)
+	    {
+		t.printStackTrace();
+	    }
+	    interfaces.release(e.luwrain);
+	}
+	extensions = null;
     }
 
     public LoadedExtension[] getAllLoadedExtensions()
     {
-	return new LoadedExtension[0];
+	return extensions;
     }
 
-    public Shortcut[] getShortcuts(Luwrain luwrain)
+    private Shortcut[] getShortcuts(Extension ext, Luwrain luwrain)
     {
-	LinkedList<Shortcut> res = new LinkedList<Shortcut>();
-	for(Extension e: extensions)
-	{
-	    Shortcut[] s;
-	    try { 
-		s = e.getShortcuts(luwrain);
-	    }
-	    catch (Exception ee)
-	    {
-		Log.error("extensions", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shortcuts:" + ee.getMessage());
-		ee.printStackTrace();
-		continue;
-	    }
-	    if (s != null)
-		for(Shortcut ss: s)
-		    if (ss != null)
-			res.add(ss);
+	try { 
+		final Shortcut[] res = ext.getShortcuts(luwrain);
+		return res != null?res:new Shortcut[0];
 	}
-	return res.toArray(new Shortcut[res.size()]);
+	catch (Exception ee)
+	{
+	    Log.error("extensions", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shortcuts:" + ee.getMessage());
+	    ee.printStackTrace();
+	    return new Shortcut[0];
+	}
     }
 
-    public SharedObject[] getSharedObjects(Luwrain luwrain)
+    private SharedObject[] getSharedObjects(Extension ext, Luwrain luwrain)
     {
-	LinkedList<SharedObject> res = new LinkedList<SharedObject>();
-	for(Extension e: extensions)
-	{
-	    SharedObject[] s;
-	    try { 
-		s = e.getSharedObjects(luwrain);
-	    }
-	    catch (Exception ee)
-	    {
-		Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shared objects:" + ee.getMessage());
-		ee.printStackTrace();
-		continue;
-	    }
-	    if (s != null)
-		for(SharedObject ss: s)
-		    if (ss != null)
-			res.add(ss);
+	try { 
+	    final SharedObject[] res = ext.getSharedObjects(luwrain);
+	    return res != null?res:new SharedObject[0];
 	}
-	return res.toArray(new SharedObject[res.size()]);
+	catch (Exception ee)
+	{
+	    Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shared objects:" + ee.getMessage());
+	    ee.printStackTrace();
+	    return new SharedObject[0];
+	}
     }
 
-    public Command[] getCommands()
+    private Command[] getCommands(Extension ext, Luwrain luwrain)
     {
-	LinkedList<Command> res = new LinkedList<Command>();
-	for(Extension e: extensions)
-	{
-	    Command[] cmds;
-	    try {
-		cmds = e.getCommands(null);//FIXME:
-	    }
-	    catch (Exception ee)
-	    {
-		Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of commands:" + ee.getMessage());
-		ee.printStackTrace();
-		continue;
-	    }
-	    if (cmds != null)
-		for(Command c: cmds)
-		    if (c != null)
-			res.add(c);
+	try {
+	    final Command[] res = ext.getCommands(luwrain);
+	    return res != null?res:new Command[0];
 	}
-	return res.toArray(new Command[res.size()]);
+	catch (Exception ee)
+	{
+	    Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of commands:" + ee.getMessage());
+	    ee.printStackTrace();
+	    return new Command[0];
+	}
     }
 
     private String[] getExtensionsList()

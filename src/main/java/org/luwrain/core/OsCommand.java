@@ -35,16 +35,12 @@ class OsCommand implements Command
 	    throw new IllegalArgumentException("name may not be empty");
     }
 
-
-
-
-
     @Override public String getName()
     {
 	return name;
     }
 
-    @Override public void onCommand(CommandEnvironment env)
+    @Override public void onCommand(Luwrain luwrain)
     {
 	Process p;
 	try {

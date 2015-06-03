@@ -107,6 +107,7 @@ class Environment implements EventConsumer
 	message(strings.startWorkFromMainMenu(), Luwrain.MESSAGE_REGULAR);
 	eventLoop(new InitialEventLoopStopCondition());
 	interaction.stopInputEventsAccepting();
+	extensions.close();
     }
 
     private void init()
@@ -115,8 +116,8 @@ class Environment implements EventConsumer
 	privilegedLuwrain = new Luwrain(this);//FIXME:
 	screenContentManager = new ScreenContentManager(apps, popups);
 	windowManager = new WindowManager(interaction, screenContentManager);
-	//	extensions = new ExtensionManager(interfaces);
-	//	extensions.load();
+	extensions = new org.luwrain.core.extensions.Manager(interfaces);
+	extensions.load();
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	initObjects();
@@ -128,9 +129,10 @@ class Environment implements EventConsumer
 
     private void initObjects()
     {
-	shortcuts.addBasicShortcuts();
-	commands.addBasicCommands(this);
-	commands.addOsCommands(registry);
+	final Command[] standardCommands = StandardCommands.createStandardCommands(this);
+	for(Command sc: standardCommands)
+	    commands.add(new Luwrain(this), sc);//FIXME:
+	commands.addOsCommands(specialLuwrain, registry);
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
 	{
@@ -153,7 +155,7 @@ class Environment implements EventConsumer
 	    for(Command c: e.commands)
 		if (c != null)
 		{
-		    if (!commands.add(ext, c))
+		    if (!commands.add(e.luwrain, c))
 			Log.warning("environment", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
 		}
 	}
@@ -422,7 +424,7 @@ class Environment implements EventConsumer
 	final String commandName = globalKeys.getCommandName(event);
 	if (commandName != null)
 	{
-	    if (!commands.run(commandName, new Luwrain(this)))
+	    if (!commands.run(commandName))
 		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
 	    return true;
 	}
@@ -889,17 +891,17 @@ class Environment implements EventConsumer
 	    throw new NullPointerException("command may not be null");
 	if (command.trim().isEmpty())
 	    return false;
-	return commands.run(command.trim(), specialLuwrain);
+	return commands.run(command.trim());
     }
 
     private void showCommandPopup()
     {
-	EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedListPopupModel(commands.getCommandsName()),
+	EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedListPopupModel(commands.getCommandNames()),
 					strings.commandPopupName(), strings.commandPopupPrefix(), "");
 	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
-	    if (!commands.run(popup.text().trim(), specialLuwrain))
+	    if (!commands.run(popup.text().trim()))
 		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
     }
 
