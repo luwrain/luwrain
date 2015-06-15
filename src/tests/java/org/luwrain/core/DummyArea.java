@@ -48,6 +48,11 @@ class DummyArea implements Area
 	return false;
     }
 
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	return false;
+    }
+
     @Override public int getHotPointY()
     {
 	return 0;
@@ -58,7 +63,7 @@ class DummyArea implements Area
 	return 0;
     }
 
-    @Override public String getName()
+    @Override public String getAreaName()
     {
 	return "#name#";
     }

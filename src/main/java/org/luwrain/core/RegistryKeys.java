@@ -170,6 +170,10 @@ class RegistryKeys
 	return getProperty("commands.OS");
     }
 
+    public String fileTypes()
+    {
+	return getProperty("environment.FileTypes");
+    }
 
     private String getProperty(String name)
     {

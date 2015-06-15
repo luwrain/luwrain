@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+java -cp ../jar/luwrain-tests.jar:../jar/luwrain.jar org.luwrain.util.UrlMlReader "$@"

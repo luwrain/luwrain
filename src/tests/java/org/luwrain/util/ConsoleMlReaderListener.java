@@ -14,44 +14,30 @@
    General Public License for more details.
 */
 
-package org.luwrain.tests;
+package org.luwrain.util;
 
-import org.luwrain.core.*;
-import org.luwrain.controls.*;
+import java.util.*;
 
-class TestingNavigateArea extends NavigateArea
+class ConsoleMlReaderListener implements MlReaderListener
 {
-    public TestingNavigateArea(ControlEnvironment environment)
+    @Override public void onMlTagOpen(String tagName, Map<String, String> attrs)
     {
-	super(environment);
-    }
-
-    @Override public int getLineCount()
-    {
-	return 5;
-    }
-
-    @Override public String getLine(int index)
-    {
-	switch(index)
+	System.out.println("Tag: " + tagName);
+	if (attrs != null && !attrs.isEmpty())
 	{
-	case 0:
-	    return "1234567890";
-	case 1:
-	    return "qwertyuiop";
-	case 2:
-	    return "asdfghjkl";
-case 3:
-    return "zxcvbnm";
-	case 4:
-	    return "~!@#$%^&*()_+";
-	default:
-	    return "";
+	    for(Map.Entry<String, String> e: attrs.entrySet())
+		System.out.println("Attr: " + e.getKey() + "=" + e.getValue());
 	}
+	System.out.println();
     }
 
-    @Override public String getAreaName()
+    @Override public void onMlText(String text)
     {
-	return "testing navigate area";
+	System.out.println(text);
+    }
+
+    @Override public void onMlTagClose(String tagName)
+    {
+	System.out.println("Closed: " + tagName);
     }
 }

@@ -19,13 +19,17 @@ package org.luwrain.core;
 import java.util.*;
 import java.io.*;
 
-class FileTypes
+import org.luwrain.util.RegistryAutoCheck;
+
+public class FileTypes
 {
+    private Map<String, String> fileTypes = new TreeMap<String, String>();
+
     public String[] chooseShortcuts(String[] fileNames)
     {
 	if (fileNames == null)
 	    throw new NullPointerException("fileNames may not be null");
-	Vector<String> res = new Vector<String>();
+	LinkedList<String> res = new LinkedList<String>();
 	for(String s: fileNames)
 	{
 	    if (s == null)
@@ -33,7 +37,7 @@ class FileTypes
 		res.add("");
 		continue;
 	    }
-	    File f = new File(s);
+	    final File f = new File(s);
 	    if (!f.exists())
 	    {
 		res.add("notepad");
@@ -44,26 +48,50 @@ class FileTypes
 		res.add("commander");
 		continue;
 	    }
-	    final String name = f.getName();
-	    final int dotPos = name.lastIndexOf('.');
-	    if (dotPos < 0)
+	    final String ext = getExtension(s);
+	    if (ext == null || ext.trim().isEmpty() || !fileTypes.containsKey(ext.toLowerCase()))
 	    {
-		res.add("");
+		res.add("notepad");
 		continue;
 	    }
-	    final String ext = name.substring(dotPos);
-	    if (ext.toLowerCase().equals(".doc"))
-	    {
-		res.add("reader");
-		continue;
-	    }
-	    if (ext.toLowerCase().equals(".html"))
-	    {
-		res.add("reader");
-		continue;
-	    }
-	    res.add("notepad");
+	    res.add(fileTypes.get(ext.toLowerCase()));
 	}
 	return res.toArray(new String[res.size()]);
+    }
+
+    public void load(Registry registry)
+    {
+	final RegistryAutoCheck check = new RegistryAutoCheck(registry, "environment");
+	final String path = new RegistryKeys().fileTypes();
+	final String[] values= registry.getValues(path);
+	if (values == null || values.length < 1)
+	    return;
+	for(String v: values)
+	{
+	    if (v.trim().isEmpty())
+		continue;
+	    final String vv = check.stringAny(path + "/" + v, "");
+	    if (vv.trim().isEmpty())
+		continue;
+	    fileTypes.put(v.trim().toLowerCase(), vv.trim());
+	}
+    }
+
+    static public String getExtension(String fileName)
+    {
+	if (fileName == null)
+	    throw new NullPointerException("fileName may not be null");
+	if (fileName.isEmpty())
+	    throw new IllegalArgumentException("fileName may not be empty");
+	final String name = new File(fileName).getName();
+	if (name.isEmpty())
+	    return "";
+	int dotPos = -1;
+	for(int i = 0;i < name.length();++i)
+	    if (name.charAt(i) == '.')
+		dotPos = i;
+	if (dotPos == 0 || dotPos + 1 >= name.length())
+	    return "";
+	return name.substring(dotPos + 1);
     }
 }

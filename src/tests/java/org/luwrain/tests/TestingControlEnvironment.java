@@ -109,4 +109,8 @@ class TestingControlEnvironment implements ControlEnvironment
     {
 	return null;
     }
+
+    @Override public void playSound(int id)
+    {
+    }
 }

@@ -120,6 +120,7 @@ class Environment implements EventConsumer
 	extensions.load();
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
+	fileTypes.load(registry);
 	initObjects();
 	initI18n();
 	EnvironmentSounds.init(registry, launchContext);
@@ -551,6 +552,7 @@ class Environment implements EventConsumer
 	catch (Throwable t)
 	{
 	    Log.error("environment", "exception while transmitting thread sync event:" + t.getMessage());
+	    t.printStackTrace();
 	}
     }
 

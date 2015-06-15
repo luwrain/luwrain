@@ -14,29 +14,27 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.events;
+package org.luwrain.util;
 
-import org.luwrain.core.*;
-
-public class ThreadSyncEvent extends EnvironmentEvent
+class SimpleMlReaderConfig implements MlReaderConfig
 {
-    private Area destArea;
+    private String[] nonClosingTags = new String[]{
+	"br",
+	"meta",
+	"link",
+"img"
+    };
 
-    public ThreadSyncEvent(Area destArea)
+    @Override public boolean mlAdmissibleTag(String tagName)
     {
-	super(THREAD_SYNC);
-	this.destArea = destArea;
-	if (destArea == null)
-	    throw new NullPointerException("destArea may not be null");
+	return true;
     }
 
-    @Override public int getCode()
+    @Override public boolean mlTagMustBeClosed(String tagName)
     {
-	return THREAD_SYNC;
-    }
-
-    public Area getDestArea()
-    {
-	return destArea;
+	for(String s: nonClosingTags)
+	    if (s.equals(tagName.toLowerCase()))
+		return false;
+	return true;
     }
 }
