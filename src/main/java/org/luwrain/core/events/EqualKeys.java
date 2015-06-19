@@ -71,6 +71,6 @@ public class EqualKeys
 		if (s.charAt(i) == lc2)
 		    return true;
 	}
-	return false;
+	return lc1 == lc2;
     }
 }
