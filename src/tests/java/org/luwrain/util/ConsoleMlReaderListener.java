@@ -31,8 +31,13 @@ class ConsoleMlReaderListener implements MlReaderListener
 	System.out.println();
     }
 
-    @Override public void onMlText(String text)
+    @Override public void onMlText(String text, LinkedList<String> tagsStack)
     {
+	if (tagsStack.contains("script"))
+	{
+	    System.out.println("# Script removed");
+	    return;
+	}
 	System.out.println(text);
     }
 

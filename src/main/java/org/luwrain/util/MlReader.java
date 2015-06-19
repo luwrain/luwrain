@@ -60,6 +60,14 @@ public class MlReader
 		continue;
 	    }
 
+	    newPos = checkAtPos(pos, "<!doctype");
+	    if (newPos > pos)
+	    {
+		pos = newPos;
+		onDoctype();
+		continue;
+	    }
+
 	    newPos = checkAtPos(pos, "<!--");
 	    if (newPos > pos)
 	    {
@@ -100,8 +108,7 @@ public class MlReader
     {
 	try {
 	StringIterator it = new StringIterator(text, pos);
-	if (!it.moveNext())
-	    return false;
+	it.moveNext();
 	it.skipBlank();
 	final String tagName = it.getUntilBlankOr(">/").toLowerCase();
 	if (!config.mlAdmissibleTag(tagName))
@@ -132,8 +139,7 @@ public class MlReader
 		if (!onOpenTagAttr(it, attr))
 		    return false;
 		it.skipBlank();
-	    }
-	    //No attributes;
+	    } //No attributes;
 	    if (it.currentChar() == '>')
 	    {
 		if (config.mlTagMustBeClosed(tagName))
@@ -161,7 +167,10 @@ public class MlReader
 	    final String attrName = it.getUntilBlankOr("=>/");
 	    it.skipBlank();
 	    if (it.currentChar() != '=')
-		return false;
+	    {
+		attr.put(attrName, "");
+		return true;
+	    }
 	    //	    System.out.println("+attrName=" + attrName);
 	    it.moveNext();
 	    it.skipBlank();
@@ -226,7 +235,7 @@ public class MlReader
 	    }
 	    value += text.charAt(pos++);
 	}
-	listener.onMlText(value);
+	listener.onMlText(value, openedTagStack);
     }
 
     private void onComments()
@@ -244,6 +253,14 @@ public class MlReader
 	    }
 	    ++pos;
 	}
+    }
+
+    private void onDoctype()
+    {
+	while (pos < text.length() && text.charAt(pos) != '>')
+	    ++pos;
+	if (pos + 1 < text.length())
+	    ++pos;
     }
 
     private void onEntity()
@@ -272,7 +289,7 @@ public class MlReader
 		break;
 	    ++pos;
 	}
-	listener.onMlText(text.substring(oldPos, pos));
+	listener.onMlText(text.substring(oldPos, pos), openedTagStack);
     }
 
     /**

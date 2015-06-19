@@ -113,13 +113,12 @@ public class StringIterator
 	return true;
     }
 
-    public boolean moveNext() throws OutOfBoundsException
+    public void moveNext() throws OutOfBoundsException
     {
 	checkBounds();
 	if (pos + 1 >= text.length())
-	    return false;
+	    throw new OutOfBoundsException(pos + 1, text.length());
 	++pos;
-	return true;
     }
 
     private void checkBounds() throws OutOfBoundsException

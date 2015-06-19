@@ -21,6 +21,6 @@ import java.util.*;
 public interface MlReaderListener
 {
     void onMlTagOpen(String tagName, Map<String, String> attrs);
-    void onMlText(String text);
+    void onMlText(String text, LinkedList<String> ttagsStack);
     void onMlTagClose(String tagName);
 }

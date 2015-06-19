@@ -19,6 +19,7 @@ package org.luwrain.util;
 class SimpleMlReaderConfig implements MlReaderConfig
 {
     private String[] nonClosingTags = new String[]{
+	"input",
 	"br",
 	"meta",
 	"link",
@@ -27,6 +28,12 @@ class SimpleMlReaderConfig implements MlReaderConfig
 
     @Override public boolean mlAdmissibleTag(String tagName)
     {
+	for(int i = 0;i < tagName.length();++i)
+	{
+	    final char c = tagName.charAt(i);
+	    if (!Character.isLetter(c) && !Character.isDigit(c))
+		return false;
+	}
 	return true;
     }
 

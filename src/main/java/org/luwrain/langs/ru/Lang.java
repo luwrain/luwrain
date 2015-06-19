@@ -157,7 +157,7 @@ public class Lang extends org.luwrain.core.Lang
 	case '$':
 	    return "доллар";
 	case '%':
-	    return "процет";
+	    return "процент";
 	case '^':
 	    return "знак степени";
 	case '&':
