@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the Luwrain.
 
@@ -14,14 +14,15 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.cpanel;
 
-public interface StringConstructor
+import org.luwrain.core.*;
+
+public interface Section
 {
-    String groupsAreaName();
-    String optionsAreaName();
-    String rootItemName();
-    String interactionItemName();
-    String mailItemName();
-    String newsItemName();
+    int getControlPanelSRoot();
+    Section getControlPanelSubsections();
+    Area getControlPanelSectionArea();
+    String getControlPanelSectionName();
+    boolean canCloseControlPanelSection();
 }

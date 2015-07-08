@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the Luwrain.
 
@@ -14,27 +14,30 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.app.cpanel;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.cpanel.*;
 
-public class ControlApp implements Application, ControlActions
+public class ControlPanelApp implements Application, Actions
 {
     private Luwrain luwrain;
-    private StringConstructor stringConstructor;
-    private ControlGroupsModel groupsModel;
-    private TreeArea groupsArea;
+    private Strings strings;
+    private SectionsTreeModel sectionsModel;
+    private TreeArea sectionsArea;
+    private Section currentSection;
+    private Area currentArea;
 
-    public boolean onLaunch(Luwrain luwrain)
+    @Override public boolean onLaunch(Luwrain luwrain)
     {
 	Object str = luwrain.i18n().getStrings("luwrain.control");
 	if (str == null)
 	    return false;
 	this.luwrain = luwrain;
-	stringConstructor = (StringConstructor)str;
-	groupsModel = new ControlGroupsModel(luwrain, this, stringConstructor);
+	strings = (Strings)str;
+	sectionsModel = new SectionsTreeModel();
 	createAreas();
 	return true;
     }
@@ -44,17 +47,17 @@ public class ControlApp implements Application, ControlActions
 	return "control";
     }
 
-    public AreaLayout getAreasToShow()
+    @Override public AreaLayout getAreasToShow()
     {
 	//	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);
-	return new AreaLayout(groupsArea);
+	return new AreaLayout(sectionsArea);
     }
 
-    public void gotoGroups()
+    @Override public void gotoSections()
     {
     }
 
-    public void gotoOptions()
+    @Override public void gotoOptions()
     {
     }
 
@@ -69,18 +72,18 @@ public class ControlApp implements Application, ControlActions
 	//FIXME:
     }
 
-    public void close()
+    @Override public void closeApp()
     {
 	luwrain.closeApp();
     }
 
     private void createAreas()
     {
-	final ControlActions a = this;
-	groupsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
-				  groupsModel,
-				  stringConstructor.groupsAreaName()) {
-		private ControlActions actions = a;
+	final Actions a = this;
+	sectionsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
+				  sectionsModel,
+				  strings.groupsAreaName()) {
+		private Actions actions = a;
 		public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (super.onKeyboardEvent(event))
@@ -89,8 +92,8 @@ public class ControlApp implements Application, ControlActions
 		    if (event.isCommand() && event.getCommand() == KeyboardEvent.INSERT &&
 			!event.isModified())
 		    {
-			ControlGroupsModel model = (ControlGroupsModel)getModel();
-			model.insertItem();//FIXME:what selected
+			SectionsTreeModel model = (SectionsTreeModel)getModel();
+			//			model.insertItem();//FIXME:what selected
 			return true;
 		    }
 
@@ -108,15 +111,15 @@ public class ControlApp implements Application, ControlActions
 		    switch (event.getCode())
 		    {
 		    case EnvironmentEvent.CLOSE:
-			actions.close();
+			actions.closeApp();
 			return true;
 		    }
 		    return false;
 		}
 		public void onClick(Object obj)
 		{
-		    if (obj != null)
-			actions.openGroup(obj);
+		    //		    if (obj != null)
+			//			actions.openGroup(obj);
 		}
 	    };
     }

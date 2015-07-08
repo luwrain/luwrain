@@ -14,13 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.control;
+package org.luwrain.app.cpanel;
 
-interface  ControlActions
+public interface Strings
 {
-    void gotoGroups();
-    void gotoOptions();
-    void openGroup(Object obj);
-    void refreshGroups(Object preferableSelected);
-    void close();
+    String groupsAreaName();
+    String optionsAreaName();
+    String rootItemName();
+    String interactionItemName();
+    String mailItemName();
+    String newsItemName();
 }

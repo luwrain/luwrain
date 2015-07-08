@@ -281,11 +281,11 @@ public static Command[] createStandardCommands(Environment env)
 		private Environment e = environment;
 		public String getName()
 		{
-		    return "control";
+		    return "control-panel";
 }
 		public void onCommand(Luwrain luwrain)
 		{
-		    Application app = new org.luwrain.app.control.ControlApp();
+		    Application app = new org.luwrain.app.cpanel.ControlPanelApp();
 		    e.launchApp(app);
 		}
 	    });
