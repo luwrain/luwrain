@@ -27,8 +27,8 @@ public interface LangStatic
     public static final int NO_LINES_BELOW = 7;
     public static final int BEGIN_OF_TEXT = 8;
     public static final int END_OF_TEXT = 9;
-    public static final int TREE_AREA_BEGIN = 10;
-    public static final int TREE_AREA_END = 11;
+    public static final int BEGIN_OF_TREE = 10;
+    public static final int END_OF_TREE = 11;
     public static final int NO_ITEMS_ABOVE = 12;
     public static final int NO_ITEMS_BELOW = 13;
     public static final int FONT_SIZE = 14;

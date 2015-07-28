@@ -42,9 +42,9 @@ public class Lang extends org.luwrain.core.Lang
 	    return "Начало текста";
 	case LangStatic.END_OF_TEXT:
 	    return "Конец текста";
-	case LangStatic.TREE_AREA_BEGIN:
+	case LangStatic.BEGIN_OF_TREE:
 	    return "Начало просмотра дерева";
-	case LangStatic.TREE_AREA_END:
+	case LangStatic.END_OF_TREE:
 	    return "Конец просмотра дерева";
 	case LangStatic.NO_ITEMS_ABOVE:
 	    return "Элементы выше отсутствуют";

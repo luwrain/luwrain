@@ -108,7 +108,7 @@ class Init
 	    return false;
 
 	//Interaction;
-	InteractionParams interactionParams = new InteractionParams();
+	InteractionParamsLoader interactionParams = new InteractionParamsLoader();
 	interactionParams.loadFromRegistry(registry);
 	if (!interactionParams.backend.equals("awt"))
 	{

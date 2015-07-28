@@ -16,37 +16,93 @@
 
 package org.luwrain.app.cpanel;
 
-import org.luwrain.controls.TreeModel;
+import java.util.*;
+
+import org.luwrain.core.*;
+import org.luwrain.controls.*;
+import org.luwrain.cpanel.*;
 
 class SectionsTreeModel implements TreeModel
 {
-    public String root = "root";
+
+
+
+    private BasicSection appsSection;
+    private BasicSection keyboardSection;
+    private BasicSection soundsSection;
+    private BasicSection speechSection;
+    private BasicSection hardwareSection;
+    private BasicSection uiSection;
+    private BasicSection extensionsSection;
+
+    private BasicSection root;
+
+    public SectionsTreeModel()
+    {
+	appsSection = new BasicSection("Приложения", new Section[0]);
+	speechSection = new BasicSection("Речь", new Section[0]);
+	soundsSection = new BasicSection("Звуки", new Section[0]);
+	keyboardSection = new BasicSection("Клавиатура", new Section[0]);
+	hardwareSection = new BasicSection("Оборудование", new Section[0]);
+	uiSection = new BasicSection("Интерфейс", new Section[0]);
+	extensionsSection = new BasicSection("Расширения", new Section[0]);
+
+
+	root = constructTree();
+    }
 
     @Override public Object getRoot()
     {
-	return "root";
+	return root;
     }
 
     @Override public boolean isLeaf(Object node)
     {
-	return true;
+	if (node == null || !(node instanceof Section))
+	    return true;
+	final Section sect = (Section)node;
+	final Section[] subsections = sect.getControlPanelSubsections();
+	return subsections == null || subsections.length < 1;
     }
 
     @Override public void beginChildEnumeration(Object obj)
     {
     }
 
-    @Override public int getChildCount(Object parent)
+    @Override public int getChildCount(Object node)
     {
-	return 0;
+	if (node == null || !(node instanceof Section))
+	    return 0;
+	final Section sect = (Section)node;
+	final Section[] subsections = sect.getControlPanelSubsections();
+	return subsections != null?subsections.length:0;
     }
 
-    @Override public Object getChild(Object parent, int index)
+    @Override public Object getChild(Object node, int index)
     {
-	return null;
+	if (node == null || !(node instanceof Section))
+	    return 0;
+	final Section sect = (Section)node;
+	final Section[] subsections = sect.getControlPanelSubsections();
+	if (subsections == null)
+	    return null;
+	return index < subsections.length?subsections[index]:null;
     }
 
     @Override public void endChildEnumeration(Object obj)
     {
+    }
+
+    private BasicSection constructTree()
+    {
+	Vector<Section> sections = new Vector<Section>();
+	sections.add(appsSection);
+	sections.add(uiSection);
+	sections.add(keyboardSection);
+	sections.add(speechSection);
+	sections.add(soundsSection);
+	sections.add(extensionsSection);
+	sections.add(hardwareSection);
+	return new BasicSection("Панель управления", sections.toArray(new Section[sections.size()]));
     }
 }

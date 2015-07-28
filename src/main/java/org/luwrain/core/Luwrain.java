@@ -119,6 +119,12 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	case Hints.NO_LINES_BELOW:
 	    playSound(Sounds.NO_LINES_BELOW);
 	    break;
+	case Hints.BEGIN_OF_TREE:
+	    playSound(Sounds.NO_ITEMS_ABOVE);
+	    break;
+	case Hints.END_OF_TREE:
+	    playSound(Sounds.NO_ITEMS_BELOW);
+	    break;
 	}
 	if (environment.onStandardHint(code))
 	    hint(text);
@@ -161,6 +167,12 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	    break;
 	case Hints.NO_ITEMS_BELOW:
 	    msg = i18n().staticStr(LangStatic.NO_ITEMS_BELOW);
+	    break;
+	case Hints.BEGIN_OF_TREE:
+	    msg = i18n().staticStr(LangStatic.BEGIN_OF_TREE);
+	    break;
+	case Hints.END_OF_TREE:
+	    msg = i18n().staticStr(LangStatic.END_OF_TREE);
 	    break;
 	default:
 	    return false;

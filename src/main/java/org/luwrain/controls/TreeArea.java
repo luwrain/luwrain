@@ -29,7 +29,6 @@ class TreeAreaNode
     public TreeAreaNode children[];//If children is null but node is not leaf it means closed node without any info about content;
     public TreeAreaNode parent;
 
-
     //Actually it is still unclear is it really good idea 
     // to request title dynamically each time;
     public String title()
@@ -66,16 +65,16 @@ public class TreeArea implements Area
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    private String beginOfLine = "";
-    private String endOfLine = "";
-    private String treeAreaBegin = "";
-    private String treeAreaEnd = "";
-    private String emptyTree = "";
-    private String emptyItem = "";
-    private String emptyLine = "";
-    private String expanded = "";
-    private String collapsed = "";
-    private String level = "";
+    //    private String beginOfLine = "";
+    //    private String endOfLine = "";
+    //    private String treeAreaBegin = "";
+    //    private String treeAreaEnd = "";
+    //    private String emptyTree = "";
+    //    private String emptyItem = "";
+    //    private String emptyLine = "";
+    //    private String expanded = "";
+    //    private String collapsed = "";
+    //    private String level = "";
 
     public TreeArea(ControlEnvironment environment,
 		    TreeModel model,
@@ -86,7 +85,7 @@ public class TreeArea implements Area
 	this.name = name;
 	root = constructNode(model.getRoot(), null, true);//true means expand children;
 	items = generateAllVisibleItems();
-	initStringConstants();
+	//	initStringConstants();
     }
 
     public int getLineCount()
@@ -124,7 +123,7 @@ public class TreeArea implements Area
 	}
 	if (items == null || items.length < 1)
 	{
-	    environment.hint(emptyTree);
+	    environment.hint(Hints.NO_CONTENT);
 	    return true;
 	}
 	switch (event.getCommand())
@@ -346,6 +345,138 @@ public class TreeArea implements Area
 	    refreshNode(n);
     }
 
+    private boolean onKeySpace(KeyboardEvent event)
+    {
+	if (event.isModified() || items == null)
+	    return false;
+	if (hotPointY >= items.length)
+	    return false;
+	VisibleTreeItem item = items[hotPointY];
+	if (item.node.obj != null)
+	    onClick(item.node.obj);
+	return true;
+    }
+
+    private boolean onKeyEnter(KeyboardEvent event)
+    {
+	if (event.isModified() || items == null || hotPointY >= items.length)
+	    return false;
+	VisibleTreeItem item = items[hotPointY];
+	if (item.type == VisibleTreeItem.LEAF)
+	{
+	    onClick(item.node.obj);
+	    return true;
+	}
+	if (item.type == VisibleTreeItem.CLOSED)
+	{
+	    fillChildrenForNonLeaf(item.node);
+	    items = generateAllVisibleItems();
+		environment.hint(Hints.TREE_BRANCH_EXPANDED);
+		environment.onAreaNewContent(this);
+		return true;
+	}
+	    if (item.type == VisibleTreeItem.OPENED)
+	    {
+		item.node.children = null;
+		items = generateAllVisibleItems();
+		environment.hint(Hints.TREE_BRANCH_COLLAPSED);
+		environment.onAreaNewContent(this);
+		return true;
+	    }
+	    return false;
+    }
+
+    private boolean onKeyDown(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (event.isModified() || items == null)
+	    return false;
+	if (hotPointY  >= items.length)
+	{
+	    environment.hint(Hints.END_OF_TREE);
+	    return true;
+	}
+	++hotPointY;
+	if (hotPointY >= items.length)
+	{
+	    hotPointX = 0;
+	    environment.hint(Hints.EMPTY_LINE);
+	} else
+	{
+	    hotPointX = getInitialHotPointX(hotPointY);
+	    environment.say(constructLineForSpeech(items[hotPointY], briefIntroduction));
+	}
+	environment.onAreaNewHotPoint(this );
+	return true;
+    }
+
+    private boolean onKeyUp(KeyboardEvent event, boolean briefIntroduction)
+    {
+	if (event.isModified() || items == null)
+	    return false;
+	if (hotPointY  <= 0)
+	{
+	    environment.hint(Hints.BEGIN_OF_TREE);
+	    return true;
+	}
+	--hotPointY;
+	hotPointX = getInitialHotPointX(hotPointY);
+	environment.say(constructLineForSpeech(items[hotPointY], briefIntroduction));
+	environment.onAreaNewHotPoint(this );
+	return true;
+    }
+
+    private boolean onKeyRight(KeyboardEvent event)
+    {
+	if (event.isModified() ||
+	    items == null || hotPointY >= items.length)
+	    return false;
+	final String value = items[hotPointY].title;
+	final int offset = getInitialHotPointX(hotPointY);
+	if (value.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX >= value.length() + offset)
+	{
+	    environment.hint(Hints.END_OF_LINE);
+	    return true;
+	}
+	if (hotPointX < offset)
+	    hotPointX = offset; else
+	    hotPointX++;
+	if (hotPointX >= value.length() + offset)
+	    environment.hint(Hints.END_OF_LINE); else
+	    environment.sayLetter(value.charAt(hotPointX - offset));
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onKeyLeft(KeyboardEvent event)
+    {
+	if (event.isModified() ||
+	    items == null || hotPointY >= items.length)
+	    return false;
+	final String value = items[hotPointY].title;
+	final int offset = getInitialHotPointX(hotPointY);
+	if (value.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX <= offset)
+	{
+	    environment.hint(Hints.BEGIN_OF_LINE);
+	    return true;
+	}
+	if (hotPointX >= value.length() + offset)
+	    hotPointX = value.length() + offset - 1; else
+	    --hotPointX;
+	environment.sayLetter(value.charAt(hotPointX - offset));
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
     private VisibleTreeItem[] generateVisibleItems(TreeAreaNode node, int level)
     {
 	if (node == null)
@@ -389,20 +520,20 @@ public class TreeArea implements Area
     private String constructLineForSpeech(VisibleTreeItem item, boolean briefIntroduction)
     {
 	if (item == null)
-	    return emptyItem;
-	String res = (item.title != null && !item.title.trim().isEmpty())?item.title.trim():emptyItem;
+	    return environment.staticStr(LangStatic.EMPTY_LINE);//FIXME:
+	String res = (item.title != null && !item.title.trim().isEmpty())?item.title.trim():environment.staticStr(LangStatic.EMPTY_LINE);
 	if (briefIntroduction)
 	    return res;
 	switch (item.type)
 	{
 	case VisibleTreeItem.OPENED:
-	    res = expanded + " " + res;
+	    res = environment.staticStr(LangStatic.TREE_EXPANDED) + " " + res;
 	    break;
 	case VisibleTreeItem.CLOSED:
-	    res = collapsed + " " + res;
+	    res = environment.staticStr(LangStatic.TREE_COLLAPSED) + " " + res;
 	    break;
 	}
-	return res + " " + level + " " + (item.level + 1);
+	return res + " " + environment.staticStr(LangStatic.TREE_LEVEL) + " " + (item.level + 1);
     }
 
     private String constructLineForScreen(VisibleTreeItem item)
@@ -426,156 +557,10 @@ public class TreeArea implements Area
 	return res + (item.title != null?item.title:"");
     }
 
-    private boolean onKeySpace(KeyboardEvent event)
-    {
-	if (event.isModified() || items == null)
-	    return false;
-	if (hotPointY >= items.length)
-	    return false;
-	VisibleTreeItem item = items[hotPointY];
-	if (item.node.obj != null)
-	    onClick(item.node.obj);
-	return true;
-    }
-
-    private boolean onKeyEnter(KeyboardEvent event)
-    {
-	if (event.isModified() || items == null || hotPointY >= items.length)
-	    return false;
-	VisibleTreeItem item = items[hotPointY];
-	if (item.type == VisibleTreeItem.LEAF)
-	{
-	    onClick(item.node.obj);
-	    return true;
-	}
-	if (item.type == VisibleTreeItem.CLOSED)
-	{
-	    fillChildrenForNonLeaf(item.node);
-	    items = generateAllVisibleItems();
-		environment.hint(expanded);
-		environment.onAreaNewContent(this);
-		return true;
-	}
-	    if (item.type == VisibleTreeItem.OPENED)
-	    {
-		item.node.children = null;
-		items = generateAllVisibleItems();
-		environment.hint(collapsed);
-		environment.onAreaNewContent(this);
-		return true;
-	    }
-	    return false;
-    }
-
-    private boolean onKeyDown(KeyboardEvent event, boolean briefIntroduction)
-    {
-	if (event.isModified() || items == null)
-	    return false;
-	if (hotPointY  >= items.length)
-	{
-	    environment.hint(treeAreaEnd);
-	    return true;
-	}
-	hotPointY++;
-	if (hotPointY >= items.length)
-	{
-	    hotPointX = 0;
-	    environment.hint(emptyLine);
-	} else
-	{
-	    hotPointX = getInitialHotPointX(hotPointY);
-	    environment.say(constructLineForSpeech(items[hotPointY], briefIntroduction));
-	}
-	environment.onAreaNewHotPoint(this );
-	return true;
-    }
-
-    private boolean onKeyUp(KeyboardEvent event, boolean briefIntroduction)
-    {
-	if (event.isModified() || items == null)
-	    return false;
-	if (hotPointY  <= 0)
-	{
-	    environment.hint(treeAreaBegin);
-	    return true;
-	}
-	hotPointY--;
-	hotPointX = getInitialHotPointX(hotPointY);
-	environment.say(constructLineForSpeech(items[hotPointY], briefIntroduction));
-	environment.onAreaNewHotPoint(this );
-	return true;
-    }
-
-    private boolean onKeyRight(KeyboardEvent event)
-    {
-	if (event.isModified() ||
-	    items == null || hotPointY >= items.length)
-	    return false;
-	final String value = items[hotPointY].title;
-	final int offset = getInitialHotPointX(hotPointY);
-	if (value.isEmpty())
-	{
-	    environment.hint(emptyItem);
-	    return true;
-	}
-	if (hotPointX >= value.length() + offset)
-	{
-	    environment.hint(endOfLine);
-	    return true;
-	}
-	if (hotPointX < offset)
-	    hotPointX = offset; else
-	    hotPointX++;
-	if (hotPointX >= value.length() + offset)
-	    environment.hint(endOfLine); else
-	    environment.sayLetter(value.charAt(hotPointX - offset));
-	environment.onAreaNewHotPoint(this);
-	return true;
-    }
-
-private boolean onKeyLeft(KeyboardEvent event)
-{
-	if (event.isModified() ||
-	    items == null || hotPointY >= items.length)
-	    return false;
-	final String value = items[hotPointY].title;
-	final int offset = getInitialHotPointX(hotPointY);
-	if (value.isEmpty())
-	{
-	    environment.hint(emptyItem);
-	    return true;
-	}
-	if (hotPointX <= offset)
-	{
-	    environment.hint(beginOfLine);
-	    return true;
-	}
-	if (hotPointX >= value.length() + offset)
-	    hotPointX = value.length() + offset - 1; else
-	    hotPointX--;
-	environment.sayLetter(value.charAt(hotPointX - offset));
-	environment.onAreaNewHotPoint(this);
-	return true;
-}
-
     private int getInitialHotPointX(int index)
     {
 	if (items == null ||  index >= items.length)
 	    return 0;
 	return (items[index].level * 2) + 2;
-    }
-
-    private void initStringConstants()
-    {
-	beginOfLine = Langs.staticValue(Langs.BEGIN_OF_LINE);
-	endOfLine = Langs.staticValue(Langs.END_OF_LINE);
-	treeAreaBegin = Langs.staticValue(Langs.TREE_AREA_BEGIN);
-	treeAreaEnd = Langs.staticValue(Langs.TREE_AREA_END);
-	emptyTree = Langs.staticValue(Langs.EMPTY_TREE);
-	emptyItem = Langs.staticValue(Langs.EMPTY_TREE_ITEM);
-	emptyLine = Langs.staticValue(Langs.EMPTY_LINE);
-	expanded  = Langs.staticValue(Langs.TREE_EXPANDED);
-	collapsed = Langs.staticValue(Langs.TREE_COLLAPSED);
-	level = Langs.staticValue(Langs.TREE_LEVEL);
     }
 }

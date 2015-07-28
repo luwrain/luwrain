@@ -21,7 +21,7 @@ import org.luwrain.core.*;
 public interface Section
 {
     int getControlPanelSRoot();
-    Section getControlPanelSubsections();
+    Section[] getControlPanelSubsections();
     Area getControlPanelSectionArea();
     String getControlPanelSectionName();
     boolean canCloseControlPanelSection();

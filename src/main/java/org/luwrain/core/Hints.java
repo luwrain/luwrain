@@ -30,4 +30,8 @@ public class Hints
     public static final int NO_ITEMS_ABOVE = 10;
     public static final int NO_ITEMS_BELOW = 11;
     public static final int NO_CONTENT = 12;
+    public static final int BEGIN_OF_TREE = 13;
+    public static final int END_OF_TREE = 14;
+    public static final int TREE_BRANCH_COLLAPSED = 15;
+    public static final int TREE_BRANCH_EXPANDED = 16;
 } 

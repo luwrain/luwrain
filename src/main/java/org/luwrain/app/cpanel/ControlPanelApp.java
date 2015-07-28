@@ -23,6 +23,8 @@ import org.luwrain.cpanel.*;
 
 public class ControlPanelApp implements Application, Actions
 {
+    public static final String STRINGS_NAME = "luwrain.strings";
+
     private Luwrain luwrain;
     private Strings strings;
     private SectionsTreeModel sectionsModel;
@@ -32,9 +34,11 @@ public class ControlPanelApp implements Application, Actions
 
     @Override public boolean onLaunch(Luwrain luwrain)
     {
-	Object str = luwrain.i18n().getStrings("luwrain.control");
-	if (str == null)
+	System.out.println("Starting cpanel");
+	Object str = luwrain.i18n().getStrings(STRINGS_NAME);
+	if (str == null || !(str instanceof Strings))
 	    return false;
+	System.out.println("Have strings");
 	this.luwrain = luwrain;
 	strings = (Strings)str;
 	sectionsModel = new SectionsTreeModel();

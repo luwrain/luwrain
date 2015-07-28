@@ -25,7 +25,12 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	i18nExt.addLang("ru", new org.luwrain.langs.ru.Lang());
 	i18nExt.addCommandTitle("ru", "quit", "Завершить работу в Luwrain");
 	i18nExt.addCommandTitle("ru", "shutdown", "Выключить компьютер");
+
+	i18nExt.addCommandTitle("ru", "control-panel", "Панель управления");
+	i18nExt.addCommandTitle("en", "control-panel", "Control panel");
+
 	i18nExt.addStrings("ru", "main-menu", new MainMenu());
 	i18nExt.addStrings("ru", "luwrain.environment", new Environment());
+	i18nExt.addStrings("ru", org.luwrain.app.cpanel.ControlPanelApp.STRINGS_NAME, new Control());
     }
 }
