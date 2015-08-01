@@ -18,5 +18,4 @@ package org.luwrain.desktop;
 
 interface Actions
 {
-    void closeApp();
 }

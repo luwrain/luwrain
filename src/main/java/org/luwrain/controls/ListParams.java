@@ -14,20 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.extensions;
+package org.luwrain.controls;
 
-import org.luwrain.core.*;
-
-public interface Extension
+public class ListParams
 {
-    String init(Luwrain luwrain);
-    Command[] getCommands(Luwrain luwrain);
-    Shortcut[] getShortcuts(Luwrain luwrain);
-    Worker[] getWorkers(Luwrain luwrain);
-    SharedObject[] getSharedObjects(Luwrain luwrain);
-    void i18nExtension(Luwrain luwrain, I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems(Luwrain luwrain);
-    org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain);
-    UniRefProc[] getUniRefProcs(Luwrain luwrain);
-    void close();
+    public ControlEnvironment environment;
+    public ListModel model;
+    public ListItemAppearance appearance;
+    public ListClickHandler clickHandler;
+    public String name;
 }

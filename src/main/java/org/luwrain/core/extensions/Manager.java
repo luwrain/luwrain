@@ -94,6 +94,7 @@ public class Manager
 	    loadedExt.commands = getCommands(ext, iface);
 	    loadedExt.shortcuts = getShortcuts(ext, iface);
 	    loadedExt.sharedObjects = getSharedObjects(ext, iface);
+	    loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
 	    res.add(loadedExt);
 	}
 	extensions = res.toArray(new LoadedExtension[res.size()]);
@@ -160,6 +161,20 @@ public class Manager
 	    Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of commands:" + ee.getMessage());
 	    ee.printStackTrace();
 	    return new Command[0];
+	}
+    }
+
+    private UniRefProc[] getUniRefProcs(Extension ext, Luwrain luwrain)
+    {
+	try {
+	    final UniRefProc[] res = ext.getUniRefProcs(luwrain);
+	    return res != null?res:new UniRefProc[0];
+	}
+	catch (Exception ee)
+	{
+	    Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of uniRefProcs:" + ee.getMessage());
+	    ee.printStackTrace();
+	    return new UniRefProc[0];
 	}
     }
 

@@ -54,6 +54,16 @@ public class EmptyExtension implements Extension
 	return new org.luwrain.mainmenu.Item[0];
     }
 
+    @Override public org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain)
+    {
+	return new org.luwrain.cpanel.Section[0];
+    } 
+
+    @Override public UniRefProc[] getUniRefProcs(Luwrain luwrain)
+    {
+	return new UniRefProc[0];
+    }
+
     @Override public void close()
     {
     }

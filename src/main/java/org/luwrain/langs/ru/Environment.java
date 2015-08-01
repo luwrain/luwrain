@@ -136,4 +136,17 @@ class Environment implements org.luwrain.core.Strings
 	}
 	return "" + num + "Б";
     }
+
+    @Override public String uniRefPrefix(String uniRefType)
+    {
+	switch(uniRefType)
+	{
+	case "file":
+	    return "Файл";
+	case "command":
+	    return "Команда";
+	default:
+	    return "#Unknown uniRef type \"" + uniRefType + "\"#";
+	}
+    }
 }

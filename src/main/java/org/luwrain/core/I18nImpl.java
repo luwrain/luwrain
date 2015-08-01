@@ -155,7 +155,7 @@ class I18nImpl implements I18n, I18nExtension
     @Override public void addLang(String name, Lang lang)
     {
 	if (name == null || name.trim().isEmpty() ||
-lang == null)
+	    lang == null)
 	    return;
 	for(LangObj l: langObjs)
 	    if (l.name.equals(name))
@@ -199,5 +199,10 @@ lang == null)
 	chosenLang = l.lang;
 	chosenLangName = l.name;
 	return true;
+    }
+
+    public String getChosenLangName()
+    {
+	return chosenLangName;
     }
 }

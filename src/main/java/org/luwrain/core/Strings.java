@@ -35,4 +35,5 @@ public interface Strings
     String commandPopupPrefix();
     String appBlockedByPopup();
     String locationTitle(Location location);
+    String uniRefPrefix(String uniRefType);
 }

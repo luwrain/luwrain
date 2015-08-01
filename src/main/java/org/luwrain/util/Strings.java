@@ -14,20 +14,19 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.extensions;
+package org.luwrain.util;
 
-import org.luwrain.core.*;
+import java.util.*;
 
-public interface Extension
+public class Strings
 {
-    String init(Luwrain luwrain);
-    Command[] getCommands(Luwrain luwrain);
-    Shortcut[] getShortcuts(Luwrain luwrain);
-    Worker[] getWorkers(Luwrain luwrain);
-    SharedObject[] getSharedObjects(Luwrain luwrain);
-    void i18nExtension(Luwrain luwrain, I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems(Luwrain luwrain);
-    org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain);
-    UniRefProc[] getUniRefProcs(Luwrain luwrain);
-    void close();
+    public static String[] notNullArray(String[] values)
+    {
+	if (values == null || values.length < 1)
+	    return new String[0];
+	LinkedList<String> res = new LinkedList<String>();
+	for(int i = 0;i < values.length;++i)
+	    res.add(values[i] != null?values[i]:"");
+	return res.toArray(new String[res.size()]);
+    }
 }

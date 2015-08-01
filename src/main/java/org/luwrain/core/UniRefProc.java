@@ -1,4 +1,4 @@
-/*
+		/*
    Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the Luwrain.
@@ -14,20 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.extensions;
+package org.luwrain.core;
 
-import org.luwrain.core.*;
-
-public interface Extension
+public interface UniRefProc
 {
-    String init(Luwrain luwrain);
-    Command[] getCommands(Luwrain luwrain);
-    Shortcut[] getShortcuts(Luwrain luwrain);
-    Worker[] getWorkers(Luwrain luwrain);
-    SharedObject[] getSharedObjects(Luwrain luwrain);
-    void i18nExtension(Luwrain luwrain, I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems(Luwrain luwrain);
-    org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain);
-    UniRefProc[] getUniRefProcs(Luwrain luwrain);
-    void close();
+    String getUniRefType();
+    UniRefInfo getUniRefInfo(String uniRef);
+    void openUniRef(String uniRef, Luwrain luwrain);
 }

@@ -18,25 +18,20 @@ package org.luwrain.core;
 
 import java.util.*;
 
-import org.luwrain.core.events.*;
+//import org.luwrain.core.events.*;
 import org.luwrain.core.extensions.*;
 
 class ShortcutManager
 {
     class Entry 
     {
-	public Extension extension;
 	public String name = "";
 	public Shortcut shortcut;
 
-	public Entry(Extension extension,
-		     String name,
-		     Shortcut shortcut)
+	public Entry(String name, Shortcut shortcut)
 	{
-	    this.extension = extension;
 	    this.name = name;
 	    this.shortcut = shortcut;
-	    //extension may be null, meaning it is a shortcut from environment itself
 	    if (name == null)
 		throw new NullPointerException("name may not be null");
 	    if (name.trim().isEmpty())
@@ -48,7 +43,7 @@ class ShortcutManager
 
     private TreeMap<String, Entry> shortcuts = new TreeMap<String, Entry>();
 
-    public boolean add(Extension extension, Shortcut shortcut)
+    public boolean add(Shortcut shortcut)
     {
 	if (shortcut == null)
 	    throw new NullPointerException("shortcut may not be null");
@@ -57,7 +52,7 @@ class ShortcutManager
 	    return false;
 	if (shortcuts.containsKey(name))
 	    return false;
-	shortcuts.put(name, new Entry(extension, name, shortcut));
+	shortcuts.put(name, new Entry(name, shortcut));
 	return true;
     }
 
@@ -84,7 +79,7 @@ class ShortcutManager
 
     public void addBasicShortcuts()
     {
-	add(null, new Shortcut(){
+	add(new Shortcut(){
 		@Override public String getName()
 		{
 		    return "registry";

@@ -18,13 +18,10 @@ package org.luwrain.core;
 
 public interface Worker
 {
-    String getName();
-    int increaseBlockingCounter();
-    int decreaseBlockingCounter();
-    boolean isRunning();
-
-    //Returns false is blocking counter greater than zero;
-    boolean run();
+    String getWorkerName();
+    void work();
+    void cancel();
     int getFirstLaunchDelay();
     int getLaunchPeriod();
+    int getRunsCount();
 }

@@ -14,20 +14,12 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.extensions;
+package org.luwrain.langs.ru;
 
-import org.luwrain.core.*;
-
-public interface Extension
+class Desktop implements org.luwrain.desktop.Strings
 {
-    String init(Luwrain luwrain);
-    Command[] getCommands(Luwrain luwrain);
-    Shortcut[] getShortcuts(Luwrain luwrain);
-    Worker[] getWorkers(Luwrain luwrain);
-    SharedObject[] getSharedObjects(Luwrain luwrain);
-    void i18nExtension(Luwrain luwrain, I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems(Luwrain luwrain);
-    org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain);
-    UniRefProc[] getUniRefProcs(Luwrain luwrain);
-    void close();
+    @Override public String appName()
+    {
+	return "Рабочий стол";
+    }
 }

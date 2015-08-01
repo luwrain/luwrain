@@ -43,7 +43,8 @@ class Environment implements EventConsumer
 
     private org.luwrain.core.extensions.Manager extensions;
     private InterfaceManager interfaces = new InterfaceManager(this);
-    private AppManager apps = new AppManager();
+    private org.luwrain.desktop.App desktop = new org.luwrain.desktop.App();
+    private AppManager apps;
     private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
@@ -54,6 +55,7 @@ class Environment implements EventConsumer
     private CommandManager commands = new CommandManager();
     private ShortcutManager shortcuts = new ShortcutManager();
     private SharedObjectManager sharedObjects = new SharedObjectManager();
+    private UniRefProcManager uniRefProcs = new UniRefProcManager();
 
     private String[] clipboard = null;
     private LaunchContext launchContext;
@@ -114,6 +116,8 @@ class Environment implements EventConsumer
     {
 	specialLuwrain = new Luwrain(this);//FIXME:
 	privilegedLuwrain = new Luwrain(this);//FIXME:
+	desktop.onLaunch(new Luwrain(this));
+	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps, popups);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	extensions = new org.luwrain.core.extensions.Manager(interfaces);
@@ -121,8 +125,10 @@ class Environment implements EventConsumer
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
-	initObjects();
+
 	initI18n();
+	initObjects();
+	desktop.ready(i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME));
 	EnvironmentSounds.init(registry, launchContext);
 	registryKeys = new RegistryKeys();
 	registryAutoCheck = new RegistryAutoCheck(registry, "environment");
@@ -134,6 +140,11 @@ class Environment implements EventConsumer
 	for(Command sc: standardCommands)
 	    commands.add(new Luwrain(this), sc);//FIXME:
 	commands.addOsCommands(specialLuwrain, registry);
+
+	final UniRefProc[] standardUniRefProcs = StandardUniRefProcs.createStandardUniRefProcs(strings);
+	for(UniRefProc proc: standardUniRefProcs)
+	    uniRefProcs.add(new Luwrain(this), proc);//FIXME:
+
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
 	{
@@ -142,7 +153,7 @@ class Environment implements EventConsumer
 	    for(Shortcut s: e.shortcuts)
 		if (s != null)
 		{
-		    if (!shortcuts.add(ext, s))
+		    if (!shortcuts.add(s))
 			Log.warning("environment", "shortcut \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shortcuts manager to be registered");
 		}
 	    //Shared objects
@@ -151,6 +162,13 @@ class Environment implements EventConsumer
 		{
 		    if (!sharedObjects.add(ext, s))
 			    Log.warning("environment", "the shared object \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shared objects manager to be registered");
+		}
+	    //UniRefProcs
+	    for(UniRefProc p: e.uniRefProcs)
+		if (p != null)
+		{
+		    if (!uniRefProcs.add(e.luwrain, p))
+			    Log.warning("environment", "the uniRefProc \'" + p.getUniRefType() + "\' of extension " + e.getClass().getName() + " has been refused by  the uniRefProcs manager to be registered");
 		}
 	    //Commands
 	    for(Command c: e.commands)
@@ -356,10 +374,9 @@ class Environment implements EventConsumer
 
     private boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
 	if (keyboardEventForEnvironment(event))
 	    return true;
+
 	//Open popup protection for non-popup areas of the same application;
 	final Application nonPopupDest = screenContentManager.isNonPopupDest();
 	if (nonPopupDest != null && popups.hasAny())//Non-popup area activated but some popup opened;
@@ -393,7 +410,8 @@ class Environment implements EventConsumer
 		    return true;
 		}
 	}
-	//OK, now we are sure that the application has no popups;
+
+	//OK, now we are sure that there are no popups
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
 	    res = screenContentManager.onKeyboardEvent(event);
@@ -405,6 +423,7 @@ class Environment implements EventConsumer
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
 	    return true;
 	}
+
 	switch(res)
 	{
 	case ScreenContentManager.EVENT_NOT_PROCESSED:
@@ -628,6 +647,8 @@ class Environment implements EventConsumer
 
     public void onAreaNewHotPoint(Area area)
     {
+	if (screenContentManager == null || windowManager == null)
+	    return;
 	if (area != null && area == screenContentManager.getActiveArea())
 	    windowManager.redrawArea(area);
     }
@@ -919,5 +940,15 @@ class Environment implements EventConsumer
 	if (id.trim().isEmpty())
 	    throw new IllegalArgumentException("id may not be empty");
 	return sharedObjects.getSharedObject(id);
+    }
+
+    public UniRefInfo getUniRefInfo(String uniRef)
+    {
+	return uniRefProcs.getInfo(uniRef);
+    }
+
+    public boolean openUniRef(String uniRef)
+    {
+	return uniRefProcs.open(uniRef);
     }
 }

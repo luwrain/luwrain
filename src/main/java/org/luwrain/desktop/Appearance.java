@@ -38,15 +38,37 @@ class Appearance implements ListItemAppearance
     {
 	if (item == null)
 	    return;
-	//FIXME:
+	if (item instanceof String)
+	{
+	    final String s = (String)item;
+	    if (s.trim().isEmpty())
+		luwrain.hint(Hints.EMPTY_LINE); else
+		luwrain.say(s);
+	    return;
+	}
+	if (item instanceof UniRefInfo)
+	{
+	    final UniRefInfo i = (UniRefInfo)item;
+	    luwrain.playSound(Sounds.NEW_LIST_ITEM);
+	    if ((flags & ListItemAppearance.BRIEF) != 0)
+		luwrain.say(i.title()); else
+		luwrain.say(i.toString());
+	    return;
+	}
     }
 
     @Override public String getScreenAppearance(Object item, int flags)
     {
 	if (item == null)
-	    return "  ";
-	//FIXME:
-	return "fixme";
+	    return "";
+	if (item instanceof String)
+return (String)item;
+	if (item instanceof UniRefInfo)
+	{
+	    final UniRefInfo i = (UniRefInfo)item;
+	    return i.toString();
+	}
+	return "";
     }
 
     @Override public int getObservableLeftBound(Object item)
@@ -56,8 +78,6 @@ class Appearance implements ListItemAppearance
 
     @Override public int getObservableRightBound(Object item)
     {
-	if (item == null)
-	    return 0;
-	return 0;
+	return getScreenAppearance(item, 0).length();
     }
 }

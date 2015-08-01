@@ -417,4 +417,14 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	}
 	return b.toString();
     }
+
+    public UniRefInfo getUniRefInfo(String uniRef)
+    {
+	return environment.getUniRefInfo(uniRef);
+    }
+
+    public boolean openUniRef(String uniRef)
+    {
+	return environment.openUniRef(uniRef);
+    }
 }

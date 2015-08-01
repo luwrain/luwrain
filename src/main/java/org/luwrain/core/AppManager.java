@@ -42,13 +42,23 @@ class AppManager
 
     private Vector<Wrapper> wrappers = new Vector<Wrapper>();
     private int[] visible = new int[0];
-    private int activeAppIndex = -1;//-1 only if there are no visible applications;
+    private int activeAppIndex = -1;
+    private Application defaultApp;
+
+    public AppManager(Application defaultApp)
+    {
+	this.defaultApp = defaultApp;
+	if (defaultApp == null)
+	    throw new NullPointerException("defaultApp may not be null");
+    }
 
     public boolean isVisibleApp(Application app)
     {
 	if (app == null)
 	    throw new NullPointerException("app may not be null");
 	ensureConsistent();
+	if (app == defaultApp && activeAppIndex < 0)
+	    return true;
 	for(int i = 0;i < getVisibleWrapperCount();i++)
 	    if (getVisibleWrapper(i).app == app)
 		return true;
@@ -58,6 +68,8 @@ class AppManager
     public Application[] getVisibleApps()
     {
 	ensureConsistent();
+	if (activeAppIndex < 0)
+	    return new Application[]{defaultApp};
 	Application[] a = new Application[getVisibleWrapperCount()];
 	for(int i = 0;i < getVisibleWrapperCount();i++)
 	    a[i] = getVisibleWrapper(i).app;
@@ -70,7 +82,7 @@ class AppManager
 	    throw new NullPointerException("app may not be null");
 	ensureConsistent();
 	if (activeAppIndex < 0)
-	    return false;
+	    return app == defaultApp?true:false;
 	return getVisibleWrapper(activeAppIndex).app == app;
     }
 
@@ -93,7 +105,7 @@ class AppManager
     {
 	ensureConsistent();
 	if (activeAppIndex < 0)
-	    return null;
+	    return defaultApp;
 	return getVisibleWrapper(activeAppIndex).app;
     }
 
@@ -246,6 +258,8 @@ class AppManager
 	if (app == null)
 	    throw new NullPointerException("app may not be null");
 	ensureConsistent();
+	if (app == defaultApp)
+	    return defaultApp.getAreasToShow().getArea1();
 	final int index = findAppInWrappers(app);
 	if (index == -1)
 	    return null;
@@ -256,7 +270,7 @@ class AppManager
     {
 	ensureConsistent();
 	if (activeAppIndex < 0)
-	    return null;
+	    return defaultApp.getAreasToShow().getArea1();
 	return wrappers.get(visible[activeAppIndex]).activeArea;
     }
 

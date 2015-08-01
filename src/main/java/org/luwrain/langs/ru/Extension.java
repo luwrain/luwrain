@@ -30,6 +30,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	i18nExt.addCommandTitle("en", "control-panel", "Control panel");
 
 	i18nExt.addStrings("ru", "main-menu", new MainMenu());
+	i18nExt.addStrings("ru", org.luwrain.desktop.App.STRINGS_NAME, new Desktop());
 	i18nExt.addStrings("ru", "luwrain.environment", new Environment());
 	i18nExt.addStrings("ru", org.luwrain.app.cpanel.ControlPanelApp.STRINGS_NAME, new Control());
     }

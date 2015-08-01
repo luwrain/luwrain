@@ -1,4 +1,4 @@
-/*
+		/*
    Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the Luwrain.
@@ -14,20 +14,35 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.extensions;
+package org.luwrain.core;
 
-import org.luwrain.core.*;
-
-public interface Extension
+public class UniRefInfo
 {
-    String init(Luwrain luwrain);
-    Command[] getCommands(Luwrain luwrain);
-    Shortcut[] getShortcuts(Luwrain luwrain);
-    Worker[] getWorkers(Luwrain luwrain);
-    SharedObject[] getSharedObjects(Luwrain luwrain);
-    void i18nExtension(Luwrain luwrain, I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems(Luwrain luwrain);
-    org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain);
-    UniRefProc[] getUniRefProcs(Luwrain luwrain);
-    void close();
+    private String prefix;
+    private String title;
+
+    public UniRefInfo(String prefix, String title)
+    {
+	this.prefix = prefix;
+	this.title = title;
+	if (prefix == null)
+	    throw new NullPointerException("prefix may not be null");
+	if (title == null)
+	    throw new NullPointerException("title may not be null");
+    }
+
+    public String prefix()
+    {
+	return prefix;
+    }
+
+    public String title()
+    {
+	return title;
+    }
+
+    @Override public String toString()
+    {
+	return prefix + " " + title;
+    }
 }

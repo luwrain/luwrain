@@ -25,4 +25,8 @@ public class LoadedExtension
     public Command[] commands;
     public Shortcut[] shortcuts;
     public SharedObject[] sharedObjects;
+    public UniRefProc[] uniRefProcs;
+    public Worker[] workers;
+    public org.luwrain.mainmenu.Item[] mainMenuItems;
+    public org.luwrain.cpanel.Section[] controlPanelSections;
 }

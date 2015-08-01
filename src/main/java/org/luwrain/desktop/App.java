@@ -22,35 +22,33 @@ import org.luwrain.controls.*;
 
 public class App implements Application, Actions
 {
-    private Luwrain luwrain;
-    private Strings strings;
+    public static final String STRINGS_NAME = "luwrain.desktop";
 
-    private Model model;
-    private Appearance appearance;
+    private Luwrain luwrain;
+    private TempStrings strings = new TempStrings();
+    private Base base = new Base();
     private ListArea area;
 
     @Override public boolean onLaunch(Luwrain luwrain)
     {
-	/*
-	Object o = luwrain.i18n().getStrings("luwrain.news");
-	if (o == null || !(o instanceof Strings))
-	    return false;
-	strings = (Strings)o;
 	this.luwrain = luwrain;
-	o =  luwrain.getSharedObject("luwrain.pim.news");
-	if (o == null || !(o instanceof NewsStoring))
+	System.out.println("init");
+	if (!base.init(luwrain, strings))
 	    return false;
-	newsStoring = (NewsStoring)o;
-	createModels();
-	createAreas();
+	createArea();
 	return true;
-	*/
-	return false;
     }
 
-    private void createModels()
+    @Override public String getAppName()
     {
-	model = new Model();
+	return strings.appName();
+    }
+
+    public void ready(String lang, Object o)
+    {
+	if (o != null && (o instanceof Strings))
+	    this.strings.setStrings((Strings)o);
+	base.setReady(lang);
     }
 
     private void createArea()
@@ -59,7 +57,7 @@ public class App implements Application, Actions
 	final Strings s = strings;
 
 	final ListClickHandler handler = new ListClickHandler(){
-		private Actions actions = a;
+		public Actions actions = a;
 		@Override public boolean onListClick(ListArea area,
 						     int index,
 						     Object item)
@@ -69,11 +67,14 @@ public class App implements Application, Actions
 		}
 	    };
 
-	      area = new ListArea(new DefaultControlEnvironment(luwrain),
-					model,
-				  appearance,
-					handler,
-					"desktop") {
+	final ListParams params = new ListParams();
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.model = base.getModel();
+	params.appearance = base.getAppearance();
+	params.clickHandler = handler;
+	params.name = strings.appName();
+
+	area = new ListArea(params) {
 		      private Strings strings = s;
 		      private Actions actions = a;
 		      @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -94,15 +95,5 @@ return super.onEnvironmentEvent(event);
     @Override public AreaLayout getAreasToShow()
     {
 	return new AreaLayout(area);
-    }
-
-    @Override public void closeApp()
-    {
-	luwrain.closeApp();
-    }
-
-    @Override public String getAppName()
-    {
-	return "desktop";//FIXME:
     }
 }
