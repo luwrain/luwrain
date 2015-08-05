@@ -30,8 +30,60 @@ public class Hints
     public static final int NO_ITEMS_ABOVE = 10;
     public static final int NO_ITEMS_BELOW = 11;
     public static final int NO_CONTENT = 12;
+
     public static final int BEGIN_OF_TREE = 13;
     public static final int END_OF_TREE = 14;
     public static final int TREE_BRANCH_COLLAPSED = 15;
     public static final int TREE_BRANCH_EXPANDED = 16;
+
+    public static final int TABLE_NO_ROWS = 17;
+    public static final int TABLE_NO_ROWS_ABOVE = 18;
+    public static final int TABLE_NO_ROWS_BELOW = 19;
+    public static final int TABLE_END_OF_COL = 20;
+    public static final int TABLE_END_OF_ROW = 21;
+
+    static public int hintToStaticStrMap(int hintCode)
+    {
+	switch (hintCode)
+	{
+	case SPACE:
+	    return LangStatic.SPACE;
+	case TAB:
+	    return LangStatic.TAB;
+	case EMPTY_LINE:
+	    return LangStatic.EMPTY_LINE;
+	case BEGIN_OF_LINE:
+	    return LangStatic.BEGIN_OF_LINE;
+	case END_OF_LINE:
+	    return LangStatic.END_OF_LINE;
+	case BEGIN_OF_TEXT:
+	    return LangStatic.BEGIN_OF_TEXT;
+	case END_OF_TEXT:
+	    return LangStatic.END_OF_TEXT;
+	case NO_LINES_ABOVE:
+	    return LangStatic.NO_LINES_ABOVE;
+	case NO_LINES_BELOW:
+	    return LangStatic.NO_LINES_BELOW;
+	case NO_ITEMS_ABOVE:
+	    return LangStatic.NO_ITEMS_ABOVE;
+	case NO_ITEMS_BELOW:
+	    return LangStatic.NO_ITEMS_BELOW;
+	case BEGIN_OF_TREE:
+	    return LangStatic.BEGIN_OF_TREE;
+	case END_OF_TREE:
+	    return LangStatic.END_OF_TREE;
+	case TABLE_NO_ROWS:
+	    return LangStatic.TABLE_NO_ROWS;
+	case TABLE_NO_ROWS_ABOVE:
+	    return LangStatic.TABLE_NO_ROWS_ABOVE;
+	case TABLE_NO_ROWS_BELOW:
+	    return LangStatic.TABLE_NO_ROWS_BELOW;
+	case TABLE_END_OF_COL:
+	    return LangStatic.TABLE_END_OF_COL;
+	case TABLE_END_OF_ROW:
+	    return LangStatic.TABLE_END_OF_ROW;
+	default:
+	    return -1;
+	}
+    }
 } 

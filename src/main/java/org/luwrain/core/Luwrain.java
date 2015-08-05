@@ -132,52 +132,11 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 
     @Override public boolean hint(int code)
     {
-	String msg = "";
-	switch (code)
-	{
-	case Hints.SPACE:
-	    msg = i18n().staticStr(LangStatic.SPACE);
-	    break;
-	case Hints.TAB:
-	    msg = i18n().staticStr(LangStatic.TAB);
-	    break;
-	case Hints.EMPTY_LINE:
-	    msg = i18n().staticStr(LangStatic.EMPTY_LINE);
-	    break;
-	case Hints.BEGIN_OF_LINE:
-	    msg = i18n().staticStr(LangStatic.BEGIN_OF_LINE);
-	    break;
-	case Hints.END_OF_LINE:
-	    msg = i18n().staticStr(LangStatic.END_OF_LINE);
-	    break;
-	case Hints.BEGIN_OF_TEXT:
-	    msg = i18n().staticStr(LangStatic.BEGIN_OF_TEXT);
-	    break;
-	case Hints.END_OF_TEXT:
-	    msg = i18n().staticStr(LangStatic.END_OF_TEXT);
-	    break;
-	case Hints.NO_LINES_ABOVE:
-	    msg = i18n().staticStr(LangStatic.NO_LINES_ABOVE);
-	    break;
-	case Hints.NO_LINES_BELOW:
-	    msg = i18n().staticStr(LangStatic.NO_LINES_BELOW);
-	    break;
-	case Hints.NO_ITEMS_ABOVE:
-	    msg = i18n().staticStr(LangStatic.NO_ITEMS_ABOVE);
-	    break;
-	case Hints.NO_ITEMS_BELOW:
-	    msg = i18n().staticStr(LangStatic.NO_ITEMS_BELOW);
-	    break;
-	case Hints.BEGIN_OF_TREE:
-	    msg = i18n().staticStr(LangStatic.BEGIN_OF_TREE);
-	    break;
-	case Hints.END_OF_TREE:
-	    msg = i18n().staticStr(LangStatic.END_OF_TREE);
-	    break;
-	default:
+	final int staticStrNum = Hints.hintToStaticStrMap(code);
+	if (staticStrNum < 0)
 	    return false;
-	}
-	hint(msg, code);
+
+	hint(i18n().staticStr(staticStrNum), code);
 	return true;
     }
 

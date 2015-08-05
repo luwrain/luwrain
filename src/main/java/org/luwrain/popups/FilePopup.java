@@ -25,6 +25,7 @@ import org.luwrain.core.events.*;
 public class FilePopup extends EditListPopup
 {
     public static final int ANY = 0;
+    public static final int DIRECTORY = 1;
 
     private File file;
 

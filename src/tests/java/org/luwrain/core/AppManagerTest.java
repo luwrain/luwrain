@@ -7,12 +7,13 @@ public class AppManagerTest extends Assert
 {
     @Test public void basicSwitching()
     {
+	DummyApp defaultApp = new DummyApp();
 	DummyApp app1 = new DummyApp();
 	DummyApp app2 = new DummyApp();
 	DummyApp app3 = new DummyApp();
 	DummyApp app4 = new DummyApp();
 
-	AppManager apps = new AppManager();
+	AppManager apps = new AppManager(defaultApp);
 	apps.registerAppSingleVisible(app1, app1.area);
 	apps.registerAppSingleVisible(app2, app2.area);
 	apps.registerAppSingleVisible(app3, app3.area);
@@ -44,12 +45,13 @@ public class AppManagerTest extends Assert
 
     @Test public void complexSwitching()
     {
+	DummyApp defaultApp = new DummyApp();
 	DummyApp app1 = new DummyApp();
 	DummyApp app2 = new DummyApp();
 	DummyApp app3 = new DummyApp();
 	DummyApp app4 = new DummyApp();
 
-	AppManager apps = new AppManager();
+	AppManager apps = new AppManager(defaultApp);
 	apps.registerAppSingleVisible(app1, app1.area);
 	apps.registerAppSingleVisible(app2, app2.area);
 	apps.registerAppSingleVisible(app3, app3.area);

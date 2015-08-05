@@ -32,27 +32,30 @@ public class TableArea  implements Area, CopyCutRequest
 {
     static final public int INTRODUCTION_BRIEF = 1;
 
-    private ControlEnvironment environment = null;
-    private CopyCutInfo copyCutInfo;
+    private ControlEnvironment environment;
+    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);;
     private String name = "";
-    private TableModel model = null;
-    private TableAppearance appearance = null;
-    private TableClickHandler clickHandler = null;
-    private int initialHotPointX = 0;
+    private TableModel model;
+    private TableAppearance appearance;
+    private TableClickHandler clickHandler;
 
+    private int initialHotPointX = 0;
     private int hotPointX = 0;
     private int hotPointY = 0;
-    private int[] colWidth = null;
+    private int[] colWidth;
     private int cellShift = 0;
 
     public TableArea(ControlEnvironment environment, TableModel model)
     {
 	this.environment = environment;
 	this.model = model;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
 	this.appearance = new DefaultTableAppearance(environment);
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
-	this.copyCutInfo = new CopyCutInfo(this);
-	refresh();
+	//	refresh();
     }
 
     public TableArea(ControlEnvironment environment,
@@ -61,30 +64,50 @@ public class TableArea  implements Area, CopyCutRequest
     {
 	this.environment = environment;
 	this.model = model;
+	this.name = name;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
 	this.appearance = new DefaultTableAppearance(environment);
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
-	this.name = name != null?name:"";
-	this.copyCutInfo = new CopyCutInfo(this);
-	refresh();
+	//	refresh();
     }
 
     public TableArea(ControlEnvironment environment,
 		     TableModel model,
-		    String name,
 		    TableAppearance appearance,
-		    TableClickHandler clickHandler)
+		     TableClickHandler clickHandler,
+		     String name)
     {
 	this.environment = environment;
 	this.model = model;
-	this.name = name != null?name:"";
 	this.appearance = appearance != null?appearance:new DefaultTableAppearance(environment);
-	this.initialHotPointX = appearance.getInitialHotPointX(model);
+	this.name = name != null?name:"";
 	this.clickHandler = clickHandler;
-	this.copyCutInfo = new CopyCutInfo(this);
-	refresh();
+	this.initialHotPointX = appearance.getInitialHotPointX(model);
+
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (model == null)
+	    throw new NullPointerException("model may not be null");
+	if (appearance == null)
+	    throw new NullPointerException("appearance may not be null");
+	//	if (clickHandler == null)
+	//	    throw new NullPointerException("clickHandler may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	//	refresh();
     }
 
     public void refresh()
+    {
+	refresh(true);
+    }
+
+    public void refresh(boolean refreshModel)
     {
 	if (model == null)
 	{
@@ -96,7 +119,8 @@ public class TableArea  implements Area, CopyCutRequest
 	    environment.onAreaNewHotPoint(this);
 	    return;
 	}
-	model.refresh();
+	if (refreshModel)
+	    model.refresh();
 	final int colCount = model.getColCount();
 	final int rowCount = model.getRowCount();
 	if (colCount <= 0 || rowCount <= 0)
@@ -160,6 +184,8 @@ public class TableArea  implements Area, CopyCutRequest
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	if (!event.isCommand() || event.isModified())
 	    return false;
 	switch(event.getCommand())
@@ -207,6 +233,8 @@ public class TableArea  implements Area, CopyCutRequest
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	if (event == null)
+	    throw new NullPointerException("event may not be null");
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.REFRESH:
@@ -238,14 +266,33 @@ public class TableArea  implements Area, CopyCutRequest
     @Override public String getLine(int index)
     {
 	if (noProperContent())
-	    return index <= 0?environment.staticStr(Langs.NO_TABLE_ROWS):"";
-	if (index < 0 ||
-	    index >= model.getRowCount())
+	    return index <= 0?environment.staticStr(LangStatic.TABLE_NO_ROWS):"";
+	if (index < 0 || index >= model.getRowCount())
 	    return "";
-	String line = stringOfLen(appearance.getRowPrefix(model, index), initialHotPointX, "", "");
-	for(int i = 0;i < model.getColCount();++i)
-	    line += stringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
-	return line;
+	final int currentCol = colUnderPos(hotPointX);
+	    String line = stringOfLen(appearance.getRowPrefix(model, index), initialHotPointX, "", "");
+	if (index != hotPointY || currentCol < 0)
+	{
+	    for(int i = 0;i < model.getColCount();++i)
+		line += stringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
+	    return line;
+	}
+	//	System.out.println("colWidth.lenght=" + colWidth.length);
+	System.out.println("hotPointX=" + hotPointX);
+
+	System.out.println("currentCol=" + currentCol);
+	if (currentCol > 0)
+	    for(int i = 0;i < currentCol;++i)
+		line += stringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
+	    String currentColText = appearance.getCellText(model, currentCol, index);
+	    System.out.println("currentColText=" + currentColText);
+	    if (cellShift > 0 && cellShift < currentColText.length())
+	    currentColText = currentColText.substring(cellShift);
+		line += stringOfLen(currentColText, colWidth[currentCol], ">", " ");
+		if (currentCol + 1 < colWidth.length)
+		    for(int i = currentCol + 1;i < colWidth.length;++i)
+			line += stringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
+    return line;
     }
 
     protected boolean onClick(TableModel model,
@@ -270,144 +317,109 @@ public class TableArea  implements Area, CopyCutRequest
 
     @Override public String getAreaName()
     {
-	return name != null?name:"";
+	return name;
     }
 
     public void setName(String value)
     {
-	name = value != null?value:"";
+	if (value == null)
+	    throw new NullPointerException("value may not be null");
+	name = value;
 	environment.onAreaNewName(this);
     }
 
     private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (noProperContent())
-	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS);
+	if (noContentCheck())
 	    return true;
-	}
 	final int count = model.getRowCount();
 	if (hotPointY >= count)
 	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS_BELOW);
+	    environment.hint(Hints.TABLE_NO_ROWS_BELOW);
 		return true;
 	}
 	++hotPointY;
-	hotPointX = hotPointY < count?initialHotPointX:0;
-	environment.onAreaNewHotPoint(this);
-	if (hotPointY < count)
-	    appearance.introduceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0); else
-	    environment.hintStaticString(Langs.EMPTY_LINE);
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onArrowUp(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (noProperContent())
-	{
-	    environment.hint(environment.staticStr(Langs.NO_TABLE_ROWS));
+	if (noContentCheck())
 	    return true;
-	}
 	final int count = model.getRowCount();
 	if (hotPointY <= 0)
 	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS_ABOVE);
+	    environment.hint(Hints.TABLE_NO_ROWS_ABOVE);
 	    return true;
 	}
 	--hotPointY;
 	if (hotPointY >= count)
 		hotPointY = count - 1;
-	hotPointX = initialHotPointX;
-	environment.onAreaNewHotPoint(this);
-	appearance.introduceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0);
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onPageDown(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (noProperContent())
-	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS);
+	if (noContentCheck())
 	    return true;
-	}
 	final int count = model.getRowCount();
 	if (hotPointY >= count)
 	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS_BELOW);
+	    environment.hint(Hints.TABLE_NO_ROWS_BELOW);
 		return true;
 	}
 	hotPointY += environment.getAreaVisibleHeight(this);
 	if (hotPointY >= count)
 	    hotPointY = count;
-	hotPointX = hotPointY < count?initialHotPointX:0;
-	environment.onAreaNewHotPoint(this);
-	if (hotPointY < count)
-	    appearance.introduceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0);
-	environment.hintStaticString(Langs.EMPTY_LINE);
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onPageUp(KeyboardEvent event, boolean briefIntroduction)
     {
-	if (noProperContent())
-	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS);
+	if (noContentCheck())
 	    return true;
-	}
 	if (hotPointY <= 0)
 	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS_ABOVE);
+	    environment.hint(Hints.TABLE_NO_ROWS_ABOVE);
 	    return true;
 	}
 	hotPointY -= environment.getAreaVisibleHeight(this);
 	if (hotPointY < 0)
 	    hotPointY = 0;
-	hotPointX = initialHotPointX;
-	environment.onAreaNewHotPoint(this);
-	appearance.introduceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0);
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
     private boolean onEnd(KeyboardEvent event)
     {
-	if (noProperContent())
-	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS);
+	if (noContentCheck())
 	    return true;
-	}
 	final int count = model.getRowCount();
 	hotPointY = count;
-	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
-	environment.hintStaticString(Langs.EMPTY_LINE);
+	onNewHotPointY(false);
 	return true;
     }
 
     private boolean onHome(KeyboardEvent event)
     {
-	if (noProperContent())
-	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS);
+	if (noContentCheck())
 	    return true;
-	}
 	hotPointY = 0;
-	hotPointX = initialHotPointX;
-	environment.onAreaNewHotPoint(this);
-	appearance.introduceRow(model, 0, 0);
+	onNewHotPointY(false);
 	return true;
     }
 
     private boolean onArrowRight(KeyboardEvent event)
     {
-	if (noProperContent())
-	{
-	    environment.hintStaticString(Langs.NO_TABLE_ROWS);
+	if (noContentCheck())
 	    return true;
-	}
 	final int count = model.getRowCount();
 	if (hotPointY < 0 || hotPointY >= count)
 	{
-	    environment.hintStaticString(Langs.EMPTY_LINE);
+	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	//Checking that hot point not before proper line begin;
@@ -417,6 +429,7 @@ public class TableArea  implements Area, CopyCutRequest
 	//Checking that hot point not beyond proper line end;
 	if (currentCol >= colWidth.length)
 	{
+	    //	    System.out.println("here");
 	    currentCol = colWidth.length - 1;
 	    hotPointX = initialHotPointX;
 	    for(int i = 0;i < colWidth.length;++i)
@@ -426,123 +439,69 @@ public class TableArea  implements Area, CopyCutRequest
 	int colStartPos = initialHotPointX;
 	for(int i = 0;i < currentCol;++i)
 	    colStartPos += (colWidth[i] + 1);
-	int nextColStartPos = colStartPos + colWidth[currentCol] + 1; 
-	//Hot point isn't at the cell end;
-	if (hotPointX + 2 < nextColStartPos)
+	final int nextColStartPos = colStartPos + colWidth[currentCol] + 1; 
+	final int currentColWidth = colWidth[currentCol];
+	//	System.out.println("currentCol=" + currentCol);
+	//	System.out.println("colStartPos=" + colStartPos);
+	//	System.out.println("nextColStartPos=" + nextColStartPos);
+	//	System.out.println("currentColWidth=" + currentColWidth);
+	final TableCell c = new TableCell(hotPointX - colStartPos, cellShift, currentColWidth, appearance.getCellText(model, currentCol, hotPointY));
+	if (!c.moveNext())
 	{
 	    cellShift = 0;
-	    final int newPos = hotPointX - colStartPos + 1;
-	    String text = appearance.getCellText(model, currentCol, hotPointY);
-	    if (text == null)
-		text = "";
-	    if (newPos <= text.length())
-	    {
-		//We may stay at the current cell;
-		++hotPointX;
-		environment.onAreaNewHotPoint(this);
-		if (newPos == text.length())
-		    environment.hint(colEndMessage(currentCol)); else
-		    environment.sayLetter(text.charAt(newPos));
-	    } else
-	    {
-		    //Jumping to next cell;
-		//Checking if there is no next cell;
-		if (currentCol + 1>= colWidth.length)
-		{
-		    environment.hint(colEndMessage(currentCol));
-		    //hotPointX left unchanged;
-		    return true;
-		}
-		//Jumping to next cell, it exists;
-		    hotPointX = nextColStartPos;
-		    String nextText = appearance.getCellText(model, currentCol + 1, hotPointY);
-		    if (nextText == null)
-			nextText = "";
-		    if (nextText.isEmpty())
-			environment.hint(colEndMessage(currentCol + 1)); else
-			environment.sayLetter(nextText.charAt(0));
-		    return true;
-	    }
-	}
-
-	//At the last position of cell;
-	if (hotPointX + 1 == nextColStartPos)
-	{
-	    //We should simply try to make step to next cell but it should exist;
-	    cellShift = 0;
-	    if (currentCol + 1 >= colWidth.length)
-	    {
-		environment.hint(colEndMessage(currentCol));
-		return true;
-	    }
 	    hotPointX = nextColStartPos;
-	    environment.onAreaNewHotPoint(this);
-	    String text = appearance.getCellText(model, currentCol + 1, hotPointY);
-	    if (text == null)
-		text = "";
-	    if (text.isEmpty())
-		environment.hint(colEndMessage(currentCol + 1)); else
-		environment.sayLetter(text.charAt(0));
-	    return true;
-	}
-	//The only case remains unconsidered is the position just before the last position of cell;
-	if (hotPointX + 2 != nextColStartPos)
-	    Log.warning("table", "onArrowRight():expecting to be at he position before cel end but something wrong: hotPointY=" + hotPointY + ", nextCoLStartPos=" + nextColStartPos);
-	hotPointX = nextColStartPos - 2;
-	final int pos = hotPointX + cellShift - colStartPos;
-	String text = appearance.getCellText(model, currentCol, hotPointY);
-	if (text == null)
-	    text = "";
-	if (pos + 1 == text.length())
-	{
-	    cellShift = 0;
-	    hotPointX = nextColStartPos - 1;
+	    final String nextColText = appearance.getCellText(model, currentCol + 1, hotPointY);
+	    if (!nextColText.isEmpty())
+		environment.sayLetter(nextColText.charAt(0)); else
+		environment.hint(Hints.TABLE_END_OF_COL);
 	    environment.onAreaNewContent(this);
 	    environment.onAreaNewHotPoint(this);
-	    environment.hint(colEndMessage(currentCol));
 	    return true;
-	}
-	if (pos >= text.length())
-	{
-	    //Trying to jump to next column if it exists;
-	    cellShift = 0;
-	    if (currentCol + 1 >= colWidth.length)
-	    {
-		environment.hint(colEndMessage(currentCol));
-		return true;
 	    }
-	    hotPointX = nextColStartPos;
-	    String nextText = appearance.getCellText(model, currentCol + 1, hotPointY);
-	    if (nextText == null)
-		nextText = "";
-	    if (nextText.isEmpty())
-		environment.hint(colEndMessage(currentCol + 1)); else
-		environment.sayLetter(nextText.charAt(0));
-	    return true;
-	}
-	//We shift current cell, there are more letters in in cell text;
-	++cellShift;
-	environment.sayLetter(text.charAt(pos + 1));
+	cellShift = c.shift;
+	//	System.out.println("cellShift=" + cellShift);
+	hotPointX = c.pos + colStartPos;
+	System.out.println("hotPointX=" + hotPointX);
+	if (c.pos == c.width)
+	    environment.hint(Hints.TABLE_END_OF_COL); else
+	    environment.sayLetter(c.line.charAt(c.pos + c.shift));
 	environment.onAreaNewContent(this);
-	return true;
-    }
+	environment.onAreaNewHotPoint(this);
+		    return true;
+	    }
 
     private boolean onArrowLeft(KeyboardEvent event)
     {
+	if (noContentCheck())
+	    return true;
 	//FIXME:
 	return false;
     }
 
     private boolean onLineEnd(KeyboardEvent event)
     {
+	if (noContentCheck())
+	    return true;
 	//FIXME:
 	return false;
     }
 
     private boolean onLineHome(KeyboardEvent event)
     {
+	if (noContentCheck())
+	    return true;
 	//FIXME:
 	return false;
+    }
+
+    private void onNewHotPointY(boolean briefIntroduction)
+    {
+	final int count = model.getRowCount();
+	hotPointX = hotPointY < count?initialHotPointX:0;
+	environment.onAreaNewHotPoint(this);
+	if (hotPointY < count)
+	    appearance.introduceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0); else
+	    environment.hint(Hints.EMPTY_LINE);
     }
 
     @Override public boolean onCopyAll()
@@ -562,35 +521,21 @@ public class TableArea  implements Area, CopyCutRequest
 
     private void copyEntireContent()
     {
-	/*
-	Vector<String> lines = new Vector<String>();
-	int maxLen = 0;
-	if (model != null && model.getItemCount() > 0)
-	{
-	    for(int i = 0;i < model.getItemCount();++i)
-	    {
-		String line = getScreenAppearance(model, i, model.getItem(i), CLIPBOARD_VALUE);
-		if (line == null)
-		    line = "";
-		lines.add(line);
-		if (line.length() > maxLen)
-		    maxLen = line.length();
-	    }
-	} else
-	    {
-		lines.add(noItems);
-		maxLen = noItems.length();
-	    }
-	String dashes = "";
-	while(dashes.length() < maxLen)
-	    dashes += "-";
-	Vector<String> res = new Vector<String>();
-	res.add(getName() != null?getName():"null");
-	res.add(dashes);
-	res.addAll(lines);
-	Luwrain.setClipboard(res.toArray(new String[res.size()]));
-	*/
     }
+
+    private boolean noProperContent()
+    {
+	return model == null || model.getRowCount() <= 0 || model.getColCount() <= 0 ||
+	colWidth == null || colWidth.length <= 0;
+    }
+
+    private boolean noContentCheck()
+    {
+	if (!noProperContent())
+	    return false;
+	environment.hint(Hints.TABLE_NO_ROWS);
+	return true;
+	}
 
     private String stringOfLen(String value,
 			       int requiredLen,
@@ -605,28 +550,22 @@ public class TableArea  implements Area, CopyCutRequest
 	return v + suffixEnoughRoom;
     }
 
-    private boolean noProperContent()
-    {
-	return model == null || model.getRowCount() <= 0 || model.getColCount() <= 0 ||
-colWidth == null || colWidth.length <= 0;
-    }
+
+
 
     private int colUnderPos(int pos)
     {
+	if (hotPointX < initialHotPointX)
+	    return -1;
 	if (colWidth == null || colWidth.length < 1)
 	    return 0;
 	int shift = initialHotPointX;
 	for(int i = 0;i < colWidth.length;++i)
 	{
-	    if (pos >= shift && pos <= colWidth[i])
+	    if (pos >= shift && pos <= shift + colWidth[i])
 		return i;
 	    shift += (colWidth[i] + 1);
 	}
-	return colWidth.length;
-    }
-
-    private String colEndMessage(int index)
-    {
-	return environment.staticStr(Langs.END_OF_TABLE_COL);
+	return -1;
     }
 }

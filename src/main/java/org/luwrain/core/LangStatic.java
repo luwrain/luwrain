@@ -32,15 +32,18 @@ public interface LangStatic
     public static final int NO_ITEMS_ABOVE = 12;
     public static final int NO_ITEMS_BELOW = 13;
     public static final int FONT_SIZE = 14;
-    public static final int EMPTY_TREE = 15;
-    public static final int EMPTY_TREE_ITEM = 16;
+
+    public static final int TREE_NO_CONTENT = 15;
+    public static final int TREE_EMPTY_ITEM = 16;
     public static final int TREE_EXPANDED = 17;
     public static final int TREE_COLLAPSED = 18;
     public static final int TREE_LEVEL = 19;
-    public static final int NO_TABLE_ROWS = 20;
-    public static final int NO_TABLE_ROWS_ABOVE = 21;
-    public static final int NO_TABLE_ROWS_BELOW = 22;
-    public static final int END_OF_TABLE_COL = 23;
+
+    public static final int TABLE_NO_ROWS = 20;
+    public static final int TABLE_NO_ROWS_ABOVE = 21;
+    public static final int TABLE_NO_ROWS_BELOW = 22;
+    public static final int TABLE_END_OF_COL = 23;
+    public static final int TABLE_END_OF_ROW = 24;
 
     public static final int MESSAGE = 30;
     public static final int MESSAGE_TO = 32;
