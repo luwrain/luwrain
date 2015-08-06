@@ -141,14 +141,15 @@ public class DefaultMultilinedEditContent implements MultilinedEditContent
 
     public String getWholeText()
     {
-	if (!noProperLines())
+	if (noProperLines())
 	    return "";
-	String value = "";
-	if (lines.length > 1)
-	    for(int i = 0;i < lines.length - 1;++i)
-		value += (lines[i] + "\n");
-	value += lines[lines.length - 1];
-	return value;
+	final StringBuilder sb = new StringBuilder();
+	for(String line: lines)
+	{
+	    sb.append(line);
+	    sb.append("\n");
+	}
+	return sb.toString();
     }
 
     private boolean noProperLines()

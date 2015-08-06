@@ -221,11 +221,11 @@ public class TableArea  implements Area, CopyCutRequest
 	case KeyboardEvent.ALTERNATIVE_PAGE_UP:
 	    return onPageUp(event, true);
 	case KeyboardEvent.ENTER:
-	    if (noProperContent() || 
+	    if (noProperContent() || clickHandler == null ||
 		hotPointY < 0 || hotPointY >= model.getRowCount() ||
-		colUnderPos(hotPointX) >= colWidth.length)
+		getColUnderPos(hotPointX) < 0)
 		return false;
-	    return onClick(model, colUnderPos(hotPointX), hotPointY, model.getCell(colUnderPos(hotPointX), hotPointY));
+	    return clickHandler.onClick(model, getColUnderPos(hotPointX), hotPointY, model.getCell(getColUnderPos(hotPointX), hotPointY));
 	default:
 	    return false;
 	}
@@ -269,40 +269,25 @@ public class TableArea  implements Area, CopyCutRequest
 	    return index <= 0?environment.staticStr(LangStatic.TABLE_NO_ROWS):"";
 	if (index < 0 || index >= model.getRowCount())
 	    return "";
-	final int currentCol = colUnderPos(hotPointX);
-	    String line = stringOfLen(appearance.getRowPrefix(model, index), initialHotPointX, "", "");
+	final int currentCol = getColUnderPos(hotPointX);
+	    String line = getStringOfLen(appearance.getRowPrefix(model, index), initialHotPointX, "", "");
 	if (index != hotPointY || currentCol < 0)
 	{
 	    for(int i = 0;i < model.getColCount();++i)
-		line += stringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
+		line += getStringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
 	    return line;
 	}
-	//	System.out.println("colWidth.lenght=" + colWidth.length);
-	System.out.println("hotPointX=" + hotPointX);
-
-	System.out.println("currentCol=" + currentCol);
 	if (currentCol > 0)
 	    for(int i = 0;i < currentCol;++i)
-		line += stringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
+		line += getStringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
 	    String currentColText = appearance.getCellText(model, currentCol, index);
-	    System.out.println("currentColText=" + currentColText);
 	    if (cellShift > 0 && cellShift < currentColText.length())
 	    currentColText = currentColText.substring(cellShift);
-		line += stringOfLen(currentColText, colWidth[currentCol], ">", " ");
+		line += getStringOfLen(currentColText, colWidth[currentCol], ">", " ");
 		if (currentCol + 1 < colWidth.length)
 		    for(int i = currentCol + 1;i < colWidth.length;++i)
-			line += stringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
+			line += getStringOfLen(appearance.getCellText(model, i, index), colWidth[i], ">", " ");
     return line;
-    }
-
-    protected boolean onClick(TableModel model,
-			      int col,
-			      int row,
-			      Object item)
-    {
-	if (clickHandler != null)
-	    return clickHandler.onClick(model, col, row, item);
-	return false;
     }
 
     @Override public int getHotPointX()
@@ -425,45 +410,34 @@ public class TableArea  implements Area, CopyCutRequest
 	//Checking that hot point not before proper line begin;
 	if (hotPointX < initialHotPointX)
 	    hotPointX = initialHotPointX;
-	int currentCol = colUnderPos(hotPointX);
-	//Checking that hot point not beyond proper line end;
-	if (currentCol >= colWidth.length)
-	{
-	    //	    System.out.println("here");
-	    currentCol = colWidth.length - 1;
+	if (getColUnderPos(hotPointX) < 0)
 	    hotPointX = initialHotPointX;
-	    for(int i = 0;i < colWidth.length;++i)
-		hotPointX += (colWidth[i] + 1);
-	}
-	//Calculating starting position of current and next cells;
-	int colStartPos = initialHotPointX;
-	for(int i = 0;i < currentCol;++i)
-	    colStartPos += (colWidth[i] + 1);
-	final int nextColStartPos = colStartPos + colWidth[currentCol] + 1; 
+	final int currentCol = getColUnderPos(hotPointX);
 	final int currentColWidth = colWidth[currentCol];
-	//	System.out.println("currentCol=" + currentCol);
-	//	System.out.println("colStartPos=" + colStartPos);
-	//	System.out.println("nextColStartPos=" + nextColStartPos);
-	//	System.out.println("currentColWidth=" + currentColWidth);
+	final int colStartPos = getColStartPos(currentCol);
+	final int nextColStartPos = colStartPos + colWidth[currentCol] + 1; 
 	final TableCell c = new TableCell(hotPointX - colStartPos, cellShift, currentColWidth, appearance.getCellText(model, currentCol, hotPointY));
 	if (!c.moveNext())
 	{
+	    if (currentCol + 1 >= colWidth.length)
+	    {
+		environment.hint(Hints.TABLE_END_OF_ROW);
+		return true;
+	    }
 	    cellShift = 0;
 	    hotPointX = nextColStartPos;
 	    final String nextColText = appearance.getCellText(model, currentCol + 1, hotPointY);
 	    if (!nextColText.isEmpty())
 		environment.sayLetter(nextColText.charAt(0)); else
-		environment.hint(Hints.TABLE_END_OF_COL);
+		environment.hint(currentCol + 2 < colWidth.length?Hints.TABLE_END_OF_COL:Hints.TABLE_END_OF_ROW);
 	    environment.onAreaNewContent(this);
 	    environment.onAreaNewHotPoint(this);
 	    return true;
 	    }
 	cellShift = c.shift;
-	//	System.out.println("cellShift=" + cellShift);
 	hotPointX = c.pos + colStartPos;
-	System.out.println("hotPointX=" + hotPointX);
-	if (c.pos == c.width)
-	    environment.hint(Hints.TABLE_END_OF_COL); else
+	if (c.pos + c.shift >= c.line.length())
+	    environment.hint(currentCol + 1 < colWidth.length?Hints.TABLE_END_OF_COL:Hints.TABLE_END_OF_ROW); else
 	    environment.sayLetter(c.line.charAt(c.pos + c.shift));
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
@@ -474,8 +448,52 @@ public class TableArea  implements Area, CopyCutRequest
     {
 	if (noContentCheck())
 	    return true;
-	//FIXME:
-	return false;
+	final int count = model.getRowCount();
+	if (hotPointY < 0 || hotPointY >= count)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	if (hotPointX < initialHotPointX)
+	    hotPointX = initialHotPointX;
+	if (getColUnderPos(hotPointX) < 0)
+	    hotPointX = initialHotPointX;
+	final int currentCol = getColUnderPos(hotPointX);
+	final int currentColWidth = colWidth[currentCol];
+	final int colStartPos = getColStartPos(currentCol);
+	final TableCell c = new TableCell(hotPointX - colStartPos, cellShift, currentColWidth, appearance.getCellText(model, currentCol, hotPointY));
+	if (!c.movePrev())
+	{
+	    if (currentCol <= 0)
+	    {
+		environment.hint(Hints.TABLE_BEGIN_OF_ROW);
+		return true;
+	    }
+	    final String prevColText = appearance.getCellText(model, currentCol - 1, hotPointY);
+	    final int prevColWidth = colWidth[currentCol - 1];
+	    final int prevColStartPos = getColStartPos(currentCol - 1);
+	    if (prevColText.length() > prevColWidth)
+	    {
+		hotPointX = prevColStartPos + prevColWidth;
+		cellShift = prevColText.length() - prevColWidth;
+	    } else
+	    {
+		cellShift = 0;
+		hotPointX = prevColStartPos + prevColText.length();
+	    }
+	    environment.hint(Hints.TABLE_END_OF_COL);
+	    environment.onAreaNewContent(this);
+	    environment.onAreaNewHotPoint(this);
+	    return true;
+	    }
+	cellShift = c.shift;
+	hotPointX = c.pos + colStartPos;
+	if (c.pos == c.width)//Should never happen;
+	    environment.hint(Hints.TABLE_END_OF_COL); else
+	    environment.sayLetter(c.line.charAt(c.pos + c.shift));
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+		    return true;
     }
 
     private boolean onLineEnd(KeyboardEvent event)
@@ -498,6 +516,7 @@ public class TableArea  implements Area, CopyCutRequest
     {
 	final int count = model.getRowCount();
 	hotPointX = hotPointY < count?initialHotPointX:0;
+	cellShift = 0;
 	environment.onAreaNewHotPoint(this);
 	if (hotPointY < count)
 	    appearance.introduceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0); else
@@ -537,7 +556,7 @@ public class TableArea  implements Area, CopyCutRequest
 	return true;
 	}
 
-    private String stringOfLen(String value,
+    private String getStringOfLen(String value,
 			       int requiredLen,
 			       String suffixLonger,
 			       String suffixEnoughRoom)
@@ -550,10 +569,7 @@ public class TableArea  implements Area, CopyCutRequest
 	return v + suffixEnoughRoom;
     }
 
-
-
-
-    private int colUnderPos(int pos)
+    private int getColUnderPos(int pos)
     {
 	if (hotPointX < initialHotPointX)
 	    return -1;
@@ -567,5 +583,13 @@ public class TableArea  implements Area, CopyCutRequest
 	    shift += (colWidth[i] + 1);
 	}
 	return -1;
+    }
+
+    private int getColStartPos(int colIndex)
+    {
+	int value = initialHotPointX;
+	for(int i = 0;i < colIndex;++i)
+	    value += (colWidth[i] + 1);
+	return value;
     }
 }

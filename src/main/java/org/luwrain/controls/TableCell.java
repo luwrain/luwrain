@@ -1,6 +1,20 @@
+/*
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of the Luwrain.
+
+   Luwrain is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   Luwrain is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.controls;
-
 
 class TableCell
 {
@@ -24,8 +38,7 @@ class TableCell
 
     public boolean moveNext()
     {
-	//	normalize();
-	//	System.out.println("shift=" + shift + ",pos=" + pos);
+	normalize();
 	if (pos + shift >= line.length())
 	    return false;
 	if (pos + shift == line.length() - 1)
@@ -36,6 +49,17 @@ class TableCell
 	if (pos == width - 1)
 	    ++shift; else
 	    ++pos;
+	return true;
+    }
+
+    public boolean movePrev()
+    {
+	normalize();
+	if (pos + shift <= 0)
+	    return false;
+	if (pos > 0)
+	    --pos; else
+	    --shift;
 	return true;
     }
 

@@ -392,7 +392,7 @@ public class TreeArea implements Area
 	    return false;
 	if (hotPointY  >= items.length)
 	{
-	    environment.hint(Hints.END_OF_TREE);
+	    environment.hint(Hints.TREE_END);
 	    return true;
 	}
 	++hotPointY;
@@ -415,7 +415,7 @@ public class TreeArea implements Area
 	    return false;
 	if (hotPointY  <= 0)
 	{
-	    environment.hint(Hints.BEGIN_OF_TREE);
+	    environment.hint(Hints.TREE_BEGIN);
 	    return true;
 	}
 	--hotPointY;

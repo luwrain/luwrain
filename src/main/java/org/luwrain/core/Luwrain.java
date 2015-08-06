@@ -19,6 +19,7 @@ package org.luwrain.core;
 import java.io.File;
 
 import org.luwrain.os.OperatingSystem;
+import org.luwrain.hardware.*;
 
 /**
  * The main gate to Luwrain core for applications. This class is the
@@ -105,27 +106,9 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 
     @Override public void hint(String text, int code)
     {
-	switch (code)
-	{
-	case Hints.NO_ITEMS_ABOVE:
-	    playSound(Sounds.NO_ITEMS_ABOVE);
-	    break;
-	case Hints.NO_ITEMS_BELOW:
-	    playSound(Sounds.NO_ITEMS_BELOW);
-	    break;
-	case Hints.NO_LINES_ABOVE:
-	    playSound(Sounds.NO_LINES_ABOVE);
-	    break;
-	case Hints.NO_LINES_BELOW:
-	    playSound(Sounds.NO_LINES_BELOW);
-	    break;
-	case Hints.BEGIN_OF_TREE:
-	    playSound(Sounds.NO_ITEMS_ABOVE);
-	    break;
-	case Hints.END_OF_TREE:
-	    playSound(Sounds.NO_ITEMS_BELOW);
-	    break;
-	}
+	final int soundId = Hints.hintToSoundMap(code);
+	if (soundId >= 0)
+	    playSound(soundId);
 	if (environment.onStandardHint(code))
 	    hint(text);
     }
@@ -385,5 +368,10 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
     public boolean openUniRef(String uniRef)
     {
 	return environment.openUniRef(uniRef);
+    }
+
+    public Hardware getHardware()
+    {
+	return environment.getHardware();
     }
 }

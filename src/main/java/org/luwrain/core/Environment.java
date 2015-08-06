@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.luwrain.os.OperatingSystem;
+import org.luwrain.hardware.*;
 import org.luwrain.speech.BackEnd;
 import org.luwrain.core.events.*;
 import org.luwrain.core.extensions.*;
@@ -950,5 +951,10 @@ class Environment implements EventConsumer
     public boolean openUniRef(String uniRef)
     {
 	return uniRefProcs.open(uniRef);
+    }
+
+    public Hardware getHardware()
+    {
+	return os.getHardware();
     }
 }

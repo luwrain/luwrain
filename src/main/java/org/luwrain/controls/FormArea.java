@@ -254,7 +254,7 @@ public class FormArea  extends NavigateArea
 
     public String getMultilinedEditText()
     {
-	return !multilinedEditActivated()?multilinedContent.getWholeText():null;
+	return multilinedEditActivated()?multilinedContent.getWholeText():null;
     }
 
     public boolean removeItemOnLine(int index)

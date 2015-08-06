@@ -31,8 +31,8 @@ public class Hints
     public static final int NO_ITEMS_BELOW = 11;
     public static final int NO_CONTENT = 12;
 
-    public static final int BEGIN_OF_TREE = 13;
-    public static final int END_OF_TREE = 14;
+    public static final int TREE_BEGIN = 13;
+    public static final int TREE_END = 14;
     public static final int TREE_BRANCH_COLLAPSED = 15;
     public static final int TREE_BRANCH_EXPANDED = 16;
 
@@ -40,7 +40,8 @@ public class Hints
     public static final int TABLE_NO_ROWS_ABOVE = 18;
     public static final int TABLE_NO_ROWS_BELOW = 19;
     public static final int TABLE_END_OF_COL = 20;
-    public static final int TABLE_END_OF_ROW = 21;
+    public static final int TABLE_BEGIN_OF_ROW = 21;
+    public static final int TABLE_END_OF_ROW = 22;
 
     static public int hintToStaticStrMap(int hintCode)
     {
@@ -68,9 +69,9 @@ public class Hints
 	    return LangStatic.NO_ITEMS_ABOVE;
 	case NO_ITEMS_BELOW:
 	    return LangStatic.NO_ITEMS_BELOW;
-	case BEGIN_OF_TREE:
+	case TREE_BEGIN:
 	    return LangStatic.BEGIN_OF_TREE;
-	case END_OF_TREE:
+	case TREE_END:
 	    return LangStatic.END_OF_TREE;
 	case TABLE_NO_ROWS:
 	    return LangStatic.TABLE_NO_ROWS;
@@ -80,8 +81,31 @@ public class Hints
 	    return LangStatic.TABLE_NO_ROWS_BELOW;
 	case TABLE_END_OF_COL:
 	    return LangStatic.TABLE_END_OF_COL;
+	case TABLE_BEGIN_OF_ROW:
+	    return LangStatic.TABLE_BEGIN_OF_ROW;
 	case TABLE_END_OF_ROW:
 	    return LangStatic.TABLE_END_OF_ROW;
+	default:
+	    return -1;
+	}
+    }
+
+    static public int hintToSoundMap(int hintCode)
+    {
+	switch (hintCode)
+	{
+	case NO_ITEMS_ABOVE:
+	case TREE_BEGIN:
+	case TABLE_NO_ROWS_ABOVE:
+	    return Sounds.NO_ITEMS_ABOVE;
+	case NO_ITEMS_BELOW:
+	case TREE_END:
+	case TABLE_NO_ROWS_BELOW:
+	    return Sounds.NO_ITEMS_BELOW;
+	case NO_LINES_ABOVE:
+	    return Sounds.NO_LINES_ABOVE;
+	case NO_LINES_BELOW:
+	    return Sounds.NO_LINES_BELOW;
 	default:
 	    return -1;
 	}

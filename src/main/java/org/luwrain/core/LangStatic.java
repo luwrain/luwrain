@@ -43,7 +43,8 @@ public interface LangStatic
     public static final int TABLE_NO_ROWS_ABOVE = 21;
     public static final int TABLE_NO_ROWS_BELOW = 22;
     public static final int TABLE_END_OF_COL = 23;
-    public static final int TABLE_END_OF_ROW = 24;
+    public static final int TABLE_BEGIN_OF_ROW = 24;
+    public static final int TABLE_END_OF_ROW = 25;
 
     public static final int MESSAGE = 30;
     public static final int MESSAGE_TO = 32;
