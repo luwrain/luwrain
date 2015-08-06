@@ -41,7 +41,7 @@ public class ControlPanelApp implements Application, Actions
 	System.out.println("Have strings");
 	this.luwrain = luwrain;
 	strings = (Strings)str;
-	sectionsModel = new SectionsTreeModel();
+	sectionsModel = new SectionsTreeModel(luwrain);
 	createAreas();
 	return true;
     }
