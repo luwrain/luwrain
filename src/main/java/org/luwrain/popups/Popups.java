@@ -19,6 +19,7 @@ package org.luwrain.popups;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.controls.*;
 import org.luwrain.os.Location;
 
 public class Popups
@@ -131,5 +132,47 @@ String text)
 	if (popup.closing.cancelled())
 	    return null;
 	return popup.text ();
+    }
+
+    static public Object fixedList(Luwrain luwrain,
+			    String name,
+			    Object[] items,
+int popupFlags)
+    {
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (name == null)
+	    throw new NullPointerException("name may not be null");
+	if (items == null)
+	    throw new NullPointerException("items may not be null");
+	if (items.length < 1)
+	    throw new IllegalArgumentException("items may not be empty");
+	for(int i = 0;i < items.length;++i)
+	    if (items[i] == null)
+	    throw new NullPointerException("items[" + i + "] may not be null");
+	final Object[] items2 = items;
+	final ListModel model = new ListModel(){
+		private Object[] items = items2;
+		@Override public int getItemCount()
+		{
+		    return items.length;
+		}
+		@Override public Object getItem(int index)
+		{
+		    return index < items.length?items[index]:null;
+		}
+		@Override public boolean toggleMark(int index)
+		{
+		    return false;
+		}
+		@Override public void refresh()
+		{
+		}
+	    };
+	final ListPopup popup = new ListPopup(luwrain, name, model, new DefaultListItemAppearance(new DefaultControlEnvironment(luwrain)), popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.selected();
     }
 }

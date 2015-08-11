@@ -22,16 +22,16 @@ import java.util.*;
 import org.luwrain.core.Log;
 import org.luwrain.core.Registry;
 
-public class Directory
+class Directory
 {
-    private static final String STRINGS_VALUES_FILE = "strings.txt";
-    private static final String INTEGERS_VALUES_FILE = "integers.txt";
-    private static final String BOOLEANS_VALUES_FILE = "booleans.txt";
+    static public final String STRINGS_VALUES_FILE = "strings.txt";
+    static public final String INTEGERS_VALUES_FILE = "integers.txt";
+    static public final String BOOLEANS_VALUES_FILE = "booleans.txt";
 
     private String name = "";
     private File dir;
     private Vector<Directory> subdirs;
-    private Map<String, Value> values;
+    private TreeMap<String, Value> values;
 
     public Directory(String name, File dir)
     {
@@ -63,10 +63,24 @@ public class Directory
 	if (d != null)
 	    return d;
 	File f = new File(dir, newName);
-	f.mkdir();
+	if (!f.mkdir())
+	    return null;
 	d = new Directory(newName, f);
+	if (!d.createValuesFiles())
+	    return null;
 	subdirs.add(d);
 	return d;
+    }
+
+    private boolean createValuesFiles() throws IOException 
+    {
+	if (!(new File(dir, STRINGS_VALUES_FILE).createNewFile()))
+	    return false;
+	if (!(new File(dir, INTEGERS_VALUES_FILE).createNewFile()))
+	    return false;
+	if (!(new File(dir, BOOLEANS_VALUES_FILE).createNewFile()))
+	    return false;
+	return true;
     }
 
     public boolean hasSubdir(String dirName) throws IOException
@@ -87,12 +101,6 @@ public class Directory
 		return s;
 	return null;
     }
-
-    /*
-    public void init() throws IOException
-    {
-    }
-    */
 
     public void delete() throws IOException
     {
@@ -225,7 +233,7 @@ public class Directory
     public String[] subdirs() throws IOException
     {
 	loadSubdirs();
-	Vector<String> v = new Vector<String>();
+	LinkedList<String> v = new LinkedList<String>();
 	for (Directory d: subdirs)
 	    v.add(d.name());
 	return v.toArray(new String[v.size()]);
@@ -234,7 +242,7 @@ public class Directory
     public String[] values() throws IOException
     {
 	loadValues();
-	Vector<String> v = new Vector<String>();
+	LinkedList<String> v = new LinkedList<String>();
 	for(Map.Entry<String, Value> i: values.entrySet())
 	    v.add(i.getKey());
 	return v.toArray(new String[v.size()]);
@@ -276,7 +284,7 @@ return values.get(valueName).type;
 	values = new TreeMap<String, Value>();
 	Map<String, String> raw;
 
-	//Strings;
+	//strings
 	raw = ValueReader.readValuesFromFile(new File(dir, STRINGS_VALUES_FILE).getAbsolutePath());
 	for(Map.Entry<String, String> e: raw.entrySet())
 	{
@@ -290,7 +298,7 @@ return values.get(valueName).type;
 	    values.put(k, new Value(v));
 	}
 
-	//Booleans;
+	//booleans
 	raw = ValueReader.readValuesFromFile(new File(dir, BOOLEANS_VALUES_FILE).getAbsolutePath());
 	for(Map.Entry<String, String> e: raw.entrySet())
 	{
@@ -313,7 +321,7 @@ return values.get(valueName).type;
 	    values.put(e.getKey(), new Value(res));
 	}
 
-	//Integers;
+	//integers
 	raw = ValueReader.readValuesFromFile(new File(dir, INTEGERS_VALUES_FILE).getAbsolutePath());
 	for(Map.Entry<String, String> e: raw.entrySet())
 	{
@@ -336,8 +344,6 @@ return values.get(valueName).type;
 	    }
 	    values.put(e.getKey(), new Value(res));
 	}
-
-	//	Log.debug("fsdir", "have " + values.size() + " values");
     }
 
     private void loadSubdirs() throws IOException
@@ -354,5 +360,31 @@ return values.get(valueName).type;
 
     private void saveValues() throws IOException
     {
+	if (values == null)
+	    return;
+	final TreeMap<String, String> stringValues = new TreeMap<String, String>();
+	final TreeMap<String, String> integerValues = new TreeMap<String, String>();
+	final TreeMap<String, String> booleanValues = new TreeMap<String, String>();
+	for(Map.Entry<String, Value> e: values.entrySet())
+	{
+	    final String name = e.getKey();
+	    final Value v = e.getValue();
+	    switch(v.type)
+	    {
+	    case Registry.STRING:
+		stringValues.put(name, v.strValue);
+		break;
+	    case Registry.INTEGER:
+		integerValues.put(name, "" + v.intValue);
+		break;
+	    case Registry.BOOLEAN:
+		booleanValues.put(name, v.boolValue?"true":"false");
+		break;
+	    }
+
+	}
+	ValueWriter.saveValuesToFile(stringValues, new File(dir, STRINGS_VALUES_FILE).getAbsolutePath());
+		ValueWriter.saveValuesToFile(integerValues, new File(dir, INTEGERS_VALUES_FILE).getAbsolutePath());
+	ValueWriter.saveValuesToFile(booleanValues, new File(dir, BOOLEANS_VALUES_FILE).getAbsolutePath());
     }
 }

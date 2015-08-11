@@ -16,7 +16,7 @@
 
 package org.luwrain.app.registry;
 
-public interface StringConstructor
+public interface Strings
 {
     String dirsAreaName();
     String valuesAreaName();

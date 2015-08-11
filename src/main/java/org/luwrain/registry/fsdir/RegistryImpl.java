@@ -40,11 +40,11 @@ public class RegistryImpl implements Registry
 	root = new Directory("root", new File(base));
     }
 
-    @Override public boolean addDirectory(String path)
+    @Override public synchronized boolean addDirectory(String path)
     {
-	Path p = parseAsDir(path);
+	final Path p = parseAsDir(path);
 	if (p.isRoot())
-	    throw new IllegalArgumentException("the root directory may not be asked for creation");
+	    throw new IllegalArgumentException("the root directory may not be requested for creation");
 	final String[] items = p.dirItems();
 	Directory d = root;
 	int pos = 0;
@@ -57,7 +57,7 @@ public class RegistryImpl implements Registry
 		d = dd;
 		++pos;
 	    }
-	    if (pos >= items.length)//The directory already exists;
+	    if (pos >= items.length)//The directory already exists
 		return true;
 	    while(pos < items.length)
 	    {
@@ -67,7 +67,7 @@ public class RegistryImpl implements Registry
 	}
 	catch(IOException e)
 	{
-	    Log.error("registry", "error while creating registry directory " + p.toString() + ":" + e.getMessage());
+	    Log.error("fsdir", "error while creating registry directory " + p.toString() + ":" + e.getMessage());
 	    e.printStackTrace();
 	    return false;
 	}

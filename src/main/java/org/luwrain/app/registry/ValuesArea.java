@@ -47,24 +47,24 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 {
     private Luwrain luwrain;
     private Registry registry;
-    private RegistryActions actions;
-    private StringConstructor stringConstructor;
-    private RegistryDir dir;
+    private Actions actions;
+    private Strings strings;
+    private Directory dir;
     private ValueItem[] items;
 
     public ValuesArea(Luwrain luwrain,
 		      Registry registry,
-		      RegistryActions actions,
-		      StringConstructor stringConstructor)
+		      Actions actions,
+		      Strings strings)
     {
 	super(new DefaultControlEnvironment(luwrain));
 	this.luwrain = luwrain;
 	this.registry = registry;
 	this.actions = actions;
-	this.stringConstructor = stringConstructor;
+	this.strings = strings;
     }
 
-    public void open(RegistryDir dir)
+    public void open(Directory dir)
     {
 	if (dir == null)
 	    return;
@@ -169,11 +169,11 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 	    }
 	}
 	if (hasProblems)
-	    luwrain.message(stringConstructor.savingFailed()); else
-	    luwrain.message(stringConstructor.savingOk());
+	    luwrain.message(strings.savingFailed()); else
+	    luwrain.message(strings.savingOk());
     }
 
-    public RegistryDir getOpenedDir()
+    public Directory getOpenedDir()
     {
 	return dir;
     }
@@ -192,7 +192,7 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 
     @Override public String getAreaName()
     {
-	return stringConstructor.valuesAreaName();
+	return strings.valuesAreaName();
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -257,16 +257,16 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 	types[0] = "integer";
 	types[1] = "string";
 	types[2] = "boolean";
-	SimpleEditPopup linePopup = new SimpleEditPopup(luwrain, stringConstructor.newParameterTitle(), stringConstructor.newParameterName(), "");
+	SimpleEditPopup linePopup = new SimpleEditPopup(luwrain, strings.newParameterTitle(), strings.newParameterName(), "");
 	luwrain.popup(linePopup);
 	if (linePopup.closing.cancelled())//FIXME:Validator if not empty
 	    return true;
 	if (linePopup.text().trim().isEmpty())
 	{
-	    luwrain.message(stringConstructor.parameterNameMayNotBeEmpty());
+	    luwrain.message(strings.parameterNameMayNotBeEmpty());
 	    return true;
 	}
-	EditListPopup listPopup = new EditListPopup(luwrain, new FixedListPopupModel(types), stringConstructor.newParameterTitle(), stringConstructor.newParameterType(), "string");//FIXME:Validator if not from the list;;
+	EditListPopup listPopup = new EditListPopup(luwrain, new FixedListPopupModel(types), strings.newParameterTitle(), strings.newParameterType(), "string");//FIXME:Validator if not from the list;;
 	luwrain.popup(listPopup);
 	if (listPopup.closing.cancelled())
 	    return true;
@@ -278,11 +278,11 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 		if (listPopup.text().trim().equals("boolean"))
 		    type = Registry.BOOLEAN; else
 		{
-		    luwrain.message(stringConstructor.invalidParameterType(listPopup.text()));
+		    luwrain.message(strings.invalidParameterType(listPopup.text()));
 		    return true;
 		}
 	if (!insertValue(linePopup.text(), type))
-	    luwrain.message(stringConstructor.parameterInsertionFailed());
+	    luwrain.message(strings.parameterInsertionFailed());
 	return true;
     }
 
@@ -357,13 +357,13 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 	switch(item.type)
 	{
 	case Registry.STRING:
-	    luwrain.say(stringConstructor.introduceStringValue(item.name, item.value));
+	    luwrain.say(strings.introduceStringValue(item.name, item.value));
 	    break;
 	case Registry.INTEGER:
-	    luwrain.say(stringConstructor.introduceIntegerValue(item.name, item.value));
+	    luwrain.say(strings.introduceIntegerValue(item.name, item.value));
 	    break;
 	case Registry.BOOLEAN:
-	    luwrain.say(stringConstructor.introduceBooleanValue(item.name, item.boolValue));
+	    luwrain.say(strings.introduceBooleanValue(item.name, item.boolValue));
 	    break;
 	}
     }
@@ -389,7 +389,7 @@ class ValuesArea extends NavigateArea implements EmbeddedEditLines
 	if (item.type == Registry.STRING || item.type == Registry.INTEGER)
 	    res += item.value;
 	if (item.type == Registry.BOOLEAN)
-	    res += item.boolValue?stringConstructor.yes():stringConstructor.no();
+	    res += item.boolValue?strings.yes():strings.no();
 	return res;
     }
 

@@ -20,24 +20,30 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 
-class RegistryDirsModel implements TreeModel
+class DirectoriesTreeModel implements TreeModel
 {
     private Luwrain luwrain;
-    private RegistryActions actions;
-    private StringConstructor stringConstructor;
+    private Actions actions;
+    private Strings strings;
     private Registry registry;
-    private RegistryDir root;
-    private AbstractMap<RegistryDir, String[]> dirsCache = new HashMap<RegistryDir, String[]>();
+    private Directory root;
+    private AbstractMap<Directory, String[]> dirsCache = new HashMap<Directory, String[]>();
 
-    public RegistryDirsModel(Luwrain luwrain,
-			     RegistryActions actions,
-			     StringConstructor stringConstructor)
+    public DirectoriesTreeModel(Luwrain luwrain,
+			     Actions actions,
+			     Strings strings)
     {
 	this.luwrain = luwrain;
 	this.actions = actions;
-	this.stringConstructor = stringConstructor; 
+	this.strings = strings;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (actions == null)
+	    throw new NullPointerException("actions may not be null");
+	if (strings == null)
+	    throw new NullPointerException("strings may not be null");
 	this.registry = luwrain.getRegistry();
-	this.root = new RegistryDir(stringConstructor.rootItemTitle());
+	this.root = new Directory(strings.rootItemTitle());
     }
 
     public Object getRoot()
@@ -49,7 +55,7 @@ class RegistryDirsModel implements TreeModel
     {
 	if (node == null)
 	    return true;
-	RegistryDir dir = (RegistryDir)node;
+	Directory dir = (Directory)node;
 	String[] children = registry.getDirectories(dir.getPath());
 	return children == null || children .length < 1;
     }
@@ -58,7 +64,7 @@ class RegistryDirsModel implements TreeModel
     {
 	if (node == null)
 	    return;
-	RegistryDir dir = (RegistryDir)node;
+	Directory dir = (Directory)node;
 	String[] children = registry.getDirectories(dir.getPath());
 	if (children != null)
 	    dirsCache.put(dir, children);
@@ -68,7 +74,7 @@ class RegistryDirsModel implements TreeModel
     {
 	if (parent == null)
 	    return 0;
-	String[] children = dirsCache.get((RegistryDir)parent);
+	String[] children = dirsCache.get((Directory)parent);
 	return children != null?children.length:0;
     }
 
@@ -76,15 +82,15 @@ class RegistryDirsModel implements TreeModel
     {
 	if (parent == null)
 	    return 0;
-	String[] children = dirsCache.get((RegistryDir)parent);
+	String[] children = dirsCache.get((Directory)parent);
 	if (children != null && index < children.length)
-	    return new RegistryDir((RegistryDir)parent, children[index]);
+	    return new Directory((Directory)parent, children[index]);
 	return null;
     }
 
     public void endChildEnumeration(Object node)
     {
-	if (dirsCache.containsKey((RegistryDir)node))
-	    dirsCache.remove((RegistryDir)node);
+	if (dirsCache.containsKey((Directory)node))
+	    dirsCache.remove((Directory)node);
     }
 }

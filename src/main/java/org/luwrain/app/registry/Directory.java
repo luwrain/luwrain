@@ -16,22 +16,22 @@
 
 package org.luwrain.app.registry;
 
-class RegistryDir
+class Directory
 {
     public String name = "";
     public String title = "";
-    public RegistryDir parent;
+    public Directory parent;
     //    public boolean deleted = false;
 
     //Used only for root directory;
-    public RegistryDir(String title)
+    public Directory(String title)
     {
 	this.name = "";
 	this.title = title;
 	this.parent = null;
     }
 
-    public RegistryDir(RegistryDir parent, String name)
+    public Directory(Directory parent, String name)
     {
 	this.name = name;
 	this.parent = parent;
@@ -61,7 +61,7 @@ class RegistryDir
 	if (o == null)
 	    return false;
 	try {
-	    RegistryDir dir = (RegistryDir)o;
+	    Directory dir = (Directory)o;
 	    return getPath().equals(dir.getPath());
 	}
 	catch(ClassCastException e)

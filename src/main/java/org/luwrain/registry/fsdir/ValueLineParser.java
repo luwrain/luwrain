@@ -44,6 +44,7 @@ class ValueLineParser
 	    key = matcher.group(1);
 	    value = matcher.group(3);
 	    key = key.substring(1, key.length() - 1).replaceAll("\"\"", "\"");
+	    value = value./*substring(1, key.length() - 1).*/replaceAll("\"\"", "\"");
 	    return true;
 	}
 	return false;

@@ -16,12 +16,12 @@
 
 package org.luwrain.app.registry;
 
-interface  RegistryActions
+interface  Actions
 {
     void gotoDirs();
     void gotoValues();
     void refresh();
-    void openDir(RegistryDir dir);
-    void insertDir(RegistryDir parent);
+    void openDir(Directory dir);
+    void insertDir(Directory parent);
     void close();
 }

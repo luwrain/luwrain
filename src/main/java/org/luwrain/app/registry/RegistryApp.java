@@ -26,11 +26,11 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 
-public class RegistryApp implements Application, RegistryActions
+public class RegistryApp implements Application, Actions
 {
     private Luwrain luwrain;
-    private StringConstructor stringConstructor;
-    private RegistryDirsModel dirsModel;
+    private Strings strings;
+    private DirectoriesTreeModel dirsModel;
     private TreeArea dirsArea;
     private ValuesArea valuesArea;
     private Registry registry;
@@ -40,10 +40,10 @@ public class RegistryApp implements Application, RegistryActions
 	Object str = luwrain.i18n().getStrings("luwrain.registry");
 	if (str == null)
 	    return false;
-	stringConstructor = (StringConstructor)str;
+	strings = (Strings)str;
 	this.luwrain = luwrain;
 	this.registry = luwrain.getRegistry();
-	dirsModel = new RegistryDirsModel(luwrain, this, stringConstructor);
+	dirsModel = new DirectoriesTreeModel(luwrain, this, strings);
 	createAreas();
 	return true;
     }
@@ -75,7 +75,7 @@ public class RegistryApp implements Application, RegistryActions
 	valuesArea.refresh();
     }
 
-    public void openDir(RegistryDir dir)
+    public void openDir(Directory dir)
     {
 	if (dir == null || dir.equals(valuesArea.getOpenedDir()))
 	    return;
@@ -93,25 +93,25 @@ public class RegistryApp implements Application, RegistryActions
 	    luwrain.setActiveArea(valuesArea);
     }
 
-    public void insertDir(RegistryDir parent)
+    public void insertDir(Directory parent)
     {
-	SimpleEditPopup popup = new SimpleEditPopup(luwrain, stringConstructor.newDirectoryTitle(), stringConstructor.newDirectoryPrefix(parent.toString()), "");//FIXME:Validator if not empty;
+	SimpleEditPopup popup = new SimpleEditPopup(luwrain, strings.newDirectoryTitle(), strings.newDirectoryPrefix(parent.toString()), "");//FIXME:Validator if not empty;
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return;
 	if (popup.text().trim().isEmpty())
 	{
-	    luwrain.message(stringConstructor.directoryNameMayNotBeEmpty());
+	    luwrain.message(strings.directoryNameMayNotBeEmpty());
 	    return;
 	}
 	if (popup.text().indexOf("/") >= 0)
 	{
-	    luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.text()));
+	    luwrain.message(strings.directoryInsertionRejected(parent.toString(), popup.text()));
 	    return;
 	}
 	if (!registry.addDirectory(parent.getPath() + "/" + popup.text()))
 	{
-	    luwrain.message(stringConstructor.directoryInsertionRejected(parent.toString(), popup.text()));
+	    luwrain.message(strings.directoryInsertionRejected(parent.toString(), popup.text()));
 	    return;
 	}
 	    dirsArea.refresh();
@@ -125,11 +125,11 @@ public class RegistryApp implements Application, RegistryActions
 
     private void createAreas()
     {
-	final RegistryActions a = this;
+	final Actions a = this;
 	dirsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
 				dirsModel,
-				stringConstructor.dirsAreaName()) {
-		private RegistryActions actions = a;
+				strings.dirsAreaName()) {
+		private Actions actions = a;
 		public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (super.onKeyboardEvent(event))
@@ -140,13 +140,13 @@ public class RegistryApp implements Application, RegistryActions
 			Object obj = getObjectUnderHotPoint();
 			if (obj == null)
 			    return false;
-			RegistryDir dir;
+			Directory dir;
 			try {
-			    dir = (RegistryDir)obj;
+			    dir = (Directory)obj;
 			}
 			catch (ClassCastException e)
 			{
-			    Log.warning("registry-app", "tree returned the object of type different than expected (RegistryDir):" + e.getMessage());
+			    Log.warning("registry-app", "tree returned the object of type different than expected (Directory):" + e.getMessage());
 			    return true;
 			}
 			actions.insertDir(dir);
@@ -178,19 +178,19 @@ public class RegistryApp implements Application, RegistryActions
 		{
 		    if (obj == null)
 			return;
-		    RegistryDir dir;
+		    Directory dir;
 		    try {
-			dir = (RegistryDir)obj;
+			dir = (Directory)obj;
 		    }
 		    catch(ClassCastException e)
 		    {
-			Log.warning("registry-app", "tree returned the object of type different than expected (RegistryDir):" + e.getMessage());
+			Log.warning("registry-app", "tree returned the object of type different than expected (Directory):" + e.getMessage());
 			e.printStackTrace();
 			return;
 		    }
 		    actions.openDir(dir);
 		}
 	    };
-	valuesArea = new ValuesArea(luwrain, registry, this, stringConstructor);
+	valuesArea = new ValuesArea(luwrain, registry, this, strings);
     }
 }
