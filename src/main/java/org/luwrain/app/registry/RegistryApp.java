@@ -28,55 +28,51 @@ import org.luwrain.popups.*;
 
 public class RegistryApp implements Application, Actions
 {
+    static public final String STRINGS_NAME = "luwrain.registry";
+
     private Luwrain luwrain;
     private Strings strings;
-    private DirectoriesTreeModel dirsModel;
+    private Base base = new Base();
     private TreeArea dirsArea;
-    private ValuesArea valuesArea;
-    private Registry registry;
+    private ListArea valuesArea;
 
     @Override public boolean onLaunch(Luwrain luwrain)
     {
-	Object str = luwrain.i18n().getStrings("luwrain.registry");
-	if (str == null)
+	final Object o = luwrain.i18n().getStrings(STRINGS_NAME);
+	if (o == null || !(o instanceof Strings))
 	    return false;
-	strings = (Strings)str;
+	strings = (Strings)o;
 	this.luwrain = luwrain;
-	this.registry = luwrain.getRegistry();
-	dirsModel = new DirectoriesTreeModel(luwrain, this, strings);
+	if (!base.init(luwrain, strings))
+	    return false;
 	createAreas();
 	return true;
     }
 
     @Override public String getAppName()
     {
-	return "registry";
+	return strings.appName();
     }
 
-    @Override public AreaLayout getAreasToShow()
-    {
-	//	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);
-	return new AreaLayout(AreaLayout.LEFT_RIGHT, dirsArea, valuesArea);
-    }
-
-    public void gotoDirs()
+    @Override public void gotoDirs()
     {
 	luwrain.setActiveArea(dirsArea);
     }
 
-    public void gotoValues()
+    @Override public void gotoValues()
     {
 	luwrain.setActiveArea(valuesArea);
     }
 
-    public void refresh()
+    @Override public void refresh()
     {
 	dirsArea.refresh();//FIXME:Comparator;
 	valuesArea.refresh();
     }
 
-    public void openDir(Directory dir)
+    @Override public void openDir(Directory dir)
     {
+	/*
 	if (dir == null || dir.equals(valuesArea.getOpenedDir()))
 	    return;
 	if (valuesArea.hasModified())
@@ -91,106 +87,130 @@ public class RegistryApp implements Application, Actions
 	}
 	    valuesArea.open(dir);
 	    luwrain.setActiveArea(valuesArea);
+	*/
     }
 
-    public void insertDir(Directory parent)
+    @Override public boolean insertDir()
     {
-	SimpleEditPopup popup = new SimpleEditPopup(luwrain, strings.newDirectoryTitle(), strings.newDirectoryPrefix(parent.toString()), "");//FIXME:Validator if not empty;
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return;
-	if (popup.text().trim().isEmpty())
-	{
-	    luwrain.message(strings.directoryNameMayNotBeEmpty());
-	    return;
-	}
-	if (popup.text().indexOf("/") >= 0)
-	{
-	    luwrain.message(strings.directoryInsertionRejected(parent.toString(), popup.text()));
-	    return;
-	}
-	if (!registry.addDirectory(parent.getPath() + "/" + popup.text()))
-	{
-	    luwrain.message(strings.directoryInsertionRejected(parent.toString(), popup.text()));
-	    return;
-	}
-	    dirsArea.refresh();
-
-    }
-
-    public void close()
-    {
-	luwrain.closeApp();
+			final Object obj = dirsArea.getObjectUnderHotPoint();
+			if (obj == null || !(obj instanceof Directory))
+			    return false;
+			if (!base.insertDir((Directory)obj))
+			    return true;
+			dirsArea.refresh();
+			return true;
     }
 
     private void createAreas()
     {
 	final Actions a = this;
+
+	final ListClickHandler valuesHandler = new ListClickHandler(){
+		private Actions actions = a;
+		@Override public boolean onListClick(ListArea area,
+						     int index,
+						     Object item)
+		{
+		    //		    if (index < 0 || item == null || !(item instanceof NewsGroupWrapper))
+			return false;
+		}
+	    };
+
 	dirsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
-				dirsModel,
+				base.getDirsModel(),
 				strings.dirsAreaName()) {
 		private Actions actions = a;
-		public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
-		    if (super.onKeyboardEvent(event))
-			return true;
-		    if (event.isCommand() && !event.isModified() &&
-			event.getCommand() == KeyboardEvent.INSERT)
+		    if (event == null)
+			throw new NullPointerException("event may not be null");
+		    if (event.isCommand() && !event.isModified())
+		    switch(event.getCommand())
 		    {
-			Object obj = getObjectUnderHotPoint();
-			if (obj == null)
-			    return false;
-			Directory dir;
-			try {
-			    dir = (Directory)obj;
-			}
-			catch (ClassCastException e)
-			{
-			    Log.warning("registry-app", "tree returned the object of type different than expected (Directory):" + e.getMessage());
-			    return true;
-			}
-			actions.insertDir(dir);
-			return true;
-		    }
-		    //Tab;
-		    if (event.isCommand() && !event.isModified() &&
-			event.getCommand() == KeyboardEvent.TAB)
-		    {
+		    case KeyboardEvent.INSERT:
+return actions.insertDir();
+		    case KeyboardEvent.TAB:
 			actions.gotoValues();
 			return true;
+		    default:
+			return super.onKeyboardEvent(event);
 		    }
-		    return false;
+			return super.onKeyboardEvent(event);
 		}
-		public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
+		    if (event == null)
+			throw new NullPointerException("event may not be null");
 		    switch (event.getCode())
 		    {
 		    case EnvironmentEvent.CLOSE:
-			actions.close();
+			actions.closeApp();
 			return true;
-		    case EnvironmentEvent.REFRESH:
+		    case EnvironmentEvent.REFRESH://To remove;
 			actions.refresh();
 			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
 		    }
-		    return false;
 		}
-		public void onClick(Object obj)
+		@Override public void onClick(Object obj)
 		{
-		    if (obj == null)
+		    if (obj == null || !(obj instanceof Directory))
 			return;
-		    Directory dir;
-		    try {
-			dir = (Directory)obj;
-		    }
-		    catch(ClassCastException e)
-		    {
-			Log.warning("registry-app", "tree returned the object of type different than expected (Directory):" + e.getMessage());
-			e.printStackTrace();
-			return;
-		    }
-		    actions.openDir(dir);
+		    actions.openDir((Directory)obj);
 		}
 	    };
-	valuesArea = new ValuesArea(luwrain, registry, this, strings);
+
+	final ListParams params = new ListParams();
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.model = base.getValuesModel();
+	params.appearance = base.getValuesAppearance();
+	params.name = strings.valuesAreaName();
+	params.clickHandler = valuesHandler;
+
+	valuesArea = new ListArea(params)
+	    {
+		private Actions actions = a;
+		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		{
+		    if (event == null)
+			throw new NullPointerException("event may not be null");
+		    if (event.isCommand() && !event.isModified())
+			switch(event.getCommand())
+		    {
+		    case KeyboardEvent.TAB:
+			actions.gotoDirs();
+			return true;
+		    default:
+			return super.onKeyboardEvent(event);
+		    }
+			return super.onKeyboardEvent(event);
+		}
+		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		{
+		    if (event == null)
+			throw new NullPointerException("event may not be null");
+		    switch(event.getCode())
+		    {
+		    case EnvironmentEvent.CLOSE:
+			actions.closeApp();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
+	    };
+
+    }
+
+    @Override public AreaLayout getAreasToShow()
+    {
+	//	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);
+	return new AreaLayout(AreaLayout.LEFT_RIGHT, dirsArea, valuesArea);
+    }
+
+    @Override public void closeApp()
+    {
+	luwrain.closeApp();
     }
 }

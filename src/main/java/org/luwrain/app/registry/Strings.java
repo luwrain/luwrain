@@ -18,6 +18,7 @@ package org.luwrain.app.registry;
 
 public interface Strings
 {
+    String appName();
     String dirsAreaName();
     String valuesAreaName();
     String rootItemTitle();

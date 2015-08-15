@@ -22,6 +22,6 @@ interface  Actions
     void gotoValues();
     void refresh();
     void openDir(Directory dir);
-    void insertDir(Directory parent);
-    void close();
+    boolean insertDir();
+    void closeApp();
 }

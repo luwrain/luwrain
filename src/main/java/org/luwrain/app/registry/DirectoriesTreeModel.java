@@ -23,23 +23,17 @@ import org.luwrain.controls.*;
 class DirectoriesTreeModel implements TreeModel
 {
     private Luwrain luwrain;
-    private Actions actions;
     private Strings strings;
     private Registry registry;
     private Directory root;
     private AbstractMap<Directory, String[]> dirsCache = new HashMap<Directory, String[]>();
 
-    public DirectoriesTreeModel(Luwrain luwrain,
-			     Actions actions,
-			     Strings strings)
+    public DirectoriesTreeModel(Luwrain luwrain, Strings strings)
     {
 	this.luwrain = luwrain;
-	this.actions = actions;
 	this.strings = strings;
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
-	if (actions == null)
-	    throw new NullPointerException("actions may not be null");
 	if (strings == null)
 	    throw new NullPointerException("strings may not be null");
 	this.registry = luwrain.getRegistry();

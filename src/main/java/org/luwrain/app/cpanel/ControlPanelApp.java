@@ -23,7 +23,7 @@ import org.luwrain.cpanel.*;
 
 public class ControlPanelApp implements Application, Actions
 {
-    public static final String STRINGS_NAME = "luwrain.strings";
+    public static final String STRINGS_NAME = "luwrain.cpanel";
 
     private Luwrain luwrain;
     private Strings strings;
