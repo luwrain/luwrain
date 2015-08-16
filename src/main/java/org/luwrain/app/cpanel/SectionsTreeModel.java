@@ -22,46 +22,112 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.hardware.*;
+import org.luwrain.app.cpanel.sects.*;
 
 class SectionsTreeModel implements TreeModel
 {
+    private Luwrain luwrain;
+    private EnvironmentImpl environment;
+    private Section[] extensionsSections;
+
     private BasicSection appsSection;
     private BasicSection keyboardSection;
     private BasicSection soundsSection;
     private BasicSection speechSection;
+    private BasicSection networkSection;
     private BasicSection hardwareSection;
     private BasicSection storageDevicesSection;
     private BasicSection uiSection;
     private BasicSection extensionsSection;
+    private BasicSection workersSection ;
+    private PersonalInfo personalInfoSection;
 
     private Device[] devices;
     private StorageDevice[] storageDevices;
 
     private BasicSection root;
 
-    public SectionsTreeModel(Luwrain luwrain)
+    public SectionsTreeModel(Luwrain luwrain,
+			     EnvironmentImpl environment,
+			     Section[] extensionsSections)
     {
+	this.luwrain = luwrain;
+	this.environment = environment;
+	this.extensionsSections = extensionsSections;
+	if (luwrain == null)
+	    throw new NullPointerException("luwrain may not be null");
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
+	if (extensionsSections == null)
+	    throw new NullPointerException("extensionsSections may not be null");
+	final org.luwrain.hardware.Hardware hardware = luwrain.getHardware();
+	if (hardware != null)
+	{
+	    devices = hardware.getDevices();
+	    storageDevices = hardware.getStorageDevices();
+	}
 
-	devices = luwrain.getHardware().getDevices();
-	storageDevices = luwrain.getHardware().getStorageDevices();
+	if (devices != null)
+	{
+	    hardwareSection = new BasicSection("Оборудование");
+	    for(int i = 0;i < devices.length;++i)
+		hardwareSection.addSubsection(new BasicSection(devices[i].vendor + " " + devices[i].model));
+	} else
+	    hardwareSection = null;
 
-	BasicSection[] devicesSections = new BasicSection[devices.length];
-	for(int i = 0;i < devices.length;++i)
-	    devicesSections[i] = new BasicSection(devices[i].vendor + " " + devices[i].model, new BasicSection[0]);
+	if (storageDevices != null)
+	{
+	    storageDevicesSection = new BasicSection("Устройства хранения");
+	    for(int i = 0;i < storageDevices.length;++i)
+		storageDevicesSection.addSubsection(new BasicSection(storageDevices[i].model));
+	} else
+	    storageDevicesSection = null;
 
-	BasicSection[] stDevicesSections = new BasicSection[storageDevices.length];
-	for(int i = 0;i < storageDevices.length;++i)
-	    stDevicesSections[i] = new BasicSection(storageDevices[i].model, new BasicSection[0]);
+	appsSection = new BasicSection("Приложения");
+	speechSection = new BasicSection("Речь");
+	soundsSection = new BasicSection("Звуки");
+	keyboardSection = new BasicSection("Клавиатура");
+	uiSection = new BasicSection("Интерфейс");
+	extensionsSection = new BasicSection("Расширения");
+	networkSection = new BasicSection("Сеть");
+	workersSection = new BasicSection("Фоновые задачи");
+	personalInfoSection = new PersonalInfo(environment);
 
+	for(Section s: extensionsSections)
+	{
+	    if (!s.isSectionEnabled())
+		continue;
+	    switch(s.getDesiredRoot())
+	    {
+		//	    case BasicSections.ROOT:
+	    case BasicSections.APPLICATIONS:
+		appsSection.addSubsection(s);
+		break;
+	    case BasicSections.KEYBOARD:
+		keyboardSection.addSubsection(s);
+		break;
+	    case BasicSections.SOUNDS:
+		soundsSection.addSubsection(s);
+		break;
+	    case BasicSections.SPEECH:
+		speechSection.addSubsection(s);
+		break;
+	    case BasicSections.NETWORK:
+		networkSection.addSubsection(s);
+		break;
+	    case BasicSections.HARDWARE:
+		hardwareSection.addSubsection(s);
+		break;
+	    case BasicSections.UI:
+		uiSection.addSubsection(s);
+	    case BasicSections.EXTENSIONS:
+		extensionsSection.addSubsection(s);
+		break;
+	    case BasicSections.WORKERS:
+		workersSection.addSubsection(s);
+	    }
+	}
 
-	appsSection = new BasicSection("Приложения", new Section[0]);
-	speechSection = new BasicSection("Речь", new Section[0]);
-	soundsSection = new BasicSection("Звуки", new Section[0]);
-	keyboardSection = new BasicSection("Клавиатура", new Section[0]);
-	hardwareSection = new BasicSection("Оборудование", devicesSections);
-	storageDevicesSection = new BasicSection("Устройства хранения", stDevicesSections);
-	uiSection = new BasicSection("Интерфейс", new Section[0]);
-	extensionsSection = new BasicSection("Расширения", new Section[0]);
 	root = constructTree();
     }
 
@@ -75,7 +141,7 @@ class SectionsTreeModel implements TreeModel
 	if (node == null || !(node instanceof Section))
 	    return true;
 	final Section sect = (Section)node;
-	final Section[] subsections = sect.getControlPanelSubsections();
+	final Section[] subsections = sect.getChildSections();
 	return subsections == null || subsections.length < 1;
     }
 
@@ -88,7 +154,7 @@ class SectionsTreeModel implements TreeModel
 	if (node == null || !(node instanceof Section))
 	    return 0;
 	final Section sect = (Section)node;
-	final Section[] subsections = sect.getControlPanelSubsections();
+	final Section[] subsections = sect.getChildSections();
 	return subsections != null?subsections.length:0;
     }
 
@@ -97,7 +163,7 @@ class SectionsTreeModel implements TreeModel
 	if (node == null || !(node instanceof Section))
 	    return 0;
 	final Section sect = (Section)node;
-	final Section[] subsections = sect.getControlPanelSubsections();
+	final Section[] subsections = sect.getChildSections();
 	if (subsections == null)
 	    return null;
 	return index < subsections.length?subsections[index]:null;
@@ -109,15 +175,21 @@ class SectionsTreeModel implements TreeModel
 
     private BasicSection constructTree()
     {
-	Vector<Section> sections = new Vector<Section>();
-	sections.add(appsSection);
-	sections.add(uiSection);
-	sections.add(keyboardSection);
-	sections.add(speechSection);
-	sections.add(soundsSection);
-	sections.add(extensionsSection);
-	sections.add(hardwareSection);
-	sections.add(storageDevicesSection);
-	return new BasicSection("Панель управления", sections.toArray(new Section[sections.size()]));
+	final BasicSection res = new BasicSection("Панель управления");
+
+	res.addSubsection(appsSection);
+	res.addSubsection(personalInfoSection);
+	res.addSubsection(uiSection);
+	res.addSubsection(keyboardSection);
+	res.addSubsection(speechSection);
+	res.addSubsection(soundsSection);
+	res.addSubsection(networkSection);
+	res.addSubsection(extensionsSection);
+	if (hardwareSection != null)
+	res.addSubsection(hardwareSection);
+	if (storageDevicesSection != null)
+	res.addSubsection(storageDevicesSection);
+	res.addSubsection(workersSection);
+	return res;
     }
 }

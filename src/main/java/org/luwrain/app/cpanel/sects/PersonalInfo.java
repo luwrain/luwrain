@@ -14,50 +14,42 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.cpanel;
-
-import java.util.*;
+package org.luwrain.app.cpanel.sects;
 
 import org.luwrain.core.*;
+import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class BasicSection implements Section
+public class PersonalInfo extends FormArea  implements Section
 {
-    private String title;
-    private LinkedList<Section> subsections = new LinkedList<Section>();
+    private Environment environment;
 
-    public BasicSection(String title)
+    public PersonalInfo(Environment environment)
     {
-	this.title = title;
-	if (title == null)
-	    throw new NullPointerException("title may not be null");
-    }
-
-    public void addSubsection(Section section)
-    {
-	if (section == null)
-	    throw new NullPointerException("section may not be null");
-	subsections.add(section);
+	super(environment, "Персональная информация");
+	this.environment = environment;
+	if (environment == null)
+	    throw new NullPointerException("environment may not be null");
     }
 
     @Override public int getDesiredRoot()
     {
-	return BasicSections.ROOT;
+	return BasicSections.NONE;
     }
 
     @Override public Section[] getChildSections()
     {
-	return subsections.toArray(new Section[subsections.size()]);
+	return new Section[0];
     }
 
     @Override public Area getSectionArea(Environment environment)
     {
-	return null;
+	return this;
     }
 
     @Override public String getSectionName()
     {
-	return "Section";
+	return "Персональная информация";
     }
 
     @Override public boolean canCloseSection(Environment environment)
@@ -75,11 +67,9 @@ class BasicSection implements Section
 	return false;
     }
 
-
-
     @Override public String toString()
     {
-	return title;
+	return "Персональная информация";
     }
 
     @Override public boolean isSectionEnabled()

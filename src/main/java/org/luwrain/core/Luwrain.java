@@ -39,7 +39,7 @@ import org.luwrain.hardware.*;
  * identification function and applications should try to keep the reference
  * to this class in secret.
  */
-public final class Luwrain implements CommandEnvironment,EventConsumer
+public final class Luwrain implements EventConsumer, CommandEnvironment
 {
     public static final int PITCH_HIGH = org.luwrain.speech.BackEnd.HIGH;
     public static final int PITCH_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
@@ -84,12 +84,12 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	return environment.getAreaVisibleHeight(area);
     }
 
-    @Override public String[] getClipboard()
+    public String[] getClipboard()
     {
 	return environment.getClipboard();
     }
 
-    @Override public Registry getRegistry()
+    public Registry getRegistry()
     {
 	return environment.registry();
     }
@@ -99,12 +99,12 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	return environment.getSharedObject(id);
     }
 
-    @Override public void hint(String text)
+    public void hint(String text)
     {
 	say(text, PITCH_HINT);
     }
 
-    @Override public void hint(String text, int code)
+    public void hint(String text, int code)
     {
 	final int soundId = Hints.hintToSoundMap(code);
 	if (soundId >= 0)
@@ -113,42 +113,41 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	    hint(text);
     }
 
-    @Override public boolean hint(int code)
+    public boolean hint(int code)
     {
 	final int staticStrNum = Hints.hintToStaticStrMap(code);
 	if (staticStrNum < 0)
 	    return false;
-
 	hint(i18n().staticStr(staticStrNum), code);
 	return true;
     }
 
-    @Override public I18n i18n()
+    public I18n i18n()
     {
 	return environment.i18n();
     }
 
-    @Override public void launchApp(String shortcutName)
+    public void launchApp(String shortcutName)
     {
 	environment.launchApp(shortcutName, new String[0]);
     }
 
-    @Override public void launchApp(String shortcutName, String[] args)
+    public void launchApp(String shortcutName, String[] args)
     {
 	environment.launchApp(shortcutName, args != null?args:new String[0]);
     }
 
-    @Override public LaunchContext launchContext()
+    public LaunchContext launchContext()
     {
 	return environment.launchContext();
     }
 
-    @Override public void message(String text)
+    public void message(String text)
     {
 	environment.message(text, MESSAGE_REGULAR);
     }
 
-    @Override public void message(String text, int semantic)
+    public void message(String text, int semantic)
     {
 	environment.message(text, semantic);
     }
@@ -196,14 +195,19 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	environment.onAreaNewName(area);
     }
 
-    @Override public void openFile(String fileName)
+    public void onNewAreaLayout()
+    {
+	environment.onNewAreaLayout(this);
+    }
+
+    public void openFile(String fileName)
     {
 	String[] s = new String[1];
 	s[0] = fileName;
 	environment.openFiles(s);
     }
 
-    @Override public void openFiles(String[] fileNames)
+    public void openFiles(String[] fileNames)
     {
 	environment.openFiles(fileNames);
     }
@@ -213,7 +217,7 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	return environment.os();
     }
 
-    @Override public void playSound(int code)
+    public void playSound(int code)
     {
 	environment.playSound(code);
     }
@@ -223,26 +227,26 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	environment.popup(popup);
     }
 
-    @Override public boolean runCommand(String command)
+    public boolean runCommand(String command)
     {
 	return environment.runCommand(command);
     }
 
-    @Override public void say(String text)
+    public void say(String text)
     {
 	silence();
 	if (text != null)
 	    environment.speech().say(preprocess(text));
     }
 
-    @Override public void say(String text, int pitch)
+    public void say(String text, int pitch)
     {
 	silence();
 	if (text != null)
 	    environment.speech().say(preprocess(text), pitch);
     }
 
-    @Override public void say(String text,
+    public void say(String text,
 			      int pitch,
 			      int rate)
     {
@@ -251,7 +255,7 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	    environment.speech().say(preprocess(text), pitch, rate);
     }
 
-    @Override public void sayLetter(char letter)
+    public void sayLetter(char letter)
     {
 	switch(letter)
 	{
@@ -271,7 +275,7 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	    hint(value); 
     }
 
-    @Override public void sayLetter(char letter, int pitch)
+    public void sayLetter(char letter, int pitch)
     {
 	switch(letter)
 	{
@@ -291,7 +295,7 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	    hint(value); 
     }
 
-    @Override public void sayLetter(char letter,
+    public void sayLetter(char letter,
 				    int pitch,
 				    int rate)
     {
@@ -313,7 +317,7 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	    hint(value); 
     }
 
-    @Override public void silence()
+    public void silence()
     {
 	environment.speech().silence();
     }
@@ -334,7 +338,7 @@ public final class Luwrain implements CommandEnvironment,EventConsumer
 	environment.setActiveArea(this, area);
     }
 
-    @Override public void setClipboard(String[] value)
+    public void setClipboard(String[] value)
     {
 	environment.setClipboard(value);
     }

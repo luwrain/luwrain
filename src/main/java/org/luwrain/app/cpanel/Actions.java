@@ -16,8 +16,11 @@
 
 package org.luwrain.app.cpanel;
 
+import org.luwrain.cpanel.Section;
+
 interface Actions
 {
+    void openSection(Section section);
     void closeApp();
     void gotoOptions();
     void gotoSections();

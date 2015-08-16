@@ -18,14 +18,8 @@ package org.luwrain.cpanel;
 
 import org.luwrain.core.*;
 
-public interface Section
+public interface Environment extends org.luwrain.controls.ControlEnvironment
 {
-    int getDesiredRoot();
-    Section[] getChildSections();
-    String getSectionName();
-    Area getSectionArea(Environment environment);
-    boolean canCloseSection(Environment environment);
-    boolean onTreeInsert(Environment environment);
-    boolean onTreeDelete(Environment environment);
-    boolean isSectionEnabled();
+    void popup(Popup popup);
+    void refreshSectionsTree();
 }

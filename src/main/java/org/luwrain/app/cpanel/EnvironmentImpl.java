@@ -14,18 +14,22 @@
    General Public License for more details.
 */
 
-package org.luwrain.cpanel;
+package org.luwrain.app.cpanel;
 
 import org.luwrain.core.*;
 
-public interface Section
+public class EnvironmentImpl extends org.luwrain.controls.DefaultControlEnvironment implements org.luwrain.cpanel.Environment
 {
-    int getDesiredRoot();
-    Section[] getChildSections();
-    String getSectionName();
-    Area getSectionArea(Environment environment);
-    boolean canCloseSection(Environment environment);
-    boolean onTreeInsert(Environment environment);
-    boolean onTreeDelete(Environment environment);
-    boolean isSectionEnabled();
+    public EnvironmentImpl(Luwrain luwrain)
+    {
+	super(luwrain);
+    }
+
+    @Override public void popup(Popup popup)
+    {
+    }
+
+    @Override public void refreshSectionsTree()
+    {
+    }
 }

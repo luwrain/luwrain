@@ -95,6 +95,8 @@ public class Manager
 	    loadedExt.shortcuts = getShortcuts(ext, iface);
 	    loadedExt.sharedObjects = getSharedObjects(ext, iface);
 	    loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
+	    loadedExt.controlPanelSections = getControlPanelSections(ext, iface);
+	    System.out.println(loadedExt.controlPanelSections.length + " sections");
 	    res.add(loadedExt);
 	}
 	extensions = res.toArray(new LoadedExtension[res.size()]);
@@ -177,6 +179,21 @@ public class Manager
 	    return new UniRefProc[0];
 	}
     }
+
+    private org.luwrain.cpanel.Section[] getControlPanelSections(Extension ext, Luwrain luwrain)
+    {
+	try {
+	    final org.luwrain.cpanel.Section[] res = ext.getControlPanelSections(luwrain);
+	    return res != null?res:new org.luwrain.cpanel.Section[0];
+	}
+	catch (Exception ee)
+	{
+	    Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of control panel sections:" + ee.getMessage());
+	    ee.printStackTrace();
+	    return new org.luwrain.cpanel.Section[0];
+	}
+    }
+
 
     private String[] getExtensionsList()
     {

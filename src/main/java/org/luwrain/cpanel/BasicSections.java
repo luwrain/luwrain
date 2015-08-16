@@ -18,6 +18,16 @@ package org.luwrain.cpanel;
 
 public interface BasicSections
 {
-    public final static int ROOT = 0;
-    public final static int APPEARANCE = 1;
+    static public final int NONE = -1;
+
+    static public final int ROOT = 0;
+    static public final int APPLICATIONS = 1;
+    static public final int KEYBOARD = 2;
+    static public final int SOUNDS = 3;
+    static public final int SPEECH = 4;
+    static public final int NETWORK = 5;
+    static public final int HARDWARE = 6;
+    static public final int UI = 7;
+    static public final int EXTENSIONS = 8;
+    static public final int WORKERS = 9;
 }

@@ -27,21 +27,29 @@ public class ControlPanelApp implements Application, Actions
 
     private Luwrain luwrain;
     private Strings strings;
+    private EnvironmentImpl environment;
+    private Section[] extensionsSections;
     private SectionsTreeModel sectionsModel;
     private TreeArea sectionsArea;
-    private Section currentSection;
-    private Area currentArea;
+    private Section currentSection = null;
+    private Area currentOptionsArea = null;
+
+    public ControlPanelApp(Section[] extensionsSections)
+    {
+	this.extensionsSections = extensionsSections;
+	if (extensionsSections == null)
+	    throw new NullPointerException("extensionsSections may not be null");
+    }
 
     @Override public boolean onLaunch(Luwrain luwrain)
     {
-	System.out.println("Starting cpanel");
-	Object str = luwrain.i18n().getStrings(STRINGS_NAME);
+	final Object str = luwrain.i18n().getStrings(STRINGS_NAME);
 	if (str == null || !(str instanceof Strings))
 	    return false;
-	System.out.println("Have strings");
 	this.luwrain = luwrain;
 	strings = (Strings)str;
-	sectionsModel = new SectionsTreeModel(luwrain);
+	environment = new EnvironmentImpl(luwrain);
+	sectionsModel = new SectionsTreeModel(luwrain, environment, extensionsSections);
 	createAreas();
 	return true;
     }
@@ -51,24 +59,15 @@ public class ControlPanelApp implements Application, Actions
 	return "control";
     }
 
-    @Override public AreaLayout getAreasToShow()
+    @Override public void openSection(Section section)
     {
-	//	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);
-	return new AreaLayout(sectionsArea);
-    }
-
-    @Override public void gotoSections()
-    {
-    }
-
-    @Override public void gotoOptions()
-    {
-    }
-
-    public void openGroup(Object obj)
-    {
-	if (obj != null)//FIXME:
-	luwrain.message(obj.toString());
+	final Area area = section.getSectionArea(environment);
+	if (area == null)
+	    return;
+	currentSection = section;
+	currentOptionsArea = area;
+	luwrain.onNewAreaLayout();
+	gotoOptions();
     }
 
     public void refreshGroups(Object preferableSelected)
@@ -122,9 +121,28 @@ public class ControlPanelApp implements Application, Actions
 		}
 		public void onClick(Object obj)
 		{
-		    //		    if (obj != null)
-			//			actions.openGroup(obj);
+		    if (obj != null && (obj instanceof Section ))
+			actions.openSection((Section)obj);
 		}
 	    };
+    }
+
+    @Override public AreaLayout getAreasToShow()
+    {
+	if (currentOptionsArea != null)
+	    return new AreaLayout(AreaLayout.LEFT_RIGHT, sectionsArea, currentOptionsArea);
+	return new AreaLayout(sectionsArea);
+    }
+
+    @Override public void gotoSections()
+    {
+	luwrain.setActiveArea(sectionsArea);
+    }
+
+    @Override public void gotoOptions()
+    {
+	if (currentOptionsArea == null)
+	    return;
+	luwrain.setActiveArea(currentOptionsArea);
     }
 }

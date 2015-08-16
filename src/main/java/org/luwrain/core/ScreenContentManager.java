@@ -150,11 +150,11 @@ return applications.getActiveAreaOfActiveApp();
 
     TileManager getWindows()
     {
-	TileManager windows = new TileManager();
-	Application[] visibleApps = applications.getVisibleApps();
-	windows.createHorizontally(visibleApps);
-	for(int i = 0;i < visibleApps.length;i++)
-	    windows.replace(visibleApps[i], constructWindowLayoutOfApp(visibleApps[i]));
+	TileManager windows;
+	final Application activeApp = applications.getActiveApp();
+	if (activeApp != null)
+	    windows = constructWindowLayoutOfApp(activeApp); else
+windows = new TileManager();
 	if (hasProperPopup())
 	{
 	    Window popupWindow = new Window(popups.getAppOfLastPopup(), popups.getAreaOfLastPopup(), popups.getPositionOfLastPopup());
@@ -181,7 +181,7 @@ return applications.getActiveAreaOfActiveApp();
     {
 	if (app == null)
 	    return null;
-	AreaLayout layout = app.getAreasToShow();
+	final AreaLayout layout = app.getAreasToShow();
 	TileManager tiles = new TileManager();
 	switch(layout.getType())
 	{
@@ -217,7 +217,7 @@ return applications.getActiveAreaOfActiveApp();
 	final Application app = popups.getAppOfLastPopup();
 	if (app == null)//it is an environment popup;
 	    return true;
-	return applications.isVisibleApp(app);
+	return applications.isAppActive(app);
     }
 
     private boolean inProperActivePopup()

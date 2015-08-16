@@ -74,6 +74,23 @@ public class AreaLayout
 	return area3;
     }
 
+    public Area[] getAreas()
+    {
+	switch(layoutType)
+	{
+	case SINGLE:
+	    return new Area[]{area1};
+	case LEFT_RIGHT:
+	case TOP_BOTTOM:
+	    return new Area[]{area1, area2};
+	case LEFT_TOP_BOTTOM:
+	case LEFT_RIGHT_BOTTOM:
+	    return new Area[]{area1, area2, area3};
+	default:
+	    return new Area[0];
+	}
+    }
+
     public Area getDefaultArea()
     {
 	return area1;

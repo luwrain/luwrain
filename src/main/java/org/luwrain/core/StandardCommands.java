@@ -276,16 +276,16 @@ public static Command[] createStandardCommands(Environment env)
 		}
 	    });
 
-	//control;
+	//control panel;
 	res.add(new Command() {
 		private Environment e = environment;
-		public String getName()
+		@Override public String getName()
 		{
 		    return "control-panel";
 }
-		public void onCommand(Luwrain luwrain)
+		@Override public void onCommand(Luwrain luwrain)
 		{
-		    Application app = new org.luwrain.app.cpanel.ControlPanelApp();
+		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(e.getControlPanelSections());
 		    e.launchApp(app);
 		}
 	    });

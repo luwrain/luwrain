@@ -267,7 +267,7 @@ class Environment implements EventConsumer
 	    interfaces.release(o);
 	    return;
 	}
-	apps.registerAppSingleVisible(app, activeArea);
+	apps.registerNewApp(app, activeArea);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	//	introduceActiveArea();
@@ -307,12 +307,35 @@ class Environment implements EventConsumer
 	    return;
 	}
 	*/
-	apps.switchNextInvisible();
+	apps.switchNextApp();
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
-	//	introduceActiveArea();
 	needForIntroduction = true;
 	introduceApp = true;
+    }
+
+    public void onNewAreaLayout(Luwrain instance)
+    {
+	if (instance == null)
+	    throw new NullPointerException("instance may not be null");
+	final Application app = interfaces.findApp(instance);
+	if (app == null)
+	    throw new IllegalArgumentException("Using the unknown instance object");
+	final Area activeArea = apps.getActiveAreaOfApp(app);
+	final AreaLayout newLayout = app.getAreasToShow();
+	if (newLayout == null)
+	    throw new NullPointerException("New area layout may not be null");
+	final Area[] areas = newLayout.getAreas();
+	int index = 0;
+	while (index < areas.length && areas[index] != activeArea)
+	    ++index;
+	if (index >= areas.length)
+	{
+	    apps.setActiveAreaOfApp(app, newLayout.getDefaultArea());
+	needForIntroduction = true;
+	}
+	screenContentManager.updatePopupState();//Probably needless
+	windowManager.redraw();
     }
 
     public void switchNextArea()
@@ -640,7 +663,7 @@ class Environment implements EventConsumer
 	if (app == null)
 	    throw new IllegalArgumentException("an unknown application instance is provided");
 	apps.setActiveAreaOfApp(app, area);
-	if (apps.isActiveApp(app) && !screenContentManager.isPopupAreaActive())
+	if (apps.isAppActive(app) && !screenContentManager.isPopupAreaActive())
 	    needForIntroduction = true;
 	    //	    introduceActiveArea();
 	windowManager.redraw();
@@ -956,5 +979,17 @@ class Environment implements EventConsumer
     public Hardware getHardware()
     {
 	return os.getHardware();
+    }
+
+    public org.luwrain.cpanel.Section[] getControlPanelSections()
+    {
+	final LinkedList<org.luwrain.cpanel.Section> res = new LinkedList<org.luwrain.cpanel.Section>();
+	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
+	for(LoadedExtension e: allExt)
+	    if (e.controlPanelSections != null)
+		for(org.luwrain.cpanel.Section s: e.controlPanelSections)
+		    res.add(s);
+	return res.toArray(new org.luwrain.cpanel.Section[res.size()]);
+
     }
 }
