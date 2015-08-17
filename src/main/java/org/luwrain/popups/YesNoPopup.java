@@ -152,6 +152,11 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 	return false;
     }
 
+    @Override public Action[] getAreaActions()
+    {
+	return new Action[0];
+    }
+
     @Override public String getAreaName()
     {
 	return name;

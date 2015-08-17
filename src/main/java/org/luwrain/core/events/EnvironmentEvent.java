@@ -20,18 +20,17 @@ import org.luwrain.core.*;
 
 public class EnvironmentEvent extends Event
 {
-    public static final int OK = 0;
-    public static final int CANCEL = 1;
-    public static final int CLOSE = 2;
-    public static final int SAVE = 3;
-    public static final int REFRESH = 4;
-    public static final int DESCRIBE = 5;
-    public static final int HELP = 6;
-    public static final int INTRODUCE = 7;
-    public static final int THREAD_SYNC = 8;
-    public static final int OPEN = 9;
+    static public final int OK = 0;
+    static public final int CANCEL = 1;
+    static public final int CLOSE = 2;
+    static public final int SAVE = 3;
+    static public final int REFRESH = 4;
+    static public final int INTRODUCE = 5;
+    static public final int HELP = 6;
+    static public final int THREAD_SYNC = 7;
+    static public final int OPEN = 8;
 
-    public static final int COPY_CUT_POINT = 10;
+    public static final int REGION_POINT = 10;
     public static final int COPY = 11;
     public static final int CUT = 12;
     public static final int PASTE = 13;

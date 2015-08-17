@@ -91,7 +91,7 @@ public class MultilinedEdit implements CopyCutRequest
 	boolean res = false;
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.COPY_CUT_POINT:
+	case EnvironmentEvent.REGION_POINT:
 	    return copyCutInfo.copyCutPoint(model.getHotPointX(), model.getHotPointY());
 	case EnvironmentEvent.COPY:
 	    return copyCutInfo.copy(model.getHotPointX(), model.getHotPointY());

@@ -240,7 +240,7 @@ public class TableArea  implements Area, CopyCutRequest
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
-	case EnvironmentEvent.COPY_CUT_POINT:
+	case EnvironmentEvent.REGION_POINT:
 	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
 	    if (!copyCutInfo.copy(hotPointX, hotPointY))
@@ -254,6 +254,11 @@ public class TableArea  implements Area, CopyCutRequest
     @Override public boolean onAreaQuery(AreaQuery query)
     {
 	return false;
+    }
+
+    @Override public Action[] getAreaActions()
+    {
+	return new Action[0];
     }
 
     @Override public int getLineCount()

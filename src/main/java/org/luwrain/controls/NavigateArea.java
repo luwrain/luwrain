@@ -91,7 +91,7 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	    throw new NullPointerException("event may not be null");
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.COPY_CUT_POINT:
+	case EnvironmentEvent.REGION_POINT:
 	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
 	    return copyCutInfo.copy(hotPointX, hotPointY);
@@ -103,6 +103,11 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
     @Override public boolean onAreaQuery(AreaQuery query)
     {
 	return false;
+    }
+
+    @Override public Action[] getAreaActions()
+    {
+	return new Action[0];
     }
 
     private boolean onHome(KeyboardEvent event)

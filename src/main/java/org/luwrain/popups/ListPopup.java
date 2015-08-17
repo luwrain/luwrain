@@ -170,7 +170,7 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 	    return true;
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.COPY_CUT_POINT:
+	case EnvironmentEvent.REGION_POINT:
 	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.COPY:
 	    return copyCutInfo.copy(hotPointX, hotPointY);
@@ -185,6 +185,11 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
     @Override public boolean onAreaQuery(AreaQuery query)
     {
 	return false;
+    }
+
+    @Override public Action[] getAreaActions()
+    {
+	return new Action[0];
     }
 
     @Override public String getAreaName()

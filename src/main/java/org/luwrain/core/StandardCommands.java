@@ -155,7 +155,7 @@ public static Command[] createStandardCommands(Environment env)
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.COPY_CUT_POINT));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REGION_POINT));
 		}
 	    });
 
@@ -199,6 +199,7 @@ public static Command[] createStandardCommands(Environment env)
 	    });
 
 	//Describe;
+	/*
 	res.add(new Command() {
 		private Environment e = environment;
 		public String getName()
@@ -210,6 +211,7 @@ public static Command[] createStandardCommands(Environment env)
 		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.DESCRIBE));
 		}
 	    });
+	*/
 
 	//Help;
 	res.add(new Command() {

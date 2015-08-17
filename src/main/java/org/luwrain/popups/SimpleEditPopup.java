@@ -143,7 +143,7 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 	    return true;
 	switch (event.getCode())
 	{
-	case EnvironmentEvent.COPY_CUT_POINT:
+	case EnvironmentEvent.REGION_POINT:
 	    return copyCutInfo.copyCutPoint(pos, 0);
 	case EnvironmentEvent.COPY:
 	    return copyCutInfo.copy(pos, 0);
@@ -155,6 +155,11 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
     @Override public boolean onAreaQuery(AreaQuery query)
     {
 	return false;
+    }
+
+    @Override public Action[] getAreaActions()
+    {
+	return new Action[0];
     }
 
     @Override public String getAreaName()

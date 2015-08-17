@@ -85,4 +85,5 @@ public interface Area extends Lines
     boolean onKeyboardEvent(KeyboardEvent event);
     boolean onEnvironmentEvent(EnvironmentEvent event);
     boolean onAreaQuery(AreaQuery areaQuery);
+    Action[] getAreaActions();
 }

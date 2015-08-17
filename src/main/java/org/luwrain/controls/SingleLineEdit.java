@@ -69,7 +69,7 @@ public class SingleLineEdit implements CopyCutRequest
 	    throw new NullPointerException("event may not be null");
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.COPY_CUT_POINT:
+	case EnvironmentEvent.REGION_POINT:
 	    return copyCutInfo.copyCutPoint(model.getHotPointX(), 0);
 	case EnvironmentEvent.COPY:
 	    return copyCutInfo.copy(model.getHotPointX(), 0);
