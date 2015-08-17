@@ -992,4 +992,9 @@ class Environment implements EventConsumer
 	return res.toArray(new org.luwrain.cpanel.Section[res.size()]);
 
     }
+
+    public Browser createBrowser(Luwrain instance)
+    {
+	return interaction.createBrowser();
+    }
 }

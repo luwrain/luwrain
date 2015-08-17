@@ -378,4 +378,9 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
     {
 	return environment.getHardware();
     }
+
+    public Browser createBrowser()
+    {
+	return environment.createBrowser(this);
+    }
 }

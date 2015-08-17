@@ -22,6 +22,7 @@ import org.luwrain.core.events.KeyboardEvent;
 import org.luwrain.core.EventConsumer;
 import org.luwrain.core.Interaction;
 import org.luwrain.core.InteractionParams;
+import org.luwrain.core.Browser;
 import org.luwrain.core.Log;
 
 public class AwtInteraction implements Interaction
@@ -354,5 +355,10 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	Font f = new Font(fontName, Font.PLAIN, desirableFontSize);
 	//Font f = new Font("Dejavu Sans Mono", Font.PLAIN, desirableFontSize);
 return f;
+    }
+
+    @Override public Browser createBrowser()
+    {
+	return new DummyBrowser();
     }
 }

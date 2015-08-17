@@ -26,12 +26,13 @@ import org.luwrain.os.OperatingSystem;
 
 class Init
 {
-    private static final String  PREFIX_REGISTRY_DIR = "--registry-dir=";
-    private static final String  PREFIX_DATA_DIR = "--data-dir=";
-    private static final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
-    private static final String  PREFIX_SPEECH= "--speech=";
-    private static final String  PREFIX_OS= "--os=";
-    private static final String  PREFIX_LANG= "--lang=";
+    static private final String  PREFIX_INTERACTION = "--interaction=";
+    static private final String  PREFIX_REGISTRY_DIR = "--registry-dir=";
+    static private final String  PREFIX_DATA_DIR = "--data-dir=";
+    static private final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
+    static private final String  PREFIX_SPEECH= "--speech=";
+    static private final String  PREFIX_OS= "--os=";
+    static private final String  PREFIX_LANG= "--lang=";
 
     private String[] cmdLine;
     private Registry registry;
@@ -108,6 +109,7 @@ class Init
 	    return false;
 
 	//Interaction;
+	final String interactionClass = getFirstCmdLineOption(PREFIX_INTERACTION);
 	InteractionParamsLoader interactionParams = new InteractionParamsLoader();
 	interactionParams.loadFromRegistry(registry);
 	if (!interactionParams.backend.equals("awt"))
@@ -115,7 +117,30 @@ class Init
 	    Log.fatal("init", "unsupported interaction type \'" + interactionParams.backend + "\'");
 	    return false;
 	}
-	interaction = new org.luwrain.interaction.AwtInteraction();
+	if (interactionClass != null && !interactionClass.isEmpty())
+	{
+	    Object o;
+	    try {
+		o = Class.forName(interactionClass).newInstance();
+	    }
+	    catch(Exception e)
+	    {
+		Log.fatal("init", "error occurred while creating an instance of " + interactionClass + " for interaction:" + e.getMessage());
+		e.printStackTrace();
+		return false;
+	    }
+	    if (!(o instanceof Interaction))
+	    {
+		Log.fatal("init", "The instance of " + interactionClass + " isn\'t an instance of org.luwrain.core.Interaction");
+		return false;
+	    }
+	    interaction = (Interaction)o;
+	    Log.info("init", "using the instance of " + interactionClass + " for interaction");
+	} else
+	{
+	    interaction = new org.luwrain.interaction.AwtInteraction();
+	    Log.info("init", "using default interaction");
+	}
 	if (!interaction.init(interactionParams))
 	{
 	    Log.fatal("init", "interaction initialization failed");
