@@ -14,22 +14,29 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.util;
 
-import org.luwrain.core.events.KeyboardEvent;
+import org.luwrain.core.HeldData;
 
-public interface Action
+public class EmptyRegionProvider implements RegionProvider
 {
-    static public final int STATIC = 0;
-    static public final int REGULAR = 1;
-    static public final int COMMAND_HINT = 2;
-    static public final int  SEPARATOR = 3;;
-    static public final int SUBMENU = 4;
+    @Override public HeldData getWholeRegion()
+    {
+	return null;
+    }
 
+    @Override public HeldData getRegion(int fromX, int fromY, int toX, int toY)
+    {
+	return null;
+    }
 
-    String getActionName();
-    String getActionTitle();
-    KeyboardEvent getActionKeyboardEvent();
-    Action[] getChildActions();
-    boolean isShadowAction();
+    @Override public boolean deleteRegion(int fromX, int fromY, int toX, int toY)
+    {
+	return false;
+    }
+
+    @Override public boolean insertRegion(int x, int y, HeldData heldData)
+    {
+	return false;
+    }
 }

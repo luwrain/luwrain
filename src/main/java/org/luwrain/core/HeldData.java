@@ -16,19 +16,35 @@
 
 package org.luwrain.core;
 
-public class AreaQuery
+final public class HeldData
 {
-    static public final int REGION = 0;
+    public Object[] rawObjects = new Object[0];
+    public String[] strings = new String[0];
+    public String comment = "";
 
-    private int code;
-
-    public AreaQuery(int code)
+    public HeldData(String[] strings)
     {
-	this.code = code;
+	this.strings = strings;
     }
 
-    public int getQueryCode()
+    public HeldData(String[] strings, String comment)
     {
-	return code;
+	this.strings = strings;
+	this.comment = comment;
+    }
+
+    public HeldData(String[] strings, Object[] rawObjects)
+    {
+	this.strings = strings;
+	this.rawObjects = rawObjects;
+    }
+
+    public HeldData(String[] strings,
+		    Object[] rawObjects,
+		    String comment)
+    {
+	this.strings = strings;
+	this.rawObjects = rawObjects;
+	this.comment = comment;
     }
 }
