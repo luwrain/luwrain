@@ -23,9 +23,10 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
+public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 {
     protected Luwrain luwrain;
+    private Region region = new Region(this, null);
     public PopupClosing closing = new PopupClosing(this);
     private ListModel model;
     private ListItemAppearance appearance;
@@ -35,7 +36,6 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
     private int hotPointY = 0;
     private String name;
     private int popupFlags;
-    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public ListPopup(Luwrain luwrain,
 		     String name,
@@ -168,12 +168,10 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 	    throw new NullPointerException("event may not be null");
 	if (closing.onEnvironmentEvent(event))
 	    return true;
+	if (region.onEnvironmentEvent(event, hotPointX, hotPointY))
+	    return false;
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.REGION_POINT:
-	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
-	case EnvironmentEvent.COPY:
-	    return copyCutInfo.copy(hotPointX, hotPointY);
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
@@ -184,7 +182,7 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return false;
+	return region.onAreaQuery(query, hotPointX, hotPointY);
     }
 
     @Override public Action[] getAreaActions()
@@ -549,65 +547,59 @@ public class ListPopup implements Popup, PopupClosingRequest, CopyCutRequest
 	return false;
     }
 
-    @Override public boolean onCopyAll()
+    @Override public HeldData getWholeRegion()
     {
 	if (model == null || model.getItemCount() == 0)
-	    return false;
-	Vector<String> res = new Vector<String>();
+	    return null;
+	final LinkedList<String> res = new LinkedList<String>();
 	final int count = model.getItemCount();
 	for(int i = 0;i < count;++i)
 	{
 	    final String line = appearance.getScreenAppearance(model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
-	    if (line != null)
-		res.add(line); else
-		res.add("");
+	    res.add(line != null?line:"");
 	}
 	res.add("");
-	if (res.size() == 2)
-	    luwrain.say(res.get(0)); else
-	    luwrain.say(luwrain.i18n().staticStr(Langs.COPIED_LINES) + (res.size() - 1));
-	luwrain.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	return new HeldData(res.toArray(new String[res.size()]));
     }
 
-    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    @Override public HeldData getRegion(int fromX, int fromY,
+					int toX, int toY)
     {
 	if (model == null || model.getItemCount() == 0)
-	    return false;
+	    return null;
 	if (fromY >= model.getItemCount() || toY >= model.getItemCount())
-	    return false;
+	    return null;
 	if (fromY == toY)
 	{
 	    final String line = appearance.getScreenAppearance(model.getItem(fromY - 1), ListItemAppearance.FOR_CLIPBOARD);
 	    if (line.isEmpty())
-		return false;
+		return null;
 	    final int fromPos = fromX < line.length()?fromX:line.length();
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
-		throw new IllegalArgumentException("fromPos should be less than toPos");
-	    luwrain.say(line.substring(fromPos, toPos));
-	    luwrain.setClipboard(new String[]{line.substring(fromPos, toPos)});
-	    return true;
+		return null;
+	    return new HeldData(new String[]{line.substring(fromPos, toPos)});
 	}
-	Vector<String> res = new Vector<String>();
+	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i <= toY;++i)
 	{
 	    if (i == 0)
 		continue;
 	    final String line = appearance.getScreenAppearance(model.getItem(i - 1), ListItemAppearance.FOR_CLIPBOARD);
-	    if (line != null)
-		res.add(line); else
-		res.add("");
+	    res.add(line != null?line:"");
 	}
 	res.add("");
-	if (res.size() == 2)
-	    luwrain.say(res.get(0)); else
-	    luwrain.say(luwrain.i18n().staticStr(Langs.COPIED_LINES) + (res.size() - 1));
-	luwrain.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	return new HeldData(res.toArray(new String[res.size()]));
     }
 
-    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean deleteRegion(int fromX, int fromY,
+					  int toX, int toY)
+    {
+	return false;
+    }
+
+    @Override public boolean insertRegion(int x, int y,
+					  HeldData data)
     {
 	return false;
     }

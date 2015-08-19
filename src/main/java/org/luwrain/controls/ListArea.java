@@ -24,23 +24,25 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
-public class ListArea  implements Area, CopyCutRequest
+public class ListArea  implements Area, RegionProvider
 {
     private ControlEnvironment environment;
+    private Region region = new Region(this, null);
     private String name = "";
     private ListModel model;
     private ListItemAppearance appearance;
     private ListClickHandler clickHandler;
     private int hotPointX = 0;
     private int hotPointY = 0;
-    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
+    /*
     private String noItemsAbove = Langs.staticValue(Langs.BEGIN_OF_LIST);
     private String noItemsBelow = Langs.staticValue(Langs.END_OF_LIST);
     private String beginOfLine = Langs.staticValue(Langs.BEGIN_OF_LINE);
     private String endOfLine = Langs.staticValue(Langs.END_OF_LINE);
     private String noItems = Langs.staticValue(Langs.LIST_NO_ITEMS);
     private String emptyLine = Langs.staticValue(Langs.EMPTY_LINE);
+    */
 
     public ListArea(ControlEnvironment environment, ListModel model)
     {
@@ -296,18 +298,14 @@ public class ListArea  implements Area, CopyCutRequest
 	    return true;
 	case EnvironmentEvent.OK:
 	    return onOk(event);
-	case EnvironmentEvent.REGION_POINT:
-	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
-	case EnvironmentEvent.COPY:
-	    return copyCutInfo.copy(hotPointX, hotPointY);
 	default:
-	    return false;
+	    return region.onEnvironmentEvent(event, hotPointX, hotPointY);
 	}
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return false;
+	return region.onAreaQuery(query, hotPointX, hotPointY);
     }
 
     @Override public Action[] getAreaActions()
@@ -773,98 +771,57 @@ public class ListArea  implements Area, CopyCutRequest
 	    return clickHandler.onListClick(this, hotPointY, model.getItem(hotPointY));
     }
 
-    @Override public boolean onCopyAll()
+    @Override public HeldData getWholeRegion()
     {
-	if (model == null || model.getItemCount() == 0)
-	    return false;
-	Vector<String> res = new Vector<String>();
+	if (model == null || model.getItemCount() < 0)
+	    return null;
+	final LinkedList<String> res = new LinkedList<String>();
 	final int count = model.getItemCount();
 	for(int i = 0;i < count;++i)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
-	    if (line != null)
-		res.add(line); else
-		res.add("");
+	    final String line = appearance.getScreenAppearance(model.getItem(i), 0);
+	    res.add(line != null?line:"");
 	}
 	res.add("");
-	if (res.size() == 2)
-	    environment.say(res.get(0)); else
-	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
-	environment.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	return new HeldData(res.toArray(new String[res.size()]));
     }
 
-    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    @Override public HeldData getRegion(int fromX, int fromY, int toX, int toY)
     {
-	if (model == null || model.getItemCount() == 0)
-	    return false;
+	if (model == null || model.getItemCount() < 0)
+	    return null;
 	if (fromY >= model.getItemCount() || toY > model.getItemCount())
-	    return false;
+	    return null;
 	if (fromY == toY)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(fromY), ListItemAppearance.FOR_CLIPBOARD);
-	    if (line.isEmpty())
-		return false;
+	    final String line = appearance.getScreenAppearance(model.getItem(fromY), 0);
+	    if (line == null || line.isEmpty())
+		return null;
 	    final int fromPos = fromX < line.length()?fromX:line.length();
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
-		throw new IllegalArgumentException("fromPos should be less than toPos");
-	    environment.say(line.substring(fromPos, toPos));
-	    environment.setClipboard(new String[]{line.substring(fromPos, toPos)});
-	    return true;
+		return null;
+	    return new HeldData(new String[]{line.substring(fromPos, toPos)});
 	}
-	Vector<String> res = new Vector<String>();
+	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i < toY;++i)
 	{
 	    final String line = appearance.getScreenAppearance(model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
-	    if (line != null)
-		res.add(line); else
-		res.add("");
+	    res.add(line != null?line:"");
 	}
 	res.add("");
-	if (res.size() == 2)
-	    environment.say(res.get(0)); else
-	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
-	environment.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	return new HeldData(res.toArray(new String[res.size()]));
     }
 
-    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean deleteRegion(int fromX, int fromY, int toX, int toY)
     {
 	return false;
     }
 
-    /*
-    private void copyEntireContent()
+    @Override public boolean insertRegion(int x, int y, HeldData data)
     {
-	Vector<String> lines = new Vector<String>();
-	int maxLen = 0;
-	if (model != null && model.getItemCount() > 0)
-	{
-	    for(int i = 0;i < model.getItemCount();++i)
-	    {
-		String line = appearance.getScreenAppearance(model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
-		if (line == null)
-		    line = "";
-		lines.add(line);
-		if (line.length() > maxLen)
-		    maxLen = line.length();
-	    }
-	} else
-	    {
-		lines.add(noItems);
-		maxLen = noItems.length();
-	    }
-	String dashes = "";
-	while(dashes.length() < maxLen)
-	    dashes += "-";
-	Vector<String> res = new Vector<String>();
-	res.add(getName() != null?getName():"null");
-	res.add(dashes);
-	res.addAll(lines);
-	environment.setClipboard(res.toArray(new String[res.size()]));
+	return false;
     }
-    */
 
     private void onNewHotPointY(boolean briefIntroduction)
     {

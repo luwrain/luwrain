@@ -32,11 +32,11 @@ import org.luwrain.os.*;
  *
  * @see CommanderPopup
  */
-public class CommanderArea implements Area, CopyCutRequest
+public class CommanderArea implements Area, RegionProvider
 {
     public static final String PARENT_DIR = "..";
 
-    class Entry
+    static public class Entry
     {
 	public static final int REGULAR = 0;
 	public static final int DIRECTORY = 1;
@@ -80,7 +80,7 @@ public class CommanderArea implements Area, CopyCutRequest
     protected OperatingSystem os;
     private Location[] importantLocations;
     private org.luwrain.core.Strings strings;
-    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
+    private Region region = new Region(this, null);
     private CommanderFilter filter;
     private Comparator comparator;
     private boolean selecting;
@@ -410,18 +410,14 @@ public class CommanderArea implements Area, CopyCutRequest
 	    return true;
 	case EnvironmentEvent.OK:
 	    return onOk(event);
-	case EnvironmentEvent.REGION_POINT:
-	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
-	case EnvironmentEvent.COPY:
-	    return copyCutInfo.copy(hotPointX, hotPointY);
 	default:
-	    return false;
+	    return region.onEnvironmentEvent(event, hotPointX, hotPointY);
 	}
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return false;
+	return region.onAreaQuery(query, hotPointX, hotPointY);
     }
 
     @Override public Action[] getAreaActions()
@@ -439,63 +435,54 @@ public class CommanderArea implements Area, CopyCutRequest
 	return current.getAbsolutePath();
     }
 
-    @Override public boolean onCopyAll()
+    @Override public HeldData getWholeRegion()
     {
 	if (entries == null || entries.isEmpty())
-	    return false;
-	Vector<String> res = new Vector<String>();
+	    return null;
+	final LinkedList<String> res = new LinkedList<String>();
 	for(Entry e: entries)
 	{
 	    final String line = getScreenLine(e);
-	    if (line != null)
-		res.add(line); else
-		res.add("");
+	    res.add(line != null?line:"");
 	}
 	res.add("");
-	if (res.size() == 2)
-	    environment.say(res.get(0)); else
-	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
-	environment.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	return new HeldData(res.toArray(new String[res.size()]));
     }
 
-    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    @Override public HeldData getRegion(int fromX, int fromY, int toX, int toY)
     {
 	if (entries == null || entries.isEmpty())
-	    return false;
+	    return null;
 	if (fromY >= entries.size() || toY > entries.size())
-	    return false;
+	    return null;
 	if (fromY == toY)
 	{
 	    String line = getScreenLine(entries.get(fromY));
-	    if (line.isEmpty() || line.length() < 3)
-		return false;
+	    if (line == null || line.length() < 3)
+		return null;
 	    line = line.substring(2);
 	    final int fromPos = fromX < line.length()?fromX:line.length();
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
-		throw new IllegalArgumentException("fromPos should be less than toPos");
-	    environment.say(line.substring(fromPos, toPos));
-	    environment.setClipboard(new String[]{line.substring(fromPos, toPos)});
-	    return true;
+		return null;
+	    return new HeldData(new String[]{line.substring(fromPos, toPos)});
 	}
-	Vector<String> res = new Vector<String>();
+	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i < toY;++i)
 	{
 	    final String line = getScreenLine(entries.get(i));
-	    if (line != null)
-		res.add(line); else
-		res.add("");
+	    res.add(line != null?line:"");
 	}
 	res.add("");
-	if (res.size() == 2)
-	    environment.say(res.get(0)); else
-	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
-	environment.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	return new HeldData(res.toArray(new String[res.size()]));
     }
 
-    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean deleteRegion(int fromX, int fromY, int toX, int toY)
+    {
+	return false;
+    }
+
+    @Override public boolean insertRegion(int x, int y, HeldData data)
     {
 	return false;
     }

@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
-public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
+public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 {
     private Luwrain luwrain;
     private CommandEnvironment commandEnv;
@@ -32,7 +32,7 @@ public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
     private Item selectedItem;
     private int hotPointX = 0;
     private int hotPointY = 0;
-    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
+    private Region region = new Region(this, null);
 
     public MainMenu(Luwrain luwrain,
 		    CommandEnvironment commandEnv,
@@ -120,18 +120,16 @@ public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
 	case EnvironmentEvent.INTRODUCE:
 	    luwrain.say(getAreaName());
 	    return true;
-	case EnvironmentEvent.REGION_POINT:
-	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
-	case EnvironmentEvent.COPY:
-	    return copyCutInfo.copy(hotPointX, hotPointY);
 	default:
+	    if (region.onEnvironmentEvent(event, hotPointX, hotPointY))
+		return true;
 	    return closing.onEnvironmentEvent(event);
 	}
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return false;
+	return region.onAreaQuery(query, hotPointX, hotPointY);
     }
 
     @Override public Action[] getAreaActions()
@@ -403,62 +401,56 @@ public class MainMenu  implements Area, PopupClosingRequest, CopyCutRequest
 	return false;
     }
 
-    @Override public boolean onCopyAll()
+    @Override public HeldData getWholeRegion()
     {
 	if (items == null || items.length < 1)
-	    return false;
-	Vector<String> res = new Vector<String>();
+	    return null;
+	final LinkedList<String> res = new LinkedList<String>();
 	for(Item i: items)
 	{
 	    final String line = i.getText();
-	    if (line != null)
-		res.add(line); else
-		res.add("");
+	    res.add(line != null?line:"");
 	}
 	res.add("");
-	if (res.size() == 2)
-	    luwrain.say(res.get(0)); else
-	    luwrain.say(luwrain.i18n().staticStr(Langs.COPIED_LINES) + (res.size() - 1));
-	luwrain.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	return new HeldData(res.toArray(new String[res.size()]));
     }
 
-    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    @Override public HeldData getRegion(int fromX, int fromY,
+					int toX, int toY)
     {
 	if (items == null || items.length < 1)
-	    return false;
+	    return null;
 	if (fromY >= items.length || toY > items.length)
-	    return false;
+	    return null;
 	if (fromY == toY)
 	{
 	    final String line = items[fromY].getText();
 	    if (line.isEmpty())
-		return false;
+		return null;
 	    final int fromPos = fromX < line.length()?fromX:line.length();
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
-		throw new IllegalArgumentException("fromPos should be less than toPos");
-	    luwrain.say(line.substring(fromPos, toPos));
-	    luwrain.setClipboard(new String[]{line.substring(fromPos, toPos)});
-	    return true;
+		return null;
+	    return new HeldData(new String[]{line.substring(fromPos, toPos)});
 	}
-	Vector<String> res = new Vector<String>();
+	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i < toY;++i)
 	{
 	    final String line = items[i].getText();
-	    if (line != null)
-		res.add(line); else
-		res.add("");
+	    res.add(line != null?line:"");
 	}
 	res.add("");
-	if (res.size() == 2)
-	    luwrain.say(res.get(0)); else
-	    luwrain.say(luwrain.i18n().staticStr(Langs.COPIED_LINES) + (res.size() - 1));
-	luwrain.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	return new HeldData(res.toArray(new String[res.size()]));
     }
 
-    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean deleteRegion(int fromX, int fromY,
+					  int toX, int toY)
+    {
+	return false;
+    }
+
+    @Override public boolean insertRegion(int x, int y,
+					  HeldData data)
     {
 	return false;
     }

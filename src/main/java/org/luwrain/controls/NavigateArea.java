@@ -34,10 +34,10 @@ import org.luwrain .util.*;
  *
  * @see SimpleArea
  */
-public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
+public abstract class NavigateArea implements Area, HotPointInfo
 {
     private ControlEnvironment environment;
-    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
+    private Region region = new Region(new EmptyRegionProvider(), this);
     private int hotPointX = 0;
     private int hotPointY = 0;
 
@@ -89,20 +89,12 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
-	switch(event.getCode())
-	{
-	case EnvironmentEvent.REGION_POINT:
-	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
-	case EnvironmentEvent.COPY:
-	    return copyCutInfo.copy(hotPointX, hotPointY);
-	default:
-	    return false;
-	}
+	return region.onEnvironmentEvent(event, hotPointX, hotPointY);
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return false;
+	return region.onAreaQuery(query, hotPointX, hotPointY);
     }
 
     @Override public Action[] getAreaActions()
@@ -428,62 +420,15 @@ public abstract class NavigateArea implements Area, HotPointInfo, CopyCutRequest
 	return hotPointY;
     }
 
-    @Override public boolean onCopyAll()
-    {
-	Vector<String> res = new Vector<String>();
-	final int count = getValidLineCount();
-	for(int i = 0;i < count;++i)
-	    res.add(getLineNotNull(i));
-	if (res.size() == 2)
-	    environment.say(res.get(0)); else
-	    environment.say(environment.staticStr(Langs.COPIED_LINES) + (res.size() - 1));
-	environment.setClipboard(res.toArray(new String[res.size()]));
-	return true;
-    }
-
-    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
-    {
-	if (toY >= getValidLineCount())
-	    return false;
-	if (fromY == toY)
-	{
-	    final String line = getLineNotNull(fromY);
-	    if (line.isEmpty())
-		return false;
-	    final int fromPos = fromX < line.length()?fromX:line.length();
-	    final int toPos = toX < line.length()?toX:line.length();
-	    if (fromPos >= toPos)
-		throw new IllegalArgumentException("fromPos should be less than toPos");
-	    environment.say(line.substring(fromPos, toPos));
-	    environment.setClipboard(new String[]{line.substring(fromPos, toPos)});
-	    return true;
-	}
-	Vector<String> res = new Vector<String>();
-	String line = getLineNotNull(fromY);
-	res.add(line.substring(fromX < line.length()?fromX:line.length()));
-	for(int i = fromY + 1;i < toY;++i)
-	    res.add(getLineNotNull(i));
-	line = getLineNotNull(toY);
-	res.add(line.substring(0, toX <line.length()?toX:line.length()));
-	environment.say(environment.staticStr(Langs.COPIED_LINES) + res.size());
-	environment.setClipboard(res.toArray(new String[res.size()]));
-	return true;
-    }
-
-    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
-    {
-	return false;
-    }
-
     protected int getValidLineCount()
     {
 	final int count = getLineCount();
 	return count >= 1?count:1;
     }
 
-protected String getLineNotNull(int index)
-{
-    final String line = getLine(index);
-    return line != null?line:"";
-}
+    protected String getLineNotNull(int index)
+    {
+	final String line = getLine(index);
+	return line != null?line:"";
+    }
 }

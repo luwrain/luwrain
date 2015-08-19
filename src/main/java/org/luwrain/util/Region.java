@@ -30,14 +30,14 @@ public class Region
     private int fromX = -1;
     private int fromY  = -1;
 
+
+    //lines may be null, this means using the region provider only;
     public Region(RegionProvider provider, Lines lines)
     {
 	this.provider = provider;
 	this.lines = lines;
 	if (provider == null)
 	    throw new NullPointerException("provider may not be null");
-	if (lines == null)
-	    throw new NullPointerException("lines may not be null");
     }
 
     public boolean firstPoint(int hotPointX, int hotPointY)
@@ -169,6 +169,8 @@ public class Region
 
     private HeldData constructAllLinesHeldData()
     {
+	if (lines == null)
+	    return null;
 	final LinkedList<String> res = new LinkedList<String>();
 	final int count = lines.getLineCount();
 	if (count < 1)
@@ -184,6 +186,8 @@ public class Region
     private HeldData constructLinesHeldData(int fromX, int fromY,
 					    int toX, int toY)
     {
+	if (lines == null)
+	    return null;
 	final int count = lines.getLineCount();
 	if (count < 1)
 	    return null;

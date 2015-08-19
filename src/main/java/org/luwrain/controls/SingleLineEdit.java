@@ -20,15 +20,11 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
-public class SingleLineEdit implements CopyCutRequest
+public class SingleLineEdit implements RegionProvider
 {
-    //    private final String tabMessage = Langs.staticValue(Langs.TAB);
-    //    private final String textBeginMessage = Langs.staticValue(Langs.AREA_BEGIN);
-    //    private final String textEndMessage = Langs.staticValue(Langs.AREA_END);
-
     private ControlEnvironment environment;
+    private Region region = new Region(this, null);
     private SingleLineEditModel model;
-    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public SingleLineEdit(ControlEnvironment environment, SingleLineEditModel model)
     {
@@ -67,21 +63,12 @@ public class SingleLineEdit implements CopyCutRequest
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
-	switch(event.getCode())
-	{
-	case EnvironmentEvent.REGION_POINT:
-	    return copyCutInfo.copyCutPoint(model.getHotPointX(), 0);
-	case EnvironmentEvent.COPY:
-	    return copyCutInfo.copy(model.getHotPointX(), 0);
-	case EnvironmentEvent.CUT:
-	    return copyCutInfo.cut(model.getHotPointX(), 0);
-	case EnvironmentEvent.INSERT:
-	    if (event instanceof InsertEvent)
-		return onInsert((InsertEvent)event);
-	    return false;
-	default:
-	    return false;
-	}
+	return region.onEnvironmentEvent(event, model.getHotPointX(), 0);
+    }
+
+    public boolean onAreaQuery(AreaQuery query)
+    {
+	return region.onAreaQuery(query, model.getHotPointX(), 0);
     }
 
     private boolean onBackspace(KeyboardEvent event)
@@ -195,34 +182,30 @@ public class SingleLineEdit implements CopyCutRequest
 	return true;
     }
 
-    @Override public boolean onCopyAll()
+    @Override public HeldData getWholeRegion()
     {
 	final String line = model.getLine();
 	if (line != null)
-	{
-	    environment.say(line);
-	    environment.setClipboard(new String[]{line});
-	} else
-	    environment.setClipboard(new String[]{""});
-	return true;
+	    return new HeldData(new String[]{line});
+	return new HeldData(new String[]{""});
     }
 
-    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    @Override public HeldData getRegion(int fromX, int fromY,
+					int toX, int toY)
     {
 	final String line = model.getLine();
 	if (line == null || line.isEmpty())
-	    return false;
+	    return null;
 	final int fromPos = fromX < line.length()?fromX:line.length();
 	final int toPos = toX < line.length()?toX:line.length();
 	if (fromPos >= toPos)
-	    throw new IllegalArgumentException("fromPos should be less than toPos");
+	    return null;
 	final String res = line.substring(fromPos, toPos);
-	environment.say(res);
-	environment.setClipboard(new String[]{res});
-	return true;
+	return new HeldData(new String[]{res});
     }
 
-    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean deleteRegion(int fromX, int fromY,
+					  int toX, int toY)
     {
 	final String line = model.getLine();
 	if (line == null || line.isEmpty())
@@ -230,30 +213,32 @@ public class SingleLineEdit implements CopyCutRequest
 	final int fromPos = fromX < line.length()?fromX:line.length();
 	final int toPos = toX < line.length()?toX:line.length();
 	if (fromPos >= toPos)
-	    throw new IllegalArgumentException("fromPos should be less than toPos");
-	final String[] res = new String[1];
-	res[0] = line.substring(fromPos, toPos);
-	environment.say(res[0]);
-	environment.setClipboard(res);
+	    return false;
 	model.setLine(line.substring(0, fromPos) + line.substring(toPos));
 	model.setHotPointX(fromPos);
 	return true;
     }
 
-    private boolean onInsert(InsertEvent event)
+    @Override public boolean insertRegion(int x, int y,
+					  HeldData data)
     {
-	if (event.getData() == null || !(event.getData() instanceof String[]))
+	if (data.strings == null || data.strings.length < 1)
 	    return false;
-	final String[] lines = (String[])event.getData();
-	if (lines.length < 1)
-	    return false;
-	String text = lines[0];
-	for(int i = 1;i < lines.length;++i)
-	    text += " " + lines[i];
+	final StringBuilder b = new StringBuilder();
+	for(int i = 0;i < data.strings.length;++i)
+	{
+	    if (data.strings[i] == null)
+		continue;
+	    if (b.length() > 0)
+		b.append(" ");
+	    b.append(data.strings[i]);
+	}
+	final String text = b.toString();
+	if (text.isEmpty())
+	    return true;
 	final String line = model.getLine();
 	final int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
 	model.setLine(line.substring(0, pos) + text + line.substring(pos));
-	environment.say(text);
 	model.setHotPointX(pos + text.length());
 	return true;
     }

@@ -21,17 +21,17 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines, CopyCutRequest
+public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines, RegionProvider
 {
     public PopupClosing closing = new PopupClosing(this);
     protected Luwrain luwrain;
+    private Region region = new Region(this, null);
     private EmbeddedSingleLineEdit edit;
     private String name;
     private String prefix;
     private String text;
     private int pos;
     private int popupFlags;
-    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public SimpleEditPopup(Luwrain luwrain,
 			    String name,
@@ -143,18 +143,16 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 	    return true;
 	switch (event.getCode())
 	{
-	case EnvironmentEvent.REGION_POINT:
-	    return copyCutInfo.copyCutPoint(pos, 0);
-	case EnvironmentEvent.COPY:
-	    return copyCutInfo.copy(pos, 0);
 	default:
+	    if (region.onEnvironmentEvent(event, pos, 0))
+		return true;
 	    return closing.onEnvironmentEvent(event);
 	}
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return false;
+	return region.onAreaQuery(query, pos, 0);
     }
 
     @Override public Action[] getAreaActions()
@@ -340,30 +338,34 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 	luwrain.onAreaNewHotPoint(this);
     }
 
-    @Override public boolean onCopyAll()
+    @Override public HeldData getWholeRegion()
     {
 	final String line = prefix + text;
-	luwrain.say(line);
-	luwrain.setClipboard(new String[]{line});
-	return true;
+	return new HeldData(new String[]{line});
     }
 
-    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    @Override public HeldData getRegion(int fromX, int fromY,
+					int toX, int toY)
     {
 	final String line = prefix + text;
 	if (line.isEmpty())
-	    return false;
+	    return null;
 	final int fromPos = fromX < line.length()?fromX:line.length();
 	final int toPos = toX < line.length()?toX:line.length();
 	if (fromPos >= toPos)
-	    throw new IllegalArgumentException("fromPos should be less than toPos");
+	    return null;
 	final String res = line.substring(fromPos, toPos);
-luwrain.say(res);
-luwrain.setClipboard(new String[]{res});
-	return true;
+	return new HeldData(new String[]{res});
     }
 
-    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean deleteRegion(int fromX, int fromY,
+					  int toX, int toY)
+    {
+	return false;
+    }
+
+    @Override public boolean insertRegion(int x, int y,
+					  HeldData data)
     {
 	return false;
     }

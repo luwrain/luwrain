@@ -29,7 +29,7 @@ public class FormArea  extends NavigateArea
     public static final int STATIC = 4;
     public static final int MULTILINED = 5;
 
-    class Item implements EmbeddedEditLines
+    static private class Item implements EmbeddedEditLines
     {
 	public int type;
     public String name;
@@ -95,7 +95,6 @@ public class FormArea  extends NavigateArea
     {
 	super(environment);
 	this.environment = environment;
-	//	this.copyCutInfo = new CopyCutInfo(this);
     }
 
     public FormArea(ControlEnvironment environment, String name)
@@ -103,7 +102,6 @@ public class FormArea  extends NavigateArea
 	super(environment);
 	this.environment = environment;
 	this.name = name != null?name:"";
-	//	this.copyCutInfo = new CopyCutInfo(this);
     }
 
     public boolean hasItemWithName(String itemName)

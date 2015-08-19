@@ -22,11 +22,11 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
-public class MultilinedEdit implements CopyCutRequest
+public class MultilinedEdit implements RegionProvider
 {
     private ControlEnvironment environment;
+    private Region region;
     private MultilinedEditModel model;
-    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);
 
     public MultilinedEdit(ControlEnvironment environment, MultilinedEditModel model)
     {
@@ -36,6 +36,7 @@ public class MultilinedEdit implements CopyCutRequest
 	    throw new NullPointerException("environment may not be null");
 	if (model == null)
 	    throw new NullPointerException("model may not be null");
+	region = new Region(this, model);
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -88,29 +89,14 @@ public class MultilinedEdit implements CopyCutRequest
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
-	boolean res = false;
-	switch(event.getCode())
-	{
-	case EnvironmentEvent.REGION_POINT:
-	    return copyCutInfo.copyCutPoint(model.getHotPointX(), model.getHotPointY());
-	case EnvironmentEvent.COPY:
-	    return copyCutInfo.copy(model.getHotPointX(), model.getHotPointY());
-	case EnvironmentEvent.CUT:
-	    if (!model.beginEditTrans())
-		return false;
-	    res = copyCutInfo.cut(model.getHotPointX(), model.getHotPointY());
-	    model.endEditTrans();
-	    return res;
-	case EnvironmentEvent.INSERT:
-	    if (!(event instanceof InsertEvent) || !model.beginEditTrans())
-		return false;
-	    res = onInsert((InsertEvent)event);
-	    model.endEditTrans();
-	    return res;
-	default:
-	    return false;
-	}
+	return region.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY());
     }
+
+    public boolean onAreaQuery(AreaQuery query)
+    {
+	return region.onAreaQuery(query, model.getHotPointX(), model.getHotPointY());
+    }
+
 
     private boolean onBackspace(KeyboardEvent event)
     {
@@ -320,68 +306,21 @@ public class MultilinedEdit implements CopyCutRequest
 	return true;
     }
 
-    @Override public boolean onCopyAll()
+    @Override public HeldData getWholeRegion()
     {
-	if (model.getLineCount() < 1)
-	    return false;
-	Vector<String> res = new Vector<String>();
-	final int count = model.getLineCount();
-	for(int i = 0;i < count;++i)
-	{
-	    final String line = model.getLine(i);
-	    if (line == null)
-		return false;
-	    res.add(line);
-	}
-	if (res.size() == 1)
-	    environment.say(res.get(0)); else
-	    environment.say(environment.staticStr(Langs.COPIED_LINES) + res.size());
-	environment.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	//Region class will take line automatically;
+	return null;
     }
 
-    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
+    @Override public HeldData getRegion(int fromX, int fromY,
+					int toX, int toY)
     {
-	if (model.getLineCount() == 0)
-	    return false;
-	if (toY >= model.getLineCount())
-	    return false;
-	if (fromY == toY)
-	{
-	    final String line = model.getLine(fromY);
-	    if (line == null || line.isEmpty())
-		return false;
-	    final int fromPos = fromX < line.length()?fromX:line.length();
-	    final int toPos = toX < line.length()?toX:line.length();
-	    if (fromPos >= toPos)
-		return false;
-	    String res = line.substring(fromPos, toPos);
-	    environment.say(res);
-	    environment.setClipboard(new String[]{res});
-	    return true;
-	}
-	Vector<String> res = new Vector<String>();
-	String line = model.getLine(fromY);
-	if (line == null)
-	    return false;
-	res.add(line.substring(fromX < line.length()?fromX:line.length()));
-	for(int i = fromY + 1;i < toY;++i)
-	{
-	    line = model.getLine(i);
-	    if (line == null)
-		return false;
-	    res.add(line);
-	}
-	line = model.getLine(toY);
-	if (line == null)
-	    return false;
-	res.add(line.substring(0, toX <line.length()?toX:line.length()));
-	environment.hint(environment.staticStr(Langs.COPIED_LINES) + res.size());
-	environment.setClipboard(res.toArray(new String[res.size()]));
-	return true;
+	//Region class will take line automatically;
+	return null;
     }
 
-    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
+    @Override public boolean deleteRegion(int fromX, int fromY,
+					  int toX, int toY)
     {
 	if (model.getLineCount() < 1)
 	    return false;
@@ -396,74 +335,70 @@ public class MultilinedEdit implements CopyCutRequest
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
 		return false;
-	    String[] res = new String[]{line.substring(fromPos, toPos)};
+	    if (!model.beginEditTrans())
+		return false;
 	    model.setLine(fromY, line.substring(0, fromPos) + line.substring(toPos));
-	    environment.say(res[0]);
-	    environment.setClipboard(res);
+	    model.endEditTrans();
 	    return true;
 	}
-	Vector<String> res = new Vector<String>();
 	final String firstLine = model.getLine(fromY);
 	if (firstLine == null)
 	    return false;
 	final int fromPos = fromX < firstLine.length()?fromX:firstLine.length();
-	res.add(firstLine.substring(fromPos));
-	for(int i = fromY + 1;i < toY;++i)
-	{
-	    final String line = model.getLine(i);
-	    if (line == null)
-		return false;
-	    res.add(line);
-	}
 	final String endingLine = model.getLine(toY);
 	if (endingLine == null)
 	    return false;
 	final int toPos = toX <endingLine.length()?toX:endingLine.length();
-	res.add(endingLine.substring(0, toPos));
+	if (!model.beginEditTrans())
+	    return false;
 	model.setLine(fromY, firstLine.substring(0, fromPos) + endingLine.substring(toPos));
 	for(int i = fromY + 1;i <= toY;++i)
 	    model.removeLine(fromY + 1);
-	environment.hint(environment.staticStr(Langs.CUT_LINES) + res.size());
-	environment.setClipboard(res.toArray(new String[res.size()]));
+	model.endEditTrans();
 	return true;
     }
 
-    private boolean onInsert(InsertEvent event)
+    @Override public boolean insertRegion(int x, int y,
+					 HeldData data)
     {
-	if (event.getData() == null || !(event.getData() instanceof String[]))
+	if (data.strings == null || data.strings.length < 1)
 	    return false;
-	final String[] text = (String[])event.getData();
-	if (text.length < 1)
-	    return false;
+	final String[] text = data.strings;
 	if (model.getHotPointY() >= model.getLineCount())
 	{
+	    if (!model.beginEditTrans())
+		return false;
 	    for(String s: text)
 		model.addLine(s != null?s:"");
 	    model.setHotPoint(text[text.length - 1].length(), model.getLineCount() - 1);
-	    environment.say(text[0]);
+	    model.endEditTrans();
 	    return true;
 	}
 	if (text.length == 1)
 	{
-	    int index = model.getHotPointY();
+	    final int index = model.getHotPointY();
 	    String line = model.getLine(index);
 	    final int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
 	    line = line.substring(0, pos) + text[0] + line.substring(pos);
+	    if (!model.beginEditTrans())
+		return false;
 	    model.setLine(index, line);
 	    model.setHotPoint(pos + text[0].length(), index);
-	    environment.say(text[0]);
+	    model.endEditTrans();
 	    return true;
 	}
-	//Multilined new text;
-	int index = model.getHotPointY();
-	String line = model.getLine(index);
+	//New text has multiple lines;
+	final int index = model.getHotPointY();
+	final String line = model.getLine(index);
 	final int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
+	if (!model.beginEditTrans())
+	    return false;
 	model.setLine(index, line.substring(0, pos) + text[0]);
 	for(int i = 1;i < text.length - 1;++i)
 	    model.insertLine(index + i, text[i]);
 	model.insertLine(index + text.length - 1, text[text.length - 1] + line.substring(pos));
 	model.setHotPoint(text[text.length - 1].length(), index + text.length - 1);
-	environment.say(text[0]);
+	model.endEditTrans();
 	return true;
     }
 }

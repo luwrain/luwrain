@@ -28,12 +28,12 @@ import org.luwrain.util.*;
  * appearance of table content through extending the TableAppearance
  * interface.
  */
-public class TableArea  implements Area, CopyCutRequest
+public class TableArea  implements Area
 {
     static final public int INTRODUCTION_BRIEF = 1;
 
     private ControlEnvironment environment;
-    private CopyCutInfo copyCutInfo = new CopyCutInfo(this);;
+    private Region region = new Region(new EmptyRegionProvider(), this);
     private String name = "";
     private TableModel model;
     private TableAppearance appearance;
@@ -240,20 +240,14 @@ public class TableArea  implements Area, CopyCutRequest
 	case EnvironmentEvent.REFRESH:
 	    refresh();
 	    return true;
-	case EnvironmentEvent.REGION_POINT:
-	    return copyCutInfo.copyCutPoint(hotPointX, hotPointY);
-	case EnvironmentEvent.COPY:
-	    if (!copyCutInfo.copy(hotPointX, hotPointY))
-		copyEntireContent();
-	    return true;
 	default:
-	    return false;
+	    return region.onEnvironmentEvent(event, hotPointX, hotPointY);
 	}
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return false;
+	return region.onAreaQuery(query, hotPointX, hotPointY);
     }
 
     @Override public Action[] getAreaActions()
@@ -526,21 +520,6 @@ public class TableArea  implements Area, CopyCutRequest
 	if (hotPointY < count)
 	    appearance.introduceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0); else
 	    environment.hint(Hints.EMPTY_LINE);
-    }
-
-    @Override public boolean onCopyAll()
-    {
-	return false; 
-    }
-
-    @Override public boolean onCopy(int fromX, int fromY, int toX, int toY)
-    {
-	return false;
-    }
-
-    @Override public boolean onCut(int fromX, int fromY, int toX, int toY)
-    {
-	return false;
     }
 
     private void copyEntireContent()
