@@ -30,11 +30,15 @@ class WindowManager
     {
 	this.interaction = interaction;
 	this.screenContentManager = screenContentManager;
+	if (interaction == null)
+	    throw new NullPointerException("interaction may not be null");
+	if (screenContentManager == null)
+	    throw new NullPointerException("screenContentManager may not be null");
     }
 
     public void redraw()
     {
-	TileManager windows = screenContentManager.getWindows();
+	final TileManager windows = screenContentManager.getWindows();
 	if (windows == null)
 	    return;
 	interaction.startDrawSession();
@@ -44,7 +48,7 @@ class WindowManager
 	visibleObjs = windows.getObjects();
 	for(int i = 0;i < visibleObjs.length;i++)
 	{
-	    Window win = (Window)visibleObjs[i];
+	    final Window win = (Window)visibleObjs[i];
 	    if (win != null && win.area != null)
 		drawWindow(win);
 	}

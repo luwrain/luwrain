@@ -211,30 +211,25 @@ class Environment implements EventConsumer
 	InitialEventLoopStopCondition.shouldContinue = false;
     }
 
-    public void launchApp(String shortcutName, String[] args)
+    public void launchAppIface(String shortcutName, String[] args)
     {
 	if (shortcutName == null)
 	    throw new NullPointerException("shortcutName may not be null");
 	if (shortcutName.trim().isEmpty())
 	    throw new IllegalArgumentException("shortcutName may not be emptyL");
-	if (args == null)
-	    throw new NullPointerException("args may not be null");
-	for(int i = 0;i < args.length;++i)
-	    if (args[i] == null)
-		throw new NullPointerException("args[" + i + "] may not be null");
-	Application[] app = shortcuts.prepareApp(shortcutName, args);
+	final String[] argsNotNull = org.luwrain.util.Strings.notNullArray(args);
+	final Application[] app = shortcuts.prepareApp(shortcutName, argsNotNull);
 	if (app != null)
 	    for(Application a: app)
 		if (a != null)
 		    launchApp(a);
     }
 
-    //Always full screen;
     public void launchApp(Application app)
     {
 	if (app == null)
-	    return;
-	Luwrain o = interfaces.requestNew(app);
+	    throw new NullPointerException("app may not be null");
+	final Luwrain o = interfaces.requestNew(app);
 	try {
 	    if (!app.onLaunch(o))
 	    {
@@ -251,27 +246,28 @@ class Environment implements EventConsumer
 	catch (Throwable e)
 	{
 	    interfaces.release(o);
+	    Log.error("core", "application " + app.getClass().getName() + " has thrown an exception during onLaunch():" + e.getMessage());
 	    e.printStackTrace();
-	    //FIXME:Log warning;
 	    message(strings.appLaunchUnexpectedError(), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
-	AreaLayout layout = app.getAreasToShow();
-	if (layout == null)
+	final AreaLayout layout = app.getAreasToShow();
+	if (layout == null || !layout.isValid())
 	{
 	    interfaces.release(o);
+	    Log.warning("core", "application " + app.getClass().getName() + " gave an invalid area layout, launch cancelled");
 	    return;
 	}
-	Area activeArea = layout.getDefaultArea();
+	final Area activeArea = layout.getDefaultArea();
 	if (activeArea == null)
 	{
 	    interfaces.release(o);
+	    Log.warning("core", "application " + app.getClass().getName() + " unable to provide valid default area, launch cancelled");
 	    return;
 	}
 	apps.registerNewApp(app, activeArea);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
-	//	introduceActiveArea();
 	needForIntroduction = true;
 	introduceApp = true;
     }
@@ -364,6 +360,7 @@ class Environment implements EventConsumer
 		eventQueue.onceAgain(event);
 		continue;
 	    }
+	    event.markAsProcessed();
 	    if (!eventQueue.hasAgain())
 		introduce(stopCondition);
 	}
@@ -627,27 +624,33 @@ class Environment implements EventConsumer
 
     public void onAreaNewHotPoint(Area area)
     {
-	if (screenContentManager == null || windowManager == null)
+	if (area == null)
+	    throw new NullPointerException("area may not be null");
+	if (screenContentManager == null)
 	    return;
 	if (area != null && area == screenContentManager.getActiveArea())
 	    windowManager.redrawArea(area);
     }
 
-    public void onAreaNewContent(Area area)
+    public void onAreaNewContentIface(Area area)
     {
+	if (area == null)
+	    throw new NullPointerException("area may not be null");
 	windowManager.redrawArea(area);
     }
 
-    public void onAreaNewName(Area area)
+    public void onAreaNewNameIface(Area area)
     {
+	if (area == null)
+	    throw new NullPointerException("area may not be null");
 	windowManager.redrawArea(area);
     }
 
     //May return -1;
-    public int getAreaVisibleHeight(Area area)
+    public int getAreaVisibleHeightIface(Area area)
     {
 	if (area == null)
-	    return -1;
+	    throw new NullPointerException("area may not be null");
 	return windowManager.getAreaVisibleHeight(area);
     }
 
@@ -729,7 +732,7 @@ class Environment implements EventConsumer
 	if (shortcuts.length != fileNames.length)
 	    return;
 	for(int i = 0;i < shortcuts.length;++i)
-	    launchApp(shortcuts[i], new String[]{fileNames[i]});
+	    launchAppIface(shortcuts[i], new String[]{fileNames[i]});
     }
 
     public Registry  registry()

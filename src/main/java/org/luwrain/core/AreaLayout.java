@@ -74,6 +74,23 @@ public class AreaLayout
 	return area3;
     }
 
+    public boolean isValid()
+    {
+	switch(layoutType)
+	{
+	case SINGLE:
+	    return area1 != null;
+	case LEFT_RIGHT:
+	case TOP_BOTTOM:
+	    return area1 != null && area2 != null;
+	case LEFT_TOP_BOTTOM:
+	case LEFT_RIGHT_BOTTOM:
+	    return area1 != null && area2 != null && area3 != null;
+	default:
+	    return false;
+	}
+    }
+
     public Area[] getAreas()
     {
 	switch(layoutType)

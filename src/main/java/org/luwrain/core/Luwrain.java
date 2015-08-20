@@ -81,7 +81,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
     //May return -1 if area is not shown on the screen;
     public int getAreaVisibleHeight(Area area)
     {
-	return environment.getAreaVisibleHeight(area);
+	return environment.getAreaVisibleHeightIface(area);
     }
 
     /*
@@ -131,12 +131,12 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
 
     public void launchApp(String shortcutName)
     {
-	environment.launchApp(shortcutName, new String[0]);
+	environment.launchAppIface(shortcutName, new String[0]);
     }
 
     public void launchApp(String shortcutName, String[] args)
     {
-	environment.launchApp(shortcutName, args != null?args:new String[0]);
+	environment.launchAppIface(shortcutName, args != null?args:new String[0]);
     }
 
     public LaunchContext launchContext()
@@ -180,7 +180,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
      */
     public void onAreaNewContent(Area area)
     {
-	environment.onAreaNewContent(area);
+	environment.onAreaNewContentIface(area);
     }
 
     /**
@@ -194,7 +194,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
      */
     public void onAreaNewName(Area area)
     {
-	environment.onAreaNewName(area);
+	environment.onAreaNewNameIface(area);
     }
 
     public void onNewAreaLayout()
