@@ -183,6 +183,11 @@ class AppManager
 	return wrappers.get(activeAppIndex).activeArea;
     }
 
+    public boolean noActiveArea()
+    {
+	return getActiveAreaOfActiveApp() == null;
+    }
+
     private void ensureConsistent()
     {
 	if (wrappers == null)

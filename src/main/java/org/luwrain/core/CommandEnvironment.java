@@ -20,7 +20,7 @@ import java.io.File;
 
 public interface CommandEnvironment
 {
-    String[] getClipboard();
+    //    String[] getClipboard();
 
     /**
      * Returns a reference to the registry object. With this method you can
@@ -113,5 +113,5 @@ public interface CommandEnvironment
      * {@code say()} and {@code sayLetter()} methods do this automatically.
      */
     void silence();
-    void setClipboard(String[] value);
+    //    void setClipboard(String[] value);
 }

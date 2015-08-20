@@ -34,8 +34,8 @@ public interface ControlEnvironment
     void onAreaNewHotPoint(Area area);
 int getAreaVisibleHeight(Area area);
     void popup(Popup popupObj);
-    void setClipboard(String[] value);
-    String[] getClipboard();
+    //    void setClipboard(String[] value);
+    //    String[] getClipboard();
     LaunchContext launchContext();
     String staticStr(int code);
     org.luwrain.core.Strings environmentStrings();

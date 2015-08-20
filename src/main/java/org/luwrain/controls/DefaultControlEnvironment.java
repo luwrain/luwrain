@@ -84,6 +84,7 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	return luwrain.getAreaVisibleHeight(area);
     }
 
+    /*
     @Override public void setClipboard(String[] value)
     {
 	luwrain.setClipboard(value);
@@ -93,6 +94,7 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	return luwrain.getClipboard();
     }
+    */
 
     @Override public void popup(Popup popupObj)
     {

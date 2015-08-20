@@ -17,6 +17,7 @@ public class RegionQuery extends AreaQuery
 	if (data != null)
 	    throw new IllegalArgumentException("data may not be set twice");
 	this.data = data;
+	resultTaken();
     }
 
     public HeldData getData()

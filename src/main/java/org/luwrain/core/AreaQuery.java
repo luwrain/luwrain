@@ -16,19 +16,31 @@
 
 package org.luwrain.core;
 
-public class AreaQuery
+public class AreaQuery extends Event
 {
     static public final int REGION = 0;
 
     private int code;
+    private boolean containsResult = false;
 
     public AreaQuery(int code)
     {
+	super(AREA_QUERY_EVENT);
 	this.code = code;
     }
 
     public int getQueryCode()
     {
 	return code;
+    }
+
+    public boolean containsResult()
+    {
+	return containsResult;
+    }
+
+    protected void resultTaken()
+    {
+	containsResult = true;
     }
 }

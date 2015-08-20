@@ -42,7 +42,7 @@ class ScreenContentManager
 
     public  Application isNonPopupDest()
     {
-	    if (inProperActivePopup())
+	    if (isPopupActive())
 		return null;
 	final Area activeArea = applications.getActiveAreaOfActiveApp();
 	return activeArea != null?applications.getActiveApp():null;
@@ -50,73 +50,111 @@ class ScreenContentManager
 
     public  int onKeyboardEvent(KeyboardEvent event)
     {
-	    if (inProperActivePopup())
-		return popups.getAreaOfLastPopup().onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
-	Area activeArea = applications.getActiveAreaOfActiveApp();
-	if (activeArea == null && hasProperPopup())
-	{
-	    activePopup = true;
-	    activeArea = popups.getAreaOfLastPopup();
-	}
-	if (activeArea != null)
-	    return activeArea.onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
-	return NO_APPLICATIONS;
+	final Area activeArea = getActiveArea();
+	if (activeArea == null)
+	    return NO_APPLICATIONS;
+	if (isActiveAreaBlocked())
+	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
+	return activeArea.onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
     }
 
     public  int onEnvironmentEvent(EnvironmentEvent event)
     {
-	    if (inProperActivePopup())
-		return popups.getAreaOfLastPopup().onEnvironmentEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
-	Area activeArea = applications.getActiveAreaOfActiveApp();
-	if (activeArea == null && hasProperPopup())
-	{
-	    activePopup = true;
-	    activeArea = popups.getAreaOfLastPopup();
-	}
-	if (activeArea != null)
-	    return activeArea.onEnvironmentEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
+	final Area activeArea = getActiveArea();
+	if (activeArea == null)
 	return NO_APPLICATIONS;
+	if (isActiveAreaBlocked())
+	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
+	    return activeArea.onEnvironmentEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
+
     }
 
-    public boolean setPopupAreaActive()
+    public boolean setPopupActive()
     {
-	if (!hasProperPopup())
+	if (!isPopupOpened())
 	    return false;
 	activePopup = true;
 	return true;
-    }
-
-    public boolean setPopupInactive()
-    {
-	if (applications.getActiveAreaOfActiveApp() == null)
-	    return !hasProperPopup();
-	activePopup = false;
-	return false;
-    }
-
-    public boolean isPopupAreaActive()
-    {
-	return inProperActivePopup();
     }
 
     public void updatePopupState()
     {
 	if (activePopup)
 	{
-	    if (!hasProperPopup())
+	    if (!isPopupOpened())
 		activePopup = false;
 	} else
 	{
-	    if (applications.getActiveAreaOfActiveApp() == null && hasProperPopup())
+	    if (applications.noActiveArea() && isPopupOpened())
 		activePopup = true;
 	}
     }
 
     public Area getActiveArea()
     {
-	    if (inProperActivePopup())
+	    if (isPopupActive())
 		return popups.getAreaOfLastPopup();
-return applications.getActiveAreaOfActiveApp();
+	final Area activeArea = applications.getActiveAreaOfActiveApp();
+	if (activeArea != null)
+	    return activeArea;
+	if (isPopupOpened())
+	{
+	    activePopup = true;
+	    return popups.getAreaOfLastPopup();
+	}
+	return null;
+    }
+
+    /**
+     * Checks that the active area may accept events. Events accepting is
+     * prohibited for non-popup areas of the application which has opened
+     * popups. This method return false even if there is no active area at
+     * all. Weak popups block areas as all others.
+     *
+     * @return False if the active area may accept events, true otherwise
+     */
+    public boolean isActiveAreaBlocked()
+    {
+	if (isPopupActive())
+	    return false;
+	final Application activeApp = applications.getActiveApp();
+	if (activeApp == null)
+	    return false;
+	return popups.hasPopupOfApp(activeApp);
+    }
+
+    /**
+     * Checks that there is an opened popup (probably, inactive). Opened
+     * popup appears on screen in one of two cases: if the currently active
+     * application has a popup or if the environment itself has it.  If the
+     * application with a popup switches to the another one without a popup,
+     * the popup hides.
+     *
+     * @return True if the environment has an opened popup (regardless active or inactive), false otherwise
+     */
+    public boolean isPopupOpened()
+    {
+	if (!popups.hasAny())
+	    return false;
+	final Application app = popups.getAppOfLastPopup();
+	if (app == null)//it is an environment popup
+	    return true;
+	return applications.isAppActive(app);
+    }
+
+    /**
+     * Checks that the environment has a proper popup, it opened and active.
+     *
+     * @return True if the popup opened and active, false otherwise
+     */
+    public boolean isPopupActive()
+    {
+	if (!activePopup)
+	    return false;
+	    if (isPopupOpened())
+		return true;
+	    activePopup = false;
+	    return false;
     }
 
     public void activateNextArea()
@@ -130,7 +168,7 @@ return applications.getActiveAreaOfActiveApp();
 	    windows[i] = (Window)objs[i];
 	if (windows == null || windows.length <= 0)
 	{
-	    activePopup = hasProperPopup();
+	    activePopup = isPopupOpened();
 	    return;
 	}
 	int index;
@@ -154,8 +192,8 @@ return applications.getActiveAreaOfActiveApp();
 	final Application activeApp = applications.getActiveApp();
 	if (activeApp != null)
 	    windows = constructWindowLayoutOfApp(activeApp); else
-windows = new TileManager();
-	if (hasProperPopup())
+	    windows = new TileManager();
+	if (isPopupOpened())
 	{
 	    Window popupWindow = new Window(popups.getAppOfLastPopup(), popups.getAreaOfLastPopup(), popups.getPositionOfLastPopup());
 	    switch(popupWindow.popupPlace)
@@ -208,25 +246,5 @@ windows = new TileManager();
 	    break;
 	}
 	return tiles;
-    }
-
-    private boolean hasProperPopup()
-    {
-	if (!popups.hasAny())
-	    return false;
-	final Application app = popups.getAppOfLastPopup();
-	if (app == null)//it is an environment popup;
-	    return true;
-	return applications.isAppActive(app);
-    }
-
-    private boolean inProperActivePopup()
-    {
-	if (!activePopup)
-	    return false;
-	    if (hasProperPopup())
-		return true;
-	    activePopup = false;
-	    return false;
     }
 }

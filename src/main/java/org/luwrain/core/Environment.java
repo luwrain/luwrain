@@ -24,6 +24,7 @@ import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
 import org.luwrain.speech.BackEnd;
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
@@ -58,7 +59,7 @@ class Environment implements EventConsumer
     private SharedObjectManager sharedObjects = new SharedObjectManager();
     private UniRefProcManager uniRefProcs = new UniRefProcManager();
 
-    private String[] clipboard = null;
+    private HeldData clipboard = null;
     private LaunchContext launchContext;
     private Strings strings;
     private RegistryAutoCheck registryAutoCheck;
@@ -204,7 +205,7 @@ class Environment implements EventConsumer
     public void quit()
     {
 	YesNoPopup popup = new YesNoPopup(new Luwrain(this), strings.quitPopupName(), strings.quitPopupText(), true);
-	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
+	popupImpl(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled() || !popup.result())
 	    return;
 	InitialEventLoopStopCondition.shouldContinue = false;
@@ -358,28 +359,70 @@ class Environment implements EventConsumer
 	    final Event event = eventQueue.takeEvent();
 	    if (event == null)
 		continue;
-	    switch (event.type())
+	    if (!onEvent(event))
 	    {
-	    case Event.KEYBOARD_EVENT:
-		if (!onKeyboardEvent(translateKeyboardEvent((KeyboardEvent)event)))
-		{
-		    eventQueue.onceAgain(event);
-		    continue;
-		}
-		break;
-	    case Event.ENVIRONMENT_EVENT:
-		if (!onEnvironmentEvent((EnvironmentEvent)event))
-		{
-		    eventQueue.onceAgain(event);
-		    continue;
-		}
-		break;
-	    default:
-		Log.warning("environment", "the event of an unknown type:" + event.type());
+		eventQueue.onceAgain(event);
+		continue;
 	    }
 	    if (!eventQueue.hasAgain())
 		introduce(stopCondition);
-		}
+	}
+    }
+
+    //True means the event is processed and there is no need to process it again;
+    private boolean onEvent(Event event)
+    {
+	try {
+	    switch (event.eventType())
+	    {
+	    case Event.KEYBOARD_EVENT:
+		return onKeyboardEvent(translateKeyboardEvent((KeyboardEvent)event));
+	    case Event.ENVIRONMENT_EVENT:
+
+		if (event instanceof ThreadSyncEvent)
+		    return onThreadSyncEvent((ThreadSyncEvent)event);
+		return onEnvironmentEvent((EnvironmentEvent)event);
+	    default:
+		Log.warning("environment", "the event of an unknown type:" + event.eventType());
+		return true;
+	    }
+	}
+	catch (Throwable e)
+	{
+	    Log.error("core", "got an exception during event processing:" + e.getMessage());
+	    e.printStackTrace();
+	    return true;
+	}
+    }
+
+    static private final int POPUP_BLOCKING_MAY_PROCESS = 0;
+    static private final int POPUP_BLOCKING_EVENT_REJECTED = 1;
+    static private final int POPUP_BLOCKING_TRY_AGAIN = 2;
+    private int popupBlocking()
+    {
+	final Application nonPopupDest = screenContentManager.isNonPopupDest();
+	if (nonPopupDest != null && popups.hasAny())//Non-popup area activated but some popup opened
+	{
+	    final Application lastPopupApp = popups.getAppOfLastPopup();
+	    if (lastPopupApp == null || popups.isWeakLastPopup())//Weak environment popup
+	    {
+		popups.cancelLastPopup();
+		return POPUP_BLOCKING_TRY_AGAIN;
+	    }
+	    if (nonPopupDest == lastPopupApp)//User tries to deal with app having opened popup
+	    {
+		if (popups.isWeakLastPopup())
+		{
+		    //Weak popup;
+		    popups.cancelLastPopup();
+		    return POPUP_BLOCKING_TRY_AGAIN;
+		} else //Strong popup
+		    return POPUP_BLOCKING_EVENT_REJECTED;
+	    } else
+		if (popups.hasPopupOfApp(nonPopupDest))//The destination application has a popup and it is somewhere in the stack, it is not the popup on top;
+		    return POPUP_BLOCKING_EVENT_REJECTED;
+	}
+	return POPUP_BLOCKING_MAY_PROCESS;
     }
 
     private void introduce(EventLoopStopCondition stopCondition)
@@ -401,41 +444,15 @@ class Environment implements EventConsumer
 	if (keyboardEventForEnvironment(event))
 	    return true;
 
-	//Open popup protection for non-popup areas of the same application;
-	final Application nonPopupDest = screenContentManager.isNonPopupDest();
-	if (nonPopupDest != null && popups.hasAny())//Non-popup area activated but some popup opened;
-	{
-	    final Application lastPopupApp = popups.getAppOfLastPopup();
-	    if (lastPopupApp == null || popups.isWeakLastPopup())//Weak environment popup;
+	    switch(popupBlocking())
 	    {
-		popups.cancelLastPopup();
+	    case POPUP_BLOCKING_TRY_AGAIN:
 		return false;
+	    case POPUP_BLOCKING_EVENT_REJECTED:
+		areaBlockedMessage();
+		return true;
 	    }
-	    if (nonPopupDest == lastPopupApp)//User tries to deal with app having opened popup;
-	    {
-		if (popups.isWeakLastPopup())
-		{
-		    //Weak popup;
-		    popups.cancelLastPopup();
-		    return false;
-		} else
-		{
-		    //Strong popup;
-		    playSound(Sounds.EVENT_NOT_PROCESSED);
-		    message(strings.appBlockedByPopup(), Luwrain.MESSAGE_REGULAR);
-		    return true;
-		}
-	    } else
-		if (popups.hasPopupOfApp(nonPopupDest))
-		{
-		    //The destination application has a popup and it is somewhere in the stack, it is not a top popup;
-		    playSound(Sounds.EVENT_NOT_PROCESSED);
-		    message(strings.appBlockedByPopup(), Luwrain.MESSAGE_REGULAR);
-		    return true;
-		}
-	}
 
-	//OK, now we are sure that there are no popups
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
 	    res = screenContentManager.onKeyboardEvent(event);
@@ -454,8 +471,7 @@ class Environment implements EventConsumer
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
-	    playSound(Sounds.NO_APPLICATIONS);
-	    message(strings.startWorkFromMainMenu(), Luwrain.MESSAGE_REGULAR);
+	    noAppsMessage();
 	    break;
 	}
 	return true;
@@ -498,75 +514,22 @@ class Environment implements EventConsumer
 
     private boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
-	//ThreadSyncEvent goes anyway;
-	    if (event.getCode() == EnvironmentEvent.THREAD_SYNC)
+	    switch(popupBlocking())
 	    {
-		onThreadSyncEvent(event);
+	    case POPUP_BLOCKING_TRY_AGAIN:
+		return false;
+	    case POPUP_BLOCKING_EVENT_REJECTED:
+		areaBlockedMessage();
 		return true;
 	    }
-	//Open popup protection for non-popup areas of the same application;
-	final Application nonPopupDest = screenContentManager.isNonPopupDest();
-	if (nonPopupDest != null && popups.hasAny())//Non-popup area activated but some popup opened;
-	{
-	    final Application lastPopupApp = popups.getAppOfLastPopup();
-	    if (lastPopupApp == null || popups.isWeakLastPopup())//Weak environment popup;
-	    {
-		popups.cancelLastPopup();
-		return false;
-	    }
-	    if (nonPopupDest == lastPopupApp)//User tries to deal with app having opened popup;
-	    {
-		if (popups.isWeakLastPopup())
-		{
-		    //Weak popup;
-		    popups.cancelLastPopup();
-		    return false;
-		} else
-		{
-		    //Strong popup;
-		    if (onBasicEnvironmentEvent(event))
-			return true;
-		    playSound(Sounds.EVENT_NOT_PROCESSED);
-		    message(strings.appBlockedByPopup(), Luwrain.MESSAGE_REGULAR);
-		    return true;
-		}
-	    } else
-		if (popups.hasPopupOfApp(nonPopupDest))
-		{
-		    //The destination application has a popup and it is somewhere in the stack, it is not a top popup;
-		    if (onBasicEnvironmentEvent(event))
-			return true;
-		    playSound(Sounds.EVENT_NOT_PROCESSED);
-		    message(strings.appBlockedByPopup(), Luwrain.MESSAGE_REGULAR);
-		    return true;
-		}
-	}
-	//OK, now we are sure that the application has no popups;
+
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
-	    //Paste;
-	    if (event.getCode() == EnvironmentEvent.PASTE)
-	    {
-		if (clipboard == null || clipboard.length < 1)
-		    return true;
-		screenContentManager.onEnvironmentEvent(new InsertEvent(clipboard));
-		return true;
-	    }
-	    //Open;
-	    if (event.getCode() == EnvironmentEvent.OPEN)
-	    {
-		if (screenContentManager.onEnvironmentEvent(event) == ScreenContentManager.EVENT_PROCESSED)
-		    return true;
-		showOpenPopup();
-		return true;
-	    }
 		res = screenContentManager.onEnvironmentEvent(event);
 	}
 	catch (Throwable e)
 	{
-	    Log.error("environment", "environment event throws an exception:" + e.getMessage());
+	    Log.error("core", "environment event throws an exception:" + e.getMessage());
 	    e.printStackTrace();
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
 	    return true;
@@ -577,37 +540,30 @@ class Environment implements EventConsumer
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
-	    playSound(Sounds.NO_APPLICATIONS);
-	    message(strings.startWorkFromMainMenu(), Luwrain.MESSAGE_REGULAR);
+	    noAppsMessage();
 	    break;
 	}
 	return true;
     }
 
-    private void onThreadSyncEvent(EnvironmentEvent event)
+    private boolean onThreadSyncEvent(ThreadSyncEvent event)
     {
-	ThreadSyncEvent threadSync = (ThreadSyncEvent)event;
-	final Area destArea = threadSync.getDestArea();
-	try {
-	    if (destArea != null)
-		destArea.onEnvironmentEvent(event);
-		}
-	catch (Throwable t)
+	final Area destArea = event.getDestArea();
+	if (destArea == null)
 	{
-	    Log.error("environment", "exception while transmitting thread sync event:" + t.getMessage());
-	    t.printStackTrace();
-	}
-    }
-
-    //Called if the application is blocked with a popup;
-    private boolean onBasicEnvironmentEvent(EnvironmentEvent event)
-    {
-	if (event.getCode() == EnvironmentEvent.OPEN)
-	{
-	    showOpenPopup();
+	    Log.warning("core", "thread sync event to the blocked area " + destArea.getClass().getName());
 	    return true;
 	}
-	return false;
+	//FIXME:if the area is blocked we should reject the event;
+	try {
+		destArea.onEnvironmentEvent(event);
+		}
+	catch (Throwable e)
+	{
+	    Log.error("core", "exception while processing thread sync event:" + e.getMessage());
+	    e.printStackTrace();
+	}
+	return true;
     }
 
     @Override public void enqueueEvent(Event e)
@@ -615,7 +571,7 @@ class Environment implements EventConsumer
 	eventQueue.putEvent(e);
     }
 
-    private void goIntoPopup(Application app,
+    private void popupImpl(Application app,
 			    Area area,
 			    int popupPlace,
 			    EventLoopStopCondition stopCondition,
@@ -637,7 +593,7 @@ class Environment implements EventConsumer
 	    popups.onNewInstanceLaunch(app, area.getClass());
 	PopupEventLoopStopCondition popupStopCondition = new PopupEventLoopStopCondition(stopCondition);
 	popups.addNew(app, area, popupPlace, popupStopCondition, noMultipleCopies, isWeakPopup);
-	if (screenContentManager.setPopupAreaActive())
+	if (screenContentManager.setPopupActive())
 	{
 	    introduceActiveArea();
 	    windowManager.redraw();
@@ -663,7 +619,7 @@ class Environment implements EventConsumer
 	if (app == null)
 	    throw new IllegalArgumentException("an unknown application instance is provided");
 	apps.setActiveAreaOfApp(app, area);
-	if (apps.isAppActive(app) && !screenContentManager.isPopupAreaActive())
+	if (apps.isAppActive(app) && !screenContentManager.isPopupActive())
 	    needForIntroduction = true;
 	    //	    introduceActiveArea();
 	windowManager.redraw();
@@ -722,9 +678,7 @@ class Environment implements EventConsumer
 	final Application app = apps.getActiveApp();
 	if (app == null)
 	{
-	    playSound(Sounds.NO_APPLICATIONS);
-	    specialLuwrain.silence(); 
-	    specialLuwrain.say(strings.noLaunchedApps());
+	    noAppsMessage();
 	    return;
 	}
 	final String name = app.getAppName();
@@ -737,37 +691,18 @@ class Environment implements EventConsumer
 
     public void introduceActiveArea()
     {
-	//	needForIntroduction = false;
-	Area activeArea = screenContentManager.getActiveArea();
+	final Area activeArea = getActiveArea();
 	if (activeArea == null)
 	{
-	    specialLuwrain.silence(); 
-	    playSound(Sounds.NO_APPLICATIONS);
-	    specialLuwrain.say(strings.noLaunchedApps());
+	    noAppsMessage();
 	    return;
 	}
-	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
+	if (!isActiveAreaBlocked() && activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
 	    return;
 	specialLuwrain.silence();
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
 	specialLuwrain.say(activeArea.getAreaName());
     }
-
-    /*
-    private void introduceActiveAreaNoEvent()
-    {
-	needForIntroduction = false;
-	Area activeArea = screenContentManager.getActiveArea();
-	if (activeArea == null)
-	{
-	    EnvironmentSounds.play(Sounds.NO_APPLICATIONS);
-	    specialLuwrain.silence();
-	    specialLuwrain.say(strings.noLaunchedApps());
-	    return;
-	}
-	specialLuwrain.say(activeArea.getName());
-    }
-    */
 
     public void increaseFontSize()
     {
@@ -821,24 +756,28 @@ class Environment implements EventConsumer
 	    throw new IllegalArgumentException("popup has provided the luwrain object which hasn\'t enough permission to open a popup");
 	if (instance == privilegedLuwrain)
 	{
-	    goIntoPopup(null, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
+	    popupImpl(null, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
 	return;
 	}
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
 	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
-	goIntoPopup(app, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
+	popupImpl(app, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
     }
 
+    /*
     public void setClipboard(String[] value)
     {
 	clipboard = value;
     }
+    */
 
+    /*
     public String[] getClipboard()
     {
 	return clipboard;
     }
+    */
 
     private KeyboardEvent translateKeyboardEvent(KeyboardEvent event)
     {
@@ -903,33 +842,11 @@ class Environment implements EventConsumer
     {
 	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(specialLuwrain, specialLuwrain).build();
 	playSound(Sounds.MAIN_MENU);
-	goIntoPopup(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true, true);
+	popupImpl(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
 	playSound(Sounds.MAIN_MENU_ITEM);
 	mainMenu.getSelectedItem().doAction(specialLuwrain);
-    }
-
-    private File openPopup()
-    {
-	final FilePopup popup = new FilePopup(privilegedLuwrain,
-					      strings.openPopupName(),
-					      strings.openPopupPrefix(),
-					      launchContext.userHomeDirAsFile());
-	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.getFile();
-    }
-
-    private void showOpenPopup()
-    {
-	File f = openPopup();
-	if (f == null)
-	    return;
-	if (!f.isAbsolute())
-	    f = new File(launchContext.userHomeDirAsFile(), f.getPath());
-	openFiles(new String[]{f.getAbsolutePath()});
     }
 
     public boolean runCommand(String command)
@@ -945,7 +862,7 @@ class Environment implements EventConsumer
     {
 	EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedListPopupModel(commands.getCommandNames()),
 					strings.commandPopupName(), strings.commandPopupPrefix(), "");
-	goIntoPopup(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
+	popupImpl(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
 	    if (!commands.run(popup.text().trim()))
@@ -996,5 +913,110 @@ class Environment implements EventConsumer
     public Browser createBrowser(Luwrain instance)
     {
 	return interaction.createBrowser();
+    }
+
+    public void onRegionPointCommand()
+    {
+	enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REGION_POINT));
+    }
+
+    //returns true if the clipboard was successfully updated;
+    public boolean onCopyCommand(boolean speakAnnouncement)
+    {
+	final Area activeArea = getActiveArea();
+	if (activeArea == null)
+	{
+	    noAppsMessage();
+	    return false;
+	}
+	if (isActiveAreaBlocked())
+	{
+	    areaBlockedMessage();
+	    return false;
+	}
+	final RegionQuery query = new RegionQuery();
+	if (!activeArea.onAreaQuery(query))
+	{
+	    objInaccessibleMessage();
+	    return false;
+	}
+	final HeldData res = query.getData();
+	if (!query.containsResult() || res == null)
+	{
+	    objInaccessibleMessage();
+	    return false;
+	}
+	clipboard = res;
+	if (speakAnnouncement)
+	specialLuwrain.say(res.strings.length + " lines");//FIXME:strings;
+	return true;
+    }
+
+    public void onCutCommand()
+    {
+	if (!onCopyCommand(false))
+	    return;
+	if (!getActiveArea().onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.CUT)))
+	{
+	    objInaccessibleMessage();
+	    return;
+	}
+    }
+
+    public void onPasteCommand()
+    {
+	//FIXME:
+    }
+
+    public void onOpenCommand()
+    {
+	File f = openPopup();
+	if (f == null)
+	    return;
+	if (!f.isAbsolute())
+	    f = new File(launchContext.userHomeDirAsFile(), f.getPath());
+	openFiles(new String[]{f.getAbsolutePath()});
+    }
+
+    private Area getActiveArea()
+    {
+	return screenContentManager.getActiveArea();
+    }
+
+    private void noAppsMessage()
+    {
+	specialLuwrain.silence(); 
+	playSound(Sounds.NO_APPLICATIONS);
+	specialLuwrain.say(strings.noLaunchedApps());
+    }
+
+    private void areaBlockedMessage()
+    {
+	specialLuwrain.silence(); 
+		    playSound(Sounds.EVENT_NOT_PROCESSED);
+		    specialLuwrain.say(strings.appBlockedByPopup(), Luwrain.MESSAGE_REGULAR);
+    }
+
+    private void objInaccessibleMessage()
+    {
+	specialLuwrain.silence();
+	    playSound(Sounds.EVENT_NOT_PROCESSED);
+    }
+
+    private File openPopup()
+    {
+	final FilePopup popup = new FilePopup(privilegedLuwrain,
+					      strings.openPopupName(),
+					      strings.openPopupPrefix(),
+					      launchContext.userHomeDirAsFile());
+	popupImpl(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.getFile();
+    }
+
+    private boolean isActiveAreaBlocked()
+    {
+	return screenContentManager.isActiveAreaBlocked();
     }
 }

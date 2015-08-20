@@ -84,10 +84,12 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
 	return environment.getAreaVisibleHeight(area);
     }
 
+    /*
     public String[] getClipboard()
     {
 	return environment.getClipboard();
     }
+    */
 
     public Registry getRegistry()
     {
@@ -338,10 +340,12 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
 	environment.setActiveArea(this, area);
     }
 
+    /*
     public void setClipboard(String[] value)
     {
 	environment.setClipboard(value);
     }
+    */
 
     private String staticString(int code)
     {

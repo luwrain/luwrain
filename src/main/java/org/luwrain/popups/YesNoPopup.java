@@ -134,7 +134,7 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.COPY:
-	    luwrain.setClipboard(new String[]{text});
+	    //FIXME:	    luwrain.setClipboard(new String[]{text});
 	    luwrain.say(text);
 	    return true;
 	case EnvironmentEvent.INTRODUCE:

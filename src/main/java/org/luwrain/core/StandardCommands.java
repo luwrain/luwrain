@@ -110,13 +110,13 @@ public static Command[] createStandardCommands(Environment env)
 	//open;
 	res.add(new Command() {
 		private Environment e = environment;
-		public String getName()
+		@Override public String getName()
 		{
 		    return "open";
 		}
-		public void onCommand(Luwrain luwrain)
+		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.OPEN));
+		    e.onOpenCommand();
 		}
 	    });
 
@@ -146,72 +146,57 @@ public static Command[] createStandardCommands(Environment env)
 		}
 	    });
 
-	//copy-cut-point;
+	//region-point;
 	res.add(new Command() {
 		private Environment e = environment;
-		public String getName()
+		@Override public String getName()
 		{
-		    return "copy-cut-point";
+		    return "region-point";
 		}
-		public void onCommand(Luwrain luwrain)
+		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REGION_POINT));
+		    e.onRegionPointCommand();
 		}
 	    });
 
 	//copy;
 	res.add(new Command() {
 		private Environment e = environment;
-		public String getName()
+		@Override public String getName()
 		{
 		    return "copy";
 		}
-		public void onCommand(Luwrain luwrain)
+		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.COPY));
+		    e.onCopyCommand(true);
 		}
 	    });
 
 	//cut;
 	res.add(new Command() {
 		private Environment e = environment;
-		public String getName()
+		@Override public String getName()
 		{
 		    return "cut";
 		}
-		public void onCommand(Luwrain luwrain)
+		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CUT));
+		    e.onCutCommand();
 		}
 	    });
 
 	//paste;
 	res.add(new Command() {
 		private Environment e = environment;
-		public String getName()
+		@Override public String getName()
 		{
 		    return "paste";
 		}
-		public void onCommand(Luwrain luwrain)
+		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.PASTE));
+		    e.onPasteCommand();
 		}
 	    });
-
-	//Describe;
-	/*
-	res.add(new Command() {
-		private Environment e = environment;
-		public String getName()
-		{
-		    return "describe";
-		}
-		public void onCommand(Luwrain luwrain)
-		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.DESCRIBE));
-		}
-	    });
-	*/
 
 	//Help;
 	res.add(new Command() {
