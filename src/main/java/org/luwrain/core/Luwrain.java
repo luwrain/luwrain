@@ -166,7 +166,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
      */
     public void onAreaNewHotPoint(Area area)
     {
-	environment.onAreaNewHotPoint(area);
+	environment.onAreaNewHotPointIface(area);
     }
 
     /**
@@ -199,7 +199,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
 
     public void onNewAreaLayout()
     {
-	environment.onNewAreaLayout(this);
+	environment.onNewAreaLayoutIface(this);
     }
 
     public void openFile(String fileName)

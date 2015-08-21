@@ -235,7 +235,7 @@ class WindowManager
 	    preferableHeight = 2;
 	int maxHeight = (bottom - top + 1) - MIN_RANGE_VERTICAL - 1;//1 is for splitter;
 	int maxWidth = (right - left + 1) - MIN_RANGE_HORIZONTAL - 1;//1 is for splitter;
-	if (maxHeight > MAX_TOP_BOTTOM_POPUP_HEIGHT && (win.popupPlace == PopupManager.TOP || win.popupPlace == PopupManager.BOTTOM))
+	if (maxHeight > MAX_TOP_BOTTOM_POPUP_HEIGHT && (win.popupPlace == Popup.TOP || win.popupPlace == Popup.BOTTOM))
 	    maxHeight = MAX_TOP_BOTTOM_POPUP_HEIGHT;
 	if (maxWidth < MIN_RANGE_HORIZONTAL || maxHeight < MIN_RANGE_VERTICAL)
 	{
@@ -248,7 +248,7 @@ class WindowManager
 	int anotherLeft, anotherTop, anotherRight, anotherBottom;
 	switch(win.popupPlace)
 	{
-	case PopupManager.LEFT:
+	case Popup.LEFT:
 	    win.x = left;
 	    win.y = top;
 	    win.width = popupWidth;
@@ -259,7 +259,7 @@ class WindowManager
 	    anotherBottom = bottom;
 	    interaction.drawVerticalLine(top, bottom, left + popupWidth);
 	    break;
-	case PopupManager.TOP:
+	case Popup.TOP:
 	    win.x = left;
 	    win.y = top;
 	    win.width = right - left + 1;
@@ -270,7 +270,7 @@ class WindowManager
 	    anotherBottom = bottom;
 	    interaction.drawHorizontalLine(left, right, top + popupHeight);
 	    break;
-	case PopupManager.RIGHT:
+	case Popup.RIGHT:
 	    win.x = right - popupWidth + 1;
 	    win.y = top;
 	    win.width = popupWidth;
@@ -281,7 +281,7 @@ class WindowManager
 	    anotherBottom = bottom;
 	    interaction.drawVerticalLine(top, bottom, right - popupHeight);
 	    break;
-	case PopupManager.BOTTOM:
+	case Popup.BOTTOM:
 	    win.x = left;
 	    win.y = bottom - popupHeight + 1;
 	    win.width = right - left + 1;

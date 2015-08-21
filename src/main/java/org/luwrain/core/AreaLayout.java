@@ -54,7 +54,7 @@ public class AreaLayout
 	this.area3 = area3;
     }
 
-    public int getType()
+    public int getLayoutType()
     {
 	return layoutType;
     }

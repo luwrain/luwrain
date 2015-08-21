@@ -18,34 +18,29 @@ package org.luwrain.core;
 
 import org.luwrain.core.events.*;
 import org.luwrain.sounds.EnvironmentSounds;
+import org.luwrain.util.*;
 
 class ScreenContentManager
 {
-    public static final int NO_APPLICATIONS = 0;
-    public static final int EVENT_NOT_PROCESSED = 1;
-    public static final int EVENT_PROCESSED = 2;
+    static public final int NO_APPLICATIONS = 0;
+    static public final int EVENT_NOT_PROCESSED = 1;
+    static public final int EVENT_PROCESSED = 2;
 
-    private AppManager applications;
-    private PopupManager popups;
+    private AppManager apps;
     private boolean activePopup = false;
 
-    public ScreenContentManager(AppManager applications,
-				PopupManager popups)
+    public ScreenContentManager(AppManager apps)
     {
-	this.applications = applications;
-	this.popups = popups;
-	if (applications == null)
-	    throw new NullPointerException("apps may not be null");
-	if (popups == null)
-	    throw new NullPointerException("popups may not be null");
+	this.apps = apps;
+	NullCheck.notNull(apps, "apps");
     }
 
     public  Application isNonPopupDest()
     {
 	    if (isPopupActive())
 		return null;
-	final Area activeArea = applications.getActiveAreaOfActiveApp();
-	return activeArea != null?applications.getActiveApp():null;
+	final Area activeArea = apps.getEffectiveActiveAreaOfActiveApp();
+	return activeArea != null?apps.getActiveApp():null;
     }
 
     public  int onKeyboardEvent(KeyboardEvent event)
@@ -85,7 +80,7 @@ class ScreenContentManager
 		activePopup = false;
 	} else
 	{
-	    if (applications.noActiveArea() && isPopupOpened())
+	    if (apps.noEffectiveActiveArea() && isPopupOpened())
 		activePopup = true;
 	}
     }
@@ -93,14 +88,14 @@ class ScreenContentManager
     public Area getActiveArea()
     {
 	    if (isPopupActive())
-		return popups.getAreaOfLastPopup();
-	final Area activeArea = applications.getActiveAreaOfActiveApp();
+		return apps.getEffectiveAreaOfLastPopup();
+	final Area activeArea = apps.getEffectiveActiveAreaOfActiveApp();
 	if (activeArea != null)
 	    return activeArea;
 	if (isPopupOpened())
 	{
 	    activePopup = true;
-	    return popups.getAreaOfLastPopup();
+	    return apps.getEffectiveAreaOfLastPopup();
 	}
 	return null;
     }
@@ -117,10 +112,10 @@ class ScreenContentManager
     {
 	if (isPopupActive())
 	    return false;
-	final Application activeApp = applications.getActiveApp();
+	final Application activeApp = apps.getActiveApp();
 	if (activeApp == null)
 	    return false;
-	return popups.hasPopupOfApp(activeApp);
+	return apps.hasPopupOfApp(activeApp);
     }
 
     /**
@@ -134,12 +129,12 @@ class ScreenContentManager
      */
     public boolean isPopupOpened()
     {
-	if (!popups.hasAny())
+	if (!apps.hasAnyPopup())
 	    return false;
-	final Application app = popups.getAppOfLastPopup();
+	final Application app = apps.getAppOfLastPopup();
 	if (app == null)//it is an environment popup
 	    return true;
-	return applications.isAppActive(app);
+	return apps.isAppActive(app);
     }
 
     /**
@@ -181,33 +176,33 @@ class ScreenContentManager
 	activePopup = windows[index].popup;
 	if (!activePopup)
 	{
-	    applications.setActiveAreaOfApp(windows[index].app, windows[index].area);
-	    applications.setActiveApp(windows[index].app);
+	    apps.setActiveAreaOfApp(windows[index].app, windows[index].area);
+	    apps.setActiveApp(windows[index].app);
 	}
     }
 
     TileManager getWindows()
     {
 	TileManager windows;
-	final Application activeApp = applications.getActiveApp();
+	final Application activeApp = apps.getActiveApp();
 	if (activeApp != null)
 	    windows = constructWindowLayoutOfApp(activeApp); else
 	    windows = new TileManager();
 	if (isPopupOpened())
 	{
-	    Window popupWindow = new Window(popups.getAppOfLastPopup(), popups.getAreaOfLastPopup(), popups.getPositionOfLastPopup());
+	    Window popupWindow = new Window(apps.getAppOfLastPopup(), apps.getEffectiveAreaOfLastPopup(), apps.getPositionOfLastPopup());
 	    switch(popupWindow.popupPlace)
 	    {
-	    case PopupManager.BOTTOM:
+	    case Popup.BOTTOM:
 		windows.addBottom(popupWindow);
 		break;
-	    case PopupManager.TOP:
+	    case Popup.TOP:
 		windows.addTop(popupWindow);
 		break;
-	    case PopupManager.LEFT:
+	    case Popup.LEFT:
 		windows.addLeftSide(popupWindow);
 		break;
-	    case PopupManager.RIGHT:
+	    case Popup.RIGHT:
 		windows.addRightSide(popupWindow);
 		break;
 	    }
@@ -221,7 +216,7 @@ class ScreenContentManager
 	    return null;
 	final AreaLayout layout = app.getAreasToShow();
 	TileManager tiles = new TileManager();
-	switch(layout.getType())
+	switch(layout.getLayoutType())
 	{
 	case AreaLayout.SINGLE:
 	    tiles.createSingle(new Window(app, layout.getArea1()));

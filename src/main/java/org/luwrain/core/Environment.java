@@ -29,7 +29,7 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.sounds.EnvironmentSounds;
-import org.luwrain.util.RegistryAutoCheck;
+import org.luwrain.util.*;
 
 class Environment implements EventConsumer
 {
@@ -47,7 +47,6 @@ class Environment implements EventConsumer
     private InterfaceManager interfaces = new InterfaceManager(this);
     private org.luwrain.desktop.App desktop = new org.luwrain.desktop.App();
     private AppManager apps;
-    private PopupManager popups = new PopupManager();
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
     private GlobalKeys globalKeys;
@@ -120,7 +119,7 @@ class Environment implements EventConsumer
 	privilegedLuwrain = new Luwrain(this);//FIXME:
 	desktop.onLaunch(new Luwrain(this));
 	apps = new AppManager(desktop);
-	screenContentManager = new ScreenContentManager(apps, popups);
+	screenContentManager = new ScreenContentManager(apps);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	extensions = new org.luwrain.core.extensions.Manager(interfaces);
 	extensions.load();
@@ -205,7 +204,7 @@ class Environment implements EventConsumer
     public void quit()
     {
 	YesNoPopup popup = new YesNoPopup(new Luwrain(this), strings.quitPopupName(), strings.quitPopupText(), true);
-	popupImpl(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
+	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled() || !popup.result())
 	    return;
 	InitialEventLoopStopCondition.shouldContinue = false;
@@ -265,7 +264,7 @@ class Environment implements EventConsumer
 	    Log.warning("core", "application " + app.getClass().getName() + " unable to provide valid default area, launch cancelled");
 	    return;
 	}
-	apps.registerNewApp(app, activeArea);
+	apps.newApp(app);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	needForIntroduction = true;
@@ -281,12 +280,12 @@ class Environment implements EventConsumer
 	Application app = interfaces.findApp(instance);
 	if (app == null)
 	    throw new NullPointerException("trying to close an application through an unknown instance object");
-	if (popups.hasPopupOfApp(app))
+	if (apps.hasPopupOfApp(app))
 	{
 	    message(strings.appCloseHasPopup(), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
-	apps.releaseApp(app);
+	apps.closeApp(app);
 	interfaces.release(instance);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
@@ -311,14 +310,14 @@ class Environment implements EventConsumer
 	introduceApp = true;
     }
 
-    public void onNewAreaLayout(Luwrain instance)
+    public void onNewAreaLayoutIface(Luwrain instance)
     {
 	if (instance == null)
 	    throw new NullPointerException("instance may not be null");
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
 	    throw new IllegalArgumentException("Using the unknown instance object");
-	final Area activeArea = apps.getActiveAreaOfApp(app);
+	final Area activeArea = apps.getEffectiveActiveAreaOfApp(app);
 	final AreaLayout newLayout = app.getAreasToShow();
 	if (newLayout == null)
 	    throw new NullPointerException("New area layout may not be null");
@@ -341,8 +340,6 @@ class Environment implements EventConsumer
 	windowManager.redraw();
 	introduceActiveArea();
     }
-
-    //Events;
 
     private void eventLoop(EventLoopStopCondition stopCondition)
     {
@@ -398,25 +395,25 @@ class Environment implements EventConsumer
     private int popupBlocking()
     {
 	final Application nonPopupDest = screenContentManager.isNonPopupDest();
-	if (nonPopupDest != null && popups.hasAny())//Non-popup area activated but some popup opened
+	if (nonPopupDest != null && apps.hasAnyPopup())//Non-popup area activated but some popup opened
 	{
-	    final Application lastPopupApp = popups.getAppOfLastPopup();
-	    if (lastPopupApp == null || popups.isWeakLastPopup())//Weak environment popup
+	    final Application lastPopupApp = apps.getAppOfLastPopup();
+	    if (lastPopupApp == null || apps.isLastPopupWeak())//Weak environment popup
 	    {
-		popups.cancelLastPopup();
+		apps.cancelLastPopup();
 		return POPUP_BLOCKING_TRY_AGAIN;
 	    }
 	    if (nonPopupDest == lastPopupApp)//User tries to deal with app having opened popup
 	    {
-		if (popups.isWeakLastPopup())
+		if (apps.isLastPopupWeak())
 		{
 		    //Weak popup;
-		    popups.cancelLastPopup();
+		    apps.cancelLastPopup();
 		    return POPUP_BLOCKING_TRY_AGAIN;
 		} else //Strong popup
 		    return POPUP_BLOCKING_EVENT_REJECTED;
 	    } else
-		if (popups.hasPopupOfApp(nonPopupDest))//The destination application has a popup and it is somewhere in the stack, it is not the popup on top;
+		if (apps.hasPopupOfApp(nonPopupDest))//The destination application has a popup and it is somewhere in the stack, it is not the popup on top;
 		    return POPUP_BLOCKING_EVENT_REJECTED;
 	}
 	return POPUP_BLOCKING_MAY_PROCESS;
@@ -568,38 +565,29 @@ class Environment implements EventConsumer
 	eventQueue.putEvent(e);
     }
 
-    private void popupImpl(Application app,
-			    Area area,
-			    int popupPlace,
-			    EventLoopStopCondition stopCondition,
-			     boolean noMultipleCopies,
-			     boolean isWeakPopup)
+    private void popupImpl(Application app, Area area,
+			   int popupPos, EventLoopStopCondition stopCondition,
+			   boolean noMultipleCopies, boolean isWeakPopup)
     {
-	if (area == null ||
-	    stopCondition == null)
-	    return;
-	if (popupPlace != PopupManager.TOP &&
-	    popupPlace != PopupManager.BOTTOM && 
-	    popupPlace != PopupManager.LEFT &&
-	    popupPlace != PopupManager.RIGHT)
-	{
-	    Log.warning("environment", "trying to get a popup with illegal place (" + popupPlace + ")");
-	    return;
-	}
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(stopCondition, "stopCondition");
+	if (popupPos != Popup.TOP && popupPos != Popup.BOTTOM && 
+	    popupPos != Popup.LEFT && popupPos != Popup.RIGHT)
+	    throw new IllegalArgumentException("Illegal popup position " + popupPos);
 	if (noMultipleCopies)
-	    popups.onNewInstanceLaunch(app, area.getClass());
-	PopupEventLoopStopCondition popupStopCondition = new PopupEventLoopStopCondition(stopCondition);
-	popups.addNew(app, area, popupPlace, popupStopCondition, noMultipleCopies, isWeakPopup);
+	    apps.onNewPopupOpening(app, area.getClass());
+	final PopupEventLoopStopCondition popupStopCondition = new PopupEventLoopStopCondition(stopCondition);
+	apps.addNewPopup(app, area, popupPos, popupStopCondition, noMultipleCopies, isWeakPopup);
 	if (screenContentManager.setPopupActive())
 	{
 	    introduceActiveArea();
 	    windowManager.redraw();
 	}
 	eventLoop(popupStopCondition);
-	popups.removeLast();
+	apps.closeLastPopup();
 	screenContentManager.updatePopupState();
-	needForIntroduction = true;
 	windowManager.redraw();
+	needForIntroduction = true;
     }
 
     public void setActiveArea(Luwrain instance, Area area)
@@ -622,7 +610,7 @@ class Environment implements EventConsumer
 	windowManager.redraw();
     }
 
-    public void onAreaNewHotPoint(Area area)
+    public void onAreaNewHotPointIface(Area area)
     {
 	if (area == null)
 	    throw new NullPointerException("area may not be null");
@@ -759,13 +747,13 @@ class Environment implements EventConsumer
 	    throw new IllegalArgumentException("popup has provided the luwrain object which hasn\'t enough permission to open a popup");
 	if (instance == privilegedLuwrain)
 	{
-	    popupImpl(null, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
+	    popupImpl(null, popup, Popup.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
 	return;
 	}
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
 	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
-	popupImpl(app, popup, PopupManager.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
+	popupImpl(app, popup, Popup.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
     }
 
     /*
@@ -845,7 +833,7 @@ class Environment implements EventConsumer
     {
 	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(specialLuwrain, specialLuwrain).build();
 	playSound(Sounds.MAIN_MENU);
-	popupImpl(null, mainMenu, PopupManager.LEFT, mainMenu.closing, true, true);
+	popupImpl(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
 	playSound(Sounds.MAIN_MENU_ITEM);
@@ -865,7 +853,7 @@ class Environment implements EventConsumer
     {
 	EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedListPopupModel(commands.getCommandNames()),
 					strings.commandPopupName(), strings.commandPopupPrefix(), "");
-	popupImpl(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
+	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
 	    if (!commands.run(popup.text().trim()))
@@ -1012,7 +1000,7 @@ class Environment implements EventConsumer
 					      strings.openPopupName(),
 					      strings.openPopupPrefix(),
 					      launchContext.userHomeDirAsFile());
-	popupImpl(null, popup, PopupManager.BOTTOM, popup.closing, true, true);
+	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return null;
 	return popup.getFile();
