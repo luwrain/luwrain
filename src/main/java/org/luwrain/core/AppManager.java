@@ -216,13 +216,14 @@ class AppManager
 	}
 	final OpenedPopup removedPopup = popups.lastElement();
 	popups.remove(popups.size() - 1);
-	final int appIndex = findApp(removedPopup.app);
-	if (appIndex < 0)
+	if (removedPopup.app != null)
 	{
-	    Log.warning("core", "the popup being closing is associated with the unknown application");
-	    return;
-	}
-	apps.get(appIndex).closeLastPopup();
+	    final int appIndex = findApp(removedPopup.app);
+	    if (appIndex >= 0)
+		apps.get(appIndex).closeLastPopup(); else
+		Log.warning("core", "the popup being closing is associated with the unknown application");
+	} else
+	    environment.closeLastPopup();
     }
 
     public boolean isLastPopupDiscontinued()
@@ -275,6 +276,53 @@ class AppManager
 	} else
 	    launchedApp = environment;
 	return launchedApp.getEffectiveAreaOfPopup(popup.index);
+    }
+
+public AreaLayout getEffectiveAreaLayout(Application app)
+    {
+	NullCheck.notNull(app, "app");
+	if (isDefaultApp(app))
+	    return defaultApp.getEffectiveAreaLayout();
+	final int index = findApp(app);
+	if (index < 0)
+	    return null;
+	return apps.get(index).getEffectiveAreaLayout();
+    }
+
+    //app may not be null, environment popups should be processed with getCorrespondingEffectiveArea(area);
+    //Area may be an area of any kind, either natural or wrapping;
+    public Area getCorrespondingEffectiveArea(Application app, Area area)
+    {
+	NullCheck.notNull(app, "app");
+	NullCheck.notNull(area, "area");
+	if (isDefaultApp(app))
+	    return defaultApp.getCorrespondingEffectiveArea(area);
+	final int index = findApp(app);
+	if (index < 0)
+	    return null;
+	return apps.get(index).getCorrespondingEffectiveArea(area);
+    }
+
+    //Area may be an area of any kind, either natural or wrapping;
+    public Area getCorrespondingEffectiveArea(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	if (hasDefaultApp())
+	{
+	    final Area res = defaultApp.getCorrespondingEffectiveArea(area);
+	    if (res != null)
+		return res;
+	}
+	for(LaunchedApp a: apps)
+	{
+	    final Area res = a.getCorrespondingEffectiveArea(area);
+	    if (res != null)
+		return res;
+	}
+	final Area res = environment.getCorrespondingEffectiveArea(area);
+	if (res != null)
+	    return res;
+	return null;
     }
 
     public int getPositionOfLastPopup()

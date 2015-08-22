@@ -212,10 +212,14 @@ class ScreenContentManager
 
     private TileManager constructWindowLayoutOfApp(Application app)
     {
-	if (app == null)
+	NullCheck.notNull(app, "app");
+	final AreaLayout layout = apps.getEffectiveAreaLayout(app);
+	if (layout == null)
+	{
+	    Log.warning("core", "got null area layout for the application " + app.getClass().getName());
 	    return null;
-	final AreaLayout layout = app.getAreasToShow();
-	TileManager tiles = new TileManager();
+	}
+	final TileManager tiles = new TileManager();
 	switch(layout.getLayoutType())
 	{
 	case AreaLayout.SINGLE:

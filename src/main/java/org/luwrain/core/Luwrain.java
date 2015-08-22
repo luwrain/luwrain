@@ -78,19 +78,6 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
 	environment.closeApp(this);
     }
 
-    //May return -1 if area is not shown on the screen;
-    public int getAreaVisibleHeight(Area area)
-    {
-	return environment.getAreaVisibleHeightIface(area);
-    }
-
-    /*
-    public String[] getClipboard()
-    {
-	return environment.getClipboard();
-    }
-    */
-
     public Registry getRegistry()
     {
 	return environment.registry();
@@ -166,7 +153,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
      */
     public void onAreaNewHotPoint(Area area)
     {
-	environment.onAreaNewHotPointIface(area);
+	environment.onAreaNewHotPointIface(this, area);
     }
 
     /**
@@ -180,7 +167,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
      */
     public void onAreaNewContent(Area area)
     {
-	environment.onAreaNewContentIface(area);
+	environment.onAreaNewContentIface(this, area);
     }
 
     /**
@@ -194,7 +181,13 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
      */
     public void onAreaNewName(Area area)
     {
-	environment.onAreaNewNameIface(area);
+	environment.onAreaNewNameIface(this, area);
+    }
+
+    //May return -1 if area is not shown on the screen;
+    public int getAreaVisibleHeight(Area area)
+    {
+	return environment.getAreaVisibleHeightIface(this, area);
     }
 
     public void onNewAreaLayout()

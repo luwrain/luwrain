@@ -8,7 +8,6 @@ class TempStrings implements Strings
     public void setStrings(Strings strings)
     {
 	this.strings = strings;
-	System.out.println(this.strings.appName());
     }
 
     @Override public String appName()

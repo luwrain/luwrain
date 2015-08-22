@@ -17,12 +17,13 @@
 package org.luwrain.core;
 
 import java.util.*;
+import org.luwrain.util.*;
 
 import org.luwrain.core.extensions.Extension;
 
 public class InterfaceManager
 {
-    private class Entry
+    static private class Entry
     {
 	public static final int APP = 1;
 	public static final int EXTENSION = 2;
@@ -45,18 +46,13 @@ Luwrain luwrain)
 	}
     }
 
-
-
-
-
     private Environment environment;
-    private Vector<Entry> entries = new Vector<Entry>();
+    final private Vector<Entry> entries = new Vector<Entry>();
 
     public InterfaceManager(Environment environment)
     {
 	this.environment = environment;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
+	NullCheck.notNull(environment, "environment");
     }
 
     public Luwrain requestNew(Application app)
@@ -99,8 +95,8 @@ Luwrain luwrain)
 	    throw new NullPointerException("luwrain may not be null");
 	for(Entry e: entries)
 	    if (e.luwrain == luwrain &&
-e.type == Entry.APP &&
-e.obj instanceof Application)
+		e.type == Entry.APP &&
+		e.obj instanceof Application)
 		return (Application)e.obj;
 	return null;
     }
@@ -111,8 +107,8 @@ e.obj instanceof Application)
 	    throw new NullPointerException("luwrain may not be null");
 	for(Entry e: entries)
 	    if (e.luwrain == luwrain &&
-e.type == Entry.EXTENSION &&
-e.obj instanceof Extension)
+		e.type == Entry.EXTENSION &&
+		e.obj instanceof Extension)
 		return (Extension)e.obj;
 	return null;
     }

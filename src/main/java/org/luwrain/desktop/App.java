@@ -32,7 +32,6 @@ public class App implements Application, Actions
     @Override public boolean onLaunch(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
-	System.out.println("init");
 	if (!base.init(luwrain, strings))
 	    return false;
 	createArea();

@@ -31,31 +31,39 @@ class LaunchedApp extends LaunchedAppBase
     {
 	NullCheck.notNull(newApp, "newApp");
 	app = newApp;
-	final AreaLayout layout = app.getAreasToShow();
+	AreaLayout layout;
+	try {
+	    layout = app.getAreasToShow();
+	}
+	catch (Throwable e)
+	{
+	    Log.info("core", "application " + newApp.getClass().getName() + " has thrown an exception on getAreasToShow():" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
 	if (layout == null)
 	{
-	    Log.warning("core", "application " + app.getClass().getName() + " has returned an empty area layout");
+	    Log.info("core", "application " + app.getClass().getName() + " has returned an empty area layout");
 	    return false;
 	}
 	if (!layout.isValid())
 	{
-	    Log.warning("core", "application " + app.getClass().getName() + " has returned an invalid area layout");
+	    Log.info("core", "application " + app.getClass().getName() + " has returned an invalid area layout");
 	    return false;
 	}
 	layoutType = layout.getLayoutType();
 	areas = layout.getAreas();
 	if (areas == null)
 	{
-	    Log.warning("core", "application " + app.getClass().getName() + " has area layout without areas");
+	    Log.info("core", "application " + app.getClass().getName() + " has area layout without areas");
 	    return false;
 	}
 	areaWrappings = new AreaWrapping[areas.length];
-	for(int i = 0;i < areas.length
-;++i)
+	for(int i = 0;i < areas.length;++i)
 	{
 	    if (areas[i] == null)
 	    {
-		Log.warning("core", "application " + app.getClass().getName() + " has a null area");
+		Log.info("core", "application " + app.getClass().getName() + " has a null area");
 		return false;
 	    }
 	    final AreaWrapping wrapping = new AreaWrapping();
@@ -93,5 +101,22 @@ class LaunchedApp extends LaunchedAppBase
 	if (activeAreaIndex < 0 || areaWrappings == null)
 	    return null;
 	return areaWrappings[activeAreaIndex].getEffectiveArea();
+    }
+
+    @Override public Area getCorrespondingEffectiveArea(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	for(AreaWrapping w: areaWrappings)
+	    if (w.containsArea(area))
+		return w.getEffectiveArea();
+	return super.getCorrespondingEffectiveArea(area);
+    }
+
+    public AreaLayout getEffectiveAreaLayout()
+    {
+	final Area[] a = new Area[areas.length];
+	for(int i = 0;i < areaWrappings.length;++i)
+	    a[i] = areaWrappings[i].getEffectiveArea();
+	return new AreaLayout(layoutType, a);
     }
 }

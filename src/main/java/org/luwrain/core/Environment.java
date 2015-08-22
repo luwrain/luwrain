@@ -117,7 +117,7 @@ class Environment implements EventConsumer
     {
 	specialLuwrain = new Luwrain(this);//FIXME:
 	privilegedLuwrain = new Luwrain(this);//FIXME:
-	desktop.onLaunch(new Luwrain(this));
+	desktop.onLaunch(interfaces.requestNew(desktop));
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
 	windowManager = new WindowManager(interaction, screenContentManager);
@@ -226,8 +226,7 @@ class Environment implements EventConsumer
 
     public void launchApp(Application app)
     {
-	if (app == null)
-	    throw new NullPointerException("app may not be null");
+	NullCheck.notNull(app, "app");
 	final Luwrain o = interfaces.requestNew(app);
 	try {
 	    if (!app.onLaunch(o))
@@ -245,26 +244,13 @@ class Environment implements EventConsumer
 	catch (Throwable e)
 	{
 	    interfaces.release(o);
-	    Log.error("core", "application " + app.getClass().getName() + " has thrown an exception during onLaunch():" + e.getMessage());
+		Log.info("core", "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
 	    e.printStackTrace();
 	    message(strings.appLaunchUnexpectedError(), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
-	final AreaLayout layout = app.getAreasToShow();
-	if (layout == null || !layout.isValid())
-	{
-	    interfaces.release(o);
-	    Log.warning("core", "application " + app.getClass().getName() + " gave an invalid area layout, launch cancelled");
-	    return;
-	}
-	final Area activeArea = layout.getDefaultArea();
-	if (activeArea == null)
-	{
-	    interfaces.release(o);
-	    Log.warning("core", "application " + app.getClass().getName() + " unable to provide valid default area, launch cancelled");
-	    return;
-	}
-	apps.newApp(app);
+	if (!apps.newApp(app))
+	    return; 
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	needForIntroduction = true;
@@ -273,13 +259,20 @@ class Environment implements EventConsumer
 
     public void closeApp(Luwrain instance)
     {
-	if (instance == null)
-	    throw new NullPointerException("instance may not be null");
-	if (instance == specialLuwrain || instance == privilegedLuwrain)
+	NullCheck.notNull(instance, "instance");
+	if (instance == specialLuwrain || instance == privilegedLuwrain)//FIXME:
 	    throw new IllegalArgumentException("trying to close an application through specialLuwrain or privilegedLuwrain objects");
-	Application app = interfaces.findApp(instance);
+	final Application app = interfaces.findApp(instance);
 	if (app == null)
-	    throw new NullPointerException("trying to close an application through an unknown instance object");
+	{
+	    Log.warning("core", "trying to close an application through an unknown instance object");
+	    return;
+	}
+	if (app == desktop)
+	{
+	    Log.warning("core", "trying to close a desktop");
+	    return;
+	}
 	if (apps.hasPopupOfApp(app))
 	{
 	    message(strings.appCloseHasPopup(), Luwrain.MESSAGE_ERROR);
@@ -289,7 +282,6 @@ class Environment implements EventConsumer
 	interfaces.release(instance);
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
-	//	introduceActiveArea();
 	needForIntroduction = true;
 	introduceApp = true;
     }
@@ -610,36 +602,88 @@ class Environment implements EventConsumer
 	windowManager.redraw();
     }
 
-    public void onAreaNewHotPointIface(Area area)
+    public void onAreaNewHotPointIface(Luwrain instance, Area area)
     {
-	if (area == null)
-	    throw new NullPointerException("area may not be null");
-	if (screenContentManager == null)
+	NullCheck.notNull(area, "area");
+	if (screenContentManager == null)//FIXME:
 	    return;
-	if (area != null && area == screenContentManager.getActiveArea())
-	    windowManager.redrawArea(area);
+	Area effectiveArea = null;
+	if (instance != null)
+	{
+	    final Application app = interfaces.findApp(instance);
+	    if (app != null)
+		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	}
+	if (effectiveArea == null)
+	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
+	if (effectiveArea == null)
+	{
+	    Log.info("core", "unable to find the corresponding effective area for " + area.getClass().getName() + " needed in onAreaNewHotPoint()");
+	    return;
+	}
+	if (effectiveArea == screenContentManager.getActiveArea())
+	    windowManager.redrawArea(effectiveArea);
     }
 
-    public void onAreaNewContentIface(Area area)
+    public void onAreaNewContentIface(Luwrain instance, Area area)
     {
-	if (area == null)
-	    throw new NullPointerException("area may not be null");
-	windowManager.redrawArea(area);
+	NullCheck.notNull(area, "area");
+	Area effectiveArea = null;
+	if (instance != null)
+	{
+	    final Application app = interfaces.findApp(instance);
+	    if (app != null)
+		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	}
+	if (effectiveArea == null)
+	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
+	if (effectiveArea == null)
+	{
+	    Log.info("core", "unable to find the corresponding effective area for " + area.getClass().getName() + " needed in onAreaNewContent()");
+	    return;
+	}
+	windowManager.redrawArea(effectiveArea);
     }
 
-    public void onAreaNewNameIface(Area area)
+    public void onAreaNewNameIface(Luwrain instance, Area area)
     {
-	if (area == null)
-	    throw new NullPointerException("area may not be null");
-	windowManager.redrawArea(area);
+	NullCheck.notNull(area, "area");
+	Area effectiveArea = null;
+	if (instance != null)
+	{
+	    final Application app = interfaces.findApp(instance);
+	    if (app != null)
+		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	}
+	if (effectiveArea == null)
+	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
+	if (effectiveArea == null)
+	{
+	    Log.info("core", "unable to find the corresponding effective area for " + area.getClass().getName() + " needed in onAreaNewName()");
+	    return;
+	}
+	windowManager.redrawArea(effectiveArea);
     }
 
     //May return -1;
-    public int getAreaVisibleHeightIface(Area area)
+    public int getAreaVisibleHeightIface(Luwrain instance, Area area)
     {
-	if (area == null)
-	    throw new NullPointerException("area may not be null");
-	return windowManager.getAreaVisibleHeight(area);
+	NullCheck.notNull(area, "area");
+	Area effectiveArea = null;
+	if (instance != null)
+	{
+	    final Application app = interfaces.findApp(instance);
+	    if (app != null)
+		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	}
+	if (effectiveArea == null)
+	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
+	if (effectiveArea == null)
+	{
+	    Log.info("core", "unable to find the corresponding effective area for " + area.getClass().getName() + " needed in getAreaVisibleHeight()");
+	    return -1;
+	}
+	return windowManager.getAreaVisibleHeight(effectiveArea);
     }
 
     public void message(String text, int semantic)

@@ -96,7 +96,6 @@ public class Manager
 	    loadedExt.sharedObjects = getSharedObjects(ext, iface);
 	    loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
 	    loadedExt.controlPanelSections = getControlPanelSections(ext, iface);
-	    System.out.println(loadedExt.controlPanelSections.length + " sections");
 	    res.add(loadedExt);
 	}
 	extensions = res.toArray(new LoadedExtension[res.size()]);

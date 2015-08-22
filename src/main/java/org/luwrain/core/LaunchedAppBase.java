@@ -72,4 +72,13 @@ class LaunchedAppBase
     {
 	return popupWrappings.get(index).getEffectiveArea();
     }
+
+    public Area getCorrespondingEffectiveArea(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	for(AreaWrapping w: popupWrappings)
+	    if (w.containsArea(area))
+		return w.getEffectiveArea();
+	return null;
+    }
 }

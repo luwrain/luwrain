@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import org.luwrain.util.*;
+
 public class AreaLayout
 {
     public static final int SINGLE = 0;
@@ -37,21 +39,71 @@ public class AreaLayout
     {
 	layoutType = SINGLE;
 	area1 = area;
+	NullCheck.notNull(area, "area");
     }
 
-    public AreaLayout(int type, Area area1, Area area2)
+    public AreaLayout(int layoutType,
+		      Area area1, Area area2)
     {
-	layoutType = type;
+	this.layoutType = layoutType;
 	this.area1 = area1;
 	this.area2 = area2;
+	NullCheck.notNull(area1, "area1");
+	NullCheck.notNull(area2, "area2");
+	if (layoutType != LEFT_RIGHT && layoutType != TOP_BOTTOM)
+	    throw new IllegalArgumentException("Illegal layoutType " + layoutType);
     }
 
-    public AreaLayout(int type, Area area1, Area area2, Area area3)
+    public AreaLayout(int layoutType, Area area1,
+		      Area area2, Area area3)
     {
-	layoutType = type;
+	this.layoutType = layoutType;
 	this.area1 = area1;
 	this.area2 = area2;
 	this.area3 = area3;
+	NullCheck.notNull(area1, "area1");
+	NullCheck.notNull(area2, "area2");
+	NullCheck.notNull(area3, "area3");
+	if (layoutType != LEFT_TOP_BOTTOM && layoutType != LEFT_RIGHT_BOTTOM)
+	    throw new IllegalArgumentException("Illegal layoutType " + layoutType);
+    }
+
+    public AreaLayout(int layoutType, Area[] areas)
+    {
+	NullCheck.notNull(areas, "areas");
+	this.layoutType = layoutType;
+	switch(layoutType)
+	{
+	case SINGLE:
+	    if (areas.length < 1)
+		throw new IllegalArgumentException("areas array must have at least one element");
+	    area1 = areas[0];
+	    NullCheck.notNull(area1, "area[0]");
+	    return;
+	case LEFT_RIGHT:
+	case TOP_BOTTOM:
+	    if (areas.length < 2)
+		throw new IllegalArgumentException("areas array must have at least two elements");
+	    area1 = areas[0];
+	    area2 = areas[1];
+	    NullCheck.notNull(area1, "areas[0]");
+	    NullCheck.notNull(area2, "areas[1]");
+	    return;
+	case LEFT_TOP_BOTTOM:
+	case LEFT_RIGHT_BOTTOM:
+
+	    if (areas.length < 3)
+		throw new IllegalArgumentException("areas array must have at least three elements");
+	    area1 = areas[0];
+	    area2 = areas[1];
+	    area3 = areas[2];
+	    NullCheck.notNull(area1, "areas[0]");
+	    NullCheck.notNull(area2, "areas[1]");
+	    NullCheck.notNull(area3, "areas[2]");
+	    return;
+	default:
+	    throw new IllegalArgumentException("Illegal layoutType " + layoutType);
+	}
     }
 
     public int getLayoutType()
