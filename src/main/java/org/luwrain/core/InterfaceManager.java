@@ -25,8 +25,8 @@ public class InterfaceManager
 {
     static private class Entry
     {
-	public static final int APP = 1;
-	public static final int EXTENSION = 2;
+	static public final int APP = 1;
+	static public final int EXTENSION = 2;
 
 	public int type;
 	public Object obj;
@@ -34,19 +34,18 @@ public class InterfaceManager
 
 	public Entry(int type,
 		     Object obj,
-Luwrain luwrain)
+		     Luwrain luwrain)
 	{
 	    this.type = type;
 	    this.obj = obj;
 	    this.luwrain = luwrain;
-	    if (obj == null)
-		throw new NullPointerException("obj may not be null");
-	    if (luwrain == null)
-		throw new NullPointerException("luwrain may not be null");
+	    NullCheck.notNull(obj, "obj");
+	    NullCheck.notNull(luwrain, "luwrain");
 	}
     }
 
     private Environment environment;
+    private Luwrain objForEnvironment;
     final private Vector<Entry> entries = new Vector<Entry>();
 
     public InterfaceManager(Environment environment)
@@ -123,5 +122,19 @@ Luwrain luwrain)
 		entries.remove(i);
 		return;
 	    }
+    }
+
+    public Luwrain getObjForEnvironment()
+    {
+	if (objForEnvironment == null)
+	    objForEnvironment = new Luwrain(environment);
+	return objForEnvironment;
+    }
+
+    //returns true if it is object for environemnt or an extension instance
+    public boolean isSuitsForEnvironmentPopup(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	return luwrain == getObjForEnvironment() || findExt(luwrain) != null;
     }
 }

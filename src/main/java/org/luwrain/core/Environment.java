@@ -66,8 +66,7 @@ class Environment implements EventConsumer
 
     private boolean needForIntroduction = false;
     private boolean introduceApp = false;
-    private Luwrain specialLuwrain;// = new Luwrain(this);
-    private Luwrain privilegedLuwrain;// = new Luwrain(this);
+    private Luwrain speechProc;
 
     public Environment(String[] cmdLine,
 		       Registry registry,
@@ -115,8 +114,7 @@ class Environment implements EventConsumer
 
     private void init()
     {
-	specialLuwrain = new Luwrain(this);//FIXME:
-	privilegedLuwrain = new Luwrain(this);//FIXME:
+	speechProc = new Luwrain(this);
 	desktop.onLaunch(interfaces.requestNew(desktop));
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
@@ -140,7 +138,7 @@ class Environment implements EventConsumer
 	final Command[] standardCommands = StandardCommands.createStandardCommands(this);
 	for(Command sc: standardCommands)
 	    commands.add(new Luwrain(this), sc);//FIXME:
-	commands.addOsCommands(specialLuwrain, registry);
+	commands.addOsCommands(interfaces.getObjForEnvironment(), registry);
 
 	final UniRefProc[] standardUniRefProcs = StandardUniRefProcs.createStandardUniRefProcs(strings);
 	for(UniRefProc proc: standardUniRefProcs)
@@ -260,19 +258,13 @@ class Environment implements EventConsumer
     public void closeApp(Luwrain instance)
     {
 	NullCheck.notNull(instance, "instance");
-	if (instance == specialLuwrain || instance == privilegedLuwrain)//FIXME:
-	    throw new IllegalArgumentException("trying to close an application through specialLuwrain or privilegedLuwrain objects");
+	if (instance == interfaces.getObjForEnvironment())
+	    throw new IllegalArgumentException("Trying to close an application through the special interface object designed for environment operations");
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
-	{
-	    Log.warning("core", "trying to close an application through an unknown instance object");
-	    return;
-	}
+	    throw new IllegalArgumentException("Trying to close an application through an unknown interface object or this object doesn\'t identify an application");
 	if (app == desktop)
-	{
-	    Log.warning("core", "trying to close a desktop");
-	    return;
-	}
+	    throw new IllegalArgumentException("Trying to close a desktop");
 	if (apps.hasPopupOfApp(app))
 	{
 	    message(strings.appCloseHasPopup(), Luwrain.MESSAGE_ERROR);
@@ -280,10 +272,8 @@ class Environment implements EventConsumer
 	}
 	apps.closeApp(app);
 	interfaces.release(instance);
-	screenContentManager.updatePopupState();
-	windowManager.redraw();
-	needForIntroduction = true;
-	introduceApp = true;
+	onNewScreenLayout();
+	setAppIntroduction();
     }
 
     public void switchNextApp()
@@ -581,24 +571,17 @@ class Environment implements EventConsumer
 	setAreaIntroduction();
     }
 
-    public void setActiveArea(Luwrain instance, Area area)
+    public void setActiveAreaIface(Luwrain instance, Area area)
     {
-	if (instance == null)
-	    throw new NullPointerException("instance may not be null");
-	if (area == null)
-	    throw new NullPointerException("area may not be null");
-	if (instance == specialLuwrain)
-	    throw new IllegalArgumentException("instance doesn\'t have enough privilege to change active areas");
-	if (instance == privilegedLuwrain)
-	    throw new NullPointerException("using of privilegedLuwrain object doesn\'t allow changing of active area");
+	NullCheck.notNull(instance, "instance");
+	NullCheck.notNull(area, "area");
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
-	    throw new IllegalArgumentException("an unknown application instance is provided");
+	    throw new IllegalArgumentException("Provided an unknown application instance");
 	apps.setActiveAreaOfApp(app, area);
 	if (apps.isAppActive(app) && !screenContentManager.isPopupActive())
-	    needForIntroduction = true;
-	    //	    introduceActiveArea();
-	windowManager.redraw();
+	    setAreaIntroduction();
+	onNewScreenLayout();
     }
 
     public void onAreaNewHotPointIface(Luwrain instance, Area area)
@@ -715,8 +698,8 @@ class Environment implements EventConsumer
 	    playSound(Sounds.GENERAL_OK);
 	    break;
 	}
-	specialLuwrain.silence();
-	specialLuwrain.say(text, Luwrain.PITCH_MESSAGE);
+	speechProc.silence();
+	speechProc.say(text, Luwrain.PITCH_MESSAGE);
 	interaction.startDrawSession();
 	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
 	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text);
@@ -732,11 +715,11 @@ class Environment implements EventConsumer
 	    return;
 	}
 	final String name = app.getAppName();
-	specialLuwrain.silence();
+	speechProc.silence();
 	playSound(Sounds.INTRO_APP);
 	if (name != null && !name.trim().isEmpty())
-	    specialLuwrain.say(name); else
-	    specialLuwrain.say(app.getClass().getName());
+	    speechProc.say(name); else
+	    speechProc.say(app.getClass().getName());
     }
 
     public void introduceActiveArea()
@@ -749,9 +732,9 @@ class Environment implements EventConsumer
 	}
 	if (!isActiveAreaBlocked() && activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
 	    return;
-	specialLuwrain.silence();
+	speechProc.silence();
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
-	specialLuwrain.say(activeArea.getAreaName());
+	speechProc.say(activeArea.getAreaName());
     }
 
     public void increaseFontSize()
@@ -792,26 +775,24 @@ class Environment implements EventConsumer
 	return null;
     }
 
-    public void popup(Popup popup)
+    public void popupIface(Popup popup)
     {
-	if (popup == null)
-	    throw new NullPointerException("popup may not be null");
-	final Luwrain instance = popup.getLuwrainObject();
+	NullCheck.notNull(popup, "popup");
+	final Luwrain luwrainObject = popup.getLuwrainObject();
 	final EventLoopStopCondition stopCondition = popup.getStopCondition();
-	if (instance == null)
-	    throw new NullPointerException("instance may not be null");
-	if (stopCondition == null)
-	    throw new NullPointerException("stopCondition may not be null");
-	if (instance == specialLuwrain)
-	    throw new IllegalArgumentException("popup has provided the luwrain object which hasn\'t enough permission to open a popup");
-	if (instance == privilegedLuwrain)
+	NullCheck.notNull(luwrainObject, "luwrainObject");
+	NullCheck.notNull(stopCondition, "stopCondition");
+	if (interfaces.isSuitsForEnvironmentPopup(luwrainObject))
 	{
 	    popupImpl(null, popup, Popup.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
-	return;
+	    return;
 	}
-	final Application app = interfaces.findApp(instance);
+	final Application app = interfaces.findApp(luwrainObject);
 	if (app == null)
+	{
+	    Log.warning("core", "somebody is trying to get a popup with fake Luwrain object");
 	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
+	}
 	popupImpl(app, popup, Popup.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
     }
 
@@ -890,13 +871,13 @@ class Environment implements EventConsumer
 
     public void mainMenu()
     {
-	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(specialLuwrain, specialLuwrain).build();
+	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(interfaces.getObjForEnvironment(), interfaces.getObjForEnvironment()).build();
 	playSound(Sounds.MAIN_MENU);
 	popupImpl(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
 	playSound(Sounds.MAIN_MENU_ITEM);
-	mainMenu.getSelectedItem().doAction(specialLuwrain);
+	mainMenu.getSelectedItem().doAction(interfaces.getObjForEnvironment());
     }
 
     public boolean runCommand(String command)
@@ -1022,7 +1003,7 @@ class Environment implements EventConsumer
 	}
 	clipboard = res;
 	if (speakAnnouncement)
-	specialLuwrain.say(res.strings.length + " lines");//FIXME:strings;
+	speechProc.say(res.strings.length + " lines");//FIXME:strings;
 	return true;
     }
 
@@ -1063,6 +1044,11 @@ class Environment implements EventConsumer
 	needForIntroduction = true;
     }
 
+    public void setAppIntroduction()
+    {
+	needForIntroduction = true;
+	introduceApp = true;
+    }
 
     private Area getActiveArea()
     {
@@ -1071,30 +1057,28 @@ class Environment implements EventConsumer
 
     private void noAppsMessage()
     {
-	specialLuwrain.silence(); 
+	speechProc.silence(); 
 	playSound(Sounds.NO_APPLICATIONS);
-	specialLuwrain.say(strings.noLaunchedApps());
+	speechProc.say(strings.noLaunchedApps());
     }
 
     private void areaBlockedMessage()
     {
-	specialLuwrain.silence(); 
+	speechProc.silence(); 
 		    playSound(Sounds.EVENT_NOT_PROCESSED);
-		    specialLuwrain.say(strings.appBlockedByPopup(), Luwrain.MESSAGE_REGULAR);
+		    speechProc.say(strings.appBlockedByPopup(), Luwrain.MESSAGE_REGULAR);
     }
 
     private void objInaccessibleMessage()
     {
-	specialLuwrain.silence();
+	speechProc.silence();
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
     }
 
     private File openPopup()
     {
-	final FilePopup popup = new FilePopup(privilegedLuwrain,
-					      strings.openPopupName(),
-					      strings.openPopupPrefix(),
-					      launchContext.userHomeDirAsFile());
+	final FilePopup popup = new FilePopup(interfaces.getObjForEnvironment(), strings.openPopupName(),
+					      strings.openPopupPrefix(), launchContext.userHomeDirAsFile());
 	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return null;

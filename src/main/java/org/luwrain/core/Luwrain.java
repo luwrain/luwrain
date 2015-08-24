@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
+import org.luwrain.util .*;
 
 /**
  * The main gate to Luwrain core for applications. This class is the
@@ -60,8 +61,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
     public Luwrain(Environment environment)
     {
 	this.environment = environment;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
+	NullCheck.notNull(environment, "environment");
 	Registry registry = environment.registry();
 	RegistryKeys keys = new RegistryKeys();
 	if (registry.getTypeOf(keys.speechCharsToSkip()) == Registry.STRING)
@@ -219,7 +219,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
 
     public void popup(Popup popup)
     {
-	environment.popup(popup);
+	environment.popupIface(popup);
     }
 
     public boolean runCommand(String command)
@@ -330,7 +330,7 @@ public final class Luwrain implements EventConsumer, CommandEnvironment
      */
     public void setActiveArea(Area area)
     {
-	environment.setActiveArea(this, area);
+	environment.setActiveAreaIface(this, area);
     }
 
     /*
