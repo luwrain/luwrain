@@ -112,6 +112,15 @@ class LaunchedApp extends LaunchedAppBase
 	return super.getCorrespondingEffectiveArea(area);
     }
 
+    @Override public AreaWrapping getAreaWrapping(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	for(AreaWrapping w: areaWrappings)
+	    if (w.containsArea(area))
+		return w;
+	return super.getAreaWrapping(area);
+    }
+
     public AreaLayout getEffectiveAreaLayout()
     {
 	final Area[] a = new Area[areas.length];

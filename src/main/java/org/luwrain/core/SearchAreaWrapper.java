@@ -17,31 +17,41 @@
 package org.luwrain.core;
 
 import org.luwrain.core.events.*;
+import org.luwrain.util.*;
 
-class SecurityAreaWrapper implements Area, AreaWrapper
+class SearchAreaWrapper implements Area, AreaWrapper
 {
     private Area area;
+    private Environment environment;
+    private AreaWrappingBase wrappingBase;
+    private int hotPointX = 0;
+    private int hotPointY = 0;
 
-    public SecurityAreaWrapper(Area area)
+    public SearchAreaWrapper(Area area,
+			     Environment environment,
+			     AreaWrappingBase wrappingBase)
     {
 	this.area = area;
-	if (area == null)
-	    throw new NullPointerException("area may not be null");
+	this.environment = environment;
+	this.wrappingBase = wrappingBase;
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(wrappingBase, "wrappingBase");
     }
 
     @Override public String getAreaName()
     {
-	return area.getAreaName();
+	return "Поиск" + area.getAreaName();
     }
 
     @Override public int getHotPointX()
     {
-	return area.getHotPointX();
+	return hotPointX;
     }
 
     @Override public int getHotPointY()
     {
-	return area.getHotPointY();
+	return hotPointY;
     }
 
     @Override public int getLineCount()
@@ -56,6 +66,13 @@ class SecurityAreaWrapper implements Area, AreaWrapper
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (event.isCommand() && !event.isModified())
+	    switch(event.getCommand())
+	    {
+	    case KeyboardEvent.ESCAPE:
+		closeSearch();
+		return true;
+	    }
 	return area.onKeyboardEvent(event);
     }
 
@@ -72,5 +89,11 @@ class SecurityAreaWrapper implements Area, AreaWrapper
     @Override public Action[] getAreaActions()
     {
 	return area.getAreaActions();
+    }
+
+    private void closeSearch()
+    {
+	wrappingBase.resetReviewWrapper();
+	environment.onNewScreenLayout();
     }
 }

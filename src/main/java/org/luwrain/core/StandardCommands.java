@@ -27,7 +27,7 @@ public static Command[] createStandardCommands(Environment env)
 	if (env == null)
 	    throw new NullPointerException("env may not be null");
 	final Environment environment = env;
-	LinkedList<Command> res = new LinkedList<Command>();
+	final LinkedList<Command> res = new LinkedList<Command>();
 
 	//Main menu;
 	res.add(new Command() {
@@ -55,7 +55,20 @@ public static Command[] createStandardCommands(Environment env)
 		}
 	    });
 
-	//OK;
+	//search;
+	res.add(new Command() {
+		final private Environment e = environment;
+		@Override public String getName()
+		{
+		    return "search";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    e.activateAreaSearch();
+		}
+	    });
+
+	//ok;
 	res.add(new Command() {
 		private Environment e = environment;
 		public String getName()

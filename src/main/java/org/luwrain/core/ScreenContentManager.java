@@ -48,7 +48,7 @@ class ScreenContentManager
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)
 	    return NO_APPLICATIONS;
-	if (isActiveAreaBlocked())
+	if (isActiveAreaBlockedByPopup())
 	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
 	return activeArea.onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
     }
@@ -58,7 +58,7 @@ class ScreenContentManager
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)
 	return NO_APPLICATIONS;
-	if (isActiveAreaBlocked())
+	if (isActiveAreaBlockedByPopup())
 	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
 	    return activeArea.onEnvironmentEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
 
@@ -108,7 +108,7 @@ class ScreenContentManager
      *
      * @return False if the active area may accept events, true otherwise
      */
-    public boolean isActiveAreaBlocked()
+    public boolean isActiveAreaBlockedByPopup()
     {
 	if (isPopupActive())
 	    return false;

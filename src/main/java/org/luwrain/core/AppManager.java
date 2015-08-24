@@ -289,6 +289,14 @@ public AreaLayout getEffectiveAreaLayout(Application app)
 	return apps.get(index).getEffectiveAreaLayout();
     }
 
+    public boolean isAppLaunched(Application app)
+    {
+	NullCheck.notNull(app, "app");
+	if (isDefaultApp(app))
+	    return true;
+	return findApp(app) >= 0;
+    }
+
     //app may not be null, environment popups should be processed with getCorrespondingEffectiveArea(area);
     //Area may be an area of any kind, either natural or wrapping;
     public Area getCorrespondingEffectiveArea(Application app, Area area)
@@ -323,6 +331,51 @@ public AreaLayout getEffectiveAreaLayout(Application app)
 	if (res != null)
 	    return res;
 	return null;
+    }
+
+    /**
+     * Returns the area wrapping object for the required area. Provided
+     * reference designates a cell in the application layout, pointing either
+     * to the natural area, either to the security wrapper or to the review
+     * wrapper. Search is carried out over all applications (including the
+     * default application) and all environment popups. 
+     *
+     * @param area The area designating a cell in application layout by the natural area itself or by any of its wrappers
+     * @return The area wrapping which corresponds to  the requested cell of the application layout
+     */
+    public LaunchedAppBase.AreaWrapping getAreaWrapping(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	if (hasDefaultApp())
+	{
+	    final LaunchedAppBase.AreaWrapping res = defaultApp.getAreaWrapping(area);
+	    if (res != null)
+		return res;
+	}
+	for(LaunchedApp a: apps)
+	{
+	    final LaunchedAppBase.AreaWrapping res = a.getAreaWrapping(area);
+	    if (res != null)
+		return res;
+	}
+	final LaunchedAppBase.AreaWrapping res = environment.getAreaWrapping(area);
+	if (res != null)
+	    return res;
+	return null;
+    }
+
+    public boolean setReviewAreaWrapper(Area area, ReviewAreaWrapperFactory factory)
+    {
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(factory, "factory");
+	final LaunchedAppBase.AreaWrapping wrapping = getAreaWrapping(area);
+	if (wrapping == null)
+	    return false;
+	final Area wrapper = factory.createReviewAreaWrapper(area, wrapping);
+	if (wrapper == null)
+	    return false;
+	wrapping.reviewWrapper = wrapper;
+	return true;
     }
 
     public int getPositionOfLastPopup()

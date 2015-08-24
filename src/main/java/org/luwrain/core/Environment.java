@@ -577,9 +577,8 @@ class Environment implements EventConsumer
 	}
 	eventLoop(popupStopCondition);
 	apps.closeLastPopup();
-	screenContentManager.updatePopupState();
-	windowManager.redraw();
-	needForIntroduction = true;
+	onNewScreenLayout();
+	setAreaIntroduction();
     }
 
     public void setActiveArea(Luwrain instance, Area area)
@@ -612,7 +611,11 @@ class Environment implements EventConsumer
 	{
 	    final Application app = interfaces.findApp(instance);
 	    if (app != null)
+	    {
+		if (!apps.isAppLaunched(app))
+		    return;
 		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	    }
 	}
 	if (effectiveArea == null)
 	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
@@ -633,7 +636,11 @@ class Environment implements EventConsumer
 	{
 	    final Application app = interfaces.findApp(instance);
 	    if (app != null)
+	    {
+		if (!apps.isAppLaunched(app))
+		    return;
 		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	    }
 	}
 	if (effectiveArea == null)
 	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
@@ -653,7 +660,11 @@ class Environment implements EventConsumer
 	{
 	    final Application app = interfaces.findApp(instance);
 	    if (app != null)
+	    {
+		if (!apps.isAppLaunched(app))
+		    return;
 		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	    }
 	}
 	if (effectiveArea == null)
 	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
@@ -674,7 +685,11 @@ class Environment implements EventConsumer
 	{
 	    final Application app = interfaces.findApp(instance);
 	    if (app != null)
+	    {
+		if (!apps.isAppLaunched(app))
+		    return -1;
 		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	    }
 	}
 	if (effectiveArea == null)
 	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
@@ -950,6 +965,30 @@ class Environment implements EventConsumer
 	return interaction.createBrowser();
     }
 
+    public void activateAreaSearch()
+    {
+	final Area activeArea = getActiveArea();
+	if (activeArea == null)
+	{
+	    noAppsMessage();
+	    return;
+	}
+	if (isActiveAreaBlocked())
+	{
+	    areaBlockedMessage();
+	    return;
+	}
+	final Environment e = this;
+	apps.setReviewAreaWrapper(activeArea,
+				  new ReviewAreaWrapperFactory() {
+				      @Override public Area createReviewAreaWrapper(Area areaToWrap, AreaWrappingBase wrappingBase)
+				      {
+					  return new SearchAreaWrapper(areaToWrap, e, wrappingBase);
+				      }
+				  });
+	onNewScreenLayout();
+    }
+
     public void onRegionPointCommand()
     {
 	enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REGION_POINT));
@@ -1013,6 +1052,18 @@ class Environment implements EventConsumer
 	openFiles(new String[]{f.getAbsolutePath()});
     }
 
+    public void onNewScreenLayout()
+    {
+	screenContentManager.updatePopupState();
+	windowManager.redraw();
+    }
+
+    public void setAreaIntroduction()
+    {
+	needForIntroduction = true;
+    }
+
+
     private Area getActiveArea()
     {
 	return screenContentManager.getActiveArea();
@@ -1052,6 +1103,7 @@ class Environment implements EventConsumer
 
     private boolean isActiveAreaBlocked()
     {
-	return screenContentManager.isActiveAreaBlocked();
+	//FIXME:Checking for the security wrapper;
+	return screenContentManager.isActiveAreaBlockedByPopup();
     }
 }

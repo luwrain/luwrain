@@ -37,15 +37,14 @@ import org.luwrain .util.*;
 public abstract class NavigateArea implements Area, HotPointInfo
 {
     private ControlEnvironment environment;
-    private Region region = new Region(new EmptyRegionProvider(), this);
+    final private Region region = new Region(new EmptyRegionProvider(), this);
     private int hotPointX = 0;
     private int hotPointY = 0;
 
     public NavigateArea(ControlEnvironment environment)
     {
 	this.environment = environment;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
+	NullCheck.notNull(environment, "environment");
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
