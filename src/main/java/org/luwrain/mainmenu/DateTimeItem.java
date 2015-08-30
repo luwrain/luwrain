@@ -19,7 +19,7 @@
 package org.luwrain.mainmenu;
 
 import org.luwrain.core.*;
-import org.luwrain.mainmenu.Strings;
+import org.luwrain.util.*;
 
 class DateTimeItem implements Item
 {
@@ -30,28 +30,31 @@ class DateTimeItem implements Item
     public DateTimeItem(Strings strings)
     {
 	this.strings = strings;
-	if (strings == null)
-	    throw new NullPointerException("strings may not be null");
-	value = strings.currentDateTime();
+	NullCheck.notNull(strings, "strings");
     }
 
-    @Override public String getText()
+    @Override public String getMMItemText()
     {
 	return value;
     }
 
-    @Override public void introduce(CommandEnvironment env)
+    @Override public void introduceMMItem(Luwrain env)
     {
 	env.playSound(Sounds.GENERAL_TIME);
 	env.say(value);
     }
 
-    @Override public boolean isAction()
+    @Override public boolean isMMAction()
     {
 	return false;
     }
 
-    @Override public void doAction(CommandEnvironment env)
+    @Override public void doMMAction(Luwrain env)
     {
+    }
+
+    @Override public boolean isMMItemEnabled()
+    {
+	return true;
     }
 }

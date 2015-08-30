@@ -25,8 +25,7 @@ import org.luwrain.util.*;
 public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 {
     private Luwrain luwrain;
-    private CommandEnvironment commandEnv;
-    public PopupClosing closing = new PopupClosing(this);
+    final public PopupClosing closing = new PopupClosing(this);
     private Strings strings;
     private Item[] items;
     private Item selectedItem;
@@ -35,22 +34,16 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
     private Region region = new Region(this, null);
 
     public MainMenu(Luwrain luwrain,
-		    CommandEnvironment commandEnv,
 		    Strings strings,
 			Item[] items)
     {
 	this.luwrain = luwrain;
-	this.commandEnv = commandEnv;
+	//	this.commandEnv = commandEnv;
 	this.strings = strings;
 	this.items = items;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (commandEnv == null)
-	    throw new NullPointerException("commandEnv may not be null");
-	if (strings == null)
-	    throw new NullPointerException("strings may not be null");
-	if (items == null)
-	    throw new NullPointerException("items may not be null");
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(strings, "strings");
+	NullCheck.notNull(items, "items");
 	for(int i = 0;i < items.length;++i)
 	    if (items[i] == null)
 		throw new NullPointerException("items[" + i + "] may not be null");
@@ -144,7 +137,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 
     @Override public String getLine(int index)
     {
-	return index < items.length?items[index].getText():"";
+	return index < items.length?items[index].getMMItemText():"";
     }
 
     @Override public String getAreaName()
@@ -179,7 +172,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
 	} else
-	    items[hotPointY].introduce(commandEnv);
+	    items[hotPointY].introduceMMItem(luwrain);//FIXME:Interface for the particular extension;
 	return true;
     }
 
@@ -196,7 +189,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	hotPointX = 0;
 	luwrain.onAreaNewHotPoint(this);
 	if (hotPointY < items.length)
-	    items[hotPointY].introduce(commandEnv);
+	    items[hotPointY].introduceMMItem(luwrain); //FIXME:Interface for the particular extension
 	return true;
     }
 
@@ -210,7 +203,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = items[hotPointY].getText();
+	final String line = items[hotPointY].getMMItemText();
 	if (line == null || line.isEmpty())
 	{
 	    luwrain.hint(Hints.EMPTY_LINE);
@@ -238,7 +231,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = items[hotPointY].getText();
+	final String line = items[hotPointY].getMMItemText();
 	if (line == null || line.isEmpty())
 	{
 	    luwrain.hint(Hints.EMPTY_LINE);
@@ -272,7 +265,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = items[hotPointY].getText();
+	final String line = items[hotPointY].getMMItemText();
 	if (line == null || line.isEmpty())
 	{
 	    luwrain.hint(Hints.EMPTY_LINE);
@@ -299,7 +292,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = items[hotPointY].getText();
+	final String line = items[hotPointY].getMMItemText();
 	if (line == null || line.isEmpty())
 	{
 	    luwrain.hint(Hints.EMPTY_LINE);
@@ -327,9 +320,9 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    return true;
 	}
 	final Item item = items[hotPointY];
-	if (item == null || item.getText() == null || item.getText().isEmpty())
+	if (item == null || item.getMMItemText() == null || item.getMMItemText().isEmpty())
 	    luwrain.hint(Hints.EMPTY_LINE); else
-	    luwrain.say(item.getText());
+	    luwrain.say(item.getMMItemText());
 	return true;
     }
 
@@ -342,7 +335,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = items[hotPointY].getText();
+	final String line = items[hotPointY].getMMItemText();
 	if (line == null || line.isEmpty())
 	{
 	    luwrain.hint(Hints.EMPTY_LINE);
@@ -376,7 +369,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    luwrain.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = items[hotPointY].getText();
+	final String line = items[hotPointY].getMMItemText();
 	if (line == null || line.isEmpty())
 	{
 	    luwrain.hint(Hints.EMPTY_LINE);
@@ -408,7 +401,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	final LinkedList<String> res = new LinkedList<String>();
 	for(Item i: items)
 	{
-	    final String line = i.getText();
+	    final String line = i.getMMItemText();
 	    res.add(line != null?line:"");
 	}
 	res.add("");
@@ -424,7 +417,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    return null;
 	if (fromY == toY)
 	{
-	    final String line = items[fromY].getText();
+	    final String line = items[fromY].getMMItemText();
 	    if (line.isEmpty())
 		return null;
 	    final int fromPos = fromX < line.length()?fromX:line.length();
@@ -436,7 +429,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i < toY;++i)
 	{
-	    final String line = items[i].getText();
+	    final String line = items[i].getMMItemText();
 	    res.add(line != null?line:"");
 	}
 	res.add("");
@@ -459,7 +452,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
     {
 	if (hotPointY >= items.length)
 	    return false;
-	if (!items[hotPointY].isAction())
+	if (!items[hotPointY].isMMAction())
 	    return false;
 	selectedItem = items[hotPointY];
 	return true;

@@ -18,24 +18,24 @@ package org.luwrain.core;
 
 public interface Sounds
 {
-    public static final int EVENT_NOT_PROCESSED = 0;
-    public static final int NO_APPLICATIONS = 1;
-    public static final int STARTUP = 2;
-    public static final int SHUTDOWN = 3;
-    public static final int MAIN_MENU = 4;
-    public static final int MAIN_MENU_ITEM = 5;
-    public static final int MAIN_MENU_EMPTY_LINE = 6;
-    public static final int GENERAL_ERROR = 7;
-
-    public static final int GENERAL_OK = 8;
-    public static final int INTRO_REGULAR = 9;
-    public static final int INTRO_POPUP = 10;
-    public static final int INTRO_APP = 11;
-    public static final int NO_ITEMS_BELOW = 12;
-    public static final int NO_ITEMS_ABOVE = 13;
-    public static final int NO_LINES_BELOW = 14;
-    public static final int NO_LINES_ABOVE = 15;
-    public static final int COMMANDER_NEW_LOCATION = 16;
-    public static final int NEW_LIST_ITEM = 17;
-    public static final int GENERAL_TIME = 18;
+    static public final int EVENT_NOT_PROCESSED = 0;
+    static public final int NO_APPLICATIONS = 1;
+    static public final int STARTUP = 2;
+    static public final int SHUTDOWN = 3;
+    static public final int MAIN_MENU = 4;
+    static public final int MAIN_MENU_ITEM = 5;
+    static public final int MAIN_MENU_EMPTY_LINE = 6;
+    static public final int GENERAL_ERROR = 7;
+    static public final int GENERAL_OK = 8;
+    static public final int INTRO_REGULAR = 9;
+    static public final int INTRO_POPUP = 10;
+    static public final int INTRO_APP = 11;
+    static public final int NO_ITEMS_BELOW = 12;
+    static public final int NO_ITEMS_ABOVE = 13;
+    static public final int NO_LINES_BELOW = 14;
+    static public final int NO_LINES_ABOVE = 15;
+    static public final int COMMANDER_NEW_LOCATION = 16;
+    static public final int NEW_LIST_ITEM = 17;
+    static public final int GENERAL_TIME = 18;
+    static public final int TERM_BELL = 19;
 }

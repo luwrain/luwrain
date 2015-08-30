@@ -16,12 +16,23 @@
 
 package org.luwrain.mainmenu;
 
-import org.luwrain.core.CommandEnvironment;
+import org.luwrain.core.Luwrain;
 
+/**
+ * General interface for the main menu item. The instances of this
+ * interface are provided by Luwrain extensions and used for construction
+ * of the main menu. Items can be one of the two types: general
+ * information item or an action item. Information item only shows some
+ * information to the user but the Enter button does nothing on
+ * it. Action item can do some action using provided 
+ * {@code org.luwrain.core.Luwrain} object, if the user presses the Enter button
+ * on it.
+ */
 public interface Item 
 {
-    String getText();
-    void introduce(CommandEnvironment env);
-    boolean isAction();
-    void doAction(CommandEnvironment env);
+    boolean isMMItemEnabled();
+    String getMMItemText();
+    void introduceMMItem(Luwrain luwrain);
+    boolean isMMAction();
+    void doMMAction(Luwrain luwrain);
 }

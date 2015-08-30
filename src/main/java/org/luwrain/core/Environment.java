@@ -871,13 +871,13 @@ class Environment implements EventConsumer
 
     public void mainMenu()
     {
-	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(interfaces.getObjForEnvironment(), interfaces.getObjForEnvironment()).build();
+	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(interfaces.getObjForEnvironment()).build();
 	playSound(Sounds.MAIN_MENU);
 	popupImpl(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
 	playSound(Sounds.MAIN_MENU_ITEM);
-	mainMenu.getSelectedItem().doAction(interfaces.getObjForEnvironment());
+	mainMenu.getSelectedItem().doMMAction(interfaces.getObjForEnvironment());//FIXME:Need to have an interface for the particular extension;
     }
 
     public boolean runCommand(String command)

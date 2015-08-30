@@ -142,6 +142,10 @@ class RegistryKeys
 	return getProperty("sounds.GeneralTime");
     }
 
+    public String termBell()
+    {
+	return getProperty("sounds.TermBell");
+    }
 
     private String getProperty(String name)
     {

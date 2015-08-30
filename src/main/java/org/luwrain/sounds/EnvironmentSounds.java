@@ -72,6 +72,7 @@ return;
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.commanderNewLocation(), ""), Sounds.COMMANDER_NEW_LOCATION);
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.newListItem(), ""), Sounds.NEW_LIST_ITEM);
 	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.generalTime(), ""), Sounds.GENERAL_TIME);
+	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.termBell(), ""), Sounds.TERM_BELL);
     }
 
     private static void setSoundFile(File dataDir,

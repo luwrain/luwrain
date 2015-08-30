@@ -40,7 +40,7 @@ import org.luwrain.util .*;
  * identification function and applications should try to keep the reference
  * to this class in secret.
  */
-public final class Luwrain implements EventConsumer, CommandEnvironment
+public final class Luwrain implements EventConsumer
 {
     public static final int PITCH_HIGH = org.luwrain.speech.BackEnd.HIGH;
     public static final int PITCH_NORMAL = org.luwrain.speech.BackEnd.NORMAL;

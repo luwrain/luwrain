@@ -17,6 +17,7 @@
 package org.luwrain.mainmenu;
 
 import org.luwrain.core.*;
+import org.luwrain.util.*;
 
 class CommandItem implements Item
 {
@@ -31,35 +32,37 @@ class CommandItem implements Item
 	this.strings = strings;
 	this.command = command;
 	this.title = title;
-	if (strings == null)
-	    throw new NullPointerException("strings may not be null");
-	if (command == null)
-	    throw new NullPointerException("command may not be null");
+	NullCheck.notNull(strings, "strings");
+	NullCheck.notNull(command, "command");
 	if (command.isEmpty())
 	    throw new IllegalArgumentException("command may not be empty");
-	if (title == null)
-	    throw new NullPointerException("title may not be null");
+	NullCheck.notNull(title, "title");
     }
 
-    @Override public String getText()
+    @Override public String getMMItemText()
     {
 	return title;
     }
 
-    @Override public void introduce(CommandEnvironment env)
+    @Override public void introduceMMItem(Luwrain env)
     {
 	env.playSound(Sounds.NEW_LIST_ITEM);
 	env.say(title);
     }
 
-    @Override public boolean isAction()
+    @Override public boolean isMMAction()
     {
 	return true;
     }
 
-    @Override public void doAction(CommandEnvironment env)
+    @Override public void doMMAction(Luwrain env)
     {
 	if (!env.runCommand(command))
 	    env.message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
+    }
+
+    @Override public boolean isMMItemEnabled()
+    {
+	return true;
     }
 }

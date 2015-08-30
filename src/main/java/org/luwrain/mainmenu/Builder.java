@@ -19,29 +19,25 @@ package org.luwrain.mainmenu;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.util.*;
 
 public class Builder
 {
     private Strings strings;
     private Luwrain luwrain;
-    private CommandEnvironment commandEnv;
     private Registry registry;
 
-    public Builder(Luwrain luwrain, CommandEnvironment commandEnv)
+    public Builder(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	this.commandEnv = commandEnv;
-	if (commandEnv == null)
-	    throw new NullPointerException("commandEnv may not be null");
+	NullCheck.notNull(luwrain, "luwrain");
 	this.strings = (Strings)luwrain.i18n().getStrings("main-menu");
 	this.registry = luwrain.getRegistry();
     }
 
     public MainMenu build()
     {
-	return new MainMenu(luwrain, commandEnv, strings, constructItems());
+	return new MainMenu(luwrain, strings, constructItems());
     }
 
     private Item[] constructItems()

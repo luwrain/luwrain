@@ -17,6 +17,7 @@
 package org.luwrain.mainmenu;
 
 import org.luwrain.core.*;
+import org.luwrain.util.*;
 
 class Separator implements Item 
 {
@@ -27,8 +28,7 @@ class Separator implements Item
     {
 	this.isDefault = isDefault;
 	this.text = text;
-	if (text == null)
-	    throw new NullPointerException("text may not be null");
+	NullCheck.notNull(text, "text");
     }
 
     public boolean isDefaultSeparator()
@@ -41,23 +41,28 @@ class Separator implements Item
 	return text;
     }
 
-    @Override public String getText()
+    @Override public String getMMItemText()
     {
 	return "";
     }
 
-    @Override public void introduce(CommandEnvironment env)
+    @Override public void introduceMMItem(Luwrain env)
     {
 	env.silence();
 	env.playSound(Sounds.MAIN_MENU_EMPTY_LINE);
     }
 
-    @Override public boolean isAction()
+    @Override public boolean isMMAction()
     {
 	return false;
     }
 
-    @Override public void doAction(CommandEnvironment env)
+    @Override public void doMMAction(Luwrain env)
     {
+    }
+
+    @Override public boolean isMMItemEnabled()
+    {
+	return true;
     }
 }
