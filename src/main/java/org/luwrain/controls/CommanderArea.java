@@ -80,7 +80,7 @@ public class CommanderArea implements Area, RegionProvider
     protected OperatingSystem os;
     private Location[] importantLocations;
     private org.luwrain.core.Strings strings;
-    private Region region = new Region(this, null);
+    private final Region region = new Region(this);
     private CommanderFilter filter;
     private Comparator comparator;
     private boolean selecting;

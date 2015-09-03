@@ -37,7 +37,7 @@ import org.luwrain .util.*;
 public abstract class NavigateArea implements Area, HotPointInfo
 {
     private ControlEnvironment environment;
-    final private Region region = new Region(new EmptyRegionProvider(), this);
+    private final Region region = new Region(new LinesRegionProvider(this));
     private int hotPointX = 0;
     private int hotPointY = 0;
 

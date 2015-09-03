@@ -25,7 +25,7 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 {
     public PopupClosing closing = new PopupClosing(this);
     protected Luwrain luwrain;
-    private Region region = new Region(this, null);
+    private final Region region = new Region(this);
     private EmbeddedSingleLineEdit edit;
     private String name;
     private String prefix;

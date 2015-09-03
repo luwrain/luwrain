@@ -27,7 +27,7 @@ import org.luwrain.util.*;
 public class ListArea  implements Area, RegionProvider
 {
     private ControlEnvironment environment;
-    private Region region = new Region(this, null);
+    private final Region region = new Region(this);
     private String name = "";
     private ListModel model;
     private ListItemAppearance appearance;

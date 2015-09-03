@@ -31,7 +31,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
     private Item selectedItem;
     private int hotPointX = 0;
     private int hotPointY = 0;
-    private Region region = new Region(this, null);
+    private final Region region = new Region(this);
 
     public MainMenu(Luwrain luwrain,
 		    Strings strings,

@@ -26,7 +26,7 @@ import org.luwrain.util.*;
 public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 {
     protected Luwrain luwrain;
-    private Region region = new Region(this, null);
+    private final Region region = new Region(this);
     public PopupClosing closing = new PopupClosing(this);
     private ListModel model;
     private ListItemAppearance appearance;

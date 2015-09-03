@@ -31,6 +31,7 @@ class DateTimeItem implements Item
     {
 	this.strings = strings;
 	NullCheck.notNull(strings, "strings");
+	this.value = strings.currentDateTime();
     }
 
     @Override public String getMMItemText()

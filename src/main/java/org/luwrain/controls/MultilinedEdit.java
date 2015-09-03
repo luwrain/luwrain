@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
-public class MultilinedEdit implements RegionProvider
+public class MultilinedEdit
 {
     private ControlEnvironment environment;
     private Region region;
@@ -36,7 +36,19 @@ public class MultilinedEdit implements RegionProvider
 	    throw new NullPointerException("environment may not be null");
 	if (model == null)
 	    throw new NullPointerException("model may not be null");
-	region = new Region(this, model);
+	final MultilinedEdit edit = this;
+	region = new Region(new LinesRegionProvider(model){
+		@Override public boolean insertRegion(int x, int y,
+						      HeldData data)
+		{
+		    return edit.insertRegion(x, y, data);
+		}
+		@Override public boolean deleteRegion(int fromX, int fromY,
+						      int toX, int toY)
+		{
+		    return edit.deleteRegion(fromX, fromY, toX, toY);
+		}
+	    });
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -306,6 +318,7 @@ public class MultilinedEdit implements RegionProvider
 	return true;
     }
 
+    /*
     @Override public HeldData getWholeRegion()
     {
 	//Region class will take line automatically;
@@ -318,8 +331,9 @@ public class MultilinedEdit implements RegionProvider
 	//Region class will take line automatically;
 	return null;
     }
+    */
 
-    @Override public boolean deleteRegion(int fromX, int fromY,
+    private boolean deleteRegion(int fromX, int fromY,
 					  int toX, int toY)
     {
 	if (model.getLineCount() < 1)
@@ -358,7 +372,7 @@ public class MultilinedEdit implements RegionProvider
 	return true;
     }
 
-    @Override public boolean insertRegion(int x, int y,
+    private boolean insertRegion(int x, int y,
 					 HeldData data)
     {
 	if (data.strings == null || data.strings.length < 1)
