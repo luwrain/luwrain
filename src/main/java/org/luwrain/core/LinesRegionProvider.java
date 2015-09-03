@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.util;
+package org.luwrain.core;
 
 import java.util.*;
 import org.luwrain.core.*;
