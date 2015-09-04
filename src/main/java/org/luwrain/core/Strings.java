@@ -20,6 +20,10 @@ import org.luwrain.os.Location;
 
 public interface Strings
 {
+    String noClipboardContent();
+    String regionPointSet();
+    String linesCopied(int linesNum);
+    String linesInserted(int linesNum);
     String quitPopupName();
     String quitPopupText();
     String appLaunchNoEnoughMemory();

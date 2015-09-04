@@ -29,17 +29,14 @@ public class EditArea extends SimpleArea
     {
 	super(environment);
 	this.environment = environment;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	createEdit();
+	NullCheck.notNull(environment, "environment");
     }
 
     public EditArea(ControlEnvironment environment, String name)
     {
 	super(environment, name);
 	this.environment = environment;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
+	NullCheck.notNull(environment, "environment");
 	createEdit();
     }
 
@@ -49,15 +46,12 @@ public class EditArea extends SimpleArea
     {
 	super(environment, name, content);
 	this.environment = environment;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be empty");
-	createEdit();
+	NullCheck.notNull(environment, "environment");
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	modified = false;
 	if (edit.onKeyboardEvent(event))
 	{
@@ -70,8 +64,7 @@ public class EditArea extends SimpleArea
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	modified = false;
 	if (edit.onEnvironmentEvent(event))
 	{
@@ -80,6 +73,14 @@ public class EditArea extends SimpleArea
 	    return true;
 	}
 	return super.onEnvironmentEvent(event);
+    }
+
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	NullCheck.notNull(query, "query");
+	if (edit.onAreaQuery(query))
+	    return true;
+	return super.onAreaQuery(query);
     }
 
     public void onChange()

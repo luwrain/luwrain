@@ -51,9 +51,20 @@ public final class Luwrain implements EventConsumer
     public static final int RATE_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
     public static final int RATE_LOW = org.luwrain.speech.BackEnd.LOW;
 
-    public static final int MESSAGE_REGULAR = 0;
-    public static final int MESSAGE_OK = 1;
-    public static final int MESSAGE_ERROR = 2;
+    /** The message must be issued without any sound announcement*/
+    static public final int MESSAGE_REGULAR = 0;
+
+    /** The message must be issued with the "OK" sound announcement*/
+    static public final int MESSAGE_OK = 1;
+
+    /** The message must be issued with a sound announcement indicating the successfully finished operation*/
+    static public final int MESSAGE_DONE = 2;
+
+    /** The message must be issued with a sound announcement indicating that the object isn't ready to perform the operation*/
+    static public final int MESSAGE_NOTREADY = 3;
+
+    /** The message must be issued with a sound announcement indicating the critical error*/
+    static public final int MESSAGE_ERROR = 4;
 
     private Environment environment;
     private String charsToSkip = "";

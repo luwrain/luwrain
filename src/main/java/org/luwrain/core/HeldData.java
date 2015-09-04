@@ -47,4 +47,9 @@ final public class HeldData
 	this.rawObjects = rawObjects;
 	this.comment = comment;
     }
+
+    public boolean isEmpty()
+    {
+	return strings == null || strings.length < 1;
+    }
 }

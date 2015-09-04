@@ -29,13 +29,6 @@ public class InsertEvent extends EnvironmentEvent
 	NullCheck.notNull(data, "data");
     }
 
-    /**
-    public int getCode()
-    {
-	return INSERT;
-    }
-    */
-
     public HeldData getData()
     {
 	return data;

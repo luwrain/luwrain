@@ -730,7 +730,8 @@ class Environment implements EventConsumer
 	    noAppsMessage();
 	    return;
 	}
-	if (!isActiveAreaBlocked() && activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
+	if (!isActiveAreaBlockedByPopup() && !isAreaBlockedBySecurity(activeArea) &&
+	    activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
 	    return;
 	speechProc.silence();
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
@@ -948,17 +949,9 @@ class Environment implements EventConsumer
 
     public void activateAreaSearch()
     {
-	final Area activeArea = getActiveArea();
+	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
-	{
-	    noAppsMessage();
 	    return;
-	}
-	if (isActiveAreaBlocked())
-	{
-	    areaBlockedMessage();
-	    return;
-	}
 	final Environment e = this;
 	apps.setReviewAreaWrapper(activeArea,
 				  new ReviewAreaWrapperFactory() {
@@ -972,38 +965,54 @@ class Environment implements EventConsumer
 
     public void onRegionPointCommand()
     {
-	enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REGION_POINT));
+	final Area activeArea = getValidActiveArea(true);
+	if (activeArea == null)
+	    return;
+	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.REGION_POINT)))
+	    speechProc.say(strings.regionPointSet()); else
+	    objInaccessibleMessage();
     }
 
-    //returns true if the clipboard was successfully updated;
+    /**
+     * Performs the copying of the content of the currently active area. This
+     * method gets currently active area, checks that it isn't blocked and
+     * performs region query, saving the result in the clipboard.  If {@code
+     * onRegionPointCommand} method has been called on the same area, the
+     * region is restricted by two points, otherwise the entire area content
+     * must be copied. The method fails if there is no active area, it is
+     * blocked or the area refuses to perform the region query. 
+     *
+     * @param speakAnnouncement Issue messages to the user to describe  the result of the operation (if false, everything goes silently)
+     * @return True if the clipboard got new content, false otherwise
+     */
     public boolean onCopyCommand(boolean speakAnnouncement)
     {
-	final Area activeArea = getActiveArea();
+	final Area activeArea = getValidActiveArea(speakAnnouncement);
 	if (activeArea == null)
-	{
-	    noAppsMessage();
 	    return false;
-	}
-	if (isActiveAreaBlocked())
-	{
-	    areaBlockedMessage();
-	    return false;
-	}
 	final RegionQuery query = new RegionQuery();
 	if (!activeArea.onAreaQuery(query))
 	{
-	    objInaccessibleMessage();
+	    if (speakAnnouncement)
+		objInaccessibleMessage();
+	    return false;
+	}
+	if (!query.containsResult())
+	{
+	    if (speakAnnouncement)
+		objInaccessibleMessage();
 	    return false;
 	}
 	final HeldData res = query.getData();
-	if (!query.containsResult() || res == null)
+	if (res == null)
 	{
-	    objInaccessibleMessage();
+	    if (speakAnnouncement)
+		objInaccessibleMessage();
 	    return false;
 	}
 	clipboard = res;
 	if (speakAnnouncement)
-	speechProc.say(res.strings.length + " lines");//FIXME:strings;
+	    speechProc.say(strings.linesCopied(res.strings.length));
 	return true;
     }
 
@@ -1020,7 +1029,18 @@ class Environment implements EventConsumer
 
     public void onPasteCommand()
     {
-	//FIXME:
+	if (clipboard == null || clipboard.isEmpty())
+	{
+	    message(strings.noClipboardContent(), Luwrain.MESSAGE_NOTREADY);
+	    return;
+	}
+	final Area activeArea = getValidActiveArea(true);
+	if (activeArea == null)
+	    return;
+	final InsertEvent event = new InsertEvent(clipboard);
+	if (activeArea.onEnvironmentEvent(event))
+	    speechProc.say(strings.linesInserted(clipboard.strings.length)); else
+	    objInaccessibleMessage();
     }
 
     public void onOpenCommand()
@@ -1050,8 +1070,10 @@ class Environment implements EventConsumer
 	introduceApp = true;
     }
 
+    //This method may not return an unwrapped area, there should be at least ta security wrapper
     private Area getActiveArea()
     {
+	//FIXME:Ensure that there is a security wrapper
 	return screenContentManager.getActiveArea();
     }
 
@@ -1085,9 +1107,37 @@ class Environment implements EventConsumer
 	return popup.getFile();
     }
 
-    private boolean isActiveAreaBlocked()
+    private boolean isActiveAreaBlockedByPopup()
     {
-	//FIXME:Checking for the security wrapper;
 	return screenContentManager.isActiveAreaBlockedByPopup();
+    }
+
+    private boolean isAreaBlockedBySecurity(Area area)
+    {
+	return false;
+    }
+
+    private Area getValidActiveArea(boolean speakMessages)
+    {
+	final Area activeArea = getActiveArea();
+	if (activeArea == null)
+	{
+	    if (speakMessages)
+		noAppsMessage();
+	    return null;
+	}
+	if (isAreaBlockedBySecurity(activeArea))
+	{
+	    if (speakMessages)
+		areaBlockedMessage();
+	    return null;
+	}
+	if (isActiveAreaBlockedByPopup())
+	{
+	    if (speakMessages)
+		areaBlockedMessage();
+	    return null;
+	}
+	return activeArea;
     }
 }
