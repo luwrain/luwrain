@@ -695,7 +695,13 @@ class Environment implements EventConsumer
 	    playSound(Sounds.GENERAL_ERROR);
 	    break;
 	case Luwrain.MESSAGE_OK:
-	    playSound(Sounds.GENERAL_OK);
+	    playSound(Sounds.MESSAGE_OK);
+	    break;
+	case Luwrain.MESSAGE_DONE:
+	    playSound(Sounds.MESSAGE_DONE);
+	    break;
+	case Luwrain.MESSAGE_NOT_READY:
+	    playSound(Sounds.MESSAGE_NOT_READY);
 	    break;
 	}
 	speechProc.silence();
@@ -877,7 +883,6 @@ class Environment implements EventConsumer
 	popupImpl(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
-	playSound(Sounds.MAIN_MENU_ITEM);
 	mainMenu.getSelectedItem().doMMAction(interfaces.getObjForEnvironment());//FIXME:Need to have an interface for the particular extension;
     }
 
@@ -1031,7 +1036,7 @@ class Environment implements EventConsumer
     {
 	if (clipboard == null || clipboard.isEmpty())
 	{
-	    message(strings.noClipboardContent(), Luwrain.MESSAGE_NOTREADY);
+	    message(strings.noClipboardContent(), Luwrain.MESSAGE_NOT_READY);
 	    return;
 	}
 	final Area activeArea = getValidActiveArea(true);
@@ -1074,7 +1079,10 @@ class Environment implements EventConsumer
     private Area getActiveArea()
     {
 	//FIXME:Ensure that there is a security wrapper
-	return screenContentManager.getActiveArea();
+	final Area area = screenContentManager.getActiveArea();
+	if (!(area instanceof AreaWrapper))
+	    Log.warning("core", "area " + area.getClass().getName() + " goes through Environment.getActiveArea() not being wrapped by any instance of core.AreaWrapper");
+	return area;
     }
 
     private void noAppsMessage()

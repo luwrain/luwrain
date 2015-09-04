@@ -58,7 +58,7 @@ public class Region
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.REGION_POINT:
-	    System.out.println("first point");
+	    //	    System.out.println("first point");
 	    return firstPoint(hotPointX, hotPointY);
 	case EnvironmentEvent.DELETE:
 	    return delete(hotPointX, hotPointY);
@@ -75,8 +75,8 @@ public class Region
     {
 	fromX = hotPointX;
 	fromY = hotPointY;
-	System.out.println("fromX=" + fromX);
-	System.out.println("fromY=" + fromY);
+	//	System.out.println("fromX=" + fromX);
+	//	System.out.println("fromY=" + fromY);
 	return true;
     }
 
@@ -84,9 +84,9 @@ public class Region
 				 int hotPointX,
 				 int hotPointY)
     {
-	System.out.println("starting");
-	System.out .println("_fromX" + fromX);
-	System.out .println("_fromY" + fromY);
+	//	System.out.println("starting");
+	//	System.out .println("_fromX" + fromX);
+	//	System.out .println("_fromY" + fromY);
 	if (fromX < 0 || fromY < 0)
 	{
 	    final HeldData res = provider.getWholeRegion();

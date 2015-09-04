@@ -72,11 +72,6 @@ class RegistryKeys
 	return getProperty("sounds.MainMenu");
     }
 
-    public String mainMenuItem()
-    {
-	return getProperty("sounds.MainMenuItem");
-    }
-
     public String mainMenuEmptyItem()
     {
 	return getProperty("sounds.MainMenuEmptyItem");
@@ -87,9 +82,19 @@ class RegistryKeys
 	return getProperty("sounds.GeneralError");
     }
 
-    public String generalOk()
+    public String messageOk()
     {
-	return getProperty("sounds.GeneralOk");
+	return getProperty("sounds.MessageOk");
+    }
+
+    public String messageDone()
+    {
+	return getProperty("sounds.MessageDone");
+    }
+
+    public String messageNotReady()
+    {
+	return getProperty("sounds.MessageNotReady");
     }
 
     public String introRegular()
