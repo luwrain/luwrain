@@ -159,6 +159,19 @@ public static Command[] createStandardCommands(Environment env)
 		}
 	    });
 
+	//introduce-line;
+	res.add(new Command() {
+		private Environment e = environment;
+		@Override public String getName()
+		{
+		    return "introduce-line";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    e.onIntroduceLineCommand();
+		}
+	    });
+
 	//region-point;
 	res.add(new Command() {
 		private Environment e = environment;
@@ -195,6 +208,19 @@ public static Command[] createStandardCommands(Environment env)
 		@Override public void onCommand(Luwrain luwrain)
 		{
 		    e.onCutCommand();
+		}
+	    });
+
+	//delete;
+	res.add(new Command() {
+		private Environment e = environment;
+		@Override public String getName()
+		{
+		    return "delete";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    e.onDeleteCommand();
 		}
 	    });
 

@@ -260,7 +260,7 @@ public class CommanderArea implements Area, RegionProvider
 	    if (selected)
 		environment.say(environment.staticStr(LangStatic.COMMANDER_SELECTED) + " " + name); else
 		if (dir)
-		    environment.say(environment.staticStr(LangStatic.COMMANDER_DIRECTORY) + " " + name); else
+		    environment.say(name + " " + environment.staticStr(LangStatic.COMMANDER_DIRECTORY)); else
 		{
 		    if (name.trim().isEmpty())
 			environment.hint(Hints.EMPTY_LINE); else

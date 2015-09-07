@@ -968,6 +968,36 @@ class Environment implements EventConsumer
 	onNewScreenLayout();
     }
 
+    public String onCurrentAreaRegionIface()
+    {
+	//FIXME:
+	return null;
+    }
+
+    public void onIntroduceLineCommand()
+    {
+	final Area activeArea = getValidActiveArea(true);
+	if (activeArea == null)
+	    return;
+	final int hotPointY = activeArea.getHotPointY();
+	if (hotPointY >= activeArea.getLineCount())
+	{
+	    failureMessage();
+	    return;
+	}
+	//FIXME:Offer to the area to introduce line by itself;
+	final String line = activeArea.getLine(hotPointY);
+	if (line == null)
+	{
+	    failureMessage();
+	    return;
+	}
+	if (!line.trim().isEmpty())
+	    speechProc.say(line); else
+	    speechProc.hint(Hints.EMPTY_LINE);
+	needForIntroduction = false;
+    }
+
     public void onRegionPointCommand()
     {
 	final Area activeArea = getValidActiveArea(true);
@@ -1019,6 +1049,11 @@ class Environment implements EventConsumer
 	if (speakAnnouncement)
 	    speechProc.say(strings.linesCopied(res.strings.length));
 	return true;
+    }
+
+    public void onDeleteCommand()
+    {
+	message("delete", Luwrain.MESSAGE_NOT_READY);
     }
 
     public void onCutCommand()
@@ -1097,6 +1132,12 @@ class Environment implements EventConsumer
 	speechProc.silence(); 
 		    playSound(Sounds.EVENT_NOT_PROCESSED);
 		    speechProc.say(strings.appBlockedByPopup(), Luwrain.MESSAGE_REGULAR);
+    }
+
+    private void failureMessage()
+    {
+	speechProc.silence();
+	playSound(Sounds.EVENT_NOT_PROCESSED);
     }
 
     private void objInaccessibleMessage()

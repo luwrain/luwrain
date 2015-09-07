@@ -88,6 +88,10 @@ if (event == null)
 throw new NullPointerException("event may not be null");
 return super.onEnvironmentEvent(event);
 		}
+		@Override public String getAreaName()
+		{
+		    return strings.appName();
+		}
 	    };
     }
 
