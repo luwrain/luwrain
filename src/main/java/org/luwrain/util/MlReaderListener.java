@@ -21,6 +21,15 @@ import java.util.*;
 public interface MlReaderListener
 {
     void onMlTagOpen(String tagName, Map<String, String> attrs);
-    void onMlText(String text, LinkedList<String> ttagsStack);
+    void onMlText(String text, LinkedList<String> tagsStack);
     void onMlTagClose(String tagName);
+
+    //Called on tag opening multiple times before  first false return, on each true closes one tag 
+    boolean isMlAutoClosingNeededOnTagOpen(String newTagName, LinkedList<String> tagsStack);
+
+    boolean mayMlAnticipatoryTagClose(String tagName, 
+				      LinkedList<String> anticipatoryTags, LinkedList<String> tagsStack);
+
+
+
 }

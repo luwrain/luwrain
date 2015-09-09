@@ -16,8 +16,10 @@
 
 package org.luwrain.util;
 
+import java.util.*;
+
 public interface MlReaderConfig
 {
-    boolean mlAdmissibleTag(String tagName);
+    boolean mlAdmissibleTag(String tagName, LinkedList<String>  tagsStack);
     boolean mlTagMustBeClosed(String tagName);
 }

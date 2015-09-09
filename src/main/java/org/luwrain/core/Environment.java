@@ -225,6 +225,9 @@ class Environment implements EventConsumer
     public void launchApp(Application app)
     {
 	NullCheck.notNull(app, "app");
+	Log.debug("core", "launching app " + app.getClass().getName());
+	System.gc();
+	printMemInfo();
 	final Luwrain o = interfaces.requestNew(app);
 	try {
 	    if (!app.onLaunch(o))
@@ -1188,5 +1191,19 @@ class Environment implements EventConsumer
 	    return null;
 	}
 	return activeArea;
+    }
+
+    private void printMemInfo()
+    {
+	final Runtime runtime = Runtime.getRuntime();
+	final java.text.NumberFormat format = java.text.NumberFormat.getInstance();
+	final long maxMemory = runtime.maxMemory();
+	final long allocatedMemory = runtime.totalMemory();
+	final long freeMemory = runtime.freeMemory();
+	Log.debug("core", "Memory usage information:");
+	Log.debug("core", "free memory: " + format.format(freeMemory / 1048576) + "M");
+	Log.debug("core", "allocated memory: " + format.format(allocatedMemory / 1046576) + "M");
+	Log.debug("core", "max memory: " + format.format(maxMemory / 1048576) + "M");
+	//	Log.debug("core", "total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024));
     }
 }

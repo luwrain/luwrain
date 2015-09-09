@@ -26,7 +26,7 @@ public class MlReader
     private String text = "";
     private int pos;
 
-    private LinkedList<String> openedTagStack = new LinkedList<String>();
+    private final LinkedList<String> openedTagStack = new LinkedList<String>();
 
     public MlReader(MlReaderConfig config,
 		   MlReaderListener listener,
@@ -35,7 +35,6 @@ public class MlReader
 	this.config = config;
 	this.listener = listener;
 	this.text = text;
-
 	if (config == null)
 	    throw new NullPointerException("config may not be null");
 	if (listener == null)
@@ -111,7 +110,7 @@ public class MlReader
 	it.moveNext();
 	it.skipBlank();
 	final String tagName = it.getUntilBlankOr(">/").toLowerCase();
-	if (!config.mlAdmissibleTag(tagName))
+	if (!config.mlAdmissibleTag(tagName, openedTagStack))
 	    return false;
 	it.skipBlank();
 	    if (it.currentChar() == '/' || it.currentChar() == '>')
@@ -119,6 +118,7 @@ public class MlReader
 	    //No attributes;
 	    if (it.currentChar() == '>')
 	    {
+		performAutoClosing(tagName);
 		if (config.mlTagMustBeClosed(tagName))
 	    openedTagStack.add(tagName);
 	    listener.onMlTagOpen(tagName, null);
@@ -127,6 +127,7 @@ public class MlReader
 	    }
 	    if (it.isStringHere("/>"))
 	    {
+		performAutoClosing(tagName);
 	    listener.onMlTagOpen(tagName, null);
 		    pos = it.pos() + 2;
 		return true;
@@ -142,6 +143,7 @@ public class MlReader
 	    } //No attributes;
 	    if (it.currentChar() == '>')
 	    {
+		performAutoClosing(tagName);
 		if (config.mlTagMustBeClosed(tagName))
 	    openedTagStack.add(tagName);
 	    listener.onMlTagOpen(tagName, attr);
@@ -150,6 +152,7 @@ public class MlReader
 	    }
 	    if (it.isStringHere("/>"))
 	    {
+		performAutoClosing(tagName);
 	    listener.onMlTagOpen(tagName, attr);
 		    pos = it.pos() + 2;
 		return true;
@@ -159,6 +162,15 @@ public class MlReader
 	catch(StringIterator.OutOfBoundsException e)
 	{
 	    return false;
+	}
+    }
+
+    private void performAutoClosing(String newTagName)
+    {
+	while(!openedTagStack.isEmpty() && listener.isMlAutoClosingNeededOnTagOpen(newTagName, openedTagStack))
+	{
+	    final String lastTag = openedTagStack.pollLast();
+	    listener.onMlTagClose(lastTag);
 	}
     }
 
@@ -186,7 +198,6 @@ public class MlReader
 			   it.moveNext();
 			   continue;
 		       }
-
 		       		       if (it.currentChar() == '\"')
 		       {
 			   it.moveNext();
@@ -204,16 +215,53 @@ public class MlReader
 
     private boolean onClosingTag()
     {
-	final String closingTag = constructClosingTag();
-	final int newPos = checkAtPos(pos, closingTag);
-	if (newPos <= pos)
+	if (openedTagStack.isEmpty())
 	    return false;
-	listener.onMlTagClose(openedTagStack.pollLast());
-	//	System.out.println("+" + closingTag);
-	//	System.out.println("+" + pos);
-	//	System.out.println("+" + newPos);
-	pos = newPos;
-	return true;
+	int newPos = checkAtPos(pos, constructClosingTag(openedTagStack.getLast()));
+	if (newPos > pos)
+	{
+	    listener.onMlTagClose(openedTagStack.pollLast());
+	    pos = newPos;
+	    return true;
+	}
+	if (openedTagStack.size() < 2)
+	    return false;
+	//Trying anticipatory tags closing (usually for </p>, </li>, etc);
+	final LinkedList<String> tagsToClose = new LinkedList<String>();
+	final Iterator it = openedTagStack.descendingIterator();
+	if (!it.hasNext())
+	    return false;
+	tagsToClose.add((String)it.next());
+	while (it.hasNext())
+	{
+	    final String tagName = (String)it.next();
+	    newPos = checkAtPos(pos, constructClosingTag(tagName));
+	    if (newPos <= pos)
+	    {
+		tagsToClose.addFirst(tagName);
+		continue;
+	    }
+	    if (!listener.mayMlAnticipatoryTagClose(tagName, tagsToClose, openedTagStack))
+	    {
+		tagsToClose.addFirst(tagName);
+		continue;
+	    }
+	    tagsToClose.addFirst(tagName);
+	    for(int i = 0;i < tagsToClose.size();++i)
+	    {
+		final String removed = 		openedTagStack.pollLast();
+		listener.onMlTagClose(removed);
+
+	    }
+	    pos = newPos;
+	    return true;
+	}
+	return false;
+    }
+
+    private String constructClosingTag(String tagName)
+    {
+	return "</" + tagName + ">";
     }
 
     private void onCdata()
@@ -338,13 +386,6 @@ public class MlReader
 	return openedTagStack.getLast();
     }
     */
-
-    private String constructClosingTag()
-    {
-	if (openedTagStack.isEmpty())
-	    return "";
-	return "</" + openedTagStack.getLast() + ">";
-    }
 
     /*
     private boolean outOfBounds()
