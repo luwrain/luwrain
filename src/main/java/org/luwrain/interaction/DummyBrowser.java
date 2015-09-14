@@ -16,7 +16,7 @@
 
 package org.luwrain.interaction;
 
-import org.luwrain.core.Browser;
+import org.luwrain.browser.Browser;
 
 class DummyBrowser implements Browser
 {

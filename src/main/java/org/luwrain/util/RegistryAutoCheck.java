@@ -16,7 +16,7 @@
 
 package org.luwrain.util;
 
-import org.luwrain.core.Registry;
+import org.luwrain.core.*;
 import org.luwrain.core.Log;
 
 public class RegistryAutoCheck
@@ -126,6 +126,21 @@ public class RegistryAutoCheck
 	}
 	    return value;
     }
+
+    public boolean bool(String path, boolean defaultValue)
+    {
+	NullCheck.notNull(path, "path");
+	if (path.isEmpty())
+	    throw new IllegalArgumentException("path may not be empty");
+	final int type = registry.getTypeOf(path);
+	if (type != Registry.BOOLEAN)
+	{
+	typeMismatchLogMessage(path, Registry.BOOLEAN, type);
+	return defaultValue;
+	}
+return registry.getBoolean(path);
+    }
+
 
     public String stringNotEmpty(String path, String defaultValue)
     {

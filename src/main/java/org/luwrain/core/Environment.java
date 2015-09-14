@@ -950,7 +950,7 @@ class Environment implements EventConsumer
 
     }
 
-    public Browser createBrowser(Luwrain instance)
+    public org.luwrain.browser.Browser createBrowser(Luwrain instance)
     {
 	return interaction.createBrowser();
     }

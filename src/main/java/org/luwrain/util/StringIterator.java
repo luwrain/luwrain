@@ -1,11 +1,13 @@
 
 package org.luwrain.util;
 
+import org.luwrain.core.NullCheck;
+
 public class StringIterator
 {
     public class OutOfBoundsException extends Exception
     {
-	public OutOfBoundsException(int pos, int len)
+	OutOfBoundsException(int pos, int len)
 	{
 	    super("" + pos + " >= " + len);
 	}
@@ -18,16 +20,14 @@ public class StringIterator
     {
 	this.text = text;
 	this.pos = 0;
-	if (text == null)
-	    throw new NullPointerException("text may not be null");
+	NullCheck.notNull(text, "text");
     }
 
     public StringIterator(String text, int pos) throws OutOfBoundsException
     {
 	this.text = text;
 	this.pos = pos;
-	if (text == null)
-	    throw new NullPointerException("text may not be null");
+	NullCheck.notNull(text, "text");
 	if (pos >= text.length())
 	    throw new OutOfBoundsException(pos, text.length());
     }
@@ -47,7 +47,7 @@ public class StringIterator
     public String getUntilBlankOr(String chars) throws OutOfBoundsException
     {
 	checkBounds();
-	StringBuilder b = new StringBuilder();
+	final StringBuilder b = new StringBuilder();
 	while(pos < text.length() && !blankChar(text.charAt(pos)))
 	{
 	    final char c = text.charAt(pos);
@@ -63,7 +63,7 @@ public class StringIterator
     public String getUntil(String chars) throws OutOfBoundsException
     {
 	checkBounds();
-	StringBuilder b = new StringBuilder();
+	final StringBuilder b = new StringBuilder();
 	while(pos < text.length())
 	{
 	    final char c = text.charAt(pos);

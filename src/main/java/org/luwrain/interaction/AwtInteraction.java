@@ -22,7 +22,7 @@ import org.luwrain.core.events.KeyboardEvent;
 import org.luwrain.core.EventConsumer;
 import org.luwrain.core.Interaction;
 import org.luwrain.core.InteractionParams;
-import org.luwrain.core.Browser;
+import org.luwrain.browser.Browser;
 import org.luwrain.core.Log;
 
 public class AwtInteraction implements Interaction

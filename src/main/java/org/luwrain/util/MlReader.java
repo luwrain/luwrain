@@ -83,12 +83,14 @@ public class MlReader
 		    continue;
 	    }
 
+	    /*
 	    if (c == '&')
 	    {
 		++pos;
 		onEntity();
 		continue;
 	    }
+	    */
 
 	    onText();
 	} //while();
