@@ -22,7 +22,6 @@ public interface Section
 {
     int getDesiredRoot();
     Section[] getChildSections();
-    String getSectionName();
     Area getSectionArea(Environment environment);
     boolean canCloseSection(Environment environment);
     boolean onTreeInsert(Environment environment);

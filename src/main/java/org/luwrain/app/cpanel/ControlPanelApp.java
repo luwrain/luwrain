@@ -1,14 +1,14 @@
 /*
    Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the Luwrain.
+   This file is part of the LUWRAIN.
 
-   Luwrain is free software; you can redistribute it and/or
+   LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
    License as published by the Free Software Foundation; either
    version 3 of the License, or (at your option) any later version.
 
-   Luwrain is distributed in the hope that it will be useful,
+   LUWRAIN is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
@@ -23,7 +23,7 @@ import org.luwrain.cpanel.*;
 
 public class ControlPanelApp implements Application, Actions
 {
-    public static final String STRINGS_NAME = "luwrain.cpanel";
+    static public final String STRINGS_NAME = "luwrain.cpanel";
 
     private Luwrain luwrain;
     private Strings strings;
@@ -37,8 +37,7 @@ public class ControlPanelApp implements Application, Actions
     public ControlPanelApp(Section[] extensionsSections)
     {
 	this.extensionsSections = extensionsSections;
-	if (extensionsSections == null)
-	    throw new NullPointerException("extensionsSections may not be null");
+	NullCheck.notNull(extensionsSections, "extensionsSections"); 
     }
 
     @Override public boolean onLaunch(Luwrain luwrain)
@@ -46,21 +45,23 @@ public class ControlPanelApp implements Application, Actions
 	final Object str = luwrain.i18n().getStrings(STRINGS_NAME);
 	if (str == null || !(str instanceof Strings))
 	    return false;
-	this.luwrain = luwrain;
 	strings = (Strings)str;
+	this.luwrain = luwrain;
 	environment = new EnvironmentImpl(luwrain);
-	sectionsModel = new SectionsTreeModel(luwrain, environment, extensionsSections);
-	createAreas();
+	sectionsModel = new SectionsTreeModel(environment, strings, extensionsSections);
+	createArea();
 	return true;
     }
 
     @Override public String getAppName()
     {
-	return "control";
+	return strings.appName();
     }
 
     @Override public void openSection(Section section)
     {
+luwrain.message("open");
+/*
 	final Area area = section.getSectionArea(environment);
 	if (area == null)
 	    return;
@@ -68,48 +69,55 @@ public class ControlPanelApp implements Application, Actions
 	currentOptionsArea = area;
 	luwrain.onNewAreaLayout();
 	gotoOptions();
+*/
     }
 
-    public void refreshGroups(Object preferableSelected)
+@Override public boolean onSectionsInsert()
+{
+luwrain.message("insert");
+return true;
+}
+
+@Override public boolean onSectionsDelete()
+{
+luwrain.message("delete");
+return true;
+}
+
+    void refreshGroups(Object preferableSelected)
     {
 	//FIXME:
     }
 
     @Override public void closeApp()
     {
+	//FIXME:
 	luwrain.closeApp();
     }
 
-    private void createAreas()
+    private void createArea()
     {
 	final Actions a = this;
 	sectionsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
-				  sectionsModel,
-				  strings.groupsAreaName()) {
-		private Actions actions = a;
-		public boolean onKeyboardEvent(KeyboardEvent event)
+				    sectionsModel,
+				    strings.sectionsAreaName()) {
+		private final Actions actions = a;
+		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
-		    if (super.onKeyboardEvent(event))
-			return true;
-		    //Insert;
-		    if (event.isCommand() && event.getCommand() == KeyboardEvent.INSERT &&
-			!event.isModified())
-		    {
-			SectionsTreeModel model = (SectionsTreeModel)getModel();
-			//			model.insertItem();//FIXME:what selected
-			return true;
-		    }
-
-		    //Tab;
-		    if (event.isCommand() && event.getCommand() == KeyboardEvent.TAB &&
-			!event.isModified())
-		    {
-			actions.gotoOptions();
-			return true;
-		    }
-		    return false;
+		    NullCheck.notNull(event, "event");
+		    if (event.isCommand() && !event.isModified())
+			switch (event.getCommand())
+			{
+			case KeyboardEvent.TAB:
+			    return actions.gotoOptions();
+			case KeyboardEvent.INSERT:
+			    return actions.onSectionsInsert();
+			case KeyboardEvent.DELETE:
+			    return actions.onSectionsDelete();
+			}
+		    return super.onKeyboardEvent(event);
 		}
-		public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
 		    switch (event.getCode())
 		    {
@@ -119,7 +127,7 @@ public class ControlPanelApp implements Application, Actions
 		    }
 		    return false;
 		}
-		public void onClick(Object obj)
+		@Override public void onClick(Object obj)
 		{
 		    if (obj != null && (obj instanceof Section ))
 			actions.openSection((Section)obj);
@@ -139,10 +147,11 @@ public class ControlPanelApp implements Application, Actions
 	luwrain.setActiveArea(sectionsArea);
     }
 
-    @Override public void gotoOptions()
+    @Override public boolean gotoOptions()
     {
-	if (currentOptionsArea == null)
-	    return;
+	if (currentSection == null || currentOptionsArea == null)
+	    return false;
 	luwrain.setActiveArea(currentOptionsArea);
+	return true;
     }
 }
