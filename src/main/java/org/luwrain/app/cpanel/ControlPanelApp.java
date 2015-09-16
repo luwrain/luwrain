@@ -58,31 +58,37 @@ public class ControlPanelApp implements Application, Actions
 	return strings.appName();
     }
 
-    @Override public void openSection(Section section)
+    @Override public void openSection(Section sect)
     {
-luwrain.message("open");
-/*
-	final Area area = section.getSectionArea(environment);
+	//	System.out.println(sect.getClass().getName());
+	final Area area = sect.getSectionArea(environment);
 	if (area == null)
 	    return;
-	currentSection = section;
+	currentSection = sect;
 	currentOptionsArea = area;
+	//	System.out.println("currentSection " + currentSection);
 	luwrain.onNewAreaLayout();
 	gotoOptions();
-*/
     }
 
-@Override public boolean onSectionsInsert()
-{
-luwrain.message("insert");
-return true;
-}
+    @Override public boolean onSectionsInsert()
+    {
+	final Object o = sectionsArea.selected();
+	if (o == null || !(o instanceof Section))
+	    return false;
+	final Section sect = (Section)o;
+	return sect.onTreeInsert(environment);
+    }
 
-@Override public boolean onSectionsDelete()
-{
-luwrain.message("delete");
-return true;
-}
+    @Override public boolean onSectionsDelete()
+    {
+	final Object o = sectionsArea.selected();
+	if (o == null || !(o instanceof Section))
+	    return false;
+	final Section sect = (Section)o;
+	luwrain.message("delete " + sect.toString());
+	return sect.onTreeDelete(environment);
+    }
 
     void refreshGroups(Object preferableSelected)
     {
@@ -137,7 +143,7 @@ return true;
 
     @Override public AreaLayout getAreasToShow()
     {
-	if (currentOptionsArea != null)
+	if (currentSection != null && currentOptionsArea != null)
 	    return new AreaLayout(AreaLayout.LEFT_RIGHT, sectionsArea, currentOptionsArea);
 	return new AreaLayout(sectionsArea);
     }

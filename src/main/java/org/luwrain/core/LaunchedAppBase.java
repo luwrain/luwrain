@@ -21,13 +21,19 @@ import org.luwrain.util.*;
 
 class LaunchedAppBase
 {
-    static public class AreaWrapping implements AreaWrappingBase
+    static class AreaWrapping implements AreaWrappingBase
     {
-	public Area origArea = null;
-	public Area securityWrapper = null;
-	public Area reviewWrapper = null;
+	Area origArea = null;
+	Area securityWrapper = null;
+	Area reviewWrapper = null;
 
-	public boolean containsArea(Area area)
+	AreaWrapping(Area area)
+	{
+	    origArea = area;
+	    securityWrapper = new SecurityAreaWrapper(origArea);
+	}
+
+	boolean containsArea(Area area)
 	{
 	    if (area == null)
 		return false;
@@ -36,7 +42,7 @@ class LaunchedAppBase
 	    reviewWrapper == area;
 	}
 
-	public Area getEffectiveArea()
+	Area getEffectiveArea()
 	{
 	    if (reviewWrapper != null)
 		return reviewWrapper;
@@ -52,17 +58,15 @@ class LaunchedAppBase
 	}
     }
 
-    final public Vector<Area> popups = new Vector<Area>();
-    final public Vector<AreaWrapping> popupWrappings = new Vector<AreaWrapping>();
+    final Vector<Area> popups = new Vector<Area>();
+    final Vector<AreaWrapping> popupWrappings = new Vector<AreaWrapping>();
 
     //Returns the index of the new popup;
-    public int addPopup(Area popup)
+    int addPopup(Area popup)
     {
 	NullCheck.notNull(popup, "popup");
 	popups.add(popup);
-	final AreaWrapping wrapping = new AreaWrapping();
-	wrapping.origArea = popup;
-	wrapping.securityWrapper = new SecurityAreaWrapper(popup);
+	final AreaWrapping wrapping = new AreaWrapping(popup);
 	popupWrappings.add(wrapping);
 	return popups.size() - 1;
     }

@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the Luwrain.
-
-   Luwrain is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   Luwrain is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.core;
 
@@ -27,7 +12,7 @@ class AppManager
     private int activeAppIndex = -1;
     private LaunchedApp defaultApp;
 
-    public AppManager(Application defaultApp)
+    AppManager(Application defaultApp)
     {
 	if (defaultApp != null)
 	{
@@ -38,7 +23,7 @@ class AppManager
 	    this.defaultApp = null;
     }
 
-    public boolean setActiveApp(Application app)
+    boolean setActiveApp(Application app)
     {
 	NullCheck.notNull(app, "app");
 	final int index = findApp(app);
@@ -48,7 +33,7 @@ class AppManager
 	return true;
     }
 
-    public boolean isAppActive(Application app)
+    boolean isAppActive(Application app)
     {
 	NullCheck.notNull(app, "app");
 	if (app == defaultApp && activeAppIndex < 0)
@@ -58,14 +43,14 @@ class AppManager
 	return false;
     }
 
-    public Application getActiveApp()
+    Application getActiveApp()
     {
 	if (activeAppIndex < 0)
 	    return defaultApp != null?defaultApp.app:null;
 	return apps.get(activeAppIndex).app;
     }
 
-    public boolean newApp(Application app)
+    boolean newApp(Application app)
     {
 	NullCheck.notNull(app, "app");
 	final Application activeNow = activeAppIndex >= 0?apps.get(activeAppIndex).app:null;
@@ -85,7 +70,7 @@ class AppManager
 	return true;
     }
 
-    public void closeApp(Application app)
+    void closeApp(Application app)
     {
 	NullCheck.notNull(app, "app");
 	final int index = findApp(app);
@@ -112,7 +97,7 @@ class AppManager
 	    activeAppIndex = apps.size() - 1;
     }
 
-    public void switchNextApp()
+    void switchNextApp()
     {
 	if (apps.isEmpty())
 	{
@@ -132,6 +117,15 @@ class AppManager
 	    activeAppIndex = 0;
     }
 
+    boolean refreshAreaLayoutOfApp(Application app)
+    {
+	NullCheck.notNull(app, "app");
+	final int index = findApp(app);
+	if (index < 0)
+	    return false;
+	return apps.get(index).refreshAreaLayout();
+    }
+
     /**
      * Sets the new active area for the application. Area argument may
      * designate the desired area by the reference of any kind, either to the
@@ -143,7 +137,7 @@ class AppManager
      * @param area The reference to new active area (to the original area or to any wrapper)
      * @return True if new active area was set, false otherwise
      */
-    public boolean setActiveAreaOfApp(Application app, Area area)
+    boolean setActiveAreaOfApp(Application app, Area area)
     {
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(area, "area");

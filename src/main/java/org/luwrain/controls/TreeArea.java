@@ -178,7 +178,7 @@ public class TreeArea implements Area
 
     public void refresh()
     {
-	Object oldSelected = getObjectUnderHotPoint();
+	Object oldSelected = selected();
 	Object newRoot = model.getRoot();
 	if (newRoot == null)
 	{
@@ -202,7 +202,7 @@ public class TreeArea implements Area
 	    selectEmptyLastLine();
     }
 
-    public Object getObjectUnderHotPoint()
+    public Object selected()
     {
 	if (items == null || hotPointY < 0 || hotPointY >= items.length)
 	    return null;

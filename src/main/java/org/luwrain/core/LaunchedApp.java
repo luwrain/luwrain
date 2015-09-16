@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the Luwrain.
-
-   Luwrain is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   Luwrain is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.core;
 
@@ -20,37 +5,18 @@ import org.luwrain.util.*;
 
 class LaunchedApp extends LaunchedAppBase
 {
-    public Application app;
-    public int layoutType;
-    public Area[] areas;
-    public AreaWrapping[] areaWrappings;
-    public int activeAreaIndex;
-    public Application activeAppBeforeLaunch;
+    Application app;
+    int layoutType;
+    Area[] areas;
+    AreaWrapping[] areaWrappings;
+    int activeAreaIndex = 0;
+    Application activeAppBeforeLaunch;
 
-    public boolean init(Application newApp)
+    boolean init(Application newApp)
     {
 	NullCheck.notNull(newApp, "newApp");
 	app = newApp;
-	AreaLayout layout;
-	try {
-	    layout = app.getAreasToShow();
-	}
-	catch (Throwable e)
-	{
-	    Log.info("core", "application " + newApp.getClass().getName() + " has thrown an exception on getAreasToShow():" + e.getMessage());
-	    e.printStackTrace();
-	    return false;
-	}
-	if (layout == null)
-	{
-	    Log.info("core", "application " + app.getClass().getName() + " has returned an empty area layout");
-	    return false;
-	}
-	if (!layout.isValid())
-	{
-	    Log.info("core", "application " + app.getClass().getName() + " has returned an invalid area layout");
-	    return false;
-	}
+	final AreaLayout layout = getValidAreaLayout();
 	layoutType = layout.getLayoutType();
 	areas = layout.getAreas();
 	if (areas == null)
@@ -66,15 +32,70 @@ class LaunchedApp extends LaunchedAppBase
 		Log.info("core", "application " + app.getClass().getName() + " has a null area");
 		return false;
 	    }
-	    final AreaWrapping wrapping = new AreaWrapping();
-	    wrapping.origArea = areas[i];
-	    wrapping.securityWrapper = new SecurityAreaWrapper(areas[i]);
-	    areaWrappings[i] = wrapping;
+	    areaWrappings[i] = new AreaWrapping(areas[i]);
 	}
 	return true;
     }
 
-    public void removeReviewWrappers()
+    boolean refreshAreaLayout()
+    {
+	final Area previouslyActiveArea = areas[activeAreaIndex];
+	final AreaLayout newLayout = getValidAreaLayout();
+	final int newLayoutType = newLayout.getLayoutType();
+	final Area[] newAreas = newLayout.getAreas();
+	if (newAreas == null)
+	{
+	    Log.info("core", "application " + app.getClass().getName() + " has area layout without areas");
+	    return false;
+	}
+	final AreaWrapping[] newAreaWrappings = new AreaWrapping[newAreas.length];
+	for(int i = 0;i < newAreas.length;++i)
+	{
+	    if (newAreas[i] == null)
+	    {
+		Log.info("core", "application " + app.getClass().getName() + " has a null area");
+		return false;
+	    }
+	    newAreaWrappings[i] = new AreaWrapping(newAreas[i]);
+	}
+	layoutType = newLayoutType;
+	areas = newAreas;
+	areaWrappings = newAreaWrappings;
+	activeAreaIndex = -1;
+	for(int i = 0;i < areas.length;++i)
+	    if (previouslyActiveArea == areas[i])
+		activeAreaIndex = i;
+	if (activeAreaIndex < 0 || activeAreaIndex > areas.length)
+	    activeAreaIndex = 0;
+	return true;
+    }
+
+    private AreaLayout getValidAreaLayout()
+    {
+	AreaLayout layout;
+	try {
+	    layout = app.getAreasToShow();
+	}
+	catch (Throwable e)
+	{
+	    Log.info("core", "application " + app.getClass().getName() + " has thrown an exception on getAreasToShow():" + e.getMessage());
+	    e.printStackTrace();
+	    return null;
+	}
+	if (layout == null)
+	{
+	    Log.info("core", "application " + app.getClass().getName() + " has returned an empty area layout");
+	    return null;
+	}
+	if (!layout.isValid())
+	{
+	    Log.info("core", "application " + app.getClass().getName() + " has returned an invalid area layout");
+	    return null;
+	}
+	return layout;
+    }
+
+    void removeReviewWrappers()
     {
 	if (areaWrappings != null)
 	    for(AreaWrapping w: areaWrappings)
@@ -82,7 +103,7 @@ class LaunchedApp extends LaunchedAppBase
     }
 
     //Takes the reference of any kind, either to original area  or to a wrapper
-    public boolean setActiveArea(Area area)
+    boolean setActiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
 	if (areaWrappings == null)
@@ -96,7 +117,7 @@ class LaunchedApp extends LaunchedAppBase
 	return true;
     }
 
-	public Area getEffectiveActiveArea()
+    Area getEffectiveActiveArea()
     {
 	if (activeAreaIndex < 0 || areaWrappings == null)
 	    return null;

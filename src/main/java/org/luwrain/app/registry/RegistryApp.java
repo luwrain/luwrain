@@ -92,7 +92,7 @@ public class RegistryApp implements Application, Actions
 
     @Override public boolean insertDir()
     {
-			final Object obj = dirsArea.getObjectUnderHotPoint();
+			final Object obj = dirsArea.selected();
 			if (obj == null || !(obj instanceof Directory))
 			    return false;
 			if (!base.insertDir((Directory)obj))

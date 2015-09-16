@@ -297,26 +297,16 @@ class Environment implements EventConsumer
 
     public void onNewAreaLayoutIface(Luwrain instance)
     {
-	if (instance == null)
-	    throw new NullPointerException("instance may not be null");
+	NullCheck.notNull(instance, "instance");
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
-	    throw new IllegalArgumentException("Using the unknown instance object");
-	final Area activeArea = apps.getEffectiveActiveAreaOfApp(app);
-	final AreaLayout newLayout = app.getAreasToShow();
-	if (newLayout == null)
-	    throw new NullPointerException("New area layout may not be null");
-	final Area[] areas = newLayout.getAreas();
-	int index = 0;
-	while (index < areas.length && areas[index] != activeArea)
-	    ++index;
-	if (index >= areas.length)
 	{
-	    apps.setActiveAreaOfApp(app, newLayout.getDefaultArea());
-	needForIntroduction = true;
+	    Log.info("core", "somebody is trying to change area layout using a fake instance object");
+	    return;
 	}
-	screenContentManager.updatePopupState();//Probably needless
-	windowManager.redraw();
+	apps.refreshAreaLayoutOfApp(app);
+	System.out.println("here");
+	onNewScreenLayout();
     }
 
     public void switchNextArea()
