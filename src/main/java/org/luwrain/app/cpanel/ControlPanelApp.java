@@ -47,7 +47,7 @@ public class ControlPanelApp implements Application, Actions
 	    return false;
 	strings = (Strings)str;
 	this.luwrain = luwrain;
-	environment = new EnvironmentImpl(luwrain);
+	environment = new EnvironmentImpl(luwrain, this);
 	sectionsModel = new SectionsTreeModel(environment, strings, extensionsSections);
 	createArea();
 	return true;
@@ -60,13 +60,11 @@ public class ControlPanelApp implements Application, Actions
 
     @Override public void openSection(Section sect)
     {
-	//	System.out.println(sect.getClass().getName());
 	final Area area = sect.getSectionArea(environment);
 	if (area == null)
 	    return;
 	currentSection = sect;
 	currentOptionsArea = area;
-	//	System.out.println("currentSection " + currentSection);
 	luwrain.onNewAreaLayout();
 	gotoOptions();
     }

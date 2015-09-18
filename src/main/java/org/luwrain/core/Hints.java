@@ -103,7 +103,11 @@ public class Hints
 	case TABLE_NO_ROWS_BELOW:
 	    return Sounds.NO_ITEMS_BELOW;
 	case NO_LINES_ABOVE:
+	case BEGIN_OF_LINE:
+	case BEGIN_OF_TEXT:
 	    return Sounds.NO_LINES_ABOVE;
+	case END_OF_TEXT:
+	case END_OF_LINE:
 	case NO_LINES_BELOW:
 	    return Sounds.NO_LINES_BELOW;
 	default:

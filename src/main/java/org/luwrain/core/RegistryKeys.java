@@ -20,7 +20,7 @@ import java.util.Properties;
 import java.net.URL;
 import java.io.IOException;
 
-class RegistryKeys
+public class RegistryKeys
 {
     private static final String REGISTRY_KEYS_RESOURCE = "org/luwrain/core/registry-keys.properties";
 
@@ -58,6 +58,16 @@ class RegistryKeys
     public String globalKeysDir()
     {
 	return getProperty("environment.GlobalKeys");
+    }
+
+    public String personalFullName()
+    {
+	return getProperty("personal.FullName");
+    }
+
+    public String personalDefaultMailAddress()
+    {
+	return getProperty("personal.DefaultMailAddress");
     }
 
     public String interactionBackend()

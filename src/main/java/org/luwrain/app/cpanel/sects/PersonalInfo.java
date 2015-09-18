@@ -17,20 +17,62 @@
 package org.luwrain.app.cpanel.sects;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
+import org.luwrain.util.*;
 
-class PersonalInfo extends FormArea  implements Section
+class PersonalInfo implements Section
 {
-    private Environment environment;
-
-    PersonalInfo(Environment environment)
+    static private class Area extends FormArea
     {
-	super(environment, "Персональная информация");
-	this.environment = environment;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
+	private Environment environment;
+	private final RegistryKeys registryKeys = new RegistryKeys();
+
+	Area(Environment environment )
+	{
+	    super(environment);
+	    this.environment = environment;
+	    NullCheck.notNull(environment, "environment");
+	    final RegistryAutoCheck check = new RegistryAutoCheck(environment.getLuwrain().getRegistry());
+	    addEdit("name", "Полное имя:", check.stringAny(registryKeys.personalFullName(), ""), null, true);
+	    addEdit("address", "Основной адрес электронной почты:", check.stringAny(registryKeys.personalDefaultMailAddress(), ""), null, true);
+	    activateMultilinedEdit("Текст подписи в сообщениях электронной почты:", new String[0], true);
+	}
+
+	@Override public boolean onKeyboardEvent(KeyboardEvent event)
+	{
+	    NullCheck.notNull(event, "event");
+	    if (event.isCommand() && !event.isModified())
+		switch(event.getCommand())
+		{
+		case KeyboardEvent.TAB:
+		    environment.gotoSectionsTree ();
+	    return true;
+		}
+	return super.onKeyboardEvent(event);
+	}
+
+	@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+	{
+	    NullCheck.notNull(event, "event");
+	    switch(event.getCode())
+	    {
+	    case EnvironmentEvent.CLOSE:
+		environment.close();
+		return true;
+	    default:
+		return super.onEnvironmentEvent(event);
+	    }
+	}
+
+	@Override public String getAreaName()
+	{
+	    return "Персональная информация";
+	}
     }
+
+    private Area area = null;
 
     @Override public int getDesiredRoot()
     {
@@ -44,12 +86,9 @@ class PersonalInfo extends FormArea  implements Section
 
     @Override public Area getSectionArea(Environment environment)
     {
-	return this;
-    }
-
-    String getSectionName()
-    {
-	return "Персональная информация";
+	if (area == null)
+	    area = new Area(environment);
+	return area;
     }
 
     @Override public boolean canCloseSection(Environment environment)

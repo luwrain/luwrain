@@ -27,7 +27,7 @@ import org.luwrain.app.cpanel.*;
 
 public class Tree
 {
-    private EnvironmentImpl environment;
+    private Environment environment;
     private org.luwrain.app.cpanel.Strings strings;
     private Section[] extensionsSections;
 
@@ -43,7 +43,7 @@ public class Tree
     private BasicSection workersSection ;
     private PersonalInfo personalInfoSection;
 
-public Tree(EnvironmentImpl environment, 
+public Tree(Environment environment, 
      org.luwrain.app.cpanel.Strings strings,
      Section[] extensionsSections)
     {
@@ -65,7 +65,7 @@ public Tree(EnvironmentImpl environment,
 	extensionsSection = new BasicSection(strings.sectName(Strings.EXTENSIONS));
 	networkSection = new BasicSection(strings.sectName(Strings.NETWORK));
 	workersSection = new BasicSection(strings.sectName(Strings.WORKERS));
-	personalInfoSection = new PersonalInfo(environment);
+	personalInfoSection = new PersonalInfo();
 	hardwareSection = makeHardwareSection();
 	for(Section s: extensionsSections)
 	{
