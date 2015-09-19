@@ -22,6 +22,7 @@ import java.io.File;
 
 import org.luwrain.core.Registry;
 import org.luwrain.core.Log;
+import org.luwrain.core.NullCheck;
 import org.luwrain.registry.Path;
 import org.luwrain.registry.PathParser;
 
@@ -315,17 +316,17 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public boolean setString(String path, String value)
+    @Override public synchronized boolean setString(String path, String value)
     {
-	if (value == null)
-	    throw new NullPointerException("value may not be null");
-	Path p = parse(path);
+	NullCheck.notNull(value, "value");
+	final Path p = parse(path);
 	if (p.isDirectory())
 	    throw new IllegalArgumentException("path addresses a directory, not a value");
 	try {
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
 		return false;
+	    //	    System.out.println("dir found");
 	    return d.setString(p.valueName(), value);
 	}
 	catch (IOException e)

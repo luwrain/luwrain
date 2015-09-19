@@ -19,8 +19,9 @@ package org.luwrain.registry.fsdir;
 import java.io.*;
 import java.util.*;
 
-import org.luwrain.core.Log;
 import org.luwrain.core.Registry;
+import org.luwrain.core.Log;
+import org.luwrain.core.NullCheck;
 
 class Directory
 {
@@ -208,14 +209,12 @@ class Directory
 	return true;
     }
 
-    public boolean setString(String valueName, String value) throws IOException
+    boolean setString(String valueName, String value) throws IOException
     {
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
+	NullCheck.notNull(valueName, "valueName");
+	NullCheck.notNull(value, "value");
 	if (valueName.isEmpty())
 	    throw new IllegalArgumentException("valueName may not be empty");
-	if (value == null)
-	    throw new NullPointerException("value may not be null");
 	loadValues();
 	if (!values.containsKey(valueName))
 	{

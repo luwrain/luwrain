@@ -58,6 +58,9 @@ class PersonalInfo implements Section
 	    NullCheck.notNull(event, "event");
 	    switch(event.getCode())
 	    {
+	    case EnvironmentEvent.SAVE:
+		save();
+		return true;
 	    case EnvironmentEvent.CLOSE:
 		environment.close();
 		return true;
@@ -69,6 +72,28 @@ class PersonalInfo implements Section
 	@Override public String getAreaName()
 	{
 	    return "Персональная информация";
+	}
+
+	private void save()
+	{
+	    final Luwrain luwrain = environment.getLuwrain();
+	    final Registry registry = luwrain.getRegistry();
+	    if (!registry.setString(registryKeys.personalFullName(), getEnteredText("name")))
+	    {
+		luwrain.message("Невозможно сохранить в реестре значение полного имени", Luwrain.MESSAGE_ERROR);
+		return;
+	    }
+	    if (!registry.setString(registryKeys.personalDefaultMailAddress(), getEnteredText("address")))
+	    {
+		luwrain.message("Невозможно сохранить в реестре значение адреса электронной почты", Luwrain.MESSAGE_ERROR);
+		return;
+	    }
+	    if (!registry.setString(registryKeys.personalSignature(), getMultilinedEditText()))
+	    {
+		luwrain.message("Невозможно сохранить в реестре значение подписи", Luwrain.MESSAGE_ERROR);
+		return;
+	    }
+	    luwrain.message("Персональная информация сохранена", Luwrain.MESSAGE_OK);
 	}
     }
 

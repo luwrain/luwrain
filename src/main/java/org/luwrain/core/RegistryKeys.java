@@ -70,6 +70,11 @@ public class RegistryKeys
 	return getProperty("personal.DefaultMailAddress");
     }
 
+    public String personalSignature()
+    {
+	return getProperty("personal.Signature");
+    }
+
     public String interactionBackend()
     {
 	return getProperty("interaction.BackEnd");
