@@ -36,7 +36,6 @@ public class Hints
     public static final int TREE_BRANCH_COLLAPSED = 15;
     public static final int TREE_BRANCH_EXPANDED = 16;
 
-    public static final int TABLE_NO_ROWS = 17;
     public static final int TABLE_NO_ROWS_ABOVE = 18;
     public static final int TABLE_NO_ROWS_BELOW = 19;
     public static final int TABLE_END_OF_COL = 20;
@@ -53,6 +52,8 @@ public class Hints
 	    return LangStatic.TAB;
 	case EMPTY_LINE:
 	    return LangStatic.EMPTY_LINE;
+	case NO_CONTENT:
+	    return LangStatic.NO_CONTENT;
 	case BEGIN_OF_LINE:
 	    return LangStatic.BEGIN_OF_LINE;
 	case END_OF_LINE:
@@ -73,8 +74,6 @@ public class Hints
 	    return LangStatic.BEGIN_OF_TREE;
 	case TREE_END:
 	    return LangStatic.END_OF_TREE;
-	case TABLE_NO_ROWS:
-	    return LangStatic.TABLE_NO_ROWS;
 	case TABLE_NO_ROWS_ABOVE:
 	    return LangStatic.TABLE_NO_ROWS_ABOVE;
 	case TABLE_NO_ROWS_BELOW:

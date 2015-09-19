@@ -37,13 +37,23 @@ public class FormArea  extends NavigateArea
 	Object obj;
 	boolean enabled = true;
 
-	private ControlEnvironment environment;//Needed for sending notifications about changing of text
-	private Area area;//Needed for sending notifications about changing of text
+//A couple of variables needed for sending notifications about changing of text;
+	private ControlEnvironment environment;
+	private Area area;
 
+	//For an edit;
 	private String enteredText = "";
 	private EmbeddedSingleLineEdit edit;
 
+	//For a static item;
 	private Object staticObject;
+
+	//For a list;
+	private Object selectedListItem = null;
+	private FormListChoosing listChoosing;
+
+	//For a checkbox;
+	boolean checkboxState;
 
 	Item(ControlEnvironment environment, Area area)
 	{
@@ -187,6 +197,74 @@ public class FormArea  extends NavigateArea
 	return null;
     }
 
+    public boolean addList(String itemName, String caption,
+			   Object initialSelectedItem, FormListChoosing listChoosing,
+			   Object obj, boolean enabled)
+    {
+	NullCheck.notNull(itemName, "itemName");
+	NullCheck.notNull(caption, "caption");
+	NullCheck.notNull(listChoosing, "listChoosing");
+	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
+	    return false;
+	final Item item = new Item(environment, this);
+	item.type = LIST;
+	item.name = itemName;
+	item.caption = caption;
+	item.selectedListItem = initialSelectedItem;
+	item.listChoosing = listChoosing;
+	item.obj = obj;
+	item.enabled = enabled;
+	items.add(item);
+	updateEditsPos();
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    public Object getSelectedListItem(String itemName)
+    {
+	NullCheck.notNull(itemName, "itemName");
+	if (itemName.trim().isEmpty())
+	    return null;
+	for(Item i: items)
+	    if (i.type == LIST && i.name.equals(itemName))
+		return i.selectedListItem;
+	return null;
+    }
+
+    public boolean addCheckbox(String itemName, String caption,
+			       boolean initialState, Object obj, boolean enabled)
+    {
+	NullCheck.notNull(itemName, "itemName");
+	NullCheck.notNull(caption, "caption");
+	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
+	    return false;
+	final Item item = new Item(environment, this);
+	item.type = CHECKBOX;
+	item.name = itemName;
+	item.caption = caption;
+	item.checkboxState = initialState;
+	item.obj = obj;
+	item.enabled = enabled;
+	items.add(item);
+	updateEditsPos();
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    public boolean getCheckboxState(String itemName)
+    {
+	NullCheck.notNull(itemName, "itemName");
+	if (itemName.trim().isEmpty())
+	    return false;
+	for(Item i: items)
+	    if (i.type == CHECKBOX && i.name.equals(itemName))
+		return i.checkboxState;
+	return false;
+    }
+
+
     public boolean addStatic(String itemName, String caption,
 			     Object obj)
     {
@@ -277,6 +355,49 @@ public class FormArea  extends NavigateArea
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+
+	if (	    event.isCommand() && event.getCommand() == KeyboardEvent.ENTER &&
+		    !event.isModified())
+	{
+	    //If the user is pressing Enter on the list;
+	    if (getHotPointY() < items.size() && items.get(getHotPointY()).type == LIST)
+	{
+	    final Item item = items.get(getHotPointY());
+	    final Object newSelectedItem = item.listChoosing.chooseItem(this, item.name, item.selectedListItem); 
+	    if (newSelectedItem == null)
+		return true;
+	    item.selectedListItem = newSelectedItem;
+	    environment.onAreaNewContent(this);
+	    environment.onAreaNewHotPoint(this);
+	    return true;
+	}
+	    //If the user is pressing Enter on the checkbox;
+	    if (getHotPointY() < items.size() && items.get(getHotPointY()).type == CHECKBOX)
+	    {
+
+	    final Item item = items.get(getHotPointY());
+	    if (item.checkboxState)
+	    {
+		item.checkboxState = false;
+		environment.say(environment.staticStr(LangStatic.NO));
+	    } else
+	    {
+		item.checkboxState = true;
+		environment.say(environment.staticStr(LangStatic.YES));
+	    }
+	    environment.onAreaNewContent(this);
+	    environment.onAreaNewHotPoint(this);
+	    return true;
+	    }
+	}
+	//If the user is typing on the caption of the edit, moving a hot point to the end of line;
+	if (getHotPointY() < items.size())
+	{
+	    final int index = getHotPointY();
+	    final Item item = items.get(index);
+	    if (item.type == EDIT && getHotPointX() < item.caption.length())
+		setHotPointX(item.caption.length() + item.enteredText.length());
+	}
 	for(Item i: items)
 	    if (i.type == EDIT && i.edit != null &&
 		i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
@@ -337,6 +458,11 @@ public class FormArea  extends NavigateArea
 	    {
 	    case EDIT:
 		return item.caption + item.enteredText;
+
+	    case LIST:
+		return item.caption + (item.selectedListItem != null?item.selectedListItem.toString():"");
+	    case CHECKBOX:
+		return item.caption + (item.checkboxState?environment.staticStr(LangStatic.YES):environment.staticStr(LangStatic.NO));
 	    case STATIC:
 		return item.caption;
 	    default:

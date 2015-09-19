@@ -20,34 +20,82 @@ import java.util.Vector;
 
 class I18nImpl implements I18n, I18nExtension
 {
-    private static final String EN_LANG = "en";
+    static private final String EN_LANG = "en";
 
-    class CommandTitle
+    static private class CommandTitle
     {
-	public String lang = "";
-	public String command = "";
-	public String title = "";
+	String lang = "";
+	String command = "";
+	String title = "";
     }
 
-    class StringsObj
+    static private class StringsObj
     {
-	public String lang = "";
-	public String component = "";
-	public Object obj;
+	String lang = "";
+	String component = "";
+	Object obj;
     };
 
-    class LangObj
+    static private class LangObj
     {
-	public String name = "";
-	public Lang lang;
+	String name = "";
+	Lang lang;
     }
 
-    private Vector<CommandTitle> commandTitles = new Vector<CommandTitle>();
-    private Vector<StringsObj> stringsObjs = new Vector<StringsObj>();
-    private Vector<LangObj> langObjs = new Vector<LangObj>();
+    private final Vector<CommandTitle> commandTitles = new Vector<CommandTitle>();
+    private final Vector<StringsObj> stringsObjs = new Vector<StringsObj>();
+    private final Vector<LangObj> langObjs = new Vector<LangObj>();
 
     private Lang chosenLang;
     private String chosenLangName = "";
+    private String[] staticValueNames;
+
+    I18nImpl()
+    {
+	try {
+	    final Class c = Class.forName("org.luwrain.core.LangStatic");
+	    final java.lang.reflect.Field[] fields = c.getFields();
+	    int maxValue = 0;
+	    for(java.lang.reflect.Field f: fields)
+		if (f.getInt(null) > maxValue)
+		    maxValue = f.getInt(null);
+	    staticValueNames = new String[maxValue + 1];
+	    for(int i = 0;i < maxValue;++i)
+		staticValueNames[i] = null;
+	    for(java.lang.reflect.Field f: fields)
+		staticValueNames[f.getInt(null)] = convertStaticValueName(f.getName());
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	    staticValueNames = new String[0];
+	}
+    }
+
+    static String convertStaticValueName(String name)
+    {
+	final StringBuilder b = new StringBuilder();
+	boolean nextCap = true;
+	for(int i = 0;i < name.length();++i)
+	{
+	    final char c = name.charAt(i);
+	    if (c == '_')
+	    {
+		nextCap = true;
+		continue;
+	    }
+	    if (nextCap)
+		b.append(Character.toUpperCase(c)); else
+		b.append(Character.toLowerCase(c));
+	    nextCap = false;
+	}
+	return b.toString();
+    }
+
+    @Override public String[] getStaticValueNames()
+    {
+	return staticValueNames;
+    }
 
     @Override public String staticStr(int code)
     {
@@ -166,7 +214,7 @@ class I18nImpl implements I18n, I18nExtension
 	langObjs.add(l);
     }
 
-    public boolean chooseLang(String name)
+    boolean chooseLang(String name)
     {
 	if (name == null)
 	    throw new NullPointerException("name may not be null");
@@ -201,7 +249,7 @@ class I18nImpl implements I18n, I18nExtension
 	return true;
     }
 
-    public String getChosenLangName()
+    String getChosenLangName()
     {
 	return chosenLangName;
     }

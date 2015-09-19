@@ -14,17 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.controls;
 
-public interface I18nExtension
+import org.luwrain.core.*;
+
+public interface FormListChoosing
 {
-    String[] getStaticValueNames();
-    void addCommandTitle(String lang,
-			 String command,
-			 String title);
-    void addStrings(String lang,
-		    String component,
-		    Object obj);
-
-    void addLang(String name, Lang lang);
+    Object chooseItem(Area area, String formItemName, Object currentSelected);
 }

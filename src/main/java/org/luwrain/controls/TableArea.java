@@ -265,7 +265,7 @@ public class TableArea  implements Area
     @Override public String getLine(int index)
     {
 	if (noProperContent())
-	    return index <= 0?environment.staticStr(LangStatic.TABLE_NO_ROWS):"";
+	    return index <= 0?environment.staticStr(LangStatic.TABLE_NO_CONTENT):"";
 	if (index < 0 || index >= model.getRowCount())
 	    return "";
 	final int currentCol = getColUnderPos(hotPointX);
@@ -536,7 +536,7 @@ public class TableArea  implements Area
     {
 	if (!noProperContent())
 	    return false;
-	environment.hint(Hints.TABLE_NO_ROWS);
+	environment.hint(environment.staticStr(LangStatic.TABLE_NO_CONTENT), Hints.NO_CONTENT);
 	return true;
 	}
 

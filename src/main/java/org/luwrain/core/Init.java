@@ -260,7 +260,7 @@ class Init
 	return null;
     }
 
-    public static void main(String[] args)
+    static public void main(String[] args)
     {                    
 	new Init().go(args);
     }
