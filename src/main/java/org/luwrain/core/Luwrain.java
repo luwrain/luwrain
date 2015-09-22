@@ -79,6 +79,11 @@ public final class Luwrain implements EventConsumer
 	    charsToSkip = registry.getString(keys.speechCharsToSkip());
     }
 
+    public HeldData currentAreaRegion(boolean issueErrorMessages)
+    {
+	return environment.currentAreaRegionIface(issueErrorMessages);
+    }
+
     @Override public void enqueueEvent(Event e)
     {
 	environment.enqueueEvent(e);
@@ -389,6 +394,6 @@ public final class Luwrain implements EventConsumer
 
     public org.luwrain.browser.Browser createBrowser()
     {
-	return environment.createBrowser(this);
+	return environment.createBrowserIface(this);
     }
 }

@@ -16,19 +16,42 @@
 
 package org.luwrain.core;
 
-public class UniRefInfo
+public class UniRefInfo implements Comparable
 {
+    private boolean available = false;
     private String prefix;
     private String title;
+    private String value;
 
-    public UniRefInfo(String prefix, String title)
+    public UniRefInfo(String value)
     {
+	available = false;
+	this.value = value;
+	NullCheck.notNull(value, "value");
+	prefix = "";
+	title = "";
+    }
+
+    public UniRefInfo(String value,
+		      String prefix, String title)
+    {
+	available = true;
+	this.value = value;
 	this.prefix = prefix;
 	this.title = title;
-	if (prefix == null)
-	    throw new NullPointerException("prefix may not be null");
-	if (title == null)
-	    throw new NullPointerException("title may not be null");
+	NullCheck.notNull(value, "value");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(title, "title");
+    }
+
+    public boolean available()
+    {
+	return available;
+    }
+
+    public String value()
+    {
+	return value;
     }
 
     public String prefix()
@@ -43,6 +66,26 @@ public class UniRefInfo
 
     @Override public String toString()
     {
+	if (!available)
+	    return value;
+	if (prefix == null || prefix.trim().isEmpty())
+	    return title;
 	return prefix + " " + title;
+    }
+
+    @Override public boolean equals(Object o)
+    {
+	if (o == null || !(o instanceof UniRefInfo))
+	    return false;
+	final UniRefInfo uniRef = (UniRefInfo)o;
+	return value.equals(uniRef.value());
+    }
+
+    @Override public int compareTo(Object o)
+    {
+	if (o == null || !(o instanceof UniRefInfo))
+	    return 0;
+	final UniRefInfo uniRef = (UniRefInfo)o;
+	return value.compareTo(uniRef.value());
     }
 }

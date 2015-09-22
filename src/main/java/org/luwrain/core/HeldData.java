@@ -52,4 +52,24 @@ final public class HeldData
     {
 	return strings == null || strings.length < 1;
     }
+
+    /**
+     * Returns the entire content of the object as a single line. All string
+     * items are concatenated with spaces between them.
+     *
+     * @return String content as a single line
+     */
+    public String toSingleLine()
+    {
+	if (strings == null || strings.length < 1)
+	    return "";
+	final StringBuilder b = new StringBuilder();
+	b.append(strings[0]);
+	for(int i = 1;i < strings.length;++i)
+	{
+	    b.append(" ");
+	    b.append(strings[i]);
+	}
+	return b.toString();
+    }
 }

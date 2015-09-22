@@ -25,45 +25,42 @@ import org.luwrain.core.NullCheck;
 
 class Directory
 {
-    static public final String STRINGS_VALUES_FILE = "strings.txt";
-    static public final String INTEGERS_VALUES_FILE = "integers.txt";
-    static public final String BOOLEANS_VALUES_FILE = "booleans.txt";
+    static private final String STRINGS_VALUES_FILE = "strings.txt";
+    static private final String INTEGERS_VALUES_FILE = "integers.txt";
+    static private final String BOOLEANS_VALUES_FILE = "booleans.txt";
 
     private String name = "";
     private File dir;
     private Vector<Directory> subdirs;
     private TreeMap<String, Value> values;
 
-    public Directory(String name, File dir)
+    Directory(String name, File dir)
     {
 	this.name = name;
 	this.dir = dir;
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(dir, "dir");
 	if (name.isEmpty())
 	    throw new IllegalArgumentException("name may not be empty");
-	if (dir == null)
-	    throw new NullPointerException("dir may not be null");
 	if (!dir.isAbsolute())
 	    throw new IllegalArgumentException("dir should denote an absolute path");
     }
 
-    public String name()
+    String name()
     {
 	return name;
     }
 
-    public Directory createSubdir(String newName) throws IOException
+    Directory createSubdir(String newName) throws IOException
     {
-	if (newName == null)
-	    throw new NullPointerException("newName may not be null");
+	NullCheck.notNull(newName, "newName");
 	if (newName.isEmpty())
 	    throw new IllegalArgumentException("newName may not be empty");
 	loadSubdirs();
 	Directory d = findSubdir(name);
 	if (d != null)
 	    return d;
-	File f = new File(dir, newName);
+	final File f = new File(dir, newName);
 	if (!f.mkdir())
 	    return null;
 	d = new Directory(newName, f);
@@ -84,16 +81,15 @@ class Directory
 	return true;
     }
 
-    public boolean hasSubdir(String dirName) throws IOException
+    boolean hasSubdir(String dirName) throws IOException
     {
 	return findSubdir(dirName) != null;
     }
 
     //null means no subdirectory
-    public Directory findSubdir(String dirName) throws IOException
+    Directory findSubdir(String dirName) throws IOException
     {
-	if (dirName == null)
-	    throw new NullPointerException("dirName may not be null");
+	NullCheck.notNull(dirName, "dirName");
 	if (dirName.isEmpty())
 	    throw new IllegalArgumentException("dirName may not be empty");
 	loadSubdirs();
@@ -103,7 +99,7 @@ class Directory
 	return null;
     }
 
-    public void delete() throws IOException
+    void delete() throws IOException
     {
 	loadSubdirs();
 	for(Directory d:subdirs)
@@ -116,10 +112,9 @@ class Directory
 	subdirs = null;
     }
 
-    public boolean deleteValue(String valueName) throws IOException
+    boolean deleteValue(String valueName) throws IOException
     {
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
+	NullCheck.notNull(valueName, "valueName");
 	if (valueName.isEmpty())
 	    throw new IllegalArgumentException("valueName may not be empty");
 	loadValues();
@@ -130,10 +125,9 @@ class Directory
 	return true;
     }
 
-    public boolean getBoolean(String valueName) throws IOException
+    boolean getBoolean(String valueName) throws IOException
     {
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
+	NullCheck.notNull(valueName, "valueName");
 	if (valueName.isEmpty())
 	    throw new IllegalArgumentException("valueName may not be empty");
 	loadValues();
@@ -143,10 +137,9 @@ class Directory
 	return value.type == Registry.BOOLEAN?value.boolValue:false;
     }
 
-    public int getInteger(String valueName) throws IOException
+    int getInteger(String valueName) throws IOException
     {
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
+	NullCheck.notNull(valueName, "valueName");
 	if (valueName.isEmpty())
 	    throw new IllegalArgumentException("valueName may not be empty");
 	loadValues();
@@ -158,8 +151,7 @@ class Directory
 
     public String getString(String valueName) throws IOException
     {
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
+	NullCheck.notNull(valueName, "valueName");
 	if (valueName.isEmpty())
 	    throw new IllegalArgumentException("valueName may not be empty");
 	loadValues();
@@ -169,10 +161,9 @@ class Directory
 	return value.type == Registry.STRING?value.strValue:"";
     }
 
-    public boolean setBoolean(String valueName, boolean value) throws IOException
+    boolean setBoolean(String valueName, boolean value) throws IOException
     {
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
+	NullCheck.notNull(valueName, "valueName");
 	if (valueName.isEmpty())
 	    throw new IllegalArgumentException("valueName may not be empty");
 	loadValues();
@@ -189,10 +180,9 @@ class Directory
 	return true;
     }
 
-    public boolean setInteger(String valueName, int value) throws IOException
+    boolean setInteger(String valueName, int value) throws IOException
     {
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
+	NullCheck.notNull(valueName, "valueName");
 	if (valueName.isEmpty())
 	    throw new IllegalArgumentException("valueName may not be empty");
 	loadValues();
@@ -229,38 +219,36 @@ class Directory
 	return true;
     }
 
-    public String[] subdirs() throws IOException
+    String[] subdirs() throws IOException
     {
 	loadSubdirs();
-	LinkedList<String> v = new LinkedList<String>();
+	final LinkedList<String> v = new LinkedList<String>();
 	for (Directory d: subdirs)
 	    v.add(d.name());
 	return v.toArray(new String[v.size()]);
     }
 
-    public String[] values() throws IOException
+    String[] values() throws IOException
     {
 	loadValues();
-	LinkedList<String> v = new LinkedList<String>();
+	final LinkedList<String> v = new LinkedList<String>();
 	for(Map.Entry<String, Value> i: values.entrySet())
 	    v.add(i.getKey());
 	return v.toArray(new String[v.size()]);
     }
 
-    public boolean hasValue(String valueName) throws IOException
+    boolean hasValue(String valueName) throws IOException
     {
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
+	NullCheck.notNull(valueName, "valueName");
 	if (valueName.isEmpty())
 	    throw new IllegalArgumentException("valueName may not be empty");
 	loadValues();
 	return values.containsKey(valueName);
     }
 
-    public int getTypeOf(String valueName) throws IOException
+    int getTypeOf(String valueName) throws IOException
     {
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
+	NullCheck.notNull(valueName, "valueName");
 	if (valueName.isEmpty())
 	    throw new IllegalArgumentException("valueName may not be empty");
 	loadValues();
@@ -269,7 +257,7 @@ class Directory
 return values.get(valueName).type;
     }
 
-    public void refreshDeleted() throws IOException
+    void refreshDeleted() throws IOException
     {
 	subdirs = null;
 	loadSubdirs();
@@ -279,7 +267,6 @@ return values.get(valueName).type;
     {
 	if (values != null)
 	    return;
-	//	Log.debug("fsdir", "loading values in " + dir.getAbsolutePath());
 	values = new TreeMap<String, Value>();
 	Map<String, String> raw;
 
@@ -349,9 +336,8 @@ return values.get(valueName).type;
     {
 	if (subdirs != null)
 	    return;
-	//	Log.debug("fsdir", "loading subdirs in " + dir.getAbsolutePath());
 	subdirs = new Vector<Directory>();
-	File[] content = dir.listFiles();
+	final File[] content = dir.listFiles();
 	for(File f: content)
 	    if (f.isDirectory())
 		subdirs.add(new Directory(f.getName(), f));
@@ -380,7 +366,6 @@ return values.get(valueName).type;
 		booleanValues.put(name, v.boolValue?"true":"false");
 		break;
 	    }
-
 	}
 	ValueWriter.saveValuesToFile(stringValues, new File(dir, STRINGS_VALUES_FILE).getAbsolutePath());
 		ValueWriter.saveValuesToFile(integerValues, new File(dir, INTEGERS_VALUES_FILE).getAbsolutePath());

@@ -16,6 +16,9 @@
 
 package org.luwrain.desktop;
 
+import org.luwrain.core.HeldData;
+
 interface Actions
 {
+    boolean onInsert(int x, int y, HeldData data);
 }

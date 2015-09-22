@@ -25,7 +25,7 @@ class ValueLineParser
 {
     private Pattern pat = Pattern.compile("^\\s*(\"[^\"]*\"(\"[^\"]*\")*)\\s*=\\s*\"(.*)\"\\s*$", Pattern.CASE_INSENSITIVE);
 
-    public String key = "";
+    String key = "";
     public String value = "";
 
     public boolean parse(String line)

@@ -25,11 +25,11 @@ class Base
 {
     private Luwrain luwrain;
     private Strings strings;
-
+    private UniRefList uniRefList;
     private Model model;
     private Appearance appearance;
 
-    public boolean init(Luwrain luwrain, Strings strings)
+    boolean init(Luwrain luwrain, Strings strings)
     {
 	this.luwrain = luwrain;
 	this.strings = strings;
@@ -37,18 +37,19 @@ class Base
 	    throw new NullPointerException("luwrain may not be null");
 	if (strings == null)
 	    throw new NullPointerException("strings may not be null");
+	uniRefList = new UniRefList(luwrain);
 	return true;
     }
 
-    public Model getModel()
+    Model getModel()
     {
 	if (model != null)
 	    return model;
-	model = new Model(luwrain);
+	model = new Model(luwrain, uniRefList);
 	return model;
     }
 
-    public Appearance getAppearance()
+    Appearance getAppearance()
     {
 	if (appearance != null)
 	    return appearance;
@@ -56,9 +57,21 @@ class Base
 return appearance;
     }
 
-    public void setReady(String lang)
+    void setReady(String lang)
     {
+	uniRefList.load();
 	model.readIntroduction(new File(luwrain.launchContext().dataDirAsFile(), "DESKTOP." + lang + ".txt").getAbsolutePath());
 	model.refresh();
+    }
+
+    boolean insert(int x, int y,
+		   HeldData data)
+    {
+	NullCheck.notNull(data, "data");
+	if (data.strings == null)
+	    return false;
+	uniRefList.add(y - model.getFirstUniRefPos(), data.strings);
+	uniRefList.save();
+	return true;
     }
 }

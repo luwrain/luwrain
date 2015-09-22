@@ -24,7 +24,7 @@ import org.luwrain.core.Log;
 
 class ValueReader
 {
-    static public Map<String, String> readValuesFromFile(String fileName) throws IOException
+    static Map<String, String> readValuesFromFile(String fileName) throws IOException
     {
 	if (fileName == null)
 	    throw new NullPointerException("fileName may not be null");

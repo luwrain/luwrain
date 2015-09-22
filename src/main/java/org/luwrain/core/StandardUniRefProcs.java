@@ -40,7 +40,7 @@ public static UniRefProc[] createStandardUniRefProcs(Strings s)
 			return null;
 		    if (!uniRef.startsWith("file:"))
 			return null;
-		    return new UniRefInfo(strings.uniRefPrefix("file"), uniRef.substring(5));
+		    return new UniRefInfo(uniRef, strings.uniRefPrefix("file"), uniRef.substring(5));
 		}
 		public void openUniRef(String uniRef, Luwrain luwrain)
 		{
@@ -65,7 +65,7 @@ public static UniRefProc[] createStandardUniRefProcs(Strings s)
 			return null;
 		    if (!uniRef.startsWith("command:"))
 			return null;
-		    return new UniRefInfo(strings.uniRefPrefix("command"), uniRef.substring(8));
+		    return new UniRefInfo(uniRef, strings.uniRefPrefix("command"), uniRef.substring(8));
 		}
 		public void openUniRef(String uniRef, Luwrain luwrain)
 		{

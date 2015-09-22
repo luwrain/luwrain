@@ -483,14 +483,26 @@ class Environment implements EventConsumer
 
     private boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	    switch(popupBlocking())
-	    {
-	    case POPUP_BLOCKING_TRY_AGAIN:
-		return false;
-	    case POPUP_BLOCKING_EVENT_REJECTED:
-		areaBlockedMessage();
+	//	System.out.println("kaka " + event.eventType());
+	if (event.getCode() == EnvironmentEvent.MESSAGE)
+	{
+	    //	    System.out.println("1");
+	    if (!(event instanceof MessageEvent))
 		return true;
-	    }
+	    //	    System.out.println("2");
+	    final MessageEvent messageEvent = (MessageEvent)event;
+	    message(messageEvent.text(), messageEvent.semantic());
+	    return true;
+	}
+
+	switch(popupBlocking())
+	{
+	case POPUP_BLOCKING_TRY_AGAIN:
+	    return false;
+	case POPUP_BLOCKING_EVENT_REJECTED:
+	    areaBlockedMessage();
+	    return true;
+	}
 
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
@@ -677,7 +689,7 @@ class Environment implements EventConsumer
 	return windowManager.getAreaVisibleHeight(effectiveArea);
     }
 
-    public void message(String text, int semantic)
+    void message(String text, int semantic)
     {
 	if (text == null || text.trim().isEmpty())
 	    return;
@@ -940,12 +952,12 @@ class Environment implements EventConsumer
 
     }
 
-    public org.luwrain.browser.Browser createBrowser(Luwrain instance)
+    org.luwrain.browser.Browser createBrowserIface(Luwrain instance)
     {
 	return interaction.createBrowser();
     }
 
-    public void activateAreaSearch()
+    void activateAreaSearch()
     {
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
@@ -961,13 +973,7 @@ class Environment implements EventConsumer
 	onNewScreenLayout();
     }
 
-    public String onCurrentAreaRegionIface()
-    {
-	//FIXME:
-	return null;
-    }
-
-    public void onIntroduceLineCommand()
+    void onIntroduceLineCommand()
     {
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
@@ -991,7 +997,7 @@ class Environment implements EventConsumer
 	needForIntroduction = false;
     }
 
-    public void onRegionPointCommand()
+    void onRegionPointCommand()
     {
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
@@ -1013,7 +1019,7 @@ class Environment implements EventConsumer
      * @param speakAnnouncement Issue messages to the user to describe  the result of the operation (if false, everything goes silently)
      * @return True if the clipboard got new content, false otherwise
      */
-    public boolean onCopyCommand(boolean speakAnnouncement)
+    boolean onCopyCommand(boolean speakAnnouncement)
     {
 	final Area activeArea = getValidActiveArea(speakAnnouncement);
 	if (activeArea == null)
@@ -1044,7 +1050,18 @@ class Environment implements EventConsumer
 	return true;
     }
 
-    public void onDeleteCommand()
+    HeldData currentAreaRegionIface(boolean issueErrorMessages)
+    {
+	final Area activeArea = getValidActiveArea(issueErrorMessages);
+	if (activeArea == null)
+	    return null;
+	final RegionQuery query = new RegionQuery();
+	if (!activeArea.onAreaQuery(query) || !query.containsResult())
+	    return null;
+	return query.getData();
+    }
+
+    void onDeleteCommand()
     {
 	message("delete", Luwrain.MESSAGE_NOT_READY);
     }

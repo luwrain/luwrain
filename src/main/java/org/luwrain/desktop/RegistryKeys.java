@@ -22,11 +22,11 @@ import java.io.IOException;
 
 class RegistryKeys
 {
-    private static final String REGISTRY_KEYS_RESOURCE = "org/luwrain/core/registry-keys.properties";
+    static private final String REGISTRY_KEYS_RESOURCE = "org/luwrain/core/registry-keys.properties";
 
     private Properties properties;
 
-    public RegistryKeys()
+    RegistryKeys()
     {
 	URL url = ClassLoader.getSystemResource(REGISTRY_KEYS_RESOURCE);
 	if (url == null)
@@ -41,11 +41,15 @@ class RegistryKeys
 	}
     }
 
-    public String desktopUniRefs()
+    String desktopUniRefs()
     {
 	return "/org/luwrain/desktop/unirefs/";
     }
 
+    String desktopIntroductionFile()
+    {
+	return "/org/luwrain/desktop/introduction-file";
+    }
 
     private String getProperty(String name)
     {

@@ -34,8 +34,7 @@ public class RegistryImpl implements Registry
     public RegistryImpl(String base)
     {
 	this.base = base;
-	if (base == null)
-	    throw new NullPointerException("base may not be null");
+	NullCheck.notNull(base, "base");
 	if (base.isEmpty())
 	    throw new IllegalArgumentException("base may not be empty");
 	root = new Directory("root", new File(base));
@@ -45,7 +44,7 @@ public class RegistryImpl implements Registry
     {
 	final Path p = parseAsDir(path);
 	if (p.isRoot())
-	    throw new IllegalArgumentException("the root directory may not be requested for creation");
+	    throw new IllegalArgumentException("the root directory may not be requested for creating");
 	final String[] items = p.dirItems();
 	Directory d = root;
 	int pos = 0;
@@ -75,10 +74,10 @@ public class RegistryImpl implements Registry
 	return true;
     }
 
-    @Override public boolean deleteDirectory(String path)
+    @Override public synchronized boolean deleteDirectory(String path)
     {
-	Path p = parseAsDir(path);
-	if (p.isAbsolute())
+	final Path p = parseAsDir(path);
+	if (p.isRoot())
 	    throw new IllegalArgumentException("Root directory may not be deleted");
 	try {
 	    Directory d = findDirectory(p.dirItems());
@@ -86,7 +85,7 @@ public class RegistryImpl implements Registry
 		return false;
 	    d.delete();
 	    Path parent = p.getParentOfDir();
-	    d = findDirectory(parent.dirItems());//Should never return null;
+	    d = findDirectory(parent.dirItems());//Should never return null
 	    d.refreshDeleted();
 	    return true;
 	}
@@ -98,9 +97,9 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public boolean deleteValue(String path)
+    @Override public synchronized boolean deleteValue(String path)
     {
-	Path p = parse(path);
+	final Path p = parse(path);
 	if (p.isDirectory())
 	    throw new IllegalArgumentException("path addresses a directory, not a value");
 	try {
@@ -116,9 +115,9 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public boolean getBoolean(String path)
+    @Override public synchronized boolean getBoolean(String path)
     {
-	Path p = parse(path);
+	final Path p = parse(path);
 	if (p.isDirectory())
 	    throw new IllegalArgumentException("path addresses a directory, not a value");
 	try {
@@ -135,9 +134,9 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public String[] getDirectories(String path)
+    @Override public synchronized String[] getDirectories(String path)
     {
-	Path p = parseAsDir(path);
+	final Path p = parseAsDir(path);
 	try {
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
@@ -152,9 +151,9 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public int getInteger(String path)
+    @Override public synchronized int getInteger(String path)
     {
-	Path p = parse(path);
+	final Path p = parse(path);
 	if (p.isDirectory())
 	    throw new IllegalArgumentException("path addresses a directory, not a value");
 	try {
@@ -171,18 +170,16 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public String getString(String path)
+    @Override public synchronized String getString(String path)
     {
-	Path p = parse(path);
+	final Path p = parse(path);
 	if (p.isDirectory())
 	    throw new IllegalArgumentException("path addresses a directory, not a value");
-	//	Log.debug("fsreg", "looking for the string value " + p.toString());
 	try {
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
 		return "";
 	    final String res = d.getString(p.valueName());
-	    //	    Log.debug("fsreg", "result is \'" + res + "\'");
 	    return res;
 	}
 	catch (IOException e)
@@ -193,7 +190,7 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public String getStringDesignationOfType(int type)
+    @Override public synchronized String getStringDesignationOfType(int type)
     {
 	switch (type)
 	{
@@ -208,10 +205,10 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public int getTypeOf(String path)
+    @Override public synchronized int getTypeOf(String path)
     {
 	try {
-	    Path p = parse(path);
+	    final Path p = parse(path);
 	    if (p.isDirectory())
 		return INVALID;
 	    Directory d = findDirectory(p.dirItems());
@@ -225,10 +222,9 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public String[] getValues(String path)
+    @Override public synchronized String[] getValues(String path)
     {
-	//	System.out.println(path);
-	Path p = parseAsDir(path);
+	final Path p = parseAsDir(path);
 	if (p.isRoot())
 	    throw new IllegalArgumentException("root directory may not have values");
 	try {
@@ -245,9 +241,9 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public boolean hasDirectory(String path)
+    @Override public synchronized boolean hasDirectory(String path)
     {
-	Path p = parseAsDir(path);
+	final Path p = parseAsDir(path);
 	try {
 	    return findDirectory(p.dirItems()) != null;
 	}
@@ -259,9 +255,9 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public boolean hasValue(String path)
+    @Override public synchronized boolean hasValue(String path)
     {
-	Path p = parse(path);
+	final Path p = parse(path);
 	if (p.isDirectory())
 	    throw new IllegalArgumentException("path addresses a directory, not a value");
 	try {
@@ -278,9 +274,9 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public boolean setBoolean(String path, boolean value)
+    @Override public synchronized boolean setBoolean(String path, boolean value)
     {
-	Path p = parse(path);
+	final Path p = parse(path);
 	if (p.isDirectory())
 	    throw new IllegalArgumentException("path addresses a directory, not a value");
 	try {
@@ -297,9 +293,9 @@ public class RegistryImpl implements Registry
 	}
     }
 
-    @Override public boolean setInteger(String path, int value)
+    @Override public synchronized boolean setInteger(String path, int value)
     {
-	Path p = parse(path);
+	final Path p = parse(path);
 	if (p.isDirectory())
 	    throw new IllegalArgumentException("path addresses a directory, not a value");
 	try {
@@ -326,7 +322,6 @@ public class RegistryImpl implements Registry
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
 		return false;
-	    //	    System.out.println("dir found");
 	    return d.setString(p.valueName(), value);
 	}
 	catch (IOException e)
@@ -340,8 +335,7 @@ public class RegistryImpl implements Registry
     //Returns the root if path is empty, null is returned if there is no such path without throwing an exception;
     private Directory findDirectory(String[] path) throws IOException
     {
-	if (path == null)
-	    throw new NullPointerException("path may not be null");
+	NullCheck.notNull(path, "path");
 	Directory d = root;
 	for(int pos = 0;pos < path.length;++pos)
 	{
@@ -358,11 +352,10 @@ public class RegistryImpl implements Registry
 
     private Path parse(String path)
     {
-	if (path == null)
-	    throw new NullPointerException("path may not be null");
+	NullCheck.notNull(path, "path");
 	if (path.isEmpty())
 	    throw new IllegalArgumentException("path may not be empty");
-	Path p = PathParser.parse(path);
+	final Path p = PathParser.parse(path);
 	if (p == null)
 	    throw new IllegalArgumentException("meaningless path");
 	return p;
@@ -370,11 +363,10 @@ public class RegistryImpl implements Registry
 
     private Path parseAsDir(String path)
     {
-	if (path == null)
-	    throw new NullPointerException("path may not be null");
+	NullCheck.notNull(path, "path");
 	if (path.isEmpty())
 	    throw new IllegalArgumentException("path may not be empty");
-	Path p = PathParser.parseAsDirectory(path);
+final Path p = PathParser.parseAsDirectory(path);
 	if (p == null)
 	    throw new IllegalArgumentException("meaningless path");
 	return p;

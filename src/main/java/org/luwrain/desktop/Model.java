@@ -30,15 +30,18 @@ class Model implements ListModel
 {
     private Luwrain luwrain;
     private Registry registry;
-    private RegistryKeys registryKeys = new RegistryKeys();
+    private final RegistryKeys registryKeys = new RegistryKeys();
     private Object[] items;
+    private UniRefList uniRefList;
     private String[] introduction;
+    private int firstUniRefPos = 0;
 
-    public Model(Luwrain luwrain)
+    public Model(Luwrain luwrain, UniRefList uniRefList)
     {
 	this.luwrain = luwrain;
-	if (luwrain == null)
-	    throw new NullPointerException("registry may not be null");
+	this.uniRefList = uniRefList;
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(uniRefList, "uniRefList");
 	this.registry = luwrain.getRegistry();
     }
 
@@ -57,19 +60,14 @@ class Model implements ListModel
     @Override public void refresh()
     {
 	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
-	final String[] values = registry.getValues(registryKeys.desktopUniRefs());
-	final LinkedList<Object> res = new LinkedList<Object>();
+	final LinkedList res = new LinkedList();
 	if (introduction != null)
 	    for(String s: introduction)
 		res.add(s);
-	for(String v: values)
-	{
-	    final String s = check.stringAny(RegistryPath.join(registryKeys.desktopUniRefs(), v), "");
-	    if (s.isEmpty())
-		continue;
-	    final UniRefInfo uniRefInfo = luwrain.getUniRefInfo(s);
-	    res.add(uniRefInfo != null?uniRefInfo:s);
-	}
+	firstUniRefPos = res.size();
+	final UniRefInfo[] uniRefs = uniRefList.get();
+	for(UniRefInfo u: uniRefs)
+	    res.add(u);
 	items = res.toArray(new Object[res.size()]);
     }
 
@@ -78,7 +76,12 @@ class Model implements ListModel
 	return false;
     }
 
-    public void readIntroduction(String fileName)
+    int getFirstUniRefPos()
+    {
+	return firstUniRefPos;
+    }
+
+    void readIntroduction(String fileName)
     {
 	try {
 	    LinkedList<String> a = new LinkedList<String>();

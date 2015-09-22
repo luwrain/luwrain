@@ -20,7 +20,7 @@ class TempStrings implements Strings
 {
     private Strings strings = null;
 
-    public void setStrings(Strings strings)
+    void setStrings(Strings strings)
     {
 	this.strings = strings;
     }
@@ -28,5 +28,10 @@ class TempStrings implements Strings
     @Override public String appName()
     {
 	return strings != null?strings.appName():"Desktop";
+    }
+
+    @Override public String noApplications()
+    {
+	return strings != null?strings.noApplications():"All applications closed";
     }
 }

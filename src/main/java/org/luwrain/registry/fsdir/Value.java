@@ -20,12 +20,12 @@ import org.luwrain.core.Registry;
 
 class Value
 {
-    public int type = Registry.INVALID;
-    public String strValue = "";
-    public int intValue = 0;
-    public boolean boolValue = false;
+    int type = Registry.INVALID;
+    String strValue = "";
+    int intValue = 0;
+    boolean boolValue = false;
 
-    public Value(String value)
+    Value(String value)
     {
 	if (value == null)
 	    throw new NullPointerException("value may not be null");
@@ -33,13 +33,13 @@ class Value
 	strValue = value;
     }
 
-    public Value(int value)
+    Value(int value)
     {
 	type = Registry.INTEGER;
 	intValue = value;
     }
 
-    public Value(boolean value)
+    Value(boolean value)
     {
 	type = Registry.BOOLEAN;
 	boolValue = value;

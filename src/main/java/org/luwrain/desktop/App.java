@@ -22,11 +22,11 @@ import org.luwrain.controls.*;
 
 public class App implements Application, Actions
 {
-    public static final String STRINGS_NAME = "luwrain.desktop";
+    static public final String STRINGS_NAME = "luwrain.desktop";
 
     private Luwrain luwrain;
-    private TempStrings strings = new TempStrings();
-    private Base base = new Base();
+    private final TempStrings strings = new TempStrings();
+    private final Base base = new Base();
     private ListArea area;
 
     @Override public boolean onLaunch(Luwrain luwrain)
@@ -43,6 +43,14 @@ public class App implements Application, Actions
 	return strings.appName();
     }
 
+    @Override public boolean onInsert(int x, int y, HeldData data)
+    {
+	if (!base.insert(x, y, data))
+	    return false;
+	area.refresh();
+	return true;
+    }
+
     public void ready(String lang, Object o)
     {
 	if (o != null && (o instanceof Strings))
@@ -52,6 +60,7 @@ public class App implements Application, Actions
 
     private void createArea()
     {
+	final Luwrain l = luwrain;
 	final Actions a = this;
 	final Strings s = strings;
 
@@ -61,7 +70,7 @@ public class App implements Application, Actions
 						     int index,
 						     Object item)
 		{
-//FIXME:
+		    //FIXME:
 		    return false;
 		}
 	    };
@@ -74,19 +83,28 @@ public class App implements Application, Actions
 	params.name = strings.appName();
 
 	area = new ListArea(params) {
-		      private Strings strings = s;
-		      private Actions actions = a;
 		      @Override public boolean onKeyboardEvent(KeyboardEvent event)
 		      {
-if (event == null)
-throw new NullPointerException("event may not be null");
+			  NullCheck.notNull(event, "event");
 		    return super.onKeyboardEvent(event);
 		}
 		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
-if (event == null)
-throw new NullPointerException("event may not be null");
-return super.onEnvironmentEvent(event);
+		    NullCheck.notNull(event, "event");
+		    switch(event.getCode())
+		    {
+		    case EnvironmentEvent.CLOSE:
+			l.silence();
+			l.playSound(Sounds.NO_APPLICATIONS);
+			l.message(s.noApplications());
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
+    @Override public boolean insertRegion(int x, int y, HeldData data)
+		{
+		    return a.onInsert(x, y, data);
 		}
 		@Override public String getAreaName()
 		{
