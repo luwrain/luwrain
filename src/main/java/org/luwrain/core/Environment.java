@@ -18,7 +18,6 @@ package org.luwrain.core;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
@@ -26,79 +25,69 @@ import org.luwrain.speech.BackEnd;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.core.extensions.*;
+import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
-import org.luwrain.sounds.EnvironmentSounds;
-import org.luwrain.util.*;
+import org.luwrain.sounds.*;
 
 class Environment implements EventConsumer
 {
-    private final static String STRINGS_OBJECT_NAME = "luwrain.environment";
-    private static final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
+    static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
+    static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
     private String[] cmdLine;
-    private EventQueue eventQueue = new EventQueue();
+    private final EventQueue eventQueue = new EventQueue();
     private Registry registry;
     private org.luwrain.speech.BackEnd speech;
     private OperatingSystem os;
     private Interaction interaction;
 
     private org.luwrain.core.extensions.Manager extensions;
-    private InterfaceManager interfaces = new InterfaceManager(this);
-    private org.luwrain.desktop.App desktop = new org.luwrain.desktop.App();
+    private final InterfaceManager interfaces = new InterfaceManager(this);
+    private final org.luwrain.desktop.App desktop = new org.luwrain.desktop.App();
     private AppManager apps;
     private ScreenContentManager screenContentManager;
     private WindowManager windowManager;
     private GlobalKeys globalKeys;
-    private FileTypes fileTypes = new FileTypes();
+    private final FileTypes fileTypes = new FileTypes();
 
-    private I18nImpl i18n = new I18nImpl();
-    private CommandManager commands = new CommandManager();
-    private ShortcutManager shortcuts = new ShortcutManager();
-    private SharedObjectManager sharedObjects = new SharedObjectManager();
-    private UniRefProcManager uniRefProcs = new UniRefProcManager();
+    private final I18nImpl i18n = new I18nImpl();
+    private final CommandManager commands = new CommandManager();
+    private final ShortcutManager shortcuts = new ShortcutManager();
+    private final SharedObjectManager sharedObjects = new SharedObjectManager();
+    private final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
     private HeldData clipboard = null;
     private LaunchContext launchContext;
     private Strings strings;
     private RegistryAutoCheck registryAutoCheck;
-    private RegistryKeys registryKeys;
+    private final RegistryKeys registryKeys = new RegistryKeys();
 
     private boolean needForIntroduction = false;
     private boolean introduceApp = false;
     private Luwrain speechProc;
 
-    public Environment(String[] cmdLine,
+    Environment(String[] cmdLine,
 		       Registry registry,
 		       org.luwrain.speech.BackEnd speech,
 		       OperatingSystem os,
 		       Interaction interaction,
 		       LaunchContext launchContext)
     {
-	this.cmdLine = cmdLine;
+	this.cmdLine = org.luwrain.util.Strings.notNullArray(cmdLine);
 	this.registry = registry;
 	this.speech = speech;
 	this.os = os;
 	this.interaction = interaction;
 	this.launchContext = launchContext;
-	if (cmdLine == null)
-	    throw new NullPointerException("cmdLine may not be null");
-	for(int i = 0;i < cmdLine.length;++i)
-	    if (cmdLine[i] == null)
-		throw new NullPointerException("cmdLine[" + i + "] may not be null");
-	if (registry == null)
-	    throw new NullPointerException("registry may not be null");
-	if (speech == null)
-	    throw new NullPointerException("speech may not be null");
-	if (os == null)
-	    throw new NullPointerException("os may not be null");
-	if (interaction == null)
-	    throw new NullPointerException("interaction may not be null");
-	if (launchContext == null)
-	    throw new NullPointerException("launchContext may not be null");
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notNull(speech, "speech");
+	NullCheck.notNull(os, "os");
+	NullCheck.notNull(interaction, "interaction");
+	NullCheck.notNull(launchContext, "launchContext");
     }
 
-    public void run()
+    void run()
     {
 	init();
 	interaction.startInputEventsAccepting(this);
@@ -129,7 +118,6 @@ class Environment implements EventConsumer
 	initObjects();
 	desktop.ready(i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME));
 	EnvironmentSounds.init(registry, launchContext);
-	registryKeys = new RegistryKeys();
 	registryAutoCheck = new RegistryAutoCheck(registry, "environment");
     }
 
@@ -199,7 +187,7 @@ class Environment implements EventConsumer
 	strings = (Strings)i18n.getStrings(STRINGS_OBJECT_NAME);
     }
 
-    public void quit()
+    void quit()
     {
 	YesNoPopup popup = new YesNoPopup(new Luwrain(this), strings.quitPopupName(), strings.quitPopupText(), true);
 	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
@@ -208,7 +196,7 @@ class Environment implements EventConsumer
 	InitialEventLoopStopCondition.shouldContinue = false;
     }
 
-    public void launchAppIface(String shortcutName, String[] args)
+    void launchAppIface(String shortcutName, String[] args)
     {
 	if (shortcutName == null)
 	    throw new NullPointerException("shortcutName may not be null");
@@ -222,7 +210,7 @@ class Environment implements EventConsumer
 		    launchApp(a);
     }
 
-    public void launchApp(Application app)
+    void launchApp(Application app)
     {
 	NullCheck.notNull(app, "app");
 	Log.debug("core", "launching app " + app.getClass().getName());
@@ -258,7 +246,7 @@ class Environment implements EventConsumer
 	introduceApp = true;
     }
 
-    public void closeApp(Luwrain instance)
+    void closeAppIface(Luwrain instance)
     {
 	NullCheck.notNull(instance, "instance");
 	if (instance == interfaces.getObjForEnvironment())
@@ -279,15 +267,8 @@ class Environment implements EventConsumer
 	setAppIntroduction();
     }
 
-    public void switchNextApp()
+    void onSwitchNextAppCommand()
     {
-	/*
-	if (screenContentManager.isPopupAreaActive())
-	{
-	    EnvironmentSounds.play(Sounds.EVENT_NOT_PROCESSED);//FIXME:Probably not well suited sound; 
-	    return;
-	}
-	*/
 	apps.switchNextApp();
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
@@ -295,7 +276,7 @@ class Environment implements EventConsumer
 	introduceApp = true;
     }
 
-    public void onNewAreaLayoutIface(Luwrain instance)
+    void onNewAreaLayoutIface(Luwrain instance)
     {
 	NullCheck.notNull(instance, "instance");
 	final Application app = interfaces.findApp(instance);
@@ -309,7 +290,7 @@ class Environment implements EventConsumer
 	onNewScreenLayout();
     }
 
-    public void switchNextArea()
+    void onSwitchNextAreaCommand()
     {
 	screenContentManager.activateNextArea();
 	windowManager.redraw();
@@ -576,7 +557,7 @@ class Environment implements EventConsumer
 	setAreaIntroduction();
     }
 
-    public void setActiveAreaIface(Luwrain instance, Area area)
+    void setActiveAreaIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(instance, "instance");
 	NullCheck.notNull(area, "area");
@@ -589,7 +570,7 @@ class Environment implements EventConsumer
 	onNewScreenLayout();
     }
 
-    public void onAreaNewHotPointIface(Luwrain instance, Area area)
+    void onAreaNewHotPointIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
 	if (screenContentManager == null)//FIXME:
@@ -616,7 +597,7 @@ class Environment implements EventConsumer
 	    windowManager.redrawArea(effectiveArea);
     }
 
-    public void onAreaNewContentIface(Luwrain instance, Area area)
+    void onAreaNewContentIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
 	Area effectiveArea = null;
@@ -640,7 +621,7 @@ class Environment implements EventConsumer
 	windowManager.redrawArea(effectiveArea);
     }
 
-    public void onAreaNewNameIface(Luwrain instance, Area area)
+    void onAreaNewNameIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
 	Area effectiveArea = null;
@@ -665,7 +646,7 @@ class Environment implements EventConsumer
     }
 
     //May return -1;
-    public int getAreaVisibleHeightIface(Luwrain instance, Area area)
+    int getAreaVisibleHeightIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
 	Area effectiveArea = null;
@@ -733,7 +714,7 @@ class Environment implements EventConsumer
 	    speechProc.say(app.getClass().getName());
     }
 
-    public void introduceActiveArea()
+    void introduceActiveArea()
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)
@@ -749,21 +730,21 @@ class Environment implements EventConsumer
 	speechProc.say(activeArea.getAreaName());
     }
 
-    public void increaseFontSize()
+    void onIncreaseFontSizeCommand()
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() + 5); 
 	windowManager.redraw();
 	message(strings.fontSize(interaction.getFontSize()), Luwrain.MESSAGE_REGULAR);
     }
 
-    public void decreaseFontSize()
+    void onDecreaseFontSizeCommand()
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() - 5); 
 	windowManager.redraw();
 	message(strings.fontSize(interaction.getFontSize()), Luwrain.MESSAGE_REGULAR);
     }
 
-    public void openFiles(String[] fileNames)
+    void openFiles(String[] fileNames)
     {
 	if (fileNames == null || fileNames.length < 1)
 	    return;
@@ -777,17 +758,12 @@ class Environment implements EventConsumer
 	    launchAppIface(shortcuts[i], new String[]{fileNames[i]});
     }
 
-    public Registry  registry()
+    Registry  registry()
     {
 	return registry;
     }
 
-    public Object getPimManager()
-    {
-	return null;
-    }
-
-    public void popupIface(Popup popup)
+    void popupIface(Popup popup)
     {
 	NullCheck.notNull(popup, "popup");
 	final Luwrain luwrainObject = popup.getLuwrainObject();
@@ -807,20 +783,6 @@ class Environment implements EventConsumer
 	}
 	popupImpl(app, popup, Popup.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
     }
-
-    /*
-    public void setClipboard(String[] value)
-    {
-	clipboard = value;
-    }
-    */
-
-    /*
-    public String[] getClipboard()
-    {
-	return clipboard;
-    }
-    */
 
     private KeyboardEvent translateKeyboardEvent(KeyboardEvent event)
     {
@@ -853,7 +815,7 @@ class Environment implements EventConsumer
 	}
     }
 
-    public BackEnd speech()
+    BackEnd speech()
     {
 	return speech;
     }
@@ -861,27 +823,27 @@ class Environment implements EventConsumer
     /**
      * @return true if this hint should be spoken as well
      */
-    public boolean onStandardHint(int code)
+    boolean onStandardHint(int code)
     {
 	return true;
     }
 
-    public I18n i18n()
+    I18n i18nIface()
     {
 	return i18n;
     }
 
-    public void playSound(int code)
+    void playSound(int code)
     {
 	EnvironmentSounds.play(code);
     }
 
-    public LaunchContext launchContext()
+    LaunchContext launchContextIface()
     {
 	return launchContext;
     }
 
-    public void mainMenu()
+    void mainMenu()
     {
 	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(interfaces.getObjForEnvironment()).build();
 	playSound(Sounds.MAIN_MENU);
@@ -891,7 +853,7 @@ class Environment implements EventConsumer
 	mainMenu.getSelectedItem().doMMAction(interfaces.getObjForEnvironment());//FIXME:Need to have an interface for the particular extension;
     }
 
-    public boolean runCommand(String command)
+    boolean runCommand(String command)
     {
 	if (command == null)
 	    throw new NullPointerException("command may not be null");
@@ -911,12 +873,12 @@ class Environment implements EventConsumer
 		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
     }
 
-    public OperatingSystem os()
+    OperatingSystem os()
     {
 	return os;
     }
 
-    public Object getSharedObject(String id)
+    Object getSharedObjectIface(String id)
     {
 	if (id == null)
 	    throw new NullPointerException("id may not be null");
@@ -925,12 +887,12 @@ class Environment implements EventConsumer
 	return sharedObjects.getSharedObject(id);
     }
 
-    public UniRefInfo getUniRefInfo(String uniRef)
+    UniRefInfo getUniRefInfoIface(String uniRef)
     {
 	return uniRefProcs.getInfo(uniRef);
     }
 
-    public boolean openUniRef(String uniRef)
+    boolean openUniRefIface(String uniRef)
     {
 	return uniRefProcs.open(uniRef);
     }
@@ -940,7 +902,7 @@ class Environment implements EventConsumer
 	return os.getHardware();
     }
 
-    public org.luwrain.cpanel.Section[] getControlPanelSections()
+    org.luwrain.cpanel.Section[] getControlPanelSections()
     {
 	final LinkedList<org.luwrain.cpanel.Section> res = new LinkedList<org.luwrain.cpanel.Section>();
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
@@ -949,7 +911,6 @@ class Environment implements EventConsumer
 		for(org.luwrain.cpanel.Section s: e.controlPanelSections)
 		    res.add(s);
 	return res.toArray(new org.luwrain.cpanel.Section[res.size()]);
-
     }
 
     org.luwrain.browser.Browser createBrowserIface(Luwrain instance)
@@ -1004,7 +965,7 @@ class Environment implements EventConsumer
 	    return;
 	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.REGION_POINT)))
 	    speechProc.say(strings.regionPointSet()); else
-	    objInaccessibleMessage();
+	    areaInaccessibleMessage();
     }
 
     /**
@@ -1028,20 +989,20 @@ class Environment implements EventConsumer
 	if (!activeArea.onAreaQuery(query))
 	{
 	    if (speakAnnouncement)
-		objInaccessibleMessage();
+		areaInaccessibleMessage();
 	    return false;
 	}
 	if (!query.containsResult())
 	{
 	    if (speakAnnouncement)
-		objInaccessibleMessage();
+		areaInaccessibleMessage();
 	    return false;
 	}
 	final HeldData res = query.getData();
 	if (res == null)
 	{
 	    if (speakAnnouncement)
-		objInaccessibleMessage();
+		areaInaccessibleMessage();
 	    return false;
 	}
 	clipboard = res;
@@ -1066,18 +1027,18 @@ class Environment implements EventConsumer
 	message("delete", Luwrain.MESSAGE_NOT_READY);
     }
 
-    public void onCutCommand()
+    void onCutCommand()
     {
 	if (!onCopyCommand(false))
 	    return;
 	if (!getActiveArea().onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.CUT)))
 	{
-	    objInaccessibleMessage();
+	    areaInaccessibleMessage();
 	    return;
 	}
     }
 
-    public void onPasteCommand()
+    void onPasteCommand()
     {
 	if (clipboard == null || clipboard.isEmpty())
 	{
@@ -1090,10 +1051,10 @@ class Environment implements EventConsumer
 	final InsertEvent event = new InsertEvent(clipboard);
 	if (activeArea.onEnvironmentEvent(event))
 	    speechProc.say(strings.linesInserted(clipboard.strings.length)); else
-	    objInaccessibleMessage();
+	    areaInaccessibleMessage();
     }
 
-    public void onOpenCommand()
+    void onOpenCommand()
     {
 	File f = openPopup();
 	if (f == null)
@@ -1103,18 +1064,18 @@ class Environment implements EventConsumer
 	openFiles(new String[]{f.getAbsolutePath()});
     }
 
-    public void onNewScreenLayout()
+    void onNewScreenLayout()
     {
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
     }
 
-    public void setAreaIntroduction()
+    void setAreaIntroduction()
     {
 	needForIntroduction = true;
     }
 
-    public void setAppIntroduction()
+    void setAppIntroduction()
     {
 	needForIntroduction = true;
 	introduceApp = true;
@@ -1139,9 +1100,7 @@ class Environment implements EventConsumer
 
     private void areaBlockedMessage()
     {
-	speechProc.silence(); 
-		    playSound(Sounds.EVENT_NOT_PROCESSED);
-		    speechProc.say(strings.appBlockedByPopup(), Luwrain.MESSAGE_REGULAR);
+		    message(strings.appBlockedByPopup(), Luwrain.MESSAGE_ERROR);
     }
 
     private void failureMessage()
@@ -1150,7 +1109,7 @@ class Environment implements EventConsumer
 	playSound(Sounds.EVENT_NOT_PROCESSED);
     }
 
-    private void objInaccessibleMessage()
+    private void areaInaccessibleMessage()
     {
 	speechProc.silence();
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
@@ -1211,6 +1170,5 @@ class Environment implements EventConsumer
 	Log.debug("core", "free memory: " + format.format(freeMemory / 1048576) + "M");
 	Log.debug("core", "allocated memory: " + format.format(allocatedMemory / 1046576) + "M");
 	Log.debug("core", "max memory: " + format.format(maxMemory / 1048576) + "M");
-	//	Log.debug("core", "total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024));
     }
 }

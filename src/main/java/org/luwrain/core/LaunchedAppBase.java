@@ -71,13 +71,13 @@ class LaunchedAppBase
 	return popups.size() - 1;
     }
 
-    public void closeLastPopup()
+    void closeLastPopup()
     {
 	popupWrappings.remove(popupWrappings.size() - 1);
 	popups.remove(popups.size() - 1);
     }
 
-    public Area getEffectiveAreaOfPopup(int index)
+    Area getEffectiveAreaOfPopup(int index)
     {
 	return popupWrappings.get(index).getEffectiveArea();
     }
@@ -93,7 +93,7 @@ class LaunchedAppBase
      * @param area The area designating a cell in application layout by the natural area itself or by any of its wrappers
      * @return The effective area which corresponds to the requested cell in the application layout
     */
-    public Area getCorrespondingEffectiveArea(Area area)
+    Area getCorrespondingEffectiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
 	for(AreaWrapping w: popupWrappings)
@@ -111,7 +111,7 @@ class LaunchedAppBase
      * @param area The area designating a cell in application layout by the natural area itself or by any of its wrappers
      * @return The area wrapping which corresponds to  the requested cell of the application layout
      */
-    public AreaWrapping getAreaWrapping(Area area)
+    AreaWrapping getAreaWrapping(Area area)
     {
 	NullCheck.notNull(area, "area");
 	for(AreaWrapping w: popupWrappings)

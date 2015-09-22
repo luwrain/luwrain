@@ -259,7 +259,7 @@ public static Command[] createStandardCommands(Environment env)
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.switchNextApp();
+		    e.onSwitchNextAppCommand();
 		}
 	    });
 
@@ -272,7 +272,7 @@ public static Command[] createStandardCommands(Environment env)
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.switchNextArea();
+		    e.onSwitchNextAreaCommand();
 		}
 	    });
 
@@ -285,7 +285,7 @@ public static Command[] createStandardCommands(Environment env)
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.increaseFontSize();
+		    e.onIncreaseFontSizeCommand();
 		}
 	    });
 
@@ -298,7 +298,7 @@ public static Command[] createStandardCommands(Environment env)
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.decreaseFontSize();
+		    e.onDecreaseFontSizeCommand();
 		}
 	    });
 

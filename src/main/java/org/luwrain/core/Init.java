@@ -16,13 +16,9 @@
 
 package org.luwrain.core;
 
-import java.util.*;
-import java.util.jar.*;
 import java.io.*;
-
 import org.luwrain.speech.BackEnd;
 import org.luwrain.os.OperatingSystem;
-
 
 class Init
 {
@@ -41,7 +37,7 @@ class Init
     private org.luwrain.speech.BackEnd speech;
     private LaunchContext launchContext;
 
-    public void go(String[] args)
+    private void go(String[] args)
     {
 	this.cmdLine = args;
 	Log.debug("init", "command line has " + cmdLine.length + " arguments:");

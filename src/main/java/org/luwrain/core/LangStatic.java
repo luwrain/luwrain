@@ -34,8 +34,6 @@ public interface LangStatic
     static public final int NO_ITEMS_ABOVE = 15;
     static public final int NO_ITEMS_BELOW = 16;
     static public final int FONT_SIZE = 17;
-    static public final int LINES_COPIED = 48;
-    static public final int LINES_CUT = 49;
 
     static public final int NO_CONTENT = 50;
     static public final int COMMANDER_NO_CONTENT = 51;

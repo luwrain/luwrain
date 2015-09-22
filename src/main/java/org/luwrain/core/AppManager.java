@@ -162,7 +162,7 @@ class AppManager
 	return apps.get(index).setActiveArea(area);
     }
 
-    public Area getEffectiveActiveAreaOfApp(Application app)
+    Area getEffectiveActiveAreaOfApp(Application app)
     {
 	NullCheck.notNull(app, "app");
 	if (isDefaultApp(app))
@@ -173,7 +173,7 @@ class AppManager
 	return apps.get(index).getEffectiveActiveArea();
     }
 
-    public Area getEffectiveActiveAreaOfActiveApp()
+    Area getEffectiveActiveAreaOfActiveApp()
     {
 	if (activeAppIndex < 0 && hasDefaultApp())
 	    return defaultApp.getEffectiveActiveArea();
@@ -182,7 +182,7 @@ class AppManager
 	return null;
     }
 
-    public boolean noEffectiveActiveArea()
+    boolean noEffectiveActiveArea()
     {
 	return getEffectiveActiveAreaOfActiveApp() == null;
     }
@@ -196,7 +196,7 @@ class AppManager
     }
 
     //null app means environment popup;
-    public void addNewPopup(Application app, Area area,
+    void addNewPopup(Application app, Area area,
 			    int position, PopupEventLoopStopCondition stopCondition,
 			    boolean noMultipleCopies, boolean isWeak)
     {
@@ -216,7 +216,7 @@ class AppManager
 	popups.add(new OpenedPopup(app, popupIndex, position, stopCondition, noMultipleCopies, isWeak));
     }
 
-    public void closeLastPopup()
+    void closeLastPopup()
     {
 	if (popups.isEmpty())
 	{
@@ -235,20 +235,20 @@ class AppManager
 	    environment.closeLastPopup();
     }
 
-    public boolean isLastPopupDiscontinued()
+    boolean isLastPopupDiscontinued()
     {
 	if (popups.isEmpty())
 	    return true;
 	return !popups.lastElement().stopCondition.continueEventLoop();
     }
 
-    public boolean hasAnyPopup()
+    boolean hasAnyPopup()
     {
 	return !popups.isEmpty();
     }
 
     //null is a valid argument;
-    public boolean hasPopupOfApp(Application app)
+    boolean hasPopupOfApp(Application app)
     {
 	LaunchedAppBase launchedApp;
 	if (app != null)
@@ -262,12 +262,12 @@ class AppManager
 	return launchedApp.popups.size() > 0;
     }
 
-    public Application getAppOfLastPopup()
+    Application getAppOfLastPopup()
     {
 	return !popups.isEmpty()?popups.lastElement().app:null;
     }
 
-    public Area getEffectiveAreaOfLastPopup()
+    Area getEffectiveAreaOfLastPopup()
     {
 	if (popups.isEmpty())
 	    return null;
@@ -287,7 +287,7 @@ class AppManager
 	return launchedApp.getEffectiveAreaOfPopup(popup.index);
     }
 
-public AreaLayout getEffectiveAreaLayout(Application app)
+    AreaLayout getEffectiveAreaLayout(Application app)
     {
 	NullCheck.notNull(app, "app");
 	if (isDefaultApp(app))
@@ -298,7 +298,7 @@ public AreaLayout getEffectiveAreaLayout(Application app)
 	return apps.get(index).getEffectiveAreaLayout();
     }
 
-    public boolean isAppLaunched(Application app)
+    boolean isAppLaunched(Application app)
     {
 	NullCheck.notNull(app, "app");
 	if (isDefaultApp(app))
@@ -308,7 +308,7 @@ public AreaLayout getEffectiveAreaLayout(Application app)
 
     //app may not be null, environment popups should be processed with getCorrespondingEffectiveArea(area);
     //Area may be an area of any kind, either natural or wrapping;
-    public Area getCorrespondingEffectiveArea(Application app, Area area)
+    Area getCorrespondingEffectiveArea(Application app, Area area)
     {
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(area, "area");
@@ -321,7 +321,7 @@ public AreaLayout getEffectiveAreaLayout(Application app)
     }
 
     //Area may be an area of any kind, either natural or wrapping;
-    public Area getCorrespondingEffectiveArea(Area area)
+    Area getCorrespondingEffectiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
 	if (hasDefaultApp())
@@ -352,7 +352,7 @@ public AreaLayout getEffectiveAreaLayout(Application app)
      * @param area The area designating a cell in application layout by the natural area itself or by any of its wrappers
      * @return The area wrapping which corresponds to  the requested cell of the application layout
      */
-    public LaunchedAppBase.AreaWrapping getAreaWrapping(Area area)
+    LaunchedAppBase.AreaWrapping getAreaWrapping(Area area)
     {
 	NullCheck.notNull(area, "area");
 	if (hasDefaultApp())
@@ -373,7 +373,7 @@ public AreaLayout getEffectiveAreaLayout(Application app)
 	return null;
     }
 
-    public boolean setReviewAreaWrapper(Area area, ReviewAreaWrapperFactory factory)
+    boolean setReviewAreaWrapper(Area area, ReviewAreaWrapperFactory factory)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(factory, "factory");
@@ -387,14 +387,14 @@ public AreaLayout getEffectiveAreaLayout(Application app)
 	return true;
     }
 
-    public int getPositionOfLastPopup()
+    int getPositionOfLastPopup()
     {
 	if (popups.isEmpty())
 	    return Popup.INVALID;
 	return popups.lastElement().position;
     }
 
-    public void onNewPopupOpening(Application app, Class newCopyClass)
+    void onNewPopupOpening(Application app, Class newCopyClass)
     {
 	/*
 	for(Wrapper w: wrappers)
@@ -403,14 +403,14 @@ public AreaLayout getEffectiveAreaLayout(Application app)
 	*/
     }
 
-    public boolean isLastPopupWeak()
+    boolean isLastPopupWeak()
     {
 	if (popups.isEmpty())
 	    return false;
 	return popups.lastElement().isWeak;
     }
 
-    public void cancelLastPopup()
+    void cancelLastPopup()
     {
 	if (popups.isEmpty())
 	    return;

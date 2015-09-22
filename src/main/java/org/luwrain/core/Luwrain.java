@@ -91,7 +91,7 @@ public final class Luwrain implements EventConsumer
 
     public     void closeApp()
     {
-	environment.closeApp(this);
+	environment.closeAppIface(this);
     }
 
     public Registry getRegistry()
@@ -101,7 +101,7 @@ public final class Luwrain implements EventConsumer
 
     public Object getSharedObject(String id)
     {
-	return environment.getSharedObject(id);
+	return environment.getSharedObjectIface(id);
     }
 
     public void hint(String text)
@@ -129,7 +129,7 @@ public final class Luwrain implements EventConsumer
 
     public I18n i18n()
     {
-	return environment.i18n();
+	return environment.i18nIface();
     }
 
     public void launchApp(String shortcutName)
@@ -144,7 +144,7 @@ public final class Luwrain implements EventConsumer
 
     public LaunchContext launchContext()
     {
-	return environment.launchContext();
+	return environment.launchContextIface();
     }
 
     public void message(String text)
@@ -379,12 +379,12 @@ public final class Luwrain implements EventConsumer
 
     public UniRefInfo getUniRefInfo(String uniRef)
     {
-	return environment.getUniRefInfo(uniRef);
+	return environment.getUniRefInfoIface(uniRef);
     }
 
     public boolean openUniRef(String uniRef)
     {
-	return environment.openUniRef(uniRef);
+	return environment.openUniRefIface(uniRef);
     }
 
     public Hardware getHardware()

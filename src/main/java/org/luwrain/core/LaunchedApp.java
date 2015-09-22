@@ -157,7 +157,7 @@ class LaunchedApp extends LaunchedAppBase
 	return super.getAreaWrapping(area);
     }
 
-    public AreaLayout getEffectiveAreaLayout()
+    AreaLayout getEffectiveAreaLayout()
     {
 	final Area[] a = new Area[areas.length];
 	for(int i = 0;i < areaWrappings.length;++i)

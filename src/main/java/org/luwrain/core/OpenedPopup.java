@@ -18,14 +18,14 @@ package org.luwrain.core;
 
 class OpenedPopup
 {
-    public Application app;
-    public int index;//Popup index in the corresponding application
-    public int position;
-    public PopupEventLoopStopCondition stopCondition;
-    public boolean noMultipleCopies;
-    public boolean isWeak; 
+    Application app;
+    int index;//Popup index in the corresponding application
+    int position;
+    PopupEventLoopStopCondition stopCondition;
+    boolean noMultipleCopies;
+    boolean isWeak; 
 
-    public OpenedPopup(Application app,
+    OpenedPopup(Application app,
 		       int index,
 		       int position,
 		       PopupEventLoopStopCondition stopCondition,

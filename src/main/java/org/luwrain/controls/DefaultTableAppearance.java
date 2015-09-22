@@ -41,7 +41,7 @@ public class DefaultTableAppearance implements TableAppearance
 	}
 	if (!value.trim().isEmpty())
 	    environment.say(value); else
-	    environment.hintStaticString(Langs.EMPTY_LINE);
+	    environment.hint(Hints.EMPTY_LINE);
     }
 
     public int getInitialHotPointX(TableModel model)
