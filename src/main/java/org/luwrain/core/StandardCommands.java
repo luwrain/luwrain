@@ -329,6 +329,20 @@ public static Command[] createStandardCommands(Environment env)
 		    e.launchApp(app);
 		}
 	    });
+
+	//context-menu;
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "context-menu";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    environment.onContextMenuCommand();
+		}
+	    });
+
+
 	return res.toArray(new Command[res.size()]);
     }
 }

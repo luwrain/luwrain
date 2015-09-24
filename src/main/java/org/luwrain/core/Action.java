@@ -18,18 +18,64 @@ package org.luwrain.core;
 
 import org.luwrain.core.events.KeyboardEvent;
 
-public interface Action
+public class Action
 {
     static public final int STATIC = 0;
     static public final int REGULAR = 1;
     static public final int COMMAND_HINT = 2;
-    static public final int  SEPARATOR = 3;;
+    static public final int  SEPARATOR = 3;
     static public final int SUBMENU = 4;
 
+    private int type = REGULAR;
+    private String name = "";
+    private String title = "";
+    private KeyboardEvent event = null;
+    private Action[] childActions = null;
 
-    String getActionName();
-    String getActionTitle();
-    KeyboardEvent getActionKeyboardEvent();
-    Action[] getChildActions();
-    boolean isShadowAction();
+    public Action(String name)
+    {
+	this.name = name;
+	NullCheck.notNull(name, "name");
+	type = REGULAR;
+	title = name;
+    }
+
+    public Action(String name, String title)
+    {
+	this.name = name;
+	this.title = title;
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(title, "title");
+	type = REGULAR;
+    }
+
+    public Action(int type,
+		  String name, String title)
+    {
+	this.type = type;
+	this.name = name;
+	this.title = title;
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(title, "title");
+    }
+
+    public String getActionName()
+    {
+	return name;
+    }
+
+    public String getActionTitle()
+    {
+	return title;
+    }
+
+    public KeyboardEvent getActionKeyboardEvent()
+    {
+	return event;
+    }
+
+    public Action[] getChildActions()
+    {
+	return childActions == null || childActions.length < 0?null:childActions;
+    }
 }

@@ -845,7 +845,7 @@ class Environment implements EventConsumer
 
     void mainMenu()
     {
-	MainMenu mainMenu = new org.luwrain.mainmenu.Builder(interfaces.getObjForEnvironment()).build();
+	final MainMenu mainMenu = new org.luwrain.mainmenu.Builder(interfaces.getObjForEnvironment()).build();
 	playSound(Sounds.MAIN_MENU);
 	popupImpl(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
@@ -932,6 +932,28 @@ class Environment implements EventConsumer
 				      }
 				  });
 	onNewScreenLayout();
+    }
+
+    void onContextMenuCommand()
+    {
+	final Area activeArea = getValidActiveArea(true);
+	if (activeArea == null)
+	    return;
+	final Action[] actions = activeArea.getAreaActions();
+	if (actions == null || actions.length < 1)
+	{
+	    areaInaccessibleMessage();
+	    return;
+	}
+	final ContextMenu menu = new ContextMenu(speechProc, actions);
+	popupImpl(null, menu, Popup.RIGHT, menu.closing, true, true);
+	if (menu.closing.cancelled())
+	    return;
+	final Object selected = menu.selected();
+	if (selected == null || !(selected instanceof Action))//Should never happen
+	    return;
+	if (!activeArea.onEnvironmentEvent(new ActionEvent((Action)selected)))
+	    areaInaccessibleMessage();
     }
 
     void onIntroduceLineCommand()

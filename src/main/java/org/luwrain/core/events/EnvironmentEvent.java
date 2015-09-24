@@ -29,13 +29,14 @@ public class EnvironmentEvent extends Event
     static public final int HELP = 6;
     static public final int THREAD_SYNC = 7;
     static public final int MESSAGE = 8;
-    static public final int OPEN = 9;
+    static public final int ACTION = 9;
+    static public final int OPEN = 10;
 
-    static public final int REGION_POINT = 10;
-    static public final int COPY = 11;
-    static public final int CUT = 12;
-    static public final int INSERT = 14;
-    static public final int DELETE = 15;
+    static public final int REGION_POINT = 100;
+    static public final int COPY = 101;
+    static public final int CUT = 102;
+    static public final int INSERT = 104;
+    static public final int DELETE = 105;
 
     private int code;
 
