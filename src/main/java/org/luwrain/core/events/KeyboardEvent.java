@@ -22,53 +22,53 @@ import org.luwrain.core.*;
 
 public class KeyboardEvent extends Event
 {
-    public static final int ENTER = 0;
-    public static final int BACKSPACE = 1;
-    public static final int ESCAPE = 2;
-    public static final int TAB = 3;
+    static public final int ENTER = 0;
+    static public final int BACKSPACE = 1;
+    static public final int ESCAPE = 2;
+    static public final int TAB = 3;
 
-    public static final int ARROW_DOWN = 10;
-    public static final int ARROW_UP = 11;
-    public static final int ARROW_LEFT = 12;
-    public static final int ARROW_RIGHT = 13;
+    static public final int ARROW_DOWN = 10;
+    static public final int ARROW_UP = 11;
+    static public final int ARROW_LEFT = 12;
+    static public final int ARROW_RIGHT = 13;
 
-    public static final int INSERT = 20;
-    public static final int DELETE = 21;
-    public static final int HOME = 22;
-    public static final int END = 23;
-    public static final int PAGE_UP = 24;
-    public static final int PAGE_DOWN = 25;
+    static public final int INSERT = 20;
+    static public final int DELETE = 21;
+    static public final int HOME = 22;
+    static public final int END = 23;
+    static public final int PAGE_UP = 24;
+    static public final int PAGE_DOWN = 25;
 
-    public static final int F1 = 30;
-    public static final int F2 = 31;
-    public static final int F3 = 32;
-    public static final int F4 = 33;
-    public static final int F5 = 34;
-    public static final int F6 = 35;
-    public static final int F7 = 36;
-    public static final int F8 = 37;
-    public static final int F9 = 38;
-    public static final int F10 = 39;
-    public static final int F11 = 40;
-    public static final int F12 = 41;
+    static public final int F1 = 30;
+    static public final int F2 = 31;
+    static public final int F3 = 32;
+    static public final int F4 = 33;
+    static public final int F5 = 34;
+    static public final int F6 = 35;
+    static public final int F7 = 36;
+    static public final int F8 = 37;
+    static public final int F9 = 38;
+    static public final int F10 = 39;
+    static public final int F11 = 40;
+    static public final int F12 = 41;
 
-    public static final int WINDOWS = 50;
-    public static final int CONTEXT_MENU = 51;
+    static public final int WINDOWS = 50;
+    static public final int CONTEXT_MENU = 51;
 
-    public static final int SHIFT = 60;
-    public static final int CONTROL = 61;
-    public static final int LEFT_ALT = 62;
-    public static final int RIGHT_ALT = 63;
+    static public final int SHIFT = 60;
+    static public final int CONTROL = 61;
+    static public final int LEFT_ALT = 62;
+    static public final int RIGHT_ALT = 63;
 
-    public static final int ALTERNATIVE_ARROW_DOWN = 70;
-    public static final int ALTERNATIVE_ARROW_UP = 71;
-    public static final int ALTERNATIVE_ARROW_LEFT = 72;
-    public static final int ALTERNATIVE_ARROW_RIGHT = 73;
-    public static final int ALTERNATIVE_HOME = 74;
-    public static final int ALTERNATIVE_END = 75;
-    public static final int ALTERNATIVE_PAGE_UP = 76;
-    public static final int ALTERNATIVE_PAGE_DOWN = 77;
-    public static final int ALTERNATIVE_DELETE = 78;
+    static public final int ALTERNATIVE_ARROW_DOWN = 70;
+    static public final int ALTERNATIVE_ARROW_UP = 71;
+    static public final int ALTERNATIVE_ARROW_LEFT = 72;
+    static public final int ALTERNATIVE_ARROW_RIGHT = 73;
+    static public final int ALTERNATIVE_HOME = 74;
+    static public final int ALTERNATIVE_END = 75;
+    static public final int ALTERNATIVE_PAGE_UP = 76;
+    static public final int ALTERNATIVE_PAGE_DOWN = 77;
+    static public final int ALTERNATIVE_DELETE = 78;
 
     private boolean cmd = false;
     private int cmdCode = 0;
