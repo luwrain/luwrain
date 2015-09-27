@@ -342,6 +342,19 @@ public static Command[] createStandardCommands(Environment env)
 		}
 	    });
 
+	//copy-object-uniref;
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "copy-object-uniref";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    environment.onCopyObjectUniRefCommand();
+		}
+	    });
+
+
 
 	return res.toArray(new Command[res.size()]);
     }

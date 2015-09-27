@@ -1082,6 +1082,33 @@ class Environment implements EventConsumer
 	openFiles(new String[]{f.getAbsolutePath()});
     }
 
+    void onCopyObjectUniRefCommand()
+    {
+	final Area activeArea = getValidActiveArea(true);
+	if (activeArea == null)
+	    return;
+	final ObjectUniRefQuery query = new ObjectUniRefQuery();
+	if (!activeArea.onAreaQuery(query) || !query.containsResult())
+	{
+	    failureMessage();
+	    return;
+	}
+	final String uniRef = query.getUniRef();
+	if (uniRef == null || uniRef.trim().isEmpty())
+	{
+	    failureMessage();
+	    return;
+	}
+	final UniRefInfo uniRefInfo = getUniRefInfoIface(uniRef);
+	if (uniRefInfo == null)
+	{
+	    failureMessage();
+	    return;
+	}
+	message(uniRefInfo.toString(), Luwrain.MESSAGE_REGULAR);
+	clipboard = new HeldData(new String[]{uniRef});
+    }
+
     void onNewScreenLayout()
     {
 	screenContentManager.updatePopupState();

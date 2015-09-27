@@ -64,6 +64,8 @@ public class ControlPanelApp implements Application, Actions
 	final Area area = sect.getSectionArea(environment);
 	if (area == null)
 	    return;
+	if (!mayCloseCurrentSection())
+	    return;
 	currentSection = sect;
 	currentOptionsArea = area;
 	luwrain.onNewAreaLayout();
@@ -112,7 +114,8 @@ public class ControlPanelApp implements Application, Actions
 
     @Override public void closeApp()
     {
-	//FIXME:
+	if (!mayCloseCurrentSection())
+	    return;
 	luwrain.closeApp();
     }
 
@@ -174,5 +177,12 @@ public class ControlPanelApp implements Application, Actions
 	    return false;
 	luwrain.setActiveArea(currentOptionsArea);
 	return true;
+    }
+
+    private boolean mayCloseCurrentSection()
+    {
+	if (currentSection == null)
+	    return true;
+	return currentSection.canCloseSection(environment);
     }
 }

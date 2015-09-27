@@ -14,20 +14,30 @@
    General Public License for more details.
 */
 
-package org.luwrain.cpanel;
+package org.luwrain.core.queries;
 
 import org.luwrain.core.*;
 
-public interface Section
+public class ObjectUniRefQuery extends AreaQuery
 {
-    int getDesiredRoot();
-    Section[] getChildSections();
-    Area getSectionArea(Environment environment);
+    private String uniRef = null;
 
-    //Must issue all necessary error message;
-    boolean canCloseSection(Environment environment);
-    boolean onTreeInsert(Environment environment);
-    boolean onTreeDelete(Environment environment);
-    boolean isSectionEnabled();
-    void refreshChildSubsections();
+    public ObjectUniRefQuery()
+    {
+	super(OBJECT_UNIREF);
+    }
+
+    public void setUniRef(String uniRef)
+    {
+	NullCheck.notNull(uniRef, "uniRef");
+	if (this.uniRef != null)
+	    throw new IllegalArgumentException("uniRef may not be set twice");
+	this.uniRef = uniRef;
+	resultTaken();
+    }
+
+    public String getUniRef()
+    {
+	return uniRef;
+    }
 }

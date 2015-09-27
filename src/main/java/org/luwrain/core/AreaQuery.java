@@ -19,6 +19,7 @@ package org.luwrain.core;
 public class AreaQuery extends Event
 {
     static public final int REGION = 0;
+    static public final int OBJECT_UNIREF = 1;
 
     private int code;
     private boolean containsResult = false;

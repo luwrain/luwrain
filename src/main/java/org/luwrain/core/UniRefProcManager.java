@@ -23,33 +23,29 @@ import org.luwrain.core.extensions.*;
 
 class UniRefProcManager
 {
-    class Entry 
+    static private class Entry 
     {
-	public Luwrain luwrain;
-	public String uniRefType;
-	public UniRefProc uniRefProc;
+	Luwrain luwrain;
+	String uniRefType;
+	UniRefProc uniRefProc;
 
-	public Entry(Luwrain luwrain,
-		     String uniRefType,
-		     UniRefProc uniRefProc)
+	Entry(Luwrain luwrain, String uniRefType,
+	      UniRefProc uniRefProc)
 	{
 	    this.luwrain = luwrain;
 	    this.uniRefType = uniRefType;
 	    this.uniRefProc = uniRefProc;
-	    if (luwrain == null)
-		throw new NullPointerException("luwrain may not be null");
-	    if (uniRefType == null)
-		throw new NullPointerException("uniRefType may not be null");
+	    NullCheck.notNull(luwrain, "luwrain");
+	    NullCheck.notNull(uniRefType, "uniRefType");
+	    NullCheck.notNull(uniRefProc, "uniRefProc");
 	    if (uniRefType.trim().isEmpty())
 		throw new IllegalArgumentException("uniRefType may not be empty");
-	    if (uniRefProc == null)
-		throw new NullPointerException("uniRefProc may not be null");
 	}
     }
 
-    private TreeMap<String, Entry> uniRefProcs = new TreeMap<String, Entry>();
+    private final TreeMap<String, Entry> uniRefProcs = new TreeMap<String, Entry>();
 
-    public boolean add(Luwrain luwrain, UniRefProc uniRefProc)
+    boolean add(Luwrain luwrain, UniRefProc uniRefProc)
     {
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
@@ -64,22 +60,20 @@ class UniRefProcManager
 	return true;
     }
 
-    public UniRefInfo getInfo(String uniRef)
+    UniRefInfo getInfo(String uniRef)
     {
-	if (uniRef == null)
-	    throw new NullPointerException("uniRef may not be null");
+	NullCheck.notNull(uniRef, "uniRef");
 	if (uniRef.trim().isEmpty())
 	    throw new IllegalArgumentException("uniRef may not be empty");
 	final String uniRefType = getUniRefType(uniRef);
-	if (uniRefType == null || uniRefType.trim().isEmpty())
-	    return null;
-	if (!uniRefProcs.containsKey(uniRefType))
-	    return null;
+	if (uniRefType == null || uniRefType.trim().isEmpty() ||
+!uniRefProcs.containsKey(uniRefType))
+	    return new UniRefInfo(uniRef);
 	final Entry entry = uniRefProcs.get(uniRefType);
 	return entry.uniRefProc.getUniRefInfo(uniRef);
     }
 
-    public boolean open(String uniRef)
+    boolean open(String uniRef)
     {
 	if (uniRef == null)
 	    throw new NullPointerException("uniRef may not be null");
