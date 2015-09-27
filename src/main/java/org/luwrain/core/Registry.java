@@ -23,6 +23,7 @@ public interface Registry
     public static final int STRING = 2;
     public static final int BOOLEAN = 3;
 
+    //Returns false if the directory alreayd exists
     boolean addDirectory(String path);
     boolean deleteDirectory(String path);
     boolean deleteValue(String path);

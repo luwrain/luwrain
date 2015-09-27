@@ -40,4 +40,5 @@ int getAreaVisibleHeight(Area area);
     String staticStr(int code);
     org.luwrain.core.Strings environmentStrings();
     void playSound(int code);
+    UniRefInfo getUniRefInfo(String uniRef);
 }

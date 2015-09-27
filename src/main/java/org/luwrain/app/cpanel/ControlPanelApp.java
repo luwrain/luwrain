@@ -23,7 +23,7 @@ import org.luwrain.cpanel.*;
 
 public class ControlPanelApp implements Application, Actions
 {
-    static public final String STRINGS_NAME = "luwrain.cpanel";
+    static public final String STRINGS_NAME = "luwrain.control-panel";
 
     private Luwrain luwrain;
     private Strings strings;
@@ -43,6 +43,7 @@ public class ControlPanelApp implements Application, Actions
     @Override public boolean onLaunch(Luwrain luwrain)
     {
 	final Object str = luwrain.i18n().getStrings(STRINGS_NAME);
+	//	System.out.println(str);
 	if (str == null || !(str instanceof Strings))
 	    return false;
 	strings = (Strings)str;
@@ -69,6 +70,23 @@ public class ControlPanelApp implements Application, Actions
 	gotoOptions();
     }
 
+    @Override public void refreshSectionsTree()
+    {
+	sectionsModel.refresh();
+    sectionsArea.refresh();
+    if (currentSection == null || currentOptionsArea == null)
+    {
+	currentSection = null;
+	currentOptionsArea = null;
+	return;
+    }
+    if (currentSection.isSectionEnabled())
+	return;
+    currentSection = null;
+    currentOptionsArea = null;
+    luwrain.onNewAreaLayout();
+    }
+
     @Override public boolean onSectionsInsert()
     {
 	final Object o = sectionsArea.selected();
@@ -84,7 +102,6 @@ public class ControlPanelApp implements Application, Actions
 	if (o == null || !(o instanceof Section))
 	    return false;
 	final Section sect = (Section)o;
-	luwrain.message("delete " + sect.toString());
 	return sect.onTreeDelete(environment);
     }
 

@@ -50,10 +50,8 @@ public class YesNoPopup implements Popup, PopupClosingRequest
     }
 
     public YesNoPopup(Luwrain luwrain,
-		      String name,
-		      String text,
-		      boolean defaultRes,
-		      int popupFlags)
+		      String name, String text,
+		      boolean defaultRes, int popupFlags)
     {
 	this.luwrain = luwrain;
 	this.name = name;

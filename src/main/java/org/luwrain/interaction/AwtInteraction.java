@@ -46,7 +46,6 @@ public class AwtInteraction implements Interaction
 	if (eventConsumer == null)
 	    return;
 	int code;
-	//	System.out.println("" + shiftPressed + " " + controlPressed + " " + leftAltPressed + " " + rightAltPressed);
 	switch (event.getKeyCode())
 	{
 	    //Functions keys;

@@ -40,7 +40,6 @@ if (uniRef != null && !res.contains(uniRef))
 	    res	   .add(uniRef);
 	}
 uniRefs = res.toArray(new UniRefInfo[res.size()]);
-System.out.println("" + uniRefs.length);
 }
 
     void add(int pos, String[] values)

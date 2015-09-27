@@ -26,4 +26,5 @@ interface Actions
     void closeApp();
     boolean gotoOptions();
     void gotoSections();
+    void refreshSectionsTree();
 }

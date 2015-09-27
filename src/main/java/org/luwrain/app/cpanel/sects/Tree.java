@@ -67,13 +67,52 @@ public Tree(Environment environment,
 	workersSection = new BasicSection(strings.sectName(Strings.WORKERS));
 	personalInfoSection = new PersonalInfo();
 	hardwareSection = makeHardwareSection();
+	root = new BasicSection("Панель управления");
+	fillRoot();
+	addExtensionsSections();
+    }
+
+    private void reinit()
+    {
+	appsSection.clear();
+	speechSection.clear();
+	soundsSection.clear();
+	keyboardSection.clear();
+	uiSection.clear();
+	extensionsSection.clear();
+	networkSection.clear();
+	workersSection.clear();
+	hardwareSection = makeHardwareSection();
+	root.clear();
+	fillRoot();
+	addExtensionsSections();
+    }
+
+    private void fillRoot()
+    {
+	root.addSubsection(appsSection);
+	root.addSubsection(personalInfoSection);
+	root.addSubsection(uiSection);
+	root.addSubsection(keyboardSection);
+	root.addSubsection(speechSection);
+	root.addSubsection(soundsSection);
+	root.addSubsection(networkSection);
+	root.addSubsection(extensionsSection);
+	root.addSubsection(hardwareSection);
+	root.addSubsection(workersSection);
+    }
+
+    private void addExtensionsSections()
+    {
 	for(Section s: extensionsSections)
 	{
 	    if (!s.isSectionEnabled())
 		continue;
 	    switch(s.getDesiredRoot())
 	    {
-		//	    case BasicSections.ROOT:
+	    case BasicSections.ROOT:
+root.addSubsection(s);
+break;
 	    case BasicSections.APPLICATIONS:
 		appsSection.addSubsection(s);
 		break;
@@ -101,7 +140,6 @@ public Tree(Environment environment,
 		workersSection.addSubsection(s);
 	    }
 	}
-	root = makeRoot();
     }
 
     private BasicSection makeHardwareSection()
@@ -132,24 +170,15 @@ public Tree(Environment environment,
 	return res;
     }
 
-    private BasicSection makeRoot()
-    {
-	final BasicSection res = new BasicSection("Панель управления");
-	res.addSubsection(appsSection);
-	res.addSubsection(personalInfoSection);
-	res.addSubsection(uiSection);
-	res.addSubsection(keyboardSection);
-	res.addSubsection(speechSection);
-	res.addSubsection(soundsSection);
-	res.addSubsection(networkSection);
-	res.addSubsection(extensionsSection);
-	res.addSubsection(hardwareSection);
-	res.addSubsection(workersSection);
-	return res;
-    }
-
     public BasicSection getRoot()
     {
 	return root;
+    }
+
+    public void refresh()
+    {
+	for(Section sect: extensionsSections)
+	    sect.refreshChildSubsections();
+	reinit();
     }
 }

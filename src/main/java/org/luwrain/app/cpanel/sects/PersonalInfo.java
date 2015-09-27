@@ -22,7 +22,7 @@ import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.util.*;
 
-class PersonalInfo implements Section
+class PersonalInfo extends EmptySection
 {
     static private class Area extends FormArea
     {
@@ -31,7 +31,7 @@ class PersonalInfo implements Section
 
 	Area(Environment environment )
 	{
-	    super(environment);
+	    super(new DefaultControlEnvironment(environment.getLuwrain()));
 	    this.environment = environment;
 	    NullCheck.notNull(environment, "environment");
 	    final RegistryAutoCheck check = new RegistryAutoCheck(environment.getLuwrain().getRegistry());
@@ -104,11 +104,6 @@ class PersonalInfo implements Section
 	return BasicSections.NONE;
     }
 
-    @Override public Section[] getChildSections()
-    {
-	return new Section[0];
-    }
-
     @Override public Area getSectionArea(Environment environment)
     {
 	if (area == null)
@@ -116,28 +111,8 @@ class PersonalInfo implements Section
 	return area;
     }
 
-    @Override public boolean canCloseSection(Environment environment)
-    {
-	return true;
-    }
-
-    @Override public boolean onTreeInsert(Environment environment)
-    {
-	return false;
-    }
-
-    @Override public boolean onTreeDelete(Environment environment)
-    {
-	return false;
-    }
-
     @Override public String toString()
     {
 	return "Персональная информация";
-    }
-
-    @Override public boolean isSectionEnabled()
-    {
-	return true;
     }
 }

@@ -18,16 +18,17 @@ package org.luwrain.app.cpanel;
 
 import org.luwrain.core.*;
 
-class EnvironmentImpl extends org.luwrain.controls.DefaultControlEnvironment implements org.luwrain.cpanel.Environment
+class EnvironmentImpl implements org.luwrain.cpanel.Environment
 {
     private Luwrain luwrain;
     private Actions actions;
 
     EnvironmentImpl(Luwrain luwrain, Actions actions)
     {
-	super(luwrain);
 	this.luwrain = luwrain;
 	this.actions = actions;
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(actions, "actions");
     }
 
     @Override public void close()
@@ -40,12 +41,9 @@ class EnvironmentImpl extends org.luwrain.controls.DefaultControlEnvironment imp
 	actions.gotoSections();
     }
 
-    @Override public void popup(Popup popup)
-    {
-    }
-
     @Override public void refreshSectionsTree()
     {
+	actions.refreshSectionsTree();
     }
 
     @Override public Luwrain getLuwrain()

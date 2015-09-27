@@ -120,4 +120,9 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	luwrain.playSound(code);
     }
+
+    @Override public UniRefInfo getUniRefInfo(String uniRef)
+    {
+	return luwrain.getUniRefInfo(uniRef);
+    }
 }

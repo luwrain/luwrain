@@ -58,7 +58,7 @@ public class RegistryImpl implements Registry
 		++pos;
 	    }
 	    if (pos >= items.length)//The directory already exists
-		return true;
+		return false;
 	    while(pos < items.length)
 	    {
 		d = d.createSubdir(items[pos]);

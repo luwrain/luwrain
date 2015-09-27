@@ -215,7 +215,7 @@ class Environment implements EventConsumer
 	NullCheck.notNull(app, "app");
 	Log.debug("core", "launching app " + app.getClass().getName());
 	System.gc();
-	printMemInfo();
+	//	printMemInfo();
 	final Luwrain o = interfaces.requestNew(app);
 	try {
 	    if (!app.onLaunch(o))
@@ -286,7 +286,6 @@ class Environment implements EventConsumer
 	    return;
 	}
 	apps.refreshAreaLayoutOfApp(app);
-	System.out.println("here");
 	onNewScreenLayout();
     }
 
@@ -464,13 +463,10 @@ class Environment implements EventConsumer
 
     private boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	//	System.out.println("kaka " + event.eventType());
 	if (event.getCode() == EnvironmentEvent.MESSAGE)
 	{
-	    //	    System.out.println("1");
 	    if (!(event instanceof MessageEvent))
 		return true;
-	    //	    System.out.println("2");
 	    final MessageEvent messageEvent = (MessageEvent)event;
 	    message(messageEvent.text(), messageEvent.semantic());
 	    return true;

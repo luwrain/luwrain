@@ -18,11 +18,10 @@ package org.luwrain.cpanel;
 
 import org.luwrain.core.*;
 
-public interface Environment extends org.luwrain.controls.ControlEnvironment
+public interface Environment
 {
     void close();
     void gotoSectionsTree();
-    void popup(Popup popup);
     void refreshSectionsTree();
     Luwrain getLuwrain();
 }

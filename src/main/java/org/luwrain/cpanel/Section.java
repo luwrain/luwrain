@@ -27,4 +27,5 @@ public interface Section
     boolean onTreeInsert(Environment environment);
     boolean onTreeDelete(Environment environment);
     boolean isSectionEnabled();
+    void refreshChildSubsections();
 }

@@ -25,14 +25,9 @@ import org.luwrain.app.cpanel.sects.Tree;
 
 class SectionsTreeModel implements TreeModel
 {
-    /*
-    private Luwrain luwrain;
-    private EnvironmentImpl environment;
-    private Section[] extensionsSections;
-    */
     private Tree tree;
 
-    SectionsTreeModel(EnvironmentImpl environment,
+    SectionsTreeModel(Environment environment,
 		      Strings strings,
 			     Section[] extensionsSections)
     {
@@ -83,5 +78,10 @@ class SectionsTreeModel implements TreeModel
 
     @Override public void endChildEnumeration(Object obj)
     {
+    }
+
+    void refresh()
+    {
+	tree.refresh();
     }
 }

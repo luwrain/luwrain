@@ -21,22 +21,20 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
 
-public class BasicSection implements Section
+public class BasicSection extends EmptySection
 {
     private String title;
-    private LinkedList<Section> subsections = new LinkedList<Section>();
+    private final LinkedList<Section> subsections = new LinkedList<Section>();
 
     public BasicSection(String title)
     {
 	this.title = title;
-	if (title == null)
-	    throw new NullPointerException("title may not be null");
+	NullCheck.notNull(title, "title");
     }
 
     public void addSubsection(Section section)
     {
-	if (section == null)
-	    throw new NullPointerException("section may not be null");
+	NullCheck.notNull(section, "section");
 	subsections.add(section);
     }
 
@@ -50,40 +48,18 @@ public class BasicSection implements Section
 	return subsections.toArray(new Section[subsections.size()]);
     }
 
-    @Override public Area getSectionArea(Environment environment)
-    {
-	return null;
-    }
-
-    String getSectionName()
-    {
-	return "Section";
-    }
-
-    @Override public boolean canCloseSection(Environment environment)
-    {
-	return true;
-    }
-
-    @Override public boolean onTreeInsert(Environment environment)
-    {
-	return false;
-    }
-
-    @Override public boolean onTreeDelete(Environment environment)
-    {
-	return false;
-    }
-
-
-
     @Override public String toString()
     {
 	return title;
     }
 
-    @Override public boolean isSectionEnabled()
+    @Override public boolean equals(Object obj)
     {
-	return true;
+	return this == obj;
+    }
+
+    public void clear()
+    {
+	subsections.clear();
     }
 }

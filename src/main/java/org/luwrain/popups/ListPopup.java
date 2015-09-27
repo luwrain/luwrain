@@ -164,8 +164,7 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	if (closing.onEnvironmentEvent(event))
 	    return true;
 	if (region.onEnvironmentEvent(event, hotPointX, hotPointY))
@@ -174,6 +173,11 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 	{
 	case EnvironmentEvent.REFRESH:
 	    refresh();
+	    return true;
+	case EnvironmentEvent.INTRODUCE:
+	    luwrain.silence();
+	    luwrain.playSound(Sounds.INTRO_POPUP);
+	    luwrain.say(getAreaName());
 	    return true;
 	default:
 	    return false;

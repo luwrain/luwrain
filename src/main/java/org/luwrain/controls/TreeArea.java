@@ -178,7 +178,7 @@ public class TreeArea implements Area
 
     public void refresh()
     {
-	Object oldSelected = selected();
+	final Object oldSelected = selected();
 	Object newRoot = model.getRoot();
 	if (newRoot == null)
 	{

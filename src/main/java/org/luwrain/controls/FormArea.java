@@ -117,6 +117,17 @@ public class FormArea  extends NavigateArea
 	NullCheck.notNull(name, "name");
     }
 
+    public void clear()
+    {
+	items.clear();
+	multilinedCaption = null;
+	multilinedContent = null;
+	multilinedEdit = null;
+	multilinedEnabled = true;
+	environment.onAreaNewContent(this);
+	setHotPoint(0, 0);
+    }
+
     public boolean hasItemWithName(String itemName)
     {
 	NullCheck.notNull(itemName, "itemName");
@@ -136,6 +147,11 @@ public class FormArea  extends NavigateArea
 	if (index < items.size())
 	    return items.get(index).type;
 	return multilinedEditActivated()?MULTILINED:NONE;
+    }
+
+    public int getItemCount()
+    {
+	return items.size();
     }
 
     public String getItemNameOnLine(int index)
@@ -194,6 +210,16 @@ public class FormArea  extends NavigateArea
 	for(Item i: items)
 	    if (i.type == EDIT && i.name.equals(itemName))
 		return i.enteredText;
+	return null;
+    }
+
+    public String getEnteredText(int lineIndex)
+    {
+	if (lineIndex < 0 || lineIndex > items.size())
+	    return null;
+	final Item i = items.get(lineIndex);
+	if (i.type == EDIT)
+	    return i.enteredText;
 	return null;
     }
 
@@ -374,7 +400,6 @@ public class FormArea  extends NavigateArea
 	    //If the user is pressing Enter on the checkbox;
 	    if (getHotPointY() < items.size() && items.get(getHotPointY()).type == CHECKBOX)
 	    {
-
 	    final Item item = items.get(getHotPointY());
 	    if (item.checkboxState)
 	    {
@@ -391,7 +416,7 @@ public class FormArea  extends NavigateArea
 	    }
 	}
 	//If the user is typing on the caption of the edit, moving a hot point to the end of line;
-	if (getHotPointY() < items.size())
+	if (!event.isCommand() && getHotPointY() < items.size())
 	{
 	    final int index = getHotPointY();
 	    final Item item = items.get(index);
