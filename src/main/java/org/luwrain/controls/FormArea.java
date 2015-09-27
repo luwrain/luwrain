@@ -27,7 +27,8 @@ public class FormArea  extends NavigateArea
     static public final int CHECKBOX = 2;
     static public final int LIST = 3;
     static public final int STATIC = 4;
-    static public final int MULTILINED = 5;
+    static public final int UNIREF = 5;
+    static public final int MULTILINED = 6;
 
     static private class Item implements EmbeddedEditLines
     {
@@ -44,6 +45,9 @@ public class FormArea  extends NavigateArea
 	//For an edit;
 	private String enteredText = "";
 	private EmbeddedSingleLineEdit edit;
+
+	//For an uniRef;
+	UniRefInfo uniRefInfo;
 
 	//For a static item;
 	private Object staticObject;
@@ -223,6 +227,55 @@ public class FormArea  extends NavigateArea
 	return null;
     }
 
+    public boolean addUniRef(String itemName, String caption,
+			   String initialUniRef, Object obj, boolean enabled)
+    {
+	NullCheck.notNull(itemName, "itemName");
+	NullCheck.notNull(caption, "caption");
+	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
+	    return false;
+	final Item item = new Item(environment, this);
+	item.type = UNIREF;
+	item.name = itemName;
+	item.caption = caption;
+	if (initialUniRef != null && !initialUniRef.trim().isEmpty())
+	{
+	    item.uniRefInfo = environment.getUniRefInfo(initialUniRef);
+	    if (item.uniRefInfo == null)
+		return false;
+	} else
+	    item.uniRefInfo = null;
+
+	item.obj = obj;
+	item.enabled = enabled;
+	items.add(item);
+	updateEditsPos();
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    public UniRefInfo getUniRefInfo(String itemName)
+    {
+	NullCheck.notNull(itemName, "itemName");
+	if (itemName.trim().isEmpty())
+	    return null;
+	for(Item i: items)
+	    if (i.type == UNIREF && i.name.equals(itemName))
+		return i.uniRefInfo;
+	return null;
+    }
+
+    public UniRefInfo getUniRefInfo(int lineIndex)
+    {
+	if (lineIndex < 0 || lineIndex > items.size())
+	    return null;
+	final Item i = items.get(lineIndex);
+	if (i.type == UNIREF)
+	    return i.uniRefInfo;
+	return null;
+    }
+
     public boolean addList(String itemName, String caption,
 			   Object initialSelectedItem, FormListChoosing listChoosing,
 			   Object obj, boolean enabled)
@@ -381,6 +434,19 @@ public class FormArea  extends NavigateArea
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	//Delete on a uniref;
+	if (event.isCommand() && event.getCommand() == KeyboardEvent.DELETE &&
+	    !event.isModified()) 
+	{
+	    final int index = getHotPointY();
+	    if (index >= 0 && index < items.size() &&
+		items.get(index).type == UNIREF)
+	    {
+		items.get(index).uniRefInfo = null;
+		environment.onAreaNewContent(this);
+		return true;
+	    }
+	}
 
 	if (	    event.isCommand() && event.getCommand() == KeyboardEvent.ENTER &&
 		    !event.isModified())
@@ -433,9 +499,31 @@ public class FormArea  extends NavigateArea
 	    return true;
 	return super.onKeyboardEvent(event);
     }
-
+    
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	//Insert command for a uniref;
+	if (event.getCode() == EnvironmentEvent.INSERT && (event instanceof InsertEvent))
+	{
+	    final int index = getHotPointY();
+	    if (index >= 0 && index < items.size() &&
+		items.get(index).type == UNIREF)
+	    {
+		final InsertEvent insertEvent = (InsertEvent)event;
+		final HeldData data = insertEvent.getData();
+		if (data == null || data.strings == null ||
+data.strings.length < 1 || data.strings[0] == null)
+		    return false;
+		final UniRefInfo uniRefInfo = environment.getUniRefInfo(data.strings[0]);
+		if (uniRefInfo == null)
+		    return false;
+		items.get(index).uniRefInfo = uniRefInfo;
+		environment.onAreaNewContent(this);
+		return true;
+	    }
+
+	}
+
 	for(Item i: items)
 		if (i.type == EDIT && i.edit != null &&
 		    i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
@@ -483,7 +571,8 @@ public class FormArea  extends NavigateArea
 	    {
 	    case EDIT:
 		return item.caption + item.enteredText;
-
+	    case UNIREF:
+		return item.caption + (item.uniRefInfo != null?item.uniRefInfo.toString():"");
 	    case LIST:
 		return item.caption + (item.selectedListItem != null?item.selectedListItem.toString():"");
 	    case CHECKBOX:
