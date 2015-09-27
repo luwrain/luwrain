@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of the LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.desktop;
 
@@ -9,24 +24,24 @@ import org.luwrain.util.*;
 class UniRefList
 {
     private Luwrain luwrain;
-private Registry registry;
-private final RegistryKeys registryKeys = new RegistryKeys();
-private UniRefInfo[] uniRefs = new UniRefInfo[0];
+    private Registry registry;
+    private final RegistryKeys registryKeys = new RegistryKeys();
+    private UniRefInfo[] uniRefs = new UniRefInfo[0];
 
-public UniRefList(Luwrain luwrain)
-{
-this.luwrain = luwrain;
-NullCheck.notNull(luwrain, "luwrain");
-this.registry = luwrain.getRegistry();
-}
+    UniRefList(Luwrain luwrain)
+    {
+	this.luwrain = luwrain;
+	NullCheck.notNull(luwrain, "luwrain");
+	this.registry = luwrain.getRegistry();
+    }
 
-UniRefInfo[] get()
-{
-return uniRefs;
-}
+    UniRefInfo[] get()
+    {
+	return uniRefs;
+    }
 
-void load()
-{
+    void load()
+    {
 	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
 	final String[] values = registry.getValues(registryKeys.desktopUniRefs());
 	final LinkedList<UniRefInfo> res = new LinkedList<UniRefInfo>();
@@ -36,11 +51,11 @@ void load()
 	    if (s.isEmpty())
 		continue;
 	    final UniRefInfo uniRef = luwrain.getUniRefInfo(s);
-if (uniRef != null && !res.contains(uniRef))
-	    res	   .add(uniRef);
+	    if (uniRef != null && !res.contains(uniRef))
+		res	   .add(uniRef);
 	}
-uniRefs = res.toArray(new UniRefInfo[res.size()]);
-}
+	uniRefs = res.toArray(new UniRefInfo[res.size()]);
+    }
 
     void add(int pos, String[] values)
     {
@@ -51,9 +66,9 @@ uniRefs = res.toArray(new UniRefInfo[res.size()]);
 	{
 	    if (v == null)
 		continue;
-		final UniRefInfo uniRef = luwrain.getUniRefInfo(v);
-		if (uniRef != null)
-		    toAdd.add(uniRef);
+	    final UniRefInfo uniRef = luwrain.getUniRefInfo(v);
+	    if (uniRef != null)
+		toAdd.add(uniRef);
 	}
 	if (toAdd.isEmpty())
 	    return;
@@ -63,10 +78,24 @@ uniRefs = res.toArray(new UniRefInfo[res.size()]);
 	for(int i = 0;i < newPos;++i)
 	    res.add(uniRefs[i]);
 	for(UniRefInfo u: newItems)
-	res.add(u);
+	    res.add(u);
 	for(int i = newPos;i < uniRefs.length;++i)
 	    res.add(uniRefs[i]);
 	uniRefs = res.toArray(new UniRefInfo[res.size()]);
+    }
+
+    boolean delete(int pos)
+    {
+	if (uniRefs == null || uniRefs.length < 1 ||
+	    pos < 0 || pos >= uniRefs.length)
+	    return false;
+	    final UniRefInfo[] n = new UniRefInfo[uniRefs.length - 1];
+	for(int i = 0;i < pos;++i)
+	    n[i] = uniRefs[i];
+	for(int i = pos + 1;i < uniRefs.length;++i)
+	    n[i - 1] = uniRefs[i];
+	uniRefs = n;
+	return true;
     }
 
     void save()

@@ -20,4 +20,5 @@ public interface Strings
 {
     String appName();
     String noApplications();
+    String clickHereToCancelIntroduction();
 }

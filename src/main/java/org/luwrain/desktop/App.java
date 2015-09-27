@@ -51,6 +51,22 @@ public class App implements Application, Actions
 	return true;
     }
 
+    @Override public boolean onDelete(int x, int y)
+    {
+	if (!base.delete(x, y))
+	    return false;
+	area.refresh();
+	return true;
+    }
+
+    @Override public boolean onClick(int index, Object obj)
+    {
+	if (!base.onClick(index, obj))
+	    return false;
+	area.refresh();
+	return  true;
+    }
+
     public void ready(String lang, Object o)
     {
 	if (o != null && (o instanceof Strings))
@@ -61,17 +77,14 @@ public class App implements Application, Actions
     private void createArea()
     {
 	final Luwrain l = luwrain;
-	final Actions a = this;
+	final Actions actions = this;
 	final Strings s = strings;
 
 	final ListClickHandler handler = new ListClickHandler(){
-		public Actions actions = a;
-		@Override public boolean onListClick(ListArea area,
-						     int index,
-						     Object item)
+		@Override public boolean onListClick(ListArea area, int index,
+						     Object obj)
 		{
-		    //FIXME:
-		    return false;
+		    return actions.onClick(index, obj);
 		}
 	    };
 
@@ -86,6 +99,12 @@ public class App implements Application, Actions
 		      @Override public boolean onKeyboardEvent(KeyboardEvent event)
 		      {
 			  NullCheck.notNull(event, "event");
+			  if (event.isCommand() && !event.isModified())
+			      switch(event.getCommand())
+			      {
+			      case KeyboardEvent.DELETE:
+				  return actions.onDelete(getHotPointX(), getHotPointY());
+			      }
 		    return super.onKeyboardEvent(event);
 		}
 		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
@@ -104,7 +123,7 @@ public class App implements Application, Actions
 		}
     @Override public boolean insertRegion(int x, int y, HeldData data)
 		{
-		    return a.onInsert(x, y, data);
+		    return actions.onInsert(x, y, data);
 		}
 		@Override public String getAreaName()
 		{

@@ -21,4 +21,6 @@ import org.luwrain.core.HeldData;
 interface Actions
 {
     boolean onInsert(int x, int y, HeldData data);
+    boolean onDelete(int x, int y);
+    boolean onClick(int index, Object object);
 }

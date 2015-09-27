@@ -34,4 +34,9 @@ class TempStrings implements Strings
     {
 	return strings != null?strings.noApplications():"All applications closed";
     }
+
+    @Override public String clickHereToCancelIntroduction()
+    {
+	return strings != null?strings.clickHereToCancelIntroduction():"Press ENTER on this line to hide introduction above";
+    }
 }

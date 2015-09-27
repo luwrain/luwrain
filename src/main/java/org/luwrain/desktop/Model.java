@@ -17,32 +17,25 @@
 package org.luwrain.desktop;
 
 import java.util.*;
-import java.io.*;
-import java.nio.file.*;
-import java.nio.charset.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.util.RegistryAutoCheck;
-import org.luwrain.util.RegistryPath;
 
 class Model implements ListModel
 {
     private Luwrain luwrain;
-    private Registry registry;
-    private final RegistryKeys registryKeys = new RegistryKeys();
     private Object[] items;
     private UniRefList uniRefList;
     private String[] introduction;
+    private String clickHereLine = null;
     private int firstUniRefPos = 0;
 
-    public Model(Luwrain luwrain, UniRefList uniRefList)
+    Model(Luwrain luwrain, UniRefList uniRefList)
     {
 	this.luwrain = luwrain;
 	this.uniRefList = uniRefList;
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(uniRefList, "uniRefList");
-	this.registry = luwrain.getRegistry();
     }
 
     @Override public int getItemCount()
@@ -59,11 +52,18 @@ class Model implements ListModel
 
     @Override public void refresh()
     {
-	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
 	final LinkedList res = new LinkedList();
-	if (introduction != null)
+	if (introduction != null && introduction.length > 0)
+	{
 	    for(String s: introduction)
 		res.add(s);
+	    if (clickHereLine != null)
+	    {
+		res.add("");
+		res.add(clickHereLine);
+		res.add("");
+	    }
+	}
 	firstUniRefPos = res.size();
 	final UniRefInfo[] uniRefs = uniRefList.get();
 	for(UniRefInfo u: uniRefs)
@@ -81,22 +81,13 @@ class Model implements ListModel
 	return firstUniRefPos;
     }
 
-    void readIntroduction(String fileName)
+    void setIntroduction(String[] text)
     {
-	try {
-	    LinkedList<String> a = new LinkedList<String>();
-	Path path = Paths.get(fileName);
-	try (Scanner scanner =  new Scanner(path, StandardCharsets.UTF_8.name()))
-	{
-	    while (scanner.hasNextLine())
-		a.add(scanner.nextLine());
-	    }
-introduction = a.toArray(new String[a.size()]);
-	}
-	catch (IOException e)
-	{
-	    e.printStackTrace();
-	    introduction = null;
-	}
+	introduction = org.luwrain.util.Strings.notNullArray(text);
+    }
+
+    void setClickHereLine(String line)
+    {
+	clickHereLine = line;
     }
 }
