@@ -26,7 +26,7 @@ class WindowManager
     private ScreenContentManager screenContentManager;
     private Object[] visibleObjs = null;
 
-    public WindowManager(Interaction interaction, ScreenContentManager screenContentManager)
+    WindowManager(Interaction interaction, ScreenContentManager screenContentManager)
     {
 	this.interaction = interaction;
 	this.screenContentManager = screenContentManager;
@@ -36,7 +36,7 @@ class WindowManager
 	    throw new NullPointerException("screenContentManager may not be null");
     }
 
-    public void redraw()
+    void redraw()
     {
 	final TileManager windows = screenContentManager.getWindows();
 	if (windows == null)
@@ -55,7 +55,7 @@ class WindowManager
 	interaction.endDrawSession();
     }
 
-    public void redrawArea(Area area)
+    void redrawArea(Area area)
     {
 	if (visibleObjs == null || visibleObjs.length == 0)
 	{
@@ -78,7 +78,7 @@ class WindowManager
 	}
     }
 
-    public int getAreaVisibleHeight(Area area)
+    int getAreaVisibleHeight(Area area)
     {
 	if (visibleObjs == null || visibleObjs.length == 0)
 	    return -1;
@@ -133,10 +133,10 @@ class WindowManager
 	    win.height = bottom - top + 1;
 	    return;
 	}
-	Object obj1 = windows.getBranch1(obj), obj2 = windows.getBranch2(obj);
+	final Object obj1 = windows.getBranch1(obj), obj2 = windows.getBranch2(obj);
 	if (windows.isLeaf(obj1))
 	{
-	    Window win = (Window)windows.getLeafObject(obj1);
+	    final Window win = (Window)windows.getLeafObject(obj1);
 	    if (win.popup)
 	    {
 		calculateGeomWithPopup(windows, win, obj2, left, top, right, bottom);
@@ -145,7 +145,7 @@ class WindowManager
 	}
 	if (windows.isLeaf(obj2))
 	{
-	    Window win = (Window)windows.getLeafObject(obj2);
+	    final Window win = (Window)windows.getLeafObject(obj2);
 	    if (win.popup)
 	    {
 		calculateGeomWithPopup(windows, win, obj1, left, top, right, bottom);
@@ -165,7 +165,7 @@ class WindowManager
 	}
 	if (windows.getDirection(obj) == TileManager.VERTICAL)
 	{
-	    int range = bottom - top;//One row is reserved for divider;
+	    final int range = bottom - top;//One row is reserved for divider;
 	    if (range < MIN_RANGE_VERTICAL || range < leafCount1 + leafCount2)
 	    {
 		markWindowsInvisible(windows, obj);
@@ -201,21 +201,19 @@ class WindowManager
 	}
     }
 
-    void calculateGeomWithPopup(TileManager windows,
-				Window win,
-				Object anotherNode,
-				int left,
-				int top,
-				int right,
-				int bottom)
+    private void calculateGeomWithPopup(TileManager windows, Window win,
+					Object anotherNode,
+					int left, int top,
+					int right, int bottom)
     {
-	if (win == null || !win.popup || win.area == null)
+	if (win == null || !win.popup || 
+win.area == null)
 	{
 	    if (anotherNode != null)
 		calculateGeomImpl(windows, anotherNode, left, top, right, bottom);
 	    return;
 	}
-	Area area = win.area;
+	final Area area = win.area;
 	int preferableHeight = area.getLineCount();
 	int preferableWidth = 0;
 	final int linesNumberToCheckLen = preferableHeight < interaction.getHeightInCharacters()?preferableHeight:interaction.getHeightInCharacters();
@@ -227,14 +225,14 @@ class WindowManager
 	    if (line.length() > preferableWidth)
 		preferableWidth = line.length();
 	}
-	preferableWidth++;//Just to be nice;
+	++preferableWidth;//Just to make nicer
 	if (preferableWidth < MIN_RANGE_HORIZONTAL)
 	    preferableWidth = MIN_RANGE_HORIZONTAL;
-	preferableHeight++;//For title bar;
+	++preferableHeight;//For the title bar
 	if (preferableHeight < 2)
 	    preferableHeight = 2;
 	int maxHeight = (bottom - top + 1) - MIN_RANGE_VERTICAL - 1;//1 is for splitter;
-	int maxWidth = (right - left + 1) - MIN_RANGE_HORIZONTAL - 1;//1 is for splitter;
+	final int maxWidth = (right - left + 1) - MIN_RANGE_HORIZONTAL - 1;//1 is for splitter;
 	if (maxHeight > MAX_TOP_BOTTOM_POPUP_HEIGHT && (win.popupPlace == Popup.TOP || win.popupPlace == Popup.BOTTOM))
 	    maxHeight = MAX_TOP_BOTTOM_POPUP_HEIGHT;
 	if (maxWidth < MIN_RANGE_HORIZONTAL || maxHeight < MIN_RANGE_VERTICAL)
@@ -279,7 +277,7 @@ class WindowManager
 	    anotherTop = top;
 	    anotherRight = right - popupWidth - 1;
 	    anotherBottom = bottom;
-	    interaction.drawVerticalLine(top, bottom, right - popupHeight);
+	    interaction.drawVerticalLine(top, bottom, right - popupWidth);
 	    break;
 	case Popup.BOTTOM:
 	    win.x = left;
