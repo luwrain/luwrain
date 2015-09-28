@@ -128,7 +128,7 @@ class Environment implements EventConsumer
 	    commands.add(new Luwrain(this), sc);//FIXME:
 	commands.addOsCommands(interfaces.getObjForEnvironment(), registry);
 
-	final UniRefProc[] standardUniRefProcs = StandardUniRefProcs.createStandardUniRefProcs(strings);
+	final UniRefProc[] standardUniRefProcs = StandardUniRefProcs.createStandardUniRefProcs(interfaces.getObjForEnvironment(), strings);
 	for(UniRefProc proc: standardUniRefProcs)
 	    uniRefProcs.add(new Luwrain(this), proc);//FIXME:
 

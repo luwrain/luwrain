@@ -124,7 +124,7 @@ public class InterfaceManager
 	    }
     }
 
-    public Luwrain getObjForEnvironment()
+    Luwrain getObjForEnvironment()
     {
 	if (objForEnvironment == null)
 	    objForEnvironment = new Luwrain(environment);
@@ -132,7 +132,7 @@ public class InterfaceManager
     }
 
     //returns true if it is object for environemnt or an extension instance
-    public boolean isSuitsForEnvironmentPopup(Luwrain luwrain)
+    boolean isSuitsForEnvironmentPopup(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	return luwrain == getObjForEnvironment() || findExt(luwrain) != null;

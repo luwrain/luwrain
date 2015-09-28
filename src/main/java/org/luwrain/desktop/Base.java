@@ -113,6 +113,12 @@ class Base
 	    luwrain.getRegistry().deleteValue(registryKeys.desktopIntroductionFile());
 	    return true;
 	}
+	if (obj instanceof UniRefInfo)
+	{
+	    final UniRefInfo uniRefInfo = (UniRefInfo)obj;
+	    luwrain.openUniRef(uniRefInfo.value());
+	    return true;
+	}
 	return false;
     }
 

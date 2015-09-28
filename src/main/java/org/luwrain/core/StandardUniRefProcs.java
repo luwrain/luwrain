@@ -16,21 +16,17 @@
 
 package org.luwrain.core;
 
-import java.util.*;
-
 class StandardUniRefProcs
 {
-public static UniRefProc[] createStandardUniRefProcs(Strings s)
+    static UniRefProc[] createStandardUniRefProcs(Luwrain l, Strings s)
     {
-	if (s == null)
-	    throw new NullPointerException("s may not be null");
-	final Strings str = s;
-	LinkedList<UniRefProc> res = new LinkedList<UniRefProc>();
+	final Luwrain luwrain = l;
+	final Strings strings = s;
+	return new UniRefProc[]{
 
-	//file;
-	res.add(new UniRefProc() {
-		private Strings strings = str;
-		public String getUniRefType()
+	    //file;
+	    new UniRefProc() {
+		@Override public String getUniRefType()
 		{
 		    return "file";
 		}
@@ -50,12 +46,11 @@ public static UniRefProc[] createStandardUniRefProcs(Strings s)
 			return;
 		    luwrain.openFile(uniRef.substring(5));
 		}
-	    });
+	    },
 
-	//command;
-	res.add(new UniRefProc() {
-		private Strings strings = str;
-		public String getUniRefType()
+	    //command;
+	    new UniRefProc() {
+		@Override public String getUniRefType()
 		{
 		    return "command";
 		}
@@ -65,9 +60,9 @@ public static UniRefProc[] createStandardUniRefProcs(Strings s)
 			return null;
 		    if (!uniRef.startsWith("command:"))
 			return null;
-		    return new UniRefInfo(uniRef, strings.uniRefPrefix("command"), uniRef.substring(8));
+		    return new UniRefInfo(uniRef, "", luwrain.i18n().commandTitle(uniRef.substring(8)));
 		}
-		public void openUniRef(String uniRef, Luwrain luwrain)
+		@Override public void openUniRef(String uniRef, Luwrain luwrain)
 		{
 		    if (uniRef == null || uniRef.isEmpty())
 			return;
@@ -75,8 +70,8 @@ public static UniRefProc[] createStandardUniRefProcs(Strings s)
 			return;
 		    luwrain.runCommand(uniRef.substring(8));
 		}
-	    });
+	    },
 
-	return res.toArray(new UniRefProc[res.size()]);
+	};
     }
 }
