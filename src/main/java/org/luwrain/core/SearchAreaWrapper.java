@@ -26,9 +26,9 @@ class SearchAreaWrapper implements Area, AreaWrapper
     private AreaWrappingBase wrappingBase;
     private int hotPointX = 0;
     private int hotPointY = 0;
+    private String expression = "";//What we already have found
 
-    public SearchAreaWrapper(Area area,
-			     Environment environment,
+    SearchAreaWrapper(Area area, Environment environment,
 			     AreaWrappingBase wrappingBase)
     {
 	this.area = area;
@@ -37,16 +37,23 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(environment, "environment");
 	NullCheck.notNull(wrappingBase, "wrappingBase");
+	hotPointX = area.getHotPointX();
+	hotPointY = area.getHotPointY();
+	if (hotPointX < 0)
+	    hotPointX = 0;
+	if (hotPointY < 0)
+	    hotPointY = 0;
+	environment.message("Режим поиска", Luwrain.MESSAGE_REGULAR);
     }
 
     @Override public String getAreaName()
     {
-	return "Поиск" + area.getAreaName();
+	return "Режим поиска: " + area.getAreaName();//FIXME:
     }
 
     @Override public int getHotPointX()
     {
-	return hotPointX;
+	return hotPointX + expression.length();
     }
 
     @Override public int getHotPointY()
@@ -66,14 +73,22 @@ class SearchAreaWrapper implements Area, AreaWrapper
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	System.out.println(event.toString());
 	if (event.isCommand() && !event.isModified())
 	    switch(event.getCommand())
 	    {
+	    case KeyboardEvent.TAB:
+		return onNewChar('\0');
 	    case KeyboardEvent.ESCAPE:
-		closeSearch();
+		closeSearch(false);
 		return true;
+	    case KeyboardEvent.ENTER:
+		closeSearch(true);
+		return true;
+	    default:
+		return false;
 	    }
-	return area.onKeyboardEvent(event);
+	return onNewChar(event.getCharacter());
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
@@ -91,9 +106,62 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	return area.getAreaActions();
     }
 
-    private void closeSearch()
+    private boolean onNewChar(char c)
     {
+	final String lookFor = c != '\0'?expression + c:expression;
+	if (c == '\0')
+	{
+	    if (expression.isEmpty())
+		return false;
+	    ++hotPointX;
+	}
+	if (hotPointY > getLineCount())
+	{
+	    environment.playSound(Sounds.MESSAGE_NOT_READY);
+	    return true;
+	}
+	String line = getLine(hotPointY);
+	if (line != null && hotPointX <line.length())
+	{
+	    line = line.substring(hotPointX);
+	    final int pos = line.indexOf(lookFor);
+	    if (pos >= 0)
+	    {
+		hotPointX += pos;
+		expression = lookFor;
+		environment.onAreaNewHotPointIface(null, this);
+		environment.message(getLine(hotPointY).substring(hotPointX), Luwrain.MESSAGE_REGULAR);
+		return true;
+	    }
+	} //On the current line
+	for(int i = hotPointY + 1;i < getLineCount();++i)
+	{
+	    line = getLine(i);
+	    if (line == null)
+		continue;
+	    final int pos = line.indexOf(lookFor);
+	    if (pos < 0)
+		continue;
+	    hotPointX = pos;
+	    hotPointY = i;
+	    environment.message(line.substring(pos), Luwrain.MESSAGE_REGULAR);
+	    expression = lookFor;
+	    environment.onAreaNewHotPointIface(null, this);
+	    return true;
+	}
+	environment.playSound(Sounds.MESSAGE_NOT_READY);
+	return true;
+    }
+
+    private void closeSearch(boolean accept)
+    {
+	if (accept )
+	{
+	    environment.message(getLine(hotPointY), Luwrain.MESSAGE_REGULAR);
+	} else
+	    environment.message("Поиск отменён", Luwrain.MESSAGE_REGULAR);
 	wrappingBase.resetReviewWrapper();
 	environment.onNewScreenLayout();
+	System.out.println("search closed");
     }
 }
