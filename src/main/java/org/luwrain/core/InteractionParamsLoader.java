@@ -16,7 +16,6 @@
 
 package org.luwrain.core;
 
-import java.awt.Color;
 import org.luwrain.util.RegistryAutoCheck;
 
 class InteractionParamsLoader extends InteractionParams
@@ -42,17 +41,17 @@ class InteractionParamsLoader extends InteractionParams
 	int red = check.intRange(keys.interactionFontColorRed(), 0, 255, 255);
 	int green = check.intRange(keys.interactionFontColorGreen(), 0, 255, 255);
 	int blue = check.intRange(keys.interactionFontColorBlue(), 0, 255, 255);
-	fontColor = new Color(red, green, blue);
+	fontColor = new InteractionParamColor(red, green, blue);
 
 	red = check.intRange(keys.interactionBkgColorRed(), 0, 255, 0);
 	green = check.intRange(keys.interactionBkgColorGreen(), 0, 255, 0);
 	blue = check.intRange(keys.interactionBkgColorBlue(), 0, 255, 0);
-	bkgColor = new Color(red, green, blue);
+	bkgColor = new InteractionParamColor(red, green, blue);
 
 	red = check.intRange(keys.interactionSplitterColorRed(), 0, 255, 128);
 	green = check.intRange(keys.interactionSplitterColorGreen(), 0, 255, 128);
 	blue = check.intRange(keys.interactionSplitterColorBlue(), 0, 255, 128);
-	splitterColor = new Color(red, green, blue);
+	splitterColor = new InteractionParamColor(red, green, blue);
 
 	initialFontSize = check.intPositiveNotZero(keys.interactionInitialFontSize(), initialFontSize);
 	fontName = check.stringNotEmpty(keys.interactionFontName(), fontName);

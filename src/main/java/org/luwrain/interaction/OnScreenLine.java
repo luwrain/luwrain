@@ -16,7 +16,7 @@
 
 package org.luwrain.interaction;
 
-class OnScreenLine
+public class OnScreenLine
 {
     public int pos1 = 0;
     public int pos2 = 0;

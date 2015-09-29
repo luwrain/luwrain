@@ -19,7 +19,7 @@ package org.luwrain.interaction;
 import java.util.Vector;
 import org.luwrain.core.Log;
 
-class OnScreenLineTracker
+public class OnScreenLineTracker
 {
     class Vertex
     {
