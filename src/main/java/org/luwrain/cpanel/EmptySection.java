@@ -63,4 +63,9 @@ public class EmptySection implements Section
     {
 	return this == obj;
     }
+
+    @Override public int getSectionFlags()
+    {
+	return 0;
+    }
 }

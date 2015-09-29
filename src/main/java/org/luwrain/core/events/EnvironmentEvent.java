@@ -31,6 +31,7 @@ public class EnvironmentEvent extends Event
     static public final int MESSAGE = 8;
     static public final int ACTION = 9;
     static public final int OPEN = 10;
+    static public final int MOVE_HOT_POINT = 11;
 
     static public final int REGION_POINT = 100;
     static public final int COPY = 101;

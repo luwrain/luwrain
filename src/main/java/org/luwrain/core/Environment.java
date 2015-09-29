@@ -92,10 +92,17 @@ class Environment implements EventConsumer
 	init();
 	interaction.startInputEventsAccepting(this);
 	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
+	if (registry.getTypeOf(registryKeys.launchGreeting()) == Registry.STRING)
+	{
+	    final String text = registry.getString(registryKeys.launchGreeting());
+	    if (!text.trim().isEmpty())
+	    {
 	try {
 	    Thread.sleep(1000);
 	} catch (InterruptedException ie){}
-	message(strings.startWorkFromMainMenu(), Luwrain.MESSAGE_REGULAR);
+	message(text, Luwrain.MESSAGE_REGULAR);
+	    }
+	}
 	eventLoop(new InitialEventLoopStopCondition());
 	interaction.stopInputEventsAccepting();
 	extensions.close();

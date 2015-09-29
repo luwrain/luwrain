@@ -45,6 +45,16 @@ public class RegistryKeys
 	}
     }
 
+    public String launchGreeting()
+    {
+	return "/org/luwrain/launch-greeting";//FIXME:
+    }
+
+    public String desktopIntroductionFile()
+    {
+	return "/org/luwrain/desktop/introduction-file";//FIXME:
+    }
+
     public String mainMenuContent()
     {
 	return getProperty("mainmenu.Content");

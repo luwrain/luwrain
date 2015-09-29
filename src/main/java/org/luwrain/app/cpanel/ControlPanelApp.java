@@ -16,6 +16,8 @@
 
 package org.luwrain.app.cpanel;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
@@ -145,11 +147,32 @@ public class ControlPanelApp implements Application, Actions
 		{
 		    switch (event.getCode())
 		    {
+		    case EnvironmentEvent.ACTION:
+			if (ActionEvent.isAction(event, "insert"))
+			    actions.onSectionsInsert();
+
+			if (ActionEvent.isAction(event, "delete"))
+			    actions.onSectionsDelete();
+			return true;
 		    case EnvironmentEvent.CLOSE:
 			actions.closeApp();
 			return true;
 		    }
 		    return false;
+		}
+		@Override public Action[] getAreaActions()
+		{
+		    final Object selected = selected();
+		    if (selected == null || !(selected instanceof Section))
+			return new Action[0];
+		    final Section sect = (Section)selected;
+		    final int flags = sect.getSectionFlags();
+		    final LinkedList<Action> res = new LinkedList<Action>();
+		    if ((flags & Section.FLAG_HAS_INSERT) > 0)
+			res.add(new Action("insert", "Добавить"));
+		    if ((flags & Section.FLAG_HAS_DELETE) > 0)
+		    res.add(new Action("delete", "Удалить"));
+		    return res.toArray(new Action[res.size()]);
 		}
 		@Override public void onClick(Object obj)
 		{

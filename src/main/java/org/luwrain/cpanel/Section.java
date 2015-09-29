@@ -20,6 +20,9 @@ import org.luwrain.core.*;
 
 public interface Section
 {
+    static public final int FLAG_HAS_INSERT = 1;
+    static public final int FLAG_HAS_DELETE = 2;
+
     int getDesiredRoot();
     Section[] getChildSections();
     Area getSectionArea(Environment environment);
@@ -30,4 +33,5 @@ public interface Section
     boolean onTreeDelete(Environment environment);
     boolean isSectionEnabled();
     void refreshChildSubsections();
+    int getSectionFlags();
 }

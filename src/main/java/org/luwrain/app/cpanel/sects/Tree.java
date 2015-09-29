@@ -38,7 +38,7 @@ public class Tree
     private BasicSection speechSection;
     private BasicSection networkSection;
     private BasicSection hardwareSection;
-    private BasicSection uiSection;
+    private UI uiSection;
     private BasicSection extensionsSection;
     private BasicSection workersSection ;
     private PersonalInfo personalInfoSection;
@@ -61,7 +61,7 @@ public Tree(Environment environment,
 	speechSection = new BasicSection(strings.sectName(Strings.SPEECH));
 	soundsSection = new BasicSection(strings.sectName(Strings.SOUNDS));
 	keyboardSection = new BasicSection(strings.sectName(Strings.KEYBOARD));
-	uiSection = new BasicSection(strings.sectName(Strings.UI));
+	uiSection = new UI();
 	extensionsSection = new BasicSection(strings.sectName(Strings.EXTENSIONS));
 	networkSection = new BasicSection(strings.sectName(Strings.NETWORK));
 	workersSection = new BasicSection(strings.sectName(Strings.WORKERS));
@@ -78,7 +78,7 @@ public Tree(Environment environment,
 	speechSection.clear();
 	soundsSection.clear();
 	keyboardSection.clear();
-	uiSection.clear();
+	//	uiSection.clear();
 	extensionsSection.clear();
 	networkSection.clear();
 	workersSection.clear();
@@ -132,12 +132,14 @@ break;
 		hardwareSection.addSubsection(s);
 		break;
 	    case BasicSections.UI:
-		uiSection.addSubsection(s);
+		//FIXME:		uiSection.addSubsection(s);
+		break;
 	    case BasicSections.EXTENSIONS:
 		extensionsSection.addSubsection(s);
 		break;
 	    case BasicSections.WORKERS:
 		workersSection.addSubsection(s);
+		break;
 	    }
 	}
     }

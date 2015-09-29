@@ -108,7 +108,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 
     private boolean onNewChar(char c)
     {
-	final String lookFor = c != '\0'?expression + c:expression;
+	final String lookFor = c != '\0'?expression + Character.toLowerCase(c):expression;
 	if (c == '\0')
 	{
 	    if (expression.isEmpty())
@@ -123,6 +123,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	String line = getLine(hotPointY);
 	if (line != null && hotPointX <line.length())
 	{
+	    line = line.toLowerCase();
 	    line = line.substring(hotPointX);
 	    final int pos = line.indexOf(lookFor);
 	    if (pos >= 0)
@@ -139,6 +140,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	    line = getLine(i);
 	    if (line == null)
 		continue;
+	    line = line.toLowerCase();
 	    final int pos = line.indexOf(lookFor);
 	    if (pos < 0)
 		continue;
