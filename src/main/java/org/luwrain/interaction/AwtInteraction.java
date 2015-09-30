@@ -42,30 +42,61 @@ public class AwtInteraction implements Interaction
     private boolean controlPressed = false;
     private boolean shiftPressed = false;
 
-	public static Color InteractionParamColorToAWT(InteractionParamColor ipc)
-	{
-		if(ipc.getPredefined()==null)
-			return new Color(ipc.getRed(),ipc.getGreen(),ipc.getBlue());
-		switch(ipc.getPredefined())
-		{
-			case BLACK:		return Color.BLACK;
-			case BLUE:		return Color.BLUE;
-			case CYAN:		return Color.CYAN;
-			case DARK_GRAY:	return Color.DARK_GRAY;
-			case GRAY:		return Color.GRAY;
-			case GREEN:		return Color.GREEN;
-			case LIGHT_GRAY:return Color.LIGHT_GRAY;
-			case MAGENTA:	return Color.MAGENTA;
-			case ORANGE:	return Color.ORANGE;
-			case PINK:		return Color.PINK;
-			case RED:		return Color.RED;
-			case WHITE:		return Color.WHITE;
-			case YELLOW:	return Color.YELLOW;	
-			default: 		return new Color(ipc.getRed(),ipc.getGreen(),ipc.getBlue());
-		}
-	}
+    static private int fixColorComponent(int c)
+    {
+	if (c < 0)
+	    return 0;
+	if (c > 255)
+	    return 255;
+	return c;
+    }
 
-	private void onKeyPress(KeyEvent event)
+    static Color InteractionParamColorToAWT(InteractionParamColor ipc)
+    {
+	if(ipc.getPredefined()==null)
+	{
+	    return new Color(
+			     fixColorComponent((int)ipc.getRed()),
+			     fixColorComponent((int)ipc.getGreen()),
+			     fixColorComponent((int)ipc.getBlue()));
+	}
+	switch(ipc.getPredefined())
+	{
+	case BLACK:	
+	    return Color.BLACK;
+	case BLUE:	
+	    return Color.BLUE;
+	case CYAN:
+	    return Color.CYAN;
+	case DARK_GRAY:
+	    return Color.DARK_GRAY;
+	case GRAY:
+	    return Color.GRAY;
+	case GREEN:		
+	    return Color.GREEN;
+	case LIGHT_GRAY:
+	    return Color.LIGHT_GRAY;
+	case MAGENTA:
+	    return Color.MAGENTA;
+	case ORANGE:
+	    return Color.ORANGE;
+	case PINK:
+	    return Color.PINK;
+	case RED:
+	    return Color.RED;
+	case WHITE:
+	    return Color.WHITE;
+	case YELLOW:
+	    return Color.YELLOW;	
+	default:
+	    return new Color(
+			     fixColorComponent((int)ipc.getRed()),
+			     fixColorComponent((int)ipc.getGreen()),
+			     fixColorComponent((int)ipc.getBlue()));
+	}
+    }
+
+    private void onKeyPress(KeyEvent event)
     {
 	if (eventConsumer == null)
 	    return;
@@ -247,6 +278,7 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	Log.info("awt", "initial font size is " + params.initialFontSize);
 	frame = new org.luwrain.interaction.MainFrame(FRAME_TITLE);
 	frame.setInteractionFont(createFont(currentFontSize));
+	System.out.println("proba");
 	frame.setColors(InteractionParamColorToAWT(params.fontColor),InteractionParamColorToAWT(params.bkgColor),InteractionParamColorToAWT(params.splitterColor));
 	frame.setMargin(params.marginLeft, params.marginTop, params.marginRight, params.marginBottom);
 	frame.setSize(wndWidth, wndHeight);
