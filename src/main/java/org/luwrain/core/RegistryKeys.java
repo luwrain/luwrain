@@ -85,11 +85,6 @@ public class RegistryKeys
 	return getProperty("personal.Signature");
     }
 
-    public String interactionBackend()
-    {
-	return getProperty("interaction.BackEnd");
-    }
-
     public String interactionWndLeft()
     {
 	return getProperty("interaction.WindowLeft");

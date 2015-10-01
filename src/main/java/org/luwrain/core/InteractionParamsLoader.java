@@ -20,15 +20,13 @@ import org.luwrain.util.RegistryAutoCheck;
 
 class InteractionParamsLoader extends InteractionParams
 {
-    private static final int MAX_MARGIN = 64;
+    static private final int MAX_MARGIN = 64;
+    final RegistryKeys keys = new RegistryKeys();
 
-    public void loadFromRegistry(Registry registry)
+    void loadFromRegistry(Registry registry)
     {
-	if (registry == null)
-	    throw new NullPointerException("Registry may not be null");
-	RegistryAutoCheck  check= new RegistryAutoCheck (registry, "interaction");
-	RegistryKeys keys = new RegistryKeys();
-	backend = check.stringNotEmpty(keys.interactionBackend(), backend);
+	NullCheck.notNull(registry, "registry");
+	final RegistryAutoCheck  check= new RegistryAutoCheck (registry, "interaction");
 	wndLeft = check.intPositive(keys.interactionWndLeft(), wndLeft);
 	wndTop = check.intPositive(keys.interactionWndTop(), wndTop);
 	wndWidth = check.intAny(keys.interactionWndWidth(), wndWidth);

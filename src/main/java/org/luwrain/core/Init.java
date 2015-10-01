@@ -30,6 +30,9 @@ class Init
     static private final String  PREFIX_OS= "--os=";
     static private final String  PREFIX_LANG= "--lang=";
 
+
+    static private final String DEFAULT_INTERACTION_CLASS = "org.luwrain.interaction.AwtInteraction";
+
     private String[] cmdLine;
     private Registry registry;
     private Interaction interaction;
@@ -106,37 +109,27 @@ class Init
 
 	//Interaction;
 	final String interactionClass = getFirstCmdLineOption(PREFIX_INTERACTION);
-	InteractionParamsLoader interactionParams = new InteractionParamsLoader();
+	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();
 	interactionParams.loadFromRegistry(registry);
-	if (!interactionParams.backend.equals("awt"))
+	Object o;
+	try {
+	    if (interactionClass != null && !interactionClass.isEmpty())
+		o = Class.forName(interactionClass).newInstance(); else
+		o = Class.forName(DEFAULT_INTERACTION_CLASS).newInstance();
+	}
+	catch(Exception e)
 	{
-	    Log.fatal("init", "unsupported interaction type \'" + interactionParams.backend + "\'");
+	    Log.fatal("init", "Unable to creating an instance of " + interactionClass + " for interaction:" + e.getMessage());
+	    e.printStackTrace();
 	    return false;
 	}
-	if (interactionClass != null && !interactionClass.isEmpty())
+	if (!(o instanceof Interaction))
 	{
-	    Object o;
-	    try {
-		o = Class.forName(interactionClass).newInstance();
-	    }
-	    catch(Exception e)
-	    {
-		Log.fatal("init", "error occurred while creating an instance of " + interactionClass + " for interaction:" + e.getMessage());
-		e.printStackTrace();
-		return false;
-	    }
-	    if (!(o instanceof Interaction))
-	    {
-		Log.fatal("init", "The instance of " + interactionClass + " isn\'t an instance of org.luwrain.core.Interaction");
-		return false;
-	    }
-	    interaction = (Interaction)o;
-	    Log.info("init", "using the instance of " + interactionClass + " for interaction");
-	} else
-	{
-	    interaction = new org.luwrain.interaction.AwtInteraction();
-	    Log.info("init", "using default interaction");
+	    Log.fatal("init", "The instance of " + interactionClass + " isn\'t an instance of org.luwrain.core.Interaction");
+	    return false;
 	}
+	interaction = (Interaction)o;
+	Log.info("init", "using the instance of " + interactionClass + " for interaction");
 	if (!interaction.init(interactionParams))
 	{
 	    Log.fatal("init", "interaction initialization failed");
