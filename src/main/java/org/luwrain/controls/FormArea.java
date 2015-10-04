@@ -206,6 +206,20 @@ public class FormArea  extends NavigateArea
 	return true;
     }
 
+    public void setEnteredText(String itemName, String newText)
+    {
+	NullCheck.notNull(itemName, "itemName");
+	NullCheck.notNull(newText, "newText");
+	if (itemName.trim().isEmpty())
+	    return;
+	for(Item i: items)
+	    if (i.type == EDIT && i.name.equals(itemName))
+		i.enteredText = newText;
+	environment.onAreaNewContent(this);
+	//FIXME:Check if the old hot point position is still valid
+    }
+
+
     public String getEnteredText(String itemName)
     {
 	NullCheck.notNull(itemName, "itemName");

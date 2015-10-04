@@ -675,7 +675,7 @@ public class ListPopupBase implements Popup, PopupClosingRequest, RegionProvider
     {
 	if (items == null || items.length <= 0)
 	{
-	    luwrain.hint("Нет объектов");//FIXME:
+	    luwrain.hint(luwrain.i18n().staticStr(LangStatic.LIST_NO_CONTENT), Hints.NO_CONTENT);
 	    return true;
 	}
 	return false;
