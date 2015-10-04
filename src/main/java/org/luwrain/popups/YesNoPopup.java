@@ -18,12 +18,12 @@ package org.luwrain.popups;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.util.*;
+import org.luwrain.core.queries.*;
 
 public class YesNoPopup implements Popup, PopupClosingRequest
 {
-    public PopupClosing closing = new PopupClosing(this);
     protected Luwrain luwrain;
+    public final PopupClosing closing = new PopupClosing(this);
     private String name = "";
     private String text = "";
     private boolean res;
@@ -131,10 +131,6 @@ public class YesNoPopup implements Popup, PopupClosingRequest
     {
 	switch (event.getCode())
 	{
-	case EnvironmentEvent.COPY:
-	    //FIXME:	    luwrain.setClipboard(new String[]{text});
-	    luwrain.say(text);
-	    return true;
 	case EnvironmentEvent.INTRODUCE:
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.INTRO_POPUP);
@@ -147,6 +143,13 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
+	NullCheck.notNull(query, "query");
+	if (query.getQueryCode() == AreaQuery.REGION && (query instanceof RegionQuery))
+	{
+	    final RegionQuery regionQuery = (RegionQuery)query;
+	    regionQuery.setData(new HeldData(new String[]{text}));
+	    return true;
+	}
 	return false;
     }
 

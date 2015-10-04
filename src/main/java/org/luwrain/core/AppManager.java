@@ -396,11 +396,32 @@ class AppManager
 
     void onNewPopupOpening(Application app, Class newCopyClass)
     {
-	/*
-	for(Wrapper w: wrappers)
-	    if (w.noMultipleCopies && app == w.app && w.area.getClass().equals(newCopyClass))
-		w.stopCondition.cancel();
-	*/
+	if (isDefaultApp(app))
+	    return;
+	for(OpenedPopup p: popups)
+	{
+	    if (p.app != app || !p.noMultipleCopies)
+		continue;
+	    Area area;
+	    if (app != null)
+	    {
+		final int index = findApp(app);
+		if (index < 0)
+		{
+		    Log.error("core", "popups contains a reference to the unregistered application " + app.getClass().getName());
+		    continue;
+		}
+		area = apps.get(index).getNativeAreaOfPopup(p.index);
+	    } else
+		area = environment.getNativeAreaOfPopup(p.index);
+	    if (area == null)
+	    {
+		Log.error("core", "unable to find a native area of the popup with index " + p.index + " of " + (app != null?" the application " + app.getClass().getName():" the environment"));
+		continue;
+	    }
+	    if (area.getClass().equals(newCopyClass))
+		p.stopCondition.cancel();
+	}
     }
 
     boolean isLastPopupWeak()

@@ -220,9 +220,7 @@ class Environment implements EventConsumer
     void launchApp(Application app)
     {
 	NullCheck.notNull(app, "app");
-	Log.debug("core", "launching app " + app.getClass().getName());
 	System.gc();
-	//	printMemInfo();
 	final Luwrain o = interfaces.requestNew(app);
 	try {
 	    if (!app.onLaunch(o))
@@ -573,29 +571,32 @@ class Environment implements EventConsumer
 	onNewScreenLayout();
     }
 
+    //Returns an effective area for the specified one
+    //Returns null if specified area not known in applications and areas managers 
+    //Instance is not mandatory but can increase speed of search
+    private Area getEffectiveAreaFor(Luwrain instance, Area area)
+    {
+	Area effectiveArea = null;
+	if (instance != null)
+	{
+	    final Application app = interfaces.findApp(instance);
+	    if (app != null && apps.isAppLaunched(app))
+		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	}
+	//No provided instance or it didn't help;
+	if (effectiveArea == null)
+	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
+	return effectiveArea;
+    }
+
     void onAreaNewHotPointIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
 	if (screenContentManager == null)//FIXME:
 	    return;
-	Area effectiveArea = null;
-	if (instance != null)
-	{
-	    final Application app = interfaces.findApp(instance);
-	    if (app != null)
-	    {
-		if (!apps.isAppLaunched(app))
-		    return;
-		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
-	    }
-	}
-	if (effectiveArea == null)
-	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
-	if (effectiveArea == null)
-	{
-	    Log.info("core", "unable to find the corresponding effective area for " + area.getClass().getName() + " needed in onAreaNewHotPoint()");
+	final Area effectiveArea = getEffectiveAreaFor(instance, area);
+	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
 	    return;
-	}
 	if (effectiveArea == screenContentManager.getActiveArea())
 	    windowManager.redrawArea(effectiveArea);
     }
@@ -603,48 +604,18 @@ class Environment implements EventConsumer
     void onAreaNewContentIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
-	Area effectiveArea = null;
-	if (instance != null)
-	{
-	    final Application app = interfaces.findApp(instance);
-	    if (app != null)
-	    {
-		if (!apps.isAppLaunched(app))
-		    return;
-		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
-	    }
-	}
-	if (effectiveArea == null)
-	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
-	if (effectiveArea == null)
-	{
-	    Log.info("core", "unable to find the corresponding effective area for " + area.getClass().getName() + " needed in onAreaNewContent()");
+	final Area effectiveArea = getEffectiveAreaFor(instance, area);
+	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
 	    return;
-	}
 	windowManager.redrawArea(effectiveArea);
     }
 
     void onAreaNewNameIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
-	Area effectiveArea = null;
-	if (instance != null)
-	{
-	    final Application app = interfaces.findApp(instance);
-	    if (app != null)
-	    {
-		if (!apps.isAppLaunched(app))
-		    return;
-		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
-	    }
-	}
-	if (effectiveArea == null)
-	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
-	if (effectiveArea == null)
-	{
-	    Log.info("core", "unable to find the corresponding effective area for " + area.getClass().getName() + " needed in onAreaNewName()");
+	final Area effectiveArea = getEffectiveAreaFor(instance, area);
+	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
 	    return;
-	}
 	windowManager.redrawArea(effectiveArea);
     }
 

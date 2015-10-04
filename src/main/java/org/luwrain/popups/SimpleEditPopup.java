@@ -23,8 +23,8 @@ import org.luwrain.util.*;
 
 public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines, RegionProvider
 {
-    public PopupClosing closing = new PopupClosing(this);
     protected Luwrain luwrain;
+    public final PopupClosing closing = new PopupClosing(this);
     private final Region region = new Region(this);
     private EmbeddedSingleLineEdit edit;
     private String name;
@@ -131,29 +131,29 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("null may not be null");
-	if (event.getCode() == EnvironmentEvent.INTRODUCE)
+	NullCheck.notNull(event, "event");
+	switch(event.getCode())
 	{
+	case EnvironmentEvent.INTRODUCE:
+	    luwrain.silence();
 	    luwrain.playSound(Sounds.INTRO_POPUP);
 	    luwrain.say(prefix + text);
 	    return true;
 	}
 	if (edit.isPosCovered(pos, 0) && edit.onEnvironmentEvent(event))
 	    return true;
-	switch (event.getCode())
-	{
-	default:
-	    if (region.onEnvironmentEvent(event, pos, 0))
-		return true;
-	    return closing.onEnvironmentEvent(event);
-	}
+	if (region.onEnvironmentEvent(event, pos, 0))
+	    return true;
+	return closing.onEnvironmentEvent(event);
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return region.onAreaQuery(query, pos, 0);
-    }
+	NullCheck.notNull(query, "query");
+	if (edit.isPosCovered(pos, 0) && edit.onAreaQuery(query))
+	    return true;
+	    return region.onAreaQuery(query, pos, 0);
+	    }
 
     @Override public Action[] getAreaActions()
     {

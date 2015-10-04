@@ -30,8 +30,8 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
     public static final int ACCEPT_ALL = ACCEPT_REGULAR_FILES | ACCEPT_DIRECTORIES;
     public static final int ACCEPT_MULTIPLE_SELECTION = 16;
 
-    private Luwrain luwrain;
-    public PopupClosing closing = new PopupClosing(this);
+    protected Luwrain luwrain;
+    public final PopupClosing closing = new PopupClosing(this);
     private String name;
     private int flags;
     private int popupFlags;

@@ -23,8 +23,7 @@ public class EditListPopup extends SimpleEditPopup
 {
     private final static int MAX_ALTERNATIVES_TO_SAY = 100;
 
-    //    protected Luwrain luwrain;
-    private EditListPopupModel model;
+    protected EditListPopupModel model;
 
     public EditListPopup(Luwrain luwrain,
 		     EditListPopupModel model,
