@@ -154,8 +154,10 @@ public class TableArea  implements Area
 
     public Object getSelectedRow()
     {
-	//FIXME:
-	return null;
+	final int index = getSelectedRowIndex();
+	if (index < 0)
+	    return null;
+	return model.getRow(index);
     }
 
     public Object getSelectedCol()
@@ -172,8 +174,7 @@ public class TableArea  implements Area
 
     public int getSelectedRowIndex()
     {
-	//FIXME:
-	return -1;
+	return hotPointY < model.getRowCount()?hotPointY:-1;
     }
 
     public int getSelectedColIndex()

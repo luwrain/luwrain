@@ -37,7 +37,7 @@ class PersonalInfo extends EmptySection
 	    final RegistryAutoCheck check = new RegistryAutoCheck(environment.getLuwrain().getRegistry());
 	    addEdit("name", "Полное имя:", check.stringAny(registryKeys.personalFullName(), ""), null, true);
 	    addEdit("address", "Основной адрес электронной почты:", check.stringAny(registryKeys.personalDefaultMailAddress(), ""), null, true);
-	    activateMultilinedEdit("Текст подписи в сообщениях электронной почты:", new String[0], true);
+	    activateMultilinedEdit("Текст подписи в сообщениях электронной почты:", check.stringAny(registryKeys.personalSignature(), "").split("\n"), true);
 	}
 
 	@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -58,9 +58,6 @@ class PersonalInfo extends EmptySection
 	    NullCheck.notNull(event, "event");
 	    switch(event.getCode())
 	    {
-	    case EnvironmentEvent.SAVE:
-		save();
-		return true;
 	    case EnvironmentEvent.CLOSE:
 		environment.close();
 		return true;
@@ -74,26 +71,17 @@ class PersonalInfo extends EmptySection
 	    return "Персональная информация";
 	}
 
-	private void save()
+	boolean save()
 	{
 	    final Luwrain luwrain = environment.getLuwrain();
 	    final Registry registry = luwrain.getRegistry();
 	    if (!registry.setString(registryKeys.personalFullName(), getEnteredText("name")))
-	    {
-		luwrain.message("Невозможно сохранить в реестре значение полного имени", Luwrain.MESSAGE_ERROR);
-		return;
-	    }
+		return false;
 	    if (!registry.setString(registryKeys.personalDefaultMailAddress(), getEnteredText("address")))
-	    {
-		luwrain.message("Невозможно сохранить в реестре значение адреса электронной почты", Luwrain.MESSAGE_ERROR);
-		return;
-	    }
+		return false;
 	    if (!registry.setString(registryKeys.personalSignature(), getMultilinedEditText()))
-	    {
-		luwrain.message("Невозможно сохранить в реестре значение подписи", Luwrain.MESSAGE_ERROR);
-		return;
-	    }
-	    luwrain.message("Персональная информация сохранена", Luwrain.MESSAGE_OK);
+		return false;
+	    return true;
 	}
     }
 
@@ -114,5 +102,14 @@ class PersonalInfo extends EmptySection
     @Override public String toString()
     {
 	return "Персональная информация";
+    }
+
+    @Override public boolean canCloseSection(Environment environment)
+    {
+	if (area == null)
+	    return true;
+	if (!area.save())
+	    environment.getLuwrain().message("Во время сохранения сделанных изменений произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
+	return true;
     }
 }

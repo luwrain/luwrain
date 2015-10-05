@@ -21,32 +21,33 @@ import java.nio.file.*;
 import java.util.regex.*;
 import java.util.*;
 
+import org.luwrain.core.NullCheck;
+
 class ValueLineParser
 {
     private Pattern pat = Pattern.compile("^\\s*(\"[^\"]*\"(\"[^\"]*\")*)\\s*=\\s*\"(.*)\"\\s*$", Pattern.CASE_INSENSITIVE);
 
     String key = "";
-    public String value = "";
+    String value = "";
 
-    public boolean parse(String line)
+    boolean parse(String line)
     {
-	if (line == null)
-	    throw new NullPointerException("line may not be null");
+	NullCheck.notNull(line, "line");
 	if (line.trim().isEmpty() || line.trim().charAt(0) == '#')
 	{
 	    key = "";
 	    value = "";
 	    return true;
 	}
-	Matcher matcher = pat.matcher(line);
-	if (matcher.find())
-	{
-	    key = matcher.group(1);
-	    value = matcher.group(3);
-	    key = key.substring(1, key.length() - 1).replaceAll("\"\"", "\"");
-	    value = value./*substring(1, key.length() - 1).*/replaceAll("\"\"", "\"");
+	final Matcher matcher = pat.matcher(line);
+	if (!matcher.find())
+	    return false;
+	key = matcher.group(1);
+	value = matcher.group(3);
+	key = key.substring(1, key.length() - 1).replaceAll("\"\"", "\"");
+	//	value = value.substring(1, key.length() - 1).replaceAll("\"\"", "\"");
+	value = value.replaceAll("\"\"", "\"");
+	value = value.replaceAll("\\\\n", "\n");
 	    return true;
-	}
-	return false;
     }
 }
