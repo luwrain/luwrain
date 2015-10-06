@@ -51,4 +51,10 @@ public class EnvironmentEvent extends Event
     {
 	return code;
     }
+
+    static public boolean resetRegionPoint(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	return false;
+    }
 }

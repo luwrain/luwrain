@@ -362,8 +362,23 @@ public abstract class NavigateArea implements Area, HotPointInfo
 	    environment.say(line);
     }
 
+    public void resetState(boolean introduce)
+    {
+	EnvironmentEvent.resetRegionPoint(this);
+	hotPointX = 0;
+	hotPointY = 0;
+	environment.onAreaNewHotPoint(this);
+	if (introduce)
+	{
+	    final String line = getLineNotNull(0);
+	    if (!line.isEmpty())
+		introduceLine(0, line); else
+		environment.hint(Hints.EMPTY_LINE);
+	}
+    }
+
     /**
-     * Sets the hot point to a new position. The provided coordinates are
+     * Sets the hot point to the new position. The provided coordinates are
      * adjusted to real area size and the user may not take care about
      * exceeding area bounds.
      *

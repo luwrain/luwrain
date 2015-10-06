@@ -188,7 +188,18 @@ public class ListArea  implements Area, RegionProvider
 	return true;
     }
 
+    public void resetState(boolean introduce)
+    {
+	EnvironmentEvent.resetRegionPoint(this);
+	resetHotPoint(introduce);
+    }
+
     public void resetHotPoint()
+    {
+	resetHotPoint(false);
+    }
+
+    public void resetHotPoint(boolean introduce)
     {
 	hotPointY = 0;
 	final int count = model.getItemCount();
@@ -199,7 +210,16 @@ public class ListArea  implements Area, RegionProvider
 	    return;
 	}
 	final Object item = model.getItem(0);
-	hotPointX = item != null?appearance.getObservableLeftBound(item):0;
+	if (item != null)
+	{
+	    hotPointX = item != null?appearance.getObservableLeftBound(item):0;
+	    if (introduce)
+		appearance.introduceItem(item, 0);
+	} else
+	{
+	    hotPointX = 0;
+	    environment.hint(Hints.EMPTY_LINE);
+	}
 	environment.onAreaNewHotPoint(this);
     }
 
