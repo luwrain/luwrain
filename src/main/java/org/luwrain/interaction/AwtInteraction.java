@@ -278,7 +278,6 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	Log.info("awt", "initial font size is " + params.initialFontSize);
 	frame = new org.luwrain.interaction.MainFrame(FRAME_TITLE);
 	frame.setInteractionFont(createFont(currentFontSize));
-	System.out.println("proba");
 	frame.setColors(InteractionParamColorToAWT(params.fontColor),InteractionParamColorToAWT(params.bkgColor),InteractionParamColorToAWT(params.splitterColor));
 	frame.setMargin(params.marginLeft, params.marginTop, params.marginRight, params.marginBottom);
 	frame.setSize(wndWidth, wndHeight);

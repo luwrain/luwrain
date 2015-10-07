@@ -25,52 +25,105 @@ class SecurityAreaWrapper implements Area, AreaWrapper
     public SecurityAreaWrapper(Area area)
     {
 	this.area = area;
-	if (area == null)
-	    throw new NullPointerException("area may not be null");
+	NullCheck.notNull(area, "area");
     }
 
     @Override public String getAreaName()
     {
-	return area.getAreaName();
+	try {
+	    final String res = area.getAreaName();
+	    return res != null?res:area.getClass().getName();
+	}
+	catch(Throwable e)
+	{
+	    exceptionMsg("getName()", e);
+	    e.printStackTrace();
+	    return area.getClass().getName();
+	}
     }
 
     @Override public int getHotPointX()
     {
-	return area.getHotPointX();
+	try {
+	    final int res = area.getHotPointX();
+	    return res >= 0?res:0;
+	}
+	catch(Throwable e)
+	{
+	    exceptionMsg("getHotPointX()", e);
+	    e.printStackTrace();
+	    return 0;
+	}
     }
 
     @Override public int getHotPointY()
     {
-	return area.getHotPointY();
+	try {
+final int res = area.getHotPointY();
+return res >= 0?res:0;
+	}
+	catch(Throwable e)
+	{
+	    exceptionMsg("getHotPointY()", e);
+	    e.printStackTrace();
+	    return 0;
+	}
     }
 
     @Override public int getLineCount()
     {
-	return area.getLineCount();
+	try {
+	    final int res = area.getLineCount();
+	    return res >= 1?res:1;
+	}
+	catch(Throwable e)
+	{
+	    exceptionMsg("getLineCount()", e);
+	    e.printStackTrace();
+	    return 1;
+	}
     }
 
     @Override public String getLine(int index)
     {
-	return area.getLine(index);
+	try {
+	    final String res = area.getLine(index);
+	    return res != null?res:"";
+	}
+	catch(Throwable e)
+	{
+	    exceptionMsg("getLine()", e);
+	    e.printStackTrace();
+	    return "";
+	}
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	//FIXME:Exception, but unclear
 	return area.onKeyboardEvent(event);
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	//FIXME:Exception, but unclear
 	return area.onEnvironmentEvent(event);
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
+	//FIXME:Exception, but unclear
 	return area.onAreaQuery(query);
     }
 
     @Override public Action[] getAreaActions()
     {
+	//FIXME:Exception, but unclear
 	return area.getAreaActions();
+    }
+
+    private void exceptionMsg(String method, Throwable e)
+    {
+	Log.error("core", "an instance of " + area.getClass().getName() + " has thrown an exception on " + method + ":" + e.getMessage());
     }
 }

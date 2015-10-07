@@ -28,6 +28,7 @@ public class PopupClosing implements EventLoopStopCondition
     public PopupClosing(PopupClosingRequest request)
     {
 	this.request = request;
+	NullCheck.notNull(request, "request");
     }
 
     public boolean doOk()

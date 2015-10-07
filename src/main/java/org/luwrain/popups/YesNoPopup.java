@@ -89,6 +89,7 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	NullCheck.notNull(event, "event");
 	if (closing.onKeyboardEvent(event))
 	    return true;
 	if (!event.isCommand())
@@ -129,6 +130,7 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	NullCheck.notNull(event, "event");
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.INTRODUCE:
