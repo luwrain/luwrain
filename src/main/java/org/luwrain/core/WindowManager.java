@@ -94,6 +94,23 @@ class WindowManager
 	return -1;
     }
 
+    int getAreaVisibleWidth(Area area)
+    {
+	if (visibleObjs == null || visibleObjs.length == 0)
+	    return -1;
+	for(int i = 0;i < visibleObjs.length;i++)
+	{
+	    Window win = (Window)visibleObjs[i];
+	    if (win == null || win.area == null || win.area != area)
+		continue;
+	    if (win.height <= 1)
+		return 0;
+	    return win.width;
+	}
+	return -1;
+    }
+
+
     private void calculateGeom(int screenWidth,
 			       int screenHeight,
 			       TileManager windows)

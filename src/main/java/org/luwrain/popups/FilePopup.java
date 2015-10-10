@@ -59,12 +59,13 @@ public class FilePopup extends EditListPopup
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ENTER &&
-	    event.withControlOnly())
-	    return openCommanderPopup();
+	NullCheck.notNull(event, "event");
+	if (event.isCommand() && event.withShiftOnly())
+	    switch(event.getCommand())
+	    {
+	    case 	    KeyboardEvent.ENTER:
+		return openCommanderPopup();
+	    }
 	return super.onKeyboardEvent(event);
     }
 

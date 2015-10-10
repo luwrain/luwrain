@@ -206,6 +206,21 @@ public final class Luwrain implements EventConsumer
 	return environment.getAreaVisibleHeightIface(this, area);
     }
 
+    public int getAreaVisibleWidth(Area area)
+    {
+	return environment.getAreaVisibleWidthIface(this, area);
+    }
+
+    public int getScreenWidth()
+    {
+	return environment.getScreenWidthIface();
+    }
+
+    public int getScreenHeight()
+    {
+	return environment.getScreenHeightIface();
+    }
+
     public void onNewAreaLayout()
     {
 	environment.onNewAreaLayoutIface(this);

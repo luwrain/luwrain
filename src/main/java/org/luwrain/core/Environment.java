@@ -619,7 +619,7 @@ class Environment implements EventConsumer
 	windowManager.redrawArea(effectiveArea);
     }
 
-    //May return -1;
+    //May return -1
     int getAreaVisibleHeightIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
@@ -637,11 +637,40 @@ class Environment implements EventConsumer
 	if (effectiveArea == null)
 	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
 	if (effectiveArea == null)
-	{
-	    Log.info("core", "unable to find the corresponding effective area for " + area.getClass().getName() + " needed in getAreaVisibleHeight()");
 	    return -1;
-	}
 	return windowManager.getAreaVisibleHeight(effectiveArea);
+    }
+
+    int getScreenWidthIface()
+    {
+	return interaction.getWidthInCharacters();
+    }
+
+    int getScreenHeightIface()
+    {
+	return interaction.getHeightInCharacters();
+    }
+
+    //May return -1
+    int getAreaVisibleWidthIface(Luwrain instance, Area area)
+    {
+	NullCheck.notNull(area, "area");
+	Area effectiveArea = null;
+	if (instance != null)
+	{
+	    final Application app = interfaces.findApp(instance);
+	    if (app != null)
+	    {
+		if (!apps.isAppLaunched(app))
+		    return -1;
+		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	    }
+	}
+	if (effectiveArea == null)
+	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
+	if (effectiveArea == null)
+	    return -1;
+	return windowManager.getAreaVisibleWidth(effectiveArea);
     }
 
     void message(String text, int semantic)
