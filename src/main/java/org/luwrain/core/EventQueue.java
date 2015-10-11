@@ -30,16 +30,16 @@ public class EventQueue
 	}
 	catch (InterruptedException ex)
 	{
-	    ex.printStackTrace();//FIXME:
+	    Thread.currentThread().interrupt();
 	}
     }
 
-    public boolean hasAgain()
+    boolean hasAgain()
     {
 	return again != null;
     }
 
-    public void onceAgain(Event event)
+    void onceAgain(Event event)
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
@@ -64,7 +64,7 @@ public class EventQueue
 	}
 	catch (InterruptedException ex)
 	{
-	    ex.printStackTrace();
+	    Thread.currentThread().interrupt();
 	    return null;
 	}
     }
