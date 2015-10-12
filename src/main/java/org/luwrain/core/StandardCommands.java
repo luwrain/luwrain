@@ -213,14 +213,13 @@ public static Command[] createStandardCommands(Environment env)
 
 	//delete;
 	res.add(new Command() {
-		private Environment e = environment;
 		@Override public String getName()
 		{
 		    return "delete";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.onDeleteCommand();
+		    environment.onDeleteCommand();
 		}
 	    });
 

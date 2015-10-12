@@ -1047,9 +1047,25 @@ class Environment implements EventConsumer
 	return query.getData();
     }
 
+    String currentAreaDirIface()
+    {
+	final Area activeArea = getValidActiveArea(false);
+	if (activeArea == null)
+	    return launchContext.userHomeDir();
+	final CurrentDirQuery query = new CurrentDirQuery();
+	if (!activeArea.onAreaQuery(query) || !query.containsResult())
+	    return launchContext.userHomeDir();
+	return query.getCurrentDir();
+    }
+
+
     void onDeleteCommand()
     {
-	message("delete", Luwrain.MESSAGE_NOT_READY);
+	final Area activeArea = getValidActiveArea(true);
+	if (activeArea == null)
+	    return;
+	if (!activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.DELETE)))
+	    areaInaccessibleMessage();
     }
 
     void onCutCommand()

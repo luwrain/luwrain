@@ -84,6 +84,13 @@ public final class Luwrain implements EventConsumer
 	return environment.currentAreaRegionIface(issueErrorMessages);
     }
 
+    //Never returns null, returns user home dir if area doesn't speak about that
+    public String currentAreaDir()
+    {
+	return environment.currentAreaDirIface();
+    }
+
+
     @Override public void enqueueEvent(Event e)
     {
 	environment.enqueueEvent(e);
