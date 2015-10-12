@@ -21,6 +21,7 @@ import org.luwrain.core.*;
 public class ThreadSyncEvent extends EnvironmentEvent
 {
     private Area destArea;
+    private Object instanceObj = null;
 
     public ThreadSyncEvent(Area destArea)
     {
@@ -38,5 +39,15 @@ public class ThreadSyncEvent extends EnvironmentEvent
     public Area getDestArea()
     {
 	return destArea;
+    }
+
+    public void setInstanceObj(Object instanceObj)
+    {
+	this.instanceObj = instanceObj;
+    }
+
+    public Object getInstanceObj()
+    {
+	return instanceObj;
     }
 }

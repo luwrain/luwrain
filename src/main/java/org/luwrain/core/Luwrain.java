@@ -20,7 +20,8 @@ import java.io.File;
 
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
-import org.luwrain.util .*;
+import org.luwrain.core.events.ThreadSyncEvent;
+//import org.luwrain.util .*;
 
 /**
  * The main gate to Luwrain core for applications. This class is the
@@ -93,6 +94,11 @@ public final class Luwrain implements EventConsumer
 
     @Override public void enqueueEvent(Event e)
     {
+	if (e != null && (e instanceof ThreadSyncEvent))
+	{
+	    final ThreadSyncEvent threadSync = (ThreadSyncEvent)e;
+	    threadSync.setInstanceObj(this);
+	}
 	environment.enqueueEvent(e);
     }
 
