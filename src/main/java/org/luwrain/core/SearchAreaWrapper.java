@@ -73,7 +73,6 @@ class SearchAreaWrapper implements Area, AreaWrapper
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	System.out.println(event.toString());
 	if (event.isCommand() && !event.isModified())
 	    switch(event.getCommand())
 	    {
@@ -83,8 +82,12 @@ class SearchAreaWrapper implements Area, AreaWrapper
 		closeSearch(false);
 		return true;
 	    case KeyboardEvent.ENTER:
-		closeSearch(true);
-		return true;
+		return closeSearch(true);
+	    case KeyboardEvent.ARROW_LEFT:
+	    case KeyboardEvent.ARROW_RIGHT:
+	    case KeyboardEvent.ARROW_UP:
+	    case KeyboardEvent.ARROW_DOWN:
+		return announceCurrentLine();
 	    default:
 		return false;
 	    }
@@ -155,15 +158,28 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	return true;
     }
 
-    private void closeSearch(boolean accept)
+    private boolean closeSearch(boolean accept)
     {
 	if (accept )
 	{
-	    environment.message(getLine(hotPointY), Luwrain.MESSAGE_REGULAR);
+	    if (!area.onEnvironmentEvent(new MoveHotPointEvent(hotPointX, hotPointY)))
+		return false;
+	    environment.setAreaIntroduction();
 	} else
 	    environment.message("Поиск отменён", Luwrain.MESSAGE_REGULAR);
 	wrappingBase.resetReviewWrapper();
 	environment.onNewScreenLayout();
-	System.out.println("search closed");
+	return true;
+    }
+
+    private boolean announceCurrentLine()
+    {
+	if (hotPointY >= area.getLineCount())
+	    return false;
+	final String line = area.getLine(hotPointY);
+	if (line == null)//Security wrapper should make this impossible
+	    return false;
+	new Luwrain(environment).say(line);//FIXME:
+	return true;
     }
 }

@@ -86,9 +86,20 @@ public abstract class NavigateArea implements Area, HotPointInfo
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
-	return region.onEnvironmentEvent(event, hotPointX, hotPointY);
+	NullCheck.notNull(event, "event");
+	switch(event.getCode())
+	{
+	case EnvironmentEvent.MOVE_HOT_POINT:
+	    if (event instanceof MoveHotPointEvent)
+	    {
+		final MoveHotPointEvent moveHotPoint = (MoveHotPointEvent)event;
+	    setHotPoint(moveHotPoint.getNewHotPointX(), moveHotPoint.getNewHotPointY());
+	    return true;
+	    }
+	    return false;
+	default:
+	    return region.onEnvironmentEvent(event, hotPointX, hotPointY);
+	}
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)

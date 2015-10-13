@@ -23,7 +23,7 @@ public class SimpleArea extends NavigateArea implements MutableLines
 {
     private ControlEnvironment environment;
     private String name = "";
-    private DefaultMultilinedEditContent content = new DefaultMultilinedEditContent();
+    private final DefaultMultilinedEditContent content = new DefaultMultilinedEditContent();
 
     public SimpleArea(ControlEnvironment environment)
     {
@@ -46,6 +46,11 @@ public class SimpleArea extends NavigateArea implements MutableLines
 	this.environment = environment;
 	this.name = name != null?name:"";
 	content.setLines(lines);
+    }
+
+    public DefaultMultilinedEditContent getEditContent()
+    {
+	return content;
     }
 
     @Override public int getLineCount()
