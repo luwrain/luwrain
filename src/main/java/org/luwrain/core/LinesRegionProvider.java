@@ -81,6 +81,11 @@ public class LinesRegionProvider implements RegionProvider
 	return new HeldData(res.toArray(new String[res.size()]));
     }
 
+    @Override public boolean deleteWholeRegion()
+    {
+	return false;
+    }
+
     @Override public boolean deleteRegion(int fromX, int fromY,
 					  int toX, int toY)
     {

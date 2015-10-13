@@ -43,6 +43,10 @@ public class MultilinedEdit
 		{
 		    return edit.insertRegion(x, y, data);
 		}
+		@Override public boolean deleteWholeRegion()
+		{
+		    return false;
+		}
 		@Override public boolean deleteRegion(int fromX, int fromY,
 						      int toX, int toY)
 		{

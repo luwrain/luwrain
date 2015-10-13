@@ -30,6 +30,11 @@ public class EmptyRegionProvider implements RegionProvider
 	return null;
     }
 
+    @Override public boolean deleteWholeRegion()
+    {
+	return false;
+    }
+
     @Override public boolean deleteRegion(int fromX, int fromY, int toX, int toY)
     {
 	return false;

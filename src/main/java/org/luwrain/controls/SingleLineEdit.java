@@ -38,8 +38,7 @@ public class SingleLineEdit implements RegionProvider
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	if (event.withControl() || event.withAlt())
 	    return false;
 	if (event.isCommand())
@@ -49,8 +48,6 @@ public class SingleLineEdit implements RegionProvider
 		return onBackspace(event);
 	    case KeyboardEvent.DELETE:
 		return onDelete(event);
-	    case KeyboardEvent.ALTERNATIVE_DELETE:
-		return onAltDelete(event);
 	    case KeyboardEvent.TAB:
 		return onTab(event);
 	    default:
@@ -61,8 +58,7 @@ public class SingleLineEdit implements RegionProvider
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	return region.onEnvironmentEvent(event, model.getHotPointX(), 0);
     }
 
@@ -113,14 +109,6 @@ public class SingleLineEdit implements RegionProvider
 	final String newLine = new String(line.substring(0, pos) + line.substring(pos + 1));
 	model.setLine(newLine);
 	environment.sayLetter(line.charAt(pos));
-	return true;
-    }
-
-    private boolean onAltDelete(KeyboardEvent event)
-    {
-	model.setHotPointX(0);
-	model.setLine("");
-	environment.hint(Hints.EMPTY_LINE);
 	return true;
     }
 
@@ -202,6 +190,14 @@ public class SingleLineEdit implements RegionProvider
 	    return null;
 	final String res = line.substring(fromPos, toPos);
 	return new HeldData(new String[]{res});
+    }
+
+    @Override public boolean deleteWholeRegion()
+    {
+	model.setHotPointX(0);
+	model.setLine("");
+	environment.hint(Hints.EMPTY_LINE);
+	return true;
     }
 
     @Override public boolean deleteRegion(int fromX, int fromY,

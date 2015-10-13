@@ -50,6 +50,8 @@ public interface RegionProvider
     HeldData getRegion(int fromX, int fromY,
 		       int toX, int toY);
 
+    boolean deleteWholeRegion();
+
     /**
      * Changes the object content by removing its part between  two points.
      *

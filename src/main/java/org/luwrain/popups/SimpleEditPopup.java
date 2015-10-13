@@ -358,6 +358,11 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
 	return new HeldData(new String[]{res});
     }
 
+    @Override public boolean deleteWholeRegion()
+    {
+	return false;
+    }
+
     @Override public boolean deleteRegion(int fromX, int fromY,
 					  int toX, int toY)
     {
