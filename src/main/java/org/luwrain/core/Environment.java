@@ -989,7 +989,7 @@ class Environment implements EventConsumer
 	if (activeArea == null)
 	    return;
 	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.REGION_POINT)))
-	    speechProc.say(strings.regionPointSet()); else
+	    message(strings.regionPointSet(), Luwrain.MESSAGE_REGULAR); else
 	    areaInaccessibleMessage();
     }
 
@@ -1032,7 +1032,7 @@ class Environment implements EventConsumer
 	}
 	clipboard = res;
 	if (speakAnnouncement)
-	    speechProc.say(strings.linesCopied(res.strings.length));
+	    message(strings.linesCopied(res.strings.length), Luwrain.MESSAGE_REGULAR);
 	return true;
     }
 
@@ -1058,14 +1058,17 @@ class Environment implements EventConsumer
 	return query.getCurrentDir();
     }
 
-
     void onDeleteCommand()
     {
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
 	    return;
 	if (!activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.DELETE)))
+	{
 	    areaInaccessibleMessage();
+	    return;
+	}
+	message(strings.linesDeleted(), Luwrain.MESSAGE_REGULAR);
     }
 
     void onCutCommand()

@@ -137,7 +137,7 @@ public class Region
     private boolean delete(int hotPointX, int hotPointY)
     {
 	if (fromX < 0 || fromY < 0)
-	    return false;
+	    return provider.deleteWholeRegion();
 	if (fromY < hotPointY)
 	    return provider.deleteRegion(fromX, fromY, hotPointX, hotPointY);
 	if (fromY > hotPointY)

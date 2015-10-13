@@ -40,4 +40,5 @@ public interface Strings
     String appBlockedByPopup();
     String locationTitle(Location location);
     String uniRefPrefix(String uniRefType);
+    String linesDeleted();
 }

@@ -144,6 +144,9 @@ class GlobalKeys
 	    return KeyboardEvent.INSERT;
 	if (value.equals("delete"))
 	    return KeyboardEvent.DELETE;
+	if (value.equals("alternative-delete"))
+	    return KeyboardEvent.ALTERNATIVE_DELETE;
+
 	    if (value.equals("home"))
 		return KeyboardEvent.HOME;
 	    if (value.equals("end"))
