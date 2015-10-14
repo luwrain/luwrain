@@ -81,8 +81,8 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 	    }
 	if (event.isCommand() &&
 	    event.getCommand() == KeyboardEvent.ENTER &&
-	    event.withControlOnly())
-	    return openImportantLocations();
+	    event.withShiftOnly())
+	    return openMountedPartitions();
 	return super.onKeyboardEvent(event);
     }
 
@@ -131,9 +131,9 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 	return (popupFlags & Popup.WEAK) != 0;
     }
 
-    private boolean openImportantLocations()
+    private boolean openMountedPartitions()
     {
-	final File f = Popups.importantLocationsAsFile(luwrain, popupFlags);
+	final File f = Popups.mountedPartitionsAsFile(luwrain, popupFlags);
 	if (f == null)
 	    return true;
 	open(f, null);

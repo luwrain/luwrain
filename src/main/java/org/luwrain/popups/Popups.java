@@ -53,24 +53,25 @@ public class Popups
 	return res[0];
     }
 
-    static public Partition mountedPartition(Luwrain luwrain, int popupFlags)
+    static public Partition mountedPartitions(Luwrain luwrain, int popupFlags)
     {
-	ImportantLocationsPopup popup = new ImportantLocationsPopup(luwrain, popupFlags);
+	final PartitionsPopup popup = new PartitionsPopup(luwrain, new DefaultPartitionsPopupControl(luwrain, luwrain.getHardware()),
+							  "Выберите раздел:", popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	final Partition p = popup.selectedPartition();
-	return p;
+	final Object result = popup.result().getObject();
+	if (result == null)
+	    return null;
+	return (Partition)result;
     }
 
-    static public File importantLocationsAsFile(Luwrain luwrain, int popupFlags)
+    static public File mountedPartitionsAsFile(Luwrain luwrain, int popupFlags)
     {
-	ImportantLocationsPopup popup = new ImportantLocationsPopup(luwrain, popupFlags);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
+	final Partition result = mountedPartitions(luwrain, popupFlags);
+	if (result == null)
 	    return null;
-	final Partition p = popup.selectedPartition();
-	return p != null?p.file():null;
+	return result.file();
     }
 
     public static File open(Luwrain luwrain, int popupFlags)
