@@ -18,14 +18,14 @@ package org.luwrain.popups;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.os.Location;
+import org.luwrain.hardware.Partition;
 import org.luwrain.os.OperatingSystem;
 
 class ImportantLocationsListModel implements ListModel
 {
     private Luwrain luwrain;
     private OperatingSystem os;
-    private Location[] locations;
+    private Partition[] partitions;
 
     public ImportantLocationsListModel(Luwrain luwrain)
     {
@@ -33,12 +33,12 @@ class ImportantLocationsListModel implements ListModel
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
 	this.os = luwrain.os();
-	locations = os.getImportantLocations();
+	partitions = os.getHardware().getMountedPartitions();
     }
 
     @Override public int getItemCount()
     {
-	return locations != null?locations.length + 1:1;
+	return partitions != null?partitions.length + 1:1;
     }
 
     @Override public Object getItem(int index)
@@ -46,10 +46,10 @@ class ImportantLocationsListModel implements ListModel
 	if (index < 0)
 	    return null;
 	if (index == 00)
-	    return new Location(Location.USER_HOME, luwrain.launchContext().userHomeDirAsFile(), luwrain.launchContext().userHomeDir());
-	if (locations == null || index > locations.length)
+	    return new Partition(Partition.USER_HOME, luwrain.launchContext().userHomeDirAsFile(), luwrain.launchContext().userHomeDir(), true);
+	if (partitions == null || index > partitions.length)
 	    return null;
-	return locations[index - 1];
+	return partitions[index - 1];
     }
 
     @Override public boolean toggleMark(int index)
@@ -59,6 +59,6 @@ class ImportantLocationsListModel implements ListModel
 
     @Override public void refresh()
     {
-	locations = os.getImportantLocations();
+	partitions = os.getHardware().getMountedPartitions();
     }
 }

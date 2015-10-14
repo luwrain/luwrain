@@ -22,6 +22,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
+import org.luwrain.hardware.*;
 import org.luwrain.os.*;
 
 /**
@@ -78,7 +79,7 @@ public class CommanderArea implements Area, RegionProvider
     private Vector<Entry> entries;//null means the content is inaccessible;
     protected ControlEnvironment environment;
     protected OperatingSystem os;
-    private Location[] importantLocations;
+    private Partition[] mountedPartitions;
     private org.luwrain.core.Strings strings;
     private final Region region = new Region(this);
     private CommanderFilter filter;
@@ -100,7 +101,7 @@ public class CommanderArea implements Area, RegionProvider
 	filter = new NoHiddenCommanderFilter();
 	comparator = new ByNameCommanderComparator();
 	selecting = false;
-	importantLocations = getImportantLocations();
+	mountedPartitions = getMountedPartitions();
 	strings = environment.environmentStrings();
 	refresh();
     }
@@ -123,7 +124,7 @@ public class CommanderArea implements Area, RegionProvider
 	filter = new NoHiddenCommanderFilter();
 	comparator = new ByNameCommanderComparator();
 	selecting = false;
-	importantLocations = getImportantLocations();
+	mountedPartitions = getMountedPartitions();
 	strings = environment.environmentStrings();
 	refresh();
     }
@@ -151,7 +152,7 @@ public class CommanderArea implements Area, RegionProvider
 	    throw new NullPointerException("comparator may not be null");
 	if (!current.isDirectory())
 	    throw new IllegalArgumentException("current must address a directory");
-	importantLocations = getImportantLocations();
+	mountedPartitions = getMountedPartitions();
 	strings = environment.environmentStrings();
 	refresh();
     }
@@ -273,10 +274,10 @@ public class CommanderArea implements Area, RegionProvider
 	if (file == null)
 	    return;
 	environment.playSound(Sounds.COMMANDER_NEW_LOCATION);
-	for(Location l: importantLocations)
-	    if (l.file().equals(file))
+	for(Partition p: mountedPartitions)
+	    if (p.file().equals(file))
 	    {
-		environment.say(strings.locationTitle(l));
+		environment.say(strings.partitionTitle(p));
 		return;
 	    }
 	environment.say(file.getName());
@@ -344,7 +345,7 @@ public class CommanderArea implements Area, RegionProvider
 		    introduceLocation(current);
 		return true;
 	    case '/':
-		open(os.getRoot(current != null?current:environment.launchContext().userHomeDirAsFile()), null);
+		open(os.getHardware().getRoot(current != null?current:environment.launchContext().userHomeDirAsFile()), null);
 		if (current != null)
 		    introduceLocation(current);
 		return true;
@@ -429,9 +430,9 @@ public class CommanderArea implements Area, RegionProvider
     {
 	if (current == null)
 	    return "-";
-	for(Location l: importantLocations)
-	    if (l.file().equals(current))
-		return strings.locationTitle(l);
+	for(Partition p: mountedPartitions)
+	    if (p.file().equals(current))
+		return strings.partitionTitle(p);
 	return current.getAbsolutePath();
     }
 
@@ -891,14 +892,14 @@ public class CommanderArea implements Area, RegionProvider
 	return filtered;
     }
 
-    private Location[] getImportantLocations()
+    private Partition[] getMountedPartitions()
     {
-	Vector<Location> res = new Vector<Location>();
-	final Location[] l = os.getImportantLocations();
-	res.add(new Location(Location.USER_HOME, environment.launchContext().userHomeDirAsFile(), environment.launchContext().userHomeDir()));
-	for(Location ll: l)
-	    res.add(ll);
-	return res.toArray(new Location[res.size()]);
+	final LinkedList<Partition> res = new LinkedList<Partition>();
+	final Partition[] p = os.getHardware().getMountedPartitions();
+	res.add(new Partition(Partition.USER_HOME, environment.launchContext().userHomeDirAsFile(), environment.launchContext().userHomeDir(), true));
+	for(Partition pp: p)
+	    res.add(pp);
+	return res.toArray(new Partition[res.size()]);
     }
 
     private void onNewHotPointY(boolean briefIntroduction)

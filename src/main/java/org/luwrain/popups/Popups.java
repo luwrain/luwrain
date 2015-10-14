@@ -20,7 +20,7 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.os.Location;
+import org.luwrain.hardware.Partition;
 
 public class Popups
 {
@@ -53,14 +53,14 @@ public class Popups
 	return res[0];
     }
 
-    static public Location importantLocations(Luwrain luwrain, int popupFlags)
+    static public Partition mountedPartition(Luwrain luwrain, int popupFlags)
     {
 	ImportantLocationsPopup popup = new ImportantLocationsPopup(luwrain, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	final Location l = popup.selectedLocation();
-	return l;
+	final Partition p = popup.selectedPartition();
+	return p;
     }
 
     static public File importantLocationsAsFile(Luwrain luwrain, int popupFlags)
@@ -69,8 +69,8 @@ public class Popups
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	final Location l = popup.selectedLocation();
-	return l != null?l.file():null;
+	final Partition p = popup.selectedPartition();
+	return p != null?p.file():null;
     }
 
     public static File open(Luwrain luwrain, int popupFlags)

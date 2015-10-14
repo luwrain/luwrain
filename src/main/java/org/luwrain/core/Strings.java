@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-import org.luwrain.os.Location;
+import org.luwrain.hardware.Partition;
 
 public interface Strings
 {
@@ -38,7 +38,7 @@ public interface Strings
     String commandPopupName();
     String commandPopupPrefix();
     String appBlockedByPopup();
-    String locationTitle(Location location);
+    String partitionTitle(Partition part);
     String uniRefPrefix(String uniRefType);
     String linesDeleted();
 }

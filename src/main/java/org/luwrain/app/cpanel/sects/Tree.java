@@ -146,13 +146,13 @@ break;
 
     private BasicSection makeHardwareSection()
     {
-	Device[] sysDevices = null;
+	SysDevice[] sysDevices = null;
 	StorageDevice[] storageDevices = null;
 	final BasicSection res = new BasicSection(strings.sectName(Strings.HARDWARE));
 	final org.luwrain.hardware.Hardware hardware = environment.getLuwrain().getHardware();
 	if (hardware != null)
 	{
-	    sysDevices = hardware.getDevices();
+	    sysDevices = hardware.getSysDevices();
 	    storageDevices = hardware.getStorageDevices();
 	}
 	if (sysDevices != null)

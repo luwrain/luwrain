@@ -16,7 +16,7 @@
 
 package org.luwrain.popups;
 
-import org.luwrain.os.Location;
+import org.luwrain.hardware.Partition;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 
@@ -40,20 +40,20 @@ strings = (Strings)o;
 
     @Override public void introduceItem(Object item, int flags)
     {
-	if (item == null || !(item instanceof Location))
+	if (item == null || !(item instanceof Partition))
 	    return;
-	final Location location = (Location)item;
+	final Partition part = (Partition)item;
 	if ((flags & BRIEF) != 0)
-	    luwrain.say(location.name()); else
-	    luwrain.say(strings.locationTitle(location));
+	    luwrain.say(part.name()); else
+	    luwrain.say(strings.partitionTitle(part));
     }
 
     @Override public String getScreenAppearance(Object item, int flags)
     {
-	if (item == null || !(item instanceof Location))
+	if (item == null || !(item instanceof Partition))
 	    return "";
-	final Location location = (Location)item;
-	return strings.locationTitle(location);
+	final Partition part = (Partition)item;
+	return strings.partitionTitle(part);
     }
 
     @Override public int getObservableLeftBound(Object item)
@@ -63,9 +63,9 @@ strings = (Strings)o;
 
     @Override public int getObservableRightBound(Object item)
     {
-	if (item == null || !(item instanceof Location))
+	if (item == null || !(item instanceof Partition))
 	    return 0;
-	final Location location = (Location)item;
-	return strings.locationTitle(location).length();
+	final Partition part = (Partition)item;
+	return strings.partitionTitle(part).length();
     }
 }

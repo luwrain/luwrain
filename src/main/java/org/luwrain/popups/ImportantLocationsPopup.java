@@ -18,7 +18,7 @@ package org.luwrain.popups;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.os.Location;
+import org.luwrain.hardware.Partition;
 
 public class ImportantLocationsPopup extends ListPopup
 {
@@ -32,11 +32,11 @@ public class ImportantLocationsPopup extends ListPopup
 	      popupFlags);
 	}
 
-    public Location selectedLocation()
+    public Partition selectedPartition()
     {
 	final Object o = selected();
-	if (o == null || !(o instanceof Location))
+	if (o == null || !(o instanceof Partition))
 	    return null;
-	return (Location)o;
+	return (Partition)o;
     }
 }
