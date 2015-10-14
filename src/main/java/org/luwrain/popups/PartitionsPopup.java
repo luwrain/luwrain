@@ -36,8 +36,8 @@ public class PartitionsPopup extends ListPopupBase
 	Partition[] getPartitions();
 	String[] getStorageDevicesIntroduction();
 	Object[] getStorageDevices();
-	void attachStorageDevice(Object device);
-	void detachStorageDevice(Object dev);
+	int attachStorageDevice(Object device);
+	int detachStorageDevice(Object dev);
     }
 
     static private class Appearance implements ListItemAppearance
@@ -103,7 +103,7 @@ public class PartitionsPopup extends ListPopupBase
 
 	@Override public int getItemCount()
 	{
-	    return items != null?items.length + 1:0;
+	    return items != null?items.length:0;
 	}
 
 	@Override public Object getItem(int index)
@@ -151,12 +151,60 @@ public class PartitionsPopup extends ListPopupBase
 	return result;
     }
 
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (event.isCommand() || !event.isModified())
+	    switch(event.getCommand())
+	    {
+	    case KeyboardEvent.INSERT:
+		return attach();
+	    case KeyboardEvent.DELETE:
+		return detach();
+	    }
+	return super.onKeyboardEvent(event);
+    }
+
     @Override public boolean onOk()
     {
 	final Object res = selected();
 	if (res == null || !(res instanceof Partition))
 	    return false;
 	result = (Partition)res;
+	return true;
+    }
+
+    private boolean attach()
+    {
+	final Object selected = selected();
+	if (selected == null ||
+	    selected instanceof Partition ||
+	    selected instanceof String)
+	    return false;
+	final int res = control.attachStorageDevice(selected);
+	if (res < 0)
+	{
+	    luwrain.message("Во время попытки подключения разделов на съёмном накопителе произошла ошибка", Luwrain.MESSAGE_ERROR);
+	    return true;
+	}
+	luwrain.message("Подключено разделов: " + res, res > 0?Luwrain.MESSAGE_OK:Luwrain.MESSAGE_REGULAR);
+	return true;
+    }
+
+    private boolean detach()
+    {
+	final Object selected = selected();
+	if (selected == null ||
+	    selected instanceof Partition ||
+	    selected instanceof String)
+	    return false;
+	final int res = control.detachStorageDevice(selected);
+	if (res < 0)
+	{
+	    luwrain.message("Во время попытки отключения разделов на съёмном накопителе произошла ошибка", Luwrain.MESSAGE_ERROR);
+	    return true;
+	}
+	luwrain.message("Отключено разделов: " + res, res > 0?Luwrain.MESSAGE_OK:Luwrain.MESSAGE_REGULAR);
 	return true;
     }
 }
