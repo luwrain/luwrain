@@ -54,16 +54,18 @@ public class PartitionsPopup extends ListPopupBase
 	{
 	    if (item == null)
 		return;
+	    String value;
 	    if (item instanceof Partition)
 	    {
-		//		System.out.println("instance");
 		final Partition part = (Partition)item;
 		if ((flags & BRIEF) != 0)
-		    luwrain.say(part.getBriefTitle()); else
-		    luwrain.say(part.getFullTitle());
-				return;
-	    }
-	    luwrain.say(item.toString());
+		    value = part.getBriefTitle(); else
+		    value = part.getFullTitle();
+	    } else
+		value = item.toString();
+	if (!value.trim().isEmpty())
+	    luwrain.say(value); else
+	    luwrain.hint(Hints.EMPTY_LINE);
 	}
 
 	@Override public String getScreenAppearance(Object item, int flags)
@@ -188,6 +190,7 @@ public class PartitionsPopup extends ListPopupBase
 	    return true;
 	}
 	luwrain.message("Подключено разделов: " + res, res > 0?Luwrain.MESSAGE_OK:Luwrain.MESSAGE_REGULAR);
+	refresh();
 	return true;
     }
 
@@ -205,6 +208,7 @@ public class PartitionsPopup extends ListPopupBase
 	    return true;
 	}
 	luwrain.message("Отключено разделов: " + res, res > 0?Luwrain.MESSAGE_OK:Luwrain.MESSAGE_REGULAR);
+	refresh();
 	return true;
     }
 }

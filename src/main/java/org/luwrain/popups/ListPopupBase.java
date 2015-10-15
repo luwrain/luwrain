@@ -60,6 +60,7 @@ public class ListPopupBase implements Popup, PopupClosingRequest, RegionProvider
 
     public void refresh()
     {
+	model.refresh();
 	final int count = model.getItemCount();
 	if (count < 1)
 	{
