@@ -21,6 +21,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 import org.luwrain.hardware.*;
 import org.luwrain.os.*;
@@ -418,6 +419,12 @@ public class CommanderArea implements Area, RegionProvider
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
+	if (query.getQueryCode() == AreaQuery.CURRENT_DIR)
+	{
+	    final CurrentDirQuery currentDirQuery = (CurrentDirQuery)query;
+	    currentDirQuery.setCurrentDir(current.getAbsolutePath());
+	    return true;
+	}
 	return region.onAreaQuery(query, hotPointX, hotPointY);
     }
 
