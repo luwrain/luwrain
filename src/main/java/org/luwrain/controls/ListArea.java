@@ -35,15 +35,6 @@ public class ListArea  implements Area, RegionProvider
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    /*
-    private String noItemsAbove = Langs.staticValue(Langs.BEGIN_OF_LIST);
-    private String noItemsBelow = Langs.staticValue(Langs.END_OF_LIST);
-    private String beginOfLine = Langs.staticValue(Langs.BEGIN_OF_LINE);
-    private String endOfLine = Langs.staticValue(Langs.END_OF_LINE);
-    private String noItems = Langs.staticValue(Langs.LIST_NO_ITEMS);
-    private String emptyLine = Langs.staticValue(Langs.EMPTY_LINE);
-    */
-
     public ListArea(ControlEnvironment environment, ListModel model)
     {
 	this.environment = environment;
@@ -309,8 +300,7 @@ public class ListArea  implements Area, RegionProvider
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	switch (event.getCode())
 	{
 	case EnvironmentEvent.REFRESH:
@@ -318,6 +308,10 @@ public class ListArea  implements Area, RegionProvider
 	    return true;
 	case EnvironmentEvent.OK:
 	    return onOk(event);
+	case EnvironmentEvent.MOVE_HOT_POINT:
+	    if (event instanceof MoveHotPointEvent)
+		return onMoveHotPoint((MoveHotPointEvent)event);
+	    return false;
 	default:
 	    return region.onEnvironmentEvent(event, hotPointX, hotPointY);
 	}
@@ -372,6 +366,22 @@ public class ListArea  implements Area, RegionProvider
 	    throw new NullPointerException("name must not be null");
 	name = value != null?value:"";
 	environment.onAreaNewName(this);
+    }
+
+    private boolean onMoveHotPoint(MoveHotPointEvent event)
+    {
+	final int x = event.getNewHotPointX();
+	final int y = event.getNewHotPointY();
+	if (y >= model.getItemCount())
+	    return false;
+	final Object o = model.getItem(y);
+	if (x < appearance.getObservableLeftBound(o) ||
+	    x > appearance.getObservableRightBound(o))
+	    return false;
+	hotPointX = x;
+	hotPointY = y;
+	environment.onAreaNewHotPoint(this);
+	return true;
     }
 
     private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
