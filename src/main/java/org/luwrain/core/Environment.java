@@ -1073,13 +1073,28 @@ class Environment implements EventConsumer
 
     void onCutCommand()
     {
-	if (!onCopyCommand(false))
+	final Area activeArea = getValidActiveArea(true);
+	if (activeArea == null)
 	    return;
-	if (!getActiveArea().onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.CUT)))
+	final CutQuery query = new CutQuery();
+	if (!activeArea.onAreaQuery(query))
 	{
 	    areaInaccessibleMessage();
 	    return;
 	}
+	if (!query.containsResult())
+	{
+		areaInaccessibleMessage();
+	    return;
+	}
+	final HeldData res = query.getData();
+	if (res == null)
+	{
+		areaInaccessibleMessage();
+		return;
+	}
+	clipboard = res;
+	    message("Вырезано строк: " + res.strings.length, Luwrain.MESSAGE_REGULAR);
     }
 
     void onPasteCommand()

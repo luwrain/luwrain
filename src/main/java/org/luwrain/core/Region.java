@@ -43,6 +43,8 @@ public class Region
 	    return false;
 	if (hotPointX < 0 || hotPointY < 0)
 	    return false;
+	if (query.getQueryCode() == AreaQuery.CUT && (query instanceof CutQuery))
+	    return onCutQuery((CutQuery)query, hotPointX, hotPointY);
 	if (query.getQueryCode() == AreaQuery.REGION && (query instanceof RegionQuery))
 	    return onRegionQuery((RegionQuery)query, hotPointX, hotPointY);
 	return false;
@@ -132,6 +134,14 @@ public class Region
 	    return false;
 	query.setData(res);
 	return true;
+    }
+
+    private boolean onCutQuery(CutQuery query, 
+			       int hotPointX, int hotPointY)
+    {
+	if (!onRegionQuery(query, hotPointX, hotPointY))
+	    return false;
+	return delete(hotPointX, hotPointY);
     }
 
     private boolean delete(int hotPointX, int hotPointY)

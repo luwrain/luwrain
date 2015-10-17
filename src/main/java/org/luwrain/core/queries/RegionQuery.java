@@ -27,10 +27,14 @@ public class RegionQuery extends AreaQuery
 	super(REGION);
     }
 
+    public RegionQuery(int desiredCode)
+    {
+	super(desiredCode);
+    }
+
+
     public void setData(HeldData data)
     {
-	if (this.data != null)
-	    throw new IllegalArgumentException("data may not be set twice");
 	this.data = data;
 	resultTaken();
     }

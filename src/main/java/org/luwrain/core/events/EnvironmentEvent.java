@@ -34,8 +34,8 @@ public class EnvironmentEvent extends Event
     static public final int MOVE_HOT_POINT = 11;
 
     static public final int REGION_POINT = 100;
-    static public final int COPY = 101;
-    static public final int CUT = 102;
+    //    static public final int COPY = 101;
+    //    static public final int CUT = 102;
     static public final int INSERT = 104;
     static public final int DELETE = 105;
 
