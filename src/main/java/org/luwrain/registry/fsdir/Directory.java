@@ -25,9 +25,9 @@ import org.luwrain.core.NullCheck;
 
 class Directory
 {
-    static private final String STRINGS_VALUES_FILE = "strings.txt";
-    static private final String INTEGERS_VALUES_FILE = "integers.txt";
-    static private final String BOOLEANS_VALUES_FILE = "booleans.txt";
+    static final String STRINGS_VALUES_FILE = "strings.txt";
+    static final String INTEGERS_VALUES_FILE = "integers.txt";
+    static final String BOOLEANS_VALUES_FILE = "booleans.txt";
 
     private String name = "";
     private File dir;

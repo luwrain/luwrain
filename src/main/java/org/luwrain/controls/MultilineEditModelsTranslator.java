@@ -56,30 +56,19 @@ public class MultilineEditModelsTranslator implements MultilineEditHighLevelMode
     @Override public char deleteChar(int pos, int lineIndex)
     {
 	final String line = model.getLine(lineIndex);
-	if (line == null)
-	    return '\0';
-	if (pos < 0 || pos>= line.length())
-	    return '\0';
-	if (pos == 0)
+	if (line == null ||
+	    pos < 0 || pos>= line.length())
 	{
-	    model.beginEditTrans();
-	    model.setLine(lineIndex, line.substring(1));
-	    if (model.getHotPointY() == lineIndex && model.getHotPointX() > 0)
+	    if (model.getHotPointY() == lineIndex && model.getHotPointX() > pos)
+	    {
+		model.beginEditTrans();
 		model.setHotPointX(model.getHotPointX() - 1);
-	    model.endEditTrans();
-	    return line.charAt(0);
-	}
-	if (pos == line.length() - 1)
-	{
-	    model.beginEditTrans();
-	    model.setLine(lineIndex, line.substring(0, line.length() - 1));
-	    if (model.getHotPointY() == lineIndex && model.getHotPointX() >= line.length())
-		model.setHotPointX(model.getHotPointX() - 1);
-	    model.endEditTrans();
-	    return line.charAt(line.length() - 1);
+		model.endEditTrans();
+	    }
+	    return '\0';
 	}
 	model.beginEditTrans();
-	model.setLine(lineIndex, line.substring(0, pos) + line.substring(pos));
+	model.setLine(lineIndex, line.substring(0, pos) + line.substring(pos + 1));
 	if (model.getHotPointY() == lineIndex && model.getHotPointX() > pos)
 	    model.setHotPointX(model.getHotPointX() - 1);
 	model.endEditTrans();

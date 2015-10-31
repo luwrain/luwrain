@@ -113,4 +113,9 @@ class TestingControlEnvironment implements ControlEnvironment
     @Override public void playSound(int id)
     {
     }
+
+@Override public UniRefInfo getUniRefInfo(String uniRef)
+    {
+	return null;
+    }
 }

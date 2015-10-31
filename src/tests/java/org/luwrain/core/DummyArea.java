@@ -67,4 +67,9 @@ class DummyArea implements Area
     {
 	return "#name#";
     }
+
+    @Override public Action[] getAreaActions()
+    {
+	return null;
+    }
 }
