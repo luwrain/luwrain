@@ -27,4 +27,12 @@ public class Strings
 	    res[i] = values[i] != null?values[i]:"";
 	return res;
     }
+
+    static public String sameCharString(char c, int count)
+    {
+	final StringBuilder b = new StringBuilder();
+	for(int i = 0;i < count;++i)
+	    b.append(c);
+	return new String(b);
+    }
 }
