@@ -31,8 +31,6 @@ import org.luwrain.os.*;
  * old-style file commander. The user can explore directory content and
  * move around it traversing over near directories. Custom filters and
  * comparators are supported.
- *
- * @see CommanderPopup
  */
 public class CommanderArea implements Area, RegionProvider
 {

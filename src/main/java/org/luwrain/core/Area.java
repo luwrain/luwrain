@@ -74,8 +74,6 @@ import org.luwrain.core.events.*;
  * depends on the length of tabs)
  * </li>
  * </ul>
- *
- * @see AreaLayout, Popup
  */
 public interface Area extends Lines
 {

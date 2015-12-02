@@ -22,7 +22,7 @@ import org.luwrain.core.events.*;
 public class EditArea extends SimpleArea
 {
     private ControlEnvironment environment;
-    private MultilinedEdit edit;
+    private MultilineEdit edit;
     private boolean modified = false;
 
     public EditArea(ControlEnvironment environment)
@@ -40,8 +40,7 @@ public class EditArea extends SimpleArea
 	createEdit();
     }
 
-    public EditArea(ControlEnvironment environment,
-		    String name,
+    public EditArea(ControlEnvironment environment, String name,
 		    String[] content)
     {
 	super(environment, name, content);
@@ -88,7 +87,7 @@ public class EditArea extends SimpleArea
 	//Nothing here;
     }
 
-    public String getTabSeq()
+    protected String getTabSeq()
     {
 	return "\t";
     }
@@ -96,59 +95,69 @@ public class EditArea extends SimpleArea
     private void createEdit()
     {
 	final EditArea thisArea = this;
-	edit = new MultilinedEdit(environment, new MultilinedEditModel(){
-		private EditArea area = thisArea;
-		@Override public String getLine(int index)
-		{
-		    return area.getLine(index);
-		}
-		@Override public void setLine(int index, String text)
-		{
-		    area.setLine(index, text);
-		    area.modified = true;
-		}
-		@Override public int getLineCount()
-		{
-		    return area.getLineCount();
-		}
-		@Override public int getHotPointX()
-		{
-		    return area.getHotPointX();
-		}
-		@Override public int getHotPointY()
-		{
-		    return area.getHotPointY();
-		}
-		@Override public void setHotPoint(int x, int y)
-		{
-		    area.setHotPoint(x, y);
-		}
-		@Override public void removeLine(int index)
-		{
-		    area.removeLine(index);
-		    area.modified = true;
-		}
-    @Override public void insertLine(int index, String text)
-		{
-		    area.insertLine(index, text);
-		    area.modified = true;
-		}
-		@Override public void addLine(String text)
-		{
-		    area.addLine(text);
-		    area.modified = true;
-		}
-		@Override public String getTabSeq()
-		{
-		    return area.getTabSeq();
-		}
-		@Override public boolean beginEditTrans()
-		{
-		    return true;
-		}
-		@Override public void endEditTrans()
-		{
-		}
-	    });
+	edit = new MultilineEdit(environment, new MultilineEditModelsTranslator(createModel()));
+    }
+
+    private MultilineEditLowLevelModel createModel()
+    {
+	final EditArea area = this;
+	return new MultilineEditLowLevelModel(){
+	    final MutableLines lines = area.getEditContent();
+	    @Override public String getLine(int index)
+	    {
+		return lines.getLine(index);
+	    }
+	    @Override public void setLine(int index, String text)
+	    {
+		lines.setLine(index, text);
+		area.modified = true;
+	    }
+	    @Override public int getLineCount()
+	    {
+		return lines.getLineCount();
+	    }
+	    @Override public int getHotPointX()
+	    {
+		return 0;
+	    }
+	    @Override public int getHotPointY()
+	    {
+		return 0;
+	    }
+	    @Override public void setHotPointX(int value)
+	    {
+	    }
+	    @Override public void setHotPointY(int y)
+	    {
+	    }
+	    @Override public void removeLine(int index)
+	    {
+		lines.removeLine(index);
+		area.modified = true;
+	    }
+	    @Override public void insertLine(int index, String text)
+	    {
+		lines.insertLine(index, text);
+		area.modified = true;
+	    }
+	    @Override public void addLine(String text)
+	    {
+		lines.addLine(text);
+		area.modified = true;
+	    }
+	    @Override public String getTabSeq()
+	    {
+		return area.getTabSeq();
+	    }
+	    @Override public void beginEditTrans()
+	    {
+		//		    hotPointX = area.getHotPointX();
+		//		    hotPointY = area.getHotPointY();
+		//		    return true;
+	    }
+	    @Override public void endEditTrans()
+	    {
+	    }
+	};
     }
 }

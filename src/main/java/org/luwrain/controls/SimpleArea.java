@@ -48,7 +48,7 @@ public class SimpleArea extends NavigateArea implements MutableLines
 	content.setLines(lines);
     }
 
-    public DefaultMultilinedEditContent getEditContent()
+    public MutableLines getEditContent()
     {
 	return content;
     }

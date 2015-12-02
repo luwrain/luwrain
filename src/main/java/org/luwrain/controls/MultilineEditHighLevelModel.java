@@ -18,13 +18,30 @@ package org.luwrain.controls;
 
 import org.luwrain.core.*;
 
-//Should not issue any speech feedback
+/**
+ * The direct model for {@link MultilineEdit}. {@code MultilineEdit}
+ * relies on instances of this class directly (in contrast to {@link
+ * MultilineEditLowLevelModel}) and uses them as models.  To translate
+ * operations of this class to the operations of {@code
+ * MultilineEditLowLevelModel} {@link MultilineEditModelsTranslator} can
+ * be used. 
+ * <p>
+ * {@code MultilineEdit} guarantees that each user action led exactly to
+ * a single call of some method of this class.  This allows
+ * substitution of each method, making any changes in the model, by any
+ * number of other methods in any order, and this will keep all structures
+ * consistent.
+ * <p>
+ * If some operation is addressed at the position outside of the stored
+ * text, the result may be undefined. This class should not issue 
+ * any speech output.
+ *
+ * @see MultilineEditLowLevelModel
+ */
 public interface MultilineEditHighLevelModel extends Lines
 {
     int getHotPointX();
     int getHotPointY();
-    int getLineCount();
-    String getLine(int index);
     String getTabSeq();
     char deleteChar(int pos, int lineIndex);
     //Expects ending point always after starting

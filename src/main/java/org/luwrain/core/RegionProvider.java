@@ -68,7 +68,8 @@ public interface RegionProvider
      * Changes the object content inserting some data at the specified position.
      *
      * @param x The horizontal point to put the data at
-     * @param x The vertical point to put the data at
+     * @param y The vertical point to put the data at
+     * @param heldData The data to put
      * @return True if the object supports the operation and the data has been inserted, false otherwise
      */
     boolean insertRegion(int x, int y,

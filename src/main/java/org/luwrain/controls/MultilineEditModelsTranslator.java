@@ -18,6 +18,9 @@ package org.luwrain.controls;
 
 import org.luwrain.core.*;
 
+// Expects that hot point is not related to the content 
+// Hot point position may be adjusted to the content changes only on endEditTrans 
+
 public class MultilineEditModelsTranslator implements MultilineEditHighLevelModel
 {
     private MultilineEditLowLevelModel model;
