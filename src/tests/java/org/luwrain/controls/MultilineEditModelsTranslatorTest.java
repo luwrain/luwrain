@@ -147,7 +147,6 @@ public class MultilineEditModelsTranslatorTest extends Assert
 	if (y < 3)
 	    assertTrue(lowLevel.getHotPointY() == 0); else
 	    assertTrue(lowLevel.getHotPointY() == y - 2);
-
 	if (y == 0 && x <= 1)
 	    assertTrue(lowLevel.getHotPointX() == x); else
 	    if ((y == 0 && x >= 2) ||
@@ -159,9 +158,6 @@ y == 1 ||
 	lowLevel.addLine("123");
 	lowLevel.addLine("456");
 	lowLevel.addLine("789");
-
 	    }
     }
-
-
 }

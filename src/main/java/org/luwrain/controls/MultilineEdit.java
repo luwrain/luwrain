@@ -26,9 +26,9 @@ public class MultilineEdit
 {
     private ControlEnvironment environment;
     private Region region;
-    private MultilineEditHighLevelModel model;
+    private MultilineEditModel model;
 
-    public MultilineEdit(ControlEnvironment environment, MultilineEditHighLevelModel model)
+    public MultilineEdit(ControlEnvironment environment, MultilineEditModel model)
     {
 	this.environment = environment;
 	this.model = model;

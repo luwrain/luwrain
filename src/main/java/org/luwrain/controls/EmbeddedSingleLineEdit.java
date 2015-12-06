@@ -23,7 +23,7 @@ public class EmbeddedSingleLineEdit implements SingleLineEditModel
 {
     private ControlEnvironment environment;
     private EmbeddedEditLines lines;
-    private HotPointInfo hotPointInfo;
+    private HotPointControl hotPointInfo;
     private int posX;
     private int posY;
     private SingleLineEdit edit;
@@ -36,7 +36,7 @@ public class EmbeddedSingleLineEdit implements SingleLineEditModel
      * @param posY The Y position of this edit in the area
      */
     public EmbeddedSingleLineEdit(ControlEnvironment environment, EmbeddedEditLines lines,
-				  HotPointInfo hotPointInfo, 
+				  HotPointControl hotPointInfo, 
 				  int posX, int posY)
     {
 	this.environment = environment;

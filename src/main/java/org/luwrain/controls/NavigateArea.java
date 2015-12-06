@@ -34,7 +34,7 @@ import org.luwrain .util.*;
  *
  * @see SimpleArea
  */
-public abstract class NavigateArea implements Area, HotPointInfo
+public abstract class NavigateArea implements Area, HotPointControl
 {
     private ControlEnvironment environment;
     private final Region region = new Region(new LinesRegionProvider(this));
@@ -386,6 +386,16 @@ public abstract class NavigateArea implements Area, HotPointInfo
 		introduceLine(0, line); else
 		environment.hint(Hints.EMPTY_LINE);
 	}
+    }
+
+    @Override public void beginHotPointTrans()
+    {
+	//FIXME:
+    }
+
+    @Override public void endHotPointTrans()
+    {
+	//FIXME:
     }
 
     /**

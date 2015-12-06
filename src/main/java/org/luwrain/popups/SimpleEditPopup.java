@@ -21,7 +21,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo, EmbeddedEditLines, RegionProvider
+public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointControl, EmbeddedEditLines, RegionProvider
 {
     protected Luwrain luwrain;
     public final PopupClosing closing = new PopupClosing(this);
@@ -291,6 +291,14 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointInfo
     @Override public void setHotPointY(int value)
     {
 	//Nothing here;
+    }
+
+    @Override public void beginHotPointTrans()
+    {
+    }
+
+    @Override public void endHotPointTrans()
+    {
     }
 
     @Override public boolean onOk()

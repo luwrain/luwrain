@@ -19,26 +19,25 @@ package org.luwrain.controls;
 import org.luwrain.core.*;
 
 /**
- * The direct model for {@link MultilineEdit}. {@code MultilineEdit}
- * relies on instances of this class directly (in contrast to {@link
- * MultilineEditLowLevelModel}) and uses them as models.  To translate
- * operations of this class to the operations of {@code
- * MultilineEditLowLevelModel} {@link MultilineEditModelsTranslator} can
- * be used. 
+ * The model for {@link MultilineEdit}. It is supposed that this
+ * interface is a front-end for {@link MutableLines} in conjunction with
+ * {@link HotPointControl}, but, of cource, everybody may use as it is
+ * necessary for a particular purpose. See 
+ * {@link MultilineEditModelTranslator} for a standard implementation.
  * <p>
  * {@code MultilineEdit} guarantees that each user action led exactly to
- * a single call of some method of this class.  This allows
- * substitution of each method, making any changes in the model, by any
- * number of other methods in any order, and this will keep all structures
+ * a single call of some method of this class.  This allows substitution
+ * of each method, making any changes in the model, by any number of
+ * other methods in any order, and this will keep all structures
  * consistent.
  * <p>
  * If some operation is addressed at the position outside of the stored
- * text, the result may be undefined. This class should not issue 
- * any speech output.
+ * text, the result may be undefined. The implementation of this
+ * interface should not issue any speech output.
  *
- * @see MultilineEditLowLevelModel
+ * @see MultilineEditModelTranslator
  */
-public interface MultilineEditHighLevelModel extends Lines
+public interface MultilineEditModel extends Lines
 {
     int getHotPointX();
     int getHotPointY();
@@ -49,5 +48,17 @@ public interface MultilineEditHighLevelModel extends Lines
     boolean insertRegion(int x, int y, String[] lines);
     void insertChars(int pos, int lineIndex, String str);
     void mergeLines(int firstLineIndex);
+
+    /**
+     * Splits the specified line at the specified position. This method
+     * removes on the line all the content after the specified position and puts
+     * the deleted fragment on new line which is inserted just after
+     * modified. If the position is given outside of the stored text, the
+     * behaviour of this method is undefined.
+     *
+     * @param pos The 0-based position to split line at
+     * @param lineIndex The 0-based index of the line to split
+     * @return The fragment moved onto newly inserted line
+     */
     String splitLines(int pos, int lineIndex);
 }

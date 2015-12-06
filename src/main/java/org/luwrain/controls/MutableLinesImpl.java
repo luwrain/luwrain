@@ -17,6 +17,7 @@
 package org.luwrain.controls;
 
 import java.util.Vector;
+import org.luwrain.core.NullCheck;
 import org.luwrain.core.MutableLines;
 import org.luwrain.util.Strings;
 
@@ -33,6 +34,22 @@ public class MutableLinesImpl implements MutableLines
 	final String[] l = Strings.notNullArray(lines);
 	for(String ll: l)
 	    this.lines.add(ll);
+    }
+
+    public MutableLinesImpl(String lines)
+    {
+	NullCheck.notNull(lines, "lines");
+	final String[] l = lines.split("\n", -1);
+	for(String ll: l)
+	    this.lines.add(ll);
+    }
+
+    @Override public void beginLinesTrans()
+    {
+    }
+
+    @Override public void endLinesTrans()
+    {
     }
 
     @Override public int getLineCount()

@@ -20,6 +20,28 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
+/**
+ * The area with a set of controls. {@code FormArea} lets the user to
+ * interact with a number of controls of various types in one single
+ * area. The controls can be of the following types:
+ * <ul>
+ * <li>Single line edits</li>
+ * <li>Checkboxes</li>
+ * <li>Lists</li>
+ * <li>UniRefs</li>
+ * <li>Static items</li>
+ * <li>Multiline edit</li>
+ * </ul>
+ * Multiline edit can be only a single in {@code FormArea} and always
+ * placed at the bottom below of all other controls. Controls of all
+ * other types can be inserted multiple times and in the arbitrary order.
+ * <p>
+ * Each control, except of multiline edit, has associated name which
+ * helps the developer reference this control. As well, each control can
+ * be associated with some object given by an opaque {@code Object}
+ * reference. The purpose of this object every developer may define
+ * completely freely as it could be convenient for a particular purpose.
+ */
 public class FormArea  extends NavigateArea
 {
     static public final int NONE = 0;
@@ -38,21 +60,21 @@ public class FormArea  extends NavigateArea
 	Object obj;
 	boolean enabled = true;
 
-//A couple of variables needed for sending notifications about changing of text;
+//A couple of variables needed for sending notifications about changing of text
 	private ControlEnvironment environment;
 	private Area area;
 
-	//For an edit;
+	//For an edit
 	private String enteredText = "";
 	private EmbeddedSingleLineEdit edit;
 
-	//For an uniRef;
+	//For an uniRef
 	UniRefInfo uniRefInfo;
 
-	//For a static item;
+	//For a static item
 	private Object staticObject;
 
-	//For a list;
+	//For a list
 	private Object selectedListItem = null;
 	private FormListChoosing listChoosing;
 
@@ -100,10 +122,12 @@ public class FormArea  extends NavigateArea
     private String name = "";
     private final Vector<Item> items = new Vector<Item>();
 
-    private String multilinedCaption;
-    private DefaultMultilinedEditContent multilinedContent;
-    private EmbeddedMultilinedEdit multilinedEdit;
-    private boolean multilinedEnabled = true;//FIXME:
+    private MutableLinesImpl multilineEditLines;
+    private final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
+    private String multilineEditCaption;
+    private MultilineEditModel multilineEditModel;
+    private MultilineEdit multilineEdit;
+    private boolean multilineEditEnabled = true;//FIXME:
 
     public FormArea(ControlEnvironment environment)
     {
@@ -124,10 +148,10 @@ public class FormArea  extends NavigateArea
     public void clear()
     {
 	items.clear();
-	multilinedCaption = null;
-	multilinedContent = null;
-	multilinedEdit = null;
-	multilinedEnabled = true;
+	multilineEditCaption = null;
+	multilineEditModel = null;
+	multilineEdit = null;
+	multilineEditEnabled = true;
 	environment.onAreaNewContent(this);
 	setHotPoint(0, 0);
     }
@@ -150,7 +174,7 @@ public class FormArea  extends NavigateArea
 	    return NONE;
 	if (index < items.size())
 	    return items.get(index).type;
-	return multilinedEditActivated()?MULTILINED:NONE;
+	return multilineEditActivated()?MULTILINED:NONE;
     }
 
     public int getItemCount()
@@ -377,37 +401,45 @@ public class FormArea  extends NavigateArea
 	return true;
     }
 
-    public boolean multilinedEditActivated()
+    public boolean multilineEditActivated()
     {
-	return multilinedEdit != null && 
-	multilinedContent != null && multilinedCaption != null;
+	return multilineEdit != null && 
+	multilineEditModel != null && multilineEditCaption != null;
     }
 
-    public boolean multilinedEditEnabled()
+    public boolean multilineEditEnabled()
     {
-	return multilinedEditActivated() && multilinedEnabled;
+	return multilineEditActivated() && multilineEditEnabled;
     }
 
-    public boolean activateMultilinedEdit(String caption, String[] initialText,
+    public boolean activateMultilinedEdit(String caption, MultilineEditModel model,
 					  boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
-	if (multilinedEditActivated())
+	NullCheck.notNull(model, "model");
+	if (multilineEditActivated())
 	    return false;
-	final ControlEnvironment env = environment;
-	final Area thisArea = this;
-	this.multilinedCaption = caption;
-	multilinedContent = new DefaultMultilinedEditContent(org.luwrain.util.Strings.notNullArray(initialText)){
-		@Override public void endEditTrans()
-		{
-		    super.endEditTrans();
-		    env.onAreaNewContent(thisArea);
-		}
-	    };
-	//FIXME:setLines;
-	this.multilinedEdit = new EmbeddedMultilinedEdit(environment, multilinedContent,
-							 this, items.size() + (!multilinedCaption.isEmpty()?1:0));
-	multilinedEnabled = enabled;
+	this.multilineEditCaption = caption;
+	//	this.multilineEditModel = createMultilineEditModel(model, items.size() + (!multilinedCaption.isEmpty()?1:0));
+	//	this.multilinedEdit = MultilineEdit(environment, multilineEditModel);
+	multilineEditEnabled = enabled;
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    public boolean activateMultilinedEdit(String caption, String lines,
+					  boolean enabled)
+    {
+	NullCheck.notNull(caption, "caption");
+	NullCheck.notNull(lines, "lines");
+	if (multilineEditActivated())
+	    return false;
+	this.multilineEditCaption = caption;
+	this.multilineEditLines = new MutableLinesImpl(lines);
+	this.multilineEditModel = new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint);
+	this.multilineEdit = new MultilineEdit(environment, multilineEditModel);
+	multilineEditEnabled = enabled;
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -415,7 +447,7 @@ public class FormArea  extends NavigateArea
 
     public String getMultilinedEditText()
     {
-	return multilinedEditActivated()?multilinedContent.getWholeText():null;
+	return multilineEditLines != null?multilineEditLines.getWholeText():null;
     }
 
     public boolean removeItemOnLine(int index)
@@ -508,8 +540,8 @@ public class FormArea  extends NavigateArea
 		i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		i.onKeyboardEvent(event))
 		return true;
-	if (multilinedEditEnabled() && multilinedEdit.isPosCovered(getHotPointX(), getHotPointY()) &&
-	    multilinedEdit.onKeyboardEvent(event))
+	if (multilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
+	    multilineEdit.onKeyboardEvent(event))
 	    return true;
 	return super.onKeyboardEvent(event);
     }
@@ -543,8 +575,8 @@ data.strings.length < 1 || data.strings[0] == null)
 		    i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		    i.onEnvironmentEvent(event))
 		    return true;
-	if (multilinedEditEnabled() && multilinedEdit.isPosCovered(getHotPointX(), getHotPointY()) &&
-	    multilinedEdit.onEnvironmentEvent(event))
+	if (multilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
+	    multilineEdit.onEnvironmentEvent(event))
 	    return true;
 	return super.onEnvironmentEvent(event);
     }
@@ -556,8 +588,8 @@ data.strings.length < 1 || data.strings[0] == null)
 		    i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		    i.onAreaQuery(query))
 		    return true;
-	if (multilinedEditEnabled() && multilinedEdit.isPosCovered(getHotPointX(), getHotPointY()) &&
-	    multilinedEdit.onAreaQuery(query))
+	if (multilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
+	    multilineEdit.onAreaQuery(query))
 	    return true;
 	return super.onAreaQuery(query);
     }
@@ -565,10 +597,10 @@ data.strings.length < 1 || data.strings[0] == null)
     @Override public int getLineCount()
     {
 	int res = items.size();
-	if (multilinedEditActivated())
+	if (multilineEditActivated())
 	{
-	    res += multilinedEdit.getLineCount();
-	    if (!multilinedCaption.isEmpty())
+	    res += multilineEditModel.getLineCount();
+	    if (!multilineEditCaption.isEmpty())
 		++res;
 	}
 	return res + 1;
@@ -597,19 +629,19 @@ data.strings.length < 1 || data.strings[0] == null)
 		return "FIXME";
 	    }
 	}
-	if (!multilinedEditActivated())
+	if (!multilineEditActivated())
 	    return "";
 	final int pos = index - items.size();
-	if (!multilinedCaption.isEmpty())
+	if (!multilineEditCaption.isEmpty())
 	{
 	    if (pos == 0)
-		return multilinedCaption;
-	    if (pos < multilinedContent.getLineCount() + 1)
-		return multilinedContent.getLine(pos - 1);
+		return multilineEditCaption;
+	    if (pos < multilineEditModel.getLineCount() + 1)
+		return multilineEditModel.getLine(pos - 1);
 	    return "";
 	}
-	if (pos < multilinedContent.getLineCount())
-	    return multilinedContent.getLine(pos);
+	if (pos < multilineEditModel.getLineCount())
+	    return multilineEditModel.getLine(pos);
 	return "";
     }
 
@@ -626,11 +658,16 @@ data.strings.length < 1 || data.strings[0] == null)
 		Item item = items.get(i);
 		item.edit.setNewPos(item.caption != null?item.caption.length():0, i);
 	    }
-	if (!multilinedEditActivated())
+	if (!multilineEditActivated())
 	    return;
 	int offset = items.size();
-	if (!multilinedCaption.isEmpty())
+	if (!multilineEditCaption.isEmpty())
 	    ++offset;
-	multilinedEdit.setNewPos(0, offset);
+	//FIXME:	multilinedEdit.setNewPos(0, offset);
+    }
+
+    private boolean isMultilineEditCovering(int x, int y)
+    {
+	return false;
     }
 }
