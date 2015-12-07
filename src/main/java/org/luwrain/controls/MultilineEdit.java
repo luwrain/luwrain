@@ -89,6 +89,8 @@ return onEnter(event);
 
     private boolean onBackspace(KeyboardEvent event)
     {
+	if (model.getHotPointY() >= model.getLineCount())
+	    return false;
 	if (model.getHotPointX() <= 0 && model.getHotPointY() <= 0)
 	{
 	    environment.hint(Hints.BEGIN_OF_TEXT);
@@ -98,7 +100,7 @@ return onEnter(event);
 	{
 	    model.mergeLines(model.getHotPointY() - 1);
 	    environment.hint(Hints.END_OF_LINE);
-} else
+	} else
 	    environment.sayLetter(model.deleteChar(model.getHotPointX() - 1, model.getHotPointY()));
 	return true;
     }
@@ -106,13 +108,10 @@ return onEnter(event);
     private boolean onDelete(KeyboardEvent event)
     {
 	if (model.getHotPointY() >= model.getLineCount())
-	{
-	    environment.hint(Hints.END_OF_TEXT);
-	    return true;
-	}
-	String line = model.getLine(model.getHotPointY());
+	    return false;
+	final String line = model.getLine(model.getHotPointY());
 	if (line == null)
-	    line = "";
+	    return false;
 	if (model.getHotPointX() < line.length())
 	{
 	    environment.sayLetter(model.deleteChar(model.getHotPointX(), model.getHotPointY()));

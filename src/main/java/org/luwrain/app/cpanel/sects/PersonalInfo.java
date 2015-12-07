@@ -37,7 +37,7 @@ class PersonalInfo extends EmptySection
 	    final RegistryAutoCheck check = new RegistryAutoCheck(environment.getLuwrain().getRegistry());
 	    addEdit("name", "Полное имя:", check.stringAny(registryKeys.personalFullName(), ""), null, true);
 	    addEdit("address", "Основной адрес электронной почты:", check.stringAny(registryKeys.personalDefaultMailAddress(), ""), null, true);
-	    activateMultilinedEdit("Текст подписи в сообщениях электронной почты:", check.stringAny(registryKeys.personalSignature(), ""), true);
+	    activateMultilineEdit("Текст подписи в сообщениях электронной почты:", check.stringAny(registryKeys.personalSignature(), ""), true);
 	}
 
 	@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -79,7 +79,7 @@ class PersonalInfo extends EmptySection
 		return false;
 	    if (!registry.setString(registryKeys.personalDefaultMailAddress(), getEnteredText("address")))
 		return false;
-	    if (!registry.setString(registryKeys.personalSignature(), getMultilinedEditText()))
+	    if (!registry.setString(registryKeys.personalSignature(), getMultilineEditText()))
 		return false;
 	    return true;
 	}

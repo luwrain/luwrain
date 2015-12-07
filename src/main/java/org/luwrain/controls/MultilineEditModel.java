@@ -25,7 +25,7 @@ import org.luwrain.core.*;
  * necessary for a particular purpose. See 
  * {@link MultilineEditModelTranslator} for a standard implementation.
  * <p>
- * {@code MultilineEdit} guarantees that each user action led exactly to
+ * {@code MultilineEdit} guarantees that each user action result exactly in
  * a single call of some method of this class.  This allows substitution
  * of each method, making any changes in the model, by any number of
  * other methods in any order, and this will keep all structures
@@ -42,10 +42,12 @@ public interface MultilineEditModel extends Lines
     int getHotPointX();
     int getHotPointY();
     String getTabSeq();
+    //Processes only chars within line bounds,  neither end of line not end of text not processed
     char deleteChar(int pos, int lineIndex);
     //Expects ending point always after starting
     boolean deleteRegion(int fromX, int fromY, int toX, int toY);
     boolean insertRegion(int x, int y, String[] lines);
+    //Must add new lines if necessary to ensure lineIndex is in the bounds
     void insertChars(int pos, int lineIndex, String str);
     void mergeLines(int firstLineIndex);
 

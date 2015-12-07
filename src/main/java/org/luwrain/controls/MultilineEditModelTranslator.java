@@ -73,18 +73,11 @@ String tabSeq)
 
     @Override public char deleteChar(int pos, int lineIndex)
     {
+	System.out.println("deleting " + pos + "," + lineIndex);
 	final String line = lines.getLine(lineIndex);
 	if (line == null ||
-	    pos < 0 || pos>= line.length())
-	{
-	    if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() > pos)
-	    {
-		beginEditTrans();
-		hotPoint.setHotPointX(hotPoint.getHotPointX() - 1);
-		endEditTrans();
-	    }
+	    pos < 0 || pos >= line.length())
 	    return '\0';
-	}
 	beginEditTrans();
 	lines.setLine(lineIndex, line.substring(0, pos) + line.substring(pos + 1));
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() > pos)
@@ -215,17 +208,19 @@ String tabSeq)
 
     @Override public void insertChars(int pos, int lineIndex, String str)
     {
+    beginEditTrans();
+	while(lineIndex >= lines.getLineCount())
+	    lines.addLine("");
 	String line = lines.getLine(lineIndex);
     if (line == null)
 	line = "";
     while(line.length() < pos)
 	line += " ";
-    beginEditTrans();
 	lines.setLine(lineIndex, line.substring(0, pos) + (str != null?str:"") + line.substring(pos));
     if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
 	hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
     endEditTrans();
-       }
+    }
 
     @Override public void mergeLines(int firstLineIndex)
     {

@@ -50,7 +50,7 @@ public class FormArea  extends NavigateArea
     static public final int LIST = 3;
     static public final int STATIC = 4;
     static public final int UNIREF = 5;
-    static public final int MULTILINED = 6;
+    static public final int MULTILINE = 6;
 
     static private class Item implements EmbeddedEditLines
     {
@@ -174,7 +174,7 @@ public class FormArea  extends NavigateArea
 	    return NONE;
 	if (index < items.size())
 	    return items.get(index).type;
-	return multilineEditActivated()?MULTILINED:NONE;
+	return multilineEditActivated()?MULTILINE:NONE;
     }
 
     public int getItemCount()
@@ -412,7 +412,22 @@ public class FormArea  extends NavigateArea
 	return multilineEditActivated() && multilineEditEnabled;
     }
 
-    public boolean activateMultilinedEdit(String caption, MultilineEditModel model,
+    /**
+     * Returns the {@link HotPointControl} object used in multiline edit
+     * operations. The object is an instance of {@clink HotPointShift} class
+     * (because multiline edit is shifted vertically in the form) and can be
+     * directly provided to the constructor of 
+     * {@link MultilineEditModelTranslator} if necessary. This method returns the
+     * object regardless whether multiline edit activated or not.
+     *
+     * @return The hot point control object suitable for multiline edit operations
+     */
+    public HotPointControl getMultilineEditHotPointControl()
+    {
+	return multilineEditHotPoint;
+    }
+
+    public boolean activateMultilineEdit(String caption, MultilineEditModel model,
 					  boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
@@ -420,15 +435,17 @@ public class FormArea  extends NavigateArea
 	if (multilineEditActivated())
 	    return false;
 	this.multilineEditCaption = caption;
-	//	this.multilineEditModel = createMultilineEditModel(model, items.size() + (!multilinedCaption.isEmpty()?1:0));
-	//	this.multilinedEdit = MultilineEdit(environment, multilineEditModel);
+	this.multilineEditLines = null;
+	this.multilineEditModel = wrapMultilineEditModel(model);
+	this.multilineEdit = new MultilineEdit(environment, model);
 	multilineEditEnabled = enabled;
+	updateEditsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
     }
 
-    public boolean activateMultilinedEdit(String caption, String lines,
+    public boolean activateMultilineEdit(String caption, String lines,
 					  boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
@@ -437,15 +454,16 @@ public class FormArea  extends NavigateArea
 	    return false;
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = new MutableLinesImpl(lines);
-	this.multilineEditModel = new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint);
+	this.multilineEditModel = wrapMultilineEditModel(new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint));
 	this.multilineEdit = new MultilineEdit(environment, multilineEditModel);
 	multilineEditEnabled = enabled;
+	updateEditsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
     }
 
-    public String getMultilinedEditText()
+    public String getMultilineEditText()
     {
 	return multilineEditLines != null?multilineEditLines.getWholeText():null;
     }
@@ -599,11 +617,14 @@ data.strings.length < 1 || data.strings[0] == null)
 	int res = items.size();
 	if (multilineEditActivated())
 	{
-	    res += multilineEditModel.getLineCount();
-	    if (!multilineEditCaption.isEmpty())
+	    final int count = multilineEditModel.getLineCount();
+	    res += count;
+	    if (count == 0)
+		++res;
+	    if (multilineEditCaption != null && !multilineEditCaption.isEmpty())
 		++res;
 	}
-	return res + 1;
+	return res;
     }
 
     @Override public String getLine(int index)
@@ -655,19 +676,32 @@ data.strings.length < 1 || data.strings[0] == null)
 	for(int i = 0;i < items.size();++i)
 	    if (items.get(i).type == EDIT)
 	    {
-		Item item = items.get(i);
+		final Item item = items.get(i);
 		item.edit.setNewPos(item.caption != null?item.caption.length():0, i);
 	    }
 	if (!multilineEditActivated())
 	    return;
 	int offset = items.size();
-	if (!multilineEditCaption.isEmpty())
+	if (multilineEditCaption != null && !multilineEditCaption.isEmpty())
 	    ++offset;
-	//FIXME:	multilinedEdit.setNewPos(0, offset);
+	multilineEditHotPoint.setOffsetY(offset);
+    }
+
+    private MultilineEditModel wrapMultilineEditModel(MultilineEditModel model)
+    {
+	final ControlEnvironment env = environment;
+	final Area thisArea = this;
+	return new MultilineEditModelChangeListener(model){
+	    @Override public void onMultilineEditChange()
+	    {
+		env.onAreaNewContent(thisArea);
+		env.onAreaNewHotPoint(thisArea);
+	    }
+	};
     }
 
     private boolean isMultilineEditCovering(int x, int y)
     {
-	return false;
+	return x >= multilineEditHotPoint.offsetX() && y >= multilineEditHotPoint.offsetY();
     }
 }
