@@ -21,7 +21,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 
-class Model implements ListModel
+class Model implements ListArea.Model
 {
     private Luwrain luwrain;
     private Object[] items;

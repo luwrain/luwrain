@@ -6,7 +6,7 @@ import org.luwrain.popups.*;
 
 class ContextMenu extends ListPopup
 {
-    static private class Model implements ListModel
+    static private class Model implements ListArea.Model
     {
 	private Action[] actions;
 

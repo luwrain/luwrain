@@ -91,7 +91,7 @@ public class PartitionsPopup extends ListPopupBase
 	}
     }
 
-    static private class Model implements ListModel
+    static private class Model implements ListArea.Model
     {
 	private Control control;
 	private Object[] items;

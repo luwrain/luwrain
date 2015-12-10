@@ -18,11 +18,11 @@ package org.luwrain.app.registry;
 
 import java.util.*;
 
-import org.luwrain.controls.ListModel;
+import org.luwrain.controls.ListArea;
 import org.luwrain.core.Registry;
 import org.luwrain.util.RegistryPath;
 
-class ValuesListModel implements ListModel
+class ValuesListModel implements ListArea.Model
 {
     private Registry registry;
     private String dirPath = null;

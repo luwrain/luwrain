@@ -26,16 +26,24 @@ import org.luwrain.util.*;
 
 public class ListArea  implements Area, RegionProvider
 {
+    public interface Model
+    {
+	int getItemCount();
+	Object getItem(int index);
+	boolean toggleMark(int index);
+	void refresh();
+    }
+
     private ControlEnvironment environment;
     private final Region region = new Region(this);
     private String name = "";
-    private ListModel model;
+    private Model model;
     private ListItemAppearance appearance;
     private ListClickHandler clickHandler;
     private int hotPointX = 0;
     private int hotPointY = 0;
 
-    public ListArea(ControlEnvironment environment, ListModel model)
+    public ListArea(ControlEnvironment environment, Model model)
     {
 	this.environment = environment;
 	this.model = model;
@@ -48,7 +56,7 @@ public class ListArea  implements Area, RegionProvider
     }
 
     public ListArea(ControlEnvironment environment,
-		    ListModel model,
+		    Model model,
 		    String name)
     {
 	this.environment = environment;
@@ -65,7 +73,7 @@ public class ListArea  implements Area, RegionProvider
     }
 
     public ListArea(ControlEnvironment environment,
-		    ListModel model,
+		    Model model,
 		    ListItemAppearance appearance,
 		    String name)
     {
@@ -85,7 +93,7 @@ public class ListArea  implements Area, RegionProvider
     }
 
     public ListArea(ControlEnvironment environment,
-		    ListModel model,
+		    Model model,
 		    ListItemAppearance appearance,
 		    ListClickHandler clickHandler,
 		    String name)
@@ -131,7 +139,7 @@ public class ListArea  implements Area, RegionProvider
     }
 
 
-    public ListModel model()
+    public Model model()
     {
 	return model;
     }

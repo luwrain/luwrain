@@ -9,7 +9,7 @@ import org.luwrain.controls.*;
 
 public class AddRemoveListPopup extends ListPopupBase
 {
-    static public class Model implements ListModel
+    static public class Model implements ListArea.Model
     {
 	private final Vector items = new Vector();
 

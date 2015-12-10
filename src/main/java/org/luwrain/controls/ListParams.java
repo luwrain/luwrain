@@ -19,7 +19,7 @@ package org.luwrain.controls;
 public class ListParams
 {
     public ControlEnvironment environment;
-    public ListModel model;
+    public ListArea.Model model;
     public ListItemAppearance appearance;
     public ListClickHandler clickHandler;
     public String name;

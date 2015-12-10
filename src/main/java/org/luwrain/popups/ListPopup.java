@@ -28,7 +28,7 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
     protected Luwrain luwrain;
     private final Region region = new Region(this);
     public PopupClosing closing = new PopupClosing(this);
-    private ListModel model;
+    private ListArea.Model model;
     private ListItemAppearance appearance;
     private Object[] items;
     private Object selected;
@@ -39,7 +39,7 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 
     public ListPopup(Luwrain luwrain,
 		     String name,
-		     ListModel model,
+		     ListArea.Model model,
 		     ListItemAppearance appearance,
 		     int popupFlags)
     {
@@ -199,7 +199,7 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 	return name;
     }
 
-    public ListModel model()
+    public ListArea.Model model()
     {
 	return model;
     }

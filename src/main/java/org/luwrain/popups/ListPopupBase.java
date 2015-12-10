@@ -28,7 +28,7 @@ public class ListPopupBase implements Popup, PopupClosingRequest, RegionProvider
     protected Luwrain luwrain;
     private final Region region = new Region(this);
     public final PopupClosing closing = new PopupClosing(this);
-    protected ListModel model;
+    protected ListArea.Model model;
     protected ListItemAppearance appearance;
     private Object[] items;
     private int hotPointX = 0;
@@ -38,7 +38,7 @@ public class ListPopupBase implements Popup, PopupClosingRequest, RegionProvider
 
     public ListPopupBase(Luwrain luwrain,
 		     String name,
-		     ListModel model,
+		     ListArea.Model model,
 		     ListItemAppearance appearance,
 		     int popupFlags)
     {
@@ -194,7 +194,7 @@ public class ListPopupBase implements Popup, PopupClosingRequest, RegionProvider
 	return name;
     }
 
-    public ListModel model()
+    public ListArea.Model model()
     {
 	return model;
     }

@@ -152,7 +152,7 @@ int popupFlags)
 	    if (items[i] == null)
 	    throw new NullPointerException("items[" + i + "] may not be null");
 	final Object[] items2 = items;
-	final ListModel model = new ListModel(){
+	final ListArea.Model model = new ListArea.Model(){
 		private Object[] items = items2;
 		@Override public int getItemCount()
 		{
