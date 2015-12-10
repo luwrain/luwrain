@@ -19,6 +19,7 @@ package org.luwrain.interaction;
 import java.awt.*;
 import java.awt.event.*;
 import org.luwrain.core.events.KeyboardEvent;
+import org.luwrain.os.OperatingSystem;
 import org.luwrain.core.EventConsumer;
 import org.luwrain.core.Interaction;
 import org.luwrain.core.InteractionParamColor;
@@ -254,7 +255,7 @@ public class AwtInteraction implements Interaction
 	    eventConsumer.enqueueEvent(new KeyboardEvent(true, code, ' ', shiftPressed, controlPressed, leftAltPressed, rightAltPressed));
     }
 
-    public boolean init(InteractionParams params)
+    public boolean init(InteractionParams params,OperatingSystem os)
     {
 	if (params == null)
 	    return false;

@@ -130,7 +130,7 @@ class Init
 	}
 	interaction = (Interaction)o;
 	Log.info("init", "using the instance of " + interactionClass + " for interaction");
-	if (!interaction.init(interactionParams))
+	if (!interaction.init(interactionParams,os))
 	{
 	    Log.fatal("init", "interaction initialization failed");
 	    return false;
