@@ -19,46 +19,66 @@ package org.luwrain.controls;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
+/**
+ * {code Area} interface implementation with internal lines storing. This
+ * area type has its own lines container based on 
+ * {@link MutableLinesImpl} class. It is the minimal area implementation which
+ * doesn't have any abstract methods. It is useful, if it is necessary to
+ * have an area with some static content, available for changing through
+ * the operations of {@link MutableLines} interface.
+ */
 public class SimpleArea extends NavigateArea implements MutableLines
 {
     private ControlEnvironment environment;
     private String name = "";
     private final MutableLinesImpl content = new MutableLinesImpl();
+    private boolean transOpened = false;
 
     public SimpleArea(ControlEnvironment environment)
     {
 	super(environment);
 	this.environment = environment;
+	NullCheck.notNull(environment, "environment");
     }
 
     public SimpleArea(ControlEnvironment environment, String name)
     {
 	super(environment);
 	this.environment = environment;
-	this.name = name != null?name:"";
+	this.name = name;
+	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(name, "name");
     }
 
-    public SimpleArea(ControlEnvironment environment,
-		      String name,
+    public SimpleArea(ControlEnvironment environment, String name,
 		      String[] lines)
     {
 	super(environment);
 	this.environment = environment;
-	this.name = name != null?name:"";
+	this.name = name;
+	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNullItems(lines, "lines");
 	content.setLines(lines);
     }
 
+    /*
     public MutableLines getMutableLines()
     {
 	return content;
     }
 
+    */
+
     @Override public void beginLinesTrans()
     {
+	transOpened = true;
     }
 
     @Override public void endLinesTrans()
     {
+	transOpened = false;
+	environment.onAreaNewContent(this);
     }
 
     @Override public int getLineCount()
@@ -69,71 +89,74 @@ public class SimpleArea extends NavigateArea implements MutableLines
 
     @Override public String getLine(int index)
     {
+	if (index >= content.getLineCount())
+	    return "";
 	final String line = content.getLine(index);
 	return line != null?line:"";
     }
 
-    public void setContent(String[] lines)
+    public void setLines(String[] lines)
     {
-	content.setLines(lines != null?lines:new String[0]);
-	environment.onAreaNewContent(this);
-	//	fixHotPoint();
+	NullCheck.notNullItems(lines, "lines");
+	content.setLines(lines);
+	afterChange();
     }
 
-    public String[] getContent()
+    public String[] getLines()
     {
 	return content.getLines();
     }
 
     public void setLine(int index, String line)
     {
+	NullCheck.notNull(line, "line");
 	content.setLine(index, line);
-	environment.onAreaNewContent(this);
-	//	fixHotPoint();
+	afterChange();
     }
 
     public void addLine(String line)
     {
+	NullCheck.notNull(line, "line");
 	content.addLine(line);
-	    environment.onAreaNewContent(this);
-	    //	    fixHotPoint();
+	afterChange();
     }
 
     //index is the position of newly inserted line
     public void insertLine(int index, String line)
     {
+	NullCheck.notNull(line, "line");
 	content.insertLine(index, line);
-	environment.onAreaNewContent(this);
-	//	fixHotPoint();
+	afterChange();
     }
 
     public void removeLine(int index)
     {
 	content.removeLine(index);
-	environment.onAreaNewContent(this);
-	//	fixHotPoint();
+	afterChange();
     }
 
     public void clear()
     {
 	content.clear();
-	environment.onAreaNewContent(this);
-	//	fixHotPoint();
-    }
-
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
-    {
-	return super.onEnvironmentEvent(event);
+	afterChange();
     }
 
     @Override public String getAreaName()
     {
-	return name != null?name:"";
+	return name;
     }
 
 public void setName(String name)
 {
-    this.name = name != null?name:"";
+    NullCheck.notNull(name, "name");
+    this.name = name;
     environment.onAreaNewName(this);
 }
+
+    private void afterChange()
+    {
+	if (transOpened)
+	    return;
+	environment.onAreaNewContent(this);
+    }
 }
