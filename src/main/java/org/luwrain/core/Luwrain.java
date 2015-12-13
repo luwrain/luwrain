@@ -424,4 +424,9 @@ public final class Luwrain implements EventConsumer
     {
 	return environment.createBrowserIface(this);
     }
+
+    public org.luwrain.speech.Channel getDefaultStreamingChannel()
+    {
+	return environment.getSpeech().getDefaultStreamingChannel();
+    }
 }

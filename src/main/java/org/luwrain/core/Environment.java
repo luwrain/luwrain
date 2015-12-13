@@ -28,6 +28,7 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
+import org.luwrain.speech.Channel;
 import org.luwrain.sounds.*;
 
 class Environment implements EventConsumer
@@ -39,6 +40,7 @@ class Environment implements EventConsumer
     private final EventQueue eventQueue = new EventQueue();
     private Registry registry;
     private org.luwrain.speech.BackEnd speech;
+    private org.luwrain.core.Speech speech2;
     private OperatingSystem os;
     private Interaction interaction;
 
@@ -67,22 +69,23 @@ class Environment implements EventConsumer
     private boolean introduceApp = false;
     private Luwrain speechProc;
 
-    Environment(String[] cmdLine,
-		       Registry registry,
+    Environment(String[] cmdLine, Registry registry,
 		       org.luwrain.speech.BackEnd speech,
-		       OperatingSystem os,
-		       Interaction interaction,
-		       LaunchContext launchContext)
+		OperatingSystem os, org.luwrain.core.Speech speech2,
+		       Interaction interaction, LaunchContext launchContext)
     {
 	this.cmdLine = org.luwrain.util.Strings.notNullArray(cmdLine);
 	this.registry = registry;
 	this.speech = speech;
 	this.os = os;
+	this.speech2 = speech2;
 	this.interaction = interaction;
 	this.launchContext = launchContext;
+	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(speech, "speech");
 	NullCheck.notNull(os, "os");
+	NullCheck.notNull(speech2, "speech2");
 	NullCheck.notNull(interaction, "interaction");
 	NullCheck.notNull(launchContext, "launchContext");
     }
@@ -1256,5 +1259,10 @@ class Environment implements EventConsumer
 	Log.debug("core", "free memory: " + format.format(freeMemory / 1048576) + "M");
 	Log.debug("core", "allocated memory: " + format.format(allocatedMemory / 1046576) + "M");
 	Log.debug("core", "max memory: " + format.format(maxMemory / 1048576) + "M");
+    }
+
+    Speech getSpeech()
+    {
+	return speech2;
     }
 }

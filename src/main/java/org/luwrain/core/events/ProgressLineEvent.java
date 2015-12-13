@@ -14,14 +14,23 @@
    General Public License for more details.
 */
 
-package org.luwrain.speech;
+package org.luwrain.core.events;
 
-public class BackEnds
+import org.luwrain.core.*;
+
+public class ProgressLineEvent extends ThreadSyncEvent
 {
-    static public BackEnd obtain(String type,
-			  String host,
-int port)
+    private String progressLine;
+
+    public ProgressLineEvent(Area destArea, String progressLine)
     {
-	return null;
+	super(destArea);
+	this.progressLine = progressLine;
+	NullCheck.notNull(progressLine, "progressLine");
+    }
+
+    public String progressLine()
+    {
+	return progressLine;
     }
 }

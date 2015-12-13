@@ -38,6 +38,7 @@ class Init
     private Interaction interaction;
     private OperatingSystem os;
     private org.luwrain.speech.BackEnd speech;
+    private Speech speech2;
     private LaunchContext launchContext;
 
     private void go(String[] args)
@@ -47,14 +48,14 @@ class Init
 	for(String s: cmdLine)
 	    Log.debug("init", s);
 	if (init())
-	    new Environment(cmdLine, registry, speech, os, interaction, launchContext).run();
+	    new Environment(cmdLine, registry, speech, os, speech2, interaction, launchContext).run();
 	interaction.close();
 	System.exit(0);
     }
 
     private boolean init()
     {
-	//Registry;
+	//Registry
 	final String regDirPath = getFirstCmdLineOption(PREFIX_REGISTRY_DIR);
 	if (regDirPath == null || regDirPath.isEmpty())
 	{
@@ -69,7 +70,7 @@ class Init
 	}
 	registry = new org.luwrain.registry.fsdir.RegistryImpl(regDir.getAbsolutePath());
 
-	//Launch context;
+	//Launch context
 	final String dataDirPath = getFirstCmdLineOption(PREFIX_DATA_DIR);
 	if (dataDirPath == null || dataDirPath.isEmpty())
 	{
@@ -104,6 +105,8 @@ class Init
 
 	if (!initOs())
 	    return false;
+	speech2 = new Speech(os, cmdLine, registry);
+	speech2.init();
 	if (!initSpeech())
 	    return false;
 
@@ -233,8 +236,7 @@ class Init
 
     private String getFirstCmdLineOption(String prefix)
     {
-	if (prefix == null)
-	    throw new NullPointerException("prefix may not be null");
+	NullCheck.notNull(prefix, "prefix");
 	if (prefix.isEmpty())
 	    throw new IllegalArgumentException("prefix may not be empty");
 	if (cmdLine == null)

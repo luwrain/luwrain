@@ -29,10 +29,10 @@ import org.luwrain.core.events.*;
  */
 public class SimpleArea extends NavigateArea implements MutableLines
 {
-    private ControlEnvironment environment;
-    private String name = "";
-    private final MutableLinesImpl content = new MutableLinesImpl();
-    private boolean transOpened = false;
+    protected ControlEnvironment environment;
+    protected String name = "";
+    protected final MutableLinesImpl content = new MutableLinesImpl();
+    protected boolean transOpened = false;
 
     public SimpleArea(ControlEnvironment environment)
     {
@@ -61,14 +61,6 @@ public class SimpleArea extends NavigateArea implements MutableLines
 	NullCheck.notNullItems(lines, "lines");
 	content.setLines(lines);
     }
-
-    /*
-    public MutableLines getMutableLines()
-    {
-	return content;
-    }
-
-    */
 
     @Override public void beginLinesTrans()
     {
@@ -146,12 +138,17 @@ public class SimpleArea extends NavigateArea implements MutableLines
 	return name;
     }
 
-public void setName(String name)
-{
-    NullCheck.notNull(name, "name");
-    this.name = name;
-    environment.onAreaNewName(this);
-}
+    public void setName(String name)
+    {
+	NullCheck.notNull(name, "name");
+	this.name = name;
+	environment.onAreaNewName(this);
+    }
+
+    public String getWholeText()
+    {
+	return content.getWholeText();
+    }
 
     private void afterChange()
     {
