@@ -44,11 +44,10 @@ public class ControlPanelApp implements Application, Actions
 
     @Override public boolean onLaunch(Luwrain luwrain)
     {
-	final Object str = luwrain.i18n().getStrings(STRINGS_NAME);
-	//	System.out.println(str);
-	if (str == null || !(str instanceof Strings))
+	final Object o = luwrain.i18n().getStrings(STRINGS_NAME);
+	if (o == null || !(o instanceof Strings))
 	    return false;
-	strings = (Strings)str;
+	strings = (Strings)o;
 	this.luwrain = luwrain;
 	environment = new EnvironmentImpl(luwrain, this);
 	sectionsModel = new SectionsTreeModel(environment, strings, extensionsSections);
@@ -63,6 +62,8 @@ public class ControlPanelApp implements Application, Actions
 
     @Override public void openSection(Section sect)
     {
+	NullCheck.notNull(sect, "sect");
+	sect.refreshArea();
 	final Area area = sect.getSectionArea(environment);
 	if (area == null)
 	    return;
@@ -109,25 +110,21 @@ public class ControlPanelApp implements Application, Actions
 	return sect.onTreeDelete(environment);
     }
 
+    /*
     void refreshGroups(Object preferableSelected)
     {
 	//FIXME:
     }
+    */
 
-    @Override public void closeApp()
-    {
-	if (!mayCloseCurrentSection())
-	    return;
-	luwrain.closeApp();
-    }
 
     private void createArea()
     {
-	final Actions a = this;
+	final Actions actions = this;
 	sectionsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
 				    sectionsModel,
 				    strings.sectionsAreaName()) {
-		private final Actions actions = a;
+		//		private final Actions actions = a;
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -150,7 +147,6 @@ public class ControlPanelApp implements Application, Actions
 		    case EnvironmentEvent.ACTION:
 			if (ActionEvent.isAction(event, "insert"))
 			    actions.onSectionsInsert();
-
 			if (ActionEvent.isAction(event, "delete"))
 			    actions.onSectionsDelete();
 			return true;
@@ -207,5 +203,12 @@ public class ControlPanelApp implements Application, Actions
 	if (currentSection == null)
 	    return true;
 	return currentSection.canCloseSection(environment);
+    }
+
+    @Override public void closeApp()
+    {
+	if (!mayCloseCurrentSection())
+	    return;
+	luwrain.closeApp();
     }
 }

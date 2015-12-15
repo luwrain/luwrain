@@ -26,12 +26,15 @@ public interface Section
     int getDesiredRoot();
     Section[] getChildSections();
     Area getSectionArea(Environment environment);
-
     //Must issue all necessary error message;
     boolean canCloseSection(Environment environment);
     boolean onTreeInsert(Environment environment);
     boolean onTreeDelete(Environment environment);
     boolean isSectionEnabled();
+
+    //After this method call getSectionArea() may return another area, between calls it is undesirable
+    //Usually it is called before opening
+    void refreshArea();
     void refreshChildSubsections();
     int getSectionFlags();
 }

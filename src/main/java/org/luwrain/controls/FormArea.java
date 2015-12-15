@@ -615,15 +615,14 @@ data.strings.length < 1 || data.strings[0] == null)
     @Override public int getLineCount()
     {
 	int res = items.size();
-	if (multilineEditActivated())
-	{
-	    final int count = multilineEditModel.getLineCount();
-	    res += count;
-	    if (count == 0)
-		++res;
-	    if (multilineEditCaption != null && !multilineEditCaption.isEmpty())
-		++res;
-	}
+	if (!multilineEditActivated())
+	    return res + 1;
+	final int count = multilineEditModel.getLineCount();
+	res += count;
+	if (count == 0)
+	    ++res;
+	if (multilineEditCaption != null && !multilineEditCaption.isEmpty())
+	    ++res;
 	return res;
     }
 
