@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:Custom checker of equality for refresh() and selectObject();
-
 package org.luwrain.controls;
 
 import org.luwrain.core.*;
@@ -24,19 +22,19 @@ import java.util.*;
 
 class TreeAreaNode
 {
-    public Object obj;
+    Object obj;
     boolean leaf = true;
-    public TreeAreaNode children[];//If children is null but node is not leaf it means closed node without any info about content;
-    public TreeAreaNode parent;
+    TreeAreaNode children[];//If children is null but node is not leaf it means closed node without any info about content;
+TreeAreaNode parent;
 
-    //Actually it is still unclear is it really good idea 
+    //Actually, it is still unclear is it really good idea 
     // to request title dynamically each time;
-    public String title()
+    String title()
     {
 	return obj != null?obj.toString():"";
     }
 
-    public void makeLeaf()
+    void makeLeaf()
     {
 	children = null;
 	leaf = true;
@@ -45,39 +43,41 @@ class TreeAreaNode
 
 class VisibleTreeItem
 {
-    public static final int LEAF = 0;
-    public static final int CLOSED = 1;
-    public static final int OPENED = 2;
+    static final int LEAF = 0;
+    static final int CLOSED = 1;
+    static final int OPENED = 2;
 
-    public int type = LEAF;
-    public String title = "";
-    public int level = 0;
-    public TreeAreaNode node;
+    int type = LEAF;
+    String title = "";
+    int level = 0;
+    TreeAreaNode node;
 }
 
 public class TreeArea implements Area
 {
-    private ControlEnvironment environment;
-    private TreeModel model;
-    private String name = "";
+    public interface ClickHandler
+    {
+	boolean onTreeClick(TreeArea area, Object obj);
+    }
+
+    static public class Params
+    {
+	public ControlEnvironment environment;
+	public TreeModel model;
+	public String name;
+	public ClickHandler clickHandler;
+    }
+
+    protected ControlEnvironment environment;
+    protected TreeModel model;
+    protected String name = "";
     private TreeAreaNode root;
     private VisibleTreeItem[] items;
     private int hotPointX = 0;
     private int hotPointY = 0;
+    private ClickHandler clickHandler;
 
-    //    private String beginOfLine = "";
-    //    private String endOfLine = "";
-    //    private String treeAreaBegin = "";
-    //    private String treeAreaEnd = "";
-    //    private String emptyTree = "";
-    //    private String emptyItem = "";
-    //    private String emptyLine = "";
-    //    private String expanded = "";
-    //    private String collapsed = "";
-    //    private String level = "";
-
-    public TreeArea(ControlEnvironment environment,
-		    TreeModel model,
+    public TreeArea(ControlEnvironment environment, TreeModel model,
 		    String name)
     {
 	this.environment = environment;
@@ -85,8 +85,22 @@ public class TreeArea implements Area
 	this.name = name;
 	root = constructNode(model.getRoot(), null, true);//true means expand children;
 	items = generateAllVisibleItems();
-	//	initStringConstants();
     }
+
+    public TreeArea(Params params)    
+{
+    NullCheck.notNull(params, "params");
+    environment = params.environment;
+    model = params.model;
+    name = params.name;
+    clickHandler = params.clickHandler;
+    NullCheck.notNull(environment, "environment");
+    NullCheck.notNull(model, "model");
+    NullCheck.notNull(name, "name");
+	root = constructNode(model.getRoot(), null, true);//true means expand children;
+	items = generateAllVisibleItems();
+    }
+
 
     public int getLineCount()
     {
@@ -241,9 +255,10 @@ public class TreeArea implements Area
 	environment.onAreaNewHotPoint(this);
     }
 
-    public void onClick(Object obj)
+    protected void onClick(Object obj)
     {
-	//Nothing here;
+	if (clickHandler != null)
+	    clickHandler.onTreeClick(this, obj);
     }
 
     //Changes only 'leaf' and 'children' fields;

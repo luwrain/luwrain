@@ -29,6 +29,7 @@ import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.speech.Channel;
+import org.luwrain.player.Player;
 import org.luwrain.sounds.*;
 
 class Environment implements EventConsumer
@@ -41,6 +42,7 @@ class Environment implements EventConsumer
     private Registry registry;
     private org.luwrain.speech.BackEnd speech;
     private org.luwrain.core.Speech speech2;
+    private Player player;
     private OperatingSystem os;
     private Interaction interaction;
 
@@ -115,6 +117,7 @@ class Environment implements EventConsumer
     {
 	speechProc = new Luwrain(this);
 	desktop.onLaunch(interfaces.requestNew(desktop));
+	player = new org.luwrain.player.Impl(registry);
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
 	windowManager = new WindowManager(interaction, screenContentManager);
@@ -1264,5 +1267,10 @@ class Environment implements EventConsumer
     Speech getSpeech()
     {
 	return speech2;
+    }
+
+    Player getPlayer()
+    {
+	return player;
     }
 }

@@ -429,4 +429,9 @@ public final class Luwrain implements EventConsumer
     {
 	return environment.getSpeech().getDefaultStreamingChannel();
     }
+
+    public org.luwrain.player.Player getPlayer()
+    {
+	return environment.getPlayer();
+    }
 }

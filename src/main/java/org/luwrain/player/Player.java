@@ -18,6 +18,11 @@ package org.luwrain.player;
 
 public interface Player
 {
-    void play(String path);
+    void play(Playlist playlist);
     void stop();
+    Playlist getCurrentPlaylist();
+    Playlist[] loadRegistryPlaylists();
+    void addListener(Listener listener);
+    void removeListener(Listener listener);
+
 }
