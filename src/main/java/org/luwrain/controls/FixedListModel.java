@@ -36,9 +36,13 @@ public class FixedListModel implements ListArea.Model
 
     public void setItems(Object[] items)
     {
-	NullCheck.notNull(items, "items");
 			  NullCheck.notNullItems(items, "items");
 			  this.items = items;
+    }
+
+    public void clear()
+    {
+	items = new Object[0];
     }
 
     @Override public int getItemCount()

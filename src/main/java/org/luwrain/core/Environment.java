@@ -209,14 +209,13 @@ class Environment implements EventConsumer
 	InitialEventLoopStopCondition.shouldContinue = false;
     }
 
+    //It is admissible situation if shortcut returns null
     void launchAppIface(String shortcutName, String[] args)
     {
-	if (shortcutName == null)
-	    throw new NullPointerException("shortcutName may not be null");
+	NullCheck.notNull(shortcutName, "shortcutName");
 	if (shortcutName.trim().isEmpty())
-	    throw new IllegalArgumentException("shortcutName may not be emptyL");
-	final String[] argsNotNull = org.luwrain.util.Strings.notNullArray(args);
-	final Application[] app = shortcuts.prepareApp(shortcutName, argsNotNull);
+	    throw new IllegalArgumentException("shortcutName may not be empty");
+	final Application[] app = shortcuts.prepareApp(shortcutName, args != null?args:new String[0]);
 	if (app != null)
 	    for(Application a: app)
 		if (a != null)
@@ -309,8 +308,7 @@ class Environment implements EventConsumer
 
     private void eventLoop(EventLoopStopCondition stopCondition)
     {
-	if (stopCondition == null)
-	    throw new NullPointerException("stopCondition may not be null");
+	NullCheck.notNull(stopCondition, "stopCondition");
 	while(stopCondition.continueEventLoop())
 	{
 	    needForIntroduction = false;
@@ -333,6 +331,8 @@ class Environment implements EventConsumer
     private boolean onEvent(Event event)
     {
 	try {
+	    if (event instanceof RunnableEvent)
+		return onRunnableEvent((RunnableEvent)event);
 	    switch (event.eventType())
 	    {
 	    case Event.KEYBOARD_EVENT:
@@ -397,6 +397,12 @@ class Environment implements EventConsumer
 	}
 	needForIntroduction = false;
 	introduceApp = false;
+    }
+
+    private boolean onRunnableEvent(RunnableEvent event)
+    {
+	event.runnable().run();
+	return true;
     }
 
     private boolean onKeyboardEvent(KeyboardEvent event)
@@ -1121,12 +1127,19 @@ class Environment implements EventConsumer
 
     void onOpenCommand()
     {
-	File f = openPopup();
-	if (f == null)
+	final File current = new File(currentAreaDirIface());
+
+	final FilePopup popup = new FilePopup(interfaces.getObjForEnvironment(), strings.openPopupName(),
+					      strings.openPopupPrefix(), current);
+	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
+	if (popup.closing.cancelled())
 	    return;
-	if (!f.isAbsolute())
-	    f = new File(launchContext.userHomeDirAsFile(), f.getPath());
-	openFiles(new String[]{f.getAbsolutePath()});
+File res = popup.getFile();
+	if (!res.isAbsolute())
+	    res = new File(launchContext.userHomeDirAsFile(), res.getPath());
+	final Area activeArea = getValidActiveArea(false);
+	if (activeArea == null || !activeArea.onEnvironmentEvent(new OpenEvent(res.toPath())))
+	openFiles(new String[]{res.getAbsolutePath()});
     }
 
     void onCopyObjectUniRefCommand()
@@ -1207,6 +1220,7 @@ class Environment implements EventConsumer
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
     }
 
+    /*
     private File openPopup()
     {
 	final FilePopup popup = new FilePopup(interfaces.getObjForEnvironment(), strings.openPopupName(),
@@ -1216,6 +1230,7 @@ class Environment implements EventConsumer
 	    return null;
 	return popup.getFile();
     }
+    */
 
     private boolean isActiveAreaBlockedByPopup()
     {

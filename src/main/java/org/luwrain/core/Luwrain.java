@@ -20,8 +20,7 @@ import java.io.File;
 
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
-import org.luwrain.core.events.ThreadSyncEvent;
-//import org.luwrain.util .*;
+import org.luwrain.core.events.*;
 
 /**
  * The main gate to Luwrain core for applications. This class is the
@@ -433,5 +432,11 @@ public final class Luwrain implements EventConsumer
     public org.luwrain.player.Player getPlayer()
     {
 	return environment.getPlayer();
+    }
+
+    public void runInMainThread(Runnable runnable)
+    {
+	NullCheck.notNull(runnable, "runnable");
+environment.enqueueEvent(new RunnableEvent(runnable));
     }
 }

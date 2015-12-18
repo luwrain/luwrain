@@ -25,12 +25,12 @@ import org.luwrain.util.RegistryPath;
 public class Impl implements Player
 {
     private final BackEnd jlayer = new JLayer();
-    //    private final BackEnd jlayer = new JLayer();
+    private final BackEnd javafx = new JavaFx();
+    private BackEnd currentPlayer = null;
 
     private Registry registry;
     private final Vector<Listener> listeners = new Vector<Listener>();
     private Playlist currentPlaylist;
-
 
     public Impl(Registry registry)
     {
@@ -40,26 +40,22 @@ public class Impl implements Player
 
     @Override public void play(Playlist playlist)
     {
-	System.out.println("here");
 	NullCheck.notNull(playlist, "playlist");
 	if (playlist.getPlaylistItems() == null || playlist.getPlaylistItems().length < 1)
 	    return;
 	this.currentPlaylist = playlist;
-	/*
+	stop();
 	if (playlist.isStreaming())
-	{
-	*/
-	    jlayer.play(playlist.getPlaylistItems()[0]);
-	    /*
-	    return;
-	}
-	    */
-
+	    currentPlayer = jlayer; else
+	    currentPlayer = javafx;
+	currentPlayer.play(playlist.getPlaylistItems()[0]);
     }
 
     @Override public void stop()
     {
-	jlayer.stop();
+	if (currentPlayer == null)
+	    return;
+	currentPlayer.stop();
     }
 
     @Override public Playlist getCurrentPlaylist()

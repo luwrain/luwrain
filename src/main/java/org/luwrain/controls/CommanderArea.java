@@ -17,6 +17,7 @@
 package org.luwrain.controls;
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
 import org.luwrain.core.*;
@@ -840,8 +841,7 @@ public class CommanderArea implements Area, RegionProvider
     //Doesn't produce any speech announcement;
     public void open(File file, String desiredSelected)
     {
-	if (file == null)
-	    throw new NullPointerException("file may not be null");
+	NullCheck.notNull(file, "file");
 	if (!file.isDirectory())
 	    throw new IllegalArgumentException("File must address a directory");
 	current = file;
@@ -864,6 +864,12 @@ public class CommanderArea implements Area, RegionProvider
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	environment.onAreaNewName(this);
+    }
+
+    public void open(Path path, String desiredSelected)
+    {
+	NullCheck.notNull(path, "path");
+	open(path.toFile(), desiredSelected);
     }
 
     private Vector<Entry> constructEntries(File f)

@@ -56,15 +56,15 @@ class ShortcutManager
 	return true;
     }
 
-    public Application[] prepareApp(String name, String[] args)
+    Application[] prepareApp(String name, String[] args)
     {
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNullItems(args, "args");
 	if (name.trim().isEmpty())
 	    throw new IllegalArgumentException("name may not be empty");
 	if (!shortcuts.containsKey(name))
 	    return null;
-	return shortcuts.get(name).shortcut.prepareApp(args != null?args:new String [0]);
+	return shortcuts.get(name).shortcut.prepareApp(args);
     }
 
     public String[] getShortcutNames()

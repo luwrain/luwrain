@@ -898,11 +898,16 @@ public class ListArea  implements Area, RegionProvider
 	return leftBound < line.length()?leftBound:line.length();
     }
 
+    protected String noContentStr()
+    {
+	return environment.staticStr(LangStatic.LIST_NO_CONTENT);
+    }
+
     private boolean noContentCheck()
     {
 	if (model == null || model.getItemCount() < 1)
 	{
-	    environment.hint(environment.staticStr(LangStatic.LIST_NO_CONTENT), Hints.NO_CONTENT);
+	    environment.hint(noContentStr(), Hints.NO_CONTENT);
 	    return true;
 	}
 	return false;
