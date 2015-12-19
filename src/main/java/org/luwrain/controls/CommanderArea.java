@@ -40,25 +40,27 @@ public class CommanderArea implements Area, RegionProvider
 
     static public class Entry
     {
-	enum Type {REGULAR, DIR, SYMLINK, PIPE, SOCKET, BLOCK_DEVICE, CHAR_DEVICE};
+	enum Type {REGULAR, DIR, SYMLINK, SPECIAL, UNKNOWN,
+		   PIPE, SOCKET, BLOCK_DEVICE, CHAR_DEVICE};
 
 	private Path path;
 	private Type type;
 	private boolean selected;
 	private boolean parent;
 
-	Entry(Path path)
+	Entry(Path path) throws IOException
 	{
 	    NullCheck.notNull(path, "path");
-	    //FIXME:type;
-	    type = Type.REGULAR;
-	    selected = false;
-	    parent = false;
+	    this.path = path;
+	    this.type = readType(path);
+	    this.selected = false;
+	    this.parent = false;
 	}
 
-Entry(Path path, Type type,
-		     boolean selected, boolean parent)
+	Entry(Path path, Type type,
+	      boolean selected, boolean parent)
 	{
+	    //	    System.out.println(path.toString());
 	    this.path = path;
 	    this.type = type;
 	    this.selected = selected;
@@ -90,6 +92,22 @@ public Type type()
 	{
 	    return path.getFileName().toString();
 	}
+
+	static private Type readType(Path path) throws IOException
+	{
+	    NullCheck.notNull(path, "path");
+	    final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+	    if (attr.isDirectory())
+		return Type.DIR;
+	    if (attr.isSymbolicLink())
+		return Type.SYMLINK;
+	    if (attr.isRegularFile())
+		return Type.REGULAR;
+	    if (attr.isOther())
+		return Type.SPECIAL;
+	return Type.UNKNOWN;
+	}
+
     }
 
     public interface ClickHandler
@@ -111,13 +129,13 @@ public interface Appearance
     String getCommanderName(Path path);
 }
 
-public class Params
+static public class Params
 {
     public ControlEnvironment environment;
     public Appearance appearance;
     public boolean selecting = false;
     public ClickHandler clickHandler = null;
-    public Filter filter = new NoHiddenCommanderFilter();
+    public Filter filter = new CommanderFilters.NoHidden();
     public Comparator comparator = new ByNameCommanderComparator();
 }
 
@@ -125,7 +143,7 @@ public class Params
     protected ControlEnvironment environment;
     private Appearance appearance;
     private ClickHandler clickHandler;
-    protected Filter filter = new NoHiddenCommanderFilter();
+    protected Filter filter = new CommanderFilters.NoHidden();
     protected Comparator comparator = new ByNameCommanderComparator();
     protected boolean selecting = false;
     protected int visualShift = 2;
@@ -825,24 +843,11 @@ public class Params
     {
 	NullCheck.notNull(path, "path");
 	final LinkedList<Path> paths = new LinkedList<Path>();
-	final FileVisitor visitor = new SimpleFileVisitor<Path>() {
-	    @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
-	    {
-		paths.add(file);
-		return FileVisitResult.CONTINUE;
-	    }
-	    @Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attr) throws IOException
-	    {
-		if (dir.equals(path))
-		return FileVisitResult.CONTINUE;
-		paths.add(dir);
-		return FileVisitResult.SKIP_SUBTREE;
-	    }
-	};
-	try {
-	    Files.walkFileTree(path, visitor);
-	}
-	catch(Exception e)
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
+		for (Path p : directoryStream) 
+		    paths.add(p);
+	    } 
+	catch (IOException e) 
 	{
 	    e.printStackTrace();
 	    return null;
@@ -851,7 +856,14 @@ public class Params
 	if (path.getParent() != null)
 	    res.add(new Entry(path.resolve(PARENT_DIR), Entry.Type.DIR, false, true));
 	for(Path p: paths)
-	    res.add(new Entry(p));
+	    try {
+		res.add(new Entry(p));
+	    }
+	    catch (IOException e)
+	    {
+		e.printStackTrace();
+		Log.warning("commander", "unable to get attributes of " + p.toString() + ":" + e.getMessage());
+	    }
 	if (filter == null)
 	{
 	    Entry[] toSort = res.toArray(new Entry[res.size()]);

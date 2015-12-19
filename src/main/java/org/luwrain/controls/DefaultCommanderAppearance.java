@@ -1,11 +1,25 @@
+/*
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of the LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.controls;
 
 import java.nio.file.*;
-
 import org.luwrain.core.*;
 
-class DefaultCommanderAppearance implements CommanderArea.Appearance
+public class DefaultCommanderAppearance implements CommanderArea.Appearance
 {
     private ControlEnvironment environment;
 
@@ -36,35 +50,54 @@ class DefaultCommanderAppearance implements CommanderArea.Appearance
 
     private void fullIntroduction(CommanderArea.Entry entry)
     {
-	/*
 	final boolean selected = entry.selected();
-	final boolean dir = entry.type() == Entry.Type.DIR;
-	final String name = entry.file().getName();
-	if (name.equals(PARENT_DIR))
+	final String name = entry.baseName();
+	final CommanderArea.Entry.Type type = entry.type();
+	if (name.trim().isEmpty() && !selected && type == CommanderArea.Entry.Type.REGULAR)
 	{
-	    environment.hint(environment.staticStr(LangStatic.COMMANDER_PARENT_DIRECTORY));
+	    environment.hint(Hints.EMPTY_LINE);
 	    return;
 	}
-	if (selected && dir)
-	    environment.say(environment.staticStr(LangStatic.COMMANDER_SELECTED_DIRECTORY) + " " + name); else
-	    if (selected)
-		environment.say(environment.staticStr(LangStatic.COMMANDER_SELECTED) + " " + name); else
-		if (dir)
-		    environment.say(name + " " + environment.staticStr(LangStatic.COMMANDER_DIRECTORY)); else
-		{
-		    if (name.trim().isEmpty())
-			environment.hint(Hints.EMPTY_LINE); else
-			environment.say(name);
-		}
-	*/
+	String res = name;
+	switch(type)
+	{
+	case DIR:
+	    res += (" " + environment.staticStr(LangStatic.COMMANDER_DIRECTORY));
+	    break;
+	case SYMLINK:
+	    res += (" " + environment.staticStr(LangStatic.COMMANDER_SYMLINK));
+	    break;
+	case SOCKET:
+	    res += (" " + environment.staticStr(LangStatic.COMMANDER_SOCKET));
+	    break;
+	case PIPE:
+	    res += (" " + environment.staticStr(LangStatic.COMMANDER_PIPE));
+	    break;
+	case CHAR_DEVICE:
+	    res += (" " + environment.staticStr(LangStatic.COMMANDER_CHAR_DEVICE));
+	    break;
+	case BLOCK_DEVICE:
+	    res += (" " + environment.staticStr(LangStatic.COMMANDER_BLOCK_DEVICE));
+	    break;
+	case SPECIAL:
+	    res += (" " + environment.staticStr(LangStatic.COMMANDER_SPECIAL));
+	    break;
+	case UNKNOWN:
+	    res += (" " + environment.staticStr(LangStatic.COMMANDER_UNKNOWN));
+	    break;
+	}
+	if (selected)
+	    res = environment.staticStr(LangStatic.COMMANDER_SELECTED) + " " + res;
+	environment.say(res);
     }
 
     @Override public  void introduceLocation(Path path)
     {
-	/*
-	if (file == null)
+	if (path == null)
 	    return;
 	environment.playSound(Sounds.COMMANDER_NEW_LOCATION);
+	environment.say(path.toString());
+	/*
 	for(Partition p: mountedPartitions)
 	    if (p.file().equals(file))
 	    {

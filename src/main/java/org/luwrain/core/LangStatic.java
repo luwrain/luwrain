@@ -41,11 +41,17 @@ public interface LangStatic
     static public final int TABLE_NO_CONTENT = 53;
     static public final int TREE_NO_CONTENT = 54;
 
-    static public final int COMMANDER_SELECTED_DIRECTORY = 100;
-    static public final int COMMANDER_SELECTED = 101;
-    static public final int COMMANDER_DIRECTORY = 102;
-    static public final int COMMANDER_PARENT_DIRECTORY = 103;
-    static public final int COMMANDER_USER_HOME = 104;
+    static public final int COMMANDER_SELECTED = 100;
+    static public final int COMMANDER_DIRECTORY = 101;
+    static public final int COMMANDER_SYMLINK = 102;
+    static public final int COMMANDER_PIPE = 103;
+    static public final int COMMANDER_SOCKET = 104;
+    static public final int COMMANDER_BLOCK_DEVICE = 105;
+    static public final int COMMANDER_CHAR_DEVICE = 106;
+    static public final int COMMANDER_SPECIAL = 107;
+    static public final int COMMANDER_UNKNOWN = 108;
+    static public final int COMMANDER_PARENT_DIRECTORY = 109;
+    static public final int COMMANDER_USER_HOME = 110;
 
     static public final int TREE_EMPTY_ITEM = 150;
     static public final int TREE_EXPANDED = 151;

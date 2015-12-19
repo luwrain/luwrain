@@ -19,21 +19,33 @@ package org.luwrain.controls;
 import java.io.*;
 import java.nio.file.*;
 
-public class NoHiddenCommanderFilter implements CommanderArea.Filter
+import org.luwrain.core.NullCheck;
+
+public class CommanderFilters
 {
-    @Override public boolean commanderEntrySuits(CommanderArea.Entry entry)
+    static public class AllFiles implements CommanderArea.Filter
     {
-	if (entry == null)
-	    return false;
-	if (entry.parent())
-	    return true;
-	try {
-	return !Files.isHidden(entry.path());
-	}
-	catch(IOException e)
+	@Override public boolean commanderEntrySuits(CommanderArea.Entry entry)
 	{
-	    e.printStackTrace();
 	    return true;
+	}
+    }
+
+    static public class NoHidden implements CommanderArea.Filter
+    {
+	@Override public boolean commanderEntrySuits(CommanderArea.Entry entry)
+	{
+	    NullCheck.notNull(entry, "entry");
+	    if (entry.parent())
+		return true;
+	    try {
+		return !Files.isHidden(entry.path());
+	    }
+	    catch(IOException e)
+	    {
+		e.printStackTrace();
+		return true;
+	    }
 	}
     }
 }
