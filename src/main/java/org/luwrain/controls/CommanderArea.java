@@ -18,6 +18,7 @@ package org.luwrain.controls;
 
 import java.io.*;
 import java.nio.file.*;
+import java.nio.file.attribute.*;
 import java.util.*;
 
 import org.luwrain.core.*;
@@ -28,9 +29,9 @@ import org.luwrain.hardware.*;
 import org.luwrain.os.*;
 
 /**
- * The area for directory browsing.  This class behaves as a panel in
+ * The area for browsing of directories.  This class behaves as a panel in
  * old-style file commander. The user can explore directory content and
- * move around it traversing over near directories. Custom filters and
+ * move around it, traversing over near directories. Custom filters and
  * comparators are supported.
  */
 public class CommanderArea implements Area, RegionProvider
@@ -39,32 +40,38 @@ public class CommanderArea implements Area, RegionProvider
 
     static public class Entry
     {
-	public static final int REGULAR = 0;
-	public static final int DIRECTORY = 1;
+	enum Type {REGULAR, DIR, SYMLINK, PIPE, SOCKET, BLOCK_DEVICE, CHAR_DEVICE};
 
-	private File file;
-	private int type;
-	boolean selected;
+	private Path path;
+	private Type type;
+	private boolean selected;
+	private boolean parent;
 
-	public Entry(File file,
-		     int type,
-		     boolean selected)
+	Entry(Path path)
 	{
-	    this.file = file;
+	    NullCheck.notNull(path, "path");
+	    //FIXME:type;
+	    type = Type.REGULAR;
+	    selected = false;
+	    parent = false;
+	}
+
+Entry(Path path, Type type,
+		     boolean selected, boolean parent)
+	{
+	    this.path = path;
 	    this.type = type;
 	    this.selected = selected;
-	    if (file == null)
-		throw new NullPointerException("file may not be null");
+	    this.parent = parent;
+	    NullCheck.notNull(path, "path");
 	}
 
-	public File file()
+	public Path path()
 	{
-	    if (file == null)
-		throw new NullPointerException("file may not be null");
-	    return file;
+	    return path;
 	}
 
-	public int type()
+public Type type()
 	{
 	    return type;
 	}
@@ -73,93 +80,104 @@ public class CommanderArea implements Area, RegionProvider
 	{
 	    return selected;
 	}
+
+	public boolean parent()
+	{
+	    return parent;
+	}
+
+	public String baseName()
+	{
+	    return path.getFileName().toString();
+	}
     }
 
-    private File current;
-    private Vector<Entry> entries;//null means the content is inaccessible;
-    protected ControlEnvironment environment;
-    protected OperatingSystem os;
-    private Partition[] mountedPartitions;
-    private org.luwrain.core.Strings strings;
+    public interface ClickHandler
+    {
+    boolean onCommanderClick(Path cursorAt, Path[] selected);
+    }
+
+    public interface Filter
+{
+    boolean commanderEntrySuits(Entry entry);
+}
+
+
+public interface Appearance 
+{
+    void introduceEntry(Entry entry, boolean brief);
+    void introduceLocation(Path path);
+    String getScreenLine(Entry entry);
+    String getCommanderName(Path path);
+}
+
+public class Params
+{
+    public ControlEnvironment environment;
+    public Appearance appearance;
+    public boolean selecting = false;
+    public ClickHandler clickHandler = null;
+    public Filter filter = new NoHiddenCommanderFilter();
+    public Comparator comparator = new ByNameCommanderComparator();
+}
+
     private final Region region = new Region(this);
-    private CommanderFilter filter;
-    private Comparator comparator;
-    private boolean selecting;
+    protected ControlEnvironment environment;
+    private Appearance appearance;
+    private ClickHandler clickHandler;
+    protected Filter filter = new NoHiddenCommanderFilter();
+    protected Comparator comparator = new ByNameCommanderComparator();
+    protected boolean selecting = false;
     protected int visualShift = 2;
-    private int hotPointX = 0;
-    private int hotPointY = 0;
 
-    public CommanderArea(ControlEnvironment environment, OperatingSystem os)
+    protected Path current;
+    protected Vector<Entry> entries;//null means the content is inaccessible
+    protected int hotPointX = 0;
+    protected int hotPointY = 0;
+
+    public CommanderArea(ControlEnvironment environment)
     {
 	this.environment = environment;
-	this.os = os;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (os == null)
-	    throw new NullPointerException("os may not be null");
-	current = environment.launchContext().userHomeDirAsFile();
-	filter = new NoHiddenCommanderFilter();
-	comparator = new ByNameCommanderComparator();
-	selecting = false;
-	mountedPartitions = getMountedPartitions();
-	strings = environment.environmentStrings();
+	NullCheck.notNull(environment, "environment");
+	current = environment.launchContext().userHomeDirAsPath();
 	refresh();
     }
 
-    public CommanderArea(ControlEnvironment environment, 
-			 OperatingSystem os,
-			 File current)
+    public CommanderArea(ControlEnvironment environment, Path current)
     {
 	this.environment = environment;
-	this.os = os;
 	this.current = current;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (os == null)
-	    throw new NullPointerException("os may not be null");
-	if (current == null)
-	    throw new NullPointerException("current may not be null");
-	if (!current.isDirectory())
+	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(current, "current");
+	if (!Files.isDirectory(current))
 	    throw new IllegalArgumentException("current must address a directory");
-	filter = new NoHiddenCommanderFilter();
-	comparator = new ByNameCommanderComparator();
-	selecting = false;
-	mountedPartitions = getMountedPartitions();
-	strings = environment.environmentStrings();
 	refresh();
     }
 
-    public CommanderArea(ControlEnvironment environment, 
-			 OperatingSystem os,
-			 File current,
-			 boolean selecting,
-			 CommanderFilter filter,
-			 Comparator comparator)
+    public CommanderArea(Params params, Path current)
     {
-	this.environment = environment;
-	this.os = os;
+	NullCheck.notNull(params, "params");
+	this.environment = params.environment;
+	this.appearance = params.appearance;
+	this.clickHandler = params.clickHandler;
+	this.filter = params.filter;
+	this.comparator = params.comparator;
+	this.selecting = params.selecting;
 	this.current = current;
-	this.selecting = selecting;
-	this.filter = filter;
-	this.comparator = comparator;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (os == null)
-	    throw new NullPointerException("os may not be null");
-	if (current == null)
-	    throw new NullPointerException("current may not be null");
-	if (comparator == null)
-	    throw new NullPointerException("comparator may not be null");
-	if (!current.isDirectory())
+	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(appearance, "appearance");
+	//	NullCheck.notNull(clickHandler, "clickHandler");
+	NullCheck.notNull(filter, "filter");
+	NullCheck.notNull(comparator, "comparator");
+	NullCheck.notNull(current, "current");
+	if (!Files.isDirectory(current))
 	    throw new IllegalArgumentException("current must address a directory");
-	mountedPartitions = getMountedPartitions();
-	strings = environment.environmentStrings();
 	refresh();
     }
 
     /*
      * Returns the list of currently selected files. If user marked some
-     * files or directories this method returns their list, regardless what
+     * files or directories, this method returns list of them, regardless what
      * entry is under the cursor. Otherwise, this method returns exactly the
      * entry under the current cursor position or an empty array if the cursor is at
      * the empty string in the bottom of the area. The parent directory entry
@@ -167,23 +185,23 @@ public class CommanderArea implements Area, RegionProvider
      *
      * @return The list of currently selected entries 
      */
-    public File[] selected()
+    public Path[] selected()
     {
-	if (entries == null)
-	    return new File[0];
+	if (isEmpty())
+	    return new Path[0];
 	if (selecting)
 	{
-	    Vector<File> files = new Vector<File>();
+	    final LinkedList<Path> paths = new LinkedList<Path>();
 	    for(Entry e: entries)
-		if (e.selected() && !e.file().getName().equals(PARENT_DIR))
-		    files.add(e.file());
-	    if (!files.isEmpty())
-		return files.toArray(new File[files.size()]);
+		if (e.selected() && !e.parent())
+		    paths.add(e.path());
+	    if (!paths.isEmpty())
+		return paths.toArray(new Path[paths.size()]);
 	}
-	final File f = cursorAt();
-	if (f == null || f.getName().equals(PARENT_DIR))
-	    return new File[0];
-	return new File[]{f};
+	final Entry e = cursorAtEntry();
+	if (e == null || e.parent())
+	    return new Path[0];
+	return new Path[]{e.path()};
     }
 
     /**
@@ -193,23 +211,29 @@ public class CommanderArea implements Area, RegionProvider
      *
      * @return The location being observed
      */
-    public File opened()
+    public Path opened()
     {
 	return current;
     }
 
     /**
      * Returns the entry exactly under the cursor. This method returns the
-     * entry without taking into account where there are the user marks. If the cursor is at
+     * entry without taking into account where the user marks are. If the cursor is at
      * the empty line in the bottom of the area this method returns null. The parent directory entry is returned
-     * as well.
+     * as usual.
      *
      * @return The entry under the cursor
      */
-    public File cursorAt()
+    public Path cursorAt()
     {
-	return entries != null && hotPointY >= 0 && hotPointY < entries.size()?entries.get(hotPointY).file():null;
+	return !isEmpty() && hotPointY >= 0 && hotPointY < entries.size()?entries.get(hotPointY).path():null;
     }
+
+    public Entry cursorAtEntry()
+    {
+	return !isEmpty() && hotPointY >= 0 && hotPointY < entries.size()?entries.get(hotPointY):null;
+    }
+
 
     /**
      * Updates the content of the current location. This method just rereads 
@@ -217,107 +241,42 @@ public class CommanderArea implements Area, RegionProvider
      */
     public void refresh()
     {
-	if (current == null)//What very strange;
+	if (current == null)//What is very strange
 	{
 	    entries = null;
+	    notifyNewContent();
 	    return;
 	}
-	final File c = cursorAt();
-	open(current, c != null?c.getName():null);
+	final Entry e = cursorAtEntry();
+	open(current, e != null?e.baseName():null);
     }
 
-    public void setFilter(CommanderFilter filter)
+    public void setFilter(Filter filter)
     {
-	if (filter == null)
-	    throw new NullPointerException("filter may not be null");
+	NullCheck.notNull(filter, "filter");
 	this.filter = filter;
     }
 
-    protected void introduceEntry(Entry entry, boolean brief)
+    public boolean isEmpty()
     {
-	if (entry == null)
-	    return;
-	environment.playSound(Sounds.NEW_LIST_ITEM);
-	if (brief)
-	{
-	    final String name = entry.file().getName();
-	    if (name.equals(PARENT_DIR))
-		environment.hint(environment.staticStr(LangStatic.COMMANDER_PARENT_DIRECTORY)); else
-		if (name.trim().isEmpty())
-		    environment.hint(Hints.EMPTY_LINE); else
-		    environment.say(entry.file().getName());
-	    return;
-	}
-	final boolean selected = entry.selected();
-	final boolean dir = entry.type() == Entry.DIRECTORY;
-	final String name = entry.file().getName();
-	if (name.equals(PARENT_DIR))
-	{
-	    environment.hint(environment.staticStr(LangStatic.COMMANDER_PARENT_DIRECTORY));
-	    return;
-	}
-	if (selected && dir)
-	    environment.say(environment.staticStr(LangStatic.COMMANDER_SELECTED_DIRECTORY) + " " + name); else
-	    if (selected)
-		environment.say(environment.staticStr(LangStatic.COMMANDER_SELECTED) + " " + name); else
-		if (dir)
-		    environment.say(name + " " + environment.staticStr(LangStatic.COMMANDER_DIRECTORY)); else
-		{
-		    if (name.trim().isEmpty())
-			environment.hint(Hints.EMPTY_LINE); else
-			environment.say(name);
-		}
-    }
-
-    protected void introduceLocation(File file)
-    {
-	if (file == null)
-	    return;
-	environment.playSound(Sounds.COMMANDER_NEW_LOCATION);
-	for(Partition p: mountedPartitions)
-	    if (p.file().equals(file))
-	    {
-		environment.say(strings.partitionTitle(p));
-		return;
-	    }
-	environment.say(file.getName());
-    }
-
-    protected String getScreenLine(Entry entry)
-    {
-	if (entry == null)
-	    throw new NullPointerException("entry may not be null");
-	final boolean selected = entry.selected();
-	final boolean dir = entry.type() == Entry.DIRECTORY;
-	if (selected && dir)
-	    return "*[" + entry.file().getName() + "]";
-	if (selected)
-	    return "* " + entry.file().getName();
-	if (dir)
-	    return " [" + entry.file().getName() + "]";
-	return "  " + entry.file().getName();
-    }
-
-    protected boolean onClick(File current, File[] selected)
-    {
-	return false;
+	return entries == null || entries.isEmpty();
     }
 
     @Override public int getLineCount()
     {
-	return entries != null && !entries.isEmpty()?entries.size() + 1:1;
+	return !isEmpty()?entries.size() + 1:1;
     }
 
     @Override public String getLine(int index)
     {
-	if (entries == null)
-	    return environment.staticStr(LangStatic.COMMANDER_NO_CONTENT);
-	return index < entries.size()?getScreenLine(entries.get(index)):"";
+	if (isEmpty())
+	    return index == 0?noContentStr():"";
+	return index < entries.size()?appearance.getScreenLine(entries.get(index)):"";
     }
 
     @Override public int getHotPointX()
     {
-	if (entries == null)
+	if (isEmpty())
 	    return 0;
 	if (hotPointY > entries.size())
 	    return 0;
@@ -326,28 +285,29 @@ public class CommanderArea implements Area, RegionProvider
 
     @Override public int getHotPointY()
     {
-	if (entries == null)
+	if (isEmpty())
 	    return 0;
 	return hotPointY >= 0?hotPointY:0;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	if (!event.isCommand())
 	{
 	    switch(event.getCharacter())
 	    {
 	    case '~':
-		open(environment.launchContext().userHomeDirAsFile(), null);
+		open(environment.launchContext().userHomeDirAsPath(), null);
 		if (current != null)
-		    introduceLocation(current);
+		    appearance.introduceLocation(current);
 		return true;
 	    case '/':
-		open(os.getHardware().getRoot(current != null?current:environment.launchContext().userHomeDirAsFile()), null);
+		if (current == null)
+		    return false;
+		open(current.getRoot(), null);
 		if (current != null)
-		    introduceLocation(current);
+		    appearance.introduceLocation(current);
 		return true;
 	    default:
 		return onChar(event);
@@ -402,8 +362,7 @@ public class CommanderArea implements Area, RegionProvider
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	switch(event.getCode())
 	{
 	case EnvironmentEvent.REFRESH:
@@ -418,10 +377,11 @@ public class CommanderArea implements Area, RegionProvider
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
+	NullCheck.notNull(query, "query");
 	if (query.getQueryCode() == AreaQuery.CURRENT_DIR)
 	{
 	    final CurrentDirQuery currentDirQuery = (CurrentDirQuery)query;
-	    currentDirQuery.setCurrentDir(current.getAbsolutePath());
+	    currentDirQuery.setCurrentDir(current.toString());
 	    return true;
 	}
 	return region.onAreaQuery(query, hotPointX, hotPointY);
@@ -436,10 +396,7 @@ public class CommanderArea implements Area, RegionProvider
     {
 	if (current == null)
 	    return "-";
-	for(Partition p: mountedPartitions)
-	    if (p.file().equals(current))
-		return strings.partitionTitle(p);
-	return current.getAbsolutePath();
+	return appearance.getCommanderName(current);
     }
 
     @Override public HeldData getWholeRegion()
@@ -449,7 +406,7 @@ public class CommanderArea implements Area, RegionProvider
 	final LinkedList<String> res = new LinkedList<String>();
 	for(Entry e: entries)
 	{
-	    final String line = getScreenLine(e);
+	    final String line = appearance.getScreenLine(e);
 	    res.add(line != null?line:"");
 	}
 	res.add("");
@@ -464,7 +421,7 @@ public class CommanderArea implements Area, RegionProvider
 	    return null;
 	if (fromY == toY)
 	{
-	    String line = getScreenLine(entries.get(fromY));
+	    String line = appearance.getScreenLine(entries.get(fromY));
 	    if (line == null || line.length() < 3)
 		return null;
 	    line = line.substring(2);
@@ -477,7 +434,7 @@ public class CommanderArea implements Area, RegionProvider
 	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i < toY;++i)
 	{
-	    final String line = getScreenLine(entries.get(i));
+	    final String line = appearance.getScreenLine(entries.get(i));
 	    res.add(line != null?line:"");
 	}
 	res.add("");
@@ -505,34 +462,36 @@ public class CommanderArea implements Area, RegionProvider
 	    return true;
 	if (hotPointY >= entries.size())
 	{
-	    File[] selected = selected();
+	    final Path[] selected = selected();
 	    if (selected == null || selected.length < 1)
 		return false;
-	    return onClick(null, selected);
+	    return clickHandler.onCommanderClick(null, selected);
 	}
 	final Entry entry = entries.get(hotPointY);
-	if (entry.type() == Entry.DIRECTORY)
+	if (entry.type() == Entry.Type.DIR)
 	{
-	    File parent = current.getParentFile();
-	    if (entry.file().getName().equals(PARENT_DIR) && parent != null)
-		open(parent, current.getName()); else
-		open(entry.file(), null);
-	    introduceLocation(current);
+	    final Path parent = current.getParent();
+	    if (entry.parent() && parent != null)
+		open(parent, current.getFileName().toString()); else
+		open(entry.path(), null);
+	    appearance.introduceLocation(current);
 	    return true;
 	}
-	return onClick(entry.file(), selected());
+	if (clickHandler == null)
+	    return false;
+	return clickHandler.onCommanderClick(entry.path(), selected());
     }
 
     private boolean onBackspace(KeyboardEvent event)
     {
-	//noContentCheck() isn't applicable here, we should be able to leave the directory even if it doesn't have any content;
+	//noContent() isn't applicable here, we should be able to leave the directory, even if it doesn't have any content
 	if (current == null)
 	    return false;
-	File parent = current.getParentFile();
+	final Path parent = current.getParent();
 	if (parent == null)
 	    return false;
-	open(parent, current.getName());
-	introduceLocation(current);
+	open(parent, current.getFileName().toString());
+	appearance.introduceLocation(current);
 	return true;
     }
 
@@ -559,13 +518,17 @@ public class CommanderArea implements Area, RegionProvider
 	    return true;
 	if (hotPointY >= entries.size())
 	{
-	    File[] selected = selected();
+	    Path[] selected = selected();
 	    if (selected == null || selected.length < 1)
 		return false;
-	    return onClick(null, selected);
+	    if (clickHandler == null)
+		return false;
+	    return clickHandler.onCommanderClick(null, selected);
 	}
 	final Entry entry = entries.get(hotPointY);
-	return onClick(entry.file(), selected());
+	if (clickHandler == null)
+	    return false;
+	return clickHandler.onCommanderClick(entry.path(), selected());
     }
 
     private boolean onChar(KeyboardEvent event)
@@ -576,20 +539,20 @@ public class CommanderArea implements Area, RegionProvider
 	String beginning = "";
 	if (hotPointY < entries.size())
 	{
-	    final String name = entries.get(hotPointY).file().getName();
+	    final String name = entries.get(hotPointY).baseName();
 	    final int pos = hotPointX < name.length()?hotPointX:name.length();
 	    beginning = name.substring(0, pos);
 	}
 	final String mustBegin = beginning + c;
 	for(int i = 0;i < entries.size();++i)
 	{
-	    final String name = entries.get(i).file().getName();
+	    final String name = entries.get(i).baseName();
 	    if (!name.startsWith(mustBegin))
 		continue;
 	    hotPointY = i;
 	    ++hotPointX;
 	    environment.onAreaNewHotPoint(this);
-	    introduceEntry(entries.get(hotPointY), true);
+	    appearance.introduceEntry(entries.get(hotPointY), true);
 	    return true;
 	}
 	return false;
@@ -599,7 +562,7 @@ public class CommanderArea implements Area, RegionProvider
     {
 	if (noContentCheck())
 	    return true;
-	if (hotPointY + 1> entries.size())
+	if (hotPointY >= entries.size())
 	{
 	    environment.hint(Hints.NO_ITEMS_BELOW);
 	    return true;
@@ -613,7 +576,7 @@ public class CommanderArea implements Area, RegionProvider
     {
 	if (noContentCheck())
 	    return true;
-	if (hotPointY < 1)
+	if (hotPointY <= 0)
 	{
 	    environment.hint(Hints.NO_ITEMS_ABOVE);
 	    return true;
@@ -657,11 +620,7 @@ public class CommanderArea implements Area, RegionProvider
 	if (hotPointY < visibleHeight)
 	    hotPointY = 0; else
 	    hotPointY -= visibleHeight;
-	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
-	if (hotPointY < entries.size())
-	    introduceEntry(entries.get(hotPointY), briefIntroduction); else
-	    environment.hint(Hints.EMPTY_LINE);
+	onNewHotPointY(briefIntroduction);
 	return true;
     }
 
@@ -692,7 +651,7 @@ public class CommanderArea implements Area, RegionProvider
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String name = entries.get(hotPointY).file().getName();
+	final String name = entries.get(hotPointY).baseName();
 	if (name == null || name.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
@@ -722,7 +681,7 @@ public class CommanderArea implements Area, RegionProvider
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String name = entries.get(hotPointY).file().getName();
+	final String name = entries.get(hotPointY).baseName();
 	if (name == null || name.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
@@ -750,7 +709,7 @@ public class CommanderArea implements Area, RegionProvider
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String name = entries.get(hotPointY).file().getName();
+	final String name = entries.get(hotPointY).baseName();
 	if (name == null || name.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
@@ -761,7 +720,7 @@ public class CommanderArea implements Area, RegionProvider
 	    environment.hint(Hints.END_OF_LINE);
 	    return true;
 	}
-	WordIterator it = new WordIterator(name, hotPointX);
+	final WordIterator it = new WordIterator(name, hotPointX);
 	if (!it.stepForward())
 	{
 	    environment.hint(Hints.END_OF_LINE);
@@ -784,7 +743,7 @@ public class CommanderArea implements Area, RegionProvider
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String name = entries.get(hotPointY).file().getName();
+	final String name = entries.get(hotPointY).baseName();
 	if (name == null || name.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
@@ -797,7 +756,7 @@ public class CommanderArea implements Area, RegionProvider
 	    environment.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
-	WordIterator it = new WordIterator(name, hotPointX);
+	final WordIterator it = new WordIterator(name, hotPointX);
 	if (!it.stepBackward())
 	{
 	    environment.hint(Hints.BEGIN_OF_LINE);
@@ -814,9 +773,9 @@ public class CommanderArea implements Area, RegionProvider
 	if (noContentCheck())
 	    return true;
 	hotPointX = 0;
-	if (hotPointY >= entries.size() || entries.get(hotPointY).file().getName().isEmpty())
+	if (hotPointY >= entries.size() || entries.get(hotPointY).baseName().isEmpty())
 	    environment.hint(Hints.EMPTY_LINE); else
-	    environment.sayLetter(entries.get(hotPointY).file().getName().charAt(hotPointX));
+	    environment.sayLetter(entries.get(hotPointY).baseName().charAt(hotPointX));
 	environment.onAreaNewHotPoint(this);
 	return true;
     }
@@ -827,7 +786,7 @@ public class CommanderArea implements Area, RegionProvider
 	    return true;
 	if (hotPointY < entries.size())
 	{
-	    hotPointX = entries.get(hotPointY).file().getName().length();
+	    hotPointX = entries.get(hotPointY).baseName().length();
 	    environment.hint(Hints.END_OF_LINE);
 	} else
 	{
@@ -838,79 +797,79 @@ public class CommanderArea implements Area, RegionProvider
 	return true;
     }
 
-    //Doesn't produce any speech announcement;
-    public void open(File file, String desiredSelected)
-    {
-	NullCheck.notNull(file, "file");
-	if (!file.isDirectory())
-	    throw new IllegalArgumentException("File must address a directory");
-	current = file;
-	entries = constructEntries(current);
-	hotPointX = 0;
-	hotPointY = 0;
-	if (entries == null || entries.isEmpty())
-	{
-	    environment.onAreaNewContent(this);
-	    environment.onAreaNewHotPoint(this);
-	    environment.onAreaNewName(this);
-	    return;
-	}
-	if (desiredSelected != null)
-	    for(hotPointY = 0;hotPointY < entries.size();++hotPointY)
-		if (entries.get(hotPointY).file().getName().equals(desiredSelected))
-		    break;
-	if (hotPointY >= entries.size())
-	    hotPointY = 0;
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
-	environment.onAreaNewName(this);
-    }
-
+    //Doesn't produce any speech announcement
     public void open(Path path, String desiredSelected)
     {
 	NullCheck.notNull(path, "path");
-	open(path.toFile(), desiredSelected);
+	if (!Files.isDirectory(path))
+	    throw new IllegalArgumentException("path must address a directory");
+	current = path;
+	entries = constructEntries(current);
+	hotPointX = 0;
+	hotPointY = 0;
+	if (isEmpty())
+	{
+	    notifyNewContent();
+	    return;
+	}
+	if (desiredSelected != null && !desiredSelected.isEmpty())
+	    for(hotPointY = 0;hotPointY < entries.size();++hotPointY)
+		if (entries.get(hotPointY).baseName().equals(desiredSelected))
+		    break;
+	if (hotPointY >= entries.size())
+	    hotPointY = 0;
+	notifyNewContent();
     }
 
-    private Vector<Entry> constructEntries(File f)
+    private Vector<Entry> constructEntries(Path path)
     {
-	if (f == null)
-	    throw new NullPointerException("f may not be null");
-	File[] files = f.listFiles();
-	if (files == null)
+	NullCheck.notNull(path, "path");
+	final LinkedList<Path> paths = new LinkedList<Path>();
+	final FileVisitor visitor = new SimpleFileVisitor<Path>() {
+	    @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
+	    {
+		paths.add(file);
+		return FileVisitResult.CONTINUE;
+	    }
+	    @Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attr) throws IOException
+	    {
+		if (dir.equals(path))
+		return FileVisitResult.CONTINUE;
+		paths.add(dir);
+		return FileVisitResult.SKIP_SUBTREE;
+	    }
+	};
+	try {
+	    Files.walkFileTree(path, visitor);
+	}
+	catch(Exception e)
+	{
+	    e.printStackTrace();
 	    return null;
-	Vector<Entry> res = new Vector<Entry>();
-	if (f.getParent() != null)
-	    res.add(new Entry(new File(f, PARENT_DIR), Entry.DIRECTORY, false));
-	for(File ff: files)
-	    res.add(new Entry(ff, ff.isDirectory()?Entry.DIRECTORY:Entry.REGULAR, false));
+	}
+	final LinkedList<Entry> res = new LinkedList<Entry>();
+	if (path.getParent() != null)
+	    res.add(new Entry(path.resolve(PARENT_DIR), Entry.Type.DIR, false, true));
+	for(Path p: paths)
+	    res.add(new Entry(p));
 	if (filter == null)
 	{
 	    Entry[] toSort = res.toArray(new Entry[res.size()]);
 	    Arrays.sort(toSort, comparator);
+	    final Vector<Entry> r = new Vector<Entry>();
 	    for(int i = 0;i < toSort.length;++i)
-		res.set(i, toSort[i]);
-	    return res;
+		entries.add(i, toSort[i]);
+	    return entries;
 	}
-	Vector<Entry> filtered = new Vector<Entry>();
+	final Vector<Entry> filtered = new Vector<Entry>();
 	for (Entry ee: res)
 	    if (filter.commanderEntrySuits(ee))
 		filtered.add(ee);
-	Entry[] toSort = filtered.toArray(new Entry[filtered.size()]);
+	final Entry[] toSort = filtered.toArray(new Entry[filtered.size()]);
 	Arrays.sort(toSort, comparator);
 	for(int i = 0;i < toSort.length;++i)
 	    filtered.set(i, toSort[i]);
 	return filtered;
-    }
-
-    private Partition[] getMountedPartitions()
-    {
-	final LinkedList<Partition> res = new LinkedList<Partition>();
-	final Partition[] p = os.getHardware().getMountedPartitions();
-	res.add(new Partition(Partition.USER_HOME, environment.launchContext().userHomeDirAsFile(), environment.launchContext().userHomeDir(), true));
-	for(Partition pp: p)
-	    res.add(pp);
-	return res.toArray(new Partition[res.size()]);
     }
 
     private void onNewHotPointY(boolean briefIntroduction)
@@ -920,20 +879,32 @@ public class CommanderArea implements Area, RegionProvider
 	{
 	    final Entry entry = entries.get(hotPointY);
 	    if (entry != null)
-		introduceEntry(entry, briefIntroduction); else
+		appearance.introduceEntry(entry, briefIntroduction); else
 		environment.hint(Hints.EMPTY_LINE);
 	} else
 	    environment.hint(Hints.EMPTY_LINE);
 	environment.onAreaNewHotPoint(this);
     }
 
+    protected String noContentStr()
+    {
+	return environment.staticStr(LangStatic.COMMANDER_NO_CONTENT);
+    }
+
     private boolean noContentCheck()
     {
 	if (entries == null)
 	{
-	    environment.hint(environment.staticStr(LangStatic.COMMANDER_NO_CONTENT), Hints.NO_CONTENT);
+	    environment.hint(noContentStr(), Hints.NO_CONTENT);
 	    return true;
 	}
 	return false;
+    }
+
+    private void notifyNewContent()
+    {
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+	environment.onAreaNewName(this);
     }
 }

@@ -17,6 +17,7 @@
 package org.luwrain.popups;
 
 import java.io.*;
+import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
@@ -24,30 +25,26 @@ import org.luwrain.hardware.Partition;
 
 public class Popups
 {
-    static public File[] commanderMultiple(Luwrain luwrain,
-					   String name,
-					   File file,
-					   int flags,
+    static public Path[] commanderMultiple(Luwrain luwrain, String name,
+					   Path path, int flags,
 					   int popupFlags)
     {
-	CommanderPopup popup = new CommanderPopup(luwrain, name, file, flags | CommanderPopup.ACCEPT_MULTIPLE_SELECTION, popupFlags);
+	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, flags | CommanderPopup.ACCEPT_MULTIPLE_SELECTION, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
 	return popup.selected();
     }
 
-    static public File commanderSingle(Luwrain luwrain,
-					   String name,
-					   File file,
-					   int flags,
+    static public Path commanderSingle(Luwrain luwrain, String name,
+				       Path path, int flags,
 					   int popupFlags)
     {
-	CommanderPopup popup = new CommanderPopup(luwrain, name, file, flags, popupFlags);
+	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, flags, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	final File[] res = popup.selected();
+	final Path[] res = popup.selected();
 	if (res == null || res.length != 1)
 	    return null;
 	return res[0];

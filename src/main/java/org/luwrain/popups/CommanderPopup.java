@@ -17,13 +17,14 @@
 package org.luwrain.popups;
 
 import java.io.*;
+import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-import org.luwrain.util.*;
+//import org.luwrain.util.*;
 
-public class CommanderPopup extends CommanderArea implements Popup, PopupClosingRequest
+public class CommanderPopup extends CommanderArea implements CommanderArea.ClickHandler, Popup, PopupClosingRequest
 {
     public static final int ACCEPT_REGULAR_FILES = 1;
     public static final int ACCEPT_DIRECTORIES = 2;
@@ -36,18 +37,17 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
     private int flags;
     private int popupFlags;
 
-    public CommanderPopup(Luwrain luwrain,
-			  String name,
-			  File file,
+    static private CommanderArea.Params constructCommanderParams()
+    {
+	return null;
+    }
+
+    public CommanderPopup(Luwrain luwrain, String name,
+			  Path path,
 			  int flags,
 			  int popupFlags)
     {
-	super(new DefaultControlEnvironment(luwrain),
-	      luwrain.os(),
-	      file != null?file:luwrain.launchContext().userHomeDirAsFile(),
-	      (flags & ACCEPT_MULTIPLE_SELECTION) != 0,
-	      new NoHiddenCommanderFilter(),
-	      new ByNameCommanderComparator());
+	super(constructCommanderParams(), null);
 	this.luwrain = luwrain;
 	this.name = name;
 	if (luwrain == null)
@@ -56,7 +56,7 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 	    throw new NullPointerException("name may not be null");
     }
 
-@Override     public boolean onClick(File current, File[] selected)
+@Override     public boolean onCommanderClick(Path current, Path[] selected)
     {
 	return closing.doOk();
     }
@@ -100,7 +100,7 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 
     @Override public boolean onOk()
     {
-	final File[] selected = selected();
+	final Path[] selected = selected();
 	if (selected  == null || selected.length < 1)
 	    return false;
 	return true;
@@ -136,7 +136,7 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 	final File f = Popups.mountedPartitionsAsFile(luwrain, popupFlags);
 	if (f == null)
 	    return true;
-	open(f, null);
+	open(f.toPath(), null);
 	return true;
     }
 }

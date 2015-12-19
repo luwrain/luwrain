@@ -19,6 +19,8 @@
 package org.luwrain.popups;
 
 import java.io.*;
+import java.nio.file.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
@@ -83,9 +85,9 @@ public class FilePopup extends EditListPopup
 	    file = file.getParentFile();
 	if (file == null || !file.isDirectory())
 	    return false;
-	final File res = Popups.commanderSingle(luwrain, getAreaName() + ": ", file, CommanderPopup.ACCEPT_ALL, 0);
+	final Path res = Popups.commanderSingle(luwrain, getAreaName() + ": ", file.toPath(), CommanderPopup.ACCEPT_ALL, 0);
 	if (res != null)
-	    setText(res.getAbsolutePath(), "");
+	    setText(res.toAbsolutePath().toString(), "");
 	return true;
     }
 }

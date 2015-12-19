@@ -3,7 +3,7 @@
 
    This file is part of the LUWRAIN.
 
-   LUWRAIN is free software; you can redistribute it and/or
+   LUWRAIN is free software; you can redistribute it and/orspackage
    modify it under the terms of the GNU General Public
    License as published by the Free Software Foundation; either
    version 3 of the License, or (at your option) any later version.
@@ -17,6 +17,7 @@
 package org.luwrain.controls;
 
 import java.util.*;
+import java.nio.file.*;
 
 public class ByNameCommanderComparator implements Comparator
 {
@@ -26,16 +27,16 @@ public class ByNameCommanderComparator implements Comparator
 	    return 0;
 	final CommanderArea.Entry i1 = (CommanderArea.Entry)o1;
 	final CommanderArea.Entry i2 = (CommanderArea.Entry)o2;
-	if (i1.file().getName().equals(CommanderArea.PARENT_DIR))
-	    return i2.file().getName().equals(CommanderArea.PARENT_DIR)?0:-1;
-	if (i2.file().getName().equals(CommanderArea.PARENT_DIR))
-	    return i1.file().getName().equals(CommanderArea.PARENT_DIR)?0:1;
-	if (i1.type() == CommanderArea.Entry.DIRECTORY && i2.type() == CommanderArea.Entry.DIRECTORY)
-	    return i1.file().getName().compareTo(i2.file().getName());
-	if (i1.type() == CommanderArea.Entry.DIRECTORY)
+	if (i1.parent())
+	    return i2.parent()?0:-1;
+	if (i2.parent())
+	    return i1.parent()?0:1;
+	if (Files.isDirectory(i1.path()) && Files.isDirectory(i2.path()))//We don't use Entry.type() because it  returns symlink even on a directory
+	    return i1.baseName().compareTo(i2.baseName());
+	    if (Files.isDirectory(i1.path()))
 	    return -1;
-	if (i2.type() == CommanderArea.Entry.DIRECTORY)
+	    if (Files.isDirectory(i2.path()))
 	    return 1;
-	return i1.file().getName().compareTo(i2.file().getName());
+		return i1.baseName().compareTo(i2.baseName());
     }
 }

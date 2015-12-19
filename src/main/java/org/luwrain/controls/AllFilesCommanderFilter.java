@@ -16,7 +16,9 @@
 
 package org.luwrain.controls;
 
-public class AllFilesCommanderFilter implements CommanderFilter
+import java.nio.file.*;
+
+public class AllFilesCommanderFilter implements CommanderArea.Filter
 {
     @Override public boolean commanderEntrySuits(CommanderArea.Entry entry)
     {

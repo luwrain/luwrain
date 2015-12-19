@@ -16,14 +16,24 @@
 
 package org.luwrain.controls;
 
-public class NoHiddenCommanderFilter implements CommanderFilter
+import java.io.*;
+import java.nio.file.*;
+
+public class NoHiddenCommanderFilter implements CommanderArea.Filter
 {
     @Override public boolean commanderEntrySuits(CommanderArea.Entry entry)
     {
 	if (entry == null)
 	    return false;
-	if (entry.file().getName().equals(CommanderArea.PARENT_DIR))
+	if (entry.parent())
 	    return true;
-	return !entry.file().isHidden();
+	try {
+	return !Files.isHidden(entry.path());
+	}
+	catch(IOException e)
+	{
+	    e.printStackTrace();
+	    return true;
+	}
     }
 }

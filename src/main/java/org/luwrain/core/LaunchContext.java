@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import java.io.*;
+import java.nio.file.*;
 
 public class LaunchContext
 {
@@ -48,6 +49,12 @@ public class LaunchContext
     {
 	return new File(userHomeDir);
     }
+
+    public Path userHomeDirAsPath()
+    {
+	return Paths.get(userHomeDir);
+    }
+
 
     public String dataDir()
     {
