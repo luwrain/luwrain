@@ -21,45 +21,31 @@ import org.luwrain.core.events.*;
 
 public class EditListPopup extends SimpleEditPopup
 {
-    private final static int MAX_ALTERNATIVES_TO_SAY = 100;
+    static private final int MAX_ALTERNATIVES_TO_SAY = 100;
 
     protected EditListPopupModel model;
 
-    public EditListPopup(Luwrain luwrain,
-		     EditListPopupModel model,
-		     String name,
-		     String prefix,
-		     String text)
+    public EditListPopup(Luwrain luwrain, EditListPopupModel model,
+			 String name, String prefix,
+			 String text)
     {
 	super(luwrain, name, prefix, text);
-	//	this.luwrain = luwrain;
 	this.model = model;
-	//	if (luwrain == null)
-	//	    throw new NullPointerException("luwrain may not be null");
-	if (model == null)
-	    throw new NullPointerException("model may not be null");
+	NullCheck.notNull(model, "model");
     }
 
-    public EditListPopup(Luwrain luwrain,
-		     EditListPopupModel model,
-		     String name,
-		     String prefix,
-		     String text,
-		     int popupFlags)
+    public EditListPopup(Luwrain luwrain, EditListPopupModel model,
+			 String name, String prefix,
+			 String text, int popupFlags)
     {
 	super(luwrain, name, prefix, text, popupFlags);
-	//	this.luwrain = luwrain;
 	this.model = model;
-	//	if (luwrain == null)
-	//	    throw new NullPointerException("luwrain may not be null");
-	if (model == null)
-	    throw new NullPointerException("model may not be null");
+	NullCheck.notNull(model, "model");
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	if (event.isCommand() && !event.isModified())
 	    switch(event.getCommand())
 	    {
@@ -78,18 +64,10 @@ public class EditListPopup extends SimpleEditPopup
 	    case KeyboardEvent.ALTERNATIVE_ARROW_UP:
 		onKeyUp(true);
 		return true;
-
 	    default:
 		return super.onKeyboardEvent(event);
 	    }
 	return super.onKeyboardEvent(event);
-    }
-
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
-    {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
-	return super.onEnvironmentEvent(event);
     }
 
     private void onTab()
@@ -119,6 +97,7 @@ public class EditListPopup extends SimpleEditPopup
     private void onKeyUp(boolean briefIntroduction)
     {
 	final EditListPopupItem item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
+	//	System.out.println(item);
 	if (item == null)
 	{
 	    luwrain.hint(Hints.NO_ITEMS_ABOVE);

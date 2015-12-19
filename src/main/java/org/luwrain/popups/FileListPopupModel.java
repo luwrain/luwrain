@@ -16,95 +16,116 @@
 
 package org.luwrain.popups;
 
-//FIXME:Add trailing slash if the directory is the single with such name beginning;
-
 import java.util.*;
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.attribute.*;
+
+import org.luwrain.core.NullCheck;
 
 class FileListPopupModel extends DynamicListPopupModel
 {
-    protected EditListPopupItem[] getItems(String context)
+    private Path defPath;
+
+    FileListPopupModel(Path defPath)
     {
-	if (context == null || context.isEmpty())
-	    return new EditListPopupItem[0];
-	File current = new File(context);
-	if (context.charAt(context.length() - 1) == pathDelimiter() && current.exists() && current.isDirectory())
-	{
-	    File[] items = null;
-	    try {
-		items = current.listFiles();
-	    }
-	    catch (SecurityException e)
-	    {
-		e.printStackTrace();
-	    }
-	    if (items != null && items.length > 0)
-	    {
-		EditListPopupItem[] res = new EditListPopupItem[items.length];
-		for(int i = 0;i < items.length;++i)
-		    res[i] = new EditListPopupItem(items[i].getAbsolutePath(), items[i].getName());
-		Arrays.sort(res);
-		return res;
-	    }
-	}
-	File parent = current.getParentFile();
-	if (parent == null || !parent.exists())
-	    return new EditListPopupItem[0];
-	File[] items = null;
-	try {
-	    items = parent.listFiles();
-	}
-	catch (SecurityException e)
-	{
-	    e.printStackTrace();
-	}
-	if (items != null && items.length > 0)
-	{
-	    EditListPopupItem[] res = new EditListPopupItem[items.length];
-	    for(int i = 0;i < items.length;++i)
-		res[i] = new EditListPopupItem(items[i].getAbsolutePath(), items[i].getName());
-	    Arrays.sort(res);
-	    return res;
-	}
-	return new EditListPopupItem[0];
+	this.defPath = defPath;
+	NullCheck.notNull(defPath, "defPath");
     }
 
-    protected EditListPopupItem getEmptyItem(String context)
+    @Override protected EditListPopupItem[] getItems(String context)
+    {
+	Path path = null;
+	Path base = null;
+	final String from = context != null?context:"";
+	final Path fromPath = Paths.get(from);
+	final boolean hadTrailingSlash = from.endsWith(separator());
+	if (!from.isEmpty() && fromPath.isAbsolute())
+	{
+	    base = null;
+	    path = fromPath;
+	} else
+	    if (from.isEmpty())
+	    {
+		base = defPath;
+		path = defPath;
+	    } else
+	    {
+		base = defPath;
+		path = defPath.resolve(fromPath);
+	    }
+	//	System.out.println("base=" + base.toString());
+	//	System.out.println(base.getNameCount());
+	//	System.out.println("path=" + path.toString());
+	if (!from.isEmpty() && !hadTrailingSlash)
+		path = path.getParent();
+	if (!Files.exists(path) || !Files.isDirectory(path))
+	    return new EditListPopupItem[0];
+	final LinkedList<EditListPopupItem> items = new LinkedList<EditListPopupItem>();
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
+		for (Path pp : directoryStream) 
+		    if (base != null)
+		    items.add(new EditListPopupItem(base.relativize(pp).toString(), pp.getFileName().toString())); else
+		    items.add(new EditListPopupItem(pp.toString(), pp.getFileName().toString()));
+	    } 
+	catch (IOException e) 
+	{
+	    e.printStackTrace();
+	    return new EditListPopupItem[0];
+	}
+	final EditListPopupItem[] res = items.toArray(new EditListPopupItem[items.size()]);
+	Arrays.sort(res);
+	return res;
+    }
+
+    @Override protected EditListPopupItem getEmptyItem(String context)
     {
 	if (context == null || context.isEmpty())
 	    return new EditListPopupItem();
-	File current = new File(context);
-	if (context.charAt(context.length() - 1) == pathDelimiter() && current.exists() && current.isDirectory())
+	Path base = null;
+	Path path = Paths.get(context);
+	if (!path.isAbsolute())
+	{
+	    base = defPath;
+	    path = base.resolve(path);
+	}
+	if (context.endsWith(separator()) && Files.exists(path) && Files.isDirectory(path))
 	    return new EditListPopupItem(context);
-	File parent = current.getParentFile();
-	if (parent != null)
-	    return new EditListPopupItem(parent.getAbsolutePath() + pathDelimiter());
+	path = path.getParent();
+	if (path != null)
+	{
+	    String suffix = "";
+	    if (Files.exists(path) && Files.isDirectory(path))
+		suffix = separator();
+	    if (base != null)
+		return new EditListPopupItem(base.relativize(path).toString() + suffix);
+	    return new EditListPopupItem(path.toString() + suffix);
+	}
 	return new EditListPopupItem(context);
     }
 
-    private static char pathDelimiter()
-    {
-	return '/';
-    }
-
-    //Just to add slashes to directories;
     @Override public String getCompletion(String beginning)
     {
 	final String res = super.getCompletion(beginning);
 	final String path = beginning + (res != null?res:"");
-	if (!path.isEmpty() && path.charAt(path.length() - 1) == pathDelimiter())
+	if (!path.isEmpty() && path.endsWith(separator()))
 	    return res;
-	if (new File(path).isDirectory())
-	    return res + pathDelimiter(); else
+	final Path pp = Paths.get(path);
+	if (Files.exists(pp) && Files.isDirectory(pp))
+	    return res + separator();
 	    return res;
     }
 
-    public static String getPathWithTrailingSlash(File f)
+    static String getPathWithTrailingSlash(Path p)
     {
-	if (f == null)
-	    throw new NullPointerException("f may not be null");
-	if (f.isDirectory())
-	    return f.getAbsolutePath() + pathDelimiter(); 
-	return f.getAbsolutePath();
+	NullCheck.notNull(p, "p");
+	if (Files.exists(p) && Files.isDirectory(p))
+	    return p.toString() + separator();
+	return p.toString();
+    }
+
+    static private String separator()
+    {
+	return FileSystems.getDefault().getSeparator();
     }
 }

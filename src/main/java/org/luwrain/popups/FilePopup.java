@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//FIXME:ControlEnvironment interface support;
-
 package org.luwrain.popups;
 
 import java.io.*;
@@ -26,32 +24,28 @@ import org.luwrain.core.events.*;
 
 public class FilePopup extends EditListPopup
 {
-    public static final int ANY = 0;
-    public static final int DIRECTORY = 1;
+    public interface Acceptance 
+    {
+	boolean pathAcceptable(Path path);
+    }
 
     private File file;
 
-    public FilePopup(Luwrain luwrain,
-			   String name,
-			   String prefix,
-			   File file)
+    public FilePopup(Luwrain luwrain, String name,
+		     String prefix, File file)
     {
-	super(luwrain, new FileListPopupModel(), name, prefix, FileListPopupModel.getPathWithTrailingSlash(file));
+	super(luwrain, new FileListPopupModel(Paths.get("/home/luwrain")), name, prefix, FileListPopupModel.getPathWithTrailingSlash(file.toPath()));
 	this.file = file;
-	if (file == null)
-	    throw new NullPointerException("file may not be null");
+	NullCheck.notNull(file, "file");
     }
 
-    public FilePopup(Luwrain luwrain,
-			   String name,
-			   String prefix,
-		     File file,
+    public FilePopup(Luwrain luwrain, String name,
+		     String prefix, File file,
 		     int popupFlags)
     {
-	super(luwrain, new FileListPopupModel(), name, prefix, FileListPopupModel.getPathWithTrailingSlash(file), popupFlags);
+	super(luwrain, new FileListPopupModel(Paths.get("/home/luwrain")), name, prefix, FileListPopupModel.getPathWithTrailingSlash(file.toPath()), popupFlags);
 	this.file = file;
-	if (file == null)
-	    throw new NullPointerException("file may not be null");
+	NullCheck.notNull(file, "file");
     }
 
     public File getFile()
