@@ -79,8 +79,7 @@ public class FileTypes
 
     static public String getExtension(String fileName)
     {
-	if (fileName == null)
-	    throw new NullPointerException("fileName may not be null");
+	NullCheck.notNull(fileName, "fileName");
 	if (fileName.isEmpty())
 	    throw new IllegalArgumentException("fileName may not be empty");
 	final String name = new File(fileName).getName();

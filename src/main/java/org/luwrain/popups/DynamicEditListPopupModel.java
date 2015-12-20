@@ -18,7 +18,7 @@ package org.luwrain.popups;
 
 import java.util.*;
 
-public abstract class DynamicListPopupModel implements EditListPopupModel
+public abstract class DynamicEditListPopupModel implements EditListPopupModel
 {
     //Items must be ordered and all of them should be greater than an empty item;
     protected abstract EditListPopupItem[] getItems(String context);

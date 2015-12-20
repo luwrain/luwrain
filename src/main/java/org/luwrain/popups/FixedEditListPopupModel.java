@@ -18,11 +18,11 @@ package org.luwrain.popups;
 
 import java.util.*;
 
-public class FixedListPopupModel extends DynamicListPopupModel
+public class FixedEditListPopupModel extends DynamicEditListPopupModel
 {
     private EditListPopupItem[] fixedItems;
 
-    public FixedListPopupModel(String[] items)
+    public FixedEditListPopupModel(String[] items)
     {
 	if (items == null)
 	    throw new NullPointerException("items may not be null");

@@ -25,6 +25,100 @@ import org.luwrain.hardware.Partition;
 
 public class Popups
 {
+    static public String simple(Luwrain luwrain,
+				String name, String prefix,
+				String text)
+    {
+	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.text ();
+    }
+
+    static public Object fixedList(Luwrain luwrain,
+			    String name, Object[] items,
+int popupFlags)
+    {
+	final Object[] items2 = items;
+	final ListArea.Model model = new ListArea.Model(){
+		private Object[] items = items2;
+		@Override public int getItemCount()
+		{
+		    return items.length;
+		}
+		@Override public Object getItem(int index)
+		{
+		    return index < items.length?items[index]:null;
+		}
+		@Override public boolean toggleMark(int index)
+		{
+		    return false;
+		}
+		@Override public void refresh()
+		{
+		}
+	    };
+	final ListPopup popup = new ListPopup(luwrain, name, model, new DefaultListItemAppearance(new DefaultControlEnvironment(luwrain)), popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.selected();
+    }
+
+    static public Path open(Luwrain luwrain)
+    {
+	return open(luwrain, null, null, null, null, null, 0);
+    }
+
+    static public Path open(Luwrain luwrain,
+			    Path startWith, Path defPath,
+			    int popupFlags)
+    {
+	return open(luwrain, null, null, startWith, defPath, null, popupFlags);
+    }
+
+    static public Path open(Luwrain luwrain,
+			    Path startWith, Path defPath,
+			    DefaultFileAcceptance.Type fileType, String[] fileExtensions,
+			    int popupFlags)
+    {
+	return open(luwrain, null, null, startWith, defPath, new DefaultFileAcceptance(fileType, fileExtensions), popupFlags);
+    }
+
+    static public Path open(Luwrain luwrain,
+			    String name, String prefix,
+			    Path startWith, Path defPath,
+			    FilePopup.Acceptance acceptance, int popupFlags)
+    {
+	org.luwrain.core.Strings strings = (org.luwrain.core.Strings)luwrain.i18n().getStrings("luwrain.environment");
+	final String chosenName = (name != null && !name.trim().isEmpty())?name.trim():strings.openPopupName();
+	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():strings.openPopupPrefix();
+	final Path chosenStartWith = startWith != null?startWith:luwrain.launchContext().userHomeDirAsPath();
+	final Path chosenDefPath = defPath != null?defPath:luwrain.launchContext().userHomeDirAsPath();
+	FilePopup popup = new FilePopup(luwrain, chosenName, chosenPrefix, acceptance,
+					chosenStartWith, chosenDefPath, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.result();
+    }
+
+    public static Path chooseFile(Luwrain luwrain,
+			    String name, String prefix,
+			    Path startWith, Path defPath,
+			    DefaultFileAcceptance.Type fileType, String[] fileExtensions,
+			    int popupFlags)
+    {
+	final FilePopup popup = new FilePopup(luwrain, name, prefix, 
+					      new DefaultFileAcceptance(fileType, fileExtensions), 
+					      startWith, defPath, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.result();
+    }
+
     static public Path[] commanderMultiple(Luwrain luwrain, String name,
 					   Path path, int flags,
 					   int popupFlags)
@@ -71,106 +165,5 @@ public class Popups
 	return result.file();
     }
 
-    public static File open(Luwrain luwrain, int popupFlags)
-    {
-	return open(luwrain, null, null, null, popupFlags);
-    }
 
-    public static File open(Luwrain luwrain,
-			    File startWith,
-			    int popupFlags)
-    {
-	return open(luwrain, null, null, startWith, popupFlags);
-    }
-
-    public static File open(Luwrain luwrain,
-			    String name,
-			    String prefix,
-			    File startWith,
-			    int popupFlags)
-    {
-	org.luwrain.core.Strings strings = (org.luwrain.core.Strings)luwrain.i18n().getStrings("luwrain.environment");
-	final String chosenName = (name != null && !name.trim().isEmpty())?name.trim():strings.openPopupName();
-	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():strings.openPopupPrefix();
-	final File chosenStartWith = startWith != null?startWith:luwrain.launchContext().userHomeDirAsFile();
-	FilePopup popup = new FilePopup(luwrain, chosenName, chosenPrefix, chosenStartWith, popupFlags);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.getFile();
-    }
-
-    public static File file(Luwrain luwrain,
-			    String name,
-			    String prefix,
-			    File startWith,
-			    int acceptingFlags,
-			    int popupFlags)
-    {
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (prefix == null)
-	    throw new NullPointerException("prefix may not be null");
-	if (startWith == null)
-	    throw new NullPointerException("startWith may not be null");
-	FilePopup popup = new FilePopup(luwrain, name, prefix, startWith, popupFlags);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.getFile();
-    }
-
-    public static String simple(Luwrain luwrain,
-				String name,
-				String prefix,
-String text)
-    {
-	SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.text ();
-    }
-
-    static public Object fixedList(Luwrain luwrain,
-			    String name,
-			    Object[] items,
-int popupFlags)
-    {
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (items == null)
-	    throw new NullPointerException("items may not be null");
-	if (items.length < 1)
-	    throw new IllegalArgumentException("items may not be empty");
-	for(int i = 0;i < items.length;++i)
-	    if (items[i] == null)
-	    throw new NullPointerException("items[" + i + "] may not be null");
-	final Object[] items2 = items;
-	final ListArea.Model model = new ListArea.Model(){
-		private Object[] items = items2;
-		@Override public int getItemCount()
-		{
-		    return items.length;
-		}
-		@Override public Object getItem(int index)
-		{
-		    return index < items.length?items[index]:null;
-		}
-		@Override public boolean toggleMark(int index)
-		{
-		    return false;
-		}
-		@Override public void refresh()
-		{
-		}
-	    };
-	final ListPopup popup = new ListPopup(luwrain, name, model, new DefaultListItemAppearance(new DefaultControlEnvironment(luwrain)), popupFlags);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.selected();
-    }
 }

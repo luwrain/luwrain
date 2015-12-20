@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
 import org.luwrain.os.OperatingSystem;
@@ -879,7 +880,7 @@ class Environment implements EventConsumer
 
     private void showCommandPopup()
     {
-	EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedListPopupModel(commands.getCommandNames()),
+	EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedEditListPopupModel(commands.getCommandNames()),
 					strings.commandPopupName(), strings.commandPopupPrefix(), "");
 	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
@@ -1127,19 +1128,18 @@ class Environment implements EventConsumer
 
     void onOpenCommand()
     {
-	final File current = new File(currentAreaDirIface());
+	final Path current = Paths.get(currentAreaDirIface());
 
-	final FilePopup popup = new FilePopup(interfaces.getObjForEnvironment(), strings.openPopupName(),
-					      strings.openPopupPrefix(), current);
+	final FilePopup popup = new FilePopup(interfaces.getObjForEnvironment(), 
+					      strings.openPopupName(), strings.openPopupPrefix(), 
+					      null, current, current, 0);
 	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
-File res = popup.getFile();
-	if (!res.isAbsolute())
-	    res = new File(launchContext.userHomeDirAsFile(), res.getPath());
+	final Path res = popup.result();
 	final Area activeArea = getValidActiveArea(false);
-	if (activeArea == null || !activeArea.onEnvironmentEvent(new OpenEvent(res.toPath())))
-	openFiles(new String[]{res.getAbsolutePath()});
+	if (activeArea == null || !activeArea.onEnvironmentEvent(new OpenEvent(res)))
+	openFiles(new String[]{res.toString()});
     }
 
     void onCopyObjectUniRefCommand()

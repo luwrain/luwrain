@@ -16,6 +16,7 @@
 
 package org.luwrain.popups;
 
+import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 
@@ -29,28 +30,29 @@ public class FilePopup extends EditListPopup
 	boolean pathAcceptable(Path path);
     }
 
-    private File file;
+    //    private Path path;
+    private Path defPath;
+    private Acceptance acceptance;
 
     public FilePopup(Luwrain luwrain, String name,
-		     String prefix, File file)
-    {
-	super(luwrain, new FileListPopupModel(Paths.get("/home/luwrain")), name, prefix, FileListPopupModel.getPathWithTrailingSlash(file.toPath()));
-	this.file = file;
-	NullCheck.notNull(file, "file");
-    }
-
-    public FilePopup(Luwrain luwrain, String name,
-		     String prefix, File file,
+		     String prefix, Acceptance acceptance,
+		     Path path, Path defPath,
 		     int popupFlags)
     {
-	super(luwrain, new FileListPopupModel(Paths.get("/home/luwrain")), name, prefix, FileListPopupModel.getPathWithTrailingSlash(file.toPath()), popupFlags);
-	this.file = file;
-	NullCheck.notNull(file, "file");
+	super(luwrain, new Model(defPath), name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
+	//	this.path = path;
+	this.defPath = defPath;
+	this.acceptance = acceptance;
+	//	NullCheck.notNull(file, "file");
+	NullCheck.notNull(defPath, "defPath");
     }
 
-    public File getFile()
+    public Path result()
     {
-	return new File(text());
+	final Path res = Paths.get(text());
+	if (res.isAbsolute())
+	    return res;
+	return defPath.resolve(res);
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -67,12 +69,14 @@ public class FilePopup extends EditListPopup
 
     @Override public boolean onOk()
     {
-	return true;
+	if (acceptance == null)
+	    return true;
+	return acceptance.pathAcceptable(result());
     }
 
     private boolean openCommanderPopup()
     {
-	File file = getFile();
+	File file = result().toFile();
 	if (file == null)
 	    return false;
 	if (!file.isDirectory())
@@ -83,5 +87,112 @@ public class FilePopup extends EditListPopup
 	if (res != null)
 	    setText(res.toAbsolutePath().toString(), "");
 	return true;
+    }
+
+    static private class Model extends DynamicEditListPopupModel
+    {
+	private Path defPath;
+
+	Model(Path defPath)
+	{
+	    this.defPath = defPath;
+	    NullCheck.notNull(defPath, "defPath");
+	}
+
+	@Override protected EditListPopupItem[] getItems(String context)
+	{
+	    Path path = null;
+	    Path base = null;
+	    final String from = context != null?context:"";
+	    final Path fromPath = Paths.get(from);
+	    final boolean hadTrailingSlash = from.endsWith(separator());
+	    if (!from.isEmpty() && fromPath.isAbsolute())
+	    {
+		base = null;
+		path = fromPath;
+	    } else
+		if (from.isEmpty())
+		{
+		    base = defPath;
+		    path = defPath;
+		} else
+		{
+		    base = defPath;
+		    path = defPath.resolve(fromPath);
+		}
+	    //	System.out.println("base=" + base.toString());
+	    //	System.out.println(base.getNameCount());
+	    //	System.out.println("path=" + path.toString());
+	    if (!from.isEmpty() && !hadTrailingSlash)
+		path = path.getParent();
+	    if (!Files.exists(path) || !Files.isDirectory(path))
+		return new EditListPopupItem[0];
+	    final LinkedList<EditListPopupItem> items = new LinkedList<EditListPopupItem>();
+	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
+		    for (Path pp : directoryStream) 
+			if (base != null)
+			    items.add(new EditListPopupItem(base.relativize(pp).toString(), pp.getFileName().toString())); else
+			    items.add(new EditListPopupItem(pp.toString(), pp.getFileName().toString()));
+		} 
+	    catch (IOException e) 
+	    {
+		e.printStackTrace();
+		return new EditListPopupItem[0];
+	    }
+	    final EditListPopupItem[] res = items.toArray(new EditListPopupItem[items.size()]);
+	    Arrays.sort(res);
+	    return res;
+	}
+
+	@Override protected EditListPopupItem getEmptyItem(String context)
+	{
+	    if (context == null || context.isEmpty())
+		return new EditListPopupItem();
+	    Path base = null;
+	    Path path = Paths.get(context);
+	    if (!path.isAbsolute())
+	    {
+		base = defPath;
+		path = base.resolve(path);
+	    }
+	    if (context.endsWith(separator()) && Files.exists(path) && Files.isDirectory(path))
+		return new EditListPopupItem(context);
+	    path = path.getParent();
+	    if (path != null)
+	    {
+		String suffix = "";
+		if (Files.exists(path) && Files.isDirectory(path))
+		    suffix = separator();
+		if (base != null)
+		    return new EditListPopupItem(base.relativize(path).toString() + suffix);
+		return new EditListPopupItem(path.toString() + suffix);
+	    }
+	    return new EditListPopupItem(context);
+	}
+
+	@Override public String getCompletion(String beginning)
+	{
+	    final String res = super.getCompletion(beginning);
+	    final String path = beginning + (res != null?res:"");
+	    if (!path.isEmpty() && path.endsWith(separator()))
+		return res;
+	    final Path pp = Paths.get(path);
+	    if (Files.exists(pp) && Files.isDirectory(pp))
+		return res + separator();
+	    return res;
+	}
+
+	static String getPathWithTrailingSlash(Path p)
+	{
+	    NullCheck.notNull(p, "p");
+	    if (Files.exists(p) && Files.isDirectory(p))
+		return p.toString() + separator();
+	    return p.toString();
+	}
+
+	static private String separator()
+	{
+	    return FileSystems.getDefault().getSeparator();
+	}
     }
 }
