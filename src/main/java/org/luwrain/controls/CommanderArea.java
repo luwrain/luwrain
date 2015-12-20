@@ -120,7 +120,6 @@ public Type type()
     boolean commanderEntrySuits(Entry entry);
 }
 
-
 public interface Appearance 
 {
     void introduceEntry(Entry entry, boolean brief);
@@ -191,6 +190,31 @@ static public class Params
 	if (!Files.isDirectory(current))
 	    throw new IllegalArgumentException("current must address a directory");
 	refresh();
+    }
+
+    public void setClickHandler(ClickHandler clickHandler)
+    {
+	this.clickHandler = clickHandler;
+    }
+
+    public boolean find(String fileName, boolean announce)
+    {
+	NullCheck.notNull(fileName, "fileName");
+	if (fileName.isEmpty())
+	    throw new IllegalArgumentException("fileName may not be null");
+	if (isEmpty())
+	    return false;
+	int index = 0;
+	while(index < entries.size() && !entries.get(index).baseName().equals(fileName))
+	    ++index;
+	if (index >= entries.size())
+	    return false;
+	hotPointY = index;
+	hotPointX = 0;
+	environment.onAreaNewHotPoint(this);
+	if (announce)
+	    appearance.introduceEntry(entries.get(hotPointY), false);
+	return true;
     }
 
     /*
@@ -480,13 +504,16 @@ static public class Params
 	    return true;
 	if (hotPointY >= entries.size())
 	{
+	    if (clickHandler == null)
+		return false;
 	    final Path[] selected = selected();
 	    if (selected == null || selected.length < 1)
 		return false;
 	    return clickHandler.onCommanderClick(null, selected);
 	}
 	final Entry entry = entries.get(hotPointY);
-	if (entry.type() == Entry.Type.DIR)
+	System.out.println("1");
+	if (Files.isDirectory(entry.path()))//Explicit check because it could be a symlink to directory
 	{
 	    final Path parent = current.getParent();
 	    if (entry.parent() && parent != null)
@@ -494,9 +521,11 @@ static public class Params
 		open(entry.path(), null);
 	    appearance.introduceLocation(current);
 	    return true;
-	}
+	} //directory
+	System.out.println("1a");
 	if (clickHandler == null)
 	    return false;
+	System.out.println("2");
 	return clickHandler.onCommanderClick(entry.path(), selected());
     }
 

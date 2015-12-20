@@ -8,7 +8,7 @@ import org.luwrain.core.FileTypes;
 
 public class DefaultFileAcceptance implements FilePopup.Acceptance
 {
-    public enum Type {ANY, EXISTING, DIRECTORY, NOT_DIRECTORY};
+    public enum Type {ANY, EXISTING, NOT_EXISTING, DIRECTORY, NOT_DIRECTORY};
 
     private Type type;
     private String[] fileExtensions;
@@ -32,7 +32,9 @@ public class DefaultFileAcceptance implements FilePopup.Acceptance
 	if (!path.isAbsolute())
 	    return false;
 	if (!Files.exists(path))
-	    return type == Type.ANY;
+	    return type == Type.ANY || type == Type.NOT_EXISTING;
+	if (type == Type.NOT_EXISTING)
+	    return false;
 	if (Files.isDirectory(path))
 	    return type == Type.ANY || type == Type.EXISTING || type == Type.DIRECTORY;
 	//Regular files

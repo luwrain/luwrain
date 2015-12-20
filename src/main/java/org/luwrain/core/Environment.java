@@ -114,7 +114,7 @@ class Environment implements EventConsumer
     {
 	speechProc = new Luwrain(this);
 	desktop.onLaunch(interfaces.requestNew(desktop));
-	player = new org.luwrain.player.Impl(registry);
+	player = new org.luwrain.player.Player(registry);
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
 	windowManager = new WindowManager(interaction, screenContentManager);

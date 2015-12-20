@@ -22,23 +22,17 @@ import org.luwrain.player.backends.*;
 import org.luwrain.util.RegistryPath;
 
 
-public class Impl implements Player
+class Impl
 {
-    private final BackEnd jlayer = new JLayer();
-    private final BackEnd javafx = new JavaFx();
+    BackEnd regularBackEnd = null;
+    BackEnd streamingBackEnd = null;
     private BackEnd currentPlayer = null;
 
-    private Registry registry;
     private final Vector<Listener> listeners = new Vector<Listener>();
     private Playlist currentPlaylist;
+    private int lastSec = 0;
 
-    public Impl(Registry registry)
-    {
-	this.registry = registry;
-	NullCheck.notNull(registry, "registry");
-    }
-
-    @Override public void play(Playlist playlist)
+synchronized void play(Playlist playlist)
     {
 	NullCheck.notNull(playlist, "playlist");
 	if (playlist.getPlaylistItems() == null || playlist.getPlaylistItems().length < 1)
@@ -46,39 +40,38 @@ public class Impl implements Player
 	this.currentPlaylist = playlist;
 	stop();
 	if (playlist.isStreaming())
-	    currentPlayer = jlayer; else
-	    currentPlayer = javafx;
+	    currentPlayer = streamingBackEnd; else
+	    currentPlayer = regularBackEnd;
 	currentPlayer.play(playlist.getPlaylistItems()[0]);
     }
 
-    @Override public void stop()
+synchronized void stop()
     {
 	if (currentPlayer == null)
 	    return;
 	currentPlayer.stop();
     }
 
-    @Override public Playlist getCurrentPlaylist()
+synchronized Playlist getCurrentPlaylist()
     {
 	return currentPlaylist;
     }
 
-    @Override public Playlist[] loadRegistryPlaylists()
+    synchronized void onBackEndTime(int sec)
     {
-	final String dir = "/org/luwrain/player/playlists";//FIXME:
-	final String[] dirs = registry.getDirectories(dir); 
-	final LinkedList<Playlist> res = new LinkedList<Playlist>();
-	for(String s: dirs)
-	{
-	    final String path = RegistryPath.join(dir, s);
-	    final RegistryPlaylist playlist = new RegistryPlaylist(registry);
-	    if (playlist.init(path))
-		res.add(playlist);
-	}
-	return res.toArray(new Playlist[res.size()]);
+	if (lastSec == sec)
+	    return;
+	lastSec = sec;
+	//	System.out.println("" + listeners.size() + " listeners");
+	for(Listener l: listeners)
+	    l.onTrackTime(lastSec);
     }
 
-    @Override public void addListener(Listener listener)
+    synchronized void onBackEndFinish()
+    {
+    }
+
+    synchronized void addListener(Listener listener)
     {
 	NullCheck.notNull(listener, "listener");
 	for(Listener l: listeners)
@@ -87,8 +80,7 @@ public class Impl implements Player
 	listeners.add(listener);
     }
 
-    @Override public void removeListener(Listener listener)
+    synchronized void removeListener(Listener listener)
     {
-
     }
 }

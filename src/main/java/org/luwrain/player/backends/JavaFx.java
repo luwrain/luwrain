@@ -26,18 +26,25 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;                                                   
 
 import org.luwrain.core.NullCheck;
+import org.luwrain.player.BackEndStatus;
 
 public class JavaFx implements org.luwrain.player.BackEnd
 {                                                                                                
-    //    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private MediaPlayer player = null;
+    private BackEndStatus status;
+
+    public JavaFx(BackEndStatus status)
+    {
+	this.status = status;
+	NullCheck.notNull(status, "status");
+    }
 
     @Override public boolean play(String uri)
     {
 	NullCheck.notNull(uri, "uri");
 	final Media media = new Media(uri);
 	player = new MediaPlayer(media);
-	player.currentTimeProperty().addListener((observable, oldValue, newValue)->{System.out.println(newValue.toString());});
+	player.currentTimeProperty().addListener((observable, oldValue, newValue)->{status.onBackEndTime((int)Math.floor(newValue.toSeconds()));});
 	player.play();
 	return true;
     }                                                                                            

@@ -183,7 +183,9 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	    final String path = beginning + (res != null?res:"");
 	    if (!path.isEmpty() && path.endsWith(separator()))
 		return res;
-	    final Path pp = Paths.get(path);
+	    Path pp = Paths.get(path);
+	    if (!pp.isAbsolute())
+		pp = defPath.resolve(pp);
 	    if (Files.exists(pp) && Files.isDirectory(pp))
 		return res + separator();
 	    return res;

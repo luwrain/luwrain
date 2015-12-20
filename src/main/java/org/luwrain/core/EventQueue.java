@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 
 public class EventQueue
 {
-    private LinkedBlockingQueue<Event> events = new LinkedBlockingQueue<Event>(1024);
+    private final LinkedBlockingQueue<Event> events = new LinkedBlockingQueue<Event>(1024);
     private Event again = null;
 
     void putEvent(Event e)

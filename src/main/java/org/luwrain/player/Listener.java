@@ -4,4 +4,5 @@ package org.luwrain.player;
 public interface Listener
 {
     void onNewPlaylist(Playlist playlist);
+    void onTrackTime(int sec);
 }

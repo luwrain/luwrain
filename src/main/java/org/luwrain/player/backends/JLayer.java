@@ -24,12 +24,20 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
 import org.luwrain.core.NullCheck;
+import org.luwrain.player.BackEndStatus;
 
 public class JLayer implements org.luwrain.player.BackEnd
 {                                                                                                
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Player player = null;
     private FutureTask task = null;
+    private BackEndStatus status;
+
+    public JLayer(BackEndStatus status)
+    {
+	this.status = status;
+	NullCheck.notNull(status, "status");
+    }
 
     @Override public boolean play(String uri)
     {
@@ -41,8 +49,8 @@ public class JLayer implements org.luwrain.player.BackEnd
 	{
 	    final URLConnection urlConnection = new URL(uri).openConnection();
 	urlConnection.connect();
-	    /*	final Player */player = new Player(urlConnection.getInputStream());
 	player.play();
+	    status.onBackEndFinish();
 	}                                                                                        
 	catch (IOException e)
 	{
