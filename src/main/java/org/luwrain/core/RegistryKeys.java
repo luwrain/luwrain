@@ -195,6 +195,11 @@ public class RegistryKeys
 	return getProperty("environment.FileTypes");
     }
 
+    public String ui()
+    {
+	return "/org/luwrain/ui";//FIXME:
+    }
+
     private String getProperty(String name)
     {
 	if (name == null)

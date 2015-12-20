@@ -26,7 +26,6 @@ import org.luwrain.speech.BackEnd;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.core.extensions.*;
-import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.speech.Channel;
@@ -65,8 +64,7 @@ class Environment implements EventConsumer
     private HeldData clipboard = null;
     private LaunchContext launchContext;
     private Strings strings;
-    private RegistryAutoCheck registryAutoCheck;
-    private final RegistryKeys registryKeys = new RegistryKeys();
+    private Settings.UserInterface uiSettings;
 
     private boolean needForIntroduction = false;
     private boolean introduceApp = false;
@@ -98,17 +96,15 @@ class Environment implements EventConsumer
 	init();
 	interaction.startInputEventsAccepting(this);
 	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
-	if (registry.getTypeOf(registryKeys.launchGreeting()) == Registry.STRING)
-	{
-	    final String text = registry.getString(registryKeys.launchGreeting());
-	    if (!text.trim().isEmpty())
+	final String greeting = uiSettings.getLaunchGreeting("");
+	if (!greeting.trim().isEmpty())
+	    try {
+		Thread.sleep(1000);
+		message(greeting, Luwrain.MESSAGE_REGULAR);
+	    } catch (InterruptedException ie)
 	    {
-	try {
-	    Thread.sleep(1000);
-	} catch (InterruptedException ie){}
-	message(text, Luwrain.MESSAGE_REGULAR);
+		Thread.currentThread().interrupt();
 	    }
-	}
 	eventLoop(new InitialEventLoopStopCondition());
 	interaction.stopInputEventsAccepting();
 	extensions.close();
@@ -132,7 +128,7 @@ class Environment implements EventConsumer
 	initObjects();
 	desktop.ready(i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME));
 	EnvironmentSounds.init(registry, launchContext);
-	registryAutoCheck = new RegistryAutoCheck(registry, "environment");
+	uiSettings = Settings.createUserInterface(registry);
     }
 
     private void initObjects()
@@ -1129,10 +1125,10 @@ class Environment implements EventConsumer
     void onOpenCommand()
     {
 	final Path current = Paths.get(currentAreaDirIface());
-
 	final FilePopup popup = new FilePopup(interfaces.getObjForEnvironment(), 
 					      strings.openPopupName(), strings.openPopupPrefix(), 
-					      null, current, current, 0);
+					      null, current, current, 
+					      uiSettings.getFilePopupSkipHidden(false)?FilePopup.SKIP_HIDDEN:0);//FIXME:SKIP_HIDDEN from the registry
 	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;

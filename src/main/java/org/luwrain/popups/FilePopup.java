@@ -25,12 +25,13 @@ import org.luwrain.core.events.*;
 
 public class FilePopup extends EditListPopup
 {
+    static public final int SKIP_HIDDEN = 2048;
+
     public interface Acceptance 
     {
 	boolean pathAcceptable(Path path);
     }
 
-    //    private Path path;
     private Path defPath;
     private Acceptance acceptance;
 
@@ -39,7 +40,8 @@ public class FilePopup extends EditListPopup
 		     Path path, Path defPath,
 		     int popupFlags)
     {
-	super(luwrain, new Model(defPath), name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
+	super(luwrain, new Model(defPath, (popupFlags & SKIP_HIDDEN) != 0), 
+name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	//	this.path = path;
 	this.defPath = defPath;
 	this.acceptance = acceptance;
@@ -92,10 +94,12 @@ public class FilePopup extends EditListPopup
     static private class Model extends DynamicEditListPopupModel
     {
 	private Path defPath;
+	private boolean skipHidden = false;
 
-	Model(Path defPath)
+	Model(Path defPath, boolean skipHidden)
 	{
 	    this.defPath = defPath;
+	    this.skipHidden = skipHidden;
 	    NullCheck.notNull(defPath, "defPath");
 	}
 
@@ -120,9 +124,6 @@ public class FilePopup extends EditListPopup
 		    base = defPath;
 		    path = defPath.resolve(fromPath);
 		}
-	    //	System.out.println("base=" + base.toString());
-	    //	System.out.println(base.getNameCount());
-	    //	System.out.println("path=" + path.toString());
 	    if (!from.isEmpty() && !hadTrailingSlash)
 		path = path.getParent();
 	    if (!Files.exists(path) || !Files.isDirectory(path))
@@ -130,9 +131,12 @@ public class FilePopup extends EditListPopup
 	    final LinkedList<EditListPopupItem> items = new LinkedList<EditListPopupItem>();
 	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
 		    for (Path pp : directoryStream) 
+			if (!skipHidden || !Files.isHidden(pp))
+			{
 			if (base != null)
 			    items.add(new EditListPopupItem(base.relativize(pp).toString(), pp.getFileName().toString())); else
 			    items.add(new EditListPopupItem(pp.toString(), pp.getFileName().toString()));
+			}
 		} 
 	    catch (IOException e) 
 	    {
@@ -161,7 +165,10 @@ public class FilePopup extends EditListPopup
 	    if (path != null)
 	    {
 		String suffix = "";
-		if (Files.exists(path) && Files.isDirectory(path))
+		//We don't want double slash in root designation and at the top of relative enumeration
+		if (Files.exists(path) && Files.isDirectory(path) && 
+		    !path.equals(path.getRoot()) &&
+		    (base == null || !base.equals(path)))
 		    suffix = separator();
 		if (base != null)
 		    return new EditListPopupItem(base.relativize(path).toString() + suffix);

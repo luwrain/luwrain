@@ -68,14 +68,14 @@ int popupFlags)
 
     static public Path open(Luwrain luwrain)
     {
-	return open(luwrain, null, null, null, null, null, 0);
+	return open(luwrain, null, null, null, null, null, makeFilePopupFlags(luwrain, 0));
     }
 
     static public Path open(Luwrain luwrain,
 			    Path startWith, Path defPath,
 			    int popupFlags)
     {
-	return open(luwrain, null, null, startWith, defPath, null, popupFlags);
+	return open(luwrain, null, null, startWith, defPath, null, makeFilePopupFlags(luwrain, popupFlags));
     }
 
     static public Path open(Luwrain luwrain,
@@ -83,7 +83,7 @@ int popupFlags)
 			    DefaultFileAcceptance.Type fileType, String[] fileExtensions,
 			    int popupFlags)
     {
-	return open(luwrain, null, null, startWith, defPath, new DefaultFileAcceptance(fileType, fileExtensions), popupFlags);
+	return open(luwrain, null, null, startWith, defPath, new DefaultFileAcceptance(fileType, fileExtensions), makeFilePopupFlags(luwrain, popupFlags));
     }
 
     static public Path open(Luwrain luwrain,
@@ -97,7 +97,7 @@ int popupFlags)
 	final Path chosenStartWith = startWith != null?startWith:luwrain.launchContext().userHomeDirAsPath();
 	final Path chosenDefPath = defPath != null?defPath:luwrain.launchContext().userHomeDirAsPath();
 	FilePopup popup = new FilePopup(luwrain, chosenName, chosenPrefix, acceptance,
-					chosenStartWith, chosenDefPath, popupFlags);
+					chosenStartWith, chosenDefPath, makeFilePopupFlags(luwrain, popupFlags));
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -112,7 +112,7 @@ int popupFlags)
     {
 	final FilePopup popup = new FilePopup(luwrain, name, prefix, 
 					      new DefaultFileAcceptance(fileType, fileExtensions), 
-					      startWith, defPath, popupFlags);
+					      startWith, defPath, makeFilePopupFlags(luwrain, popupFlags));
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -165,5 +165,12 @@ int popupFlags)
 	return result.file();
     }
 
-
+    static private int makeFilePopupFlags(Luwrain luwrain, int orig)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final Settings.UserInterface ui = Settings.createUserInterface(luwrain.getRegistry());
+	if (ui.getFilePopupSkipHidden(false))
+	return orig | FilePopup.SKIP_HIDDEN;
+	return orig;
+    }
 }
