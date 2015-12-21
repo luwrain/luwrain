@@ -49,6 +49,7 @@ public class JLayer implements org.luwrain.player.BackEnd
 	{
 	    final URLConnection urlConnection = new URL(uri).openConnection();
 	urlConnection.connect();
+player = new Player(urlConnection.getInputStream());
 	player.play();
 	    status.onBackEndFinish();
 	}                                                                                        

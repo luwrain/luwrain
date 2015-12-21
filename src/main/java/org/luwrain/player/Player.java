@@ -85,6 +85,11 @@ public class Player
 	return impl.getCurrentPlaylist();
     }
 
+    public int getCurrentTrackNum()
+    {
+	return impl.getCurrentTrackNum();
+    }
+
     public Playlist[] loadRegistryPlaylists()
     {
 	final String dir = "/org/luwrain/player/playlists";//FIXME:

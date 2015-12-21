@@ -15,7 +15,7 @@ public class SingleLocalFilePlaylist implements Playlist
 
     @Override public String getPlaylistTitle()
     {
-	return uri;
+	return "-";
     }
 
     @Override public String[] getPlaylistItems()

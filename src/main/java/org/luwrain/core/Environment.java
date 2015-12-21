@@ -1134,7 +1134,7 @@ class Environment implements EventConsumer
 	    return;
 	final Path res = popup.result();
 	final Area activeArea = getValidActiveArea(false);
-	if (activeArea == null || !activeArea.onEnvironmentEvent(new OpenEvent(res)))
+	if (activeArea == null || !activeArea.onEnvironmentEvent(new OpenEvent(res.toString())))
 	openFiles(new String[]{res.toString()});
     }
 

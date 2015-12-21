@@ -16,23 +16,21 @@
 
 package org.luwrain.core.events;
 
-import java.nio.file.Path;
 import org.luwrain.core.*;
 
 public class OpenEvent extends EnvironmentEvent
 {
-    private Path path;
+    private String path;
 
-    public OpenEvent(Path path)
+    public OpenEvent(String path)
     {
 	super(OPEN);
 	this.path = path;
 	NullCheck.notNull(path, "path");
     }
 
-    public Path path()
+    public String path()
     {
 	return path;
     }
-
 }

@@ -72,6 +72,12 @@ int popupFlags)
     }
 
     static public Path open(Luwrain luwrain,
+			    Path startWith, Path defPath)
+    {
+	return open(luwrain, null, null, startWith, defPath, null, makeFilePopupFlags(luwrain, 0));
+    }
+
+    static public Path open(Luwrain luwrain,
 			    Path startWith, Path defPath,
 			    int popupFlags)
     {

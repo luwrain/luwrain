@@ -26,23 +26,31 @@ class Impl
 {
     BackEnd regularBackEnd = null;
     BackEnd streamingBackEnd = null;
-    private BackEnd currentPlayer = null;
 
+    private BackEnd currentPlayer = null;//null means the player is in idle state
     private final Vector<Listener> listeners = new Vector<Listener>();
     private Playlist currentPlaylist;
+    private int currentTrackNum = 0;
     private int lastSec = 0;
 
 synchronized void play(Playlist playlist)
     {
 	NullCheck.notNull(playlist, "playlist");
+	System.out.println("play1");
 	if (playlist.getPlaylistItems() == null || playlist.getPlaylistItems().length < 1)
 	    return;
-	this.currentPlaylist = playlist;
 	stop();
+	this.currentPlaylist = playlist;
+	currentTrackNum = 0;
 	if (playlist.isStreaming())
 	    currentPlayer = streamingBackEnd; else
 	    currentPlayer = regularBackEnd;
-	currentPlayer.play(playlist.getPlaylistItems()[0]);
+	for(Listener l: listeners)
+	{
+	    l.onNewPlaylist(playlist);
+	    l.onNewTrack(currentTrackNum);
+	}
+	currentPlayer.play(playlist.getPlaylistItems()[currentTrackNum]);
     }
 
 synchronized void stop()
@@ -50,12 +58,20 @@ synchronized void stop()
 	if (currentPlayer == null)
 	    return;
 	currentPlayer.stop();
+	for(Listener l: listeners)
+	    l.onPlayerStop();
+	currentPlayer = null;
     }
 
 synchronized Playlist getCurrentPlaylist()
     {
 	return currentPlaylist;
     }
+
+    synchronized int getCurrentTrackNum()
+    {
+	return currentTrackNum;
+    } 
 
     synchronized void onBackEndTime(int sec)
     {

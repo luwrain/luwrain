@@ -21,9 +21,14 @@ import org.luwrain.core.events.*;
 
 public class EditArea extends SimpleArea
 {
+    public interface ChangeListener
+    {
+	void onEditChange();
+    }
+
     private ControlEnvironment environment;
     private MultilineEdit edit;
-    private boolean modified = false;
+    private ChangeListener listener = null;
 
     public EditArea(ControlEnvironment environment)
     {
@@ -46,31 +51,32 @@ public class EditArea extends SimpleArea
 	super(environment, name, content);
 	this.environment = environment;
 	NullCheck.notNull(environment, "environment");
+	createEdit();
+    }
+
+    public EditArea(ControlEnvironment environment, String name,
+		    String[] content, ChangeListener listener)
+    {
+	super(environment, name, content);
+	this.environment = environment;
+	this.listener = listener;
+	NullCheck.notNull(environment, "environment");
+	createEdit();
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	modified = false;
 	if (edit.onKeyboardEvent(event))
-	{
-	    if (modified)
-		onChange();
 	    return true;
-	}
 	return super.onKeyboardEvent(event);
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	modified = false;
 	if (edit.onEnvironmentEvent(event))
-	{
-	    if (modified)
-		onChange();
 	    return true;
-	}
 	return super.onEnvironmentEvent(event);
     }
 
@@ -82,11 +88,6 @@ public class EditArea extends SimpleArea
 	return super.onAreaQuery(query);
     }
 
-    public void onChange()
-    {
-	//Nothing here;
-    }
-
     protected String getTabSeq()
     {
 	return "\t";
@@ -94,7 +95,13 @@ public class EditArea extends SimpleArea
 
     private void createEdit()
     {
-	final EditArea thisArea = this;
-	edit = new MultilineEdit(environment, new MultilineEditModelTranslator(this, this));
+	//	final EditArea thisArea = this;
+	edit = new MultilineEdit(environment, new MultilineEditModelChangeListener(new MultilineEditModelTranslator(this, this)){
+		@Override public void onMultilineEditChange()
+		{
+		    if (listener != null)
+			listener.onEditChange();
+		}
+	    });
     }
 }

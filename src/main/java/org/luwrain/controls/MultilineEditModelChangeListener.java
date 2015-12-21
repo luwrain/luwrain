@@ -19,11 +19,11 @@ package org.luwrain.controls;
 import org.luwrain.core.*;
 
 /**
- * Implements a listener of all changes in {@link
- * MultilineEditModel}. This class contains the abstract method {
- * @code onMultilineEditChange} called each time when any changes are made in
+ * Implements a listener of all changes in 
+ * {@link MultilineEditModel}. This class contains the abstract method {
+ * @code onMultilineEditChange} called each time when any changes occurred in
  * the state of the model.  This allows users to implement any necessary
- * actions which should have effect if and only if something was changed
+ * actions, which should have effect if and only if something was changed
  * in the model and this class guarantees that {@code
  * onMultilineEditChange} is called strictly after changes in the model.
  *
