@@ -30,7 +30,7 @@ public class TextUtils
 	    Character.getType(c) == Character.DECIMAL_DIGIT_NUMBER)
 	{
 	    if (broken)
-		word = new String();
+		word = "";
 	    broken = false;
 	    word += c;
 	    continue;
@@ -40,4 +40,3 @@ public class TextUtils
 	return word;
     }
 }
-
