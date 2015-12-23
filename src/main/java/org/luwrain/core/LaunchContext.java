@@ -66,8 +66,19 @@ public class LaunchContext
 	return new File(dataDir);
     }
 
+    public Path dataDirAsPath()
+    {
+	return Paths.get(dataDir);
+    }
+
     public String lang()
     {
 	return lang;
+    }
+
+    public Path scriptPath(String scriptName)
+    {
+	NullCheck.notNull(scriptName, "scriptName");
+	return dataDirAsPath().resolve("scripts").resolve(scriptName);
     }
 }
