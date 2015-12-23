@@ -30,6 +30,11 @@ public class AreaLayoutSwitch
 	NullCheck.notNull(luwrain, "luwrain");
     }
 
+    public int getCurrentIndex()
+    {
+	return currentIndex;
+    }
+
     public void add(AreaLayout layout)
     {
 	NullCheck.notNull(layout, "layout");
