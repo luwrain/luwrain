@@ -42,6 +42,10 @@ import org.luwrain.core.events.*;
  */
 public final class Luwrain implements EventConsumer
 {
+    public enum ReloadComponents {
+	ENVIRONMENT_SOUNDS,
+};
+
     public static final int PITCH_HIGH = org.luwrain.speech.BackEnd.HIGH;
     public static final int PITCH_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
     public static final int PITCH_LOW = org.luwrain.speech.BackEnd.LOW;
@@ -438,5 +442,10 @@ public final class Luwrain implements EventConsumer
     {
 	NullCheck.notNull(runnable, "runnable");
 environment.enqueueEvent(new RunnableEvent(runnable));
+    }
+
+    public void reloadComponent(ReloadComponents component)
+    {
+	environment.reloadComponent(component);
     }
 }

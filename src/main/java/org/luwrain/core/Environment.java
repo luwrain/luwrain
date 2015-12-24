@@ -1067,6 +1067,16 @@ class Environment implements EventConsumer
 	return query.getCurrentDir();
     }
 
+    void reloadComponent(Luwrain.ReloadComponents component)
+    {
+	switch(component)
+	{
+	case ENVIRONMENT_SOUNDS:
+	    EnvironmentSounds.init(registry, launchContext);
+	    break;
+	}
+    }
+
     void onDeleteCommand()
     {
 	final Area activeArea = getValidActiveArea(true);

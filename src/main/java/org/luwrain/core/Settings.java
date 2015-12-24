@@ -43,6 +43,28 @@ public interface Settings
 	String getCommanderNewLocation(String defValue);
 	String getGeneralTime(String defValue);
 	String getTermBell(String defValue);
+
+	void setEventNotProcessed(String value);
+	void setGeneralError(String value);
+	void setMessageDone(String value);
+	void setMessageNotReady(String value);
+	void setMessageOk(String value);
+	void setNoApplications(String value);
+	void setStartup(String value);
+	void setShutdown(String value);
+	void setMainMenu(String value);
+	void setMainMenuEmptyLine(String value);
+	void setNoItemsAbove(String value);
+	void setNoItemsBelow(String value);
+	void setNoLinesAbove(String value);
+	void setNoLinesBelow(String value);
+	void setNewListItem(String value);
+	void setIntroRegular(String value);
+	void setIntroPopup(String value);
+	void setIntroApp(String value);
+	void setCommanderNewLocation(String value);
+	void setGeneralTime(String value);
+	void setTermBell(String value);
     }
 
     public interface UserInterface
