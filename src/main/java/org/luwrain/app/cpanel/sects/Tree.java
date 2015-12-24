@@ -60,6 +60,8 @@ public Tree(Environment environment,
 	appsSection = new BasicSection(strings.sectName(Strings.APPS));
 	speechSection = new BasicSection(strings.sectName(Strings.SPEECH));
 	soundsSection = new BasicSection(strings.sectName(Strings.SOUNDS));
+	soundsSection.addSubsection(new SoundSchemes());
+	soundsSection.addSubsection(new SoundsList());
 	keyboardSection = new BasicSection(strings.sectName(Strings.KEYBOARD));
 	uiSection = new UI();
 	extensionsSection = new BasicSection(strings.sectName(Strings.EXTENSIONS));

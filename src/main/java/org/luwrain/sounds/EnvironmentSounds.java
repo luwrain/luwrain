@@ -19,10 +19,7 @@ package org.luwrain.sounds;
 import java.util.*;
 import java.io.File;
 
-import org.luwrain.core.Sounds;
-import org.luwrain.core.Registry;
-import org.luwrain.core.LaunchContext;
-import org.luwrain.util.RegistryAutoCheck;
+import org.luwrain.core.*;
 
 public class EnvironmentSounds
 {
@@ -46,38 +43,33 @@ return;
 
     public static void init(Registry registry, LaunchContext launchContext)
     {
-	if (registry == null)
-	    throw new NullPointerException("registry may not be null");
-	if (launchContext == null)
-	    throw new NullPointerException("launchContent may not be null");
-	RegistryAutoCheck check = new RegistryAutoCheck(registry, "sounds");
-	RegistryKeys keys = new RegistryKeys();
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.eventNotProcessed(), ""), Sounds.EVENT_NOT_PROCESSED);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noApplications(), ""), Sounds.NO_APPLICATIONS);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.startup(), ""), Sounds.STARTUP);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.shutdown(), ""), Sounds.SHUTDOWN);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.mainMenu(), ""), Sounds.MAIN_MENU);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.mainMenuEmptyItem(), ""), Sounds.MAIN_MENU_EMPTY_LINE);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.generalError(), ""), Sounds.GENERAL_ERROR);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.messageOk(), ""), Sounds.MESSAGE_OK);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.messageDone(), ""), Sounds.MESSAGE_DONE);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.messageNotReady(), ""), Sounds.MESSAGE_NOT_READY);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.introRegular(), ""), Sounds.INTRO_REGULAR);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.introPopup(), ""), Sounds.INTRO_POPUP);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.introApp(), ""), Sounds.INTRO_APP);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noItemsAbove(), ""), Sounds.NO_ITEMS_ABOVE);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noItemsBelow(), ""), Sounds.NO_ITEMS_BELOW);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noLinesAbove(), ""), Sounds.NO_LINES_ABOVE);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.noLinesBelow(), ""), Sounds.NO_LINES_BELOW);
-
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.commanderNewLocation(), ""), Sounds.COMMANDER_NEW_LOCATION);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.newListItem(), ""), Sounds.NEW_LIST_ITEM);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.generalTime(), ""), Sounds.GENERAL_TIME);
-	setSoundFile(launchContext.dataDirAsFile(), check.stringNotEmpty(keys.termBell(), ""), Sounds.TERM_BELL);
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notNull(launchContext, "launchContext");
+	final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(registry);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getEventNotProcessed(""), Sounds.EVENT_NOT_PROCESSED);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getNoApplications(""), Sounds.NO_APPLICATIONS);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getStartup(""), Sounds.STARTUP);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getShutdown(""), Sounds.SHUTDOWN);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getMainMenu(""), Sounds.MAIN_MENU);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getMainMenuEmptyLine(""), Sounds.MAIN_MENU_EMPTY_LINE);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getGeneralError(""), Sounds.GENERAL_ERROR);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getMessageOk(""), Sounds.MESSAGE_OK);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getMessageDone(""), Sounds.MESSAGE_DONE);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getMessageNotReady(""), Sounds.MESSAGE_NOT_READY);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getIntroRegular(""), Sounds.INTRO_REGULAR);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getIntroPopup(""), Sounds.INTRO_POPUP);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getIntroApp(""), Sounds.INTRO_APP);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getNoItemsAbove(""), Sounds.NO_ITEMS_ABOVE);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getNoItemsBelow(""), Sounds.NO_ITEMS_BELOW);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getNoLinesAbove(""), Sounds.NO_LINES_ABOVE);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getNoLinesBelow(""), Sounds.NO_LINES_BELOW);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getCommanderNewLocation(""), Sounds.COMMANDER_NEW_LOCATION);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getNewListItem(""), Sounds.NEW_LIST_ITEM);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getGeneralTime(""), Sounds.GENERAL_TIME);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getTermBell(""), Sounds.TERM_BELL);
     }
 
-    private static void setSoundFile(File dataDir,
-				    String fileName,
+    private static void setSoundFile(File dataDir, String fileName,
 				    int index)
     {
 	if (fileName == null || fileName.isEmpty())

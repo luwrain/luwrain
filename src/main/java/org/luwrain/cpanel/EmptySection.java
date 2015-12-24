@@ -55,7 +55,7 @@ public class EmptySection implements Section
 	return true;
     }
 
-    @Override public void refreshArea()
+    @Override public void refreshArea(Environment environment)
     {
     }
 

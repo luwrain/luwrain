@@ -60,9 +60,9 @@ public class RegistryKeys
 	return getProperty("mainmenu.Content");
     }
 
-    public String soundsDir()
+    public String currentSoundScheme()
     {
-	return getProperty("environment.Sounds");
+	return getProperty("core.CurrentSoundScheme");
     }
 
     public String globalKeysDir()

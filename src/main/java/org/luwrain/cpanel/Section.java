@@ -34,7 +34,7 @@ public interface Section
 
     //After this method call getSectionArea() may return another area, between calls it is undesirable
     //Usually it is called before opening
-    void refreshArea();
+    void refreshArea(Environment environment);
     void refreshChildSubsections();
     int getSectionFlags();
 }

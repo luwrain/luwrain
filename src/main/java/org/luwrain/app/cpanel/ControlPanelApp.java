@@ -63,7 +63,7 @@ public class ControlPanelApp implements Application, Actions
     @Override public void openSection(Section sect)
     {
 	NullCheck.notNull(sect, "sect");
-	sect.refreshArea();
+	sect.refreshArea(environment);
 	final Area area = sect.getSectionArea(environment);
 	if (area == null)
 	    return;

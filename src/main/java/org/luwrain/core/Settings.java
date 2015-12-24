@@ -20,6 +20,31 @@ public interface Settings
 {
     static public RegistryKeys keys = new RegistryKeys();
 
+    public interface SoundScheme 
+    {
+	String getEventNotProcessed(String defValue);
+	String getGeneralError(String defValue);
+	String getMessageDone(String defValue);
+	String getMessageNotReady(String defValue);
+	String getMessageOk(String defValue);
+	String getNoApplications(String defValue);
+	String getStartup(String defValue);
+	String getShutdown(String defValue);
+	String getMainMenu(String defValue);
+	String getMainMenuEmptyLine(String defValue);
+	String getNoItemsAbove(String defValue);
+	String getNoItemsBelow(String defValue);
+	String getNoLinesAbove(String defValue);
+	String getNoLinesBelow(String defValue);
+	String getNewListItem(String defValue);
+	String getIntroRegular(String defValue);
+	String getIntroPopup(String defValue);
+	String getIntroApp(String defValue);
+	String getCommanderNewLocation(String defValue);
+	String getGeneralTime(String defValue);
+	String getTermBell(String defValue);
+    }
+
     public interface UserInterface
     {
 	String getLaunchGreeting(String defValue);
@@ -30,5 +55,10 @@ public interface Settings
     static public UserInterface createUserInterface(Registry registry)
     {
 	return RegistryProxy.create(registry, keys.ui(), UserInterface.class);
+    }
+
+    static public SoundScheme createCurrentSoundScheme(Registry registry)
+    {
+	return RegistryProxy.create(registry, keys.currentSoundScheme(), SoundScheme.class);
     }
 }
