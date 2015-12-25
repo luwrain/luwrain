@@ -18,6 +18,9 @@ class Speech
     private String[] cmdLine;
     private Registry registry;
     private CmdLineUtils cmdLineUtils;
+    private Settings.SpeechParams settings;
+    private int pitch = 50;
+    private int rate = 50;
 
     Speech(OperatingSystem os,
 	   String[] cmdLine, Registry registry)
@@ -29,6 +32,7 @@ class Speech
 	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
 	cmdLineUtils = new CmdLineUtils(cmdLine);
+	settings = Settings.createSpeechParams(registry);
     }
 
     boolean init()
@@ -42,6 +46,18 @@ class Speech
 	    return false;
 	}
 	Log.debug("core", "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
+	pitch = settings.getPitch(50);
+	rate = settings.getRate(50);
+	if (pitch < 0)
+	    pitch = 0;
+	if (pitch > 100)
+	    pitch = 100;
+	if (rate < 0)
+	    rate = 0;
+	if (rate > 100)
+	    rate = 100;
+	defaultChannel.setDefaultRate(rate);
+	defaultChannel.setDefaultPitch(50);
 	return true;
     }
 
@@ -141,17 +157,49 @@ class Speech
     {
 	defaultChannel.silence();
 	if (text != null)
-	defaultChannel.speak(text, relPitch, relRate);
+	    defaultChannel.speak(text, null, relPitch, relRate);
     }
 
     void speakLetter(char letter, int relPitch, int relRate)
     {
 	defaultChannel.silence();
-	defaultChannel.speakLetter(letter, relPitch, relRate);
+	defaultChannel.speakLetter(letter, null, relPitch, relRate);
     }
 
     void silence()
     {
 	defaultChannel.silence();
+    }
+
+    int getRate()
+    {
+	return rate;
+    }
+
+    void setRate(int value)
+    {
+	if (value < 0)
+	    rate = 0; else 
+	    if (value > 100)
+		rate = 100; else
+		rate = value;
+	defaultChannel.setDefaultRate(rate);
+	settings.setRate(rate);
+    }
+
+    int getPitch()
+    {
+	return pitch;
+    }
+
+    void setPitch(int value)
+    {
+	if (value < 0)
+	    pitch = 0; else 
+	    if (value > 100)
+		pitch = 100; else
+		pitch = value;
+	defaultChannel.setDefaultPitch(pitch);
+	settings.setPitch(pitch);
     }
 }

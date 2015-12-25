@@ -74,6 +74,14 @@ public interface Settings
 	void setLaunchGreeting(String value);
     }
 
+    public interface SpeechParams
+    {
+	int getPitch(int defValue);
+	int getRate(int defValue);
+	void setPitch(int value);
+	void setRate(int value);
+    }
+
     static public UserInterface createUserInterface(Registry registry)
     {
 	return RegistryProxy.create(registry, keys.ui(), UserInterface.class);
@@ -82,5 +90,10 @@ public interface Settings
     static public SoundScheme createCurrentSoundScheme(Registry registry)
     {
 	return RegistryProxy.create(registry, keys.currentSoundScheme(), SoundScheme.class);
+    }
+
+    static public SpeechParams createSpeechParams(Registry registry)
+    {
+	return RegistryProxy.create(registry, keys.speech(), SpeechParams.class);
     }
 }

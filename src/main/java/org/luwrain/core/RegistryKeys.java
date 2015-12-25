@@ -180,6 +180,11 @@ public class RegistryKeys
 	return getProperty("interaction.FontName");
     }
 
+    public String speech()
+    {
+	return "/org/luwrain/speech";//FIXME:
+    }
+
     public String speechCharsToSkip()
     {
 	return getProperty("speech.CharsToSkip");

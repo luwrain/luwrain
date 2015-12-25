@@ -16,13 +16,9 @@
 
 package org.luwrain.core;
 
-import java.io.*;
-import java.nio.file.*;
 import java.util.*;
+import java.nio.file.*;
 
-import org.luwrain.os.OperatingSystem;
-import org.luwrain.hardware.*;
-//import org.luwrain.speech.BackEnd;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.core.extensions.*;
@@ -30,6 +26,8 @@ import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.player.Player;
 import org.luwrain.sounds.*;
+import org.luwrain.os.OperatingSystem;
+import org.luwrain.hardware.*;
 
 class Environment implements EventConsumer
 {
@@ -39,8 +37,7 @@ class Environment implements EventConsumer
     private String[] cmdLine;
     private final EventQueue eventQueue = new EventQueue();
     private Registry registry;
-    //    private org.luwrain.speech.BackEnd speech;
-    private org.luwrain.core.Speech speech2;
+    private org.luwrain.core.Speech speech;
     private Player player;
     private OperatingSystem os;
     private Interaction interaction;
@@ -67,25 +64,21 @@ class Environment implements EventConsumer
 
     private boolean needForIntroduction = false;
     private boolean introduceApp = false;
-    //    private Luwrain speechProc;
 
     Environment(String[] cmdLine, Registry registry,
-		/*		       org.luwrain.speech.BackEnd speech,*/
-		OperatingSystem os, org.luwrain.core.Speech speech2,
-		       Interaction interaction, LaunchContext launchContext)
+		OperatingSystem os, Speech speech,
+		Interaction interaction, LaunchContext launchContext)
     {
 	this.cmdLine = org.luwrain.util.Strings.notNullArray(cmdLine);
 	this.registry = registry;
-	//	this.speech = speech;
 	this.os = os;
-	this.speech2 = speech2;
+	this.speech = speech;
 	this.interaction = interaction;
 	this.launchContext = launchContext;
 	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
-	//	NullCheck.notNull(speech, "speech");
 	NullCheck.notNull(os, "os");
-	NullCheck.notNull(speech2, "speech2");
+	NullCheck.notNull(speech, "speech");
 	NullCheck.notNull(interaction, "interaction");
 	NullCheck.notNull(launchContext, "launchContext");
     }
@@ -455,7 +448,7 @@ class Environment implements EventConsumer
 	    final int code = event.getCommand();
 	    if (code == KeyboardEvent.CONTROL)
 	    {
-		speech2.silence();
+		speech.silence();
 		return true;
 	    }
 	    if (code == KeyboardEvent.SHIFT ||
@@ -599,7 +592,7 @@ class Environment implements EventConsumer
 
     Speech getSpeech()
     {
-	return speech2;
+	return speech;
     }
 
     void onAreaNewHotPointIface(Luwrain instance, Area area)
@@ -707,7 +700,7 @@ class Environment implements EventConsumer
 	    break;
 	}
 	//	speechProc.silence();
-	speech2.speak(text, Luwrain.PITCH_MESSAGE, 0);
+	speech.speak(text, Luwrain.PITCH_MESSAGE, 0);
 	interaction.startDrawSession();
 	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
 	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text);
@@ -723,11 +716,11 @@ class Environment implements EventConsumer
 	    return;
 	}
 	final String name = app.getAppName();
-	speech2.silence();
+	speech.silence();
 	playSound(Sounds.INTRO_APP);
 	if (name != null && !name.trim().isEmpty())
-	    speech2.speak(name, 0, 0); else
-	    speech2.speak(app.getClass().getName(), 0, 0);
+	    speech.speak(name, 0, 0); else
+	    speech.speak(app.getClass().getName(), 0, 0);
     }
 
     void introduceActiveArea()
@@ -741,9 +734,9 @@ class Environment implements EventConsumer
 	if (!isActiveAreaBlockedByPopup() && !isAreaBlockedBySecurity(activeArea) &&
 	    activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
 	    return;
-	speech2.silence();
+	speech.silence();
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
-	speech2.speak(activeArea.getAreaName(), 0, 0);
+	speech.speak(activeArea.getAreaName(), 0, 0);
     }
 
     void onIncreaseFontSizeCommand()
@@ -993,7 +986,7 @@ class Environment implements EventConsumer
 	    return;
 	}
 	if (!line.trim().isEmpty())
-	    speech2.speak(line, 0, 0); else
+	    speech.speak(line, 0, 0); else
 	    interfaces.getObjForEnvironment().hint(Hints.EMPTY_LINE);
 	needForIntroduction = false;
     }
@@ -1210,9 +1203,9 @@ class Environment implements EventConsumer
 
     private void noAppsMessage()
     {
-	speech2.silence(); 
+	speech.silence(); 
 	playSound(Sounds.NO_APPLICATIONS);
-	speech2.speak(strings.noLaunchedApps(), 0, 0);
+	speech.speak(strings.noLaunchedApps(), 0, 0);
     }
 
     private void areaBlockedMessage()
@@ -1222,13 +1215,13 @@ class Environment implements EventConsumer
 
     private void failureMessage()
     {
-	speech2.silence();
+	speech.silence();
 	playSound(Sounds.EVENT_NOT_PROCESSED);
     }
 
     private void areaInaccessibleMessage()
     {
-speech2.silence();
+speech.silence();
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
     }
 

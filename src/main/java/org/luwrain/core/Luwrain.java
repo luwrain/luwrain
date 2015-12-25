@@ -46,14 +46,17 @@ public final class Luwrain implements EventConsumer
 	ENVIRONMENT_SOUNDS,
 };
 
-    public static final int PITCH_HIGH = org.luwrain.speech.BackEnd.HIGH;
-    public static final int PITCH_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
-    public static final int PITCH_LOW = org.luwrain.speech.BackEnd.LOW;
-    public static final int PITCH_HINT = 25;
-    public static final int PITCH_MESSAGE = 25;
+    public static final int PITCH_HIGH = 25;
+    public static final int PITCH_NORMAL = 0;
+    public static final int PITCH_LOW = -25;
+    public static final int PITCH_HINT = -25;
+    public static final int PITCH_MESSAGE = -25;
+
+    /*
     public static final int RATE_HIGH = org.luwrain.speech.BackEnd.HIGH;
     public static final int RATE_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
     public static final int RATE_LOW = org.luwrain.speech.BackEnd.LOW;
+    */
 
     /** The message has no any typical semantics*/
     static public final int MESSAGE_REGULAR = 0;
@@ -444,5 +447,25 @@ environment.enqueueEvent(new RunnableEvent(runnable));
     public void reloadComponent(ReloadComponents component)
     {
 	environment.reloadComponent(component);
+    }
+
+    public int getSpeechRate()
+    {
+	return  environment.getSpeech().getRate();
+    }
+
+    public void setSpeechRate(int value)
+    {
+	environment.getSpeech().setRate(value);
+    }
+
+    public int getSpeechPitch()
+    {
+	return environment.getSpeech().getPitch();
+    }
+
+    public void setSpeechPitch(int value)
+    {
+	environment.getSpeech().setPitch(value);
     }
 }

@@ -59,6 +59,7 @@ public Tree(Environment environment,
     {
 	appsSection = new BasicSection(strings.sectName(Strings.APPS));
 	speechSection = new BasicSection(strings.sectName(Strings.SPEECH));
+	speechSection.addSubsection(new SimpleNavigateSection("Параметры речи", BasicSections.NONE, (environment)->{return new SpeechParamsArea(environment, "Параметры речи");}));
 	soundsSection = new BasicSection(strings.sectName(Strings.SOUNDS));
 	soundsSection.addSubsection(new SoundSchemes());
 	soundsSection.addSubsection(new SoundsList());
