@@ -36,7 +36,13 @@ class Speech
 	if (!cmdLineUtils.used(NO_REGISTRY_CHANNELS))
 	    loadRegistryChannels();
 	loadFromCmdLine();
-	return chooseDefaultChannel();
+	if (!chooseDefaultChannel())
+	{
+	    Log.error("core", "unable to choose the default channel");
+	    return false;
+	}
+	Log.debug("core", "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
+	return true;
     }
 
     private void loadFromCmdLine()
@@ -100,10 +106,8 @@ class Speech
 	Channel any = null;
 	for(Channel c: channels)
 	{
-	    /*
 	    if (!c.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_SPEAKERS))
 		continue;
-	    */
 	    any = c;
 	    if (c.isDefault())
 	    {
@@ -124,5 +128,30 @@ class Speech
     {
 	//FIXME:
 	return channels.get(0);
+    }
+
+    /*
+    Channel getDefaultChannel()
+    {
+	return defaultChannel;
+    }
+    */
+
+    void speak(String text, int relPitch, int relRate)
+    {
+	defaultChannel.silence();
+	if (text != null)
+	defaultChannel.speak(text, relPitch, relRate);
+    }
+
+    void speakLetter(char letter, int relPitch, int relRate)
+    {
+	defaultChannel.silence();
+	defaultChannel.speakLetter(letter, relPitch, relRate);
+    }
+
+    void silence()
+    {
+	defaultChannel.silence();
     }
 }

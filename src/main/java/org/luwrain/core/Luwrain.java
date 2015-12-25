@@ -277,24 +277,22 @@ public final class Luwrain implements EventConsumer
     public void say(String text)
     {
 	silence();
-	if (text != null)
-	    environment.speech().say(preprocess(text));
+	environment.getSpeech().speak(preprocess(text), 0, 0);
     }
 
     public void say(String text, int pitch)
     {
 	silence();
 	if (text != null)
-	    environment.speech().say(preprocess(text), pitch);
+	    environment.getSpeech().speak(preprocess(text), pitch, 0);
     }
 
     public void say(String text,
-			      int pitch,
-			      int rate)
+			      int pitch, int rate)
     {
 	silence();
 	if (text != null)
-	    environment.speech().say(preprocess(text), pitch, rate);
+	    environment.getSpeech().speak(preprocess(text), pitch, rate);
     }
 
     public void sayLetter(char letter)
@@ -312,7 +310,7 @@ public final class Luwrain implements EventConsumer
 	if (value == null)
 	{
 	    silence();
-	    environment.speech().sayLetter(letter);
+	    environment.getSpeech().speakLetter(letter, 0, 0);
 	} else
 	    hint(value); 
     }
@@ -332,14 +330,13 @@ public final class Luwrain implements EventConsumer
 	if (value == null)
 	{
 	    silence();
-	    environment.speech().sayLetter(letter, pitch);
+	    environment.getSpeech().speakLetter(letter, pitch, 0);
 	} else
 	    hint(value); 
     }
 
-    public void sayLetter(char letter,
-				    int pitch,
-				    int rate)
+    public void speakLetter(char letter,
+				    int pitch, int rate)
     {
 	switch(letter)
 	{
@@ -354,14 +351,14 @@ public final class Luwrain implements EventConsumer
 	if (value == null)
 	{
 	    silence();
-	    environment.speech().sayLetter(letter, pitch, rate);
+	    environment.getSpeech().speakLetter(letter, pitch, rate);
 	} else
 	    hint(value); 
     }
 
     public void silence()
     {
-	environment.speech().silence();
+	environment.getSpeech().silence();
     }
 
     /**
