@@ -16,6 +16,8 @@
 
 package org.luwrain.registry;
 
+import org.luwrain.core.NullCheck;
+
 //Root directory may not contain values;
 public class Path
 {
@@ -30,17 +32,11 @@ public class Path
 	this.absolute = absolute;
 	this.dirItems = dirItems;
 	this.valueName = valueName;
-	if (dirItems == null)
-	    throw new NullPointerException("dirItems may not be null");
-	for(int i = 0;i < dirItems.length;++i)
-	{
-	    if (dirItems[i] == null)
-		throw new NullPointerException("dirItems[" + i + "] may not be null");
+	NullCheck.notNullItems(dirItems, "dirItems");
+	NullCheck.notNull(valueName, "valueName");
+	for(int i = 0;i < dirItems.length;++i)	    
 	    if (dirItems[i].isEmpty())
 		throw new NullPointerException("dirItems[" + i + "] may not be empty");
-	}
-	if (valueName == null)
-	    throw new NullPointerException("valueName may not be null");
     }
 
     public Path(boolean absolute, String[] dirItems)

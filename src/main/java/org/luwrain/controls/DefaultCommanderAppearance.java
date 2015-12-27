@@ -97,48 +97,50 @@ public class DefaultCommanderAppearance implements CommanderArea.Appearance
 	    return;
 	environment.playSound(Sounds.COMMANDER_NEW_LOCATION);
 	environment.say(path.toString());
-	/*
-	for(Partition p: mountedPartitions)
-	    if (p.file().equals(file))
-	    {
-		environment.say(strings.partitionTitle(p));
-		return;
-	    }
-	environment.say(file.getName());
-	*/
     }
-
 
     @Override public String getScreenLine(CommanderArea.Entry entry)
     {
-    /*
-	if (entry == null)
-	    throw new NullPointerException("entry may not be null");
+	NullCheck.notNull(entry, "entry");
 	final boolean selected = entry.selected();
-	final boolean dir = entry.type() == Entry.DIRECTORY;
-	if (selected && dir)
-	    return "*[" + entry.file().getName() + "]";
-	if (selected)
-	    return "* " + entry.file().getName();
-	if (dir)
-	    return " [" + entry.file().getName() + "]";
-	return "  " + entry.file().getName();
-	*/
-	return "fixme";
+	final CommanderArea.Entry.Type type = entry.type();
+	final String name = entry.baseName();
+	final StringBuilder b = new StringBuilder();
+	b.append(selected?"*":" ");
+	switch(type)
+	{
+	case REGULAR:
+	    b.append(" ");
+	    break;
+	case DIR:
+	    b.append("[");
+	    break;
+	case SPECIAL:
+	    b.append("!");
+	    break;
+	case UNKNOWN:
+	    b.append("?");
+	    break;
+	case SYMLINK:
+	    b.append("{");
+	    break;
+	}
+	b.append(name);
+	switch(type)
+	{
+	case DIR:
+	    b.append("]");
+	    break;
+	case SYMLINK:
+	    b.append("}");
+	    break;
+	}
+	return new String(b);
     }
 
     @Override public String getCommanderName(Path path)
     {
-	return "коммандер";
-	/*
-	if (current == null)
-	    return "-";
-	for(Partition p: mountedPartitions)
-	    if (p.file().equals(current))
-		return strings.partitionTitle(p);
-	return current.getAbsolutePath();
-    }
-    */
+	return path.toString();
     }
 }
 

@@ -43,6 +43,12 @@ public class RegistryImpl implements Registry
     @Override public synchronized boolean addDirectory(String path)
     {
 	final Path p = parseAsDir(path);
+	return addDirectory(p);
+    }
+
+    private boolean addDirectory(Path p)
+	{
+	    NullCheck.notNull(p, "p");
 	if (p.isRoot())
 	    throw new IllegalArgumentException("the root directory may not be requested for creating");
 	final String[] items = p.dirItems();
@@ -282,7 +288,13 @@ public class RegistryImpl implements Registry
 	try {
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
+	    {
+		if (!addDirectory(new Path(true, p.dirItems(), "")))
+		    return false;
+d = findDirectory(p.dirItems());
+if (d == null)
 		return false;
+	    }
 	    return d.setBoolean(p.valueName(), value);
 	}
 	catch (IOException e)
@@ -301,7 +313,13 @@ public class RegistryImpl implements Registry
 	try {
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
+	    {
+		if (!addDirectory(new Path(true, p.dirItems(), "")))
+		    return false;
+d = findDirectory(p.dirItems());
+if (d == null)
 		return false;
+	    }
 	    return d.setInteger(p.valueName(), value);
 	}
 	catch (IOException e)
@@ -321,7 +339,13 @@ public class RegistryImpl implements Registry
 	try {
 	    Directory d = findDirectory(p.dirItems());
 	    if (d == null)
+	    {
+		if (!addDirectory(new Path(true, p.dirItems(), "")))
+		    return false;
+d = findDirectory(p.dirItems());
+if (d == null)
 		return false;
+	    }
 	    return d.setString(p.valueName(), value);
 	}
 	catch (IOException e)
