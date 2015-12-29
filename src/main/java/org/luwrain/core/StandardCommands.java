@@ -19,10 +19,12 @@ package org.luwrain.core;
 import java.util.*;
 
 import org.luwrain.core.events.*;
+import org.luwrain.os.OperatingSystem;
 
 class StandardCommands
 {
     static private final int SPEECH_STEP = 5;
+    static private final int VOLUME_STEP = 5;
     static Command[] createStandardCommands(Environment env)
     {
 	NullCheck.notNull(env, "env");
@@ -365,6 +367,7 @@ class StandardCommands
 		{
 		    final Speech speech = environment.getSpeech();
 		    speech.setPitch(speech.getPitch() + SPEECH_STEP);
+		    luwrain.message("Высота речи " + speech.getPitch());
 		}
 	    });
 
@@ -378,6 +381,7 @@ class StandardCommands
 		{
 		    final Speech speech = environment.getSpeech();
 		    speech.setPitch(speech.getPitch() - SPEECH_STEP);
+		    luwrain.message("Высота речи " + speech.getPitch());
 		}
 	    });
 
@@ -391,6 +395,7 @@ class StandardCommands
 		{
 		    final Speech speech = environment.getSpeech();
 		    speech.setRate(speech.getRate() - SPEECH_STEP);
+		    luwrain.message("Скорость речи " + (100 - speech.getRate()));
 		}
 	    });
 
@@ -404,8 +409,38 @@ class StandardCommands
 		{
 		    final Speech speech = environment.getSpeech();
 		    speech.setRate(speech.getRate() + SPEECH_STEP);
+		    luwrain.message("Скорость речи " + (100 - speech.getRate()));
 		}
 	    });
+
+	//volume-inc
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "volume-inc";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final OperatingSystem os = environment.os();
+		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() + VOLUME_STEP);
+		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
+		}
+	    });
+
+	//volume-dec
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "volume-dec";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final OperatingSystem os = environment.os();
+		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() - VOLUME_STEP);
+		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
+		}
+	    });
+
 
 
 

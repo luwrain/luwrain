@@ -30,14 +30,12 @@ class Init
     static private final String  PREFIX_OS= "--os=";
     static private final String  PREFIX_LANG= "--lang=";
 
-
     static private final String DEFAULT_INTERACTION_CLASS = "org.luwrain.interaction.AwtInteraction";
 
     private String[] cmdLine;
     private Registry registry;
     private Interaction interaction;
     private OperatingSystem os;
-    //    private org.luwrain.speech.BackEnd speech;
     private Speech speech2;
     private LaunchContext launchContext;
 
@@ -232,7 +230,7 @@ class Init
 	    return false;
 	}
 	os = (org.luwrain.os.OperatingSystem)o;
-	final String errorMessage = os.init();
+	final String errorMessage = os.init(launchContext.dataDirAsPath().toString());
 	if (errorMessage != null)
 	{
 	    Log.fatal("init", "operating system initialization failed:" + errorMessage);
