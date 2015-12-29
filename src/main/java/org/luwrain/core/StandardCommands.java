@@ -22,10 +22,10 @@ import org.luwrain.core.events.*;
 
 class StandardCommands
 {
-public static Command[] createStandardCommands(Environment env)
+    static private final int SPEECH_STEP = 5;
+    static Command[] createStandardCommands(Environment env)
     {
-	if (env == null)
-	    throw new NullPointerException("env may not be null");
+	NullCheck.notNull(env, "env");
 	final Environment environment = env;
 	final LinkedList<Command> res = new LinkedList<Command>();
 
@@ -341,7 +341,7 @@ public static Command[] createStandardCommands(Environment env)
 		}
 	    });
 
-	//copy-object-uniref;
+	//copy-object-uniref
 	res.add(new Command() {
 		@Override public String getName()
 		{
@@ -352,6 +352,63 @@ public static Command[] createStandardCommands(Environment env)
 		    environment.onCopyObjectUniRefCommand();
 		}
 	    });
+
+
+
+	//speech-pitch-inc
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "speech-pitch-inc";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final Speech speech = environment.getSpeech();
+		    speech.setPitch(speech.getPitch() + SPEECH_STEP);
+		}
+	    });
+
+	//speech-pitch-dec
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "speech-pitch-dec";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final Speech speech = environment.getSpeech();
+		    speech.setPitch(speech.getPitch() - SPEECH_STEP);
+		}
+	    });
+
+	//speech-speed-inc
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "speech-speed-inc";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final Speech speech = environment.getSpeech();
+		    speech.setRate(speech.getRate() - SPEECH_STEP);
+		}
+	    });
+
+	//speech-speed-dec
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "speech-speed-dec";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final Speech speech = environment.getSpeech();
+		    speech.setRate(speech.getRate() + SPEECH_STEP);
+		}
+	    });
+
+
+
 
 
 
