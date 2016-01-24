@@ -24,17 +24,21 @@ import org.luwrain.core.*;
 
 public class Manager
 {
+    public interface InterfaceRequest 
+    {
+	Luwrain getInterfaceObj(Extension ext);
+    }
+
     private InterfaceManager interfaces;
     private LoadedExtension[] extensions;
 
-    public Manager(InterfaceManager interfaceManager)
+    public Manager(InterfaceManager interfaces)
     {
-	this.interfaces = interfaceManager;
-	if (interfaceManager == null)
-	    throw new NullPointerException("interfaceManager may not be null");
+	this.interfaces = interfaces;
+	NullCheck.notNull(interfaces, "interfaces");
     }
 
-    public void load()
+    public void load(InterfaceRequest interfaceRequest)
     {
 	LinkedList<LoadedExtension> res = new LinkedList<LoadedExtension>();
 	final String[] extensionsList = getExtensionsList();
@@ -70,7 +74,7 @@ public class Manager
 		continue;
 	    }
 	    final Extension ext = (Extension)o;
-	    Luwrain iface = interfaces.requestNew(ext);
+	    final Luwrain iface = interfaceRequest.getInterfaceObj(ext);
 	    String message = null;
 	    try {
 		message = ext.init(iface);

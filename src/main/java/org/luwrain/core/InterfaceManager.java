@@ -28,13 +28,12 @@ public class InterfaceManager
 	static public final int APP = 1;
 	static public final int EXTENSION = 2;
 
-	public int type;
-	public Object obj;
-	public Luwrain luwrain;
+	int type;
+	Object obj;
+	Luwrain luwrain;
 
 	public Entry(int type,
-		     Object obj,
-		     Luwrain luwrain)
+		     Object obj, Luwrain luwrain)
 	{
 	    this.type = type;
 	    this.obj = obj;
@@ -44,17 +43,10 @@ public class InterfaceManager
 	}
     }
 
-    private Environment environment;
-    private Luwrain objForEnvironment;
-    final private Vector<Entry> entries = new Vector<Entry>();
+    private Luwrain objForEnvironment = null;
+    private final Vector<Entry> entries = new Vector<Entry>();
 
-    public InterfaceManager(Environment environment)
-    {
-	this.environment = environment;
-	NullCheck.notNull(environment, "environment");
-    }
-
-    public Luwrain requestNew(Application app)
+    Luwrain requestNew(Application app, Environment environment)
     {
 	if (app == null)
 	    throw new NullPointerException("app may not be null");
@@ -66,7 +58,7 @@ public class InterfaceManager
 	return luwrain;
     }
 
-    public Luwrain requestNew(Extension ext)
+    Luwrain requestNew(Extension ext, Environment environment)
     {
 	if (ext == null)
 	    throw new NullPointerException("ext may not be null");
@@ -78,7 +70,7 @@ public class InterfaceManager
 	return luwrain;
     }
 
-    public Luwrain findFor(Object obj)
+    Luwrain findFor(Object obj)
     {
 	if (obj == null)
 	    throw new NullPointerException("obj may not be null");
@@ -88,7 +80,7 @@ public class InterfaceManager
 	return null;
     }
 
-    public Application findApp(Luwrain luwrain)
+    Application findApp(Luwrain luwrain)
     {
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
@@ -100,7 +92,7 @@ public class InterfaceManager
 	return null;
     }
 
-    public Extension findExt(Luwrain luwrain)
+    Extension findExt(Luwrain luwrain)
     {
 	if (luwrain == null)
 	    throw new NullPointerException("luwrain may not be null");
@@ -114,8 +106,7 @@ public class InterfaceManager
 
     public void release(Luwrain luwrain)
     {
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
+	NullCheck.notNull(luwrain, "luwrain");
 	for(int i = 0;i < entries.size();i++)
 	    if (entries.get(i).luwrain == luwrain)
 	    {
@@ -124,10 +115,16 @@ public class InterfaceManager
 	    }
     }
 
+    void createObjForEnvironment(Environment environment)
+    {
+	NullCheck.notNull(environment, "environment");
+	if (objForEnvironment != null)
+	    return;
+	objForEnvironment = new Luwrain(environment);
+    }
+
     Luwrain getObjForEnvironment()
     {
-	if (objForEnvironment == null)
-	    objForEnvironment = new Luwrain(environment);
 	return objForEnvironment;
     }
 
@@ -135,6 +132,6 @@ public class InterfaceManager
     boolean isSuitsForEnvironmentPopup(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	return luwrain == getObjForEnvironment() || findExt(luwrain) != null;
+	return luwrain == objForEnvironment || findExt(luwrain) != null;
     }
 }

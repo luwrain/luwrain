@@ -103,4 +103,9 @@ abstract class EnvironmentBase implements EventConsumer
 	needForIntroduction = true;
 	introduceApp = true;
     }
+
+    Speech getSpeech()
+    {
+	return speech;
+    }
 }

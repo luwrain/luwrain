@@ -20,11 +20,31 @@ abstract class EnvironmentAreas extends EnvironmentBase
 {
     protected ScreenContentManager screenContentManager;
     protected WindowManager windowManager;
+    protected final InterfaceManager interfaces = new InterfaceManager();
+    protected AppManager apps;
 
     protected void onNewScreenLayout()
     {
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
+    }
+
+    //Returns an effective area for the specified one
+    //Returns null if specified area not known in applications and areas managers 
+    //Instance is not mandatory but can increase speed of search
+    protected Area getEffectiveAreaFor(Luwrain instance, Area area)
+    {
+	Area effectiveArea = null;
+	if (instance != null)
+	{
+	    final Application app = interfaces.findApp(instance);
+	    if (app != null && apps.isAppLaunched(app))
+		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
+	}
+	//No provided instance or it didn't help
+	if (effectiveArea == null)
+	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
+	return effectiveArea;
     }
 
     //This method may not return an unwrapped area, there should be at least ta security wrapper

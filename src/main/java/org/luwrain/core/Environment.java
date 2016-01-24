@@ -25,7 +25,6 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.player.Player;
-//import org.luwrain.sounds.*;
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
 import org.luwrain.speech.Channel;
@@ -36,17 +35,13 @@ class Environment extends EnvironmentAreas
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
     private String[] cmdLine;
-    //    private final EventQueue eventQueue = new EventQueue();
     private Registry registry;
-    //    private org.luwrain.core.Speech speech;
     private Player player;
     private OperatingSystem os;
     private Interaction interaction;
 
     private org.luwrain.core.extensions.Manager extensions;
-    private final InterfaceManager interfaces = new InterfaceManager(this);
     private final org.luwrain.desktop.App desktop = new org.luwrain.desktop.App();
-    private AppManager apps;
     private GlobalKeys globalKeys;
     private final FileTypes fileTypes = new FileTypes();
 
@@ -58,11 +53,7 @@ class Environment extends EnvironmentAreas
 
     private HeldData clipboard = null;
     private LaunchContext launchContext;
-    //    private Strings strings;
     private Settings.UserInterface uiSettings;
-
-    //    private boolean needForIntroduction = false;
-    //    private boolean introduceApp = false;
 
     Environment(String[] cmdLine, Registry registry,
 		OperatingSystem os, Speech speech,
@@ -80,6 +71,7 @@ class Environment extends EnvironmentAreas
 	NullCheck.notNull(speech, "speech");
 	NullCheck.notNull(interaction, "interaction");
 	NullCheck.notNull(launchContext, "launchContext");
+	interfaces.createObjForEnvironment(this);
     }
 
     void run()
@@ -104,14 +96,13 @@ class Environment extends EnvironmentAreas
 
     private void init()
     {
-	//	speechProc = new Luwrain(this);
-	desktop.onLaunch(interfaces.requestNew(desktop));
+	desktop.onLaunch(interfaces.requestNew(desktop, this));
 	player = new org.luwrain.player.Player(registry);
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	extensions = new org.luwrain.core.extensions.Manager(interfaces);
-	extensions.load();
+	extensions.load((ext)->interfaces.requestNew(ext, this));
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
@@ -215,7 +206,7 @@ class Environment extends EnvironmentAreas
     {
 	NullCheck.notNull(app, "app");
 	System.gc();
-	final Luwrain o = interfaces.requestNew(app);
+	final Luwrain o = interfaces.requestNew(app, this);
 	try {
 	    if (!app.onLaunch(o))
 	    {
@@ -538,29 +529,6 @@ class Environment extends EnvironmentAreas
 	if (apps.isAppActive(app) && !screenContentManager.isPopupActive())
 	    setAreaIntroduction();
 	onNewScreenLayout();
-    }
-
-    //Returns an effective area for the specified one
-    //Returns null if specified area not known in applications and areas managers 
-    //Instance is not mandatory but can increase speed of search
-    private Area getEffectiveAreaFor(Luwrain instance, Area area)
-    {
-	Area effectiveArea = null;
-	if (instance != null)
-	{
-	    final Application app = interfaces.findApp(instance);
-	    if (app != null && apps.isAppLaunched(app))
-		effectiveArea = apps.getCorrespondingEffectiveArea(app, area);
-	}
-	//No provided instance or it didn't help;
-	if (effectiveArea == null)
-	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
-	return effectiveArea;
-    }
-
-    Speech getSpeech()
-    {
-	return speech;
     }
 
     void onAreaNewHotPointIface(Luwrain instance, Area area)
