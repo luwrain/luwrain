@@ -1,3 +1,0 @@
-VoiceMan:
---voiceman-host=
---voiceman-port=

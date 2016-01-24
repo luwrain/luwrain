@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<registry>
-  <regdir name="/org/luwrain/speech/">
-    <regvalue name="type" type="string">voiceman</regvalue>
-    <regvalue name="host" type="string">localhost</regvalue>
-    <regvalue name="port" type="int">5511</regvalue>
-  </regdir>
-</registry>
