@@ -44,4 +44,6 @@ public interface Sounds
     static public final int NEW_LIST_ITEM = 18;
     static public final int GENERAL_TIME = 19;
     static public final int TERM_BELL = 20;
+
+    static public final int DOC_SECTION = 30;
 }

@@ -43,6 +43,7 @@ public interface Settings
 	String getCommanderNewLocation(String defValue);
 	String getGeneralTime(String defValue);
 	String getTermBell(String defValue);
+	String getDocSection(String defValue);
 
 	void setEventNotProcessed(String value);
 	void setGeneralError(String value);
@@ -65,6 +66,7 @@ public interface Settings
 	void setCommanderNewLocation(String value);
 	void setGeneralTime(String value);
 	void setTermBell(String value);
+	void setDocSection(String value);
     }
 
     public interface UserInterface

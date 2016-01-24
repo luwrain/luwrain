@@ -202,4 +202,14 @@ class Speech
 	defaultChannel.setDefaultPitch(pitch);
 	settings.setPitch(pitch);
     }
+
+    Channel getReadingChannel()
+    {
+	return null;
+    }
+
+    boolean hasReadingChannel()
+    {
+	return false;
+    }
 }

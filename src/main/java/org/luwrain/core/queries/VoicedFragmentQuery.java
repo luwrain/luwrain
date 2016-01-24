@@ -14,37 +14,43 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.core.queries;
 
-public class AreaQuery extends Event
+import org.luwrain.core.*;
+
+public class VoicedFragmentQuery extends AreaQuery
 {
-    static public final int REGION = 0;
-    static public final int OBJECT_UNIREF = 1;
-    static public final int CURRENT_DIR = 2;
-    static public final int CUT = 3;
-    static public final int VOICED_FRAGMENT = 4;
+    private String text = "";
+    private int nextPointX = 0;
+    private int nextPointY = 0;
 
-    private int code;
-    private boolean containsResult = false;
-
-    public AreaQuery(int code)
+    public VoicedFragmentQuery()
     {
-	super(AREA_QUERY_EVENT);
-	this.code = code;
+	super(VOICED_FRAGMENT);
     }
 
-    public int getQueryCode()
+    public void answer(String text,
+		       int nextPointX, int nextPointY)
     {
-	return code;
+	NullCheck.notNull(text, "text");
+	this.text = text;
+	this.nextPointX = nextPointX;
+	this.nextPointY = nextPointY;
+	resultTaken();
     }
 
-    public boolean containsResult()
+    public String text()
     {
-	return containsResult;
+	return text;
     }
 
-    protected void resultTaken()
+    public int nextPointX()
     {
-	containsResult = true;
+	return nextPointX;
+    }
+
+    public int nextPointY()
+    {
+	return nextPointY;
     }
 }

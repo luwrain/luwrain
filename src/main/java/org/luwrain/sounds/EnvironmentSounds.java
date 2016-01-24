@@ -67,6 +67,7 @@ return;
 	setSoundFile(launchContext.dataDirAsFile(), scheme.getNewListItem(""), Sounds.NEW_LIST_ITEM);
 	setSoundFile(launchContext.dataDirAsFile(), scheme.getGeneralTime(""), Sounds.GENERAL_TIME);
 	setSoundFile(launchContext.dataDirAsFile(), scheme.getTermBell(""), Sounds.TERM_BELL);
+	setSoundFile(launchContext.dataDirAsFile(), scheme.getDocSection(""), Sounds.DOC_SECTION);
     }
 
     private static void setSoundFile(File dataDir, String fileName,

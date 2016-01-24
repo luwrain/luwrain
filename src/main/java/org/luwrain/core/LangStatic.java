@@ -65,4 +65,5 @@ public interface LangStatic
     static public final int TABLE_END_OF_ROW = 204;
 
     static public final int POPUP_IMPORTANT_LOCATIONS_NAME = 250;
+    static public final int DOCUMENT_NO_CONTENT = 300;
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the LUWRAIN.
 
@@ -25,19 +25,20 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.player.Player;
-import org.luwrain.sounds.*;
+//import org.luwrain.sounds.*;
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
+import org.luwrain.speech.Channel;
 
-class Environment implements EventConsumer
+class Environment extends EnvironmentAreas
 {
     static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
     private String[] cmdLine;
-    private final EventQueue eventQueue = new EventQueue();
+    //    private final EventQueue eventQueue = new EventQueue();
     private Registry registry;
-    private org.luwrain.core.Speech speech;
+    //    private org.luwrain.core.Speech speech;
     private Player player;
     private OperatingSystem os;
     private Interaction interaction;
@@ -46,8 +47,6 @@ class Environment implements EventConsumer
     private final InterfaceManager interfaces = new InterfaceManager(this);
     private final org.luwrain.desktop.App desktop = new org.luwrain.desktop.App();
     private AppManager apps;
-    private ScreenContentManager screenContentManager;
-    private WindowManager windowManager;
     private GlobalKeys globalKeys;
     private final FileTypes fileTypes = new FileTypes();
 
@@ -59,11 +58,11 @@ class Environment implements EventConsumer
 
     private HeldData clipboard = null;
     private LaunchContext launchContext;
-    private Strings strings;
+    //    private Strings strings;
     private Settings.UserInterface uiSettings;
 
-    private boolean needForIntroduction = false;
-    private boolean introduceApp = false;
+    //    private boolean needForIntroduction = false;
+    //    private boolean introduceApp = false;
 
     Environment(String[] cmdLine, Registry registry,
 		OperatingSystem os, Speech speech,
@@ -87,7 +86,8 @@ class Environment implements EventConsumer
     {
 	init();
 	interaction.startInputEventsAccepting(this);
-	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
+	//	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
+	playSound(Sounds.STARTUP);//FIXME:
 	final String greeting = uiSettings.getLaunchGreeting("");
 	if (!greeting.trim().isEmpty())
 	    try {
@@ -119,7 +119,7 @@ class Environment implements EventConsumer
 	initI18n();
 	initObjects();
 	desktop.ready(i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME));
-	EnvironmentSounds.init(registry, launchContext);
+	org.luwrain.sounds.EnvironmentSounds.init(registry, launchContext);
 	uiSettings = Settings.createUserInterface(registry);
     }
 
@@ -295,50 +295,23 @@ class Environment implements EventConsumer
 	introduceActiveArea();
     }
 
-    private void eventLoop(EventLoopStopCondition stopCondition)
-    {
-	NullCheck.notNull(stopCondition, "stopCondition");
-	while(stopCondition.continueEventLoop())
-	{
-	    needForIntroduction = false;
-	    introduceApp = false;
-	    final Event event = eventQueue.takeEvent();
-	    if (event == null)
-		continue;
-	    if (!onEvent(event))
-	    {
-		eventQueue.onceAgain(event);
-		continue;
-	    }
-	    event.markAsProcessed();
-	    if (!eventQueue.hasAgain())
-		introduce(stopCondition);
-	}
-    }
-
-    //True means the event is processed and there is no need to process it again;
-    private boolean onEvent(Event event)
+    @Override protected boolean onEvent(Event event)
     {
 	try {
 	    if (event instanceof RunnableEvent)
 		return onRunnableEvent((RunnableEvent)event);
-	    switch (event.eventType())
-	    {
-	    case Event.KEYBOARD_EVENT:
+	    if (event instanceof KeyboardEvent)
 		return onKeyboardEvent(translateKeyboardEvent((KeyboardEvent)event));
-	    case Event.ENVIRONMENT_EVENT:
-
-		if (event instanceof ThreadSyncEvent)
-		    return onThreadSyncEvent((ThreadSyncEvent)event);
+	    if (event instanceof ThreadSyncEvent)
+		return onThreadSyncEvent((ThreadSyncEvent)event);
+	    if (event instanceof EnvironmentEvent)
 		return onEnvironmentEvent((EnvironmentEvent)event);
-	    default:
-		Log.warning("environment", "the event of an unknown type:" + event.eventType());
-		return true;
-	    }
+	    Log.warning("core", "unknown event class:" + event.getClass().getName());
+	    return true;
 	}
-	catch (Throwable e)
+	catch (Exception e)
 	{
-	    Log.error("core", "got an exception during event processing:" + e.getMessage());
+	    Log.error("core", "an exception of class " + e.getClass().getName() + " has been thrown while processing of event of class " + event.getClass().getName() + "::" + e.getMessage());
 	    e.printStackTrace();
 	    return true;
 	}
@@ -374,7 +347,7 @@ class Environment implements EventConsumer
 	return POPUP_BLOCKING_MAY_PROCESS;
     }
 
-    private void introduce(EventLoopStopCondition stopCondition)
+    @Override public void introduce(EventLoopStopCondition stopCondition)
     {
 	if (stopCondition == null)
 	    throw new NullPointerException("stopCondition may not be null");
@@ -528,11 +501,6 @@ class Environment implements EventConsumer
 	    e.printStackTrace();
 	}
 	return true;
-    }
-
-    @Override public void enqueueEvent(Event e)
-    {
-	eventQueue.putEvent(e);
     }
 
     private void popupImpl(Application app, Area area,
@@ -844,11 +812,6 @@ class Environment implements EventConsumer
 	return i18n;
     }
 
-    void playSound(int code)
-    {
-	EnvironmentSounds.play(code);
-    }
-
     LaunchContext launchContextIface()
     {
 	return launchContext;
@@ -1071,7 +1034,7 @@ class Environment implements EventConsumer
 	switch(component)
 	{
 	case ENVIRONMENT_SOUNDS:
-	    EnvironmentSounds.init(registry, launchContext);
+	    org.luwrain.sounds.EnvironmentSounds.init(registry, launchContext);
 	    break;
 	}
     }
@@ -1174,77 +1137,9 @@ class Environment implements EventConsumer
 	clipboard = new HeldData(new String[]{uniRef});
     }
 
-    void onNewScreenLayout()
-    {
-	screenContentManager.updatePopupState();
-	windowManager.redraw();
-    }
-
-    void setAreaIntroduction()
-    {
-	needForIntroduction = true;
-    }
-
-    void setAppIntroduction()
-    {
-	needForIntroduction = true;
-	introduceApp = true;
-    }
-
-    //This method may not return an unwrapped area, there should be at least ta security wrapper
-    private Area getActiveArea()
-    {
-	//FIXME:Ensure that there is a security wrapper
-	final Area area = screenContentManager.getActiveArea();
-	if (!(area instanceof AreaWrapper))
-	    Log.warning("core", "area " + area.getClass().getName() + " goes through Environment.getActiveArea() not being wrapped by any instance of core.AreaWrapper");
-	return area;
-    }
-
-    private void noAppsMessage()
-    {
-	speech.silence(); 
-	playSound(Sounds.NO_APPLICATIONS);
-	speech.speak(strings.noLaunchedApps(), 0, 0);
-    }
-
     private void areaBlockedMessage()
     {
 		    message(strings.appBlockedByPopup(), Luwrain.MESSAGE_ERROR);
-    }
-
-    private void failureMessage()
-    {
-	speech.silence();
-	playSound(Sounds.EVENT_NOT_PROCESSED);
-    }
-
-    private void areaInaccessibleMessage()
-    {
-speech.silence();
-	    playSound(Sounds.EVENT_NOT_PROCESSED);
-    }
-
-    /*
-    private File openPopup()
-    {
-	final FilePopup popup = new FilePopup(interfaces.getObjForEnvironment(), strings.openPopupName(),
-					      strings.openPopupPrefix(), launchContext.userHomeDirAsFile());
-	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.getFile();
-    }
-    */
-
-    private boolean isActiveAreaBlockedByPopup()
-    {
-	return screenContentManager.isActiveAreaBlockedByPopup();
-    }
-
-    private boolean isAreaBlockedBySecurity(Area area)
-    {
-	return false;
     }
 
     private Area getValidActiveArea(boolean speakMessages)
@@ -1271,28 +1166,89 @@ speech.silence();
 	return activeArea;
     }
 
-    private void printMemInfo()
-    {
-	final Runtime runtime = Runtime.getRuntime();
-	final java.text.NumberFormat format = java.text.NumberFormat.getInstance();
-	final long maxMemory = runtime.maxMemory();
-	final long allocatedMemory = runtime.totalMemory();
-	final long freeMemory = runtime.freeMemory();
-	Log.debug("core", "Memory usage information:");
-	Log.debug("core", "free memory: " + format.format(freeMemory / 1048576) + "M");
-	Log.debug("core", "allocated memory: " + format.format(allocatedMemory / 1046576) + "M");
-	Log.debug("core", "max memory: " + format.format(maxMemory / 1048576) + "M");
-    }
-
-    /*
-    Speech getSpeech()
-    {
-	return speech2;
-    }
-    */
-
     Player getPlayer()
     {
 	return player;
+    }
+
+    void onReadAreaCommand()
+    {
+	final Area activeArea = getValidActiveArea(true);
+	if (activeArea == null)
+	    return;
+	final VoicedFragmentQuery query = new VoicedFragmentQuery();
+	if (activeArea.onAreaQuery(query) && query.containsResult())
+	{
+	    startReading(activeArea, query.text(), query.nextPointX(), query.nextPointY());
+	    startReadingGeneralText(activeArea, activeArea.getHotPointX(), activeArea.getHotPointY());
+	    return;
+	}
+    }
+
+    private void fragmentReadingFinished(Area area, String text,
+					 int nextPointX, int nextPointY)
+    {
+    }
+
+    private void startReadingGeneralText(Area area,
+					 int fromPosX, int fromPosY)
+    {
+	NullCheck.notNull(area, "area");
+	final StringBuilder b = new StringBuilder();
+	final int count = area.getLineCount();
+	if (fromPosY >= count)
+	    return;
+	int index = fromPosY;
+	String line = area.getLine(index);
+	if (line == null)
+	    return;
+	if (fromPosX < line.length())
+	    line = line.substring(fromPosX); else
+	    line = "";
+	int pos = 0;
+	while(true)
+	{
+	while (pos < line.length() && 
+	       line.charAt(pos) != '.' && line.charAt(pos) != '!' && line.charAt(pos) != '?')
+	    ++pos;
+	if (pos >= line.length())
+	{
+	    b.append(line);
+	    pos = 0;
+	    ++index;
+	    if (index >= count)
+		break;
+	    line = area.getLine(index);
+	    if (line == null)
+		return;
+	    continue;
+	}
+	b.append(line.substring(0, pos + 1));
+	break;
+	}
+	int nextPosX = pos + 1;
+	int nextPosY = index;
+	if (nextPosX >= line.length())
+	{
+	    nextPosX = 0;
+	    //We may be careless that nextPosY would be greater than number of lines, a corresponding check will be performed on next step
+	    ++nextPosY;
+	}
+	//If it is still a first line, we must restore a text to fromPosX
+	if (nextPosY == fromPosY)
+	    nextPosX += fromPosX;
+	startReading(area, new String(b), nextPosX, nextPosY);
+    }
+
+    private void startReading(Area area, String text,
+			      int nextPointX, int nextPointY)
+    {
+	final Channel.Listener listener = new Channel.Listener(){
+		@Override public void onFinished()
+		{
+		    enqueueEvent(new RunnableEvent(()->{fragmentReadingFinished(area, text, nextPointX, nextPointY);}));
+		}};
+	final Channel channel = speech.getReadingChannel();
+	channel.speak(text, listener, 0, 0);
     }
 }
