@@ -22,6 +22,7 @@ package org.luwrain.controls;
 import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
 public class ListArea  implements Area, RegionProvider
@@ -316,6 +317,7 @@ public class ListArea  implements Area, RegionProvider
 	    return true;
 	case EnvironmentEvent.OK:
 	    return onOk(event);
+	case EnvironmentEvent.READING_POINT:
 	case EnvironmentEvent.MOVE_HOT_POINT:
 	    if (event instanceof MoveHotPointEvent)
 		return onMoveHotPoint((MoveHotPointEvent)event);
@@ -327,7 +329,16 @@ public class ListArea  implements Area, RegionProvider
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return region.onAreaQuery(query, hotPointX, hotPointY);
+	NullCheck.notNull(query, "query");
+	switch(query.getQueryCode())
+	{
+	case AreaQuery.VOICED_FRAGMENT:
+	    if (query instanceof VoicedFragmentQuery)
+		return onVoicedFragmentQuery((VoicedFragmentQuery)query); else
+		return false;
+	default:
+	    return region.onAreaQuery(query, hotPointX, hotPointY);
+	}
     }
 
     @Override public Action[] getAreaActions()
@@ -381,7 +392,12 @@ public class ListArea  implements Area, RegionProvider
 	final int x = event.getNewHotPointX();
 	final int y = event.getNewHotPointY();
 	if (y >= model.getItemCount())
-	    return false;
+	{
+	    hotPointY = model.getItemCount();
+	    hotPointX = 0;
+	environment.onAreaNewHotPoint(this);
+	return true;
+	}
 	final Object o = model.getItem(y);
 	if (x < appearance.getObservableLeftBound(o) ||
 	    x > appearance.getObservableRightBound(o))
@@ -389,6 +405,23 @@ public class ListArea  implements Area, RegionProvider
 	hotPointX = x;
 	hotPointY = y;
 	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+    private boolean onVoicedFragmentQuery(VoicedFragmentQuery query)
+    {
+	NullCheck.notNull(query, "query");
+	final int count = model.getItemCount();
+	if (hotPointY >= count)
+	    return false;
+	final Object current = model.getItem(hotPointY);
+	final String text = appearance.getScreenAppearance(current, 0).substring(hotPointX, appearance.getObservableRightBound(current));
+	if (hotPointY + 1 < count)
+	{
+	    final Object next = model.getItem(hotPointY + 1);
+	    query.answer(text, appearance.getObservableLeftBound(next), hotPointY + 1);
+	} else
+	    query.answer(text, 0, hotPointY + 1);
 	return true;
     }
 

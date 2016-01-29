@@ -36,6 +36,7 @@ class Environment extends EnvironmentAreas
 
     private String[] cmdLine;
     private Registry registry;
+    private Channel readingChannel = null;
     private Player player;
     private OperatingSystem os;
     private Interaction interaction;
@@ -360,6 +361,8 @@ class Environment extends EnvironmentAreas
 
     private boolean onKeyboardEvent(KeyboardEvent event)
     {
+	if (readingChannel != null)
+	    cancelAreaReading();
 	if (keyboardEventForEnvironment(event))
 	    return true;
 
@@ -1144,24 +1147,38 @@ class Environment extends EnvironmentAreas
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
 	    return;
+	if (readingChannel != null)
+	    cancelAreaReading();
+readingChannel = speech.getReadingChannel();
+if (readingChannel == null)
+{
+    message(strings.noReadingChannel(), Luwrain.MESSAGE_ERROR);
+    return;
+}
+	Log.debug("core", "using the channel \'" + readingChannel.getChannelName() + " for area reading");
 	final VoicedFragmentQuery query = new VoicedFragmentQuery();
 	if (activeArea.onAreaQuery(query) && query.containsResult())
-	{
-	    startReading(activeArea, query.text(), query.nextPointX(), query.nextPointY());
+	    startReading(activeArea, query.text(), query.nextPointX(), query.nextPointY()); else
 	    startReadingGeneralText(activeArea, activeArea.getHotPointX(), activeArea.getHotPointY());
 	    return;
-	}
     }
 
     private void fragmentReadingFinished(Area area, String text,
 					 int nextPointX, int nextPointY)
     {
+	NullCheck.notNull(area, "area");
+	area.onEnvironmentEvent(new ReadingPointEvent(nextPointX, nextPointY));
+	final VoicedFragmentQuery query = new VoicedFragmentQuery();
+	if (area.onAreaQuery(query) && query.containsResult())
+	    startReading(area, query.text(), query.nextPointX(), query.nextPointY()); else
+	    startReadingGeneralText(area, nextPointX, nextPointY);
     }
 
     private void startReadingGeneralText(Area area,
 					 int fromPosX, int fromPosY)
     {
 	NullCheck.notNull(area, "area");
+	Log.debug("core", "reading general text of area " + area.getAreaName() + " from (" + fromPosX + "," + fromPosY + ")");
 	final StringBuilder b = new StringBuilder();
 	final int count = area.getLineCount();
 	if (fromPosY >= count)
@@ -1211,12 +1228,21 @@ class Environment extends EnvironmentAreas
     private void startReading(Area area, String text,
 			      int nextPointX, int nextPointY)
     {
+	if (readingChannel == null)//No area reading is active currently
+	    return;
 	final Channel.Listener listener = new Channel.Listener(){
-		@Override public void onFinished()
+		@Override public void onFinished(long id)
 		{
 		    enqueueEvent(new RunnableEvent(()->{fragmentReadingFinished(area, text, nextPointX, nextPointY);}));
 		}};
-	final Channel channel = speech.getReadingChannel();
-	channel.speak(text, listener, 0, 0);
+	readingChannel.speak(text, listener, 0, 0);
+    }
+
+    private void cancelAreaReading()
+    {
+	if (readingChannel == null)
+	    return;
+	readingChannel.silence();
+	readingChannel = null;
     }
 }

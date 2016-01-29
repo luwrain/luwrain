@@ -18,33 +18,13 @@ package org.luwrain.core.events;
 
 import org.luwrain.core.*;
 
-public class MoveHotPointEvent extends EnvironmentEvent
+public class ReadingPointEvent extends MoveHotPointEvent
 {
     private int newHotPointX;
     private int newHotPointY;
 
-    MoveHotPointEvent(int customCode,
-		      int newHotPointX, int newHotPointY)
+    public ReadingPointEvent(int newHotPointX, int newHotPointY)
     {
-	super(customCode);
-	this.newHotPointX = newHotPointX;
-	this.newHotPointY = newHotPointY;
-    }
-
-    public MoveHotPointEvent(int newHotPointX, int newHotPointY)
-    {
-	super(MOVE_HOT_POINT);
-	this.newHotPointX = newHotPointX;
-	this.newHotPointY = newHotPointY;
-    }
-
-    public int getNewHotPointX()
-    {
-	return newHotPointX;
-    }
-
-    public int getNewHotPointY()
-    {
-	return newHotPointY;
+	super(READING_POINT, newHotPointX, newHotPointY);
     }
 }

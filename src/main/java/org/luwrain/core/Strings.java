@@ -41,4 +41,5 @@ public interface Strings
     String partitionTitle(Partition part);
     String uniRefPrefix(String uniRefType);
     String linesDeleted();
+    String noReadingChannel();
 }

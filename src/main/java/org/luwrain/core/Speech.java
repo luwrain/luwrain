@@ -205,11 +205,30 @@ class Speech
 
     Channel getReadingChannel()
     {
-	return null;
+	return getAnyChannelByCond(EnumSet.of(Channel.Features.CAN_SYNTH_TO_SPEAKERS, Channel.Features.CAN_NOTIFY_WHEN_FINISHED));
     }
 
     boolean hasReadingChannel()
     {
 	return false;
+    }
+
+    //Never returns default channe;
+    Channel[] getChannelsByCond(Set<Channel.Features> cond)
+    {
+	NullCheck.notNull(cond, "cond");
+	final LinkedList<Channel> res = new LinkedList<Channel>();
+	for(Channel c: channels)
+	    if (c != defaultChannel && c.getFeatures().containsAll(cond))
+		res.add(c);
+	return res.toArray(new Channel[res.size()]);
+    }
+
+    Channel getAnyChannelByCond(Set<Channel.Features> cond)
+    {
+	final Channel[] res = getChannelsByCond(cond);
+	if (res.length < 1)
+	    return null;
+	return res[0];
     }
 }

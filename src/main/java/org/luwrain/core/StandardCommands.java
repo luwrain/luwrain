@@ -441,6 +441,19 @@ class StandardCommands
 		}
 	    });
 
+	//read-area
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "read-area";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    environment.onReadAreaCommand();
+		}
+	    });
+
+
 
 
 
