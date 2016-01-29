@@ -30,7 +30,7 @@ class Init
     static private final String  PREFIX_OS= "--os=";
     static private final String  PREFIX_LANG= "--lang=";
 
-    static private final String DEFAULT_INTERACTION_CLASS = "org.luwrain.interaction.AwtInteraction";
+    static private final String DEFAULT_INTERACTION_CLASS = "org.luwrain.interaction.javafx.JavaFxInteraction";
 
     private String[] cmdLine;
     private Registry registry;
