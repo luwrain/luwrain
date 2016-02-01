@@ -109,6 +109,8 @@ public class Hints
 	case END_OF_LINE:
 	case NO_LINES_BELOW:
 	    return Sounds.NO_LINES_BELOW;
+	case NO_CONTENT:
+	    return Sounds.NO_CONTENT;
 	default:
 	    return -1;
 	}

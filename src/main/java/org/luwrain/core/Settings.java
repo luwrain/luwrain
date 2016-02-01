@@ -44,6 +44,7 @@ public interface Settings
 	String getGeneralTime(String defValue);
 	String getTermBell(String defValue);
 	String getDocSection(String defValue);
+	String getNoContent(String defValue);
 
 	void setEventNotProcessed(String value);
 	void setGeneralError(String value);
@@ -67,6 +68,7 @@ public interface Settings
 	void setGeneralTime(String value);
 	void setTermBell(String value);
 	void setDocSection(String value);
+	void setNoContent(String value);
     }
 
     public interface UserInterface
