@@ -140,12 +140,6 @@ class Speech
 	return true;
     }
 
-    Channel getDefaultStreamingChannel()
-    {
-	//FIXME:
-	return channels.get(0);
-    }
-
     /*
     Channel getDefaultChannel()
     {

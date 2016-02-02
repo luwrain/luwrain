@@ -135,28 +135,28 @@ class Environment extends EnvironmentAreas
 		if (s != null)
 		{
 		    if (!shortcuts.add(s))
-			Log.warning("environment", "shortcut \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shortcuts manager to be registered");
+			Log.warning("core", "shortcut \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shortcuts manager to be registered");
 		}
 	    //Shared objects
 	    for(SharedObject s: e.sharedObjects)
 		if (s != null)
 		{
 		    if (!sharedObjects.add(ext, s))
-			    Log.warning("environment", "the shared object \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shared objects manager to be registered");
+			    Log.warning("core", "the shared object \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shared objects manager to be registered");
 		}
 	    //UniRefProcs
 	    for(UniRefProc p: e.uniRefProcs)
 		if (p != null)
 		{
 		    if (!uniRefProcs.add(e.luwrain, p))
-			    Log.warning("environment", "the uniRefProc \'" + p.getUniRefType() + "\' of extension " + e.getClass().getName() + " has been refused by  the uniRefProcs manager to be registered");
+			    Log.warning("core", "the uniRefProc \'" + p.getUniRefType() + "\' of extension " + e.getClass().getName() + " has been refused by  the uniRefProcs manager to be registered");
 		}
 	    //Commands
 	    for(Command c: e.commands)
 		if (c != null)
 		{
 		    if (!commands.add(e.luwrain, c))
-			Log.warning("environment", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
+			Log.warning("core", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
 		}
 	}
     }
@@ -170,12 +170,12 @@ class Environment extends EnvironmentAreas
 	    }
 	    catch (Exception ee)
 	    {
-		Log.error("environment", "extension " + e.getClass().getName() + " has thrown an exception on i18n:" + ee.getMessage());
+		Log.error("core", "extension " + e.getClass().getName() + " has thrown an exception on i18n:" + ee.getMessage());
 		ee.printStackTrace();
 	    }
 	if (!i18n.chooseLang(launchContext.lang()))
 	{
-	    Log.fatal("environment", "unable to choose matching language for i18n, requested language is \'" + launchContext.lang() + "\'");
+	    Log.fatal("core", "unable to choose matching language for i18n, requested language is \'" + launchContext.lang() + "\'");
 	    return;
 	}
 	strings = (Strings)i18n.getStrings(STRINGS_OBJECT_NAME);
@@ -381,7 +381,7 @@ class Environment extends EnvironmentAreas
 	}
 	catch (Throwable e)
 	{
-	    Log.error("environment", "keyboard event throws an exception:" + e.getMessage());
+	    Log.error("core", "keyboard event throws an exception:" + e.getMessage());
 	    e.printStackTrace();
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
 	    return true;

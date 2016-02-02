@@ -16,11 +16,14 @@
 
 package org.luwrain.core;
 
+
+import java.util.Set;
 import java.io.File;
 
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
 import org.luwrain.core.events.*;
+import org.luwrain.speech.Channel;
 
 /**
  * The main gate to Luwrain core for applications. This class is the
@@ -428,10 +431,19 @@ public final class Luwrain implements EventConsumer
 	return environment.createBrowserIface(this);
     }
 
-    public org.luwrain.speech.Channel getDefaultStreamingChannel()
+    public Channel getAnySpeechChannelByCond(Set<Channel.Features> cond)
     {
-	return environment.getSpeech().getDefaultStreamingChannel();
+	NullCheck.notNull(cond, "cond");
+	return environment.getSpeech().getAnyChannelByCond(cond);
     }
+
+    public Channel[] getSpeechChannelsByCond(Set<Channel.Features> cond)
+    {
+	NullCheck.notNull(cond, "cond");
+	return environment.getSpeech().getChannelsByCond(cond);
+    }
+
+
 
     public org.luwrain.player.Player getPlayer()
     {

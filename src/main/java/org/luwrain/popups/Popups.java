@@ -118,7 +118,6 @@ int popupFlags)
 	return chooseFile(luwrain, name, prefix, startWith, defPath, fileType, new String[0], 0);
     }
 
-
     static public Path chooseFile(Luwrain luwrain,
 			    String name, String prefix,
 			    Path startWith, Path defPath,
