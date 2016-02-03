@@ -35,22 +35,28 @@ class Impl
 
 synchronized void play(Playlist playlist)
     {
+	try {
 	NullCheck.notNull(playlist, "playlist");
-	System.out.println("play1");
+	//	System.out.println("play1");
 	if (playlist.getPlaylistItems() == null || playlist.getPlaylistItems().length < 1)
 	    return;
 	stop();
 	this.currentPlaylist = playlist;
 	currentTrackNum = 0;
-	if (playlist.isStreaming())
-	    currentPlayer = streamingBackEnd; else
-	    currentPlayer = regularBackEnd;
+	//	if (playlist.isStreaming())
+	currentPlayer = streamingBackEnd;// else
+	//	    currentPlayer = regularBackEnd;
 	for(Listener l: listeners)
 	{
 	    l.onNewPlaylist(playlist);
 	    l.onNewTrack(currentTrackNum);
 	}
 	currentPlayer.play(playlist.getPlaylistItems()[currentTrackNum]);
+	}
+	catch(Exception e)
+	{
+	    e.printStackTrace();
+	}
     }
 
 synchronized void stop()

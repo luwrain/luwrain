@@ -76,7 +76,7 @@ class CommandManager
 
     public String[] getCommandNames()
     {
-	LinkedList<String> res = new LinkedList<String>();
+	final LinkedList<String> res = new LinkedList<String>();
 	for(Map.Entry<String, Entry> e: commands.entrySet())
 	    res.add(e.getKey());
 	String[] str = res.toArray(new String[res.size()]);
@@ -84,10 +84,10 @@ class CommandManager
 	return str;
     }
 
-    public void addOsCommands(Luwrain luwrain, Registry registry)
+    void addOsCommands(Luwrain luwrain, Registry registry)
     {
-	if (registry == null)
-	    throw new NullPointerException("registry may not be null");
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(registry, "registry");
 	final String path = new RegistryKeys().commandsOs();
 	final String[] subdirs = registry.getDirectories(path);
 	if (subdirs == null)
@@ -105,7 +105,7 @@ class CommandManager
 		Log.warning("environment", "registry value " + commandValue + " supposed to be a string but it isn\'t a string");
 		continue;
 	    }
-	    add(null, new OsCommand(s, registry.getString(commandValue)));
+	    add(luwrain, new OsCommand(s, registry.getString(commandValue)));
 	}
     }
 }
