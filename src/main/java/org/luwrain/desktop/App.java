@@ -112,7 +112,7 @@ public class App implements Application, Actions
 		    NullCheck.notNull(event, "event");
 		    switch(event.getCode())
 		    {
-		    case EnvironmentEvent.CLOSE:
+		    case CLOSE:
 			l.silence();
 			l.playSound(Sounds.NO_APPLICATIONS);
 			l.message(s.noApplications());

@@ -171,10 +171,10 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 	    return false;
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.REFRESH:
+	case REFRESH:
 	    refresh();
 	    return true;
-	case EnvironmentEvent.INTRODUCE:
+	case INTRODUCE:
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.INTRO_POPUP);
 	    luwrain.say(getAreaName());

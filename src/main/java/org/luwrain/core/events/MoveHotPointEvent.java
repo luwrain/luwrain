@@ -23,7 +23,7 @@ public class MoveHotPointEvent extends EnvironmentEvent
     private int newHotPointX;
     private int newHotPointY;
 
-    MoveHotPointEvent(int customCode,
+    MoveHotPointEvent(Code customCode,
 		      int newHotPointX, int newHotPointY)
     {
 	super(customCode);
@@ -33,7 +33,7 @@ public class MoveHotPointEvent extends EnvironmentEvent
 
     public MoveHotPointEvent(int newHotPointX, int newHotPointY)
     {
-	super(MOVE_HOT_POINT);
+	super(Code.MOVE_HOT_POINT);
 	this.newHotPointX = newHotPointX;
 	this.newHotPointY = newHotPointY;
     }

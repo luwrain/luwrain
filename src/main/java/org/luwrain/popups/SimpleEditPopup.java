@@ -134,7 +134,7 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 	NullCheck.notNull(event, "event");
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.INTRODUCE:
+	case INTRODUCE:
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.INTRO_POPUP);
 	    luwrain.say(prefix + text);

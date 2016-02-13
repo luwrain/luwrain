@@ -43,17 +43,14 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
     }
 
     public CommanderPopup(Luwrain luwrain, String name,
-			  Path path,
-			  int flags,
+			  Path path, int flags,
 			  int popupFlags)
     {
 	super(constructCommanderParams(), null);
 	this.luwrain = luwrain;
 	this.name = name;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
     }
 
 @Override     public boolean onCommanderClick(Path current, Path[] selected)

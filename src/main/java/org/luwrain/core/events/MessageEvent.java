@@ -31,7 +31,7 @@ public class MessageEvent extends EnvironmentEvent
 
     public MessageEvent(String text)
     {
-	super(MESSAGE);
+	super(Code.MESSAGE);
 	this.text = text;
 	NullCheck.notNull(text, "text");
 	this.semantic = Luwrain.MESSAGE_REGULAR;
@@ -39,7 +39,7 @@ public class MessageEvent extends EnvironmentEvent
 
     public MessageEvent(String text, int semantic)
     {
-	super(MESSAGE);
+	super(Code.MESSAGE);
 	this.text = text;
 	NullCheck.notNull(text, "text");
 	this.semantic = semantic;

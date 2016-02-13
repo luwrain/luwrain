@@ -238,7 +238,7 @@ public class TableArea  implements Area
 	    throw new NullPointerException("event may not be null");
 	switch (event.getCode())
 	{
-	case EnvironmentEvent.REFRESH:
+	case REFRESH:
 	    refresh();
 	    return true;
 	default:

@@ -24,7 +24,7 @@ public class OpenEvent extends EnvironmentEvent
 
     public OpenEvent(String path)
     {
-	super(OPEN);
+	super(Code.OPEN);
 	this.path = path;
 	NullCheck.notNull(path, "path");
     }

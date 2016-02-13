@@ -567,7 +567,7 @@ public class FormArea  extends NavigateArea
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	//Insert command for a uniref;
-	if (event.getCode() == EnvironmentEvent.INSERT && (event instanceof InsertEvent))
+	if (event.getCode() == EnvironmentEvent.Code.INSERT && (event instanceof InsertEvent))
 	{
 	    final int index = getHotPointY();
 	    if (index >= 0 && index < items.size() &&

@@ -143,10 +143,10 @@ return actions.insertDir();
 			throw new NullPointerException("event may not be null");
 		    switch (event.getCode())
 		    {
-		    case EnvironmentEvent.CLOSE:
+		    case CLOSE:
 			actions.closeApp();
 			return true;
-		    case EnvironmentEvent.REFRESH://To remove;
+		    case REFRESH://To remove;
 			actions.refresh();
 			return true;
 		    default:
@@ -192,7 +192,7 @@ return actions.insertDir();
 			throw new NullPointerException("event may not be null");
 		    switch(event.getCode())
 		    {
-		    case EnvironmentEvent.CLOSE:
+		    case CLOSE:
 			actions.closeApp();
 			return true;
 		    default:

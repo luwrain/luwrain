@@ -110,7 +110,7 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    throw new NullPointerException("event may not be null");
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.INTRODUCE:
+	case INTRODUCE:
 	    luwrain.say(getAreaName());
 	    return true;
 	default:

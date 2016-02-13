@@ -24,7 +24,6 @@ import org.luwrain.core.queries.*;
 import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.mainmenu.MainMenu;
-import org.luwrain.player.Player;
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
 import org.luwrain.speech.Channel;
@@ -37,7 +36,6 @@ class Environment extends EnvironmentAreas
     private String[] cmdLine;
     private Registry registry;
     private Channel readingChannel = null;
-    private Player player;
     private OperatingSystem os;
     private Interaction interaction;
 
@@ -98,7 +96,6 @@ class Environment extends EnvironmentAreas
     private void init()
     {
 	desktop.onLaunch(interfaces.requestNew(desktop, this));
-	player = new org.luwrain.player.Player(registry);
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
 	windowManager = new WindowManager(interaction, screenContentManager);
@@ -436,7 +433,7 @@ class Environment extends EnvironmentAreas
 
     private boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.MESSAGE)
+	if (event.getCode() == EnvironmentEvent.Code.MESSAGE)
 	{
 	    if (!(event instanceof MessageEvent))
 		return true;
@@ -671,7 +668,7 @@ class Environment extends EnvironmentAreas
 	    return;
 	}
 	if (!isActiveAreaBlockedByPopup() && !isAreaBlockedBySecurity(activeArea) &&
-	    activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.INTRODUCE)))
+	    activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.INTRODUCE)))
 	    return;
 	speech.silence();
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
@@ -930,7 +927,7 @@ class Environment extends EnvironmentAreas
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
 	    return;
-	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.REGION_POINT)))
+	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
 	    message(strings.regionPointSet(), Luwrain.MESSAGE_REGULAR); else
 	    areaInaccessibleMessage();
     }
@@ -1015,7 +1012,7 @@ class Environment extends EnvironmentAreas
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
 	    return;
-	if (!activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.DELETE)))
+	if (!activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE)))
 	{
 	    areaInaccessibleMessage();
 	    return;
@@ -1135,11 +1132,6 @@ class Environment extends EnvironmentAreas
 	    return null;
 	}
 	return activeArea;
-    }
-
-    Player getPlayer()
-    {
-	return player;
     }
 
     void onReadAreaCommand()

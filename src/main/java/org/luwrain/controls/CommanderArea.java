@@ -407,10 +407,10 @@ static public class Params
 	NullCheck.notNull(event, "event");
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.REFRESH:
+	case REFRESH:
 	    refresh();
 	    return true;
-	case EnvironmentEvent.OK:
+	case OK:
 	    return onOk(event);
 	default:
 	    return region.onEnvironmentEvent(event, hotPointX, hotPointY);

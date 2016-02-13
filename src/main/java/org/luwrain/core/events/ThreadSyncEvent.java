@@ -25,14 +25,14 @@ public class ThreadSyncEvent extends EnvironmentEvent
 
     public ThreadSyncEvent(Area destArea)
     {
-	super(THREAD_SYNC);
+	super(Code.THREAD_SYNC);
 	this.destArea = destArea;
 	NullCheck.notNull(destArea, "destArea");
     }
 
-    @Override public int getCode()
+    @Override public Code getCode()
     {
-	return THREAD_SYNC;
+	return Code.THREAD_SYNC;
     }
 
     public Area getDestArea()

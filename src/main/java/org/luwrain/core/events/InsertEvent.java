@@ -24,7 +24,7 @@ public class InsertEvent extends EnvironmentEvent
 
     public InsertEvent(HeldData data)
     {
-	super(INSERT);
+	super(Code.INSERT);
 	this.data = data;
 	NullCheck.notNull(data, "data");
     }

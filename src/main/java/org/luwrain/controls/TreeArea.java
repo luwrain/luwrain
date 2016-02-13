@@ -162,7 +162,7 @@ public class TreeArea implements Area
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.REFRESH)
+	if (event.getCode() == EnvironmentEvent.Code.REFRESH)
 	{
 	    refresh();
 	    return true;

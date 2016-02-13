@@ -79,7 +79,7 @@ class StandardCommands
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.OK));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.OK));
 		}
 	    });
 
@@ -92,7 +92,7 @@ class StandardCommands
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CANCEL));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CANCEL));
 		}
 	    });
 
@@ -105,7 +105,7 @@ class StandardCommands
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.CLOSE));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLOSE));
 		}
 	    });
 
@@ -118,7 +118,7 @@ class StandardCommands
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.SAVE));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.SAVE));
 		}
 	    });
 
@@ -157,7 +157,7 @@ class StandardCommands
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.REFRESH));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.REFRESH));
 		}
 	    });
 
@@ -247,7 +247,7 @@ class StandardCommands
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.HELP));
+		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.HELP));
 		}
 	    });
 

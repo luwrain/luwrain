@@ -445,11 +445,6 @@ public final class Luwrain implements EventConsumer
 
 
 
-    public org.luwrain.player.Player getPlayer()
-    {
-	return environment.getPlayer();
-    }
-
     public void runInMainThread(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");

@@ -59,11 +59,11 @@ public class Region
 	    return false;
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.REGION_POINT:
+	case REGION_POINT:
 	    return firstPoint(hotPointX, hotPointY);
-	case EnvironmentEvent.DELETE:
+	case DELETE:
 	    return delete(hotPointX, hotPointY);
-	case EnvironmentEvent.INSERT:
+	case INSERT:
 	    if (!(event instanceof InsertEvent))
 		return false;
 	    return insert((InsertEvent)event, hotPointX, hotPointY);

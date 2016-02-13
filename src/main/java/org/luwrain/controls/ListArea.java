@@ -312,13 +312,13 @@ public class ListArea  implements Area, RegionProvider
 	NullCheck.notNull(event, "event");
 	switch (event.getCode())
 	{
-	case EnvironmentEvent.REFRESH:
+	case REFRESH:
 	    refresh();
 	    return true;
-	case EnvironmentEvent.OK:
+	case OK:
 	    return onOk(event);
-	case EnvironmentEvent.READING_POINT:
-	case EnvironmentEvent.MOVE_HOT_POINT:
+	case READING_POINT:
+	case MOVE_HOT_POINT:
 	    if (event instanceof MoveHotPointEvent)
 		return onMoveHotPoint((MoveHotPointEvent)event);
 	    return false;

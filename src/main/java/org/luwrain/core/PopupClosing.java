@@ -70,12 +70,12 @@ public class PopupClosing implements EventLoopStopCondition
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.CANCEL || event.getCode() == EnvironmentEvent.CLOSE)
+	if (event.getCode() == EnvironmentEvent.Code.CANCEL || event.getCode() == EnvironmentEvent.Code.CLOSE)
 	{
 	    doCancel();
 	    return true;
 	}
-	if (event.getCode() == EnvironmentEvent.OK)
+	if (event.getCode() == EnvironmentEvent.Code.OK)
 	{
 	    doOk();
 	    return true;

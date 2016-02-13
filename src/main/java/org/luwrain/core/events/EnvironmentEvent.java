@@ -20,35 +20,34 @@ import org.luwrain.core.*;
 
 public class EnvironmentEvent extends Event
 {
-    static public final int OK = 0;
-    static public final int CANCEL = 1;
-    static public final int CLOSE = 2;
-    static public final int SAVE = 3;
-    static public final int REFRESH = 4;
-    static public final int INTRODUCE = 5;
-    static public final int HELP = 6;
-    static public final int THREAD_SYNC = 7;
-    static public final int MESSAGE = 8;
-    static public final int ACTION = 9;
-    static public final int OPEN = 10;
-    static public final int MOVE_HOT_POINT = 11;
-    static public final int READING_POINT = 12;
+    public enum Code {OK,
+		      CANCEL,
+		      CLOSE,
+		      SAVE,
+		      REFRESH,
+		      INTRODUCE,
+		      HELP,
+		      THREAD_SYNC,
+		      MESSAGE,
+		      ACTION,
+		      OPEN,
+		      MOVE_HOT_POINT,
+		      READING_POINT,
+		      REGION_POINT,
+		      INSERT,
+		      DELETE
+    };
 
-    static public final int REGION_POINT = 100;
-    //    static public final int COPY = 101;
-    //    static public final int CUT = 102;
-    static public final int INSERT = 104;
-    static public final int DELETE = 105;
+    private Code code;
 
-    private int code;
-
-    public EnvironmentEvent(int code)
+    public EnvironmentEvent(Code code)
     {
 	super(ENVIRONMENT_EVENT);
 	this.code = code;
+	NullCheck.notNull(code, "code");
     }
 
-    public int getCode()
+    public Code getCode()
     {
 	return code;
     }

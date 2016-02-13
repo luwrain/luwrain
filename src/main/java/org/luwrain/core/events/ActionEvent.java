@@ -24,7 +24,7 @@ public class ActionEvent extends EnvironmentEvent
 
     public ActionEvent(Action action)
     {
-	super(ACTION);
+	super(Code.ACTION);
 	this.action = action;
 	NullCheck.notNull(action, "action");
     }

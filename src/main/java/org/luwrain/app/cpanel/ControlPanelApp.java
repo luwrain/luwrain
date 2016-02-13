@@ -144,13 +144,13 @@ public class ControlPanelApp implements Application, Actions
 		{
 		    switch (event.getCode())
 		    {
-		    case EnvironmentEvent.ACTION:
+		    case ACTION:
 			if (ActionEvent.isAction(event, "insert"))
 			    actions.onSectionsInsert();
 			if (ActionEvent.isAction(event, "delete"))
 			    actions.onSectionsDelete();
 			return true;
-		    case EnvironmentEvent.CLOSE:
+		    case CLOSE:
 			actions.closeApp();
 			return true;
 		    }

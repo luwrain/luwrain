@@ -89,7 +89,7 @@ public abstract class NavigateArea implements Area, HotPointControl
 	NullCheck.notNull(event, "event");
 	switch(event.getCode())
 	{
-	case EnvironmentEvent.MOVE_HOT_POINT:
+	case MOVE_HOT_POINT:
 	    if (event instanceof MoveHotPointEvent)
 	    {
 		final MoveHotPointEvent moveHotPoint = (MoveHotPointEvent)event;
