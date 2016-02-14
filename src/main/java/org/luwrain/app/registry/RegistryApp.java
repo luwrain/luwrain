@@ -124,8 +124,8 @@ public class RegistryApp implements Application, Actions
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
-		    if (event.isCommand() && !event.isModified())
-		    switch(event.getCommand())
+		    if (event.isSpecial() && !event.isModified())
+		    switch(event.getSpecial())
 		    {
 		    case INSERT:
 return actions.insertDir();
@@ -175,8 +175,8 @@ return actions.insertDir();
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
-		    if (event.isCommand() && !event.isModified())
-			switch(event.getCommand())
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
 		    {
 		    case TAB:
 			actions.gotoDirs();

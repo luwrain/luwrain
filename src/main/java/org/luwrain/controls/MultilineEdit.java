@@ -56,11 +56,11 @@ public class MultilineEdit
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (!event.isCommand())
+	if (!event.isSpecial())
 	    return onChar(event);
 	if (event.isModified())
 	    return false;
-	switch(event.getCommand())
+	switch(event.getSpecial())
 	{
 	case BACKSPACE:
 return onBackspace(event);
@@ -148,7 +148,7 @@ return onEnter(event);
 
     private boolean onChar(KeyboardEvent event)
     {
-	final char c = event.getCharacter();
+	final char c = event.getChar();
 	String line = model.getLine(model.getHotPointY());
 	if (line == null)
 	    line = "";

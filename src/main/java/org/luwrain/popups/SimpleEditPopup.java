@@ -106,9 +106,9 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 	    return true;
 	if (edit.isPosCovered(pos, 0) && edit.onKeyboardEvent(event))
 	    return true;
-	if (!event.isCommand() || event.isModified())
+	if (!event.isSpecial() || event.isModified())
 	    return false;
-	switch (event.getCommand())
+	switch (event.getSpecial())
 	{
 	case ARROW_LEFT:
 	    return onArrowLeft(event);

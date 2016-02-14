@@ -73,8 +73,8 @@ class SearchAreaWrapper implements Area, AreaWrapper
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event.isCommand() && !event.isModified())
-	    switch(event.getCommand())
+	if (event.isSpecial() && !event.isModified())
+	    switch(event.getSpecial())
 	    {
 	    case TAB:
 		return onNewChar('\0');
@@ -91,7 +91,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	    default:
 		return false;
 	    }
-	return onNewChar(event.getCharacter());
+	return onNewChar(event.getChar());
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)

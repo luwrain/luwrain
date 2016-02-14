@@ -41,8 +41,8 @@ public class SingleLineEdit implements RegionProvider
 	NullCheck.notNull(event, "event");
 	if (event.withControl() || event.withAlt())
 	    return false;
-	if (event.isCommand())
-	    switch (event.getCommand())
+	if (event.isSpecial())
+	    switch (event.getSpecial())
 	    {
 	    case BACKSPACE:
 		return onBackspace(event);
@@ -144,29 +144,29 @@ public class SingleLineEdit implements RegionProvider
 	    return false;
 	if (pos == line.length())
 	{
-	    model.setLine(line + event.getCharacter());
+	    model.setLine(line + event.getChar());
 	    model.setHotPointX(pos + 1);
-	    if (event.getCharacter() == ' ')
+	    if (event.getChar() == ' ')
 	    {
 		final String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
 		if (lastWord != null && !lastWord.isEmpty())
 		    environment.say(lastWord); else
 		    environment.hint(Hints.SPACE);
 	    } else
-		environment.sayLetter(event.getCharacter());
+		environment.sayLetter(event.getChar());
 	    return true;
 	}
-	final String newLine = new String(line.substring(0, pos) + event.getCharacter() + line.substring(pos));
+	final String newLine = new String(line.substring(0, pos) + event.getChar() + line.substring(pos));
 	model.setLine(newLine);
 	model.setHotPointX(pos + 1);
-	if (event.getCharacter() == ' ')
+	if (event.getChar() == ' ')
 	{
 	    final String lastWord = TextUtils.getLastWord(newLine, pos + 1);
 	    if (lastWord != null && !lastWord.isEmpty())
 		environment.say(lastWord); else
 		environment.hint(Hints.SPACE);
 	} else
-	    environment.sayLetter(event.getCharacter());
+	    environment.sayLetter(event.getChar());
 	return true;
     }
 

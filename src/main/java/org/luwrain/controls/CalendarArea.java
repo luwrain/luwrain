@@ -61,9 +61,9 @@ public class CalendarArea implements Area
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (!event.isCommand() || event.isModified())
+	if (!event.isSpecial() || event.isModified())
 	    return false;
-	switch(event.getCommand())
+	switch(event.getSpecial())
 	{
 	case ARROW_RIGHT:
 	    calendar.add(Calendar.DAY_OF_MONTH, 1);

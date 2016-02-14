@@ -499,7 +499,7 @@ public class FormArea  extends NavigateArea
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	//Delete on a uniref;
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.Special.DELETE &&
+	if (event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.DELETE &&
 	    !event.isModified()) 
 	{
 	    final int index = getHotPointY();
@@ -512,7 +512,7 @@ public class FormArea  extends NavigateArea
 	    }
 	}
 
-	if (	    event.isCommand() && event.getCommand() == KeyboardEvent.Special.ENTER &&
+	if (	    event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.ENTER &&
 		    !event.isModified())
 	{
 	    //If the user is pressing Enter on the list;
@@ -546,7 +546,7 @@ public class FormArea  extends NavigateArea
 	    }
 	}
 	//If the user is typing on the caption of the edit, moving a hot point to the end of line;
-	if (!event.isCommand() && getHotPointY() < items.size())
+	if (!event.isSpecial() && getHotPointY() < items.size())
 	{
 	    final int index = getHotPointY();
 	    final Item item = items.get(index);

@@ -117,9 +117,9 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 	    throw new NullPointerException("event may not be null");
 	if (closing.onKeyboardEvent(event))
 	    return true;
-	if (event.isModified() || !event.isCommand())
+	if (event.isModified() || !event.isSpecial())
 	    return false;
-	switch(event.getCommand())
+	switch(event.getSpecial())
 	{
 	case ENTER:
 	    return closing.doOk();

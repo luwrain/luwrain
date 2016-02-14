@@ -335,9 +335,9 @@ static public class Params
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (!event.isCommand())
+	if (!event.isSpecial())
 	{
-	    switch(event.getCharacter())
+	    switch(event.getChar())
 	    {
 	    case '~':
 		open(environment.launchContext().userHomeDirAsPath(), null);
@@ -357,7 +357,7 @@ static public class Params
 	}
 	if (event.isModified())
 	    return false;
-	switch(event.getCommand())
+	switch(event.getSpecial())
 	{
 	case BACKSPACE:
 	    return onBackspace(event);
@@ -582,7 +582,7 @@ static public class Params
     {
 	if (noContentCheck())
 	    return true;
-	final char c = event.getCharacter();
+	final char c = event.getChar();
 	String beginning = "";
 	if (hotPointY < entries.size())
 	{

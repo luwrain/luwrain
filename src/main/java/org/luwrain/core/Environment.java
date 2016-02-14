@@ -407,9 +407,9 @@ class Environment extends EnvironmentAreas
 		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
 	    return true;
 	}
-	if (event.isCommand())
+	if (event.isSpecial())
 	{
-	    final KeyboardEvent.Special code = event.getCommand();
+	    final KeyboardEvent.Special code = event.getSpecial();
 	    if (code == KeyboardEvent.Special.CONTROL)
 	    {
 		speech.silence();
@@ -421,8 +421,8 @@ class Environment extends EnvironmentAreas
 		code == KeyboardEvent.Special.RIGHT_ALT)
 		return true;
 	}
-	if (!event.isCommand() &&
-	    EqualKeys.equalKeys(event.getCharacter(), 'x') &&
+	if (!event.isSpecial() &&
+	    EqualKeys.equalKeys(event.getChar(), 'x') &&
 	    event.withLeftAltOnly())
 	{
 	    showCommandPopup();
@@ -733,9 +733,9 @@ class Environment extends EnvironmentAreas
     {
 	if (event == null)
 	    return null;
-	if (!event.isCommand() || !event.withControlOnly())
+	if (!event.isSpecial() || !event.withControlOnly())
 	    return event;
-	switch (event.getCommand())
+	switch (event.getSpecial())
 	{
 	case ARROW_UP:
 	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_UP, ' ');

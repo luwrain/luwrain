@@ -60,8 +60,8 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.isCommand() && event.withShiftOnly())
-	    switch(event.getCommand())
+	if (event.isSpecial() && event.withShiftOnly())
+	    switch(event.getSpecial())
 	    {
 	    case 	    ENTER:
 		return openCommanderPopup();

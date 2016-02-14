@@ -42,8 +42,8 @@ class SpeechParamsArea extends org.luwrain.cpanel.SimpleNavigateSection.Area
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (!event.isCommand() && !event.isModified())
-	    switch(event.getCharacter())
+	if (!event.isSpecial() && !event.isModified())
+	    switch(event.getChar())
 	{
 
 	case '+':

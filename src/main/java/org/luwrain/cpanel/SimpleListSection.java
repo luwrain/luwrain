@@ -45,8 +45,8 @@ public interface Loader
 	@Override public boolean onKeyboardEvent(KeyboardEvent event)
 	{
 	    NullCheck.notNull(event, "event");
-	    if (event.isCommand() && !event.isModified())
-		switch(event.getCommand())
+	    if (event.isSpecial() && !event.isModified())
+		switch(event.getSpecial())
 		{
 		case TAB:
 		    environment.gotoSectionsTree ();

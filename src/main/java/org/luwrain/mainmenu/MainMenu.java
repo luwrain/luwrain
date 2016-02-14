@@ -66,9 +66,9 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    throw new NullPointerException("event may not be null");
 	if (closing.onKeyboardEvent(event))
 	    return true;
-	if (!event.isCommand())
+	if (!event.isSpecial())
 	    return false;
-	switch(event.getCommand())
+	switch(event.getSpecial())
 	{
 	case ENTER:
 	    if (event.isModified())

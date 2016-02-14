@@ -262,9 +262,9 @@ public class ListArea  implements Area, RegionProvider
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
-	if (!event.isCommand() || event.isModified())
+	if (!event.isSpecial() || event.isModified())
 	    return false;
-	switch(event.getCommand())
+	switch(event.getSpecial())
 	{
 	case ARROW_DOWN:
 	    return onArrowDown(event, false);

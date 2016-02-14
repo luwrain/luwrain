@@ -92,9 +92,9 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 	NullCheck.notNull(event, "event");
 	if (closing.onKeyboardEvent(event))
 	    return true;
-	if (!event.isCommand())
+	if (!event.isSpecial())
 	{
-	    final char c = event.getCharacter();
+	    final char c = event.getChar();
 	    if (EqualKeys.equalKeys(c, 'y'))
 	    {
 		res = true;
@@ -111,7 +111,7 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 	}
 	if (event.isModified())
 	    return false;
-	switch(event.getCommand())
+	switch(event.getSpecial())
 	{
 	case ENTER:
 	    closing.doOk();

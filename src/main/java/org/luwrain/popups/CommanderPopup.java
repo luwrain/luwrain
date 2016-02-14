@@ -62,8 +62,8 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
     {
 	if (closing.onKeyboardEvent(event))
 	    return true;
-	if (!event.isCommand() && !event.isModified())
-	    switch(event.getCharacter())
+	if (!event.isSpecial() && !event.isModified())
+	    switch(event.getChar())
 	    {
 	    case '=':
 		setFilter(new CommanderFilters.AllFiles());
@@ -76,8 +76,8 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	    default:
 		return super.onKeyboardEvent(event);
 	    }
-	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.Special.ENTER &&
+	if (event.isSpecial() &&
+	    event.getSpecial() == KeyboardEvent.Special.ENTER &&
 	    event.withShiftOnly())
 	    return openMountedPartitions();
 	return super.onKeyboardEvent(event);

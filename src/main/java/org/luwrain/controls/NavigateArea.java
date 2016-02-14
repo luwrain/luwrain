@@ -51,9 +51,9 @@ public abstract class NavigateArea implements Area, HotPointControl
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
-	if (!event.isCommand() || event.isModified())
+	if (!event.isSpecial() || event.isModified())
 	    return false;
-	switch (event.getCommand())
+	switch (event.getSpecial())
 	{
 	case HOME:
 	    return onHome(event);

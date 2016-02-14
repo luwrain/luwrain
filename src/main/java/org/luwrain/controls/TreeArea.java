@@ -129,9 +129,9 @@ public class TreeArea implements Area
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	//Space;
-	if (!event.isCommand())
+	if (!event.isSpecial())
 	{
-	    if (event.getCharacter() == ' ')
+	    if (event.getChar() == ' ')
 		return onKeySpace(event);
 	    return false;
 	}
@@ -140,7 +140,7 @@ public class TreeArea implements Area
 	    environment.hint(Hints.NO_CONTENT);
 	    return true;
 	}
-	switch (event.getCommand())
+	switch (event.getSpecial())
 	{
 	case ENTER:
 	    return onKeyEnter(event);
