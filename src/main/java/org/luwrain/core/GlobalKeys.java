@@ -105,7 +105,8 @@ class GlobalKeys
 	final boolean withControl = proxy.getWithControl(false);
 	final boolean withShift = proxy.getWithShift(false);
 	final boolean withLeftAlt = proxy.getWithAlt(false);
-	final boolean withRightAlt = proxy.getWithAlt(false);
+	//	final boolean withRightAlt = proxy.getWithAlt(false);
+	final boolean withRightAlt = false;
 	return new KeyboardEvent(special != null, special, c, withShift, withControl, withLeftAlt, withRightAlt); 
     }
 }
