@@ -93,10 +93,10 @@ public class AddRemoveListPopup extends ListPopupBase
 	if (event.isCommand() && !event.isModified())
 	    switch(event.getCommand())
 	    {
-	    case KeyboardEvent.INSERT:
+	    case INSERT:
 		tryToAdd();
 		return true;
-	    case KeyboardEvent.DELETE:
+	    case DELETE:
 		return tryToRemove();
 	    }
 	return super.onKeyboardEvent(event);

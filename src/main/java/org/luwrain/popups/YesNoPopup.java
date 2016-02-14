@@ -111,21 +111,20 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 	}
 	if (event.isModified())
 	    return false;
-	final int cmd = event.getCommand();
-	if (cmd == KeyboardEvent.ENTER)
+	switch(event.getCommand())
 	{
+	case ENTER:
 	    closing.doOk();
 	    return true;
-	}
-	if (cmd == KeyboardEvent.ARROW_UP ||
-	    cmd == KeyboardEvent.ARROW_DOWN ||
-	    cmd == KeyboardEvent.ARROW_LEFT ||
-	    cmd == KeyboardEvent.ARROW_RIGHT)
-	{
+	case ARROW_UP:
+	case ARROW_DOWN:
+	case ARROW_LEFT:
+	case ARROW_RIGHT:
 	    luwrain.say(text);
 	    return true;
+	default:
+	    return false;
 	}
-	return false;
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)

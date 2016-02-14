@@ -77,7 +77,7 @@ private class Entry
 	    if (event.isCommand() && !event.isModified())
 		switch(event.getCommand())
 		{
-		case KeyboardEvent.TAB:
+		case TAB:
 		    environment.gotoSectionsTree ();
 	    return true;
 		}

@@ -142,19 +142,19 @@ public class TreeArea implements Area
 	}
 	switch (event.getCommand())
 	{
-	case KeyboardEvent.ENTER:
+	case ENTER:
 	    return onKeyEnter(event);
-	case KeyboardEvent.ARROW_DOWN:
+	case ARROW_DOWN:
 	    return onKeyDown(event, false);
-	case KeyboardEvent.ALTERNATIVE_ARROW_DOWN:
+	case ALTERNATIVE_ARROW_DOWN:
 	    return onKeyDown(event, true);
-	case KeyboardEvent.ARROW_UP:
+	case ARROW_UP:
 	    return onKeyUp(event, false);
-	case KeyboardEvent.ALTERNATIVE_ARROW_UP:
+	case ALTERNATIVE_ARROW_UP:
 	    return onKeyUp(event, true);
-	case KeyboardEvent.ARROW_RIGHT:
+	case ARROW_RIGHT:
 	    return onKeyRight(event);
-	case KeyboardEvent.ARROW_LEFT:
+	case ARROW_LEFT:
 	    return onKeyLeft(event);
 	}
 	return false;

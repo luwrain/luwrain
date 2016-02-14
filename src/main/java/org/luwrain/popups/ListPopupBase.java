@@ -116,41 +116,41 @@ public class ListPopupBase implements Popup, PopupClosingRequest, RegionProvider
 	    return false;
 	switch(event.getCommand())
 	{
-	case KeyboardEvent.ENTER:
+	case ENTER:
 	    return closing.doOk();
-	case KeyboardEvent.ARROW_DOWN:
+	case ARROW_DOWN:
 	    return onArrowDown(event, false);
-	case KeyboardEvent.ARROW_UP:
+	case ARROW_UP:
 	    return onArrowUp(event, false);
-	case KeyboardEvent.ALTERNATIVE_ARROW_DOWN:
+	case ALTERNATIVE_ARROW_DOWN:
 	    return onArrowDown(event, true);
-	case KeyboardEvent.ALTERNATIVE_ARROW_UP:
+	case ALTERNATIVE_ARROW_UP:
 	    return onArrowUp(event, true);
-	case KeyboardEvent.ARROW_LEFT:
+	case ARROW_LEFT:
 	    return onArrowLeft(event);
-	case KeyboardEvent.ARROW_RIGHT:
+	case ARROW_RIGHT:
 	    return onArrowRight(event);
-	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+	case ALTERNATIVE_ARROW_LEFT:
 	    return onAltLeft(event);
-	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
+	case ALTERNATIVE_ARROW_RIGHT:
 	    return onAltRight(event);
-	case KeyboardEvent.PAGE_DOWN:
+	case PAGE_DOWN:
 	    return onPageDown(event, false);
-	case KeyboardEvent.PAGE_UP:
+	case PAGE_UP:
 	    return onPageUp(event, false);
-	case KeyboardEvent.ALTERNATIVE_PAGE_DOWN:
+	case ALTERNATIVE_PAGE_DOWN:
 	    return onPageDown(event, true);
-	case KeyboardEvent.ALTERNATIVE_PAGE_UP:
+	case ALTERNATIVE_PAGE_UP:
 	    return onPageUp(event, true);
-	case KeyboardEvent.HOME:
+	case HOME:
 	    return onHome(event);
-	case KeyboardEvent.END:
+	case END:
 	    return onEnd(event);
-	case KeyboardEvent.ALTERNATIVE_HOME:
+	case ALTERNATIVE_HOME:
 	    return onAltHome(event);
-	case KeyboardEvent.ALTERNATIVE_END:
+	case ALTERNATIVE_END:
 	    return onAltEnd(event);
-	case KeyboardEvent.INSERT:
+	case INSERT:
 	    return onInsert(event);
 	default:
 	    return false;

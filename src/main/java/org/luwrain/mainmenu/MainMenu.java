@@ -70,34 +70,34 @@ public class MainMenu  implements Area, PopupClosingRequest, RegionProvider
 	    return false;
 	switch(event.getCommand())
 	{
-	case KeyboardEvent.ENTER:
+	case ENTER:
 	    if (event.isModified())
 		return false;
 	    closing.doOk();
 	    return true;
-	case KeyboardEvent.ARROW_DOWN:
+	case ARROW_DOWN:
 	    return onArrowDown(event);
-	case KeyboardEvent.ARROW_UP:
+	case  ARROW_UP:
 	    return onArrowUp(event);
-	case KeyboardEvent.ARROW_RIGHT:
+	case ARROW_RIGHT:
 	    return onArrowRight(event);
-	case KeyboardEvent.ARROW_LEFT:
+	case ARROW_LEFT:
 	    return onArrowLeft(event);
-	case KeyboardEvent.HOME:
+	case HOME:
 	    return onHome(event);
-	case KeyboardEvent.END:
+	case END:
 	    return onEnd(event);
-	case KeyboardEvent.PAGE_DOWN:
+	case PAGE_DOWN:
 	    return onPageDown(event);
-	case KeyboardEvent.PAGE_UP:
+	case PAGE_UP:
 	    return onPageUp(event);
-	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
+	case ALTERNATIVE_ARROW_RIGHT:
 	    return onAltRight(event);
-	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+	case ALTERNATIVE_ARROW_LEFT:
 	    return onAltLeft(event);
-	case KeyboardEvent.ALTERNATIVE_HOME:
+	case ALTERNATIVE_HOME:
 	    return onAltHome(event);
-	case KeyboardEvent.ALTERNATIVE_END:
+	case ALTERNATIVE_END:
 	    return onAltEnd(event);
 	default:
 	return false;

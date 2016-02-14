@@ -499,7 +499,7 @@ public class FormArea  extends NavigateArea
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	//Delete on a uniref;
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.DELETE &&
+	if (event.isCommand() && event.getCommand() == KeyboardEvent.Special.DELETE &&
 	    !event.isModified()) 
 	{
 	    final int index = getHotPointY();
@@ -512,7 +512,7 @@ public class FormArea  extends NavigateArea
 	    }
 	}
 
-	if (	    event.isCommand() && event.getCommand() == KeyboardEvent.ENTER &&
+	if (	    event.isCommand() && event.getCommand() == KeyboardEvent.Special.ENTER &&
 		    !event.isModified())
 	{
 	    //If the user is pressing Enter on the list;

@@ -409,16 +409,16 @@ class Environment extends EnvironmentAreas
 	}
 	if (event.isCommand())
 	{
-	    final int code = event.getCommand();
-	    if (code == KeyboardEvent.CONTROL)
+	    final KeyboardEvent.Special code = event.getCommand();
+	    if (code == KeyboardEvent.Special.CONTROL)
 	    {
 		speech.silence();
 		return true;
 	    }
-	    if (code == KeyboardEvent.SHIFT ||
-		code == KeyboardEvent.CONTROL ||
-		code == KeyboardEvent.LEFT_ALT ||
-		code == KeyboardEvent.RIGHT_ALT)
+	    if (code == KeyboardEvent.Special.SHIFT ||
+		code == KeyboardEvent.Special.CONTROL ||
+		code == KeyboardEvent.Special.LEFT_ALT ||
+		code == KeyboardEvent.Special.RIGHT_ALT)
 		return true;
 	}
 	if (!event.isCommand() &&
@@ -737,24 +737,24 @@ class Environment extends EnvironmentAreas
 	    return event;
 	switch (event.getCommand())
 	{
-	case KeyboardEvent.ARROW_UP:
-	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_UP, ' ');
-	case KeyboardEvent.ARROW_DOWN:
-	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_DOWN, ' ');
-	case KeyboardEvent.ARROW_LEFT:
-	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_LEFT, ' ');
-	case KeyboardEvent.ARROW_RIGHT:
-	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_ARROW_RIGHT, ' ');
-	case KeyboardEvent.PAGE_DOWN:
-	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_PAGE_DOWN, ' ');
-	case KeyboardEvent.PAGE_UP:
-	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_PAGE_UP, ' ');
-	case KeyboardEvent.HOME:
-	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_HOME, ' ');
-	case KeyboardEvent.END:
-	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_END, ' ');
-	case KeyboardEvent.DELETE:
-	    return new KeyboardEvent(true, KeyboardEvent.ALTERNATIVE_DELETE, ' ');
+	case ARROW_UP:
+	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_UP, ' ');
+	case ARROW_DOWN:
+	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_DOWN, ' ');
+	case ARROW_LEFT:
+	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_LEFT, ' ');
+	case ARROW_RIGHT:
+	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_RIGHT, ' ');
+	case PAGE_DOWN:
+	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_PAGE_DOWN, ' ');
+	case PAGE_UP:
+	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_PAGE_UP, ' ');
+	case HOME:
+	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_HOME, ' ');
+	case END:
+	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_END, ' ');
+	case DELETE:
+	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_DELETE, ' ');
 	default:
 	    return event;
 	}

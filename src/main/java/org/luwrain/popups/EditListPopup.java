@@ -49,19 +49,19 @@ public class EditListPopup extends SimpleEditPopup
 	if (event.isCommand() && !event.isModified())
 	    switch(event.getCommand())
 	    {
-	    case KeyboardEvent.TAB:
+	    case TAB:
 		onTab();
 		return true;
-	    case KeyboardEvent.ARROW_DOWN:
+	    case ARROW_DOWN:
 		onKeyDown(false);
 		return true;
-	    case KeyboardEvent.ARROW_UP:
+	    case ARROW_UP:
 		onKeyUp(false);
 		return true;
-	    case KeyboardEvent.ALTERNATIVE_ARROW_DOWN:
+	    case ALTERNATIVE_ARROW_DOWN:
 		onKeyDown(true);
 		return true;
-	    case KeyboardEvent.ALTERNATIVE_ARROW_UP:
+	    case ALTERNATIVE_ARROW_UP:
 		onKeyUp(true);
 		return true;
 	    default:

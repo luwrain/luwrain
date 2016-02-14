@@ -110,19 +110,19 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 	    return false;
 	switch (event.getCommand())
 	{
-	case KeyboardEvent.ARROW_LEFT:
+	case ARROW_LEFT:
 	    return onArrowLeft(event);
-	case KeyboardEvent.ARROW_RIGHT:
+	case ARROW_RIGHT:
 	    return onArrowRight(event);
-	case KeyboardEvent.ALTERNATIVE_ARROW_LEFT:
+	case ALTERNATIVE_ARROW_LEFT:
 	    return onAltLeft(event);
-	case KeyboardEvent.ALTERNATIVE_ARROW_RIGHT:
+	case ALTERNATIVE_ARROW_RIGHT:
 	    return onAltRight(event);
-	case KeyboardEvent.HOME:
+	case HOME:
 	    return onHome(event);
-	case KeyboardEvent.END:
+	case END:
 	    return onEnd(event);
-	case KeyboardEvent.ENTER:
+	case ENTER:
 	    return closing.doOk();
 	default:
 	    return false;

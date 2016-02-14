@@ -44,11 +44,11 @@ public class SingleLineEdit implements RegionProvider
 	if (event.isCommand())
 	    switch (event.getCommand())
 	    {
-	    case KeyboardEvent.BACKSPACE:
+	    case BACKSPACE:
 		return onBackspace(event);
-	    case KeyboardEvent.DELETE:
+	    case DELETE:
 		return onDelete(event);
-	    case KeyboardEvent.TAB:
+	    case TAB:
 		return onTab(event);
 	    default:
 		return false;

@@ -102,7 +102,7 @@ public class App implements Application, Actions
 			  if (event.isCommand() && !event.isModified())
 			      switch(event.getCommand())
 			      {
-			      case KeyboardEvent.DELETE:
+			      case DELETE:
 				  return actions.onDelete(getHotPointX(), getHotPointY());
 			      }
 		    return super.onKeyboardEvent(event);

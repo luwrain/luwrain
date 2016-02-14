@@ -62,13 +62,13 @@ public class MultilineEdit
 	    return false;
 	switch(event.getCommand())
 	{
-	case KeyboardEvent.BACKSPACE:
+	case BACKSPACE:
 return onBackspace(event);
-	case KeyboardEvent.DELETE:
+	case DELETE:
 return onDelete(event);
-	case KeyboardEvent.TAB:
+	case TAB:
 return onTab(event);
-	case KeyboardEvent.ENTER:
+	case ENTER:
 return onEnter(event);
 	default:
 	    return false;

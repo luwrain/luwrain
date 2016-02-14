@@ -46,7 +46,7 @@ class PersonalInfo extends EmptySection
 	    if (event.isCommand() && !event.isModified())
 		switch(event.getCommand())
 		{
-		case KeyboardEvent.TAB:
+		case TAB:
 		    environment.gotoSectionsTree ();
 	    return true;
 		}

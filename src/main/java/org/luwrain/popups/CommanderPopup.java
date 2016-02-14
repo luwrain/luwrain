@@ -77,7 +77,7 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 		return super.onKeyboardEvent(event);
 	    }
 	if (event.isCommand() &&
-	    event.getCommand() == KeyboardEvent.ENTER &&
+	    event.getCommand() == KeyboardEvent.Special.ENTER &&
 	    event.withShiftOnly())
 	    return openMountedPartitions();
 	return super.onKeyboardEvent(event);

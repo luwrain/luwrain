@@ -63,7 +63,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	if (event.isCommand() && event.withShiftOnly())
 	    switch(event.getCommand())
 	    {
-	    case 	    KeyboardEvent.ENTER:
+	    case 	    ENTER:
 		return openCommanderPopup();
 	    }
 	return super.onKeyboardEvent(event);

@@ -65,22 +65,22 @@ public class CalendarArea implements Area
 	    return false;
 	switch(event.getCommand())
 	{
-	case KeyboardEvent.ARROW_RIGHT:
+	case ARROW_RIGHT:
 	    calendar.add(Calendar.DAY_OF_MONTH, 1);
 	    break;
-	case KeyboardEvent.ARROW_LEFT:
+	case ARROW_LEFT:
 	    calendar.add(Calendar.DAY_OF_MONTH, -1);
 	    break;
-	case KeyboardEvent.ARROW_DOWN:
+	case ARROW_DOWN:
 	    calendar.add(Calendar.WEEK_OF_MONTH, 1);
 	    break;
-	case KeyboardEvent.ARROW_UP:
+	case ARROW_UP:
 	    calendar.add(Calendar.WEEK_OF_MONTH, -1);
 	    break;
-	case KeyboardEvent.PAGE_DOWN:
+	case PAGE_DOWN:
 	    calendar.add(Calendar.MONTH, 1);
 	    break;
-	case KeyboardEvent.PAGE_UP:
+	case PAGE_UP:
 	    calendar.add(Calendar.MONTH, -1);
 	    break;
 	default:return false;

@@ -131,11 +131,11 @@ public class ControlPanelApp implements Application, Actions
 		    if (event.isCommand() && !event.isModified())
 			switch (event.getCommand())
 			{
-			case KeyboardEvent.TAB:
+			case TAB:
 			    return actions.gotoOptions();
-			case KeyboardEvent.INSERT:
+			case INSERT:
 			    return actions.onSectionsInsert();
-			case KeyboardEvent.DELETE:
+			case DELETE:
 			    return actions.onSectionsDelete();
 			}
 		    return super.onKeyboardEvent(event);

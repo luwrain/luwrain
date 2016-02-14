@@ -159,9 +159,9 @@ public class PartitionsPopup extends ListPopupBase
 	if (event.isCommand() || !event.isModified())
 	    switch(event.getCommand())
 	    {
-	    case KeyboardEvent.INSERT:
+	    case INSERT:
 		return attach();
-	    case KeyboardEvent.DELETE:
+	    case DELETE:
 		return detach();
 	    }
 	return super.onKeyboardEvent(event);

@@ -20,6 +20,15 @@ public interface Settings
 {
     static public RegistryKeys keys = new RegistryKeys();
 
+public interface HotKey
+{
+    String getSpecial(String defValue);
+    String getCharacter(String defValue);
+    boolean getWithControl(boolean defValue);
+    boolean getWithShift(boolean defValue);
+    boolean getWithAlt(boolean defValue);
+}
+
     public interface SoundScheme 
     {
 	String getEventNotProcessed(String defValue);
@@ -84,6 +93,11 @@ public interface Settings
 	int getRate(int defValue);
 	void setPitch(int value);
 	void setRate(int value);
+    }
+
+    static public HotKey createHotKey(Registry registry, String path)
+    {
+	return RegistryProxy.create(registry, path, HotKey.class);
     }
 
     static public UserInterface createUserInterface(Registry registry)

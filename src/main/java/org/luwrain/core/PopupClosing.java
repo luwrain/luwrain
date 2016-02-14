@@ -60,7 +60,7 @@ public class PopupClosing implements EventLoopStopCondition
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event.isCommand() && event.getCommand() == KeyboardEvent.ESCAPE)
+	if (event.isCommand() && event.getCommand() == KeyboardEvent.Special.ESCAPE)
 	{
 	    doCancel();
 	    return true;

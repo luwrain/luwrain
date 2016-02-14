@@ -127,9 +127,9 @@ public class RegistryApp implements Application, Actions
 		    if (event.isCommand() && !event.isModified())
 		    switch(event.getCommand())
 		    {
-		    case KeyboardEvent.INSERT:
+		    case INSERT:
 return actions.insertDir();
-		    case KeyboardEvent.TAB:
+		    case TAB:
 			actions.gotoValues();
 			return true;
 		    default:
@@ -178,7 +178,7 @@ return actions.insertDir();
 		    if (event.isCommand() && !event.isModified())
 			switch(event.getCommand())
 		    {
-		    case KeyboardEvent.TAB:
+		    case TAB:
 			actions.gotoDirs();
 			return true;
 		    default:

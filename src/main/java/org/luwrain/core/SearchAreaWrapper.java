@@ -76,17 +76,17 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	if (event.isCommand() && !event.isModified())
 	    switch(event.getCommand())
 	    {
-	    case KeyboardEvent.TAB:
+	    case TAB:
 		return onNewChar('\0');
-	    case KeyboardEvent.ESCAPE:
+	    case ESCAPE:
 		closeSearch(false);
 		return true;
-	    case KeyboardEvent.ENTER:
+	    case ENTER:
 		return closeSearch(true);
-	    case KeyboardEvent.ARROW_LEFT:
-	    case KeyboardEvent.ARROW_RIGHT:
-	    case KeyboardEvent.ARROW_UP:
-	    case KeyboardEvent.ARROW_DOWN:
+	    case ARROW_LEFT:
+	    case ARROW_RIGHT:
+	    case ARROW_UP:
+	    case ARROW_DOWN:
 		return announceCurrentLine();
 	    default:
 		return false;
