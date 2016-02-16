@@ -55,6 +55,12 @@ public class RegistryKeys
 	return "/org/luwrain/desktop/introduction-file";//FIXME:
     }
 
+    public String mainMenuSections()
+    {
+	return "/org/luwrain/main-menu/sections";
+    }
+
+
     public String mainMenuContent()
     {
 	return getProperty("mainmenu.Content");

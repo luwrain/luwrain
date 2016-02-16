@@ -23,7 +23,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
-import org.luwrain.mainmenu.MainMenu;
+//import org.luwrain.mainmenu.MainMenu;
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
 import org.luwrain.speech.Channel;
@@ -787,12 +787,17 @@ class Environment extends EnvironmentAreas
 
     void mainMenu()
     {
-	final MainMenu mainMenu = new org.luwrain.mainmenu.Builder(interfaces.getObjForEnvironment()).build();
+	final MainMenu mainMenu = MainMenu.newMainMenu(interfaces.getObjForEnvironment());
+	if (mainMenu == null)
+	{
+	    Log.error("core", "unable to create main menu popup object");
+	    return;
+	}
 	playSound(Sounds.MAIN_MENU);
 	popupImpl(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
-	mainMenu.getSelectedItem().doMMAction(interfaces.getObjForEnvironment());//FIXME:Need to have an interface for the particular extension;
+	//	mainMenu.getSelectedItem().doMMAction(interfaces.getObjForEnvironment());//FIXME:Need to have an interface for the particular extension;
     }
 
     boolean runCommand(String command)

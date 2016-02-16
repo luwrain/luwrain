@@ -20,14 +20,22 @@ public interface Settings
 {
     static public RegistryKeys keys = new RegistryKeys();
 
-public interface HotKey
-{
-    String getSpecial(String defValue);
-    String getCharacter(String defValue);
-    boolean getWithControl(boolean defValue);
-    boolean getWithShift(boolean defValue);
-    boolean getWithAlt(boolean defValue);
-}
+    public interface HotKey
+    {
+	String getSpecial(String defValue);
+	String getCharacter(String defValue);
+	boolean getWithControl(boolean defValue);
+	boolean getWithShift(boolean defValue);
+	boolean getWithAlt(boolean defValue);
+    }
+
+    public interface MainMenuSection
+    {
+	String getTitle(String defValue);
+	void setTitle(String value);
+	String getUniRefs(String defValue);
+	void setUniRefs(String value);
+    }
 
     public interface SoundScheme 
     {
@@ -99,6 +107,12 @@ public interface HotKey
     {
 	return RegistryProxy.create(registry, path, HotKey.class);
     }
+
+    static public MainMenuSection createMainMenuSection(Registry registry, String path)
+    {
+	return RegistryProxy.create(registry, path, MainMenuSection.class);
+    }
+
 
     static public UserInterface createUserInterface(Registry registry)
     {

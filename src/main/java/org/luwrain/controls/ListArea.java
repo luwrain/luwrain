@@ -119,26 +119,23 @@ public class ListArea  implements Area, RegionProvider
 
     public ListArea(ListParams params)
     {
-	if (params == null)
-	    throw new NullPointerException("params may not be null");
+	NullCheck.notNull(params, "params");
+	NullCheck.notNull(params.environment, "params.environment");
+	NullCheck.notNull(params.model, "params.model");
+	NullCheck.notNull(params.appearance, "params.appearance");
+	NullCheck.notNull(params.name, "params.name");
 	this.environment = params.environment;
 	this.model = params.model;
 	this.appearance = params.appearance;
 	this.clickHandler = params.clickHandler;
 	this.name = params.name;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (model == null)
-	    throw new NullPointerException("model may not be null");
-	if (appearance == null)
-	    throw new NullPointerException("appearance may not be null");
-	if (clickHandler == null)
-	    throw new NullPointerException("clickHandler may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
 	resetHotPoint();
     }
 
+    public void setClickHandler(ListClickHandler clickHandler)
+    {
+	this.clickHandler = clickHandler;
+    }
 
     public Model model()
     {
