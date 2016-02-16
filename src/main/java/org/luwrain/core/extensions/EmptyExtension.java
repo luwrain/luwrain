@@ -49,11 +49,6 @@ public class EmptyExtension implements Extension
     {
     }
 
-    @Override public org.luwrain.mainmenu.Item[] getMainMenuItems(Luwrain luwrain)
-    {
-	return new org.luwrain.mainmenu.Item[0];
-    }
-
     @Override public org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain)
     {
 	return new org.luwrain.cpanel.Section[0];

@@ -26,7 +26,6 @@ public interface Extension
     Worker[] getWorkers(Luwrain luwrain);
     SharedObject[] getSharedObjects(Luwrain luwrain);
     void i18nExtension(Luwrain luwrain, I18nExtension i18nExt);
-    org.luwrain.mainmenu.Item[] getMainMenuItems(Luwrain luwrain);
     org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain);
     UniRefProc[] getUniRefProcs(Luwrain luwrain);
     void close();

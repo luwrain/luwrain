@@ -43,13 +43,82 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	@Override public String toString() {return title;}
     }
 
+    static private class Appearance implements ListItemAppearance
+    {
+	private Luwrain luwrain;
+
+	Appearance(Luwrain luwrain)
+	{
+	    this.luwrain = luwrain;
+	    NullCheck.notNull(luwrain, "luwrain");
+	}
+
+	@Override public void introduceItem(Object item, int flags)
+	{
+	    if (item == null)
+		return;
+	    if (item instanceof Section)
+	    {
+		luwrain.silence();
+		luwrain.playSound(Sounds.DOC_SECTION);
+		luwrain.say(item.toString());
+		return;
+	    }
+	    luwrain.silence();
+	    luwrain.playSound(Sounds.NEW_LIST_ITEM);
+	    luwrain.say(item.toString());
+	}
+
+	@Override public String getScreenAppearance(Object item, int flags)
+	{
+	    return item != null?item.toString():"";
+	}
+
+	@Override public int getObservableLeftBound(Object item)
+	{
+	    return 0;
+	}
+
+	@Override public int getObservableRightBound(Object item)
+	{
+	    return item != null?getScreenAppearance(item, 0).length():0;
+	}
+    }
+
     private Luwrain luwrain;
     public final PopupClosing closing = new PopupClosing(this);
     private Strings strings;
 
-    private MainMenu(ListParams params)
+    private MainMenu(Luwrain luwrain, ListParams params)
     {
 	super(params);
+	this.luwrain = luwrain;
+	NullCheck.notNull(luwrain, "luwrain");
+    }
+
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (closing.onKeyboardEvent(event))
+	    return true;
+	return super.onKeyboardEvent(event);
+    }
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (closing.onEnvironmentEvent(event))
+	    return true;
+	switch(event.getCode())
+	{
+	case INTRODUCE:
+	    luwrain.silence();
+	    luwrain.playSound(Sounds.MAIN_MENU);
+	    luwrain.say(getAreaName());
+	    return true;
+	default:
+	return super.onEnvironmentEvent(event);
+	}
     }
 
     @Override public boolean onListClick(ListArea area, int index,
@@ -65,7 +134,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 
     @Override public boolean onCancel()
     {
-	return false;
+	return true;
     }
 
     static MainMenu newMainMenu(Luwrain luwrain)
@@ -78,6 +147,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	    Log.warning("core", "no main menu sections in the registry");
 	    return null;
 	}
+	Arrays.sort(dirs);
 	final LinkedList<Section> sects = new LinkedList<Section>();
 	for(String s: dirs)
 	{
@@ -97,9 +167,9 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	final ListParams params = new ListParams();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.model = new FixedListModel(objs.toArray(new Object[objs.size()]));
-	params.appearance = new DefaultListItemAppearance(params.environment);
+	params.appearance = new Appearance(luwrain);
 	params.name = "Главное меню";
-final MainMenu mainMenu = new MainMenu(params);
+	final MainMenu mainMenu = new MainMenu(luwrain, params);
 mainMenu.setClickHandler(mainMenu);
 return mainMenu;
     }
@@ -107,7 +177,7 @@ return mainMenu;
     static private Section loadSection(Luwrain luwrain, Settings.MainMenuSection proxy)
     {
 	final String title = proxy.getTitle("");
-	final String[] refs = proxy.getUniRefs("").split(":", -1);
+	final String[] refs = proxy.getUniRefs("").split("\\\\:", -1);
 	final LinkedList<UniRefInfo> uniRefs = new LinkedList<UniRefInfo>();
 	for(String s: refs)
 	{
