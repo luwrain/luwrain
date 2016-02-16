@@ -43,7 +43,8 @@ class ScreenContentManager
 	return activeArea != null?apps.getActiveApp():null;
     }
 
-    public  int onKeyboardEvent(KeyboardEvent event)
+    /*
+    int onKeyboardEvent(KeyboardEvent event)
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)
@@ -52,8 +53,9 @@ class ScreenContentManager
 	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
 	return activeArea.onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
     }
+    */
 
-    public  int onEnvironmentEvent(EnvironmentEvent event)
+    int onEnvironmentEvent(EnvironmentEvent event)
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)

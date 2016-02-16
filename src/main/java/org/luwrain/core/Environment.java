@@ -362,38 +362,42 @@ class Environment extends EnvironmentAreas
 	    cancelAreaReading();
 	if (keyboardEventForEnvironment(event))
 	    return true;
-
-	    switch(popupBlocking())
-	    {
-	    case POPUP_BLOCKING_TRY_AGAIN:
-		return false;
-	    case POPUP_BLOCKING_EVENT_REJECTED:
-		areaBlockedMessage();
-		return true;
-	    }
-
-	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
-	try {
-	    res = screenContentManager.onKeyboardEvent(event);
-	}
-	catch (Throwable e)
+	switch(popupBlocking())
 	{
-	    Log.error("core", "keyboard event throws an exception:" + e.getMessage());
-	    e.printStackTrace();
-	    playSound(Sounds.EVENT_NOT_PROCESSED);
+	case POPUP_BLOCKING_TRY_AGAIN:
+	    return false;
+	case POPUP_BLOCKING_EVENT_REJECTED:
+	    areaBlockedMessage();
 	    return true;
 	}
-
-	switch(res)
-	{
-	case ScreenContentManager.EVENT_NOT_PROCESSED:
-	    playSound(Sounds.EVENT_NOT_PROCESSED);
-	    break;
-	case ScreenContentManager.NO_APPLICATIONS:
-	    noAppsMessage();
-	    break;
+	final Area activeArea = getActiveArea();
+	try {
+	    if (activeArea == null)
+	    {
+		noAppsMessage();
+		return true;
+	    }
+	    final Action[] actions = activeArea.getAreaActions();
+	    if (actions != null)
+		for(Action a: actions)
+		{
+		    final KeyboardEvent actionEvent = a.keyboardEvent();
+		    if (actionEvent != null && activeArea.onEnvironmentEvent(new ActionEvent(a)))
+			return true;
+		}
+	    if (!activeArea.onKeyboardEvent(event))
+		playSound(Sounds.EVENT_NOT_PROCESSED);
+	    return true;
 	}
-	return true;
+	catch (Exception e)
+	{
+	    Log.error("core", "active area of class " + activeArea.getClass().getName() + " throws an exception on keyboard event processing:" + e.getMessage());
+	    e.printStackTrace();
+	    speech.silence();
+	    playSound(Sounds.EVENT_NOT_PROCESSED);
+	    speech.speak(e.getMessage(), 0, 0);
+	    return true;
+	}
     }
 
     private boolean keyboardEventForEnvironment(KeyboardEvent event)

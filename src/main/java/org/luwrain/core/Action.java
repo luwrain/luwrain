@@ -20,25 +20,9 @@ import org.luwrain.core.events.KeyboardEvent;
 
 public class Action
 {
-    static public final int STATIC = 0;
-    static public final int REGULAR = 1;
-    static public final int COMMAND_HINT = 2;
-    static public final int  SEPARATOR = 3;
-    static public final int SUBMENU = 4;
-
-    private int type = REGULAR;
-    private String name = "";
-    private String title = "";
+    private String name;
+    private String title;
     private KeyboardEvent event = null;
-    private Action[] childActions = null;
-
-    public Action(String name)
-    {
-	this.name = name;
-	NullCheck.notNull(name, "name");
-	type = REGULAR;
-	title = name;
-    }
 
     public Action(String name, String title)
     {
@@ -46,36 +30,20 @@ public class Action
 	this.title = title;
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(title, "title");
-	type = REGULAR;
     }
 
-    public Action(int type,
-		  String name, String title)
+    public Action(String name, String title,
+		  KeyboardEvent event)
     {
-	this.type = type;
 	this.name = name;
 	this.title = title;
+	this.event = event;
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(title, "title");
+	NullCheck.notNull(event, "event");
     }
 
-    public String getActionName()
-    {
-	return name;
-    }
-
-    public String getActionTitle()
-    {
-	return title;
-    }
-
-    public KeyboardEvent getActionKeyboardEvent()
-    {
-	return event;
-    }
-
-    public Action[] getChildActions()
-    {
-	return childActions == null || childActions.length < 0?null:childActions;
-    }
+    public String name() {return name;}
+    public String title() { return title; }
+    public KeyboardEvent keyboardEvent() { return event; }
 }

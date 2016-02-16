@@ -36,7 +36,7 @@ public class ActionEvent extends EnvironmentEvent
 
     public String getActionName()
     {
-	return action.getActionName();
+	return action.name();
     }
 
     static public boolean isAction(Event event, String actionName)

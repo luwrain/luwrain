@@ -52,7 +52,7 @@ class ContextMenu extends ListPopup
 		return;
 	    final Action act = (Action)item;
 	    luwrain.playSound(Sounds.NEW_LIST_ITEM);
-	    luwrain.say(act.getActionTitle());
+	    luwrain.say(act.title());
     }
 
 	@Override public String getScreenAppearance(Object item, int flags)
@@ -60,7 +60,7 @@ class ContextMenu extends ListPopup
 	    if (item == null || !(item instanceof Action))
 		return "";
 	    final Action act = (Action)item;
-return act.getActionTitle();
+return act.title();
 	}
 
 	@Override public int getObservableLeftBound(Object item)
