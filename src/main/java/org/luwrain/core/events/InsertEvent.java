@@ -20,16 +20,16 @@ import org.luwrain.core.*;
 
 public class InsertEvent extends EnvironmentEvent
 {
-    private HeldData data;
+    private RegionContent data;
 
-    public InsertEvent(HeldData data)
+    public InsertEvent(RegionContent data)
     {
 	super(Code.INSERT);
 	this.data = data;
 	NullCheck.notNull(data, "data");
     }
 
-    public HeldData getData()
+    public RegionContent getData()
     {
 	return data;
     }

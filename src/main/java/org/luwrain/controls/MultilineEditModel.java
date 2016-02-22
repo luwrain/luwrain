@@ -21,13 +21,13 @@ import org.luwrain.core.*;
 /**
  * The model for {@link MultilineEdit}. It is supposed that this
  * interface is a front-end for {@link MutableLines} in conjunction with
- * {@link HotPointControl}, but, of cource, everybody may use as it is
+ * {@link HotPointControl}, but you may use it freely as it is
  * necessary for a particular purpose. See 
- * {@link MultilineEditModelTranslator} for a standard implementation.
+ * {@link MultilineEditModelTranslator} for a default implementation.
  * <p>
- * {@code MultilineEdit} guarantees that each user action result exactly in
- * a single call of some method of this class.  This allows substitution
- * of each method, making any changes in the model, by any number of
+ * {@code MultilineEdit} guarantees that each user action results exactly in
+ * a single call of some method of this interface.  This allows substitution
+ * of any method, which makes changes in the model, by any number of
  * other methods in any order, and this will keep all structures
  * consistent.
  * <p>

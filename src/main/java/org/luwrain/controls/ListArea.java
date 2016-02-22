@@ -35,14 +35,14 @@ public class ListArea  implements Area, RegionProvider
 	void refresh();
     }
 
-    private ControlEnvironment environment;
     private final Region region = new Region(this);
-    private String name = "";
-    private Model model;
-    private ListItemAppearance appearance;
-    private ListClickHandler clickHandler;
-    private int hotPointX = 0;
-    private int hotPointY = 0;
+    protected ControlEnvironment environment;
+    protected String areaName = "";
+    protected Model model;
+    protected ListItemAppearance appearance;
+    protected ListClickHandler clickHandler;
+    protected int hotPointX = 0;
+    protected int hotPointY = 0;
 
     public ListArea(ControlEnvironment environment, Model model)
     {
@@ -62,7 +62,7 @@ public class ListArea  implements Area, RegionProvider
     {
 	this.environment = environment;
 	this.model = model;
-	this.name = name;
+	this.areaName = name;
 	if (environment == null)
 	    throw new NullPointerException("environment may not be null");
 	if (model == null)
@@ -81,7 +81,7 @@ public class ListArea  implements Area, RegionProvider
 	this.environment = environment;
 	this.model = model;
 	this.appearance = appearance;
-	this.name = name;
+	this.areaName = name;
 	if (environment == null)
 	    throw new NullPointerException("environment may not be null");
 	if (model == null)
@@ -103,7 +103,7 @@ public class ListArea  implements Area, RegionProvider
 	this.model = model;
 	this.appearance = appearance;
 	this.clickHandler = clickHandler;
-	this.name = name;
+	this.areaName = name;
 	if (environment == null)
 	    throw new NullPointerException("environment may not be null");
 	if (model == null)
@@ -128,7 +128,7 @@ public class ListArea  implements Area, RegionProvider
 	this.model = params.model;
 	this.appearance = params.appearance;
 	this.clickHandler = params.clickHandler;
-	this.name = params.name;
+	this.areaName = params.name;
 	resetHotPoint();
     }
 
@@ -373,15 +373,13 @@ public class ListArea  implements Area, RegionProvider
 
     @Override public String getAreaName()
     {
-	return name;
+	return areaName;
     }
 
-    public void setName(String value)
+    public void setName(String areaName)
     {
-	if (value == null)
-	    throw new NullPointerException("name must not be null");
-	name = value != null?value:"";
-	environment.onAreaNewName(this);
+	NullCheck.notNull(areaName, "areaName");
+	this.areaName = areaName;
     }
 
     private boolean onMoveHotPoint(MoveHotPointEvent event)
@@ -839,7 +837,7 @@ public class ListArea  implements Area, RegionProvider
 	    return clickHandler.onListClick(this, hotPointY, model.getItem(hotPointY));
     }
 
-    @Override public HeldData getWholeRegion()
+    @Override public RegionContent getWholeRegion()
     {
 	if (model == null || model.getItemCount() < 0)
 	    return null;
@@ -851,10 +849,10 @@ public class ListArea  implements Area, RegionProvider
 	    res.add(line != null?line:"");
 	}
 	res.add("");
-	return new HeldData(res.toArray(new String[res.size()]));
+	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
-    @Override public HeldData getRegion(int fromX, int fromY, int toX, int toY)
+    @Override public RegionContent getRegion(int fromX, int fromY, int toX, int toY)
     {
 	if (model == null || model.getItemCount() < 0)
 	    return null;
@@ -869,7 +867,7 @@ public class ListArea  implements Area, RegionProvider
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
 		return null;
-	    return new HeldData(new String[]{line.substring(fromPos, toPos)});
+	    return new RegionContent(new String[]{line.substring(fromPos, toPos)});
 	}
 	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i < toY;++i)
@@ -878,7 +876,7 @@ public class ListArea  implements Area, RegionProvider
 	    res.add(line != null?line:"");
 	}
 	res.add("");
-	return new HeldData(res.toArray(new String[res.size()]));
+	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
     @Override public boolean deleteWholeRegion()
@@ -891,7 +889,7 @@ public class ListArea  implements Area, RegionProvider
 	return false;
     }
 
-    @Override public boolean insertRegion(int x, int y, HeldData data)
+    @Override public boolean insertRegion(int x, int y, RegionContent data)
     {
 	return false;
     }

@@ -20,7 +20,7 @@ import org.luwrain.core.*;
 
 public class RegionQuery extends AreaQuery
 {
-    private HeldData data = null;
+    private RegionContent data = null;
 
     public RegionQuery()
     {
@@ -33,13 +33,13 @@ public class RegionQuery extends AreaQuery
     }
 
 
-    public void setData(HeldData data)
+    public void setData(RegionContent data)
     {
 	this.data = data;
 	resultTaken();
     }
 
-    public HeldData getData()
+    public RegionContent getData()
     {
 	return data;
     }

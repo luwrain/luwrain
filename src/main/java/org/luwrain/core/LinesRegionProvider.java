@@ -29,7 +29,7 @@ public class LinesRegionProvider implements RegionProvider
 	NullCheck.notNull(lines, "lines");
     }
 
-    @Override public HeldData getWholeRegion()
+    @Override public RegionContent getWholeRegion()
     {
 	final LinkedList<String> res = new LinkedList<String>();
 	final int count = lines.getLineCount();
@@ -40,10 +40,10 @@ public class LinesRegionProvider implements RegionProvider
 	    final String line = lines.getLine(i);
 	    res.add(line != null?line:"");
 	}
-	return new HeldData(res.toArray(new String[res.size()]));
+	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
-    @Override public HeldData getRegion(int fromX, int fromY,
+    @Override public RegionContent getRegion(int fromX, int fromY,
 					int toX, int toY)
     {
 	final int count = lines.getLineCount();
@@ -60,7 +60,7 @@ public class LinesRegionProvider implements RegionProvider
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
 		return null;
-	    return new HeldData(new String[]{line.substring(fromPos, toPos)});
+	    return new RegionContent(new String[]{line.substring(fromPos, toPos)});
 	}
 	final LinkedList<String> res = new LinkedList<String>();
 	String line = lines.getLine(fromY);
@@ -78,7 +78,7 @@ public class LinesRegionProvider implements RegionProvider
 	if (line == null)
 	    line = "";
 	res.add(line.substring(0, toX <line.length()?toX:line.length()));
-	return new HeldData(res.toArray(new String[res.size()]));
+	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
     @Override public boolean deleteWholeRegion()
@@ -96,7 +96,7 @@ public class LinesRegionProvider implements RegionProvider
 
 
     @Override public boolean insertRegion(int x, int y,
-					  HeldData heldData)
+					  RegionContent regionContent)
     {
 	return false;
     }

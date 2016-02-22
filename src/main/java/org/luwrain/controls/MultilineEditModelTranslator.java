@@ -36,7 +36,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
     }
 
     public MultilineEditModelTranslator(MutableLines lines, HotPointControl hotPoint,
-String tabSeq)
+					String tabSeq)
     {
 	this.lines = lines;
 	this.hotPoint = hotPoint;
@@ -164,7 +164,7 @@ String tabSeq)
 	    for(int i = 1;i < text.length;++i)
 		lines.addLine(text[i]);
 	    if (needToMoveHotPoint)
-	    hotPoint.setHotPointX(text[text.length - 1].length());
+		hotPoint.setHotPointX(text[text.length - 1].length());
 	    hotPoint.setHotPointY(lines.getLineCount() - 1);
 	    endEditTrans();
 	    return true;
@@ -179,18 +179,18 @@ String tabSeq)
 	    final boolean needToMoveHotPoint = (hotPoint.getHotPointY() == y && x >= hotPoint.getHotPointX());
 	    beginEditTrans();
 	    lines.setLine(y, line.substring(0, x) + firstLine + line.substring(x));
-			  if (needToMoveHotPoint)
-			      hotPoint.setHotPointX(hotPoint.getHotPointX() + firstLine.length());
+	    if (needToMoveHotPoint)
+		hotPoint.setHotPointX(hotPoint.getHotPointX() + firstLine.length());
 	    endEditTrans();
 	    return true;
 	}
 	//New text has multiple lines
-	    String line = lines.getLine(y);
-	    if (line == null)
-		line = "";
-	    while (line.length() < x)
-		line += ' ';
-	    beginEditTrans();
+	String line = lines.getLine(y);
+	if (line == null)
+	    line = "";
+	while (line.length() < x)
+	    line += ' ';
+	beginEditTrans();
 	lines.setLine(y, line.substring(0, x) + text[0]);
 	for(int i = 1;i < text.length - 1;++i)
 	    lines.insertLine(y + i, text[i]);
@@ -208,18 +208,18 @@ String tabSeq)
 
     @Override public void insertChars(int pos, int lineIndex, String str)
     {
-    beginEditTrans();
+	beginEditTrans();
 	while(lineIndex >= lines.getLineCount())
 	    lines.addLine("");
 	String line = lines.getLine(lineIndex);
-    if (line == null)
-	line = "";
-    while(line.length() < pos)
-	line += " ";
+	if (line == null)
+	    line = "";
+	while(line.length() < pos)
+	    line += " ";
 	lines.setLine(lineIndex, line.substring(0, pos) + (str != null?str:"") + line.substring(pos));
-    if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
-	hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
-    endEditTrans();
+	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
+	    hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
+	endEditTrans();
     }
 
     @Override public void mergeLines(int firstLineIndex)
@@ -235,8 +235,8 @@ String tabSeq)
 	    hotPoint.setHotPointY(hotPoint.getHotPointY() - 1);
 	    hotPoint.setHotPointX(hotPoint.getHotPointX() + origLineLen);
 	} else
-	if (hotPoint.getHotPointY() > firstLineIndex + 1)
-	    hotPoint.setHotPointY(hotPoint.getHotPointY() - 1);
+	    if (hotPoint.getHotPointY() > firstLineIndex + 1)
+		hotPoint.setHotPointY(hotPoint.getHotPointY() - 1);
 	endEditTrans();
     }
 

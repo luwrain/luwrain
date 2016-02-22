@@ -148,7 +148,7 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 	if (query.getQueryCode() == AreaQuery.REGION && (query instanceof RegionQuery))
 	{
 	    final RegionQuery regionQuery = (RegionQuery)query;
-	    regionQuery.setData(new HeldData(new String[]{text}));
+	    regionQuery.setData(new RegionContent(new String[]{text}));
 	    return true;
 	}
 	return false;

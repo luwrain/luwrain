@@ -85,7 +85,7 @@ public class Region
     {
 	if (fromX < 0 || fromY < 0)
 	{
-	    final HeldData res = provider.getWholeRegion();
+	    final RegionContent res = provider.getWholeRegion();
 	    if (res == null)
 		return false;
 	    query.setData(res);
@@ -122,14 +122,14 @@ public class Region
 			y2 = fromY;
 		    } else
 		    {
-			final HeldData res = provider.getWholeRegion();
+			final RegionContent res = provider.getWholeRegion();
 			if (res == null)
 			    return false;
 			query.setData(res);
 			return true;
 		    }
 	    }
-	final HeldData res = provider.getRegion(x1, y1, x2, y2);
+	final RegionContent res = provider.getRegion(x1, y1, x2, y2);
 	if (res == null)
 	    return false;
 	query.setData(res);

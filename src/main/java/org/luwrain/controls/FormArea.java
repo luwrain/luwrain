@@ -414,7 +414,7 @@ public class FormArea  extends NavigateArea
 
     /**
      * Returns the {@link HotPointControl} object used in multiline edit
-     * operations. The object is an instance of {@clink HotPointShift} class
+     * operations. The object is an instance of {@link HotPointShift} class
      * (because multiline edit is shifted vertically in the form) and can be
      * directly provided to the constructor of 
      * {@link MultilineEditModelTranslator} if necessary. This method returns the
@@ -574,7 +574,7 @@ public class FormArea  extends NavigateArea
 		items.get(index).type == UNIREF)
 	    {
 		final InsertEvent insertEvent = (InsertEvent)event;
-		final HeldData data = insertEvent.getData();
+		final RegionContent data = insertEvent.getData();
 		if (data == null || data.strings == null ||
 data.strings.length < 1 || data.strings[0] == null)
 		    return false;

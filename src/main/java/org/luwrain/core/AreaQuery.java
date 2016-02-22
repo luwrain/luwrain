@@ -29,7 +29,7 @@ public class AreaQuery extends Event
 
     public AreaQuery(int code)
     {
-	super(AREA_QUERY_EVENT);
+	//	super(AREA_QUERY_EVENT);
 	this.code = code;
     }
 

@@ -170,15 +170,15 @@ public class SingleLineEdit implements RegionProvider
 	return true;
     }
 
-    @Override public HeldData getWholeRegion()
+    @Override public RegionContent getWholeRegion()
     {
 	final String line = model.getLine();
 	if (line != null)
-	    return new HeldData(new String[]{line});
-	return new HeldData(new String[]{""});
+	    return new RegionContent(new String[]{line});
+	return new RegionContent(new String[]{""});
     }
 
-    @Override public HeldData getRegion(int fromX, int fromY,
+    @Override public RegionContent getRegion(int fromX, int fromY,
 					int toX, int toY)
     {
 	final String line = model.getLine();
@@ -189,7 +189,7 @@ public class SingleLineEdit implements RegionProvider
 	if (fromPos >= toPos)
 	    return null;
 	final String res = line.substring(fromPos, toPos);
-	return new HeldData(new String[]{res});
+	return new RegionContent(new String[]{res});
     }
 
     @Override public boolean deleteWholeRegion()
@@ -216,7 +216,7 @@ public class SingleLineEdit implements RegionProvider
     }
 
     @Override public boolean insertRegion(int x, int y,
-					  HeldData data)
+					  RegionContent data)
     {
 	if (data.strings == null || data.strings.length < 1)
 	    return false;

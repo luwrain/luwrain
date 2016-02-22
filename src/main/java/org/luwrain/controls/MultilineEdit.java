@@ -37,7 +37,7 @@ public class MultilineEdit
 	final MultilineEdit edit = this;
 	region = new Region(new LinesRegionProvider(model){
 		@Override public boolean insertRegion(int x, int y,
-						      HeldData data)
+						      RegionContent data)
 		{
 		    return edit.insertRegion(x, y, data);
 		}
@@ -174,7 +174,7 @@ return onEnter(event);
 }
 
     private boolean insertRegion(int x, int y,
-					 HeldData data)
+					 RegionContent data)
     {
 	return model.insertRegion(x, y, org.luwrain.util.Strings.notNullArray(data.strings));
     }

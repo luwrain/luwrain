@@ -43,7 +43,7 @@ public class App implements Application, Actions
 	return strings.appName();
     }
 
-    @Override public boolean onInsert(int x, int y, HeldData data)
+    @Override public boolean onInsert(int x, int y, RegionContent data)
     {
 	if (!base.insert(x, y, data))
 	    return false;
@@ -121,7 +121,7 @@ public class App implements Application, Actions
 			return super.onEnvironmentEvent(event);
 		    }
 		}
-    @Override public boolean insertRegion(int x, int y, HeldData data)
+    @Override public boolean insertRegion(int x, int y, RegionContent data)
 		{
 		    return actions.onInsert(x, y, data);
 		}

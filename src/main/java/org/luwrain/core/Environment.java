@@ -50,7 +50,7 @@ class Environment extends EnvironmentAreas
     private final SharedObjectManager sharedObjects = new SharedObjectManager();
     private final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
-    private HeldData clipboard = null;
+    private RegionContent clipboard = null;
     private LaunchContext launchContext;
     private Settings.UserInterface uiSettings;
 
@@ -382,8 +382,11 @@ class Environment extends EnvironmentAreas
 		for(Action a: actions)
 		{
 		    final KeyboardEvent actionEvent = a.keyboardEvent();
-		    if (actionEvent != null && activeArea.onEnvironmentEvent(new ActionEvent(a)))
+		    if (actionEvent == null || !actionEvent.equals(event))
+			continue;
+		    if (activeArea.onEnvironmentEvent(new ActionEvent(a)))
 			return true;
+		    break;
 		}
 	    if (!activeArea.onKeyboardEvent(event))
 		playSound(Sounds.EVENT_NOT_PROCESSED);
@@ -971,7 +974,7 @@ class Environment extends EnvironmentAreas
 		areaInaccessibleMessage();
 	    return false;
 	}
-	final HeldData res = query.getData();
+	final RegionContent res = query.getData();
 	if (res == null)
 	{
 	    if (speakAnnouncement)
@@ -984,7 +987,7 @@ class Environment extends EnvironmentAreas
 	return true;
     }
 
-    HeldData currentAreaRegionIface(boolean issueErrorMessages)
+    RegionContent currentAreaRegionIface(boolean issueErrorMessages)
     {
 	final Area activeArea = getValidActiveArea(issueErrorMessages);
 	if (activeArea == null)
@@ -1045,7 +1048,7 @@ class Environment extends EnvironmentAreas
 		areaInaccessibleMessage();
 	    return;
 	}
-	final HeldData res = query.getData();
+	final RegionContent res = query.getData();
 	if (res == null)
 	{
 		areaInaccessibleMessage();
@@ -1111,7 +1114,7 @@ class Environment extends EnvironmentAreas
 	    return;
 	}
 	message(uniRefInfo.toString(), Luwrain.MESSAGE_REGULAR);
-	clipboard = new HeldData(new String[]{uniRef});
+	clipboard = new RegionContent(new String[]{uniRef});
     }
 
     private void areaBlockedMessage()

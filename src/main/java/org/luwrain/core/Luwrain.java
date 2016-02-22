@@ -89,7 +89,7 @@ public final class Luwrain implements EventConsumer
 	    charsToSkip = registry.getString(keys.speechCharsToSkip());
     }
 
-    public HeldData currentAreaRegion(boolean issueErrorMessages)
+    public RegionContent currentAreaRegion(boolean issueErrorMessages)
     {
 	return environment.currentAreaRegionIface(issueErrorMessages);
     }

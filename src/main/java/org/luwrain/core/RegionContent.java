@@ -16,30 +16,30 @@
 
 package org.luwrain.core;
 
-final public class HeldData
+final public class RegionContent
 {
     public Object[] rawObjects = new Object[0];
     public String[] strings = new String[0];
     public String comment = "";
 
-    public HeldData(String[] strings)
+    public RegionContent(String[] strings)
     {
 	this.strings = strings;
     }
 
-    public HeldData(String[] strings, String comment)
+    public RegionContent(String[] strings, String comment)
     {
 	this.strings = strings;
 	this.comment = comment;
     }
 
-    public HeldData(String[] strings, Object[] rawObjects)
+    public RegionContent(String[] strings, Object[] rawObjects)
     {
 	this.strings = strings;
 	this.rawObjects = rawObjects;
     }
 
-    public HeldData(String[] strings,
+    public RegionContent(String[] strings,
 		    Object[] rawObjects,
 		    String comment)
     {

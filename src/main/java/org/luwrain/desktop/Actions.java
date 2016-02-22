@@ -16,11 +16,11 @@
 
 package org.luwrain.desktop;
 
-import org.luwrain.core.HeldData;
+import org.luwrain.core.RegionContent;
 
 interface Actions
 {
-    boolean onInsert(int x, int y, HeldData data);
+    boolean onInsert(int x, int y, RegionContent data);
     boolean onDelete(int x, int y);
     boolean onClick(int index, Object object);
 }

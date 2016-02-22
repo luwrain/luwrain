@@ -551,7 +551,7 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 	return false;
     }
 
-    @Override public HeldData getWholeRegion()
+    @Override public RegionContent getWholeRegion()
     {
 	if (model == null || model.getItemCount() == 0)
 	    return null;
@@ -563,10 +563,10 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 	    res.add(line != null?line:"");
 	}
 	res.add("");
-	return new HeldData(res.toArray(new String[res.size()]));
+	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
-    @Override public HeldData getRegion(int fromX, int fromY,
+    @Override public RegionContent getRegion(int fromX, int fromY,
 					int toX, int toY)
     {
 	if (model == null || model.getItemCount() == 0)
@@ -582,7 +582,7 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
 		return null;
-	    return new HeldData(new String[]{line.substring(fromPos, toPos)});
+	    return new RegionContent(new String[]{line.substring(fromPos, toPos)});
 	}
 	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i <= toY;++i)
@@ -593,7 +593,7 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
 	    res.add(line != null?line:"");
 	}
 	res.add("");
-	return new HeldData(res.toArray(new String[res.size()]));
+	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
     @Override public boolean deleteWholeRegion()
@@ -608,7 +608,7 @@ public class ListPopup implements Popup, PopupClosingRequest, RegionProvider
     }
 
     @Override public boolean insertRegion(int x, int y,
-					  HeldData data)
+					  RegionContent data)
     {
 	return false;
     }

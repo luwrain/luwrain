@@ -42,7 +42,7 @@ public class EnvironmentEvent extends Event
 
     public EnvironmentEvent(Code code)
     {
-	super(ENVIRONMENT_EVENT);
+	//	super(ENVIRONMENT_EVENT);
 	this.code = code;
 	NullCheck.notNull(code, "code");
     }

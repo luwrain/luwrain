@@ -24,7 +24,6 @@ public class RunnableEvent extends Event
 
     public RunnableEvent(Runnable runnable)
     {
-	super(-1);//FIXME:
 	this.runnable = runnable;
 	NullCheck.notNull(runnable, "runnable");
     }

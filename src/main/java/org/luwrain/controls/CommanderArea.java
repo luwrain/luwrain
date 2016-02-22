@@ -441,7 +441,7 @@ static public class Params
 	return appearance.getCommanderName(current);
     }
 
-    @Override public HeldData getWholeRegion()
+    @Override public RegionContent getWholeRegion()
     {
 	if (entries == null || entries.isEmpty())
 	    return null;
@@ -452,10 +452,10 @@ static public class Params
 	    res.add(line != null?line:"");
 	}
 	res.add("");
-	return new HeldData(res.toArray(new String[res.size()]));
+	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
-    @Override public HeldData getRegion(int fromX, int fromY, int toX, int toY)
+    @Override public RegionContent getRegion(int fromX, int fromY, int toX, int toY)
     {
 	if (entries == null || entries.isEmpty())
 	    return null;
@@ -471,7 +471,7 @@ static public class Params
 	    final int toPos = toX < line.length()?toX:line.length();
 	    if (fromPos >= toPos)
 		return null;
-	    return new HeldData(new String[]{line.substring(fromPos, toPos)});
+	    return new RegionContent(new String[]{line.substring(fromPos, toPos)});
 	}
 	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i < toY;++i)
@@ -480,7 +480,7 @@ static public class Params
 	    res.add(line != null?line:"");
 	}
 	res.add("");
-	return new HeldData(res.toArray(new String[res.size()]));
+	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
     @Override public boolean deleteWholeRegion()
@@ -493,7 +493,7 @@ static public class Params
 	return false;
     }
 
-    @Override public boolean insertRegion(int x, int y, HeldData data)
+    @Override public boolean insertRegion(int x, int y, RegionContent data)
     {
 	return false;
     }

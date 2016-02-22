@@ -346,13 +346,13 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 	luwrain.onAreaNewHotPoint(this);
     }
 
-    @Override public HeldData getWholeRegion()
+    @Override public RegionContent getWholeRegion()
     {
 	final String line = prefix + text;
-	return new HeldData(new String[]{line});
+	return new RegionContent(new String[]{line});
     }
 
-    @Override public HeldData getRegion(int fromX, int fromY,
+    @Override public RegionContent getRegion(int fromX, int fromY,
 					int toX, int toY)
     {
 	final String line = prefix + text;
@@ -363,7 +363,7 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 	if (fromPos >= toPos)
 	    return null;
 	final String res = line.substring(fromPos, toPos);
-	return new HeldData(new String[]{res});
+	return new RegionContent(new String[]{res});
     }
 
     @Override public boolean deleteWholeRegion()
@@ -378,7 +378,7 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
     }
 
     @Override public boolean insertRegion(int x, int y,
-					  HeldData data)
+					  RegionContent data)
     {
 	return false;
     }

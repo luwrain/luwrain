@@ -82,7 +82,7 @@ class Base
     }
 
     boolean insert(int x, int y,
-		   HeldData data)
+		   RegionContent data)
     {
 	NullCheck.notNull(data, "data");
 	if (data.strings == null)

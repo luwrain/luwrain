@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-import org.luwrain.core.HeldData;
+import org.luwrain.core.RegionContent;
 
 /**
  * Implementation of copy-cut-paste operations in real objects. By
@@ -36,7 +36,7 @@ public interface RegionProvider
      *
      * @return A whole object content
      */
-    HeldData getWholeRegion();
+    RegionContent getWholeRegion();
 
     /**
      * Returns an object content between two points of its text representation.
@@ -47,7 +47,7 @@ public interface RegionProvider
      * @param toY A vertical value of the point to copy to
      * @return An object content between two points
      */
-    HeldData getRegion(int fromX, int fromY,
+    RegionContent getRegion(int fromX, int fromY,
 		       int toX, int toY);
 
     boolean deleteWholeRegion();
@@ -73,5 +73,5 @@ public interface RegionProvider
      * @return True if the object supports the operation and the data has been inserted, false otherwise
      */
     boolean insertRegion(int x, int y,
-			 HeldData heldData);
+			 RegionContent heldData);
 }

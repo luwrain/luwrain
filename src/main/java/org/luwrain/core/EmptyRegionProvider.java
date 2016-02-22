@@ -16,16 +16,16 @@
 
 package org.luwrain.core;
 
-import org.luwrain.core.HeldData;
+import org.luwrain.core.RegionContent;
 
 public class EmptyRegionProvider implements RegionProvider
 {
-    @Override public HeldData getWholeRegion()
+    @Override public RegionContent getWholeRegion()
     {
 	return null;
     }
 
-    @Override public HeldData getRegion(int fromX, int fromY, int toX, int toY)
+    @Override public RegionContent getRegion(int fromX, int fromY, int toX, int toY)
     {
 	return null;
     }
@@ -40,7 +40,7 @@ public class EmptyRegionProvider implements RegionProvider
 	return false;
     }
 
-    @Override public boolean insertRegion(int x, int y, HeldData heldData)
+    @Override public boolean insertRegion(int x, int y, RegionContent heldData)
     {
 	return false;
     }

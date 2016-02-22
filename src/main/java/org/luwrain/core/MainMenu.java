@@ -101,6 +101,41 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	NullCheck.notNull(event, "event");
 	if (closing.onKeyboardEvent(event))
 	    return true;
+	if (event.isSpecial() && !event.isModified())
+	    switch(event.getSpecial())
+	    {
+	    case PAGE_DOWN:
+	    case ALTERNATIVE_PAGE_DOWN:
+		if (selectedIndex() + 1 >= model.getItemCount())
+		{
+		    environment.hint(Hints.NO_ITEMS_BELOW);
+		    return true;
+		}
+		for(int i = selectedIndex() + 1;i < model.getItemCount();++i)
+		    if (model.getItem(i) instanceof Section)
+		    {
+			setSelectedByIndex(i, true);
+			return true;
+		    }
+		environment.hint(Hints.NO_ITEMS_BELOW);
+		return true;
+	    case PAGE_UP:
+	    case ALTERNATIVE_PAGE_UP:
+
+		if (selectedIndex() < 1)
+		{
+		    environment.hint(Hints.NO_ITEMS_ABOVE);
+		    return true;
+		}
+		for(int i = selectedIndex() - 1;i >= 0;--i)
+		    if (model.getItem(i) instanceof Section)
+		    {
+			setSelectedByIndex(i, true);
+			return true;
+		    }
+		environment.hint(Hints.NO_ITEMS_ABOVE);
+		return true;
+	    }
 	return super.onKeyboardEvent(event);
     }
 
