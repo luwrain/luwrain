@@ -18,7 +18,7 @@ package org.luwrain.controls;
 
 import java.util.*;
 
-public class CachedTreeModel implements TreeModel
+public class CachedTreeModel implements TreeArea.Model
 {
 static private class CacheItem
 {

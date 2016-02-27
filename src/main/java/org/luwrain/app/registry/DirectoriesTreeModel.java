@@ -20,7 +20,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 
-class DirectoriesTreeModel implements TreeModel
+class DirectoriesTreeModel implements TreeArea.Model
 {
     private Luwrain luwrain;
     private Strings strings;

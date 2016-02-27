@@ -110,21 +110,16 @@ public class ControlPanelApp implements Application, Actions
 	return sect.onTreeDelete(environment);
     }
 
-    /*
-    void refreshGroups(Object preferableSelected)
-    {
-	//FIXME:
-    }
-    */
-
-
     private void createArea()
     {
 	final Actions actions = this;
-	sectionsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
-				    sectionsModel,
-				    strings.sectionsAreaName()) {
-		//		private final Actions actions = a;
+
+	final TreeArea.Params treeParams = new TreeArea.Params();
+	treeParams.environment = new DefaultControlEnvironment(luwrain);
+	treeParams.model = sectionsModel;
+	treeParams.name = strings.sectionsAreaName();
+
+	sectionsArea = new TreeArea(treeParams){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");

@@ -23,7 +23,7 @@ import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.app.cpanel.sects.Tree;
 
-class SectionsTreeModel implements TreeModel
+class SectionsTreeModel implements TreeArea.Model
 {
     private Tree tree;
 

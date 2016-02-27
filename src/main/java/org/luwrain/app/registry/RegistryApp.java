@@ -103,23 +103,18 @@ public class RegistryApp implements Application, Actions
 
     private void createAreas()
     {
-	final Actions a = this;
+	final Actions actions = this;
 
-	final ListClickHandler valuesHandler = new ListClickHandler(){
-		private Actions actions = a;
-		@Override public boolean onListClick(ListArea area,
-						     int index,
-						     Object item)
-		{
-		    //		    if (index < 0 || item == null || !(item instanceof NewsGroupWrapper))
-			return false;
-		}
+	final ListClickHandler valuesHandler = (area, index, item)->{
+		return false;
 	    };
 
-	dirsArea = new TreeArea(new DefaultControlEnvironment(luwrain),
-				base.getDirsModel(),
-				strings.dirsAreaName()) {
-		private Actions actions = a;
+	    final TreeArea.Params treeParams = new TreeArea.Params();
+	    treeParams.environment = new DefaultControlEnvironment(luwrain);
+	    treeParams.model = base.getDirsModel();
+	    treeParams.name = strings.dirsAreaName();
+
+	    dirsArea = new TreeArea(treeParams){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (event == null)
@@ -170,7 +165,6 @@ return actions.insertDir();
 
 	valuesArea = new ListArea(params)
 	    {
-		private Actions actions = a;
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    if (event == null)

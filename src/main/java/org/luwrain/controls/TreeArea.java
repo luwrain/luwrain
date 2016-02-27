@@ -20,39 +20,6 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import java.util.*;
 
-class TreeAreaNode
-{
-    Object obj;
-    boolean leaf = true;
-    TreeAreaNode children[];//If children is null but node is not leaf it means closed node without any info about content;
-TreeAreaNode parent;
-
-    //Actually, it is still unclear is it really good idea 
-    // to request title dynamically each time;
-    String title()
-    {
-	return obj != null?obj.toString():"";
-    }
-
-    void makeLeaf()
-    {
-	children = null;
-	leaf = true;
-    } 
-}
-
-class VisibleTreeItem
-{
-    static final int LEAF = 0;
-    static final int CLOSED = 1;
-    static final int OPENED = 2;
-
-    int type = LEAF;
-    String title = "";
-    int level = 0;
-    TreeAreaNode node;
-}
-
 public class TreeArea implements Area
 {
     public interface ClickHandler
@@ -60,45 +27,96 @@ public class TreeArea implements Area
 	boolean onTreeClick(TreeArea area, Object obj);
     }
 
+    public interface Model
+    {
+	Object getRoot();
+	boolean isLeaf(Object node);
+	void beginChildEnumeration(Object obj);
+	int getChildCount(Object parent);
+	Object getChild(Object parent, int index);
+	void endChildEnumeration(Object obj);
+    }
+
     static public class Params
     {
 	public ControlEnvironment environment;
-	public TreeModel model;
+	public Model model;
 	public String name;
 	public ClickHandler clickHandler;
     }
 
-    protected ControlEnvironment environment;
-    protected TreeModel model;
-    protected String name = "";
-    private TreeAreaNode root;
-    private VisibleTreeItem[] items;
-    private int hotPointX = 0;
-    private int hotPointY = 0;
-    private ClickHandler clickHandler;
-
-    public TreeArea(ControlEnvironment environment, TreeModel model,
-		    String name)
+    static protected class Node
     {
-	this.environment = environment;
-	this.model = model;
-	this.name = name;
-	root = constructNode(model.getRoot(), null, true);//true means expand children;
+	Object obj;
+	boolean leaf = true;
+	Node children[];//If children is null but node is not leaf it means closed node without any info about content;
+	Node parent;
+
+	String title()
+	{
+	    return obj != null?obj.toString():"";
+	}
+
+	void makeLeaf()
+	{
+	    children = null;
+	    leaf = true;
+	} 
+    }
+
+    static protected class VisibleItem
+    {
+	enum Type {LEAF, CLOSED, OPENED};
+
+	Type type = Type.LEAF;
+	String title = "";
+	int level = 0;
+	Node node;
+    }
+
+    protected ControlEnvironment environment;
+    protected Model model;
+    protected String name = "";
+    protected Node root;
+    protected VisibleItem[] items;
+    protected int hotPointX = 0;
+    protected int hotPointY = 0;
+    protected ClickHandler clickHandler;
+
+    public TreeArea(Params params)    
+    {
+	NullCheck.notNull(params, "params");
+	NullCheck.notNull(params.environment, "params.environment");
+	NullCheck.notNull(params.model, "params.model");
+	NullCheck.notNull(params.name, "params.name");
+	environment = params.environment;
+	model = params.model;
+	name = params.name;
+	clickHandler = params.clickHandler;
+	root = constructNode(model.getRoot(), null, true);//true means children should be expanded
 	items = generateAllVisibleItems();
     }
 
-    public TreeArea(Params params)    
-{
-    NullCheck.notNull(params, "params");
-    environment = params.environment;
-    model = params.model;
-    name = params.name;
-    clickHandler = params.clickHandler;
-    NullCheck.notNull(environment, "environment");
-    NullCheck.notNull(model, "model");
-    NullCheck.notNull(name, "name");
-	root = constructNode(model.getRoot(), null, true);//true means expand children;
-	items = generateAllVisibleItems();
+    public ClickHandler getClickHandler()
+    {
+	return clickHandler;
+    }
+
+    public void setClickHandler(ClickHandler clickHandler)
+    {
+	NullCheck.notNull(clickHandler, "clickHandler");
+	this.clickHandler = clickHandler;
+    }
+
+    public Model getModel()
+    {
+	return model;
+    }
+
+    public void setModel(Model model)
+    {
+	NullCheck.notNull(model, "model");
+	this.model = model;
     }
 
 
@@ -185,10 +203,6 @@ public class TreeArea implements Area
 	return name != null?name:"";
     }
 
-    public TreeModel getModel()
-    {
-	return model;
-    }
 
     public void refresh()
     {
@@ -262,7 +276,7 @@ public class TreeArea implements Area
     }
 
     //Changes only 'leaf' and 'children' fields;
-    private void fillChildrenForNonLeaf(TreeAreaNode node)
+    private void fillChildrenForNonLeaf(Node node)
     {
 	if (node == null || node.obj == null)
 	    return;
@@ -280,10 +294,10 @@ public class TreeArea implements Area
 	    return;
 	}
 	node.leaf = false;
-	node.children = new TreeAreaNode[count];
+	node.children = new Node[count];
 	for(int i = 0;i < count;++i)
 	{
-	    TreeAreaNode n = new TreeAreaNode();
+	    Node n = new Node();
 	    node.children[i] = n;
 	    n.obj = model.getChild(node.obj, i);
 	    if (n.obj == null)
@@ -299,11 +313,11 @@ public class TreeArea implements Area
 	model.endChildEnumeration(node.obj);
     }
 
-    private TreeAreaNode constructNode(Object obj, TreeAreaNode parent, boolean fillChildren)
+    private Node constructNode(Object obj, Node parent, boolean fillChildren)
     {
 	if (obj == null)
 	    return null;
-	TreeAreaNode node = new TreeAreaNode();
+	Node node = new Node();
 	node.obj = obj;
 	node.parent = parent;
 	node.leaf = model.isLeaf(obj);
@@ -312,7 +326,7 @@ public class TreeArea implements Area
 	return node;
     }
 
-    private void refreshNode(TreeAreaNode node)
+    private void refreshNode(Node node)
     {
 	if (node == null || node.obj == null)
 	    return;
@@ -338,7 +352,7 @@ public class TreeArea implements Area
 	    model.endChildEnumeration(node.obj);
 	    return;
 	}
-	TreeAreaNode[] newNodes = new TreeAreaNode[newCount];
+	Node[] newNodes = new Node[newCount];
 	for(int i = 0;i < newCount;++i)
 	{
 	    Object newObj = model.getChild(node.obj, i);
@@ -361,7 +375,7 @@ public class TreeArea implements Area
 	}
 	model.endChildEnumeration(node.obj);
 	node.children = newNodes;
-	for(TreeAreaNode n: node.children)
+	for(Node n: node.children)
 	    refreshNode(n);
     }
 
@@ -371,7 +385,7 @@ public class TreeArea implements Area
 	    return false;
 	if (hotPointY >= items.length)
 	    return false;
-	VisibleTreeItem item = items[hotPointY];
+	VisibleItem item = items[hotPointY];
 	if (item.node.obj != null)
 	    onClick(item.node.obj);
 	return true;
@@ -381,13 +395,13 @@ public class TreeArea implements Area
     {
 	if (event.isModified() || items == null || hotPointY >= items.length)
 	    return false;
-	VisibleTreeItem item = items[hotPointY];
-	if (item.type == VisibleTreeItem.LEAF)
+	VisibleItem item = items[hotPointY];
+	if (item.type == VisibleItem.Type.LEAF)
 	{
 	    onClick(item.node.obj);
 	    return true;
 	}
-	if (item.type == VisibleTreeItem.CLOSED)
+	if (item.type == VisibleItem.Type.CLOSED)
 	{
 	    fillChildrenForNonLeaf(item.node);
 	    items = generateAllVisibleItems();
@@ -395,7 +409,7 @@ public class TreeArea implements Area
 		environment.onAreaNewContent(this);
 		return true;
 	}
-	    if (item.type == VisibleTreeItem.OPENED)
+	    if (item.type == VisibleItem.Type.OPENED)
 	    {
 		item.node.children = null;
 		items = generateAllVisibleItems();
@@ -497,47 +511,47 @@ public class TreeArea implements Area
 	return true;
     }
 
-    private VisibleTreeItem[] generateVisibleItems(TreeAreaNode node, int level)
+    private VisibleItem[] generateVisibleItems(Node node, int level)
     {
 	if (node == null)
 	    return null;
-	VisibleTreeItem itself = new VisibleTreeItem();
+	VisibleItem itself = new VisibleItem();
 	itself.node = node;
 	itself.title = node.title();
 	itself.level = level;
 	if (node.leaf || node.children == null)
 	{
-	    itself.type = node.leaf?VisibleTreeItem.LEAF:VisibleTreeItem.CLOSED;
-	    VisibleTreeItem res[] = new VisibleTreeItem[1];
+	    itself.type = node.leaf?VisibleItem.Type.LEAF:VisibleItem.Type.CLOSED;
+	    VisibleItem res[] = new VisibleItem[1];
 	    res[0] = itself;
 	    return res;
 	}
-	itself.type = VisibleTreeItem.OPENED;
-	ArrayList<VisibleTreeItem> items = new ArrayList<VisibleTreeItem>();
+	itself.type = VisibleItem.Type.OPENED;
+	ArrayList<VisibleItem> items = new ArrayList<VisibleItem>();
 	items.add(itself);
     	for(int i = 0;i < node.children.length;i++)
 	{
-	    VisibleTreeItem c[] = generateVisibleItems(node.children[i], level + 1);
+	    VisibleItem c[] = generateVisibleItems(node.children[i], level + 1);
 	    if (c == null)
 		continue;
-	    for(VisibleTreeItem v: c)
+	    for(VisibleItem v: c)
 		items.add(v);
 	}
-	VisibleTreeItem res[] = new VisibleTreeItem[items.size()];
+	VisibleItem res[] = new VisibleItem[items.size()];
 	int k = 0;
-	for(VisibleTreeItem i: items)
+	for(VisibleItem i: items)
 	    res[k++] = i;
 	return res;
     }
 
-    private VisibleTreeItem[] generateAllVisibleItems()
+    private VisibleItem[] generateAllVisibleItems()
     {
 	if (root == null)
 	    return null;
 	return generateVisibleItems(root, 0);
     }
 
-    private String constructLineForSpeech(VisibleTreeItem item, boolean briefIntroduction)
+    private String constructLineForSpeech(VisibleItem item, boolean briefIntroduction)
     {
 	if (item == null)
 	    return environment.staticStr(LangStatic.EMPTY_LINE);//FIXME:
@@ -546,17 +560,17 @@ public class TreeArea implements Area
 	    return res;
 	switch (item.type)
 	{
-	case VisibleTreeItem.OPENED:
+	case OPENED:
 	    res = environment.staticStr(LangStatic.TREE_EXPANDED) + " " + res;
 	    break;
-	case VisibleTreeItem.CLOSED:
+	case CLOSED:
 	    res = environment.staticStr(LangStatic.TREE_COLLAPSED) + " " + res;
 	    break;
 	}
 	return res + " " + environment.staticStr(LangStatic.TREE_LEVEL) + " " + (item.level + 1);
     }
 
-    private String constructLineForScreen(VisibleTreeItem item)
+    private String constructLineForScreen(VisibleItem item)
     {
 	if (item == null)
 	    return "";
@@ -565,10 +579,10 @@ public class TreeArea implements Area
 	    res += "  ";
 	switch(item.type)
 	{
-	case VisibleTreeItem.OPENED:
+	case OPENED:
 	    res += " -";
 	    break;
-	case VisibleTreeItem.CLOSED:
+	case CLOSED:
 	    res += " +";
 	    break;
 	default:
