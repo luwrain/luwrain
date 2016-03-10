@@ -354,7 +354,7 @@ win.area == null)
 	    return;
 	final String name = area.getAreaName();
 	if (name != null && !name.isEmpty())
-	    interaction.drawText(win.x, win.y, name.length() <= win.width?name:name.substring(0, win.width));
+	    interaction.drawText(win.x, win.y, name.length() <= win.width?name:name.substring(0, win.width),true);
 	int count = area.getLineCount() - win.scrolledVert;
 	if (count > win.height - 1)
 	    count = win.height - 1;
