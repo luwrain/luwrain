@@ -20,6 +20,54 @@ public interface Settings
 {
     static public RegistryKeys keys = new RegistryKeys();
 
+    public interface InteractionParams
+    {
+	int getWindowLeft(int defValue);
+	int getWindowTop(int defValue);
+	int getWindowWidth(int defValue);
+	int getWindowHeight(int defValue);
+	int getMarginLeft(int defValue);
+	int getMarginTop(int defValue);
+	int getMarginRight(int defValue);
+	int getMarginBottom(int defValue);
+	int getFontColorRed(int defValue);
+	int getFontColorGreen(int defValue);
+	int getFontColorBlue(int defValue);
+	int getFont2ColorRed(int defValue);
+	int getFont2ColorGreen(int defValue);
+	int getFont2ColorBlue(int defValue);
+	int getBkgColorRed(int defValue);
+	int getBkgColorGreen(int defValue);
+	int getBkgColorBlue(int defValue);
+	int getSplitterColorRed(int defValue);
+	int getSplitterColorGreen(int defValue);
+	int getSplitterColorBlue(int defValue);
+	int getInitialFontSize(int defValue);
+	String getFontName(String defValue);
+	void setWindowLeft(int value);
+	void setWindowTop(int value);
+	void setWindowWidth(int value);
+	void setWindowHeight(int value);
+	void setMarginLeft(int value);
+	void setMarginTop(int value);
+	void setMarginRight(int value);
+	void setMarginBottom(int value);
+	void setFontColorRed(int value);
+	void setFontColorGreen(int value);
+	void setFontColorBlue(int value);
+	void setFont2ColorRed(int value);
+	void setFont2ColorGreen(int value);
+	void setFont2ColorBlue(int value);
+	void setBkgColorRed(int value);
+	void setBkgColorGreen(int value);
+	void setBkgColorBlue(int value);
+	void setSplitterColorRed(int value);
+	void setSplitterColorGreen(int value);
+	void setSplitterColorBlue(int value);
+	void setInitialFontSize(int value);
+	void setFontName(String value);
+    }
+
     public interface HotKey
     {
 	String getSpecial(String defValue);
@@ -103,6 +151,11 @@ public interface Settings
 	void setRate(int value);
     }
 
+    static public InteractionParams createInteractionParams(Registry registry)
+    {
+	return RegistryProxy.create(registry, keys.interactionParams(), InteractionParams.class);
+    }
+
     static public HotKey createHotKey(Registry registry, String path)
     {
 	return RegistryProxy.create(registry, path, HotKey.class);
@@ -112,7 +165,6 @@ public interface Settings
     {
 	return RegistryProxy.create(registry, path, MainMenuSection.class);
     }
-
 
     static public UserInterface createUserInterface(Registry registry)
     {

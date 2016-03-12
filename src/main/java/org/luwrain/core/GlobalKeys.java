@@ -57,8 +57,8 @@ class GlobalKeys
     public void loadFromRegistry()
     {
 	RegistryKeys registryKeys = new RegistryKeys();
-	final String globalKeysDir = registryKeys.globalKeysDir();
-	String[] dirs = registry.getDirectories(registryKeys.globalKeysDir());
+	final String globalKeysDir = registryKeys.globalKeys();
+	String[] dirs = registry.getDirectories(registryKeys.globalKeys());
 	if (dirs != null)
 	    for(String s: dirs)
 	    {

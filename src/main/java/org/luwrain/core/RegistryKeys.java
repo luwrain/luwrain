@@ -60,7 +60,6 @@ public class RegistryKeys
 	return "/org/luwrain/main-menu/sections";
     }
 
-
     public String mainMenuContent()
     {
 	return getProperty("mainmenu.Content");
@@ -71,9 +70,9 @@ public class RegistryKeys
 	return getProperty("core.CurrentSoundScheme");
     }
 
-    public String globalKeysDir()
+    public String globalKeys()
     {
-	return getProperty("environment.GlobalKeys");
+	return getProperty("core.GlobalKeys");
     }
 
     public String personalFullName()
@@ -91,104 +90,14 @@ public class RegistryKeys
 	return getProperty("personal.Signature");
     }
 
-    public String interactionWndLeft()
+    public String interactionParams()
     {
-	return getProperty("interaction.WindowLeft");
-    }
-
-    public String interactionWndTop()
-    {
-	return getProperty("interaction.WindowTop");
-    }
-
-    public String interactionWndWidth()
-    {
-	return getProperty("interaction.WindowWidth");
-    }
-
-    public String interactionWndHeight()
-    {
-	return getProperty("interaction.WindowHeight");
-    }
-
-    public String interactionMarginLeft()
-    {
-	return getProperty("interaction.MarginLeft");
-    }
-
-    public String interactionMarginTop()
-    {
-	return getProperty("interaction.MarginTop");
-    }
-
-    public String interactionMarginRight()
-    {
-	return getProperty("interaction.MarginRight");
-    }
-
-    public String interactionMarginBottom()
-    {
-	return getProperty("interaction.MarginBottom");
-    }
-
-    public String interactionFontColorRed()
-    {
-	return getProperty("interaction.FontColorRed");
-    }
-
-    public String interactionFontColorGreen()
-    {
-	return getProperty("interaction.FontColorGreenn");
-    }
-
-    public String interactionFontColorBlue()
-    {
-	return getProperty("interaction.FontColorBlue");
-    }
-
-    public String interactionBkgColorRed()
-    {
-	return getProperty("interaction.BkgColorRed");
-    }
-
-    public String interactionBkgColorGreen()
-    {
-	return getProperty("interaction.BkgColorGreen");
-    }
-
-    public String interactionBkgColorBlue()
-    {
-	return getProperty("interaction.BkgColorBlue");
-    }
-
-    public String interactionSplitterColorRed()
-    {
-	return getProperty("interaction.SplitterColorRed");
-    }
-
-    public String interactionSplitterColorGreen()
-    {
-	return getProperty("interaction.SplitterColorGreen");
-    }
-
-    public String interactionSplitterColorBlue()
-    {
-	return getProperty("interaction.SplitterColorBlue");
-    }
-
-	public String interactionInitialFontSize()
-    {
-	return getProperty("interaction.InitialFontSize");
-    }
-
-    public String interactionFontName()
-    {
-	return getProperty("interaction.FontName");
+	return getProperty("core.InteractionParams");
     }
 
     public String speech()
     {
-	return "/org/luwrain/speech";//FIXME:
+	return getProperty("core.Speech");
     }
 
     public String speechCharsToSkip()
@@ -203,12 +112,12 @@ public class RegistryKeys
 
     public String fileTypes()
     {
-	return getProperty("environment.FileTypes");
+	return getProperty("core.FileTypes");
     }
 
     public String ui()
     {
-	return "/org/luwrain/ui";//FIXME:
+	return getProperty("core.UI");
     }
 
     private String getProperty(String name)

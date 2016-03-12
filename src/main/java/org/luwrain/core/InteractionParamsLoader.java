@@ -16,42 +16,63 @@
 
 package org.luwrain.core;
 
-import org.luwrain.util.RegistryAutoCheck;
-
 class InteractionParamsLoader extends InteractionParams
 {
+    static private final int DEFAULT_MARGIN = 16;
     static private final int MAX_MARGIN = 64;
-    final RegistryKeys keys = new RegistryKeys();
+    static private final int DEFAULT_FONT_COLOR = 192;
+    static private final int DEFAULT_FONT2_COLOR = 255;
+    static private final int DEFAULT_BKG_COLOR = 0;
+    static private final int DEFAULT_SPLITTER_COLOR = 256;
 
     void loadFromRegistry(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-	final RegistryAutoCheck  check= new RegistryAutoCheck (registry, "interaction");
-	wndLeft = check.intPositive(keys.interactionWndLeft(), wndLeft);
-	wndTop = check.intPositive(keys.interactionWndTop(), wndTop);
-	wndWidth = check.intAny(keys.interactionWndWidth(), wndWidth);
-	wndHeight = check.intAny(keys.interactionWndHeight(), wndHeight);
-	marginLeft = check.intRange(keys.interactionMarginLeft(), 0, MAX_MARGIN, marginLeft);
-	marginTop = check.intRange(keys.interactionMarginTop(), 0, MAX_MARGIN, marginTop);
-	marginRight = check.intRange(keys.interactionMarginRight(), 0, MAX_MARGIN, marginRight);
-	marginBottom = check.intRange(keys.interactionMarginBottom(), 0, MAX_MARGIN, marginBottom);
+	final Settings.InteractionParams settings = Settings.createInteractionParams(registry);
 
-	int red = check.intRange(keys.interactionFontColorRed(), 0, 255, 255);
-	int green = check.intRange(keys.interactionFontColorGreen(), 0, 255, 255);
-	int blue = check.intRange(keys.interactionFontColorBlue(), 0, 255, 255);
+	wndLeft = checkRange(settings.getWindowLeft(0), 0, -1);
+	wndTop = checkRange(settings.getWindowTop(0), 0, -1);
+	wndWidth = settings.getWindowWidth(-1);
+	wndHeight = settings.getWindowHeight(-1);
+
+	marginLeft = checkRange(settings.getMarginLeft(DEFAULT_MARGIN), 0, MAX_MARGIN);
+	marginTop = checkRange(settings.getMarginTop(DEFAULT_MARGIN), 0, MAX_MARGIN);
+	marginRight = checkRange(settings.getMarginRight(DEFAULT_MARGIN), 0, MAX_MARGIN);
+	marginBottom = checkRange(settings.getMarginBottom(DEFAULT_MARGIN), 0, MAX_MARGIN);
+
+	int red = checkRange(settings.getFontColorRed(DEFAULT_FONT_COLOR), 0, 255);
+	int green = checkRange(settings.getFontColorGreen(DEFAULT_FONT_COLOR), 0, 255);
+	int blue = checkRange(settings.getFontColorBlue(DEFAULT_FONT_COLOR), 0, 255);
 	fontColor = new InteractionParamColor(red, green, blue);
 
-	red = check.intRange(keys.interactionBkgColorRed(), 0, 255, 0);
-	green = check.intRange(keys.interactionBkgColorGreen(), 0, 255, 0);
-	blue = check.intRange(keys.interactionBkgColorBlue(), 0, 255, 0);
-	bkgColor = new InteractionParamColor(red, green, blue);
+	red = checkRange(settings.getFont2ColorRed(DEFAULT_FONT2_COLOR), 0, 255);
+	green = checkRange(settings.getFont2ColorGreen(DEFAULT_FONT2_COLOR), 0, 255);
+	blue = checkRange(settings.getFont2ColorBlue(DEFAULT_FONT2_COLOR), 0, 255);
+	font2Color = new InteractionParamColor(red, green, blue);
 
-	red = check.intRange(keys.interactionSplitterColorRed(), 0, 255, 128);
-	green = check.intRange(keys.interactionSplitterColorGreen(), 0, 255, 128);
-	blue = check.intRange(keys.interactionSplitterColorBlue(), 0, 255, 128);
-	splitterColor = new InteractionParamColor(red, green, blue);
+	red = checkRange(settings.getBkgColorRed(DEFAULT_BKG_COLOR), 0, 255);
+	green = checkRange(settings.getBkgColorGreen(DEFAULT_BKG_COLOR), 0, 255);
+	blue = checkRange(settings.getBkgColorBlue(DEFAULT_BKG_COLOR), 0, 255);
+	bkgColor =  new InteractionParamColor(red, green, blue);
 
-	initialFontSize = check.intPositiveNotZero(keys.interactionInitialFontSize(), initialFontSize);
-	fontName = check.stringNotEmpty(keys.interactionFontName(), fontName);
+	red = checkRange(settings.getSplitterColorRed(DEFAULT_SPLITTER_COLOR), 0, 255);
+	green = checkRange(settings.getSplitterColorGreen(DEFAULT_SPLITTER_COLOR), 0, 255);
+	blue = checkRange(settings.getSplitterColorBlue(DEFAULT_SPLITTER_COLOR), 0, 255);
+	splitterColor =   new InteractionParamColor(red, green, blue);
+
+	initialFontSize = checkRange(settings.getInitialFontSize(14), 0, -1);
+	fontName = settings.getFontName("Monospaced");
+    }
+
+    static private int checkRange(int value,
+				  int min, int max)
+    {
+	if (max < 0)
+	    return value >= min?value:min;
+	if (value < min)
+	    return min;
+	if (value > max)
+	    return max;
+	return value;
     }
 }

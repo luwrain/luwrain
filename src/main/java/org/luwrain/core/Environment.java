@@ -191,8 +191,12 @@ class Environment extends EnvironmentAreas
     void launchAppIface(String shortcutName, String[] args)
     {
 	NullCheck.notNull(shortcutName, "shortcutName");
+	NullCheck.notNullItems(args, "args");
 	if (shortcutName.trim().isEmpty())
 	    throw new IllegalArgumentException("shortcutName may not be empty");
+	Log.info("core", "launching application \'" + shortcutName + "\' with " + args.length + " argument(s)");
+	for(int i = 0;i < args.length;++i)
+	    Log.info("core", "args[" + i + "]: " + args[i]);
 	final Application[] app = shortcuts.prepareApp(shortcutName, args != null?args:new String[0]);
 	if (app != null)
 	    for(Application a: app)
