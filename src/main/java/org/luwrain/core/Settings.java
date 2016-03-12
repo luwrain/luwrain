@@ -151,6 +151,11 @@ public interface Settings
 	void setRate(int value);
     }
 
+    public interface SpeechChannelBase
+    {
+	String getType(String defValue);
+    }
+
     static public InteractionParams createInteractionParams(Registry registry)
     {
 	return RegistryProxy.create(registry, keys.interactionParams(), InteractionParams.class);
@@ -180,4 +185,11 @@ public interface Settings
     {
 	return RegistryProxy.create(registry, keys.speech(), SpeechParams.class);
     }
+
+    static public SpeechChannelBase createSpeechChannelBase(Registry registry, String path)
+    {
+	return RegistryProxy.create(registry, path, SpeechChannelBase.class);
+    }
+
+
 }

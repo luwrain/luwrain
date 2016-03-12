@@ -63,6 +63,7 @@ class Speech
 
     private void loadFromCmdLine()
     {
+	/*
 	final String[] classes = cmdLineUtils.getArgs(LOAD_CHANNEL);
 	for(String c: classes)
 	{
@@ -90,6 +91,7 @@ class Speech
 	    }
 	    channels.add(channel);
 	}
+	*/
     }
 
     private void loadRegistryChannels()
@@ -101,15 +103,23 @@ class Speech
 	{
 	    final String dir = RegistryPath.join(path, s);
 	    Log.debug("core", "trying the channel from " + dir);
-	    final Channel channel = os.loadSpeechChannel(cmdLine, registry, dir);
-	    if (channel == null)
+	    final Settings.SpeechChannelBase channelBase = Settings.createSpeechChannelBase(registry, dir);
+	    final String type = channelBase.getType("");
+	    Log.debug("core", "channel\'s type is \'" + type + "\'");
+	    if (type.isEmpty())
 	    {
-		Log.error("core", "OS unable to load a speech channel from the registry directory " + dir);
+		Log.warning("core", "no type information in speech channel registry directory at " + dir);
 		continue;
 	    }
-	    if (!channel.init(cmdLine, registry, dir))
+	    final Channel channel = os.loadSpeechChannel(type);
+	    if (channel == null)
 	    {
-		Log.error("core", "speech channel " + channel.getClass().getName() + " loaded from the registry directory " + s + " refused to initialize");
+		Log.error("core", "the OS unable to load a speech channel of type \'" + type + "\'");
+		continue;
+	    }
+	    if (!channel.initByRegistry(registry, dir))
+	    {
+		Log.error("core", "speech channel " + channel.getClass().getName() + " loaded from the registry directory " + s + " refused to be initialized");
 		continue;
 	    }
 	    channels.add(channel);

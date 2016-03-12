@@ -114,29 +114,29 @@ class Init
 	    return false;
 	*/
 
-	//Interaction;
-	final String interactionClass = getFirstCmdLineOption(PREFIX_INTERACTION);
+	//Interaction
 	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();
 	interactionParams.loadFromRegistry(registry);
 	Object o;
 	try {
+	final String interactionClass = getFirstCmdLineOption(PREFIX_INTERACTION);
 	    if (interactionClass != null && !interactionClass.isEmpty())
 		o = Class.forName(interactionClass).newInstance(); else
 		o = Class.forName(DEFAULT_INTERACTION_CLASS).newInstance();
 	}
 	catch(Exception e)
 	{
-	    Log.fatal("init", "Unable to creating an instance of " + interactionClass + " for interaction:" + e.getMessage());
+	    Log.fatal("init", "Unable to create an instance of  interaction class:" + e.getMessage());
 	    e.printStackTrace();
 	    return false;
 	}
+	Log.info("init", "using interaction of class " + o.getClass().getName());
 	if (!(o instanceof Interaction))
 	{
-	    Log.fatal("init", "The instance of " + interactionClass + " isn\'t an instance of org.luwrain.core.Interaction");
+	    Log.fatal("init", "The instance of " + o.getClass().getName() + " isn\'t an instance of org.luwrain.core.Interaction");
 	    return false;
 	}
 	interaction = (Interaction)o;
-	Log.info("init", "using the instance of " + interactionClass + " for interaction");
 	if (!interaction.init(interactionParams,os))
 	{
 	    Log.fatal("init", "interaction initialization failed");
@@ -230,10 +230,9 @@ class Init
 	    return false;
 	}
 	os = (org.luwrain.os.OperatingSystem)o;
-	final String errorMessage = os.init(launchContext.dataDirAsPath().toString());
-	if (errorMessage != null)
+	if (!os.init(launchContext.dataDirAsPath().toString()))
 	{
-	    Log.fatal("init", "operating system initialization failed:" + errorMessage);
+	    Log.fatal("init", "unable to initialize operating system through " + os.getClass().getName());
 	    return false;
 	}
 	Log.debug("init", "operating system functions (" + osClass + " class) are initialized successfully");
