@@ -462,19 +462,33 @@ class StandardCommands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    environment.playSound(Sounds.SHUTDOWN);
-		    while(!EnvironmentSounds.finished());//FIXME:
-
+		    environment.os().shutdown();
 		}
 	    });
 
+	//reboot
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "reboot";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    environment.os().reboot();
+		}
+	    });
 
-
-
-
-
-
-
+	//suspend
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "suspend";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    environment.os().suspend(false);
+		}
+	    });
 
 	return res.toArray(new Command[res.size()]);
     }
