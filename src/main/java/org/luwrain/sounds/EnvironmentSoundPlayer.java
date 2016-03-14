@@ -20,13 +20,14 @@ import java.io.File;
 import java.io.IOException;
 import javax.sound.sampled.*;
 
-public class EnvironmentSoundPlayer implements Runnable
+class EnvironmentSoundPlayer implements Runnable
 {
     private static final int BUF_SIZE = 16;//Large this value causes delay on interruption;
     private String fileName;
-    public boolean interruptPlayback = false;
+    boolean interruptPlayback = false;
+    boolean finished = false;
 
-    public EnvironmentSoundPlayer(String fileName)
+    EnvironmentSoundPlayer(String fileName)
     {
 	this.fileName = fileName;
     }
@@ -35,10 +36,7 @@ public class EnvironmentSoundPlayer implements Runnable
     {
 	File soundFile = new File(fileName);
 	if (!soundFile.exists())
-	{
-	    //FIXME:Log warning;
 	    return;
-	}
 	AudioInputStream audioInputStream = null;
 	try {
 	    audioInputStream = AudioSystem.getAudioInputStream(soundFile);
@@ -92,6 +90,7 @@ public class EnvironmentSoundPlayer implements Runnable
 	{
 	    audioLine.drain();
 	    audioLine.close();
+	    finished = true;
 	}
     }
 }

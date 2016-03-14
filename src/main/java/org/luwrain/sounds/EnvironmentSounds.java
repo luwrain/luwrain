@@ -41,6 +41,11 @@ return;
 	t.start();
     }
 
+    static public boolean finished()
+    {
+	return previous == null || previous.finished;
+    }
+
     public static void init(Registry registry, LaunchContext launchContext)
     {
 	NullCheck.notNull(registry, "registry");

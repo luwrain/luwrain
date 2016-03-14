@@ -101,11 +101,9 @@ class LaunchedAppBase
     Area getCorrespondingEffectiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
-	//	System.out.println("" + popupWrappings.size() + " popup wrappings");
 	for(AreaWrapping w: popupWrappings)
 	    if (w.containsArea(area))
 		return w.getEffectiveArea();
-	//	System.out.println("not foudn");
 	return null;
     }
 

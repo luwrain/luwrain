@@ -60,7 +60,6 @@ public class CommanderArea implements Area, RegionProvider
 	Entry(Path path, Type type,
 	      boolean selected, boolean parent)
 	{
-	    //	    System.out.println(path.toString());
 	    this.path = path;
 	    this.type = type;
 	    this.selected = selected;
@@ -512,7 +511,6 @@ static public class Params
 	    return clickHandler.onCommanderClick(null, selected);
 	}
 	final Entry entry = entries.get(hotPointY);
-	System.out.println("1");
 	if (Files.isDirectory(entry.path()))//Explicit check because it could be a symlink to directory
 	{
 	    final Path parent = current.getParent();
@@ -522,10 +520,8 @@ static public class Params
 	    appearance.introduceLocation(current);
 	    return true;
 	} //directory
-	System.out.println("1a");
 	if (clickHandler == null)
 	    return false;
-	System.out.println("2");
 	return clickHandler.onCommanderClick(entry.path(), selected());
     }
 

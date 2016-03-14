@@ -20,6 +20,7 @@ import java.util.*;
 
 import org.luwrain.core.events.*;
 import org.luwrain.os.OperatingSystem;
+import org.luwrain.sounds.EnvironmentSounds;
 
 class StandardCommands
 {
@@ -452,6 +453,21 @@ class StandardCommands
 		    environment.onReadAreaCommand();
 		}
 	    });
+
+	//shutdown
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "shutdown";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    environment.playSound(Sounds.SHUTDOWN);
+		    while(!EnvironmentSounds.finished());//FIXME:
+
+		}
+	    });
+
 
 
 

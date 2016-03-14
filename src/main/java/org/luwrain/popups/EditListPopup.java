@@ -97,7 +97,6 @@ public class EditListPopup extends SimpleEditPopup
     private void onKeyUp(boolean briefIntroduction)
     {
 	final EditListPopupItem item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
-	//	System.out.println(item);
 	if (item == null)
 	{
 	    luwrain.hint(Hints.NO_ITEMS_ABOVE);

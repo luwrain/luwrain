@@ -388,6 +388,7 @@ class Environment extends EnvironmentAreas
 		    final KeyboardEvent actionEvent = a.keyboardEvent();
 		    if (actionEvent == null || !actionEvent.equals(event))
 			continue;
+		    //		    Log.debug("core", "doing the action \'" + a.name() + "\' on area \'" + activeArea.getClass().getName() + "\'");
 		    if (activeArea.onEnvironmentEvent(new ActionEvent(a)))
 			return true;
 		    break;
@@ -650,7 +651,7 @@ class Environment extends EnvironmentAreas
 	speech.speak(text, Luwrain.PITCH_MESSAGE, 0);
 	interaction.startDrawSession();
 	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
-	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text);
+	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text, true);
 	interaction.endDrawSession();
     }
 

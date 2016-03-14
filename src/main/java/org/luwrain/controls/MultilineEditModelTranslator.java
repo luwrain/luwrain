@@ -73,7 +73,6 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 
     @Override public char deleteChar(int pos, int lineIndex)
     {
-	System.out.println("deleting " + pos + "," + lineIndex);
 	final String line = lines.getLine(lineIndex);
 	if (line == null ||
 	    pos < 0 || pos >= line.length())

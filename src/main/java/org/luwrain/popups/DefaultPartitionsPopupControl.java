@@ -36,7 +36,6 @@ public class DefaultPartitionsPopupControl implements PartitionsPopup.Control
 
 	@Override public String getFullTitle()
 	{
-	    //	    System.out.println(part.name());
 	    return strings.partitionTitle(part);
 	}
 
