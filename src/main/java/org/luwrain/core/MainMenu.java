@@ -70,12 +70,20 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 
 	@Override public String getScreenAppearance(Object item, int flags)
 	{
-	    return item != null?item.toString():"";
+	    if (item == null)
+		return "";
+	    if (item instanceof Section)
+		return item.toString();
+	    return "  " + item.toString();
 	}
 
 	@Override public int getObservableLeftBound(Object item)
 	{
+	    if (item == null)
+		return 0;
+	    if (item instanceof Section)
 	    return 0;
+	    return 2;
 	}
 
 	@Override public int getObservableRightBound(Object item)
