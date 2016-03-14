@@ -421,6 +421,12 @@ public final class Luwrain implements EventConsumer
 	return environment.openUniRefIface(uniRef);
     }
 
+    public boolean openUniRef(UniRefInfo uniRefInfo)
+    {
+	NullCheck.notNull(uniRefInfo, "uniRefInfo");
+	return openUniRef(uniRefInfo.value());
+    }
+
     public Hardware getHardware()
     {
 	return environment.getHardware();

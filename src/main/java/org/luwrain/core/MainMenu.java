@@ -18,7 +18,6 @@ package org.luwrain.core;
 
 import java.util.*;
 
-//import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
@@ -86,14 +85,15 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
     }
 
     private Luwrain luwrain;
-    public final PopupClosing closing = new PopupClosing(this);
+    final PopupClosing closing = new PopupClosing(this);
     private Strings strings;
+    private UniRefInfo result = null;
 
     private MainMenu(Luwrain luwrain, ListParams params)
     {
 	super(params);
-	this.luwrain = luwrain;
 	NullCheck.notNull(luwrain, "luwrain");
+	this.luwrain = luwrain;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -121,7 +121,6 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 		return true;
 	    case PAGE_UP:
 	    case ALTERNATIVE_PAGE_UP:
-
 		if (selectedIndex() < 1)
 		{
 		    environment.hint(Hints.NO_ITEMS_ABOVE);
@@ -159,17 +158,26 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
     @Override public boolean onListClick(ListArea area, int index,
 					    Object item)
     {
-	return false;
+	return closing.doOk();
     }
 
     @Override public boolean onOk()
     {
-	return false;
+	final Object o = selected();
+	if (o == null || !(o instanceof UniRefInfo))
+	    return false;
+	result = (UniRefInfo)o;
+	return true;
     }
 
     @Override public boolean onCancel()
     {
 	return true;
+    }
+
+    UniRefInfo result()
+    {
+	return result;
     }
 
     static MainMenu newMainMenu(Luwrain luwrain)
