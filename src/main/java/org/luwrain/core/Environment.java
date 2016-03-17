@@ -26,6 +26,7 @@ import org.luwrain.popups.*;
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
 import org.luwrain.speech.Channel;
+import org.luwrain.braille.*;
 
 class Environment extends EnvironmentAreas
 {
@@ -52,6 +53,7 @@ class Environment extends EnvironmentAreas
     private RegionContent clipboard = null;
     private LaunchContext launchContext;
     private Settings.UserInterface uiSettings;
+    private BrlApi brlApi = new BrlApi();
 
     Environment(String[] cmdLine, Registry registry,
 		OperatingSystem os, Speech speech,
@@ -103,6 +105,7 @@ class Environment extends EnvironmentAreas
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
+	brlApi.connect();
 
 	initI18n();
 	initObjects();
