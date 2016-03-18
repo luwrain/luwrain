@@ -53,7 +53,7 @@ class Environment extends EnvironmentAreas
     private RegionContent clipboard = null;
     private LaunchContext launchContext;
     private Settings.UserInterface uiSettings;
-    private BrlApi brlApi = new BrlApi();
+    BrlApi brlApi = new BrlApi();
 
     Environment(String[] cmdLine, Registry registry,
 		OperatingSystem os, Speech speech,
@@ -80,7 +80,6 @@ class Environment extends EnvironmentAreas
 	interaction.startInputEventsAccepting(this);
 	//	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
 	playSound(Sounds.STARTUP);//FIXME:
-	brlApi.connect();
 	final String greeting = uiSettings.getLaunchGreeting("");
 	if (!greeting.trim().isEmpty())
 	    try {
