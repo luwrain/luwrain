@@ -18,7 +18,8 @@ public class BrlApi implements Constants
 	    Log.debug("braille", "driver is " + brlapi.getDriverName());
 	    final DisplaySize size = brlapi.getDisplaySize();
 	    Log.debug("braille", "display size is " + size.getWidth() + "x" + size.getHeight());
-brlapi.enterTtyModeWithPath(null);
+brlapi.enterTtyModeWithPath(new int[0]);
+brlapi.writeText("aaaaa");
 	    return true;
 	}
 	catch (org.a11y.BrlAPI.Error | UnsatisfiedLinkError e)
