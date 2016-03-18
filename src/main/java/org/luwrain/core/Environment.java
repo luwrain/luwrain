@@ -80,6 +80,7 @@ class Environment extends EnvironmentAreas
 	interaction.startInputEventsAccepting(this);
 	//	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
 	playSound(Sounds.STARTUP);//FIXME:
+	brlApi.connect();
 	final String greeting = uiSettings.getLaunchGreeting("");
 	if (!greeting.trim().isEmpty())
 	    try {
@@ -105,7 +106,6 @@ class Environment extends EnvironmentAreas
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
-	brlApi.connect();
 
 	initI18n();
 	initObjects();
