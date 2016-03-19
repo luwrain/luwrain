@@ -490,19 +490,6 @@ class StandardCommands
 		}
 	    });
 
-	//brlapi
-	res.add(new Command() {
-		@Override public String getName()
-		{
-		    return "braille";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    environment.brlApi.connect();
-		}
-	    });
-
-
 	return res.toArray(new Command[res.size()]);
     }
 }

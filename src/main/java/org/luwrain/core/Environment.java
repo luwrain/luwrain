@@ -102,6 +102,7 @@ class Environment extends EnvironmentAreas
 	windowManager = new WindowManager(interaction, screenContentManager);
 	extensions = new org.luwrain.core.extensions.Manager(interfaces);
 	extensions.load((ext)->interfaces.requestNew(ext, this));
+	brlApi.connect();
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);

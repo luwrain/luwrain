@@ -282,7 +282,9 @@ public final class Luwrain implements EventConsumer
 
     public void say(String text)
     {
+	NullCheck.notNull(text, "text");
 	silence();
+	environment.brlApi.writeText(text);
 	environment.getSpeech().speak(preprocess(text), 0, 0);
     }
 
