@@ -111,7 +111,17 @@ public Type type()
 
     public interface ClickHandler
     {
-    boolean onCommanderClick(Path cursorAt, Path[] selected);
+	/**
+	 * Handles the click in the commander area. {@code cursorAt} argument may
+	 * be {@code null}, what means that the cursor is at the bottom empty
+	 * line or at the parent directory entry. {@code selected} argument is
+	 * never {@code null}, but may be empty. 
+	 *
+	 * @param cursorAt The path entry under the cursor (may be {@code null})
+	 * @param selected The entries with user marks or the current entry, if there are no marks (reference to the parent never included)
+	 * @return {@code true} if the click is handled
+	 */
+	boolean onCommanderClick(Path cursorAt, Path[] selected);
     }
 
     public interface Filter
@@ -220,9 +230,9 @@ static public class Params
      * Returns the list of currently selected files. If user marked some
      * files or directories, this method returns list of them, regardless what
      * entry is under the cursor. Otherwise, this method returns exactly the
-     * entry under the current cursor position or an empty array if the cursor is at
+     * entry under the current cursor position or an empty array, if the cursor is at
      * the empty string in the bottom of the area. The parent directory entry
-     * is always ignored.
+     * is always ignored. This method never returns {@code >null}.
      *
      * @return The list of currently selected entries 
      */
