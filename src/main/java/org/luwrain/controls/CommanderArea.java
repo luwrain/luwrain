@@ -226,6 +226,25 @@ static public class Params
 	return true;
     }
 
+    public boolean find(Path path, boolean announce)
+    {
+	NullCheck.notNull(path, "path");
+	if (isEmpty())
+	    return false;
+	int index = 0;
+	while(index < entries.size() && !entries.get(index).path().equals(path))
+	    ++index;
+	if (index >= entries.size())
+	    return false;
+	hotPointY = index;
+	hotPointX = 0;
+	environment.onAreaNewHotPoint(this);
+	if (announce)
+	    appearance.introduceEntry(entries.get(hotPointY), false);
+	return true;
+    }
+
+
     /*
      * Returns the list of currently selected files. If user marked some
      * files or directories, this method returns list of them, regardless what
@@ -284,7 +303,6 @@ static public class Params
     {
 	return !isEmpty() && hotPointY >= 0 && hotPointY < entries.size()?entries.get(hotPointY):null;
     }
-
 
     /**
      * Updates the content of the current location. This method just rereads 

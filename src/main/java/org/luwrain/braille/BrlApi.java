@@ -23,7 +23,7 @@ brlApi = new Brlapi(settings);
 brlApi.enterTtyModeWithPath(new int[0]);
 	    return true;
 	}
-	catch (java.lang.Exception e)
+	catch (UnsatisfiedLinkError | java.lang.Exception e)
 	{
 	    Log.error("braille", "unable to connect to brltty");
 	    e.printStackTrace();
