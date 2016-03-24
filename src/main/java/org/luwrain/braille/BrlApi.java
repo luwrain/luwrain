@@ -59,7 +59,11 @@ Log.debug("braille", "braile keys service started");
 	    return;
 	try {
 	    final long key = brlApi.readKey(false);
-	    System.out.println("braille " + key);
+	    if (key != -1)
+	    {
+		System.out.println("braille " + key);
+		luwrain.runInMainThread(()->luwrain.message("" + key));
+	    }
 	}
 	catch(java.lang.Exception e)
 	{
