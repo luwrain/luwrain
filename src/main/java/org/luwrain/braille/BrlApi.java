@@ -1,15 +1,25 @@
 
 package org.luwrain.braille;
 
+import java.util.concurrent.*;
+
 import org.a11y.BrlAPI.*;
 import org.luwrain.core.*;
 
 public class BrlApi implements Constants 
 {
+    private final int STEP_DELAY = 1000;
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private FutureTask task = null;
     private Brlapi brlApi = null;
 
-    public boolean connect()
+    private Luwrain luwrain;
+
+    public boolean connect(Luwrain luwrain)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	this.luwrain = luwrain;
 	ConnectionSettings settings = new ConnectionSettings();
 	settings.host = "";
 	try {
@@ -21,6 +31,9 @@ brlApi = new Brlapi(settings);
 	    final DisplaySize size = brlApi.getDisplaySize();
 	    Log.debug("braille", "display size is " + size.getWidth() + "x" + size.getHeight());
 brlApi.enterTtyModeWithPath(new int[0]);
+task = createTask();
+executor.execute(task);
+Log.debug("braille", "braile keys service started");
 	    return true;
 	}
 	catch (UnsatisfiedLinkError | java.lang.Exception e)
@@ -32,11 +45,43 @@ brlApi.enterTtyModeWithPath(new int[0]);
 	}
     }
 
-    public void writeText(String text)
+    synchronized public void writeText(String text)
     {
 	NullCheck.notNull(text, "text");
 	if (brlApi == null)
 	    return;
 	brlApi.writeText(text);
+    }
+
+    synchronized private void readKeys()
+    {
+	if (brlApi == null)
+	    return;
+	try {
+	    final long key = brlApi.readKey(false);
+	    System.out.println("braille " + key);
+	}
+	catch(java.lang.Exception e)
+	{
+	    e.printStackTrace();
+
+	}
+    }
+
+    private FutureTask createTask()
+    {
+	return new FutureTask(()->{
+	    while(!Thread.currentThread().isInterrupted())
+	    {
+		try {
+		    Thread.sleep(STEP_DELAY);
+		    readKeys();
+		}
+		catch(InterruptedException e)
+		{
+		    Thread.currentThread().interrupt();
+		}
+	    }
+	}, null);
     }
 }
