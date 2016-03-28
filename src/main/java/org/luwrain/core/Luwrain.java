@@ -16,9 +16,7 @@
 
 package org.luwrain.core;
 
-
-import java.util.Set;
-import java.io.File;
+import java.util.*;
 
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
@@ -26,28 +24,27 @@ import org.luwrain.core.events.*;
 import org.luwrain.speech.Channel;
 
 /**
- * The main gate to Luwrain core for applications. This class is the
+ * The main gate to the LUWRAIN core for applications. This class is the
  * single point which all applications have for the access to system
- * functions.  All other classes considered as parts of Luwrain API
- * (e.g. from packages {@code org.luwrain.controls} or {@code
- * org.luwrain.popups}) only wrap the object of this class. In other
- * words, this class is an interface for interaction with environment
- * features.
+ * functions.  All other classes considered as parts of LUWRAIN API
+ * (e.g. from packages {@code org.luwrain.controls} or 
+ * {@code org.luwrain.popups}) just wrap the instances of this class. In other
+ * words, this class is an interface to the features of the LUWRAIN core.
  * <p>
- * On every application launch environment creates new instance of this
- * class which is provided to the application object through {@code
- * Application.onLaunch()} method.  All methods of this class dealing with the
+ * On every application launch, the environment creates new instance of this
+ * class which is provided to the application object through 
+ * {@code Application.onLaunch()} method.  All methods of this class which deal with the
  * environment always give the {@code this} reference. Therefore, the
- * environment is always aware which application the request is come
- * from. With this behaviour {@code Luwrain} class does the
- * identification function and applications should try to keep the reference
+ * environment is always aware which application has issued the particular request.
+ * With this behaviour  the {@code Luwrain} class does the
+ * identification function, and applications should try to keep the reference
  * to this class in secret.
  */
 public final class Luwrain implements EventConsumer
 {
     public enum ReloadComponents {
 	ENVIRONMENT_SOUNDS,
-};
+    };
 
     public static final int PITCH_HIGH = 25;
     public static final int PITCH_NORMAL = 0;
@@ -56,9 +53,9 @@ public final class Luwrain implements EventConsumer
     public static final int PITCH_MESSAGE = -25;
 
     /*
-    public static final int RATE_HIGH = org.luwrain.speech.BackEnd.HIGH;
-    public static final int RATE_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
-    public static final int RATE_LOW = org.luwrain.speech.BackEnd.LOW;
+      public static final int RATE_HIGH = org.luwrain.speech.BackEnd.HIGH;
+      public static final int RATE_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
+      public static final int RATE_LOW = org.luwrain.speech.BackEnd.LOW;
     */
 
     /** The message has no any typical semantics*/
@@ -79,10 +76,10 @@ public final class Luwrain implements EventConsumer
     private Environment environment;
     private String charsToSkip = "";
 
-    public Luwrain(Environment environment)
+    Luwrain(Environment environment)
     {
-	this.environment = environment;
 	NullCheck.notNull(environment, "environment");
+	this.environment = environment;
 	Registry registry = environment.registry();
 	RegistryKeys keys = new RegistryKeys();
 	if (registry.getTypeOf(keys.speechCharsToSkip()) == Registry.STRING)
@@ -100,10 +97,10 @@ public final class Luwrain implements EventConsumer
 	return environment.currentAreaDirIface();
     }
 
-
     @Override public void enqueueEvent(Event e)
     {
-	if (e != null && (e instanceof ThreadSyncEvent))
+	NullCheck.notNull(e, "e");
+	if (e instanceof ThreadSyncEvent)
 	{
 	    final ThreadSyncEvent threadSync = (ThreadSyncEvent)e;
 	    threadSync.setInstanceObj(this);
@@ -123,16 +120,19 @@ public final class Luwrain implements EventConsumer
 
     public Object getSharedObject(String id)
     {
+	NullCheck.notNull(id, "id");
 	return environment.getSharedObjectIface(id);
     }
 
     public void hint(String text)
     {
+	NullCheck.notNull(text, "text");
 	say(text, PITCH_HINT);
     }
 
     public void hint(String text, int code)
     {
+	NullCheck.notNull(text, "text");
 	final int soundId = Hints.hintToSoundMap(code);
 	if (soundId >= 0)
 	    playSound(soundId);
@@ -156,11 +156,14 @@ public final class Luwrain implements EventConsumer
 
     public void launchApp(String shortcutName)
     {
+	NullCheck.notNull(shortcutName, "shortcutName");
 	environment.launchAppIface(shortcutName, new String[0]);
     }
 
     public void launchApp(String shortcutName, String[] args)
     {
+	NullCheck.notNull(shortcutName, "shortcutName");
+	NullCheck.notNullItems(args, "args");
 	environment.launchAppIface(shortcutName, args != null?args:new String[0]);
     }
 
@@ -171,11 +174,13 @@ public final class Luwrain implements EventConsumer
 
     public void message(String text)
     {
+	NullCheck.notNull(text, "text");
 	environment.message(text, MESSAGE_REGULAR);
     }
 
     public void message(String text, int semantic)
     {
+	NullCheck.notNull(text, "text");
 	environment.message(text, semantic);
     }
 
@@ -191,6 +196,7 @@ public final class Luwrain implements EventConsumer
      */
     public void onAreaNewHotPoint(Area area)
     {
+	NullCheck.notNull(area, "area");
 	environment.onAreaNewHotPointIface(this, area);
     }
 
@@ -205,6 +211,7 @@ public final class Luwrain implements EventConsumer
      */
     public void onAreaNewContent(Area area)
     {
+	NullCheck.notNull(area, "area");
 	environment.onAreaNewContentIface(this, area);
     }
 
@@ -219,17 +226,20 @@ public final class Luwrain implements EventConsumer
      */
     public void onAreaNewName(Area area)
     {
+	NullCheck.notNull(area, "area");
 	environment.onAreaNewNameIface(this, area);
     }
 
     //May return -1 if area is not shown on the screen;
     public int getAreaVisibleHeight(Area area)
     {
+	NullCheck.notNull(area, "area");
 	return environment.getAreaVisibleHeightIface(this, area);
     }
 
     public int getAreaVisibleWidth(Area area)
     {
+	NullCheck.notNull(area, "area");
 	return environment.getAreaVisibleWidthIface(this, area);
     }
 
@@ -250,6 +260,7 @@ public final class Luwrain implements EventConsumer
 
     public void openFile(String fileName)
     {
+	NullCheck.notNull(fileName, "fileName");
 	String[] s = new String[1];
 	s[0] = fileName;
 	environment.openFiles(s);
@@ -257,6 +268,7 @@ public final class Luwrain implements EventConsumer
 
     public void openFiles(String[] fileNames)
     {
+	NullCheck.notNullItems(fileNames, "fileNames");
 	environment.openFiles(fileNames);
     }
 
@@ -272,11 +284,13 @@ public final class Luwrain implements EventConsumer
 
     public void popup(Popup popup)
     {
+	NullCheck.notNull(popup, "popup");
 	environment.popupIface(popup);
     }
 
     public boolean runCommand(String command)
     {
+	NullCheck.notNull(command, "command");
 	return environment.runCommand(command);
     }
 
@@ -290,14 +304,16 @@ public final class Luwrain implements EventConsumer
 
     public void say(String text, int pitch)
     {
+	NullCheck.notNull(text, "text");
 	silence();
 	if (text != null)
 	    environment.getSpeech().speak(preprocess(text), pitch, 0);
     }
 
     public void say(String text,
-			      int pitch, int rate)
+		    int pitch, int rate)
     {
+	NullCheck.notNull(text, "text");
 	silence();
 	if (text != null)
 	    environment.getSpeech().speak(preprocess(text), pitch, rate);
@@ -344,7 +360,7 @@ public final class Luwrain implements EventConsumer
     }
 
     public void speakLetter(char letter,
-				    int pitch, int rate)
+			    int pitch, int rate)
     {
 	switch(letter)
 	{
@@ -382,49 +398,30 @@ public final class Luwrain implements EventConsumer
      */
     public void setActiveArea(Area area)
     {
+	NullCheck.notNull(area, "area");
 	environment.setActiveAreaIface(this, area);
     }
 
-    /*
-    public void setClipboard(String[] value)
-    {
-	environment.setClipboard(value);
-    }
-    */
-
-    private String staticString(int code)
+    public String staticStr(int code)
     {
 	return i18n().staticStr(code);
     }
 
-    private String preprocess(String s)
-    {
-	StringBuilder b = new StringBuilder();
-	for(int i = 0;i < s.length();++i)
-	{
-	    final char c = s.charAt(i);
-	    int k;
-	    for(k = 0;k < charsToSkip.length();++k)
-		if (c == charsToSkip.charAt(k))
-		    break;
-	    if (k >= charsToSkip.length())
-		b.append(c);
-	}
-	return b.toString();
-    }
-
     public UniRefInfo getUniRefInfo(String uniRef)
     {
+	NullCheck.notNull(uniRef, "uniRef");
 	return environment.getUniRefInfoIface(uniRef);
     }
 
     public boolean openUniRef(String uniRef)
     {
+	NullCheck.notNull(uniRef, "uniRef");
 	return environment.openUniRefIface(uniRef);
     }
 
     public boolean openUniRef(UniRefInfo uniRefInfo)
     {
+	NullCheck.notNull(uniRefInfo, "uniRefInfo");
 	NullCheck.notNull(uniRefInfo, "uniRefInfo");
 	return openUniRef(uniRefInfo.value());
     }
@@ -451,16 +448,15 @@ public final class Luwrain implements EventConsumer
 	return environment.getSpeech().getChannelsByCond(cond);
     }
 
-
-
     public void runInMainThread(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
-environment.enqueueEvent(new RunnableEvent(runnable));
+	environment.enqueueEvent(new RunnableEvent(runnable));
     }
 
     public void reloadComponent(ReloadComponents component)
     {
+	NullCheck.notNull(component, "component");
 	environment.reloadComponent(component);
     }
 
@@ -482,5 +478,21 @@ environment.enqueueEvent(new RunnableEvent(runnable));
     public void setSpeechPitch(int value)
     {
 	environment.getSpeech().setPitch(value);
+    }
+
+    private String preprocess(String s)
+    {
+	StringBuilder b = new StringBuilder();
+	for(int i = 0;i < s.length();++i)
+	{
+	    final char c = s.charAt(i);
+	    int k;
+	    for(k = 0;k < charsToSkip.length();++k)
+		if (c == charsToSkip.charAt(k))
+		    break;
+	    if (k >= charsToSkip.length())
+		b.append(c);
+	}
+	return b.toString();
     }
 }
