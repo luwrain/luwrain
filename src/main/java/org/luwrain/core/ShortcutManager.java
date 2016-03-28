@@ -18,35 +18,29 @@ package org.luwrain.core;
 
 import java.util.*;
 
-//import org.luwrain.core.events.*;
-import org.luwrain.core.extensions.*;
-
 class ShortcutManager
 {
     class Entry 
     {
-	public String name = "";
-	public Shortcut shortcut;
+	String name = "";
+	Shortcut shortcut;
 
-	public Entry(String name, Shortcut shortcut)
+	Entry(String name, Shortcut shortcut)
 	{
-	    this.name = name;
-	    this.shortcut = shortcut;
-	    if (name == null)
-		throw new NullPointerException("name may not be null");
+	    NullCheck.notNull(name, "name");
+	    NullCheck.notNull(shortcut, "shortcut");
 	    if (name.trim().isEmpty())
 		throw new IllegalArgumentException("name may not be empty");
-	    if (shortcut == null)
-		throw new NullPointerException("shortcut may not be null");
+	    this.name = name;
+	    this.shortcut = shortcut;
 	}
     }
 
-    private TreeMap<String, Entry> shortcuts = new TreeMap<String, Entry>();
+    private final TreeMap<String, Entry> shortcuts = new TreeMap<String, Entry>();
 
-    public boolean add(Shortcut shortcut)
+    boolean add(Shortcut shortcut)
     {
-	if (shortcut == null)
-	    throw new NullPointerException("shortcut may not be null");
+	NullCheck.notNull(shortcut, "shortcut");
 	final String name = shortcut.getName();
 	if (name == null || name.trim().isEmpty())
 	    return false;
@@ -67,9 +61,9 @@ class ShortcutManager
 	return shortcuts.get(name).shortcut.prepareApp(args);
     }
 
-    public String[] getShortcutNames()
+    String[] getShortcutNames()
     {
-	Vector<String> res = new Vector<String>();
+	final Vector<String> res = new Vector<String>();
 	for(Map.Entry<String, Entry> e: shortcuts.entrySet())
 	    res.add(e.getKey());
 	String[] str = res.toArray(new String[res.size()]);
@@ -77,7 +71,7 @@ class ShortcutManager
 	return str;
     }
 
-    public void addBasicShortcuts()
+    void addBasicShortcuts()
     {
 	add(new Shortcut(){
 		@Override public String getName()

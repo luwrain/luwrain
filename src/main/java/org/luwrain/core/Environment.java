@@ -1172,6 +1172,11 @@ if (readingChannel == null)
 	    return;
     }
 
+    String[] getAllShortcutNames()
+    {
+	return shortcuts.getShortcutNames();
+    }
+
     private void fragmentReadingFinished(Area area, String text,
 					 int nextPointX, int nextPointY)
     {

@@ -480,6 +480,11 @@ public final class Luwrain implements EventConsumer
 	environment.getSpeech().setPitch(value);
     }
 
+    public String[] getAllShortcutNames()
+    {
+	return environment.getAllShortcutNames();
+    }
+
     private String preprocess(String s)
     {
 	StringBuilder b = new StringBuilder();
