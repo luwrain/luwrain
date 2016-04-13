@@ -96,9 +96,9 @@ class ContextMenu extends ListPopup
 	}
     }
 
-    ContextMenu(Luwrain luwrain, Action[] actions)
+    ContextMenu(Luwrain luwrain, Action[] actions, Strings strings)
     {
-	super(luwrain, "Контексное меню",//FIXME:
+	super(luwrain, strings.contextMenuName(),
 	      new FixedListModel(actions), new Appearance(luwrain), 0);
     }
 }

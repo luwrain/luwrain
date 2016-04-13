@@ -904,7 +904,7 @@ class Environment extends EnvironmentAreas
 	    areaInaccessibleMessage();
 	    return;
 	}
-	final ContextMenu menu = new ContextMenu(interfaces.getObjForEnvironment(), actions);
+	final ContextMenu menu = new ContextMenu(interfaces.getObjForEnvironment(), actions, strings);
 	popupImpl(null, menu, Popup.RIGHT, menu.closing, true, true);
 	if (menu.closing.cancelled())
 	    return;

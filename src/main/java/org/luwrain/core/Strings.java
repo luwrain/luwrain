@@ -44,4 +44,5 @@ public interface Strings
     String noReadingChannel();
     String mainMenuName();
     String mainMenuSection(String sect);
+    String contextMenuName();
 }
