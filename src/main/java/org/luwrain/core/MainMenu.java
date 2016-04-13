@@ -188,9 +188,11 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	return result;
     }
 
-    static MainMenu newMainMenu(Luwrain luwrain)
+    static MainMenu newMainMenu(Luwrain luwrain, Strings strings)
     {
-	final Registry registry = luwrain.getRegistry();
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(strings, "strings");
+		final Registry registry = luwrain.getRegistry();
 	final RegistryKeys keys = new RegistryKeys();
 	final String[] dirs = registry.getDirectories(keys.mainMenuSections());
 	if (dirs == null || dirs.length < 1)
@@ -204,7 +206,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	{
 	    final String path = RegistryPath.join(keys.mainMenuSections(), s);
 	    final Settings.MainMenuSection proxy = Settings.createMainMenuSection(registry, path);
-	    final Section sect = loadSection(luwrain, proxy);
+	    final Section sect = loadSection(luwrain, proxy, strings);
 	    if (sect != null)
 		sects.add(sect);
 	}
@@ -219,15 +221,16 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.model = new FixedListModel(objs.toArray(new Object[objs.size()]));
 	params.appearance = new Appearance(luwrain);
-	params.name = "Главное меню";
+	params.name = strings.mainMenuName();
 	final MainMenu mainMenu = new MainMenu(luwrain, params);
 mainMenu.setClickHandler(mainMenu);
 return mainMenu;
     }
 
-    static private Section loadSection(Luwrain luwrain, Settings.MainMenuSection proxy)
+    static private Section loadSection(Luwrain luwrain, Settings.MainMenuSection proxy,
+				       Strings strings)
     {
-	final String title = proxy.getTitle("");
+	final String title = strings.mainMenuSection(proxy.getTitle(""));
 	final String[] refs = proxy.getUniRefs("").split("\\\\:", -1);
 	final LinkedList<UniRefInfo> uniRefs = new LinkedList<UniRefInfo>();
 	for(String s: refs)

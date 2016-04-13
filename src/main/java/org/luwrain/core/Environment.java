@@ -801,7 +801,7 @@ class Environment extends EnvironmentAreas
 
     void mainMenu()
     {
-	final MainMenu mainMenu = MainMenu.newMainMenu(interfaces.getObjForEnvironment());
+	final MainMenu mainMenu = MainMenu.newMainMenu(interfaces.getObjForEnvironment(), strings);
 	if (mainMenu == null)
 	    return;
 	//	playSound(Sounds.MAIN_MENU);

@@ -42,4 +42,6 @@ public interface Strings
     String uniRefPrefix(String uniRefType);
     String linesDeleted();
     String noReadingChannel();
+    String mainMenuName();
+    String mainMenuSection(String sect);
 }

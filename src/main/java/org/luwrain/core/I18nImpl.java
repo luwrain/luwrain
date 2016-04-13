@@ -112,8 +112,7 @@ class I18nImpl implements I18n, I18nExtension
 
     @Override public String commandTitle(String command)
     {
-	if (command == null)
-	    throw new NullPointerException("command may not be null");
+	NullCheck.notNull(command, "command");
 	if (command.trim().isEmpty())
 	    throw new IllegalArgumentException("command may not be empty");
 	String chosenLangValue = null;
@@ -216,8 +215,7 @@ class I18nImpl implements I18n, I18nExtension
 
     boolean chooseLang(String name)
     {
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
+	NullCheck.notNull(name, "name");
 	if (name.trim().isEmpty())
 	    throw new IllegalArgumentException("name may not be empty");
 	if (langObjs.isEmpty())
@@ -235,17 +233,20 @@ class I18nImpl implements I18n, I18nExtension
 	{
 	    chosenLang = desiredLang.lang;
 	    chosenLangName = desiredLang.name;
+	    Log.info("core", "chosen lang is \'" + chosenLang + "\"");
 	    return true;
 	}
 	if (enLang != null)
 	{
 	    chosenLang = enLang.lang;
 	    chosenLangName = enLang.name;
+	    	    Log.info("core", "chosen lang is \'" + chosenLang + "\"");
 	    return true;
 	}
 	LangObj l = langObjs.get(0);
 	chosenLang = l.lang;
 	chosenLangName = l.name;
+		    Log.info("core", "chosen lang is \'" + chosenLang + "\"");
 	return true;
     }
 
