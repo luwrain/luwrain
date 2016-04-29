@@ -97,7 +97,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
     private Strings strings;
     private UniRefInfo result = null;
 
-    private MainMenu(Luwrain luwrain, ListParams params)
+    private MainMenu(Luwrain luwrain, ListArea.Params params)
     {
 	super(params);
 	NullCheck.notNull(luwrain, "luwrain");
@@ -217,7 +217,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	    for(UniRefInfo u: s.uniRefs())
 		objs.add(u);
 	}
-	final ListParams params = new ListParams();
+	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.model = new FixedListModel(objs.toArray(new Object[objs.size()]));
 	params.appearance = new Appearance(luwrain);

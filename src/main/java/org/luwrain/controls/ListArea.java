@@ -35,6 +35,15 @@ public class ListArea  implements Area, RegionProvider
 	void refresh();
     }
 
+    public static class Params
+    {
+	public ControlEnvironment environment;
+	public Model model;
+    public ListItemAppearance appearance;
+	public ListClickHandler clickHandler;
+	public String name;
+    }
+
     private final Region region = new Region(this);
     protected ControlEnvironment environment;
     protected String areaName = "";
@@ -117,7 +126,7 @@ public class ListArea  implements Area, RegionProvider
 	resetHotPoint();
     }
 
-    public ListArea(ListParams params)
+    public ListArea(Params params)
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.environment, "params.environment");

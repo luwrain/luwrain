@@ -28,14 +28,14 @@ public class SimpleListSection extends EmptySection
 public interface Loader
 {
     //params.environment is always prepared
-    void setListParams(Luwrain luwrain, ListParams params);
+    void setListParams(Luwrain luwrain, ListArea.Params params);
 }
 
     static private class Area extends ListArea
     {
 	private Environment environment;
 
-	Area(Environment environment , ListParams params)
+	Area(Environment environment , ListArea.Params params)
 	{
 	    super(params);
 	    this.environment = environment;
@@ -74,7 +74,7 @@ private Area area = null;
     private String name;
     private int desiredRoot;
     private Loader loader;
-    private final ListParams params = new ListParams();
+    private final ListArea.Params params = new ListArea.Params();
 
     public SimpleListSection(String name, int desiredRoot, Loader loader)
     {

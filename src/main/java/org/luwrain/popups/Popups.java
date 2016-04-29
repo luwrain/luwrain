@@ -187,4 +187,21 @@ int popupFlags)
 	return orig | FilePopup.SKIP_HIDDEN;
 	return orig;
     }
+
+    static public String fixedEditList(Luwrain luwrain,
+				       String name, String prefix, String text,
+				       String[] items)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	NullCheck.notNullItems(items, "items");
+	final EditListPopup popup = new EditListPopup(luwrain, new FixedEditListPopupModel(items),
+						      name, prefix, text);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.text();
+    }
 }

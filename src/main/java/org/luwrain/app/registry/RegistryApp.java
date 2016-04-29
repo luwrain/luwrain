@@ -156,7 +156,7 @@ return actions.insertDir();
 		}
 	    };
 
-	final ListParams params = new ListParams();
+	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.model = base.getValuesModel();
 	params.appearance = base.getValuesAppearance();
