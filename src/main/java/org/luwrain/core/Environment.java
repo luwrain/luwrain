@@ -220,20 +220,64 @@ class Environment extends EnvironmentAreas
 	}
 	catch (OutOfMemoryError e)
 	{
+	    e.printStackTrace();
 	    interfaces.release(o);
 	    message(strings.appLaunchNoEnoughMemory(), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
-	catch (Throwable e)
+	catch (Exception e)
 	{
 	    interfaces.release(o);
-		Log.info("core", "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
+		Log.error("core", "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
 	    e.printStackTrace();
-	    message(strings.appLaunchUnexpectedError(), Luwrain.MESSAGE_ERROR);
+	    launchAppCrash(app, e);
 	    return;
 	}
 	if (!apps.newApp(app))
+	{
+	    interfaces.release(o);
 	    return; 
+	}
+	screenContentManager.updatePopupState();
+	windowManager.redraw();
+	needForIntroduction = true;
+	introduceApp = true;
+    }
+
+    void launchAppCrash(Luwrain instance, Exception e)
+    {
+	NullCheck.notNull(instance, "instance");
+	NullCheck.notNull(e, "e");
+	final Application app = interfaces.findApp(instance);
+	if (app != null)
+	    launchAppCrash(app, e);
+    }
+
+    void launchAppCrash(Application app, Exception e)
+    {
+	NullCheck.notNull(app, "app");
+	NullCheck.notNull(e, "e");
+	System.gc();
+	final org.luwrain.app.crash.CrashApp crashApp = new org.luwrain.app.crash.CrashApp(app, e);
+	final Luwrain o = interfaces.requestNew(crashApp, this);
+	try {
+	    if (!crashApp.onLaunch(o))
+	    {
+		interfaces.release(o);
+		return;
+	    }
+	}
+	catch (OutOfMemoryError ee)
+	{
+	    ee.printStackTrace();
+	    interfaces.release(o);
+	    return;
+	}
+	if (!apps.newApp(crashApp))
+	{
+	    interfaces.release(o);
+	    return; 
+	}
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
 	needForIntroduction = true;

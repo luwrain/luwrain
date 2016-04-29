@@ -154,6 +154,13 @@ public final class Luwrain implements EventConsumer
 	return environment.i18nIface();
     }
 
+    public void crash(Exception e)
+    {
+	NullCheck.notNull(e, "e");
+	final Luwrain instance = this;
+	runInMainThread(()->environment.launchAppCrash(this, e));
+    }
+
     public void launchApp(String shortcutName)
     {
 	NullCheck.notNull(shortcutName, "shortcutName");
