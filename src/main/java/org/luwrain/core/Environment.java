@@ -210,6 +210,29 @@ class Environment extends EnvironmentAreas
     {
 	NullCheck.notNull(app, "app");
 	System.gc();
+	//Checking is it a mono application
+	if (app instanceof MonoApp)
+	{
+	    Log.debug("core", app.getClass().getName() + " is a mono app,  checking already launched instances");
+	    final Application[] launchedApps = apps.getLaunchedApps();
+	    for(Application a: launchedApps)
+		if (a instanceof MonoApp && a.getClass().equals(app.getClass()))
+	    {
+		final MonoApp ma = (MonoApp)a;
+		final MonoApp.Result res = ma.onMonoAppSecondInstance(app);
+		Log.debug("core", "already launched instance found, result is " + res);
+		NullCheck.notNull(res, "res");
+		if (res == MonoApp.Result.SECOND_INSTANCE_PERMITTED)
+		    break;
+		if (res == MonoApp.Result.BRING_FOREGROUND)
+		{
+		    apps.setActiveApp(a);
+	needForIntroduction = true;
+	introduceApp = true;
+		    return;
+		}
+	    }
+	}
 	final Luwrain o = interfaces.requestNew(app, this);
 	try {
 	    if (!app.onLaunch(o))
@@ -434,7 +457,6 @@ class Environment extends EnvironmentAreas
 		    final KeyboardEvent actionEvent = a.keyboardEvent();
 		    if (actionEvent == null || !actionEvent.equals(event))
 			continue;
-		    //		    Log.debug("core", "doing the action \'" + a.name() + "\' on area \'" + activeArea.getClass().getName() + "\'");
 		    if (activeArea.onEnvironmentEvent(new ActionEvent(a)))
 			return true;
 		    break;

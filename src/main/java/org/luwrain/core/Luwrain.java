@@ -157,6 +157,7 @@ public final class Luwrain implements EventConsumer
     public void crash(Exception e)
     {
 	NullCheck.notNull(e, "e");
+	e.printStackTrace();
 	final Luwrain instance = this;
 	runInMainThread(()->environment.launchAppCrash(this, e));
     }

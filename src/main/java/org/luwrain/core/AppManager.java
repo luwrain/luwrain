@@ -38,6 +38,14 @@ class AppManager
 	    this.defaultApp = null;
     }
 
+    Application[] getLaunchedApps()
+    {
+	final LinkedList<Application> res = new LinkedList<Application>();
+	for(LaunchedApp a: apps)
+	    res.add(a.app);
+	return res.toArray(new Application[res.size()]);
+    }
+
     boolean setActiveApp(Application app)
     {
 	NullCheck.notNull(app, "app");
