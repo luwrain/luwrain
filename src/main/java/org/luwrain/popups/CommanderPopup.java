@@ -37,11 +37,6 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
     private int flags;
     private int popupFlags;
 
-    static private CommanderArea.Params constructCommanderParams()
-    {
-	return null;
-    }
-
     public CommanderPopup(Luwrain luwrain, String name,
 			  Path path, int flags,
 			  int popupFlags)
@@ -135,5 +130,11 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	    return true;
 	open(f.toPath(), null);
 	return true;
+    }
+
+    static private CommanderArea.Params constructCommanderParams()
+    {
+
+	return null;
     }
 }

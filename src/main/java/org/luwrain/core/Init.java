@@ -17,7 +17,6 @@
 package org.luwrain.core;
 
 import java.io.*;
-//import org.luwrain.speech.BackEnd;
 import org.luwrain.os.OperatingSystem;
 
 class Init
@@ -26,7 +25,6 @@ class Init
     static private final String  PREFIX_REGISTRY_DIR = "--registry-dir=";
     static private final String  PREFIX_DATA_DIR = "--data-dir=";
     static private final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
-    //    static private final String  PREFIX_SPEECH= "--speech=";
     static private final String  PREFIX_OS= "--os=";
     static private final String  PREFIX_LANG= "--lang=";
 
@@ -103,7 +101,7 @@ class Init
 
 	if (!initOs())
 	    return false;
-	speech2 = new Speech(os, cmdLine, registry);
+	speech2 = new Speech(os, new CmdLineUtils(cmdLine), registry);
 	if (!speech2.init())
 	{
 	    Log.fatal("init", "unable to initialize speech output, usually it means that there is no default channel");

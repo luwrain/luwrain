@@ -9,41 +9,62 @@ import org.luwrain.util.RegistryPath;
 
 class Speech
 {
-    static private final String NO_REGISTRY_CHANNELS = "--speech-no-registry";
-    static private final String LOAD_CHANNEL = "--speech-load-channel=";
+    static private final String SPEECH_PREFIX = "--speech=";
+    static private final String ADD_SPEECH_PREFIX = "--add-speech=";
 
     private final Vector<Channel> channels = new Vector<Channel>();
     private Channel defaultChannel = null;
     private OperatingSystem os;
-    private String[] cmdLine;
+    private CmdLineUtils cmdLine;
     private Registry registry;
-    private CmdLineUtils cmdLineUtils;
     private Settings.SpeechParams settings;
     private int pitch = 50;
     private int rate = 50;
 
     Speech(OperatingSystem os,
-	   String[] cmdLine, Registry registry)
+	   CmdLineUtils cmdLine, Registry registry)
     {
+
+	NullCheck.notNull(os, "os");
+	NullCheck.notNull(cmdLine, "cmdLine");
+	NullCheck.notNull(registry, "registry");
 	this.os = os;
 	this.cmdLine = cmdLine;
 	this.registry = registry;
-	NullCheck.notNull(os, "os");
-	NullCheck.notNullItems(cmdLine, "cmdLine");
-	NullCheck.notNull(registry, "registry");
-	cmdLineUtils = new CmdLineUtils(cmdLine);
 	settings = Settings.createSpeechParams(registry);
     }
 
     boolean init()
     {
-	if (!cmdLineUtils.used(NO_REGISTRY_CHANNELS))
-	    loadRegistryChannels();
-	loadFromCmdLine();
+	final String speechArg = cmdLine.getFirstArg(SPEECH_PREFIX);
+	if (speechArg != null)
+	{
+	    Log.debug("core", "trying to initialize speech channel for main speech output with arguments line \'" + speechArg + "\', skipping all channels in the registry");
+	    final Channel main = loadChannelByStr(speechArg);
+	    if (main == null)
+	    {
+		Log.error("core", "unable to initialize main speech channel with arguments line \'" + speechArg + "\'");
+		return false;
+	    }
+	    final String[] additional = cmdLine.getArgs(ADD_SPEECH_PREFIX);
+	    final LinkedList<Channel> res = new LinkedList<Channel>();
+	    channels.add(main);
+	    for(String s: additional)
+	    {
+		Log.debug("core", "initializing addition speech channel with arguments line \'" + s + "\'");
+		final Channel c = loadChannelByStr(s);
+		if (c != null)
+channels.add(c);
+	    }
+	    defaultChannel = main;
+	} else
+	{
+	loadRegistryChannels();
 	if (!chooseDefaultChannel())
 	{
 	    Log.error("core", "unable to choose the default channel");
 	    return false;
+	}
 	}
 	Log.debug("core", "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
 	pitch = settings.getPitch(50);
@@ -59,39 +80,6 @@ class Speech
 	defaultChannel.setDefaultRate(rate);
 	defaultChannel.setDefaultPitch(50);
 	return true;
-    }
-
-    private void loadFromCmdLine()
-    {
-	/*
-	final String[] classes = cmdLineUtils.getArgs(LOAD_CHANNEL);
-	for(String c: classes)
-	{
-	    Log.debug("core", "loading speech channel " + c + " by the command line option");
-	    Object o;
-	    try {
-		o = Class.forName(c).newInstance();
-	    }
-	    catch(Exception e)
-	    {
-		Log.error("core", "unable to load speech channel " + c + " by a command line option:" + e.getMessage());
-		e.printStackTrace();
-		continue;
-	    }
-	    if (!(o instanceof Channel))
-	    {
-		Log.error("core", "the instance of " + c + " is not an instance of org.luwrain.speech.Channel");
-		continue;
-	    }
-	    final Channel channel = (Channel)o;
-	    if (!channel.init(cmdLine, null, null))
-	    {
-		Log.error("core", "speech channel " + c + " refuced to initialize");
-		continue;
-	    }
-	    channels.add(channel);
-	}
-	*/
     }
 
     private void loadRegistryChannels()
@@ -127,6 +115,32 @@ class Speech
 	}
     }
 
+    private Channel loadChannelByStr(String arg)
+    {
+	Log.debug("core", "trying to prepare new speech channel with complete arguments line \'" + arg + "\'");
+	if (arg.isEmpty())
+	{
+	    Log.warning("core", "an empty value of speech channel parameters in command line option, skipping");
+	    return null;
+	}
+	final String[] params = arg.split(":", -1);
+	final String type = params[0];
+	Log.debug("core", "asking the operating system to prepare new speech channel of type \'" + type + "\'");
+	final Channel res = os.loadSpeechChannel(params[0]);
+	if (res == null)
+	{
+	    Log.error("core", "the operating system is unable to load new speech channel of type \'" + type + "\'");
+	    return null;
+	}
+	Log.debug("core", "initializing the newly created channel");
+	if (!res.initByArgs(params.length <= 1?new String[0]:Arrays.copyOfRange(params, 1, params.length)))
+	{
+	    Log.error("core", "newly created channel of type \'" + type + "\' refuses to initialize, complete arguments line is \'" + arg + "\'");
+	    return null;
+	}
+	    return res;
+    }
+
     private boolean chooseDefaultChannel()
     {
 	Channel any = null;
@@ -149,13 +163,6 @@ class Speech
 	defaultChannel = any;
 	return true;
     }
-
-    /*
-    Channel getDefaultChannel()
-    {
-	return defaultChannel;
-    }
-    */
 
     void speak(String text, int relPitch, int relRate)
     {
