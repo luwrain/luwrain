@@ -357,7 +357,6 @@ class StandardCommands
 	    });
 
 
-
 	//speech-pitch-inc
 	res.add(new Command() {
 		@Override public String getName()
@@ -489,6 +488,19 @@ class StandardCommands
 		    environment.os().suspend(false);
 		}
 	    });
+
+	//say-current-word
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "say-current-word";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    environment.onSayCurrentWordCommand();
+		}
+	    });
+
 
 	return res.toArray(new Command[res.size()]);
     }

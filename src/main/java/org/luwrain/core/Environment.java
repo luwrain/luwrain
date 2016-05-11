@@ -1224,7 +1224,7 @@ class Environment extends EnvironmentAreas
 	    return;
 	if (readingChannel != null)
 	    cancelAreaReading();
-readingChannel = speech.getReadingChannel();
+	readingChannel = speech.getReadingChannel();
 if (readingChannel == null)
 {
     message(strings.noReadingChannel(), Luwrain.MESSAGE_ERROR);
@@ -1237,6 +1237,23 @@ if (readingChannel == null)
 	    startReadingGeneralText(activeArea, activeArea.getHotPointX(), activeArea.getHotPointY());
 	    return;
     }
+
+    String currentAreaWordIface(boolean issueErrorMessages)
+    {
+	final Area activeArea = getValidActiveArea(issueErrorMessages);
+	if (activeArea == null)
+	    return null;
+	return new AreaText(activeArea).currentWord();
+    }
+
+    void onSayCurrentWordCommand()
+    {
+	final String word = currentAreaWordIface(false);
+	if (word != null && !word.trim().isEmpty())
+	    message(word, Luwrain.MESSAGE_REGULAR); else
+	    areaInaccessibleMessage();
+    }
+
 
     String[] getAllShortcutNames()
     {
