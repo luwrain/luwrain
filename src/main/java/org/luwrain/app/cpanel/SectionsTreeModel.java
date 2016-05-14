@@ -18,70 +18,52 @@ package org.luwrain.app.cpanel;
 
 import java.util.*;
 
-import org.luwrain.core.*;
+import org.luwrain.core.NullCheck;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
-import org.luwrain.app.cpanel.sects.Tree;
 
-class SectionsTreeModel implements TreeArea.Model
+class SectionsTreeModel implements CachedTreeModelSource
 {
-    private Tree tree;
+    private HashMap<Element, TreeItem> treeItems;
 
-    SectionsTreeModel(Environment environment,
-		      Strings strings,
-			     Section[] extensionsSections)
+    SectionsTreeModel(HashMap<Element, TreeItem> treeItems)
     {
-	NullCheck.notNull(environment, "environment");
-	NullCheck.notNull(strings, "strings");
-	NullCheck.notNull(extensionsSections, "extensionsSections");
-	tree = new Tree(environment, strings, extensionsSections);
-	tree.init();
+	NullCheck.notNull(treeItems, "treeItems");
+	this.treeItems = treeItems;
     }
 
     @Override public Object getRoot()
     {
-	return tree.getRoot();
+	return findSect(StandardElements.ROOT);
     }
 
-    @Override public boolean isLeaf(Object node)
+    @Override public Object[] getChildObjs(Object obj)
     {
-	if (node == null || !(node instanceof Section))
-	    return true;
-	final Section sect = (Section)node;
-	final Section[] subsections = sect.getChildSections();
-	return subsections == null || subsections.length < 1;
+	NullCheck.notNull(obj, "obj");
+	final Element el = (Element)obj;
+	final TreeItem item = treeItems.get(el);
+	if (item == null || item.children.isEmpty())
+	    return new Section[0];
+	final LinkedList<Section> res = new LinkedList<Section>();
+	for(Element c: item.children)
+	{
+	    final Section sect = findSect(c);
+	    if (sect != null)
+		res.add(sect);
+	}
+	return res.toArray(new Section[res.size()]);
     }
 
-    @Override public void beginChildEnumeration(Object obj)
+    private Section findSect(Element el)
     {
-    }
-
-    @Override public int getChildCount(Object node)
-    {
-	if (node == null || !(node instanceof Section))
-	    return 0;
-	final Section sect = (Section)node;
-	final Section[] subsections = sect.getChildSections();
-	return subsections != null?subsections.length:0;
-    }
-
-    @Override public Object getChild(Object node, int index)
-    {
-	if (node == null || !(node instanceof Section))
-	    return 0;
-	final Section sect = (Section)node;
-	final Section[] subsections = sect.getChildSections();
-	if (subsections == null)
+	final TreeItem item = treeItems.get(el);
+	if (el == null)
 	    return null;
-	return index < subsections.length?subsections[index]:null;
-    }
-
-    @Override public void endChildEnumeration(Object obj)
-    {
-    }
-
-    void refresh()
-    {
-	tree.refresh();
+	if (item.sect != null)
+	    return item.sect;
+	if (item.factory == null)
+	    return null;
+	item.sect = item.factory.createSection(el);
+	return item.sect;
     }
 }

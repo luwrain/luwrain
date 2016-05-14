@@ -20,6 +20,18 @@ import org.luwrain.core.*;
 
 public class EmptySection implements Section
 {
+    private int desiredRoot;
+
+    public EmptySection()
+    {
+	desiredRoot = BasicSections.NONE;
+    }
+
+    public EmptySection(int desiredRoot)
+    {
+	this.desiredRoot = desiredRoot;
+    }
+
     @Override public int getDesiredRoot()
     {
 	return BasicSections.NONE;

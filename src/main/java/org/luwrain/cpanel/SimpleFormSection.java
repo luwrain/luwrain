@@ -67,8 +67,8 @@ private class Entry
 	Area(Environment environment , String name)
 	{
 	    super(new DefaultControlEnvironment(environment.getLuwrain()), name);
-	    this.environment = environment;
 	    NullCheck.notNull(environment, "environment");
+	    this.environment = environment;
 	}
 
 	@Override public boolean onKeyboardEvent(KeyboardEvent event)

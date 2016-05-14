@@ -30,7 +30,6 @@ public class TreeArea implements Area
     public interface Model
     {
 	Object getRoot();
-	boolean isLeaf(Object node);
 	void beginChildEnumeration(Object obj);
 	int getChildCount(Object parent);
 	Object getChild(Object parent, int index);
@@ -280,7 +279,7 @@ public class TreeArea implements Area
     {
 	if (node == null || node.obj == null)
 	    return;
-	if (node.leaf || model.isLeaf(node.obj))
+	if (node.leaf || isLeaf(node.obj))
 	{
 	    node.makeLeaf();
 	    return;
@@ -306,7 +305,7 @@ public class TreeArea implements Area
 		model.endChildEnumeration(node.obj);
 		return;
 	    }
-	    n.leaf = model.isLeaf(n.obj);
+	    n.leaf = isLeaf(n.obj);
 	    n.children = null;
 	    n.parent = node;
 	}
@@ -320,7 +319,7 @@ public class TreeArea implements Area
 	Node node = new Node();
 	node.obj = obj;
 	node.parent = parent;
-	node.leaf = model.isLeaf(obj);
+	node.leaf = isLeaf(obj);
 	if (fillChildren && !node.leaf)
 	fillChildrenForNonLeaf(node);
 	return node;
@@ -332,11 +331,11 @@ public class TreeArea implements Area
 	    return;
 	if (node.leaf)
 	{
-	    node.leaf = model.isLeaf(node.obj);
+	    node.leaf = isLeaf(node.obj);
 	    return;
 	}
 	//Was not a leaf;
-	if (model.isLeaf(node.obj))
+	if (isLeaf(node.obj))
 	{
 	    node.makeLeaf();
 	    return;
@@ -549,6 +548,15 @@ public class TreeArea implements Area
 	if (root == null)
 	    return null;
 	return generateVisibleItems(root, 0);
+    }
+
+    private boolean isLeaf(Object o)
+    {
+	NullCheck.notNull(o, "o");
+	model.beginChildEnumeration(o);
+	final boolean res = model.getChildCount(o) <= 0;
+	model.endChildEnumeration(o);
+	return res;
     }
 
     private String constructLineForSpeech(VisibleItem item, boolean briefIntroduction)

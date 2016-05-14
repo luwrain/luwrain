@@ -1,6 +1,5 @@
 
-
-package org.luwrain.app.cpanel.sects;
+package org.luwrain.settings;
 
 import java.io.*;
 import java.util.*;
@@ -9,7 +8,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SoundsList extends SimpleListSection
+class SoundsListSection extends SimpleListSection
 {
 static private class Item 
 {
@@ -46,7 +45,7 @@ static private class Item
 	}
     };
 
-    SoundsList()
+    SoundsListSection()
     {
 	super("Звуки событий", BasicSections.NONE, (luwrain, params)->{
 		params.clickHandler = new ClickHandler(luwrain);
@@ -82,9 +81,5 @@ static private class Item
 	items.add(new Item(scheme, "Время", scheme.getGeneralTime(""), null));
 	items.add(new Item(scheme, "Сигнал в терминале", scheme.getTermBell(""), null));
 	model.setItems(items.toArray(new Item[items.size()]));
-
-
-
-
     }
 }

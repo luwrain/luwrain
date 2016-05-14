@@ -1,20 +1,5 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
-
-package org.luwrain.app.cpanel.sects;
+package org.luwrain.settings;
 
 import java.util.*;
 import java.io.IOException;
@@ -24,7 +9,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SoundSchemes extends SimpleListSection
+class SoundSchemesSection extends SimpleListSection
 {
     static private final String SCHEMES_DIR = "sounds/schemes";
 
@@ -94,12 +79,12 @@ class SoundSchemes extends SimpleListSection
 	    luwrain.reloadComponent(Luwrain.ReloadComponents.ENVIRONMENT_SOUNDS);
 	    luwrain.message("Новые настройки сохранены", Luwrain.MESSAGE_OK);
 	    return true;
-
 	}
     };
+
     private final FixedListModel model = new FixedListModel();
 
-    SoundSchemes()
+    SoundSchemesSection()
     {
 	super("Схемы", BasicSections.NONE, (luwrain, params)->{
 		params.clickHandler = new ClickHandler(luwrain);

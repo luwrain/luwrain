@@ -28,10 +28,10 @@ public class ControlPanelApp implements Application, Actions
     static public final String STRINGS_NAME = "luwrain.control-panel";
 
     private Luwrain luwrain;
+    private final Base base = new Base();
     private Strings strings;
     private EnvironmentImpl environment;
     private Section[] extensionsSections;
-    private SectionsTreeModel sectionsModel;
     private TreeArea sectionsArea;
     private Section currentSection = null;
     private Area currentOptionsArea = null;
@@ -50,7 +50,7 @@ public class ControlPanelApp implements Application, Actions
 	strings = (Strings)o;
 	this.luwrain = luwrain;
 	environment = new EnvironmentImpl(luwrain, this);
-	sectionsModel = new SectionsTreeModel(environment, strings, extensionsSections);
+	//	sectionsModel = new SectionsTreeModel(environment, strings, extensionsSections);
 	createArea();
 	return true;
     }
@@ -77,7 +77,7 @@ public class ControlPanelApp implements Application, Actions
 
     @Override public void refreshSectionsTree()
     {
-	sectionsModel.refresh();
+	//	sectionsModel.refresh();
     sectionsArea.refresh();
     if (currentSection == null || currentOptionsArea == null)
     {
@@ -116,7 +116,7 @@ public class ControlPanelApp implements Application, Actions
 
 	final TreeArea.Params treeParams = new TreeArea.Params();
 	treeParams.environment = new DefaultControlEnvironment(luwrain);
-	treeParams.model = sectionsModel;
+	treeParams.model = base.getTreeModel();
 	treeParams.name = strings.sectionsAreaName();
 
 	sectionsArea = new TreeArea(treeParams){
