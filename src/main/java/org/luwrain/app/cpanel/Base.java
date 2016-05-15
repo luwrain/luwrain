@@ -6,24 +6,45 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
+import org.luwrain.settings.StandardFactory;
 
 class Base
 {
     private Luwrain luwrain;
     private Factory[] factories;
+    private final StandardFactory standardFactory = new StandardFactory();
     private HashMap<Element, TreeItem> treeItems = new HashMap<Element, TreeItem>();
+    private SectionsTreeModelSource treeModelSource;
+    private CachedTreeModel treeModel;
 
-    boolean init(Luwrain luwrain)
+    boolean init(Luwrain luwrain, Factory[] factories)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNullItems(factories, "factories");
 	this.luwrain = luwrain;
+	this.factories = factories;
+	treeModelSource = new SectionsTreeModelSource(treeItems);
+	treeModel = new CachedTreeModel(treeModelSource);
+	refreshTreeItems();
 	return true;
     }
 
     void refreshTreeItems()
     {
-
 	final HashMap<Element, TreeItem> newItems = new HashMap<Element, TreeItem>();
+	final TreeItem rootItem = new TreeItem(StandardElements.ROOT, standardFactory);
+	newItems.put(StandardElements.ROOT, rootItem);
+	rootItem.children.add(StandardElements.APPLICATIONS);
+	rootItem.children.add(StandardElements.KEYBOARD);
+	rootItem.children.add(StandardElements.SOUNDS);
+	rootItem.children.add(StandardElements.SPEECH);
+	rootItem.children.add(StandardElements.NETWORK);
+	rootItem.children.add(StandardElements.HARDWARE);
+	rootItem.children.add(StandardElements.UI);
+	rootItem.children.add(StandardElements.EXTENSIONS);
+	rootItem.children.add(StandardElements.WORKERS);
+	for(Element e: rootItem.children)
+	    newItems.put(e, new TreeItem(e, standardFactory));
 	for(Factory f: factories)
 	{
 	    final Element[] elements = f.getElements();
@@ -42,16 +63,15 @@ class Base
 		}
 		if (!newItems.containsKey(parent))
 		{
-		    final TreeItem item = new TreeItem(parent);
+		    final TreeItem item = new TreeItem(parent, f);
 		    item.children.add(e);
-		newItems.put(parent, item);
+		    newItems.put(parent, item);
 		} else
 		    newItems.get(parent).children.add(e);
 		if (!newItems.containsKey(e))
-		newItems.put(e, new TreeItem(e));
+		    newItems.put(e, new TreeItem(e, f));
 	    }
 	}
-
 	for(Map.Entry<Element, TreeItem> n: newItems.entrySet())
 	{
 	    final TreeItem item = treeItems.get(n.getKey());
@@ -59,10 +79,11 @@ class Base
 		n.getValue().sect = item.sect;
 	}
 	treeItems = newItems;
+	treeModelSource.setTreeItems(treeItems);
     }
 
     TreeArea.Model getTreeModel()
     {
-	return null;
+	return treeModel;
     }
 }

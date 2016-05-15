@@ -13,9 +13,11 @@ class TreeItem
     Section sect = null;
     final LinkedList<Element> children = new LinkedList<Element>();
 
-    TreeItem(Element el)
+    TreeItem(Element el, Factory factory)
     {
 	NullCheck.notNull(el, "el");
+	NullCheck.notNull(factory, "factory");
 	this.el = el;
+	this.factory = factory;
     }
 }

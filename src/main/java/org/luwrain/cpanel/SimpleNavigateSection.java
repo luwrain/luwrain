@@ -25,7 +25,7 @@ import org.luwrain.util.*;
 
 public class SimpleNavigateSection extends EmptySection
 {
-    static abstract public class Area extends NavigateArea
+    static abstract public class Area extends NavigateArea implements SectionArea
     {
 	protected Environment environment;
 	protected String name;
@@ -78,34 +78,31 @@ public interface Loader
 
 private Area area = null;
     private String name;
-    private int desiredRoot;
     private Loader loader;
 
-    public SimpleNavigateSection(String name, int desiredRoot, Loader loader)
+    public SimpleNavigateSection(String name, Loader loader)
     {
 	this.name = name;
-	this.desiredRoot = desiredRoot;
 	this.loader = loader;
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(loader, "loader");
 }
 
-    @Override public int getDesiredRoot()
+    @Override public SectionArea getSectionArea(Environment environment)
     {
-	return desiredRoot;
-    }
-
-    @Override public Area getSectionArea(Environment environment)
-    {
+	/*
 	if (area == null)
 	    refreshArea(environment);
+	*/
 	return area;
     }
 
+    /*
     @Override public void refreshArea(Environment environment)
     {
 	area = loader.createArea(environment);
     }
+    */
 
     @Override public String toString()
     {

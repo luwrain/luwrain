@@ -25,9 +25,4 @@ public class HotKeys extends EmptySection
     {
 	//	super(basicSections.KEYBOARD);
     }
-
-    @Override public Section[] getChildSections()
-    {
-	return new Section[0];
-    }
 }

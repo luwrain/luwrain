@@ -31,7 +31,7 @@ public interface Loader
     void setListParams(Luwrain luwrain, ListArea.Params params);
 }
 
-    static private class Area extends ListArea
+    static private class Area extends ListArea implements SectionArea
     {
 	private Environment environment;
 
@@ -70,16 +70,14 @@ public interface Loader
 
     }
 
-private Area area = null;
+    private Area area = null;
     private String name;
-    private int desiredRoot;
     private Loader loader;
     private final ListArea.Params params = new ListArea.Params();
 
-    public SimpleListSection(String name, int desiredRoot, Loader loader)
+    public SimpleListSection(String name, Loader loader)
     {
 	this.name = name;
-	this.desiredRoot = desiredRoot;
 	this.loader = loader;
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(params, "params");
@@ -87,24 +85,23 @@ private Area area = null;
     this.params.name = name;
 }
 
-    @Override public int getDesiredRoot()
+    @Override public SectionArea getSectionArea(Environment environment)
     {
-	return desiredRoot;
-    }
-
-    @Override public Area getSectionArea(Environment environment)
-    {
+	/*
 	if (area == null)
 	    refreshArea(environment);
+	*/
 	return area;
     }
 
+    /*
     @Override public void refreshArea(Environment environment)
     {
 	params.environment = new DefaultControlEnvironment(environment.getLuwrain());
 	loader.setListParams(environment.getLuwrain(), params);
 	    area = new Area(environment, params);
     }
+    */
 
     @Override public String toString()
     {

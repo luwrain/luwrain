@@ -11,7 +11,7 @@ class UiSection extends EmptySection
 {
     private UiArea area = null;
 
-    @Override public Area getSectionArea(Environment environment)
+    @Override public SectionArea getSectionArea(Environment environment)
     {
 	if (area == null)
 	    area = new UiArea(environment);

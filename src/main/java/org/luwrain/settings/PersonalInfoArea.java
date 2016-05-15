@@ -7,7 +7,7 @@ import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.util.*;
 
-class PersonalInfoArea extends FormArea
+class PersonalInfoArea extends FormArea implements SectionArea
 {
     private Environment environment;
     private final RegistryKeys registryKeys = new RegistryKeys();

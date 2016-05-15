@@ -60,7 +60,7 @@ private class Entry
     }
 }
 
-    static private class Area extends FormArea
+    static private class Area extends FormArea implements SectionArea
     {
 	private Environment environment;
 
@@ -113,13 +113,11 @@ private class Entry
 
 private Area area = null;
     private String name;
-    private int desiredRoot;
     private final Vector<Entry> entries = new Vector<Entry>();
 
-    public SimpleFormSection(String name, int desiredRoot)
+    public SimpleFormSection(String name)
     {
 	this.name = name;
-	this.desiredRoot = desiredRoot;
 	NullCheck.notNull(name, "name");
     }
 
@@ -131,12 +129,7 @@ private Area area = null;
 	entries.add(new Entry("entry" + entries.size(), title, defStrValue, strValueSaver));
     }
 
-    @Override public int getDesiredRoot()
-    {
-	return desiredRoot;
-    }
-
-    @Override public Area getSectionArea(Environment environment)
+    @Override public SectionArea getSectionArea(Environment environment)
     {
 	if (area == null)
 	    area = createArea(environment);

@@ -47,7 +47,7 @@ static private class Item
 
     SoundsListSection()
     {
-	super("Звуки событий", BasicSections.NONE, (luwrain, params)->{
+	super("Звуки событий", (luwrain, params)->{
 		params.clickHandler = new ClickHandler(luwrain);
 		params.model = new FixedListModel();
 		params.appearance = new DefaultListItemAppearance(params.environment);

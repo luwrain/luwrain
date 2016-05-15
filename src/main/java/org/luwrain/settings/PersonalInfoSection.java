@@ -11,7 +11,7 @@ class PersonalInfoSection extends EmptySection
 {
     private PersonalInfoArea area = null;
 
-    @Override public Area getSectionArea(Environment environment)
+    @Override public SectionArea getSectionArea(Environment environment)
     {
 	if (area == null)
 	    area = new PersonalInfoArea(environment);

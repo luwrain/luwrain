@@ -34,7 +34,7 @@ public class ControlPanelApp implements Application, Actions
     private Section[] extensionsSections;
     private TreeArea sectionsArea;
     private Section currentSection = null;
-    private Area currentOptionsArea = null;
+    private SectionArea currentOptionsArea = null;
 
     public ControlPanelApp(Section[] extensionsSections)
     {
@@ -49,22 +49,17 @@ public class ControlPanelApp implements Application, Actions
 	    return false;
 	strings = (Strings)o;
 	this.luwrain = luwrain;
+	if (!base.init(luwrain, new Factory[0]))
+	    return false;
 	environment = new EnvironmentImpl(luwrain, this);
-	//	sectionsModel = new SectionsTreeModel(environment, strings, extensionsSections);
 	createArea();
 	return true;
-    }
-
-    @Override public String getAppName()
-    {
-	return strings.appName();
     }
 
     @Override public void openSection(Section sect)
     {
 	NullCheck.notNull(sect, "sect");
-	sect.refreshArea(environment);
-	final Area area = sect.getSectionArea(environment);
+	final SectionArea area = sect.getSectionArea(environment);
 	if (area == null)
 	    return;
 	if (!mayCloseCurrentSection())
@@ -157,11 +152,11 @@ public class ControlPanelApp implements Application, Actions
 		    if (selected == null || !(selected instanceof Section))
 			return new Action[0];
 		    final Section sect = (Section)selected;
-		    final int flags = sect.getSectionFlags();
+		    final Set<Section.Flags> flags = sect.getSectionFlags();
 		    final LinkedList<Action> res = new LinkedList<Action>();
-		    if ((flags & Section.FLAG_HAS_INSERT) > 0)
+		    if (flags.contains(Section.Flags.HAS_INSERT))
 			res.add(new Action("insert", "Добавить"));
-		    if ((flags & Section.FLAG_HAS_DELETE) > 0)
+		    if (flags.contains(Section.Flags.HAS_DELETE))
 		    res.add(new Action("delete", "Удалить"));
 		    return res.toArray(new Action[res.size()]);
 		}
@@ -198,6 +193,11 @@ public class ControlPanelApp implements Application, Actions
 	if (currentSection == null)
 	    return true;
 	return currentSection.canCloseSection(environment);
+    }
+
+    @Override public String getAppName()
+    {
+	return strings.appName();
     }
 
     @Override public void closeApp()

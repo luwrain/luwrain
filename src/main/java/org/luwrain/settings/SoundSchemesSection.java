@@ -86,7 +86,7 @@ class SoundSchemesSection extends SimpleListSection
 
     SoundSchemesSection()
     {
-	super("Схемы", BasicSections.NONE, (luwrain, params)->{
+	super("Схемы", (luwrain, params)->{
 		params.clickHandler = new ClickHandler(luwrain);
 		params.model = new FixedListModel();
 		params.appearance = new DefaultListItemAppearance(params.environment);

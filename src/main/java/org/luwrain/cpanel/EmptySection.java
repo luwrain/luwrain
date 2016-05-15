@@ -16,33 +16,18 @@
 
 package org.luwrain.cpanel;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 
 public class EmptySection implements Section
 {
-    private int desiredRoot;
-
-    public EmptySection()
+    @Override public SectionArea getSectionArea(Environment environment)
     {
-	desiredRoot = BasicSections.NONE;
+	return null;
     }
 
-    public EmptySection(int desiredRoot)
-    {
-	this.desiredRoot = desiredRoot;
-    }
-
-    @Override public int getDesiredRoot()
-    {
-	return BasicSections.NONE;
-    }
-
-    @Override public Section[] getChildSections()
-    {
-	return new Section[0];
-    }
-
-    @Override public Area getSectionArea(Environment environment)
+    @Override public Element getElement()
     {
 	return null;
     }
@@ -67,21 +52,13 @@ public class EmptySection implements Section
 	return true;
     }
 
-    @Override public void refreshArea(Environment environment)
-    {
-    }
-
-    @Override public void refreshChildSubsections()
-    {
-    }
-
     @Override public boolean equals(Object obj)
     {
 	return this == obj;
     }
 
-    @Override public int getSectionFlags()
+    @Override public Set<Flags> getSectionFlags()
     {
-	return 0;
+	return EnumSet.noneOf(Flags.class);
     }
 }

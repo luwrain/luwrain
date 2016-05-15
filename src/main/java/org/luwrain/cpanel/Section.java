@@ -16,25 +16,21 @@
 
 package org.luwrain.cpanel;
 
+import java.util.*;
 import org.luwrain.core.*;
 
 public interface Section
 {
-    static public final int FLAG_HAS_INSERT = 1;
-    static public final int FLAG_HAS_DELETE = 2;
+    public enum Flags {
+	HAS_INSERT,
+	HAS_DELETE,
+    };
 
-    int getDesiredRoot();
-    Section[] getChildSections();
-    Area getSectionArea(Environment environment);
-    //Must issue all necessary error message;
+    SectionArea getSectionArea(Environment environment);
+    Element getElement();
     boolean canCloseSection(Environment environment);
     boolean onTreeInsert(Environment environment);
     boolean onTreeDelete(Environment environment);
     boolean isSectionEnabled();
-
-    //After this method call getSectionArea() may return another area, between calls it is undesirable
-    //Usually it is called before opening
-    void refreshArea(Environment environment);
-    void refreshChildSubsections();
-    int getSectionFlags();
+    Set<Flags> getSectionFlags();
 }

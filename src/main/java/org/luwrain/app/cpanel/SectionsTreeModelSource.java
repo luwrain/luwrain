@@ -22,11 +22,17 @@ import org.luwrain.core.NullCheck;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SectionsTreeModel implements CachedTreeModelSource
+class SectionsTreeModelSource implements CachedTreeModelSource
 {
     private HashMap<Element, TreeItem> treeItems;
 
-    SectionsTreeModel(HashMap<Element, TreeItem> treeItems)
+    SectionsTreeModelSource(HashMap<Element, TreeItem> treeItems)
+    {
+	NullCheck.notNull(treeItems, "treeItems");
+	this.treeItems = treeItems;
+    }
+
+void     setTreeItems(HashMap<Element, TreeItem> treeItems)
     {
 	NullCheck.notNull(treeItems, "treeItems");
 	this.treeItems = treeItems;
@@ -40,7 +46,7 @@ class SectionsTreeModel implements CachedTreeModelSource
     @Override public Object[] getChildObjs(Object obj)
     {
 	NullCheck.notNull(obj, "obj");
-	final Element el = (Element)obj;
+	final Element el = ((Section)obj).getElement();
 	final TreeItem item = treeItems.get(el);
 	if (item == null || item.children.isEmpty())
 	    return new Section[0];
