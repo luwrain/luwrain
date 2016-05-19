@@ -99,7 +99,7 @@ public class Manager
 	    loadedExt.shortcuts = getShortcuts(ext, iface);
 	    loadedExt.sharedObjects = getSharedObjects(ext, iface);
 	    loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
-	    loadedExt.controlPanelSections = getControlPanelSections(ext, iface);
+	    loadedExt.controlPanelFactories = getControlPanelFactories(ext, iface);
 	    res.add(loadedExt);
 	}
 	extensions = res.toArray(new LoadedExtension[res.size()]);
@@ -183,17 +183,17 @@ public class Manager
 	}
     }
 
-    private org.luwrain.cpanel.Section[] getControlPanelSections(Extension ext, Luwrain luwrain)
+    private org.luwrain.cpanel.Factory[] getControlPanelFactories(Extension ext, Luwrain luwrain)
     {
 	try {
-	    final org.luwrain.cpanel.Section[] res = ext.getControlPanelSections(luwrain);
-	    return res != null?res:new org.luwrain.cpanel.Section[0];
+	    final org.luwrain.cpanel.Factory[] res = ext.getControlPanelFactories(luwrain);
+	    return res != null?res:new org.luwrain.cpanel.Factory[0];
 	}
 	catch (Exception ee)
 	{
-	    Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of control panel sections:" + ee.getMessage());
+	    Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of control panel factories:" + ee.getMessage());
 	    ee.printStackTrace();
-	    return new org.luwrain.cpanel.Section[0];
+	    return new org.luwrain.cpanel.Factory[0];
 	}
     }
 

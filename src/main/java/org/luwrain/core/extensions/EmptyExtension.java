@@ -49,9 +49,9 @@ public class EmptyExtension implements Extension
     {
     }
 
-    @Override public org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain)
+    @Override public org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain)
     {
-	return new org.luwrain.cpanel.Section[0];
+	return new org.luwrain.cpanel.Factory[0];
     } 
 
     @Override public UniRefProc[] getUniRefProcs(Luwrain luwrain)

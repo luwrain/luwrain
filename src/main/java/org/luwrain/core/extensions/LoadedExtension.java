@@ -27,5 +27,5 @@ public class LoadedExtension
     public SharedObject[] sharedObjects;
     public UniRefProc[] uniRefProcs;
     public Worker[] workers;
-    public org.luwrain.cpanel.Section[] controlPanelSections;
+    public org.luwrain.cpanel.Factory[] controlPanelFactories;
 }

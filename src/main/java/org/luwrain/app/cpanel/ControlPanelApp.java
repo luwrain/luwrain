@@ -23,23 +23,23 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-public class ControlPanelApp implements Application, Actions
+public class ControlPanelApp implements Application, MonoApp, Actions
 {
-    static public final String STRINGS_NAME = "luwrain.control-panel";
+    static private final String STRINGS_NAME = "luwrain.control-panel";
 
     private Luwrain luwrain;
     private final Base base = new Base();
     private Strings strings;
     private EnvironmentImpl environment;
-    private Section[] extensionsSections;
-    private TreeArea sectionsArea;
+    private Factory[] factories;
     private Section currentSection = null;
+    private TreeArea sectionsArea;
     private SectionArea currentOptionsArea = null;
 
-    public ControlPanelApp(Section[] extensionsSections)
+    public ControlPanelApp(Factory[] factories)
     {
-	this.extensionsSections = extensionsSections;
-	NullCheck.notNull(extensionsSections, "extensionsSections"); 
+	NullCheck.notNullItems(factories, "factories");
+	this.factories = factories;
     }
 
     @Override public boolean onLaunch(Luwrain luwrain)
@@ -56,18 +56,22 @@ public class ControlPanelApp implements Application, Actions
 	return true;
     }
 
-    @Override public void openSection(Section sect)
+    @Override public boolean openSection(Object obj)
     {
-	NullCheck.notNull(sect, "sect");
+	NullCheck.notNull(obj, "obj");
+	if (!(obj instanceof Section))
+	    return false;
+	final Section sect = (Section)obj;
 	final SectionArea area = sect.getSectionArea(environment);
 	if (area == null)
-	    return;
+	    return false;
 	if (!mayCloseCurrentSection())
-	    return;
+	    return true;
 	currentSection = sect;
 	currentOptionsArea = area;
 	luwrain.onNewAreaLayout();
 	gotoOptions();
+	return true;
     }
 
     @Override public void refreshSectionsTree()
@@ -113,6 +117,7 @@ public class ControlPanelApp implements Application, Actions
 	treeParams.environment = new DefaultControlEnvironment(luwrain);
 	treeParams.model = base.getTreeModel();
 	treeParams.name = strings.sectionsAreaName();
+	treeParams.clickHandler = (area, obj)->actions.openSection(obj);
 
 	sectionsArea = new TreeArea(treeParams){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -160,11 +165,6 @@ public class ControlPanelApp implements Application, Actions
 		    res.add(new Action("delete", "Удалить"));
 		    return res.toArray(new Action[res.size()]);
 		}
-		@Override public void onClick(Object obj)
-		{
-		    if (obj != null && (obj instanceof Section ))
-			actions.openSection((Section)obj);
-		}
 	    };
     }
 
@@ -198,6 +198,12 @@ public class ControlPanelApp implements Application, Actions
     @Override public String getAppName()
     {
 	return strings.appName();
+    }
+
+    @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
+    {
+	NullCheck.notNull(app, "app");
+	return MonoApp.Result.BRING_FOREGROUND;
     }
 
     @Override public void closeApp()

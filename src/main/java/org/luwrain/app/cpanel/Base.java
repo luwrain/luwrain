@@ -32,19 +32,21 @@ class Base
     void refreshTreeItems()
     {
 	final HashMap<Element, TreeItem> newItems = new HashMap<Element, TreeItem>();
-	final TreeItem rootItem = new TreeItem(StandardElements.ROOT, standardFactory);
-	newItems.put(StandardElements.ROOT, rootItem);
-	rootItem.children.add(StandardElements.APPLICATIONS);
-	rootItem.children.add(StandardElements.KEYBOARD);
-	rootItem.children.add(StandardElements.SOUNDS);
-	rootItem.children.add(StandardElements.SPEECH);
-	rootItem.children.add(StandardElements.NETWORK);
-	rootItem.children.add(StandardElements.HARDWARE);
-	rootItem.children.add(StandardElements.UI);
-	rootItem.children.add(StandardElements.EXTENSIONS);
-	rootItem.children.add(StandardElements.WORKERS);
-	for(Element e: rootItem.children)
-	    newItems.put(e, new TreeItem(e, standardFactory));
+	for(Element e: standardFactory.getElements())
+	{
+	    if (!newItems.containsKey(e))
+		newItems.put(e, new TreeItem(e, standardFactory));
+	    final Element parent = e.getParentElement();
+	    if (parent == null)
+		continue;
+	    if (!newItems.containsKey(parent))
+	    {
+		final TreeItem item = new TreeItem(parent, standardFactory);
+		item.children.add(e);
+		newItems.put(parent, item);
+	    } else
+		newItems.get(parent).children.add(e);
+	}
 	for(Factory f: factories)
 	{
 	    final Element[] elements = f.getElements();

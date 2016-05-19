@@ -20,7 +20,7 @@ import org.luwrain.cpanel.Section;
 
 interface Actions
 {
-    void openSection(Section section);
+    boolean openSection(Object obj);
     boolean onSectionsInsert();
     boolean onSectionsDelete();
     void closeApp();

@@ -25,38 +25,39 @@ import org.luwrain.util.*;
 
 public class SimpleFormSection extends EmptySection
 {
-public interface StringValueSaver
-{
-    void saveStringValue(String name, String value);
-}
+private enum Type { STR, INT, BOOL, STATIC }
 
-private enum Type
-    {
-STRING
-    }
+public interface StringLoader { String loadString(String name); }
+public interface StringSaver { void saveString(String name, String value); }
 
-private class Entry 
+public interface integerLoader { int loadInteger(String name); }
+public interface IntegerSaver { void saveInteger(String name, int value); }
+
+public interface booleanLoader { boolean loadBoolean(String name); }
+public interface BooleanSaver { void saveBoolean(String name, boolean value); }
+
+static private class Entry 
 {
     Type type;
     String name;
     String title;
 
     //For strings
-    String defStrValue = "";
-    StringValueSaver strValueSaver = null;
+    StringLoader strLoader = null;
+    StringSaver strSaver = null;
 
     Entry(String name, String title,
-	  String defValue, StringValueSaver strValueSaver)
+	  StringLoader strLoader, StringSaver strSaver)
     {
-	this.type = Type.STRING;
-	this.name = name;
-	this.title = title;
-	this.defStrValue = defValue;
-	this.strValueSaver = strValueSaver;
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(title, "title");
-	NullCheck.notNull(defStrValue, "defStrValue");
-	NullCheck.notNull(strValueSaver, "strValueSaver");
+	NullCheck.notNull(strLoader, "strLoader");
+	NullCheck.notNull(strSaver, "strSaver");
+	this.type = Type.STR;
+	this.name = name;
+	this.title = title;
+	this.strLoader = strLoader;
+	this.strSaver = strSaver;
     }
 }
 
@@ -112,21 +113,32 @@ private class Entry
     }
 
 private Area area = null;
+    private Element element;
     private String name;
     private final Vector<Entry> entries = new Vector<Entry>();
 
-    public SimpleFormSection(String name)
+    public SimpleFormSection(Element element, String name)
     {
-	this.name = name;
+	NullCheck.notNull(element, "element");
 	NullCheck.notNull(name, "name");
+	this.element = element;
+	this.name = name;
     }
 
-    public void addString(String title, String defStrValue, StringValueSaver strValueSaver)
+    public String addString(String title, 
+StringLoader strLoader, StringSaver strSaver)
     {
 	NullCheck.notNull(title, "title");
-	NullCheck.notNull(defStrValue, "defStrValue");
-	NullCheck.notNull(strValueSaver, "strValueSaver");
-	entries.add(new Entry("entry" + entries.size(), title, defStrValue, strValueSaver));
+	NullCheck.notNull(strLoader, "strLoader");
+	NullCheck.notNull(strSaver, "strSaver");
+	final String newName = "entry" + entries.size();
+	entries.add(new Entry(newName, title, strLoader, strSaver));
+	return newName;
+    }
+
+    @Override public Element getElement()
+    {
+	return element;
     }
 
     @Override public SectionArea getSectionArea(Environment environment)
@@ -162,8 +174,8 @@ for(Entry e: entries)
 {
     switch(e.type)
     {
-    case STRING:
-res.addEdit(e.name, e.title, e.defStrValue, null, true);
+    case STR:
+	res.addEdit(e.name, e.title, e.strLoader.loadString(e.name), null, true);
     }
 }
 return res;

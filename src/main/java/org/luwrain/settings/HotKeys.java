@@ -16,13 +16,80 @@
 
 package org.luwrain.settings;
 
-import org.luwrain.core.*;
-import org.luwrain.cpanel.*;
+import java.util.*;
 
-public class HotKeys extends EmptySection
+import org.luwrain.core.*;
+import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
+import org.luwrain.cpanel.*;
+import org.luwrain.util.RegistryPath;
+
+class HotKeys extends ListArea implements SectionArea
 {
-    public HotKeys()
+    private static class Item implements Comparable
     {
-	//	super(basicSections.KEYBOARD);
+	KeyboardEvent event;
+	Settings.HotKey settings;
+	String command;
+
+	Item(Settings.HotKey settings, String command)
+	{
+	    NullCheck.notNull(settings, "settings");
+	    NullCheck.notNull(command, "command");
+	    this.settings = settings;
+	    this.event = new KeyboardEvent(KeyboardEvent.Special.ENTER);
+	    this.command = command;
+	}
+
+	@Override public String toString()
+	{
+	    return command;
+	}
+
+	@Override public int compareTo(Object o)
+	{
+	    if (o == null || !(o instanceof Item))
+		return 0;
+	    return command.compareTo(((Item)o).command);
+	}
+    }
+
+    public HotKeys(ListArea.Params params)
+    {
+	super(params);
+	setClickHandler((area, index, obj)->editItem(obj));
+    }
+
+    private boolean editItem(Object obj)
+    {
+	return false;
+    }
+
+    static private Item[] loadItems(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	final org.luwrain.core.RegistryKeys registryKeys = new org.luwrain.core.RegistryKeys();
+	final LinkedList<Item> res = new LinkedList<Item>();
+	for(String d: registry.getDirectories(registryKeys.globalKeys()))
+	{
+	    if (d.trim().isEmpty())
+		continue;
+	    final String path = RegistryPath.join(registryKeys.globalKeys(), d);
+	    res.add(new Item(Settings.createHotKey(registry, path), d));
+	}
+final Item[] toSort = res.toArray(new Item[res.size()]);
+Arrays.sort(toSort);
+return toSort;
+    }
+
+    static HotKeys create(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final ListArea.Params params = new ListArea.Params();
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.appearance = new DefaultListItemAppearance(params.environment);
+	params.name = "Общие горячие клавиши";
+	params.model = new FixedListModel(loadItems(luwrain.getRegistry()));
+	return new HotKeys(params);
     }
 }

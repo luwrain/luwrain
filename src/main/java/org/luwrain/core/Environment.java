@@ -927,15 +927,16 @@ class Environment extends EnvironmentAreas
 	return os.getHardware();
     }
 
-    org.luwrain.cpanel.Section[] getControlPanelSections()
+    org.luwrain.cpanel.Factory[] getControlPanelFactories()
     {
-	final LinkedList<org.luwrain.cpanel.Section> res = new LinkedList<org.luwrain.cpanel.Section>();
+	final LinkedList<org.luwrain.cpanel.Factory> res = new LinkedList<org.luwrain.cpanel.Factory>();
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
-	    if (e.controlPanelSections != null)
-		for(org.luwrain.cpanel.Section s: e.controlPanelSections)
-		    res.add(s);
-	return res.toArray(new org.luwrain.cpanel.Section[res.size()]);
+	    if (e.controlPanelFactories != null)
+		for(org.luwrain.cpanel.Factory f: e.controlPanelFactories)
+		    if (f != null)
+			res.add(f);
+	return res.toArray(new org.luwrain.cpanel.Factory[res.size()]);
     }
 
     org.luwrain.browser.Browser createBrowserIface(Luwrain instance)

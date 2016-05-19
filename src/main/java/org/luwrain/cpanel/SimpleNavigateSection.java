@@ -33,10 +33,10 @@ public class SimpleNavigateSection extends EmptySection
 	protected Area(Environment environment , String name)
 	{
 	    super(new DefaultControlEnvironment(environment.getLuwrain()));
-	    this.environment = environment;
-	    this.name = name;
 	    NullCheck.notNull(environment, "environment");
 	    NullCheck.notNull(name, "name");
+	    this.environment = environment;
+	    this.name = name;
 	}
 
 	@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -76,16 +76,16 @@ public interface Loader
     org.luwrain.cpanel.SimpleNavigateSection.Area createArea(Environment environment);
 }
 
-private Area area = null;
-    private String name;
-    private Loader loader;
+protected Area area = null;
+    protected String name;
+    protected Loader loader;
 
     public SimpleNavigateSection(String name, Loader loader)
     {
-	this.name = name;
-	this.loader = loader;
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(loader, "loader");
+	this.name = name;
+	this.loader = loader;
 }
 
     @Override public SectionArea getSectionArea(Environment environment)

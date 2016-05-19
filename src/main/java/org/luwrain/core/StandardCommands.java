@@ -313,7 +313,7 @@ class StandardCommands
 }
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(e.getControlPanelSections());
+		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(e.getControlPanelFactories());
 		    e.launchApp(app);
 		}
 	    });
