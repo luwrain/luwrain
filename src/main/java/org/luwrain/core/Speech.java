@@ -242,4 +242,15 @@ channels.add(c);
 	    return null;
 	return res[0];
     }
+
+    Channel[] getAllChannels()
+    {
+	return channels.toArray(new Channel[channels.size()]);
+    }
+
+    boolean isDefaultChannel(Channel channel)
+    {
+	NullCheck.notNull(channel, "channel");
+	return channel == defaultChannel;
+    }
 }

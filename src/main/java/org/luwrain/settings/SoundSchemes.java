@@ -9,7 +9,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SoundSchemesSection extends SimpleListSection
+class SoundSchemes extends ListArea implements SectionArea
 {
     static private final String SCHEMES_DIR = "sounds/schemes";
 
@@ -84,18 +84,14 @@ class SoundSchemesSection extends SimpleListSection
 
     private final FixedListModel model = new FixedListModel();
 
-    SoundSchemesSection()
+    SoundSchemes(ListArea.Params params)
     {
-	super("Схемы", (luwrain, params)->{
-		params.clickHandler = new ClickHandler(luwrain);
-		params.model = new FixedListModel();
-		params.appearance = new DefaultListItemAppearance(params.environment);
-		fillModel(luwrain, (FixedListModel)params.model);
-	    });
+	super(params);
     }
 
-    static private void fillModel(Luwrain luwrain, FixedListModel model)
+    static private Item[] loadItems(Luwrain luwrain)
     {
+	NullCheck.notNull(luwrain, "luwrain");
 	final LinkedList<Item> items = new LinkedList<Item>();
 	final LinkedList<Path> dirs = new LinkedList<Path>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(luwrain.launchContext().dataDirAsPath().resolve(SCHEMES_DIR))) {
@@ -105,8 +101,8 @@ class SoundSchemesSection extends SimpleListSection
 	    } 
 	catch (IOException e) 
 	{
-	    e.printStackTrace();
-	    return;
+	    luwrain.crash(e);
+	    return new Item[0];
 	}
 	for(Path p: dirs)
 	{
@@ -125,6 +121,17 @@ class SoundSchemesSection extends SimpleListSection
 	    if (title != null && !title.trim().isEmpty())
 		items.add(new Item(p, title));
 	} //for(dirs)
-	model.setItems(items.toArray(new Item[items.size()]));
+return items.toArray(new Item[items.size()]);
+    }
+
+    static SoundSchemes create(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final ListArea.Params params = new ListArea.Params();
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.appearance = new DefaultListItemAppearance(params.environment);
+	params.name = "Звуковые схемы";
+	params.model = new FixedListModel(loadItems(luwrain));
+	return new SoundSchemes(params);
     }
 }

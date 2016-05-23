@@ -1,22 +1,28 @@
 
 
-package org.luwrain.app.cpanel.sects;
+package org.luwrain.settings;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SpeechParamsArea extends org.luwrain.cpanel.SimpleNavigateSection.Area
+class SpeechParams extends NavigateArea implements SectionArea
 {
     static private final int STEP = 5;
 
     private Luwrain luwrain;
+    private String name;
 
-    SpeechParamsArea(Environment environment, String name)
+    SpeechParams(Luwrain luwrain,
+		 ControlEnvironment env, String name)
     {
-	super(environment, name);
-	this.luwrain = environment.getLuwrain();
+	super(env);
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(env, "env");
+	NullCheck.notNull(name, "name");
+	this.luwrain = luwrain;
+	this.name = name;
     }
 
     @Override public String getLine(int index)
@@ -39,13 +45,17 @@ class SpeechParamsArea extends org.luwrain.cpanel.SimpleNavigateSection.Area
 	return 4;
     }
 
+    @Override public String getAreaName()
+    {
+	return name;
+    }
+
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!event.isSpecial() && !event.isModified())
 	    switch(event.getChar())
 	{
-
 	case '+':
 	case '=':
 	    switch(getHotPointY())
@@ -75,5 +85,11 @@ class SpeechParamsArea extends org.luwrain.cpanel.SimpleNavigateSection.Area
 	    break;
 	}
 	return super.onKeyboardEvent(event);
+    }
+
+    static SpeechParams create(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	return new SpeechParams(luwrain, new DefaultControlEnvironment(luwrain), "Параметры речи");
     }
 }

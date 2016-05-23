@@ -9,12 +9,15 @@ public class StandardFactory implements Factory
     static private final String ELEMENT_PREFIX = "org.luwrain.settings.StandardFactory:";
 
     static private final Element hotKeys = new SimpleElement(StandardElements.KEYBOARD, ELEMENT_PREFIX + "HotKeys");
+    static private final Element fileTypes = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "FileTypes");
     static private final Element mainMenu = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "MainMenu");
     static private final Element sysInfo = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "SysInfo");
+    static private final Element speechParams = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechParams");
     static private final Element speechChannels = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechChannels");
     static private final Element speechCurrent = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechCurrent");
 
-
+    static private final Element soundsList = new SimpleElement(StandardElements.SOUNDS, ELEMENT_PREFIX + "SoundsList");
+    static private final Element soundSchemes = new SimpleElement(StandardElements.SOUNDS, ELEMENT_PREFIX + "SoundSchemes");
 
     @Override public Element[] getElements()
     {
@@ -22,20 +25,23 @@ public class StandardFactory implements Factory
 	    StandardElements.ROOT,
 	    StandardElements.APPLICATIONS,
 	    StandardElements.UI,
+	    fileTypes,
+	    StandardElements.NETWORK,
+	    StandardElements.KEYBOARD,
+	    StandardElements.SOUNDS,
 	    StandardElements.SPEECH,
 	    StandardElements.BRAILLE,
-	    StandardElements.SOUNDS,
-	    StandardElements.KEYBOARD,
-	    StandardElements.NETWORK,
 	    sysInfo,
 	    StandardElements.HARDWARE,
 	    StandardElements.EXTENSIONS,
 	    StandardElements.WORKERS,
-
 	    hotKeys,
 	    mainMenu,
-	    speechChannels,
+	    speechParams,
 	    speechCurrent,
+	    speechChannels,
+	    soundSchemes,
+	    soundsList,
 	};
     }
 
@@ -70,18 +76,23 @@ public class StandardFactory implements Factory
 	//Other sections
 	if (el.equals(hotKeys))
 	    return new SimpleSection(hotKeys, "Общие горячие клавиши", (env)->HotKeys.create(env.getLuwrain()));
+	if (el.equals(fileTypes))
+	    return new SimpleSection(fileTypes, "Типы файлов", (env)->FileTypes.create(env.getLuwrain()));
 	if (el.equals(mainMenu))
 	    return new SimpleSection(mainMenu, "Главное меню");
 	if (el.equals(sysInfo))
-	    return new SimpleSection(sysInfo, "Информация о системе");
+	    return new SimpleSection(sysInfo, "Информация о системе", (env)->SysInfo.create(env.getLuwrain()));
+
+	if (el.equals(speechParams))
+	    return new SimpleSection(speechParams, "Основные параметры", (env)->SpeechParams.create(env.getLuwrain()));
 	if (el.equals(speechCurrent))
-	    return new SimpleSection(speechCurrent, "Текущие речевые настройки");
+	    return new SimpleSection(speechCurrent, "Загруженные каналы", (env)->SpeechCurrent.create(env.getLuwrain()));
 	if (el.equals(speechChannels))
-	    return new SimpleSection(speechChannels, "Речевые каналы");
-
-
-
-
+	    return new SimpleSection(speechChannels, "Настройка каналов");
+	if (el.equals(soundsList))
+	    return new SimpleSection(soundsList, "Звуки системных событий", (env)->SoundsList.create(env.getLuwrain()));
+	if (el.equals(soundSchemes))
+	    return new SimpleSection(soundSchemes, "Звуковые схемы", (env)->SoundSchemes.create(env.getLuwrain()));
 	return null;
     }
 }

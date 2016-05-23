@@ -513,4 +513,58 @@ public final class Luwrain implements EventConsumer
 	}
 	return b.toString();
     }
+
+    public String getProperty(String propName)
+    {
+	NullCheck.notNull(propName, "propName");
+	if (propName.startsWith("luwrain.speech.channel."))
+	{
+	    final String arg = propName.substring("luwrain.speech.channel.".length());
+	    final String[] args = arg.split("\\.", -1);
+	    if (args.length != 2 || 
+		args[0].isEmpty() || args[1].isEmpty())
+		return "";
+	    int n = 0;
+	    try {
+		n = Integer.parseInt(args[0]);
+	    }
+	    catch(NumberFormatException e)
+	    {
+		return "";
+	    }
+	    final Channel[] channels = environment.getSpeech().getAllChannels();
+	    if (n >= channels.length)
+		return "";
+	    final Channel channel = channels[n];
+	    switch(args[1])
+	    {
+	    case "name":
+		return channel.getChannelName();
+	    case "class":
+		return channel.getClass().getName();
+	    case "default":
+		return environment.getSpeech().isDefaultChannel(channel)?"1":"0";
+	    case "cansynthtospeakers":
+		return channel.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_SPEAKERS)?"1":"0";
+	    case "cansynthtostream":
+		return channel.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_STREAM)?"1":"0";
+	    case "cannotifywhenfinished":
+		return channel.getFeatures().contains(Channel.Features.CAN_NOTIFY_WHEN_FINISHED)?"1":"0";
+	    default:
+		return "";
+	    }
+	}
+	switch(propName)
+	{
+	case "luwrain.version":
+	    return "0.5.2 (nightly)";
+	default:
+	    if (propName.startsWith("luwrain.os.") || propName.startsWith("luwrain.hardware."))
+	    {
+		final String res = environment.os().getProperty(propName);
+		return res != null?res:"";
+	    }
+	    return "";
+	}
+    }
 }

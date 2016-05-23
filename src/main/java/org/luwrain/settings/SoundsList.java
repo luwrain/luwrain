@@ -8,7 +8,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SoundsListSection extends SimpleListSection
+class SoundsList extends ListArea implements SectionArea
 {
 static private class Item 
 {
@@ -45,19 +45,14 @@ static private class Item
 	}
     };
 
-    SoundsListSection()
+    SoundsList(ListArea.Params params)
     {
-	super("Звуки событий", (luwrain, params)->{
-		params.clickHandler = new ClickHandler(luwrain);
-		params.model = new FixedListModel();
-		params.appearance = new DefaultListItemAppearance(params.environment);
-		fillModel(luwrain, (FixedListModel)params.model);
-	    });
-}
+	super(params);
+    }
 
-    static private void fillModel(Luwrain luwrain, FixedListModel model)
+    static private Item[] loadItems(Registry registry)
     {
-	final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(luwrain.getRegistry());
+	final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(registry);
 	final LinkedList<Item> items = new LinkedList<Item>();
 		items.add(new Item(scheme, "Событие не обработано", scheme.getEventNotProcessed(""), null));
 	items.add(new Item(scheme, "Общая ошибка", scheme.getGeneralError(""), null));
@@ -80,6 +75,17 @@ static private class Item
 	items.add(new Item(scheme, "Новая папка в обзоре файлов", scheme.getCommanderNewLocation(""), null));
 	items.add(new Item(scheme, "Время", scheme.getGeneralTime(""), null));
 	items.add(new Item(scheme, "Сигнал в терминале", scheme.getTermBell(""), null));
-	model.setItems(items.toArray(new Item[items.size()]));
+	return items.toArray(new Item[items.size()]);
+    }
+
+    static SoundsList create(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final ListArea.Params params = new ListArea.Params();
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.appearance = new DefaultListItemAppearance(params.environment);
+	params.name = "Звуки системных событий";
+	params.model = new FixedListModel(loadItems(luwrain.getRegistry()));
+	return new SoundsList(params);
     }
 }
