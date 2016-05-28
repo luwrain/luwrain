@@ -7,22 +7,24 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
+import org.luwrain.controls.CommanderArea.Entry.Type;
+
 public class CommanderUtils
 {
-    static public class AllFilesFilter implements CommanderArea2.Filter
+    static public class AllFilesFilter implements CommanderArea.Filter
     {
-	@Override public boolean commanderEntrySuits(CommanderArea2.Entry entry)
+	@Override public boolean commanderEntrySuits(CommanderArea.Entry entry)
 	{
 	    return true;
 	}
     }
 
-    static public class NoHiddenFilter implements CommanderArea2.Filter
+    static public class NoHiddenFilter implements CommanderArea.Filter
     {
-	@Override public boolean commanderEntrySuits(CommanderArea2.Entry entry)
+	@Override public boolean commanderEntrySuits(CommanderArea.Entry entry)
 	{
 	    NullCheck.notNull(entry, "entry");
-	    if (entry.type() == CommanderArea2.Entry.Type.PARENT)
+	    if (entry.type() == Type.PARENT)
 		return true;
 	    try {
 		return !Files.isHidden(entry.path());
@@ -50,7 +52,7 @@ public class CommanderUtils
 	boolean onCommanderClick(Path cursorAt, Path[] selected);
     }
 
-    static public class DefaultAppearance implements CommanderArea2.CommanderAppearance
+    static public class DefaultAppearance implements CommanderArea.CommanderAppearance
     {
 	protected ControlEnvironment environment;
 
@@ -60,7 +62,7 @@ public class CommanderUtils
 	    this.environment = environment;
 	}
 
-	@Override public void introduceEntry(CommanderArea2.Entry entry, boolean brief)
+	@Override public void introduceEntry(CommanderArea.Entry entry, boolean brief)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    environment.playSound(Sounds.NEW_LIST_ITEM);
@@ -69,26 +71,26 @@ public class CommanderUtils
 		fullIntroduction(entry);
 	}
 
-	private void briefIntroduction(CommanderArea2.Entry entry)
+	private void briefIntroduction(CommanderArea.Entry entry)
 	{
 	    final String name = entry.baseName();
-	    if (entry.type() == CommanderArea2.Entry.Type.PARENT)
+	    if (entry.type() == Type.PARENT)
 		environment.hint(environment.staticStr(LangStatic.COMMANDER_PARENT_DIRECTORY)); else
 		if (name.trim().isEmpty())
 		    environment.hint(Hints.EMPTY_LINE); else
 		    environment.say(entry.baseName());
 	}
 
-	private void fullIntroduction(CommanderArea2.Entry entry)
+	private void fullIntroduction(CommanderArea.Entry entry)
 	{
-	    if (entry.type() == CommanderArea2.Entry.Type.PARENT)
+	    if (entry.type() == Type.PARENT)
 	    {
 		environment.hint(environment.staticStr(LangStatic.COMMANDER_PARENT_DIRECTORY));
 		return;
 	    }
 	    final String name = entry.baseName();
 	    if (name.trim().isEmpty() && !entry.selected() && 
-		entry.type() == CommanderArea2.Entry.Type.REGULAR)
+		entry.type() == Type.REGULAR)
 	    {
 		environment.hint(Hints.EMPTY_LINE);
 		return;
@@ -118,7 +120,7 @@ public class CommanderUtils
 	    environment.say(path.toString());
 	}
 
-	@Override public String getScreenLine(CommanderArea2.Entry entry)
+	@Override public String getScreenLine(CommanderArea.Entry entry)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    return entry.baseName();
@@ -134,14 +136,14 @@ static public class ByNameComparator implements Comparator
 {
     @Override public int compare(Object o1, Object o2)
     {
-	if (!(o1 instanceof CommanderArea2.Entry) || !(o2 instanceof CommanderArea2.Entry))
+	if (!(o1 instanceof CommanderArea.Entry) || !(o2 instanceof CommanderArea.Entry))
 	    return 0;
-	final CommanderArea2.Entry i1 = (CommanderArea2.Entry)o1;
-	final CommanderArea2.Entry i2 = (CommanderArea2.Entry)o2;
-	if (i1.type() == CommanderArea2.Entry.Type.PARENT)
-	    return i2.type() == CommanderArea2.Entry.Type.PARENT?0:-1;
-	if (i2.type() == CommanderArea2.Entry.Type.PARENT)
-	    return i2.type() == CommanderArea2.Entry.Type.PARENT?0:1;
+	final CommanderArea.Entry i1 = (CommanderArea.Entry)o1;
+	final CommanderArea.Entry i2 = (CommanderArea.Entry)o2;
+	if (i1.type() == Type.PARENT)
+	    return i2.type() == Type.PARENT?0:-1;
+	if (i2.type() == Type.PARENT)
+	    return i2.type() == Type.PARENT?0:1;
 	if (Files.isDirectory(i1.path()) && Files.isDirectory(i2.path()))//We don't use Entry.type() because it  returns symlink even on a directory
 	    return i1.baseName().compareTo(i2.baseName());
 	    if (Files.isDirectory(i1.path()))
@@ -151,7 +153,4 @@ static public class ByNameComparator implements Comparator
 		return i1.baseName().compareTo(i2.baseName());
     }
 }
-
-
-
 }

@@ -34,7 +34,7 @@ import org.luwrain.os.*;
  * move around it, traversing over near directories. Custom filters and
  * comparators are supported.
  */
-public class CommanderArea2 extends ListArea
+public class CommanderArea extends ListArea
 {
     public static final String PARENT_DIR = "..";
 
@@ -137,7 +137,7 @@ static public class CommanderParams
 
 	    NullCheck.notNull(entry, "entry");
 	    final boolean selected = entry.selected();
-	    final CommanderArea2.Entry.Type type = entry.type();
+	    final CommanderArea.Entry.Type type = entry.type();
 	    final String name = commanderAppearance.getScreenLine(entry);
 	    final StringBuilder b = new StringBuilder();
 	    b.append(selected?"*":" ");
@@ -227,7 +227,7 @@ Filter filter = null;
 protected CommanderAppearance commanderAppearance;
     protected boolean selecting = false;
 
-    public CommanderArea2(CommanderParams params, Path current)
+    public CommanderArea(CommanderParams params, Path current)
     {
 	super(constructListParams(params));
 	this.commanderAppearance = params.appearance;

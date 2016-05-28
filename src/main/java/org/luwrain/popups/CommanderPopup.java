@@ -24,7 +24,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 //import org.luwrain.util.*;
 
-public class CommanderPopup extends CommanderArea2 implements Popup, PopupClosingRequest
+public class CommanderPopup extends CommanderArea implements Popup, PopupClosingRequest
 {
     public static final int ACCEPT_REGULAR_FILES = 1;
     public static final int ACCEPT_DIRECTORIES = 2;
