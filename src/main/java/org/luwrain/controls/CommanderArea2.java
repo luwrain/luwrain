@@ -40,7 +40,7 @@ public class CommanderArea2 extends ListArea
 
     static public class Entry
     {
-	enum Type {REGULAR, DIR, PARENT, SYMLINK, SPECIAL};
+	enum Type {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
 
 	private Path path;
 	private Type type;
@@ -110,7 +110,7 @@ static public class CommanderParams
     public CommanderAppearance appearance;
     public boolean selecting = false;
     public Filter filter = null;//FIXME:
-    public Comparator comparator = new ByNameCommanderComparator();
+    public Comparator comparator = new CommanderUtils.ByNameComparator();
 }
 
     public static class AppearanceImpl implements ListItemAppearance
@@ -232,6 +232,7 @@ protected CommanderAppearance commanderAppearance;
 	super(constructListParams(params));
 	this.commanderAppearance = params.appearance;
 	this.selecting = params.selecting;
+	super.setClickHandler((area, index, obj)->clickImpl(index, (Entry)obj));
 	if (!Files.isDirectory(current))
 	    throw new IllegalArgumentException("current must address a directory");
 	model().load(current);
@@ -346,151 +347,6 @@ protected CommanderAppearance commanderAppearance;
 	return model().entries == null || model().entries.length < 1;
     }
 
-    @Override public int getLineCount()
-    {
-	return !isEmpty()?model().entries.length + 1:1;
-    }
-
-    @Override public String getLine(int index)
-    {
-	if (isEmpty())
-	    return index == 0?noContentStr():"";
-	return index < model().entries.length?commanderAppearance.getScreenLine(model().entries[index]):"";
-    }
-
-    @Override public boolean onAreaQuery(AreaQuery query)
-    {
-	NullCheck.notNull(query, "query");
-	if (query.getQueryCode() == AreaQuery.CURRENT_DIR)
-	{
-	    final CurrentDirQuery currentDirQuery = (CurrentDirQuery)query;
-	    currentDirQuery.setCurrentDir(model().current.toString());
-	    return true;
-	}
-	return super.onAreaQuery(query);
-    }
-
-    @Override public String getAreaName()
-    {
-	if (model().current == null)
-	    return "-";
-	return commanderAppearance.getCommanderName(model().current);
-    }
-
-    /*
-    private boolean onEnter(KeyboardEvent event)
-    {
-	if (noContentCheck())
-	    return true;
-	if (hotPointY >= entries.size())
-	{
-	    if (clickHandler == null)
-		return false;
-	    final Path[] selected = selected();
-	    if (selected == null || selected.length < 1)
-		return false;
-	    return clickHandler.onCommanderClick(null, selected);
-	}
-	final Entry entry = entries.get(hotPointY);
-	if (Files.isDirectory(entry.path()))//Explicit check because it could be a symlink to directory
-	{
-	    final Path parent = current.getParent();
-	    if (entry.parent() && parent != null)
-		open(parent, current.getFileName().toString()); else
-		open(entry.path(), null);
-	    appearance.introduceLocation(current);
-	    return true;
-	} //directory
-	if (clickHandler == null)
-	    return false;
-	return clickHandler.onCommanderClick(entry.path(), selected());
-    }
-    */
-
-    /*
-    private boolean onBackspace(KeyboardEvent event)
-    {
-	//noContent() isn't applicable here, we should be able to leave the directory, even if it doesn't have any content
-	if (current == null)
-	    return false;
-	final Path parent = current.getParent();
-	if (parent == null)
-	    return false;
-	open(parent, current.getFileName().toString());
-	appearance.introduceLocation(current);
-	return true;
-    }
-    */
-
-    /*
-    private boolean onInsert(KeyboardEvent event)
-    {
-	if (!selecting)
-	    return false;
-	if (noContentCheck())
-	    return true;
-	if (hotPointY >= entries.size())
-	{
-	    environment.hint(Hints.EMPTY_LINE);
-	    return true;
-	}
-	entries.get (hotPointY).selected = !entries.get(hotPointY).selected;
-	++hotPointY;
-	onNewHotPointY(false);
-	return true;
-    }
-    */
-
-    /*
-    private boolean onOk(EnvironmentEvent event)
-    {
-	if (noContentCheck())
-	    return true;
-	if (hotPointY >= entries.size())
-	{
-	    Path[] selected = selected();
-	    if (selected == null || selected.length < 1)
-		return false;
-	    if (clickHandler == null)
-		return false;
-	    return clickHandler.onCommanderClick(null, selected);
-	}
-	final Entry entry = entries.get(hotPointY);
-	if (clickHandler == null)
-	    return false;
-	return clickHandler.onCommanderClick(entry.path(), selected());
-    }
-    */
-
-    /*
-    private boolean onChar(KeyboardEvent event)
-    {
-	if (noContentCheck())
-	    return true;
-	final char c = event.getChar();
-	String beginning = "";
-	if (hotPointY < entries.size())
-	{
-	    final String name = entries.get(hotPointY).baseName();
-	    final int pos = hotPointX < name.length()?hotPointX:name.length();
-	    beginning = name.substring(0, pos);
-	}
-	final String mustBegin = beginning + c;
-	for(int i = 0;i < entries.size();++i)
-	{
-	    final String name = entries.get(i).baseName();
-	    if (!name.startsWith(mustBegin))
-		continue;
-	    hotPointY = i;
-	    ++hotPointX;
-	    environment.onAreaNewHotPoint(this);
-	    appearance.introduceEntry(entries.get(hotPointY), true);
-	    return true;
-	}
-	return false;
-    }
-    */
-
     //Doesn't produce any speech announcement
     public void open(Path path, String desiredSelected)
     {
@@ -513,6 +369,78 @@ protected CommanderAppearance commanderAppearance;
 	    hotPointY = 0;
 	notifyNewContent();
     }
+
+    @Override public ModelImpl model()
+    {
+	return (ModelImpl)model;
+    }
+
+    @Override public void setClickHandler(ListClickHandler clickHandler)
+    {
+	throw new UnsupportedOperationException("Changing list click handler for commander areas not allowed, use setCommanderClickHandler() instead");
+    }
+
+
+
+
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (event.isSpecial() && !event.isModified())
+	    switch(event.getSpecial())
+	    {
+	    case BACKSPACE:
+		return onBackspace(event);
+	    }
+	return super.onKeyboardEvent(event);
+    }
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	NullCheck.notNull(query, "query");
+	if (query.getQueryCode() == AreaQuery.CURRENT_DIR)
+	{
+	    final CurrentDirQuery currentDirQuery = (CurrentDirQuery)query;
+	    currentDirQuery.setCurrentDir(model().current.toString());
+	    return true;
+	}
+	return super.onAreaQuery(query);
+    }
+
+    @Override public String getAreaName()
+    {
+	if (model().current == null)
+	    return "-";
+	return commanderAppearance.getCommanderName(model().current);
+    }
+
+    private boolean onBackspace(KeyboardEvent event)
+    {
+	//noContent() isn't applicable here, we should be able to leave the directory, even if it doesn't have any content
+	if (model().current == null)
+	    return false;
+	final Path parent = model().current.getParent();
+	if (parent == null)
+	    return false;
+	open(parent, model().current.getFileName().toString());
+	commanderAppearance.introduceLocation(model().current);
+	return true;
+    }
+
+    private boolean clickImpl(int index, Entry entry)
+    {
+	NullCheck.notNull(entry, "entry");
+if (entry.type() == Entry.Type.DIR || entry.type() == Entry.Type.SYMLINK_DIR)
+	{
+	    final Path parent = model().current.getParent();
+	    if (entry.type() == Entry.Type.PARENT && parent != null)
+		open(parent, model().current.getFileName().toString()); else
+		open(entry.path(), null);
+	    commanderAppearance.introduceLocation(model().current);
+	    return true;
+	} //directory
+return false;
+    }
+
 
     static private Entry[] loadEntries(Path path,
 				       Filter filter, Comparator comparator)
@@ -556,11 +484,6 @@ protected CommanderAppearance commanderAppearance;
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	environment.onAreaNewName(this);
-    }
-
-    @Override public ModelImpl model()
-    {
-	return (ModelImpl)model;
     }
 
     static private ListArea.Params constructListParams(CommanderParams params)

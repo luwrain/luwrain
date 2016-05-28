@@ -24,7 +24,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 //import org.luwrain.util.*;
 
-public class CommanderPopup extends CommanderArea implements CommanderArea.ClickHandler, Popup, PopupClosingRequest
+public class CommanderPopup extends CommanderArea2 implements Popup, PopupClosingRequest
 {
     public static final int ACCEPT_REGULAR_FILES = 1;
     public static final int ACCEPT_DIRECTORIES = 2;
@@ -41,14 +41,14 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 			  Path path, int flags,
 			  int popupFlags)
     {
-	super(constructCommanderParams(), null);
+	super(constructParams(), null);
 	this.luwrain = luwrain;
 	this.name = name;
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
     }
 
-@Override     public boolean onCommanderClick(Path current, Path[] selected)
+    public boolean onCommanderClick(Path current, Path[] selected)
     {
 	return closing.doOk();
     }
@@ -61,11 +61,11 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	    switch(event.getChar())
 	    {
 	    case '=':
-		setFilter(new CommanderFilters.AllFiles());
+		setFilter(new CommanderUtils.AllFilesFilter());
 		refresh();
 		return true;
 	    case '-':
-		setFilter(new CommanderFilters.NoHidden());
+		setFilter(new CommanderUtils.NoHiddenFilter());
 		refresh();
 		return true;
 	    default:
@@ -132,9 +132,8 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	return true;
     }
 
-    static private CommanderArea.Params constructCommanderParams()
+    static private CommanderParams constructParams()
     {
-
 	return null;
     }
 }

@@ -122,7 +122,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 		for(int i = selectedIndex() + 1;i < model.getItemCount();++i)
 		    if (model.getItem(i) instanceof Section)
 		    {
-			setSelectedByIndex(i, true);
+			select(i, true);
 			return true;
 		    }
 		environment.hint(Hints.NO_ITEMS_BELOW);
@@ -137,7 +137,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 		for(int i = selectedIndex() - 1;i >= 0;--i)
 		    if (model.getItem(i) instanceof Section)
 		    {
-			setSelectedByIndex(i, true);
+			select(i, true);
 			return true;
 		    }
 		environment.hint(Hints.NO_ITEMS_ABOVE);

@@ -3,6 +3,7 @@ package org.luwrain.controls;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.*;
 
 import org.luwrain.core.*;
 
@@ -128,4 +129,29 @@ public class CommanderUtils
 	    return path.toString();
 	}
     }
+
+static public class ByNameComparator implements Comparator
+{
+    @Override public int compare(Object o1, Object o2)
+    {
+	if (!(o1 instanceof CommanderArea2.Entry) || !(o2 instanceof CommanderArea2.Entry))
+	    return 0;
+	final CommanderArea2.Entry i1 = (CommanderArea2.Entry)o1;
+	final CommanderArea2.Entry i2 = (CommanderArea2.Entry)o2;
+	if (i1.type() == CommanderArea2.Entry.Type.PARENT)
+	    return i2.type() == CommanderArea2.Entry.Type.PARENT?0:-1;
+	if (i2.type() == CommanderArea2.Entry.Type.PARENT)
+	    return i2.type() == CommanderArea2.Entry.Type.PARENT?0:1;
+	if (Files.isDirectory(i1.path()) && Files.isDirectory(i2.path()))//We don't use Entry.type() because it  returns symlink even on a directory
+	    return i1.baseName().compareTo(i2.baseName());
+	    if (Files.isDirectory(i1.path()))
+	    return -1;
+	    if (Files.isDirectory(i2.path()))
+	    return 1;
+		return i1.baseName().compareTo(i2.baseName());
+    }
+}
+
+
+
 }

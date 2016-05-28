@@ -173,7 +173,47 @@ public class ListArea  implements Area, RegionProvider
 	environment.onAreaNewHotPoint(this);
     }
 
-    public boolean setSelectedByIndex(int index, boolean introduce)
+    /**
+     * Searches for the item in the model and sets hot point on it. Given an
+     * arbitrary object, this method looks through all items in the model and
+     * does a couple of checks: literal pointers equality and a check with
+     * {@code equals()} method. If at least one of these checks succeeds, the
+     * item is considered equal to the given one, and hot points is set on
+     * it.  
+     *
+     * @param obj The object to search for
+     * @param introduce Must be true if it is necessary to introduce the object, once it's found
+     * @return True if the request object is found, false otherwise
+     */
+    public boolean find(Object obj, boolean introduce)
+    {
+	NullCheck.notNull(obj, "obj");
+	for(int i = 0;i < model.getItemCount();++i)
+	{
+	    final Object o = model.getItem(i);
+	    if (o == null ||
+		(obj != o && !obj.equals(o)))
+	continue;
+	hotPointY = i;
+	hotPointX = appearance.getObservableLeftBound(o);
+	environment.onAreaNewHotPoint(this);
+	if (introduce)
+	    appearance.introduceItem(o, 0);
+	return true;
+	}
+	return false;
+    }
+
+    /**
+     * Selects the item by its index. Given the non-negative integer value as
+     * an index, this method sets the hot point on the item addressed with
+     * this index, checking only that index is in appropriate bounds.
+     *
+     * @param index The item index to select
+     * @param introduce Must be true, if it is necessary to introduce the item , once it is selected
+     * @return True if the index is valid and the item gets hot point on it
+     */
+    public boolean select(int index, boolean introduce)
     {
 	if (index < 0 || index >= model.getItemCount())
 	    return false;
@@ -266,6 +306,9 @@ public class ListArea  implements Area, RegionProvider
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	NullCheck.notNull(event, "event");
+	if (!event.isSpecial() && (!event.isModified() || event.withShiftOnly()))
+	    return onChar(event);
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
 	if (!event.isSpecial() || event.isModified())
@@ -428,6 +471,40 @@ public class ListArea  implements Area, RegionProvider
 	    query.answer(text, 0, hotPointY + 1);
 	return true;
     }
+
+    private boolean onChar(KeyboardEvent event)
+    {
+	if (noContentCheck())
+	    return true;
+	final int count = model.getItemCount();
+	final char c = event.getChar();
+	String beginning = "";
+	if (hotPointY < count)
+	{
+	if (hotPointX >= appearance.getObservableRightBound(model.getItem(hotPointY)))
+	    return false;
+	final String name = appearance.getScreenAppearance(model.getItem(hotPointY), 0);
+	    final int pos = hotPointX < name.length()?hotPointX:name.length();
+	    beginning = name.substring(0, pos);
+	}
+	final String mustBegin = beginning + c;
+	for(int i = 0;i < count;++i)
+	{
+	    final String name = appearance.getScreenAppearance(model.getItem(i), 0);
+	    if (!name.startsWith(mustBegin))
+		continue;
+	    hotPointY = i;
+	    ++hotPointX;
+	    //	    onNewHotPointY(false);
+
+	    appearance.introduceItem(model.getItem(hotPointY), 0);
+	environment.onAreaNewHotPoint(this);
+
+	    return true;
+	}
+	return false;
+    }
+
 
     private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
     {
