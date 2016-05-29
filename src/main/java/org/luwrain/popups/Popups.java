@@ -170,6 +170,13 @@ int popupFlags)
 	return res[0];
     }
 
+    static public Partition mountedPartitions(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	return mountedPartitions(luwrain, DEFAULT_POPUP_FLAGS);
+    }
+
+
     static public Partition mountedPartitions(Luwrain luwrain, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -183,6 +190,12 @@ int popupFlags)
 	if (result == null)
 	    return null;
 	return (Partition)result;
+    }
+
+    static public File mountedPartitionsAsFile(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	return mountedPartitionsAsFile(luwrain, DEFAULT_POPUP_FLAGS);
     }
 
     static public File mountedPartitionsAsFile(Luwrain luwrain, Set<Popup.Flags> popupFlags)
