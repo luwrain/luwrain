@@ -16,6 +16,8 @@
 
 package org.luwrain.popups;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
@@ -27,20 +29,11 @@ public class EditListPopup extends SimpleEditPopup
 
     public EditListPopup(Luwrain luwrain, EditListPopupModel model,
 			 String name, String prefix,
-			 String text)
-    {
-	super(luwrain, name, prefix, text);
-	this.model = model;
-	NullCheck.notNull(model, "model");
-    }
-
-    public EditListPopup(Luwrain luwrain, EditListPopupModel model,
-			 String name, String prefix,
-			 String text, int popupFlags)
+			 String text, Set<Popup.Flags> popupFlags)
     {
 	super(luwrain, name, prefix, text, popupFlags);
-	this.model = model;
 	NullCheck.notNull(model, "model");
+	this.model = model;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)

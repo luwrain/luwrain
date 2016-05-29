@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import java.util.*;
+
 /**
  * Provides all necessary additional data about the area shown to user in
  * model mode. The popups in Luwrain are the areas of a special type
@@ -31,6 +33,10 @@ package org.luwrain.core;
  */
 public interface Popup extends Area
 {
+    public enum Flags {
+	NO_MULTIPLE_COPIES, WEAK, STRONG,
+    };
+
         static public final int INVALID = -1;
     static public final int TOP = 0;
     static public final int BOTTOM = 1;
@@ -42,6 +48,5 @@ public interface Popup extends Area
 
     Luwrain getLuwrainObject();
     EventLoopStopCondition getStopCondition();
-    boolean noMultipleCopies();
-    boolean isWeakPopup();
+    Set<Flags> getPopupFlags();
 }

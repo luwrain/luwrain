@@ -16,6 +16,8 @@
 
 package org.luwrain.popups;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
@@ -25,55 +27,28 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 {
     protected Luwrain luwrain;
     public final PopupClosing closing = new PopupClosing(this);
-    private final Region region = new Region(this);
-    private EmbeddedSingleLineEdit edit;
+    protected final Region region = new Region(this);
+    protected EmbeddedSingleLineEdit edit;
     protected String name;
     protected String prefix;
-    private String text;
-    private int pos;
-    private int popupFlags;
+    protected String text;
+    protected int pos;
+    protected Set<Popup.Flags> popupFlags;
 
-    public SimpleEditPopup(Luwrain luwrain,
-			    String name,
-			    String prefix,
-			    String text)
+    public SimpleEditPopup(Luwrain luwrain, String name,
+			    String prefix, String text,
+			   Set<Popup.Flags> popupFlags)
     {
-	this.luwrain = luwrain;
-	this.name = name;
-	this.prefix = prefix;
-	this.text = text;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (prefix == null)
-	    throw new NullPointerException("prefix may not be null");
-	if (text == null)
-	    throw new NullPointerException("text may not be null");
-	this.pos = prefix.length() + text.length();
-	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, prefix.length(), 0);
-	this.popupFlags = 0;
-    }
-
-    public SimpleEditPopup(Luwrain luwrain,
-			    String name,
-			    String prefix,
-			   String text,
-			   int popupFlags)
-    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(popupFlags, "popupFlags");
 	this.luwrain = luwrain;
 	this.name = name ;
 	this.prefix = prefix;
 	this.text = text;
 	this.popupFlags = popupFlags;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (prefix == null)
-	    throw new NullPointerException("prefix may not be null");
-	if (text == null)
-	    throw new NullPointerException("text may not be null");
 	this.pos = prefix.length() + text.length();
 	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, prefix.length(), 0);
     }
@@ -393,13 +368,8 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 	return closing;
     }
 
-    @Override public boolean noMultipleCopies()
+    @Override public Set<Popup.Flags> getPopupFlags()
     {
-	return (popupFlags & Popup.NO_MULTIPLE_COPIES) != 0;
-    }
-
-    @Override public boolean isWeakPopup()
-    {
-	return (popupFlags & Popup.WEAK) != 0;
+	return popupFlags;
     }
 }

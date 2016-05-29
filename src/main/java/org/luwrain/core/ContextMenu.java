@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import java.util.*;
+
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 
@@ -98,7 +100,20 @@ class ContextMenu extends ListPopup
 
     ContextMenu(Luwrain luwrain, Action[] actions, Strings strings)
     {
-	super(luwrain, strings.contextMenuName(),
-	      new FixedListModel(actions), new Appearance(luwrain), 0);
+	super(luwrain, constructParams(luwrain, actions, strings), EnumSet.noneOf(Popup.Flags.class));
+    }
+
+    static private ListArea.Params constructParams(Luwrain luwrain, Action[] actions,
+Strings strings)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNullItems(actions, "actions");
+	NullCheck.notNull(strings, "strings");
+	final ListArea.Params params = new ListArea.Params();
+	params.name = strings.contextMenuName();
+	params.model = new FixedListModel(actions);
+	params.appearance = new Appearance(luwrain);
+	params.environment = new DefaultControlEnvironment(luwrain);
+	return params;
     }
 }

@@ -16,6 +16,8 @@
 
 package org.luwrain.popups;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
@@ -24,47 +26,26 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 {
     protected Luwrain luwrain;
     public final PopupClosing closing = new PopupClosing(this);
-    private String name = "";
-    private String text = "";
-    private boolean res;
-    private boolean defaultRes;
-    private int popupFlags;
-
-    public YesNoPopup(Luwrain luwrain,
-		      String name,
-		      String text,
-		      boolean defaultRes)
-    {
-	this.luwrain = luwrain;
-	this.name = name;
-	this.text = text;
-	this.defaultRes = defaultRes;
-	this.res = defaultRes;
-	this.popupFlags = 0;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (text == null)
-	    throw new NullPointerException("text may not be null");
-    }
+    protected String name = "";
+    protected String text = "";
+    protected boolean res;
+    protected boolean defaultRes;
+    protected Set<Popup.Flags> popupFlags;
 
     public YesNoPopup(Luwrain luwrain,
 		      String name, String text,
-		      boolean defaultRes, int popupFlags)
+		      boolean defaultRes, Set<Popup.Flags> popupFlags)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(popupFlags, "popupFlags");
 	this.luwrain = luwrain;
 	this.name = name;
 	this.text = text;
 	this.defaultRes = defaultRes;
 	this.res = defaultRes;
 	this.popupFlags = popupFlags;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (text == null)
-	    throw new NullPointerException("text may not be null");
     }
 
     @Override public int getLineCount()
@@ -189,13 +170,8 @@ public class YesNoPopup implements Popup, PopupClosingRequest
 	return closing;
     }
 
-    @Override public boolean noMultipleCopies()
+    @Override public Set<Popup.Flags> getPopupFlags()
     {
-	return (popupFlags & Popup.NO_MULTIPLE_COPIES) != 0;
-    }
-
-    @Override public boolean isWeakPopup()
-    {
-	return (popupFlags & Popup.WEAK) != 0;
+	return popupFlags;
     }
 }

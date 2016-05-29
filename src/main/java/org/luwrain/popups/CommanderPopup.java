@@ -16,6 +16,7 @@
 
 package org.luwrain.popups;
 
+import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 
@@ -33,13 +34,13 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 
     protected Luwrain luwrain;
     public final PopupClosing closing = new PopupClosing(this);
-    private String name;
-    private int flags;
-    private int popupFlags;
+    protected String name;
+    protected int flags;
+    protected Set<Popup.Flags> popupFlags;
 
     public CommanderPopup(Luwrain luwrain, String name,
 			  Path path, int flags,
-			  int popupFlags)
+			  Set<Popup.Flags> popupFlags)
     {
 	super(constructParams(), null);
 	this.luwrain = luwrain;
@@ -113,19 +114,14 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 	return closing;
     }
 
-    @Override public boolean noMultipleCopies()
+    @Override public Set<Popup.Flags> getPopupFlags()
     {
-	return (popupFlags & Popup.NO_MULTIPLE_COPIES) != 0;
-    }
-
-    @Override public boolean isWeakPopup()
-    {
-	return (popupFlags & Popup.WEAK) != 0;
+	return popupFlags;
     }
 
     private boolean openMountedPartitions()
     {
-	final File f = Popups.mountedPartitionsAsFile(luwrain, popupFlags);
+	final File f = Popups.mountedPartitionsAsFile(luwrain, EnumSet.noneOf(Popup.Flags.class));
 	if (f == null)
 	    return true;
 	open(f.toPath(), null);

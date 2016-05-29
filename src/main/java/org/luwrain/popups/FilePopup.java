@@ -25,7 +25,7 @@ import org.luwrain.core.events.*;
 
 public class FilePopup extends EditListPopup
 {
-    static public final int SKIP_HIDDEN = 2048;
+    public enum Flags { SKIP_HIDDEN };
 
     public interface Acceptance 
     {
@@ -38,9 +38,9 @@ public class FilePopup extends EditListPopup
     public FilePopup(Luwrain luwrain, String name,
 		     String prefix, Acceptance acceptance,
 		     Path path, Path defPath,
-		     int popupFlags)
+		     Set<Flags> flags, Set<Popup.Flags> popupFlags)
     {
-	super(luwrain, new Model(defPath, (popupFlags & SKIP_HIDDEN) != 0), 
+	super(luwrain, new Model(defPath, flags .contains(Flags.SKIP_HIDDEN)), 
 name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	//	this.path = path;
 	this.defPath = defPath;
@@ -85,7 +85,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	    file = file.getParentFile();
 	if (file == null || !file.isDirectory())
 	    return false;
-	final Path res = Popups.commanderSingle(luwrain, getAreaName() + ": ", file.toPath(), CommanderPopup.ACCEPT_ALL, 0);
+	final Path res = Popups.commanderSingle(luwrain, getAreaName() + ": ", file.toPath(), CommanderPopup.ACCEPT_ALL, EnumSet.noneOf(Popup.Flags.class));
 	if (res != null)
 	    setText(res.toAbsolutePath().toString(), "");
 	return true;

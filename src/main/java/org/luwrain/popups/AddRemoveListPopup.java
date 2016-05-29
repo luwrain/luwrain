@@ -75,16 +75,14 @@ public class AddRemoveListPopup extends ListPopupBase
     protected ItemsSource itemsSource;
 
     public AddRemoveListPopup(Luwrain luwrain, String name,
-			      Object[] items, 
-			      ItemsSource itemsSource, RemoveConfirmation removeConfirmation,
-			      int popupFlags)
+			      Object[] items, ItemsSource itemsSource, RemoveConfirmation removeConfirmation,
+			      Set<Popup.Flags> popupFlags)
     {
-	super(luwrain, name,
-	      new Model(items), new DefaultListItemAppearance(new DefaultControlEnvironment(luwrain)), popupFlags);
-	this.itemsSource = itemsSource;
-	this.removeConfirmation = removeConfirmation;
+	super(luwrain, constructParams(luwrain, items, name), popupFlags);
 	NullCheck.notNull(itemsSource, "itemsSource");
 	NullCheck.notNull(removeConfirmation, "removeConfirmation");
+	this.itemsSource = itemsSource;
+	this.removeConfirmation = removeConfirmation;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -132,5 +130,19 @@ public class AddRemoveListPopup extends ListPopupBase
     {
 	final Model m = (Model)model;
 	return m.getAllItems();
+    }
+
+    static private ListArea.Params constructParams(Luwrain luwrain, 
+						   Object[] items, String name)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNullItems(items, "items");
+	NullCheck.notNull(name, "name");
+	final ListArea.Params params = new ListArea.Params();
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.name = name;
+	params.model = new Model(items);
+	params.appearance = new DefaultListItemAppearance(params.environment);
+	return params;
     }
 }

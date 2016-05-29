@@ -182,7 +182,7 @@ class Environment extends EnvironmentAreas
 
     void quit()
     {
-	YesNoPopup popup = new YesNoPopup(new Luwrain(this), strings.quitPopupName(), strings.quitPopupText(), true);
+	final YesNoPopup popup = new YesNoPopup(new Luwrain(this), strings.quitPopupName(), strings.quitPopupText(), true, EnumSet.noneOf(Popup.Flags.class));
 	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled() || !popup.result())
 	    return;
@@ -797,7 +797,8 @@ class Environment extends EnvironmentAreas
 	NullCheck.notNull(stopCondition, "stopCondition");
 	if (interfaces.isSuitsForEnvironmentPopup(luwrainObject))
 	{
-	    popupImpl(null, popup, Popup.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
+	    popupImpl(null, popup, Popup.BOTTOM, stopCondition,
+		      popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
 	    return;
 	}
 	final Application app = interfaces.findApp(luwrainObject);
@@ -806,7 +807,8 @@ class Environment extends EnvironmentAreas
 	    Log.warning("core", "somebody is trying to get a popup with fake Luwrain object");
 	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
 	}
-	popupImpl(app, popup, Popup.BOTTOM, stopCondition, popup.noMultipleCopies(), popup.isWeakPopup());
+	popupImpl(app, popup, Popup.BOTTOM, stopCondition, 
+		  popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
     }
 
     private KeyboardEvent translateKeyboardEvent(KeyboardEvent event)
@@ -889,8 +891,8 @@ class Environment extends EnvironmentAreas
 
     private void showCommandPopup()
     {
-	EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedEditListPopupModel(commands.getCommandNames()),
-					strings.commandPopupName(), strings.commandPopupPrefix(), "");
+	final EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedEditListPopupModel(commands.getCommandNames()),
+						      strings.commandPopupName(), strings.commandPopupPrefix(), "", EnumSet.noneOf(Popup.Flags.class));
 	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
@@ -1152,7 +1154,9 @@ class Environment extends EnvironmentAreas
 	final FilePopup popup = new FilePopup(interfaces.getObjForEnvironment(), 
 					      strings.openPopupName(), strings.openPopupPrefix(), 
 					      null, current, current, 
-					      uiSettings.getFilePopupSkipHidden(false)?FilePopup.SKIP_HIDDEN:0);//FIXME:SKIP_HIDDEN from the registry
+					      uiSettings.getFilePopupSkipHidden(false)?EnumSet.of(FilePopup.Flags.SKIP_HIDDEN):EnumSet.noneOf(FilePopup.Flags.class),
+					      EnumSet.noneOf(Popup.Flags.class));
+
 	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;

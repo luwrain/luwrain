@@ -16,6 +16,7 @@
 
 package org.luwrain.popups;
 
+import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 
@@ -25,11 +26,13 @@ import org.luwrain.hardware.Partition;
 
 public class Popups
 {
+    static public final Set<Popup.Flags> DEFAULT_POPUP_FLAGS = EnumSet.noneOf(Popup.Flags.class);
+
     static public String simple(Luwrain luwrain,
 				String name, String prefix,
 				String text)
     {
-	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text);
+	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, EnumSet.noneOf(Popup.Flags.class));
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -59,7 +62,12 @@ int popupFlags)
 		{
 		}
 	    };
-	final ListPopup popup = new ListPopup(luwrain, name, model, new DefaultListItemAppearance(new DefaultControlEnvironment(luwrain)), popupFlags);
+	final ListArea.Params params = new ListArea.Params();
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.name = name;
+	params.model = model;
+	params.appearance = new DefaultListItemAppearance(params.environment);
+	final ListPopup popup = new ListPopup(luwrain, params, EnumSet.noneOf(Popup.Flags.class));
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -68,28 +76,32 @@ int popupFlags)
 
     static public Path open(Luwrain luwrain)
     {
-	return open(luwrain, null, null, null, null, null, makeFilePopupFlags(luwrain, 0));
+	//	return open(luwrain, null, null, null, null, null, makeFilePopupFlags(luwrain, 0), null);
+	return null;
     }
 
     static public Path open(Luwrain luwrain,
 			    Path startWith, Path defPath)
     {
-	return open(luwrain, null, null, startWith, defPath, null, makeFilePopupFlags(luwrain, 0));
+	//	return open(luwrain, null, null, startWith, defPath, null, makeFilePopupFlags(luwrain, 0));
+	return null;
     }
 
     static public Path open(Luwrain luwrain,
 			    Path startWith, Path defPath,
-			    int popupFlags)
+			    Set<FilePopup.Flags> filePopupFlags, Set<Popup.Flags> popupFlags)
     {
-	return open(luwrain, null, null, startWith, defPath, null, makeFilePopupFlags(luwrain, popupFlags));
+	//	return open(luwrain, null, null, startWith, defPath, null, makeFilePopupFlags(luwrain, 0));
+	return null;
     }
 
     static public Path open(Luwrain luwrain,
 			    Path startWith, Path defPath,
 			    DefaultFileAcceptance.Type fileType, String[] fileExtensions,
-			    int popupFlags)
+			    Set<Popup.Flags> filePopupFlags, Set<Popup.Flags> popupFlags)
     {
-	return open(luwrain, null, null, startWith, defPath, new DefaultFileAcceptance(fileType, fileExtensions), makeFilePopupFlags(luwrain, popupFlags));
+	//	return open(luwrain, null, null, startWith, defPath, new DefaultFileAcceptance(fileType, fileExtensions), makeFilePopupFlags(luwrain, popupFlags));
+	return null;
     }
 
     static public Path open(Luwrain luwrain,
@@ -102,8 +114,8 @@ int popupFlags)
 	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():strings.openPopupPrefix();
 	final Path chosenStartWith = startWith != null?startWith:luwrain.launchContext().userHomeDirAsPath();
 	final Path chosenDefPath = defPath != null?defPath:luwrain.launchContext().userHomeDirAsPath();
-	FilePopup popup = new FilePopup(luwrain, chosenName, chosenPrefix, acceptance,
-					chosenStartWith, chosenDefPath, makeFilePopupFlags(luwrain, popupFlags));
+	final FilePopup popup = new FilePopup(luwrain, chosenName, chosenPrefix, acceptance,
+					      chosenStartWith, chosenDefPath, makeFilePopupFlags(luwrain, popupFlags), EnumSet.noneOf(Popup.Flags.class));
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -115,18 +127,18 @@ int popupFlags)
 			    Path startWith, Path defPath,
 			    DefaultFileAcceptance.Type fileType)
     {
-	return chooseFile(luwrain, name, prefix, startWith, defPath, fileType, new String[0], 0);
+	return chooseFile(luwrain, name, prefix, startWith, defPath, fileType, new String[0], EnumSet.noneOf(FilePopup.Flags.class), EnumSet.noneOf(Popup.Flags.class));
     }
 
     static public Path chooseFile(Luwrain luwrain,
 			    String name, String prefix,
 			    Path startWith, Path defPath,
 			    DefaultFileAcceptance.Type fileType, String[] fileExtensions,
-			    int popupFlags)
+				  Set<FilePopup.Flags> filePopupFlags, Set<Popup.Flags> popupFlags)
     {
 	final FilePopup popup = new FilePopup(luwrain, name, prefix, 
 					      new DefaultFileAcceptance(fileType, fileExtensions), 
-					      startWith, defPath, makeFilePopupFlags(luwrain, popupFlags));
+					      startWith, defPath, filePopupFlags, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -135,9 +147,9 @@ int popupFlags)
 
     static public Path[] commanderMultiple(Luwrain luwrain, String name,
 					   Path path, int flags,
-					   int popupFlags)
+					   Set<Popup.Flags> popupFlags)
     {
-	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, flags | CommanderPopup.ACCEPT_MULTIPLE_SELECTION, popupFlags);
+	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, 0, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -146,7 +158,7 @@ int popupFlags)
 
     static public Path commanderSingle(Luwrain luwrain, String name,
 				       Path path, int flags,
-					   int popupFlags)
+					   Set<Popup.Flags> popupFlags)
     {
 	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, flags, popupFlags);
 	luwrain.popup(popup);
@@ -158,8 +170,10 @@ int popupFlags)
 	return res[0];
     }
 
-    static public Partition mountedPartitions(Luwrain luwrain, int popupFlags)
+    static public Partition mountedPartitions(Luwrain luwrain, Set<Popup.Flags> popupFlags)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(popupFlags, "popupFlags");
 	final PartitionsPopup popup = new PartitionsPopup(luwrain, new DefaultPartitionsPopupControl(luwrain, luwrain.getHardware()),
 							  "Выберите раздел:", popupFlags);
 	luwrain.popup(popup);
@@ -171,21 +185,23 @@ int popupFlags)
 	return (Partition)result;
     }
 
-    static public File mountedPartitionsAsFile(Luwrain luwrain, int popupFlags)
+    static public File mountedPartitionsAsFile(Luwrain luwrain, Set<Popup.Flags> popupFlags)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(popupFlags, "popupFlags");
 	final Partition result = mountedPartitions(luwrain, popupFlags);
 	if (result == null)
 	    return null;
 	return result.file();
     }
 
-    static private int makeFilePopupFlags(Luwrain luwrain, int orig)
+    static private Set<FilePopup.Flags> makeFilePopupFlags(Luwrain luwrain, int orig)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	final Settings.UserInterface ui = Settings.createUserInterface(luwrain.getRegistry());
 	if (ui.getFilePopupSkipHidden(false))
-	return orig | FilePopup.SKIP_HIDDEN;
-	return orig;
+	    return EnumSet.of(FilePopup.Flags.SKIP_HIDDEN);
+	return EnumSet.noneOf(FilePopup.Flags.class);
     }
 
     static public String fixedEditList(Luwrain luwrain,
@@ -198,7 +214,7 @@ int popupFlags)
 	NullCheck.notNull(text, "text");
 	NullCheck.notNullItems(items, "items");
 	final EditListPopup popup = new EditListPopup(luwrain, new FixedEditListPopupModel(items),
-						      name, prefix, text);
+						      name, prefix, text, DEFAULT_POPUP_FLAGS);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;

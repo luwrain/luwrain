@@ -139,13 +139,11 @@ public class PartitionsPopup extends ListPopupBase
     private Partition result = null;
 
     public PartitionsPopup(Luwrain luwrain, Control control,
-			   String name, int popupFlags)
+			   String name, Set<Popup.Flags> popupFlags)
     {
-	super(luwrain, name,
-	      new Model(control), new Appearance(luwrain),
-	      popupFlags);
-	this.control = control;
+	super(luwrain, constructParams(luwrain, control, name), popupFlags);
 	NullCheck.notNull(control, "control");
+	this.control = control;
     }
 
     public Partition result()
@@ -210,5 +208,19 @@ public class PartitionsPopup extends ListPopupBase
 	luwrain.message("Отключено разделов: " + res, res > 0?Luwrain.MESSAGE_OK:Luwrain.MESSAGE_REGULAR);
 	refresh();
 	return true;
+    }
+
+    static private ListArea.Params constructParams(Luwrain luwrain, Control control,
+String name)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(control, "control");
+	NullCheck.notNull(name, "name");
+	final ListArea.Params params = new ListArea.Params();
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.name = name;
+	params.model = new Model(control);
+	params.appearance = new Appearance(luwrain);
+	return params;
     }
 }
