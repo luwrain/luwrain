@@ -132,25 +132,25 @@ public class CommanderUtils
 	}
     }
 
-static public class ByNameComparator implements Comparator
-{
-    @Override public int compare(Object o1, Object o2)
+    static public class ByNameComparator implements Comparator
     {
-	if (!(o1 instanceof CommanderArea.Entry) || !(o2 instanceof CommanderArea.Entry))
-	    return 0;
-	final CommanderArea.Entry i1 = (CommanderArea.Entry)o1;
-	final CommanderArea.Entry i2 = (CommanderArea.Entry)o2;
-	if (i1.type() == Type.PARENT)
-	    return i2.type() == Type.PARENT?0:-1;
-	if (i2.type() == Type.PARENT)
-	    return i2.type() == Type.PARENT?0:1;
-	if (Files.isDirectory(i1.path()) && Files.isDirectory(i2.path()))//We don't use Entry.type() because it  returns symlink even on a directory
-	    return i1.baseName().compareTo(i2.baseName());
-	    if (Files.isDirectory(i1.path()))
-	    return -1;
-	    if (Files.isDirectory(i2.path()))
-	    return 1;
+	@Override public int compare(Object o1, Object o2)
+	{
+	    if (!(o1 instanceof CommanderArea.Entry) || !(o2 instanceof CommanderArea.Entry))
+		return 0;
+	    final CommanderArea.Entry i1 = (CommanderArea.Entry)o1;
+	    final CommanderArea.Entry i2 = (CommanderArea.Entry)o2;
+	    if (i1.type() == Type.PARENT)
+		return i2.type() == Type.PARENT?0:-1;
+	    if (i2.type() == Type.PARENT)
+		return i2.type() == Type.PARENT?0:1;
+	    if (Files.isDirectory(i1.path()) && Files.isDirectory(i2.path()))//We don't use Entry.type() because it  returns symlink even on a directory
 		return i1.baseName().compareTo(i2.baseName());
+	    if (Files.isDirectory(i1.path()))
+		return -1;
+	    if (Files.isDirectory(i2.path()))
+		return 1;
+	    return i1.baseName().compareTo(i2.baseName());
+	}
     }
-}
 }
