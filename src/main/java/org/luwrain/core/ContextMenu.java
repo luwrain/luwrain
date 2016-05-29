@@ -55,7 +55,7 @@ class ContextMenu extends ListPopup
     }
     */
 
-    static private class Appearance implements ListItemAppearance
+    static private class Appearance implements ListArea.Appearance
     {
 	private Luwrain luwrain;
 
@@ -65,10 +65,10 @@ class ContextMenu extends ListPopup
 	    NullCheck.notNull(luwrain, "luwrain");
 	}
 
-	@Override public void introduceItem(Object item, int flags)
+	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
-	    if (item == null || !(item instanceof Action))
-		return;
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
 	    final Action act = (Action)item;
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.NEW_LIST_ITEM);
@@ -77,10 +77,10 @@ class ContextMenu extends ListPopup
 	    luwrain.say(act.title());
     }
 
-	@Override public String getScreenAppearance(Object item, int flags)
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
-	    if (item == null || !(item instanceof Action))
-		return "";
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
 	    final Action act = (Action)item;
 	    if (act.keyboardEvent() != null)
 		return act.title() + " (" + act.keyboardEvent() + ")"; else
@@ -94,7 +94,7 @@ class ContextMenu extends ListPopup
 
 	@Override public int getObservableRightBound(Object item)
 	{
-	    return getScreenAppearance(item, 0).length();
+	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
 	}
     }
 

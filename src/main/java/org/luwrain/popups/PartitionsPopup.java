@@ -40,7 +40,7 @@ public class PartitionsPopup extends ListPopupBase
 	int detachStorageDevice(Object dev);
     }
 
-    static private class Appearance implements ListItemAppearance
+    static private class Appearance implements ListArea.Appearance
     {
 	private Luwrain luwrain;
 
@@ -50,15 +50,15 @@ public class PartitionsPopup extends ListPopupBase
 	    NullCheck.notNull(luwrain, "luwrain");
 	}
 
-	@Override public void introduceItem(Object item, int flags)
+	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
-	    if (item == null)
-		return;
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flag ");
 	    String value;
 	    if (item instanceof Partition)
 	    {
 		final Partition part = (Partition)item;
-		if ((flags & BRIEF) != 0)
+		if (flags.contains(Flags.BRIEF))
 		    value = part.getBriefTitle(); else
 		    value = part.getFullTitle();
 	    } else
@@ -68,10 +68,10 @@ public class PartitionsPopup extends ListPopupBase
 	    luwrain.hint(Hints.EMPTY_LINE);
 	}
 
-	@Override public String getScreenAppearance(Object item, int flags)
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
-	    if (item == null)
-		return "";
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
 	    if (item instanceof Partition)
 	    {
 		final Partition part = (Partition)item;
@@ -87,7 +87,7 @@ public class PartitionsPopup extends ListPopupBase
 
 	@Override public int getObservableRightBound(Object item)
 	{
-	    return getScreenAppearance(item, 0).length();
+	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
 	}
     }
 

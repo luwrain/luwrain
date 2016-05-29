@@ -42,7 +42,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	@Override public String toString() {return title;}
     }
 
-    static private class Appearance implements ListItemAppearance
+    static private class Appearance implements ListArea.Appearance
     {
 	private Luwrain luwrain;
 
@@ -52,10 +52,10 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	    NullCheck.notNull(luwrain, "luwrain");
 	}
 
-	@Override public void introduceItem(Object item, int flags)
+	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
-	    if (item == null)
-		return;
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
 	    if (item instanceof Section)
 	    {
 		luwrain.silence();
@@ -68,10 +68,10 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	    luwrain.say(item.toString());
 	}
 
-	@Override public String getScreenAppearance(Object item, int flags)
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
-	    if (item == null)
-		return "";
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
 	    if (item instanceof Section)
 		return item.toString();
 	    return "  " + item.toString();
@@ -88,7 +88,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 
 	@Override public int getObservableRightBound(Object item)
 	{
-	    return item != null?getScreenAppearance(item, 0).length():0;
+	    return item != null?getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length():0;
 	}
     }
 

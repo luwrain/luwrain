@@ -16,28 +16,28 @@
 
 package org.luwrain.desktop;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 
-class Appearance implements ListItemAppearance
+class Appearance implements ListArea.Appearance
 {
     private Luwrain luwrain;
     private Strings strings;
 
     public Appearance(Luwrain luwrain, Strings strings)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(strings, "strings");
 	this.luwrain = luwrain;
 	this.strings = strings;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (strings == null)
-	    throw new NullPointerException("strings may not be null");
     }
 
-    @Override public void introduceItem(Object item, int flags)
+    @Override public void announceItem(Object item, Set<Flags> flags)
     {
-	if (item == null)
-	    return;
+	NullCheck.notNull(item, "item");
+	NullCheck.notNull(flags, "flags");
 	if (item instanceof String)
 	{
 	    final String s = (String)item;
@@ -50,14 +50,14 @@ class Appearance implements ListItemAppearance
 	{
 	    final UniRefInfo i = (UniRefInfo)item;
 	    luwrain.playSound(Sounds.NEW_LIST_ITEM);
-	    if ((flags & ListItemAppearance.BRIEF) != 0)
+	    if (flags.contains(Flags.BRIEF))
 		luwrain.say(i.title()); else
 		luwrain.say(i.toString());
 	    return;
 	}
     }
 
-    @Override public String getScreenAppearance(Object item, int flags)
+    @Override public String getScreenAppearance(Object item, Set<Flags> flags)
     {
 	if (item == null)
 	    return "";
@@ -78,6 +78,6 @@ return (String)item;
 
     @Override public int getObservableRightBound(Object item)
     {
-	return getScreenAppearance(item, 0).length();
+	return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
     }
 }

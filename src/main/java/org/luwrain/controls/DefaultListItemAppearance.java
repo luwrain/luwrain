@@ -16,31 +16,32 @@
 
 package org.luwrain.controls;
 
-import org.luwrain.core.Sounds;
+import java.util.*;
 
-public class DefaultListItemAppearance implements ListItemAppearance
+import org.luwrain.core.*;
+
+public class DefaultListItemAppearance implements ListArea.Appearance
 {
     private ControlEnvironment environment;
 
     public DefaultListItemAppearance(ControlEnvironment environment)
     {
+	NullCheck.notNull(environment, "environment");
 	this.environment = environment;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
     }
 
-    @Override public void introduceItem(Object item, int flags)
+    @Override public void announceItem(Object item, Set<Flags> flags)
     {
-	if (item == null)
-	    return;
+	NullCheck.notNull(item, "item");
+	NullCheck.notNull(flags, "flags");
 	environment.playSound(Sounds.NEW_LIST_ITEM);
 	environment.say(item.toString());
     }
 
-    @Override public String getScreenAppearance(Object item, int flags)
+    @Override public String getScreenAppearance(Object item, Set<Flags> flags)
     {
-	if (item == null)
-	    return null;
+	NullCheck.notNull(item, "item");
+	NullCheck.notNull(flags, "flags");
 	return item.toString();
     }
 

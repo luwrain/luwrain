@@ -16,10 +16,12 @@
 
 package org.luwrain.app.registry;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 
-class ValuesListAppearance implements ListItemAppearance
+class ValuesListAppearance implements ListArea.Appearance
 {
     private Luwrain luwrain;
     private Strings strings;
@@ -34,18 +36,18 @@ class ValuesListAppearance implements ListItemAppearance
 	    throw new NullPointerException("strings may not be null");
     }
 
-    @Override public void introduceItem(Object item, int flags)
+    @Override public void announceItem(Object item, Set<Flags> flags)
     {
-	if (item == null || !(item instanceof Value))
-	    return;
+	NullCheck.notNull(item, "item");
+	NullCheck.notNull(flags, "flags");
 	final Value value = (Value)item;
 	luwrain.say(value.name);
     }
 
-    @Override public String getScreenAppearance(Object item, int flags)
+    @Override public String getScreenAppearance(Object item, Set<Flags> flags)
     {
-	if (item == null || !(item instanceof Value))
-	    return "";
+	NullCheck.notNull(item, "item");
+	NullCheck.notNull(flags, "flags");
 	final Value value = (Value)item;
 	return value.name;
     }
@@ -58,6 +60,6 @@ class ValuesListAppearance implements ListItemAppearance
 
     @Override public int getObservableRightBound(Object item)
     {
-	return getScreenAppearance(item, 0).length();
+	return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
     }
 }

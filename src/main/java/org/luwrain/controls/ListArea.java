@@ -35,6 +35,19 @@ public class ListArea  implements Area, RegionProvider
 	void refresh();
     }
 
+    public interface Appearance
+    {
+	public enum Flags { BRIEF };
+
+	void announceItem(Object item, Set<Flags> flags);
+	String getScreenAppearance(Object item, Set<Flags> flags);
+	int getObservableLeftBound(Object item);
+	int getObservableRightBound(Object item);
+    }
+
+    static protected final Set<Appearance.Flags> NONE_APPEARANCE_FLAGS = EnumSet.noneOf(Appearance.Flags.class);
+    static protected final Set<Appearance.Flags> BRIEF_ANNOUNCEMENT_ONLY = EnumSet.of(Appearance.Flags.BRIEF);
+
 public interface HotPointMoves 
 {
     int numberOfEmptyLinesTop();
@@ -47,7 +60,7 @@ public interface HotPointMoves
     {
 	public ControlEnvironment environment;
 	public Model model;
-    public ListItemAppearance appearance;
+    public Appearance appearance;
 	public ListClickHandler clickHandler;
 	public String name;
     }
@@ -56,7 +69,7 @@ public interface HotPointMoves
     protected ControlEnvironment environment;
     protected String areaName = "";
     protected Model model;
-    protected ListItemAppearance appearance;
+    protected Appearance appearance;
     protected ListClickHandler clickHandler;
     protected HotPointMoves hotPointMoves = new ListUtils.DefaultHotPointMoves();
     protected int hotPointX = 0;
@@ -93,7 +106,7 @@ public interface HotPointMoves
 
     public ListArea(ControlEnvironment environment,
 		    Model model,
-		    ListItemAppearance appearance,
+		    Appearance appearance,
 		    String name)
     {
 	this.environment = environment;
@@ -113,7 +126,7 @@ public interface HotPointMoves
 
     public ListArea(ControlEnvironment environment,
 		    Model model,
-		    ListItemAppearance appearance,
+		    Appearance appearance,
 		    ListClickHandler clickHandler,
 		    String name)
     {
@@ -204,7 +217,7 @@ public interface HotPointMoves
 	hotPointX = appearance.getObservableLeftBound(o);
 	environment.onAreaNewHotPoint(this);
 	if (introduce)
-	    appearance.introduceItem(o, 0);
+	    appearance.announceItem(o, NONE_APPEARANCE_FLAGS);
 	return true;
 	}
 	return false;
@@ -230,7 +243,7 @@ public interface HotPointMoves
 	{
 	    hotPointX = appearance.getObservableLeftBound(item);
 	    if (announce)
-		appearance.introduceItem(item, 0);
+		appearance.announceItem(item, NONE_APPEARANCE_FLAGS);
 	} else
 	{
 	    hotPointX = 0;
@@ -267,7 +280,7 @@ public interface HotPointMoves
 	{
 	    hotPointX = item != null?appearance.getObservableLeftBound(item):0;
 	    if (introduce)
-		appearance.introduceItem(item, 0);
+		appearance.announceItem(item, NONE_APPEARANCE_FLAGS);
 	} else
 	{
 	    hotPointX = 0;
@@ -280,7 +293,7 @@ public interface HotPointMoves
     {
 	final Object item = selected();
 	if (item != null)
-	    appearance.introduceItem(item, 0);
+	    appearance.announceItem(item, NONE_APPEARANCE_FLAGS);
     }
 
     /**
@@ -421,7 +434,7 @@ public interface HotPointMoves
 	if (modelIndex < 0 || modelIndex >= model.getItemCount())
 	    return "";
 	final Object res = model.getItem(modelIndex);
-	return res != null?appearance.getScreenAppearance(res, 0):"";
+	return res != null?appearance.getScreenAppearance(res, NONE_APPEARANCE_FLAGS):"";
     }
 
     @Override public int getHotPointX()
@@ -473,7 +486,7 @@ public interface HotPointMoves
 	if (hotPointY >= count)
 	    return false;
 	final Object current = model.getItem(hotPointY);
-	final String text = appearance.getScreenAppearance(current, 0).substring(hotPointX, appearance.getObservableRightBound(current));
+	final String text = appearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS).substring(hotPointX, appearance.getObservableRightBound(current));
 	if (hotPointY + 1 < count)
 	{
 	    final Object next = model.getItem(hotPointY + 1);
@@ -494,20 +507,20 @@ public interface HotPointMoves
 	{
 	    if (hotPointX >= appearance.getObservableRightBound(model.getItem(hotPointY)))
 		return false;
-	    final String name = appearance.getScreenAppearance(model.getItem(hotPointY), 0);
+	    final String name = appearance.getScreenAppearance(model.getItem(hotPointY), NONE_APPEARANCE_FLAGS);
 	    final int pos = hotPointX < name.length()?hotPointX:name.length();
 	    beginning = name.substring(0, pos);
 	}
 	final String mustBegin = beginning + c;
 	for(int i = 0;i < count;++i)
 	{
-	    final String name = appearance.getScreenAppearance(model.getItem(i), 0);
+	    final String name = appearance.getScreenAppearance(model.getItem(i), NONE_APPEARANCE_FLAGS);
 	    if (!name.startsWith(mustBegin))
 		continue;
 	    hotPointY = i;
 	    ++hotPointX;
 	    //	    onNewHotPointY(false);
-	    appearance.introduceItem(model.getItem(hotPointY), 0);
+	    appearance.announceItem(model.getItem(hotPointY), NONE_APPEARANCE_FLAGS);
 	    environment.onAreaNewHotPoint(this);
 	    return true;
 	}
@@ -606,7 +619,7 @@ public interface HotPointMoves
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, 0);
+	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	if (line == null || line.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
@@ -635,7 +648,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, 0);
+	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	if (line == null || line.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
@@ -664,7 +677,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, 0);
+	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	if (line == null || line.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
@@ -702,7 +715,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, 0);
+	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	if (line == null || line.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
@@ -738,7 +751,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, 0);
+	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	hotPointX = appearance.getObservableRightBound(item);
 	environment.hint(Hints.END_OF_LINE);
 	environment.onAreaNewHotPoint(this);
@@ -755,7 +768,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, 0);
+	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	if (line == null)
 	{
 	    environment.hint(Hints.EMPTY_LINE);
@@ -809,7 +822,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	final int count = model.getItemCount();
 	for(int i = 0;i < count;++i)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(i), 0);
+	    final String line = appearance.getScreenAppearance(model.getItem(i), NONE_APPEARANCE_FLAGS);
 	    res.add(line != null?line:"");
 	}
 	res.add("");
@@ -824,7 +837,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return null;
 	if (fromY == toY)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(fromY), 0);
+	    final String line = appearance.getScreenAppearance(model.getItem(fromY), NONE_APPEARANCE_FLAGS);
 	    if (line == null || line.isEmpty())
 		return null;
 	    final int fromPos = fromX < line.length()?fromX:line.length();
@@ -836,7 +849,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	final LinkedList<String> res = new LinkedList<String>();
 	for(int i = fromY;i < toY;++i)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(i), ListItemAppearance.FOR_CLIPBOARD);
+	    final String line = appearance.getScreenAppearance(model.getItem(i), NONE_APPEARANCE_FLAGS);
 	    res.add(line != null?line:"");
 	}
 	res.add("");
@@ -877,7 +890,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    environment.onAreaNewHotPoint(this);
 	    return;
 	}
-	appearance.introduceItem(item, briefAnnouncement?ListItemAppearance.BRIEF:0);
+	appearance.announceItem(item, briefAnnouncement?BRIEF_ANNOUNCEMENT_ONLY:NONE_APPEARANCE_FLAGS);
 	hotPointX = appearance.getObservableLeftBound(item);
 	environment.onAreaNewHotPoint(this);
     }

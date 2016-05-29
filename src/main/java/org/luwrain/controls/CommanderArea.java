@@ -113,7 +113,7 @@ static public class CommanderParams
     public Comparator comparator = new CommanderUtils.ByNameComparator();
 }
 
-    public static class AppearanceImpl implements ListItemAppearance
+    public static class AppearanceImpl implements ListArea.Appearance
     {
 	//	protected ControlEnvironment environment;
 	protected CommanderAppearance commanderAppearance;
@@ -124,15 +124,17 @@ static public class CommanderParams
 	    this.commanderAppearance = commanderAppearance;
 	}
 
-	@Override public void introduceItem(Object item, int flags)
+	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
-	    commanderAppearance.introduceEntry((Entry)item, (flags & BRIEF) > 0);
+	    NullCheck.notNull(flags, "flags");
+	    commanderAppearance.introduceEntry((Entry)item, flags.contains(Flags.BRIEF));
 	}
 
-	@Override public String getScreenAppearance(Object item, int flags)
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
 	    final Entry entry = (Entry)item;
 
 	    NullCheck.notNull(entry, "entry");
