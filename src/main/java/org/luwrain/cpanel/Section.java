@@ -26,11 +26,11 @@ public interface Section
 	HAS_DELETE,
     };
 
-    SectionArea getSectionArea(Environment environment);
+    SectionArea getSectionArea(ControlPanel controlPanel);
     Element getElement();
-    boolean canCloseSection(Environment environment);
-    boolean onTreeInsert(Environment environment);
-    boolean onTreeDelete(Environment environment);
+    boolean canCloseSection(ControlPanel controlPanel);
+    boolean onTreeInsert(ControlPanel controlPanel);
+    boolean onTreeDelete(ControlPanel controlPanel);
     boolean isSectionEnabled();
     Set<Flags> getSectionFlags();
 }

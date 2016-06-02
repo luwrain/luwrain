@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 
 public class EmptySection implements Section
 {
-    @Override public SectionArea getSectionArea(Environment environment)
+    @Override public SectionArea getSectionArea(ControlPanel controlPanel)
     {
 	return null;
     }
@@ -32,17 +32,17 @@ public class EmptySection implements Section
 	return null;
     }
 
-    @Override public boolean canCloseSection(Environment environment)
+    @Override public boolean canCloseSection(ControlPanel controlPanel)
     {
 	return true;
     }
 
-    @Override public boolean onTreeInsert(Environment environment)
+    @Override public boolean onTreeInsert(ControlPanel controlPanel)
     {
 	return false;
     }
 
-    @Override public boolean onTreeDelete(Environment environment)
+    @Override public boolean onTreeDelete(ControlPanel controlPanel)
     {
 	return false;
     }

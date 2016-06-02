@@ -10,6 +10,7 @@ class TreeItem
 {
     Element el;
     Factory factory;
+    boolean onDemandFilled = false;
     Section sect = null;
     final LinkedList<Element> children = new LinkedList<Element>();
 

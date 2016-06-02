@@ -23,7 +23,8 @@ class Base
 	NullCheck.notNullItems(factories, "factories");
 	this.luwrain = luwrain;
 	this.factories = factories;
-	treeModelSource = new SectionsTreeModelSource(treeItems);
+	treeModelSource = new SectionsTreeModelSource(this, 
+treeItems);
 	treeModel = new CachedTreeModel(treeModelSource);
 	refreshTreeItems();
 	return true;
@@ -83,6 +84,24 @@ class Base
 	treeItems = newItems;
 	treeModelSource.setTreeItems(treeItems);
     }
+
+    void addOnDemandElements(TreeItem treeItem)
+    {
+	NullCheck.notNull(treeItem, "treeItem");
+	if (treeItem.onDemandFilled)
+	    return;
+	final Element[] toAdd = treeItem.factory.getOnDemandElements(treeItem.el);
+	for(Element e: toAdd)
+	{
+	    if (!e.getParentElement().equals(treeItem.el))
+		continue;
+		if (!treeItems.containsKey(e))
+treeItems.put(e, new TreeItem(e, treeItem.factory));
+		treeItem.children.add(e);
+	}
+	treeItem.onDemandFilled = true;
+    }
+
 
     TreeArea.Model getTreeModel()
     {

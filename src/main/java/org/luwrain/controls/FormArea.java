@@ -207,6 +207,18 @@ public class FormArea  extends NavigateArea
 	return null;
     }
 
+    public boolean addEdit(String itemName, String caption)
+    {
+	return addEdit(itemName, caption, "");
+    }
+
+    public boolean addEdit(String itemName, String caption,
+			   String initialText)
+    {
+	return addEdit(itemName, caption, initialText, null, true);
+    }
+
+
     public boolean addEdit(String itemName, String caption,
 			   String initialText, Object obj, boolean enabled)
     {

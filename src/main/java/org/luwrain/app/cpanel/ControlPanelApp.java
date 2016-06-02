@@ -30,7 +30,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
     private Luwrain luwrain;
     private final Base base = new Base();
     private Strings strings;
-    private EnvironmentImpl environment;
+    private ControlPanelImpl iface;
     private Factory[] factories;
     private Section currentSection = null;
     private TreeArea sectionsArea;
@@ -49,9 +49,9 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	    return false;
 	strings = (Strings)o;
 	this.luwrain = luwrain;
-	if (!base.init(luwrain, new Factory[0]))
+	if (!base.init(luwrain, factories))
 	    return false;
-	environment = new EnvironmentImpl(luwrain, this);
+	iface = new ControlPanelImpl(luwrain, this);
 	createArea();
 	return true;
     }
@@ -62,7 +62,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	if (!(obj instanceof Section))
 	    return false;
 	final Section sect = (Section)obj;
-	final SectionArea area = sect.getSectionArea(environment);
+	final SectionArea area = sect.getSectionArea(iface);
 	if (area == null)
 	    return false;
 	if (!mayCloseCurrentSection())
@@ -97,7 +97,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	if (o == null || !(o instanceof Section))
 	    return false;
 	final Section sect = (Section)o;
-	return sect.onTreeInsert(environment);
+	return sect.onTreeInsert(iface);
     }
 
     @Override public boolean onSectionsDelete()
@@ -106,7 +106,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	if (o == null || !(o instanceof Section))
 	    return false;
 	final Section sect = (Section)o;
-	return sect.onTreeDelete(environment);
+	return sect.onTreeDelete(iface);
     }
 
     private void createArea()
@@ -192,7 +192,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
     {
 	if (currentSection == null)
 	    return true;
-	return currentSection.canCloseSection(environment);
+	return currentSection.canCloseSection(iface);
     }
 
     @Override public String getAppName()

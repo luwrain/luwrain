@@ -27,6 +27,8 @@ import org.luwrain.util.*;
 
 public class ListArea  implements Area, RegionProvider
 {
+    public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM};
+
     public interface Model
     {
 	int getItemCount();
@@ -54,15 +56,17 @@ public interface HotPointMoves
     int numberOfEmptyLinesBottom();
     int oneLineUp(int index, int modelLineCount);
     int oneLineDown(int index, int modelLineCount);
+    void setFlags(Set<Flags> flags);
 }
 
-    public static class Params
+    static public class Params
     {
 	public ControlEnvironment environment;
 	public Model model;
     public Appearance appearance;
 	public ListClickHandler clickHandler;
 	public String name;
+	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
     }
 
     protected final Region region = new Region(this);
@@ -70,83 +74,11 @@ public interface HotPointMoves
     protected String areaName = "";
     protected Model model;
     protected Appearance appearance;
+    protected Set<Flags> flags;
     protected ListClickHandler clickHandler;
     protected HotPointMoves hotPointMoves = new ListUtils.DefaultHotPointMoves();
     protected int hotPointX = 0;
     protected int hotPointY = 0;
-
-    public ListArea(ControlEnvironment environment, Model model)
-    {
-	this.environment = environment;
-	this.model = model;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (model == null)
-	    throw new NullPointerException("model may not be null");
-	appearance = new DefaultListItemAppearance(environment);
-	resetHotPoint();
-    }
-
-    public ListArea(ControlEnvironment environment,
-		    Model model,
-		    String name)
-    {
-	this.environment = environment;
-	this.model = model;
-	this.areaName = name;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (model == null)
-	    throw new NullPointerException("model may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	appearance = new DefaultListItemAppearance(environment);
-	resetHotPoint();
-    }
-
-    public ListArea(ControlEnvironment environment,
-		    Model model,
-		    Appearance appearance,
-		    String name)
-    {
-	this.environment = environment;
-	this.model = model;
-	this.appearance = appearance;
-	this.areaName = name;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (model == null)
-	    throw new NullPointerException("model may not be null");
-	if (appearance == null)
-	    throw new NullPointerException("appearance may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	resetHotPoint();
-    }
-
-    public ListArea(ControlEnvironment environment,
-		    Model model,
-		    Appearance appearance,
-		    ListClickHandler clickHandler,
-		    String name)
-    {
-	this.environment = environment;
-	this.model = model;
-	this.appearance = appearance;
-	this.clickHandler = clickHandler;
-	this.areaName = name;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (model == null)
-	    throw new NullPointerException("model may not be null");
-	if (appearance == null)
-	    throw new NullPointerException("appearance may not be null");
-	if (clickHandler == null)
-	    throw new NullPointerException("clickHandler may not be null");
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	resetHotPoint();
-    }
 
     public ListArea(Params params)
     {
@@ -155,11 +87,14 @@ public interface HotPointMoves
 	NullCheck.notNull(params.model, "params.model");
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.name, "params.name");
+	NullCheck.notNull(params.flags, "params.flags");
 	this.environment = params.environment;
 	this.model = params.model;
 	this.appearance = params.appearance;
 	this.clickHandler = params.clickHandler;
 	this.areaName = params.name;
+	this.flags = params.flags;
+	hotPointMoves.setFlags(params.flags);
 	resetHotPoint();
     }
 

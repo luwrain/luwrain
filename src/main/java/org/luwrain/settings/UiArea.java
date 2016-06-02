@@ -9,15 +9,15 @@ import org.luwrain.util.*;
 
 class UiArea extends FormArea implements SectionArea
 {
-    private Environment environment;
+    private ControlPanel controlPanel;
     private final RegistryKeys registryKeys = new RegistryKeys();
 
-    UiArea(Environment environment )
+    UiArea(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(environment.getLuwrain()));
-	this.environment = environment;
-	NullCheck.notNull(environment, "environment");
-	final RegistryAutoCheck check = new RegistryAutoCheck(environment.getLuwrain().getRegistry());
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
+	this.controlPanel = controlPanel;
+	NullCheck.notNull(controlPanel, "controlPanel");
+	final RegistryAutoCheck check = new RegistryAutoCheck(controlPanel.getCoreInterface().getRegistry());
 	addEdit("desktop-introduction-file", "Имя файла для отображения на рабочем столе:", check.stringAny(registryKeys.desktopIntroductionFile(), ""), null, true);
 	addEdit("launch-greeting", "Текст голосового приветствия при старте системы:", check.stringAny(registryKeys.launchGreeting(), ""), null, true);
     }
@@ -29,7 +29,7 @@ class UiArea extends FormArea implements SectionArea
 	    switch(event.getSpecial())
 	    {
 	    case TAB:
-		environment.gotoSectionsTree ();
+		controlPanel.gotoSectionsTree ();
 		return true;
 	    }
 	return super.onKeyboardEvent(event);
@@ -41,7 +41,7 @@ class UiArea extends FormArea implements SectionArea
 	switch(event.getCode())
 	{
 	case CLOSE:
-	    environment.close();
+	    controlPanel.close();
 	    return true;
 	default:
 	    return super.onEnvironmentEvent(event);
@@ -55,7 +55,7 @@ class UiArea extends FormArea implements SectionArea
 
     boolean save()
     {
-	final Luwrain luwrain = environment.getLuwrain();
+	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final Registry registry = luwrain.getRegistry();
 	if (!registry.setString(registryKeys.desktopIntroductionFile(), getEnteredText("desktop-introduction-file")))
 	    return false;

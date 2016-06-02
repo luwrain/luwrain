@@ -24,11 +24,14 @@ import org.luwrain.cpanel.*;
 
 class SectionsTreeModelSource implements CachedTreeModelSource
 {
+    private Base base;
     private HashMap<Element, TreeItem> treeItems;
 
-    SectionsTreeModelSource(HashMap<Element, TreeItem> treeItems)
+    SectionsTreeModelSource(Base base, HashMap<Element, TreeItem> treeItems)
     {
+	NullCheck.notNull(base, "base");
 	NullCheck.notNull(treeItems, "treeItems");
+	this.base = base;
 	this.treeItems = treeItems;
     }
 
@@ -48,6 +51,7 @@ void     setTreeItems(HashMap<Element, TreeItem> treeItems)
 	NullCheck.notNull(obj, "obj");
 	final Element el = ((Section)obj).getElement();
 	final TreeItem item = treeItems.get(el);
+	base.addOnDemandElements(item);
 	if (item == null || item.children.isEmpty())
 	    return new Section[0];
 	final LinkedList<Section> res = new LinkedList<Section>();

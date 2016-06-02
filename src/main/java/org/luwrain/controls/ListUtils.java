@@ -16,13 +16,19 @@
 
 package org.luwrain.controls;
 
+import java.util.*;
+
+import org.luwrain.core.NullCheck;
+
 public class ListUtils
 {
     static public class DefaultHotPointMoves implements ListArea.HotPointMoves 
     {
+	protected boolean hasEmptyLineTop = false;
+
 	@Override public int numberOfEmptyLinesTop()
 	{
-	    return 1;
+	    return hasEmptyLineTop?1:0;
 	}
 
 	    @Override public int numberOfEmptyLinesBottom()
@@ -32,13 +38,19 @@ public class ListUtils
 
 	    @Override public int oneLineUp(int index, int modelItemCount)
 	    {
-		System.out.println(index);
 		return index > 0?index - 1:0;
 	    }
 
 	    @Override public int oneLineDown(int index, int modelItemCount)
 	    {
-		return (index < modelItemCount + 1)?index + 1:index;
+		final int count = modelItemCount + (hasEmptyLineTop?1:0) + 1;
+		return (index + 1 < count)?index + 1:index;
 	    }
+
+	@Override public void setFlags(Set<ListArea.Flags> flags)
+	{
+	    NullCheck.notNull(flags, "flags");
+	    hasEmptyLineTop = flags.contains(ListArea.Flags.EMPTY_LINE_TOP);
+	}
 	}
     }

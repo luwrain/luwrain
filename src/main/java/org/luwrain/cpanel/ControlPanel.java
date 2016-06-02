@@ -17,11 +17,14 @@
 package org.luwrain.cpanel;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 
-public interface Environment
+public interface ControlPanel
 {
     void close();
     void gotoSectionsTree();
+    boolean onEnvironmentEvent(EnvironmentEvent event);
+    boolean onKeyboardEvent(KeyboardEvent event);
     void refreshSectionsTree();
-    Luwrain getLuwrain();
+    Luwrain getCoreInterface();
 }

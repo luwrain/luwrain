@@ -9,15 +9,15 @@ import org.luwrain.util.*;
 
 class PersonalInfoArea extends FormArea implements SectionArea
 {
-    private Environment environment;
+    private ControlPanel controlPanel;
     private final RegistryKeys registryKeys = new RegistryKeys();
 
-    PersonalInfoArea(Environment environment )
+    PersonalInfoArea(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(environment.getLuwrain()));
-	this.environment = environment;
-	NullCheck.notNull(environment, "environment");
-	final RegistryAutoCheck check = new RegistryAutoCheck(environment.getLuwrain().getRegistry());
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
+	this.controlPanel = controlPanel;
+	NullCheck.notNull(controlPanel, "controlPanel");
+	final RegistryAutoCheck check = new RegistryAutoCheck(controlPanel.getCoreInterface().getRegistry());
 	addEdit("name", "Полное имя:", check.stringAny(registryKeys.personalFullName(), ""), null, true);
 	addEdit("address", "Основной адрес электронной почты:", check.stringAny(registryKeys.personalDefaultMailAddress(), ""), null, true);
 	activateMultilineEdit("Текст подписи в сообщениях электронной почты:", check.stringAny(registryKeys.personalSignature(), ""), true);
@@ -30,7 +30,7 @@ class PersonalInfoArea extends FormArea implements SectionArea
 	    switch(event.getSpecial())
 	    {
 	    case TAB:
-		environment.gotoSectionsTree ();
+		controlPanel.gotoSectionsTree ();
 		return true;
 	    }
 	return super.onKeyboardEvent(event);
@@ -42,7 +42,7 @@ class PersonalInfoArea extends FormArea implements SectionArea
 	switch(event.getCode())
 	{
 	case CLOSE:
-	    environment.close();
+	    controlPanel.close();
 	    return true;
 	default:
 	    return super.onEnvironmentEvent(event);
@@ -56,7 +56,7 @@ class PersonalInfoArea extends FormArea implements SectionArea
 
     boolean save()
     {
-	final Luwrain luwrain = environment.getLuwrain();
+	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final Registry registry = luwrain.getRegistry();
 	if (!registry.setString(registryKeys.personalFullName(), getEnteredText("name")))
 	    return false;

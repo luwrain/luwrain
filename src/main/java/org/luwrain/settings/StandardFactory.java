@@ -45,6 +45,11 @@ public class StandardFactory implements Factory
 	};
     }
 
+    @Override public Element[] getOnDemandElements(Element parent)
+    {
+	return new Element[0];
+    }
+
     @Override public org.luwrain.cpanel.Section createSection(Element el)
     {
 	NullCheck.notNull(el, "el");
@@ -75,24 +80,24 @@ public class StandardFactory implements Factory
 
 	//Other sections
 	if (el.equals(hotKeys))
-	    return new SimpleSection(hotKeys, "Общие горячие клавиши", (env)->HotKeys.create(env.getLuwrain()));
+	    return new SimpleSection(hotKeys, "Общие горячие клавиши", (controlPanel)->HotKeys.create(controlPanel.getCoreInterface()));
 	if (el.equals(fileTypes))
-	    return new SimpleSection(fileTypes, "Типы файлов", (env)->FileTypes.create(env.getLuwrain()));
+	    return new SimpleSection(fileTypes, "Типы файлов", (controlPanel)->FileTypes.create(controlPanel.getCoreInterface()));
 	if (el.equals(mainMenu))
 	    return new SimpleSection(mainMenu, "Главное меню");
 	if (el.equals(sysInfo))
-	    return new SimpleSection(sysInfo, "Информация о системе", (env)->SysInfo.create(env.getLuwrain()));
+	    return new SimpleSection(sysInfo, "Информация о системе", (controlPanel)->SysInfo.create(controlPanel.getCoreInterface()));
 
 	if (el.equals(speechParams))
-	    return new SimpleSection(speechParams, "Основные параметры", (env)->SpeechParams.create(env.getLuwrain()));
+	    return new SimpleSection(speechParams, "Основные параметры", (controlPanel)->SpeechParams.create(controlPanel.getCoreInterface()));
 	if (el.equals(speechCurrent))
-	    return new SimpleSection(speechCurrent, "Загруженные каналы", (env)->SpeechCurrent.create(env.getLuwrain()));
+	    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel.getCoreInterface()));
 	if (el.equals(speechChannels))
 	    return new SimpleSection(speechChannels, "Настройка каналов");
 	if (el.equals(soundsList))
-	    return new SimpleSection(soundsList, "Звуки системных событий", (env)->SoundsList.create(env.getLuwrain()));
+	    return new SimpleSection(soundsList, "Звуки системных событий", (controlPanel)->SoundsList.create(controlPanel.getCoreInterface()));
 	if (el.equals(soundSchemes))
-	    return new SimpleSection(soundSchemes, "Звуковые схемы", (env)->SoundSchemes.create(env.getLuwrain()));
+	    return new SimpleSection(soundSchemes, "Звуковые схемы", (controlPanel)->SoundSchemes.create(controlPanel.getCoreInterface()));
 	return null;
     }
 }

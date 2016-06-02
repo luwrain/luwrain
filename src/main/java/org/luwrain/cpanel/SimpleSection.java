@@ -24,7 +24,7 @@ public class SimpleSection implements Section
 {
     public interface AreaFactory
     {
-	SectionArea newSectionArea(Environment env);
+	SectionArea newSectionArea(ControlPanel controlPanel);
     }
 
     protected Element element;
@@ -75,14 +75,14 @@ public class SimpleSection implements Section
 	this.flags = flags;
     }
 
-    @Override public SectionArea getSectionArea(Environment env)
+    @Override public SectionArea getSectionArea(ControlPanel controlPanel)
     {
-	NullCheck.notNull(env, "env");
+	NullCheck.notNull(controlPanel, "controlPanel");
 	if (area != null)
 	    return area;
 	if (areaFactory == null)
 	    return null;
-	area = areaFactory.newSectionArea(env);
+	area = areaFactory.newSectionArea(controlPanel);
 	return area;
     }
 
@@ -91,17 +91,17 @@ public class SimpleSection implements Section
 	return element;
     }
 
-    @Override public boolean canCloseSection(Environment environment)
+    @Override public boolean canCloseSection(ControlPanel controlPanel)
     {
 	return true;
     }
 
-    @Override public boolean onTreeInsert(Environment environment)
+    @Override public boolean onTreeInsert(ControlPanel controlPanel)
     {
 	return false;
     }
 
-    @Override public boolean onTreeDelete(Environment environment)
+    @Override public boolean onTreeDelete(ControlPanel controlPanel)
     {
 	return false;
     }

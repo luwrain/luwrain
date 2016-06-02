@@ -63,13 +63,13 @@ static private class Entry
 
     static private class Area extends FormArea implements SectionArea
     {
-	private Environment environment;
+	private ControlPanel controlPanel;
 
-	Area(Environment environment , String name)
+	Area(ControlPanel controlPanel, String name)
 	{
-	    super(new DefaultControlEnvironment(environment.getLuwrain()), name);
-	    NullCheck.notNull(environment, "environment");
-	    this.environment = environment;
+	    super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), name);
+	    NullCheck.notNull(controlPanel, "controlPanel");
+	    this.controlPanel = controlPanel;
 	}
 
 	@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -79,7 +79,7 @@ static private class Entry
 		switch(event.getSpecial())
 		{
 		case TAB:
-		    environment.gotoSectionsTree ();
+		    controlPanel.gotoSectionsTree ();
 	    return true;
 		}
 	return super.onKeyboardEvent(event);
@@ -91,7 +91,7 @@ static private class Entry
 	    switch(event.getCode())
 	    {
 	    case CLOSE:
-		environment.close();
+		controlPanel.close();
 		return true;
 	    default:
 		return super.onEnvironmentEvent(event);
@@ -141,10 +141,10 @@ StringLoader strLoader, StringSaver strSaver)
 	return element;
     }
 
-    @Override public SectionArea getSectionArea(Environment environment)
+    @Override public SectionArea getSectionArea(ControlPanel controlPanel)
     {
 	if (area == null)
-	    area = createArea(environment);
+	    area = createArea(controlPanel);
 	return area;
     }
 
@@ -153,12 +153,12 @@ StringLoader strLoader, StringSaver strSaver)
 	return name;
     }
 
-    @Override public boolean canCloseSection(Environment environment)
+    @Override public boolean canCloseSection(ControlPanel controlPanel)
     {
 	if (area == null)
 	    return true;
 	if (save())
-	    environment.getLuwrain().message("Во время сохранения сделанных изменений произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);//FIXME:
+	    controlPanel.getCoreInterface().message("Во время сохранения сделанных изменений произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);//FIXME:
 	return true;
     }
 
@@ -167,9 +167,9 @@ StringLoader strLoader, StringSaver strSaver)
 	return true;
     }
 
-    private Area  createArea(Environment environment)
+    private Area  createArea(ControlPanel controlPanel)
     {
-	final Area res = new Area(environment, name);
+	final Area res = new Area(controlPanel, name);
 for(Entry e: entries)
 {
     switch(e.type)

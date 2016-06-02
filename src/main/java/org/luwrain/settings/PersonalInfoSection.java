@@ -11,10 +11,10 @@ class PersonalInfoSection extends EmptySection
 {
     private PersonalInfoArea area = null;
 
-    @Override public SectionArea getSectionArea(Environment environment)
+    @Override public SectionArea getSectionArea(ControlPanel controlPanel)
     {
 	if (area == null)
-	    area = new PersonalInfoArea(environment);
+	    area = new PersonalInfoArea(controlPanel);
 	return area;
     }
 
@@ -23,12 +23,12 @@ class PersonalInfoSection extends EmptySection
 	return "Персональная информация";
     }
 
-    @Override public boolean canCloseSection(Environment environment)
+    @Override public boolean canCloseSection(ControlPanel controlPanel)
     {
 	if (area == null)
 	    return true;
 	if (!area.save())
-	    environment.getLuwrain().message("Во время сохранения сделанных изменений произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
+	    controlPanel.getCoreInterface().message("Во время сохранения сделанных изменений произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
 	return true;
     }
 }

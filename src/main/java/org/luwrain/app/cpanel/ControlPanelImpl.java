@@ -17,18 +17,19 @@
 package org.luwrain.app.cpanel;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 
-class EnvironmentImpl implements org.luwrain.cpanel.Environment
+class ControlPanelImpl implements org.luwrain.cpanel.ControlPanel
 {
     private Luwrain luwrain;
     private Actions actions;
 
-    EnvironmentImpl(Luwrain luwrain, Actions actions)
+    ControlPanelImpl(Luwrain luwrain, Actions actions)
     {
-	this.luwrain = luwrain;
-	this.actions = actions;
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(actions, "actions");
+	this.luwrain = luwrain;
+	this.actions = actions;
     }
 
     @Override public void close()
@@ -46,7 +47,17 @@ class EnvironmentImpl implements org.luwrain.cpanel.Environment
 	actions.refreshSectionsTree();
     }
 
-    @Override public Luwrain getLuwrain()
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	return false;
+    }
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	return false;
+    }
+
+    @Override public Luwrain getCoreInterface()
     {
 	return luwrain;
     }
