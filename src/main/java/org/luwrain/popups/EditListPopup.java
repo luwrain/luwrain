@@ -25,9 +25,61 @@ public class EditListPopup extends SimpleEditPopup
 {
     static private final int MAX_ALTERNATIVES_TO_SAY = 100;
 
-    protected EditListPopupModel model;
+    static public class Item implements Comparable
+    {
+	protected String value;
+	protected String announcement;
 
-    public EditListPopup(Luwrain luwrain, EditListPopupModel model,
+	public Item()
+	{
+	    value = "";
+	    announcement = "";
+	}
+
+	public Item(String value, String announcement)
+	{
+	    NullCheck.notNull(value, "value");
+	    NullCheck.notNull(announcement, "announcement");
+	    this.value = value;
+	    this.announcement = announcement;
+	}
+
+	public Item(String value)
+	{
+	    NullCheck.notNull(value, "value");
+	    this.value = value;
+	    this.announcement = value;
+	}
+
+	public String value() { return value; }
+	public String announcement() { return announcement; }
+
+	@Override public String toString()
+	{
+	    return value;
+	}
+
+	@Override public int compareTo(Object o)
+	{
+	    return value.compareTo(o.toString());
+	}
+    }
+
+    public interface Model
+    {
+	String getCompletion(String beginning);
+	String[] getAlternatives(String beginning);
+	//May return null, that means no item
+	//Empty value is a usual valid value
+	Item getListPopupPreviousItem(String text);
+	//May return null, that means no item
+	//Empty value is a usual valid value
+	Item getListPopupNextItem(String text);
+    }
+
+    protected Model model;
+
+    public EditListPopup(Luwrain luwrain, EditListPopup.Model model,
 			 String name, String prefix,
 			 String text, Set<Popup.Flags> popupFlags)
     {
@@ -89,13 +141,13 @@ public class EditListPopup extends SimpleEditPopup
 
     private void onKeyUp(boolean briefIntroduction)
     {
-	final EditListPopupItem item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
+	final Item item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
 	    luwrain.hint(Hints.NO_ITEMS_ABOVE);
 	    return;
 	}
-	final String value = briefIntroduction?item.introduction():item.value();
+	final String value = briefIntroduction?item.announcement():item.value();
 	if (value.isEmpty())
 	    luwrain.hint(Hints.EMPTY_LINE); else
 	    luwrain.say(value);
@@ -104,13 +156,13 @@ public class EditListPopup extends SimpleEditPopup
 
     private void onKeyDown(boolean briefIntroduction)
     {
-	final EditListPopupItem item = model.getListPopupNextItem(getTextBeforeHotPoint());
+	final Item item = model.getListPopupNextItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
 	    luwrain.hint(Hints.NO_ITEMS_BELOW);
 	    return;
 	}
-	final String value = briefIntroduction?item.introduction():item.value();
+	final String value = briefIntroduction?item.announcement():item.value();
 	if (value.isEmpty())
 	    luwrain.hint(Hints.EMPTY_LINE); else
 	    luwrain.say(value);

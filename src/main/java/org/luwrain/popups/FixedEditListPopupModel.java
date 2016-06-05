@@ -18,32 +18,34 @@ package org.luwrain.popups;
 
 import java.util.*;
 
+import org.luwrain.popups.EditListPopup.Item;
+
 public class FixedEditListPopupModel extends DynamicEditListPopupModel
 {
-    private EditListPopupItem[] fixedItems;
+    protected EditListPopup.Item[] fixedItems;
 
     public FixedEditListPopupModel(String[] items)
     {
 	if (items == null)
 	    throw new NullPointerException("items may not be null");
-	Vector<EditListPopupItem> v = new Vector<EditListPopupItem>();
+	final Vector<Item> v = new Vector<Item>();
 	for(String s: items)
 	    if (s != null && !s.isEmpty())
-		v.add(new EditListPopupItem(s));
-	fixedItems = new EditListPopupItem[v.size()];
+		v.add(new Item(s));
+	fixedItems = new Item[v.size()];
 	for(int i = 0;i < v.size();++i)
-	    fixedItems[i] = new EditListPopupItem(items[i]);
+	    fixedItems[i] = new Item(items[i]);
 	    Arrays.sort(fixedItems);
     }
 
-    @Override protected EditListPopupItem[] getItems(String context)
+    @Override protected Item[] getItems(String context)
     {
 	//Returning every time the same items regardless the context;
 	return fixedItems;
     }
 
-    @Override protected EditListPopupItem getEmptyItem(String context)
+    @Override protected Item getEmptyItem(String context)
     {
-	return new EditListPopupItem();
+	return new Item();
     }
 }

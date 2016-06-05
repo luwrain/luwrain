@@ -103,7 +103,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	    NullCheck.notNull(defPath, "defPath");
 	}
 
-	@Override protected EditListPopupItem[] getItems(String context)
+	@Override protected EditListPopup.Item[] getItems(String context)
 	{
 	    Path path = null;
 	    Path base = null;
@@ -127,31 +127,31 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	    if (!from.isEmpty() && !hadTrailingSlash)
 		path = path.getParent();
 	    if (!Files.exists(path) || !Files.isDirectory(path))
-		return new EditListPopupItem[0];
-	    final LinkedList<EditListPopupItem> items = new LinkedList<EditListPopupItem>();
+		return new Item[0];
+	    final LinkedList<Item> items = new LinkedList<Item>();
 	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
 		    for (Path pp : directoryStream) 
 			if (!skipHidden || !Files.isHidden(pp))
 			{
 			if (base != null)
-			    items.add(new EditListPopupItem(base.relativize(pp).toString(), pp.getFileName().toString())); else
-			    items.add(new EditListPopupItem(pp.toString(), pp.getFileName().toString()));
+			    items.add(new Item(base.relativize(pp).toString(), pp.getFileName().toString())); else
+			    items.add(new Item(pp.toString(), pp.getFileName().toString()));
 			}
 		} 
 	    catch (IOException e) 
 	    {
 		e.printStackTrace();
-		return new EditListPopupItem[0];
+		return new Item[0];
 	    }
-	    final EditListPopupItem[] res = items.toArray(new EditListPopupItem[items.size()]);
+	    final EditListPopup.Item[] res = items.toArray(new EditListPopup.Item[items.size()]);
 	    Arrays.sort(res);
 	    return res;
 	}
 
-	@Override protected EditListPopupItem getEmptyItem(String context)
+	@Override protected EditListPopup.Item getEmptyItem(String context)
 	{
 	    if (context == null || context.isEmpty())
-		return new EditListPopupItem();
+		return new EditListPopup.Item();
 	    Path base = null;
 	    Path path = Paths.get(context);
 	    if (!path.isAbsolute())
@@ -160,7 +160,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 		path = base.resolve(path);
 	    }
 	    if (context.endsWith(separator()) && Files.exists(path) && Files.isDirectory(path))
-		return new EditListPopupItem(context);
+		return new EditListPopup.Item(context);
 	    path = path.getParent();
 	    if (path != null)
 	    {
@@ -171,10 +171,10 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 		    (base == null || !base.equals(path)))
 		    suffix = separator();
 		if (base != null)
-		    return new EditListPopupItem(base.relativize(path).toString() + suffix);
-		return new EditListPopupItem(path.toString() + suffix);
+		    return new EditListPopup.Item(base.relativize(path).toString() + suffix);
+		return new EditListPopup.Item(path.toString() + suffix);
 	    }
-	    return new EditListPopupItem(context);
+	    return new EditListPopup.Item(context);
 	}
 
 	@Override public String getCompletion(String beginning)

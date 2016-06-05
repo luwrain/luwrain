@@ -18,17 +18,19 @@ package org.luwrain.popups;
 
 import java.util.*;
 
-public abstract class DynamicEditListPopupModel implements EditListPopupModel
+import org.luwrain.popups.EditListPopup.Item;
+
+public abstract class DynamicEditListPopupModel implements EditListPopup.Model
 {
     //Items must be ordered and all of them should be greater than an empty item;
-    protected abstract EditListPopupItem[] getItems(String context);
-    protected abstract EditListPopupItem getEmptyItem(String context);
+    protected abstract Item[] getItems(String context);
+    protected abstract Item getEmptyItem(String context);
 
     @Override public String getCompletion(String beginning)
     {
 	if (beginning == null)
 	    return "";
-	final EditListPopupItem[] fullItems = getItems(beginning);
+	final Item[] fullItems = getItems(beginning);
 	if (fullItems == null || fullItems.length < 1)
 	    return "";
 	final String[] items = new String[fullItems.length];
@@ -62,7 +64,7 @@ public abstract class DynamicEditListPopupModel implements EditListPopupModel
 
     @Override public String[] getAlternatives(String beginning)
     {
-	final EditListPopupItem[] fullItems = getItems(beginning);
+	final Item[] fullItems = getItems(beginning);
 	if (fullItems == null || fullItems.length < 1)
 	    return new String[0];
 	final String[] items = new String[fullItems.length];
@@ -77,16 +79,16 @@ public abstract class DynamicEditListPopupModel implements EditListPopupModel
 	return matching.toArray(new String[matching.size()]);
     }
 
-    @Override public EditListPopupItem getListPopupPreviousItem(String text)
+    @Override public Item getListPopupPreviousItem(String text)
     {
 	if (text == null || text.isEmpty())
 	    return null;
-	final EditListPopupItem emptyItem = getEmptyItem(text);
+	final Item emptyItem = getEmptyItem(text);
 	if (emptyItem == null)
 	    return null;
 	if (text.compareTo(emptyItem.value()) <= 0)
 	    return null;
-	final EditListPopupItem[] items = getItems(text);
+	final Item[] items = getItems(text);
 	if (items == null || items.length <= 1)
 	    return null;
 	if (text.compareTo(items[0].value()) <= 0)
@@ -97,9 +99,9 @@ public abstract class DynamicEditListPopupModel implements EditListPopupModel
 	return items[items.length - 1];
     }
 
-    @Override public EditListPopupItem getListPopupNextItem(String text)
+    @Override public Item getListPopupNextItem(String text)
     {
-	final EditListPopupItem[] items = getItems(text);
+	final Item[] items = getItems(text);
 	if (text == null || text.isEmpty())
 	    return (items != null && items.length > 0)?items[0]:null;
 	if (items == null || items.length <= 1)
