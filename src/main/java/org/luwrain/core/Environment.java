@@ -896,7 +896,7 @@ class Environment extends EnvironmentAreas
 
     private void showCommandPopup()
     {
-	final EditListPopup popup = new EditListPopup(new Luwrain(this), new FixedEditListPopupModel(commands.getCommandNames()),
+	final EditListPopup popup = new EditListPopup(new Luwrain(this), new EditListPopupUtils.FixedModel(commands.getCommandNames()),
 						      strings.commandPopupName(), strings.commandPopupPrefix(), "", EnumSet.noneOf(Popup.Flags.class));
 	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())

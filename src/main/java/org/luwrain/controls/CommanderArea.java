@@ -29,7 +29,7 @@ import org.luwrain.hardware.*;
 import org.luwrain.os.*;
 
 /**
- * The area for browsing of directories.  This class behaves as a panel in
+ * The area for browsing the directories.  This class behaves as a panel in
  * old-style file commander. The user can explore directory content and
  * move around it, traversing over near directories. Custom filters and
  * comparators are supported.
@@ -75,20 +75,6 @@ public Type type() { return type; }
 	    final Entry e = (Entry)o;
 	    return path.equals(e.path) && type == e.type;
 	}
-
-	static private Type readType(Path path) throws IOException
-	{
-	    NullCheck.notNull(path, "path");
-	    final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-	    if (attr.isDirectory())
-		return Type.DIR;
-	    if (attr.isSymbolicLink())
-		return Type.SYMLINK;
-	    if (attr.isRegularFile())
-		return Type.REGULAR;
-	    return Type.SPECIAL;
-	}
-
     }
 
     public interface Filter
@@ -99,15 +85,22 @@ public Type type() { return type; }
     public interface CommanderAppearance 
     {
 	String getCommanderName(Path path);
-	void announceLocation(Path path);
 	String getScreenLine(Entry entry);
-	void introduceEntry(Entry entry, boolean brief);
+	void announceLocation(Path path);
+	void announceEntry(Entry entry, boolean brief);
+    }
+
+    public interface ClickHandler
+    {
+	public enum Result {OPEN_DIR, OK, REJECTED};
+	Result onCommanderClick(CommanderArea area, Path path, boolean dir);
     }
 
 static public class CommanderParams
 {
     public ControlEnvironment environment;
     public CommanderAppearance appearance;
+    public CommanderArea.ClickHandler clickHandler;
     public boolean selecting = false;
     public Filter filter = null;//FIXME:
     public Comparator comparator = new CommanderUtils.ByNameComparator();
@@ -128,7 +121,7 @@ static public class CommanderParams
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
-	    commanderAppearance.introduceEntry((Entry)item, flags.contains(Flags.BRIEF));
+	    commanderAppearance.announceEntry((Entry)item, flags.contains(Flags.BRIEF));
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
@@ -227,12 +220,14 @@ Filter filter = null;
     }
 
 protected CommanderAppearance commanderAppearance;
+    protected CommanderArea.ClickHandler clickHandler;
     protected boolean selecting = false;
 
     public CommanderArea(CommanderParams params, Path current)
     {
 	super(constructListParams(params));
 	this.commanderAppearance = params.appearance;
+	this.clickHandler = params.clickHandler;
 	this.selecting = params.selecting;
 	super.setClickHandler((area, index, obj)->clickImpl(index, (Entry)obj));
 	if (!Files.isDirectory(current))
@@ -256,7 +251,7 @@ protected CommanderAppearance commanderAppearance;
 	hotPointX = 0;
 	environment.onAreaNewHotPoint(this);
 	if (announce)
-	    commanderAppearance.introduceEntry(model().entries[hotPointY], false);
+	    commanderAppearance.announceEntry(model().entries[hotPointY], false);
 	return true;
     }
 
@@ -275,7 +270,7 @@ protected CommanderAppearance commanderAppearance;
 	hotPointX = 0;
 	environment.onAreaNewHotPoint(this);
 	if (announce)
-	    commanderAppearance.introduceEntry(model().entries[hotPointY], false);
+	    commanderAppearance.announceEntry(model().entries[hotPointY], false);
 	return true;
     }
 
@@ -377,9 +372,14 @@ protected CommanderAppearance commanderAppearance;
 	return (ModelImpl)model;
     }
 
+    public void setClickHandler(CommanderArea.ClickHandler clickHandler)
+    {
+	this.clickHandler = clickHandler;
+    }
+
     @Override public void setClickHandler(ListClickHandler clickHandler)
     {
-	throw new UnsupportedOperationException("Changing list click handler for commander areas not allowed, use setCommanderClickHandler() instead");
+	throw new UnsupportedOperationException("Changing list click handler for commander areas not allowed, use setClickHandler(CommanderArea.ClickHandler)instead");
     }
 
 
@@ -428,21 +428,39 @@ protected CommanderAppearance commanderAppearance;
 	return true;
     }
 
-    private boolean clickImpl(int index, Entry entry)
+    protected boolean clickImpl(int index, Entry entry)
     {
 	NullCheck.notNull(entry, "entry");
-if (entry.type() == Entry.Type.DIR || entry.type() == Entry.Type.SYMLINK_DIR)
+	final Path parent = model().current.getParent();
+	if (entry.type() == Entry.Type.PARENT && parent != null)
 	{
-	    final Path parent = model().current.getParent();
-	    if (entry.type() == Entry.Type.PARENT && parent != null)
-		open(parent, model().current.getFileName().toString()); else
-		open(entry.path(), null);
+	    open(parent, model().current.getFileName().toString());
 	    commanderAppearance.announceLocation(model().current);
-	    return true;
+									return true;
+	}
+	if (entry.type() == Entry.Type.DIR || entry.type() == Entry.Type.SYMLINK_DIR)
+	{
+	    ClickHandler.Result res = ClickHandler.Result.OPEN_DIR;
+	    if (this.clickHandler != null)
+		res = this.clickHandler.onCommanderClick(this, entry.path(), true);
+	    switch(res)
+	    {
+	    case OPEN_DIR:
+		open(entry.path(), null);
+		commanderAppearance.announceLocation(model().current);
+		return true;
+	    case OK:
+		return true;
+	    case REJECTED:
+		return false;
+	    }
+	    return false;
 	} //directory
-return false;
+	ClickHandler.Result res = ClickHandler.Result.REJECTED;
+	if (this.clickHandler != null)
+	    res = this.clickHandler.onCommanderClick(this, entry.path(), false);
+	return res == ClickHandler.Result.OK?true:false;
     }
-
 
     static private Entry[] loadEntries(Path path,
 				       Filter filter, Comparator comparator)
@@ -487,6 +505,22 @@ return false;
 	environment.onAreaNewHotPoint(this);
 	environment.onAreaNewName(this);
     }
+
+    static private Entry.Type readType(Path path) throws IOException
+    {
+	NullCheck.notNull(path, "path");
+	final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+	if (attr.isDirectory())
+	    return Entry.Type.DIR;
+	    if (attr.isSymbolicLink())
+		if (Files.isDirectory(path))
+		    return Entry.Type.SYMLINK_DIR; else
+		    return Entry.Type.SYMLINK;
+	    if (attr.isRegularFile())
+		return Entry.Type.REGULAR;
+	    return Entry.Type.SPECIAL;
+	}
+
 
     static private ListArea.Params constructListParams(CommanderParams params)
     {

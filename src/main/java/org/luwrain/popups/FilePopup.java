@@ -91,10 +91,10 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	return true;
     }
 
-    static private class Model extends DynamicEditListPopupModel
+    static protected class Model extends EditListPopupUtils.DynamicModel
     {
-	private Path defPath;
-	private boolean skipHidden = false;
+	protected Path defPath;
+	protected boolean skipHidden = false;
 
 	Model(Path defPath, boolean skipHidden)
 	{

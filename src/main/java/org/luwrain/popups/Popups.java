@@ -200,7 +200,7 @@ public class Popups
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(text, "text");
 	NullCheck.notNullItems(items, "items");
-	final EditListPopup popup = new EditListPopup(luwrain, new FixedEditListPopupModel(items),
+	final EditListPopup popup = new EditListPopup(luwrain, new EditListPopupUtils.FixedModel(items),
 						      name, prefix, text, DEFAULT_POPUP_FLAGS);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())

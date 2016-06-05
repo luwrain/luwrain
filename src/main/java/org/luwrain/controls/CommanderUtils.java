@@ -62,7 +62,7 @@ public class CommanderUtils
 	    this.environment = environment;
 	}
 
-	@Override public void introduceEntry(CommanderArea.Entry entry, boolean brief)
+	@Override public void announceEntry(CommanderArea.Entry entry, boolean brief)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    environment.playSound(Sounds.NEW_LIST_ITEM);
@@ -102,6 +102,7 @@ public class CommanderUtils
 		res += (" " + environment.staticStr(LangStatic.COMMANDER_DIRECTORY));
 		break;
 	    case SYMLINK:
+	    case SYMLINK_DIR:
 		res += (" " + environment.staticStr(LangStatic.COMMANDER_SYMLINK));
 		break;
 	    case SPECIAL:
