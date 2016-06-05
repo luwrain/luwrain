@@ -89,7 +89,7 @@ public class CommanderUtils
 		return;
 	    }
 	    final String name = entry.baseName();
-	    if (name.trim().isEmpty() && !entry.selected() && 
+	    if (name.trim().isEmpty() && !entry.marked() && 
 		entry.type() == Type.REGULAR)
 	    {
 		environment.hint(Hints.EMPTY_LINE);
@@ -109,7 +109,7 @@ public class CommanderUtils
 		res += (" " + environment.staticStr(LangStatic.COMMANDER_SPECIAL));
 		break;
 	    }
-	    if (entry.selected())
+	    if (entry.marked())
 		res = environment.staticStr(LangStatic.COMMANDER_SELECTED) + " " + res;
 	    environment.say(res);
 	}

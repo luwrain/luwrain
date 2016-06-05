@@ -715,14 +715,19 @@ final int rightBound = appearance.getObservableRightBound(item);
 	return true;
     }
 
-    private boolean onInsert(KeyboardEvent event)
+    protected boolean onInsert(KeyboardEvent event)
     {
-	final int count = model.getItemCount();
-	if (count == 0 || hotPointY >= count)
+	final int index = selectedIndex();
+	if (index < 0)
 	    return false;
-	if (!model.toggleMark(hotPointY))
+	if (!model.toggleMark(index))
 	    return false;
 	environment.onAreaNewContent(this);
+	if (index + 1 < model.getItemCount() || hotPointMoves.numberOfEmptyLinesBottom() > 0)
+	{
+	    ++hotPointY;
+	    onNewHotPointY(false); 
+	}
 	return true;
     }
 
@@ -806,7 +811,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	return false;
     }
 
-    private void onNewHotPointY(boolean briefAnnouncement)
+    protected void onNewHotPointY(boolean briefAnnouncement)
     {
 	final int index = hotPointY - hotPointMoves.numberOfEmptyLinesTop();
 	final int count = model.getItemCount();

@@ -36,22 +36,24 @@ import org.luwrain.os.*;
  */
 public class CommanderArea extends ListArea
 {
-    public static final String PARENT_DIR = "..";
+    static public final String PARENT_DIR = "..";
+
+    public enum Flags {MARKING};
 
     static public class Entry
     {
 	enum Type {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
 
-	private Path path;
-	private Type type;
-	private boolean selected;
+	protected Path path;
+	protected Type type;
+	protected boolean marked;
 
 	Entry(Path path) throws IOException
 	{
 	    NullCheck.notNull(path, "path");
 	    this.path = path;
 	    this.type = readType(path);
-	    this.selected = false;
+	    this.marked = false;
 	}
 
 	Entry(Path path, Type type)
@@ -60,12 +62,27 @@ public class CommanderArea extends ListArea
 	    NullCheck.notNull(type, "type");
 	    this.path = path;
 	    this.type = type;
-	    this.selected = false;
+	    this.marked = false;
+	}
+
+	public void mark()
+	{
+	    marked = true;
+	}
+
+	public void unmark()
+	{
+	    marked = false;
+	}
+
+	public void toggleMark()
+	{
+	    marked = !marked;
 	}
 
 	public Path path() { return path; }
 public Type type() { return type; }
-	public boolean selected() { return selected; }
+	public boolean marked() { return marked; }
 	public String baseName() { return path.getFileName().toString(); }
 
 	@Override public boolean equals(Object o)
@@ -131,11 +148,11 @@ static public class CommanderParams
 	    final Entry entry = (Entry)item;
 
 	    NullCheck.notNull(entry, "entry");
-	    final boolean selected = entry.selected();
+	    final boolean marked = entry.marked();
 	    final CommanderArea.Entry.Type type = entry.type();
 	    final String name = commanderAppearance.getScreenLine(entry);
 	    final StringBuilder b = new StringBuilder();
-	    b.append(selected?"*":" ");
+	    b.append(marked?"*":" ");
 	    switch(type)
 	    {
 	    case DIR:
@@ -177,6 +194,7 @@ static public class CommanderParams
 
     static public class ModelImpl implements ListArea.Model
     {
+	boolean marking = true;
 Filter filter = null;
 	Comparator comparator = null;
 
@@ -210,7 +228,15 @@ Filter filter = null;
 
 	@Override public boolean toggleMark(int index)
 	{
-	    return false;
+	    if (!marking)
+		return false;
+	    if (entries == null ||
+		index < 0 || index >= entries.length)
+		return false;
+	    if (entries[index].type() == Entry.Type.PARENT)
+		return false;
+	    entries[index].toggleMark();
+	    return true;
 	}
 
 	@Override public void refresh()
@@ -292,7 +318,7 @@ protected CommanderAppearance commanderAppearance;
 	{
 	    final LinkedList<Path> paths = new LinkedList<Path>();
 	    for(Entry e: model().entries)
-		if (e.selected() && e.type() != Entry.Type.PARENT)
+		if (e.marked() && e.type() != Entry.Type.PARENT)
 		    paths.add(e.path());
 	    if (!paths.isEmpty())
 		return paths.toArray(new Path[paths.size()]);
@@ -506,7 +532,7 @@ protected CommanderAppearance commanderAppearance;
 	environment.onAreaNewName(this);
     }
 
-    static private Entry.Type readType(Path path) throws IOException
+    static protected Entry.Type readType(Path path) throws IOException
     {
 	NullCheck.notNull(path, "path");
 	final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
@@ -521,8 +547,7 @@ protected CommanderAppearance commanderAppearance;
 	    return Entry.Type.SPECIAL;
 	}
 
-
-    static private ListArea.Params constructListParams(CommanderParams params)
+    static protected ListArea.Params constructListParams(CommanderParams params)
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.environment, "params.environment");
