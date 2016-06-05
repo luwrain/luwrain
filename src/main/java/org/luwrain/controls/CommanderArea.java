@@ -99,7 +99,7 @@ public Type type() { return type; }
     public interface CommanderAppearance 
     {
 	String getCommanderName(Path path);
-	void introduceLocation(Path path);
+	void announceLocation(Path path);
 	String getScreenLine(Entry entry);
 	void introduceEntry(Entry entry, boolean brief);
     }
@@ -424,7 +424,7 @@ protected CommanderAppearance commanderAppearance;
 	if (parent == null)
 	    return false;
 	open(parent, model().current.getFileName().toString());
-	commanderAppearance.introduceLocation(model().current);
+	commanderAppearance.announceLocation(model().current);
 	return true;
     }
 
@@ -437,7 +437,7 @@ if (entry.type() == Entry.Type.DIR || entry.type() == Entry.Type.SYMLINK_DIR)
 	    if (entry.type() == Entry.Type.PARENT && parent != null)
 		open(parent, model().current.getFileName().toString()); else
 		open(entry.path(), null);
-	    commanderAppearance.introduceLocation(model().current);
+	    commanderAppearance.announceLocation(model().current);
 	    return true;
 	} //directory
 return false;

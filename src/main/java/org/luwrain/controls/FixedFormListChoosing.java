@@ -16,6 +16,8 @@
 
 package org.luwrain.controls;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.popups.Popups;
 
@@ -24,20 +26,19 @@ public class FixedFormListChoosing implements FormListChoosing
     private Luwrain luwrain;
     private String name;
     private Object[] items;
-    private int popupFlags;
+    private Set<Popup.Flags> popupFlags;
 
     public FixedFormListChoosing(Luwrain luwrain, String name,
-			  Object[] items, int popupFlags)
+			  Object[] items, Set<Popup.Flags> popupFlags)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNullItems(items, "items");
+	NullCheck.notNull(popupFlags, "popupFlags");
 	this.luwrain = luwrain;
 	this.name = name;
 	this.items = items;
 	this.popupFlags = popupFlags;
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(items, "items");
-	for(int i = 0;i < items.length;++i)
-	    NullCheck.notNull(items[i], "items[" + i + "]");
     }
 
     @Override public Object chooseItem(Area area, String formListItem, Object currentSelected)

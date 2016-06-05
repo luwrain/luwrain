@@ -337,6 +337,11 @@ class Environment extends EnvironmentAreas
 	introduceApp = true;
     }
 
+    void announceActiveAreaIface()
+    {
+	introduceActiveArea();
+    }
+
     void onNewAreaLayoutIface(Luwrain instance)
     {
 	NullCheck.notNull(instance, "instance");

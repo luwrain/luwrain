@@ -16,10 +16,13 @@
 
 package org.luwrain.core;
 
+import java.util.*;
+
 public interface I18n
 {
     String staticStr(int code);
     String hasSpecialNameOfChar(char ch);
     String commandTitle(String command);
     Object getStrings(String component);
+    String pastTimeBrief(Date date);
 }

@@ -30,9 +30,29 @@ public class Popups
 
     static public String simple(Luwrain luwrain,
 				String name, String prefix,
+				String text, Set<Popup.Flags> popupFlags)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(popupFlags, "popupFlags");
+	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.text ();
+    }
+
+    static public String simple(Luwrain luwrain,
+				String name, String prefix,
 				String text)
     {
-	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, EnumSet.noneOf(Popup.Flags.class));
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, DEFAULT_POPUP_FLAGS);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -40,109 +60,73 @@ public class Popups
     }
 
     static public Object fixedList(Luwrain luwrain,
-			    String name, Object[] items,
-int popupFlags)
+				   String name, final Object[] items,
+				   Set<Popup.Flags> popupFlags)
     {
-	final Object[] items2 = items;
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNullItems(items, "items");
+	NullCheck.notNull(popupFlags, "popupFlags");
+	//	final Object[] items2 = items;
 	final ListArea.Model model = new ListArea.Model(){
-		private Object[] items = items2;
-		@Override public int getItemCount()
-		{
-		    return items.length;
-		}
-		@Override public Object getItem(int index)
-		{
-		    return index < items.length?items[index]:null;
-		}
-		@Override public boolean toggleMark(int index)
-		{
-		    return false;
-		}
-		@Override public void refresh()
-		{
-		}
+		@Override public int getItemCount() { return items.length; }
+		@Override public Object getItem(int index) { return index < items.length?items[index]:null; }
+		@Override public boolean toggleMark(int index) { return false; }
+		@Override public void refresh() {}
 	    };
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.name = name;
 	params.model = model;
 	params.appearance = new DefaultListItemAppearance(params.environment);
-	final ListPopup popup = new ListPopup(luwrain, params, EnumSet.noneOf(Popup.Flags.class));
+	final ListPopup popup = new ListPopup(luwrain, params, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
 	return popup.selected();
     }
 
-    static public Path open(Luwrain luwrain)
+    static public Object fixedList(Luwrain luwrain,
+				   String name, Object[] items)
     {
-	//	return open(luwrain, null, null, null, null, null, makeFilePopupFlags(luwrain, 0), null);
-	return null;
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNullItems(items, "items");
+	return fixedList(luwrain, name, items, DEFAULT_POPUP_FLAGS);
     }
 
-    static public Path open(Luwrain luwrain,
-			    Path startWith, Path defPath)
-    {
-	//	return open(luwrain, null, null, startWith, defPath, null, makeFilePopupFlags(luwrain, 0));
-	return null;
-    }
-
-    static public Path open(Luwrain luwrain,
-			    Path startWith, Path defPath,
+    static public Path path(Luwrain luwrain,
+			    String name, String prefix,
+			    Path startWith, Path defaultPath,
+			    FilePopup.Acceptance acceptance, 
 			    Set<FilePopup.Flags> filePopupFlags, Set<Popup.Flags> popupFlags)
     {
-	//	return open(luwrain, null, null, startWith, defPath, null, makeFilePopupFlags(luwrain, 0));
-	return null;
-    }
-
-    static public Path open(Luwrain luwrain,
-			    Path startWith, Path defPath,
-			    DefaultFileAcceptance.Type fileType, String[] fileExtensions,
-			    Set<Popup.Flags> filePopupFlags, Set<Popup.Flags> popupFlags)
-    {
-	//	return open(luwrain, null, null, startWith, defPath, new DefaultFileAcceptance(fileType, fileExtensions), makeFilePopupFlags(luwrain, popupFlags));
-	return null;
-    }
-
-    static public Path open(Luwrain luwrain,
-			    String name, String prefix,
-			    Path startWith, Path defPath,
-			    FilePopup.Acceptance acceptance, int popupFlags)
-    {
-	org.luwrain.core.Strings strings = (org.luwrain.core.Strings)luwrain.i18n().getStrings("luwrain.environment");
-	final String chosenName = (name != null && !name.trim().isEmpty())?name.trim():strings.openPopupName();
-	final String chosenPrefix = (prefix != null && !prefix.trim().isEmpty())?prefix.trim():strings.openPopupPrefix();
-	final Path chosenStartWith = startWith != null?startWith:luwrain.launchContext().userHomeDirAsPath();
-	final Path chosenDefPath = defPath != null?defPath:luwrain.launchContext().userHomeDirAsPath();
-	final FilePopup popup = new FilePopup(luwrain, chosenName, chosenPrefix, acceptance,
-					      chosenStartWith, chosenDefPath, makeFilePopupFlags(luwrain, popupFlags), EnumSet.noneOf(Popup.Flags.class));
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(startWith, "startWith");
+	NullCheck.notNull(defaultPath, "defaultPath");
+	NullCheck.notNull(acceptance, "acceptance");
+	NullCheck.notNull(filePopupFlags, "filePopupFlags");
+	NullCheck.notNull(popupFlags, "popupFlags");
+	final FilePopup popup = new FilePopup(luwrain, name, prefix, acceptance,
+					      startWith, defaultPath, filePopupFlags, popupFlags);
 	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.result();
+	return popup.closing.cancelled()?null:popup.result();
     }
 
-    static public Path chooseFile(Luwrain luwrain,
+    static public Path path(Luwrain luwrain,
 			    String name, String prefix,
-			    Path startWith, Path defPath,
-			    DefaultFileAcceptance.Type fileType)
+			    Path startWith, FilePopup.Acceptance acceptance)
     {
-	return chooseFile(luwrain, name, prefix, startWith, defPath, fileType, new String[0], EnumSet.noneOf(FilePopup.Flags.class), EnumSet.noneOf(Popup.Flags.class));
-    }
-
-    static public Path chooseFile(Luwrain luwrain,
-			    String name, String prefix,
-			    Path startWith, Path defPath,
-			    DefaultFileAcceptance.Type fileType, String[] fileExtensions,
-				  Set<FilePopup.Flags> filePopupFlags, Set<Popup.Flags> popupFlags)
-    {
-	final FilePopup popup = new FilePopup(luwrain, name, prefix, 
-					      new DefaultFileAcceptance(fileType, fileExtensions), 
-					      startWith, defPath, filePopupFlags, popupFlags);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.result();
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(startWith, "startWith");
+	NullCheck.notNull(acceptance, "acceptance");
+	return path(luwrain, name, prefix,
+		    startWith, startWith, 
+		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
 
     static public Path[] commanderMultiple(Luwrain luwrain, String name,
@@ -158,7 +142,7 @@ int popupFlags)
 
     static public Path commanderSingle(Luwrain luwrain, String name,
 				       Path path, int flags,
-					   Set<Popup.Flags> popupFlags)
+				       Set<Popup.Flags> popupFlags)
     {
 	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, flags, popupFlags);
 	luwrain.popup(popup);
@@ -175,7 +159,6 @@ int popupFlags)
 	NullCheck.notNull(luwrain, "luwrain");
 	return mountedPartitions(luwrain, DEFAULT_POPUP_FLAGS);
     }
-
 
     static public Partition mountedPartitions(Luwrain luwrain, Set<Popup.Flags> popupFlags)
     {
@@ -208,15 +191,6 @@ int popupFlags)
 	return result.file();
     }
 
-    static private Set<FilePopup.Flags> makeFilePopupFlags(Luwrain luwrain, int orig)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	final Settings.UserInterface ui = Settings.createUserInterface(luwrain.getRegistry());
-	if (ui.getFilePopupSkipHidden(false))
-	    return EnumSet.of(FilePopup.Flags.SKIP_HIDDEN);
-	return EnumSet.noneOf(FilePopup.Flags.class);
-    }
-
     static public String fixedEditList(Luwrain luwrain,
 				       String name, String prefix, String text,
 				       String[] items)
@@ -232,5 +206,37 @@ int popupFlags)
 	if (popup.closing.cancelled())
 	    return null;
 	return popup.text();
+    }
+
+    static public boolean confirmDefaultYes(Luwrain luwrain,
+					    String name, String text)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(text, "text");
+	final YesNoPopup popup = new YesNoPopup(luwrain, name, text, true, DEFAULT_POPUP_FLAGS);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return false;
+	return popup.result();
+    }
+
+    static public boolean confirmDefaultNo(Luwrain luwrain,
+					   String name, String text)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(text, "text");
+	final YesNoPopup popup = new YesNoPopup(luwrain, name, text, false, DEFAULT_POPUP_FLAGS);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return false;
+	return popup.result();
+    }
+
+    static public Set<FilePopup.Flags> loadFilePopupFlags(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	return EnumSet.noneOf(FilePopup.Flags.class);
     }
 }

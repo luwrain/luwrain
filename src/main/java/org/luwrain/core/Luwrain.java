@@ -266,6 +266,13 @@ public final class Luwrain implements EventConsumer
 	return environment.getScreenHeightIface();
     }
 
+    public void announceActiveArea()
+    {
+	environment.announceActiveAreaIface();
+    }
+
+
+    //Doesn't produce any announcement
     public void onNewAreaLayout()
     {
 	environment.onNewAreaLayoutIface(this);
@@ -512,6 +519,18 @@ public final class Luwrain implements EventConsumer
 		b.append(c);
 	}
 	return b.toString();
+    }
+
+    public java.nio.file.Path getPathProperty(String propName)
+    {
+	NullCheck.notNull(propName, "propName");
+	switch(propName)
+	{
+	case "luwrain.dir.userhome":
+	    return launchContext().userHomeDirAsPath();
+	default:
+	    return null;
+	}
     }
 
     public String getProperty(String propName)

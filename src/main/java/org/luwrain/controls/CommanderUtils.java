@@ -113,11 +113,13 @@ public class CommanderUtils
 	    environment.say(res);
 	}
 
-	@Override public  void introduceLocation(Path path)
+	@Override public  void announceLocation(Path path)
 	{
 	    NullCheck.notNull(path, "path");
 	    environment.playSound(Sounds.COMMANDER_NEW_LOCATION);
-	    environment.say(path.toString());
+	    if (path.getFileName() != null)
+	    environment.say(path.getFileName().toString()); else
+		environment.say("Корневой каталог");//FIXME:
 	}
 
 	@Override public String getScreenLine(CommanderArea.Entry entry)

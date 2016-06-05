@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-import java.util.Vector;
+import java.util.*;
 
 class I18nImpl implements I18n, I18nExtension
 {
@@ -90,6 +90,11 @@ class I18nImpl implements I18n, I18nExtension
 	    nextCap = false;
 	}
 	return b.toString();
+    }
+
+    @Override public String pastTimeBrief(Date date)
+    {
+	return ((Strings)getStrings("luwrain.environment")).pastTimeBrief(date);
     }
 
     @Override public String[] getStaticValueNames()

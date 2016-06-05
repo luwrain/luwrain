@@ -189,7 +189,7 @@ public interface HotPointMoves
 	return true;
     }
 
-    public void resetState(boolean introduce)
+    public void reset(boolean introduce)
     {
 	EnvironmentEvent.resetRegionPoint(this);
 	resetHotPoint(introduce);
@@ -224,7 +224,7 @@ public interface HotPointMoves
 	environment.onAreaNewHotPoint(this);
     }
 
-    public void introduceSelected()
+    public void announceSelected()
     {
 	final Object item = selected();
 	if (item != null)

@@ -75,8 +75,7 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	if (closing.onKeyboardEvent(event))
 	    return true;
 	if (edit.isPosCovered(pos, 0) && edit.onKeyboardEvent(event))
@@ -98,7 +97,8 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 	case END:
 	    return onEnd(event);
 	case ENTER:
-	    return closing.doOk();
+	    closing.doOk();
+	    return true;
 	default:
 	    return false;
 	}

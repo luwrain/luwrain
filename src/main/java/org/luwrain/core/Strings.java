@@ -16,10 +16,12 @@
 
 package org.luwrain.core;
 
+import java.util.*;
 import org.luwrain.hardware.Partition;
 
 public interface Strings
 {
+    String pastTimeBrief(Date date);
     String noClipboardContent();
     String regionPointSet();
     String linesCopied(int linesNum);

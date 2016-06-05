@@ -71,9 +71,9 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 
     @Override public boolean onOk()
     {
-	if (acceptance == null)
-	    return true;
-	return acceptance.pathAcceptable(result());
+	if (result() == null)
+	    return false;
+	return acceptance != null?acceptance.pathAcceptable(result()):true;
     }
 
     private boolean openCommanderPopup()
