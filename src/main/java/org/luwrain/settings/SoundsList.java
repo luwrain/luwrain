@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
@@ -45,9 +46,29 @@ static private class Item
 	}
     };
 
-    SoundsList(ListArea.Params params)
+    private ControlPanel controlPanel;
+
+    SoundsList(ControlPanel controlPanel, ListArea.Params params)
     {
 	super(params);
+	NullCheck.notNull(controlPanel, "controlPanel");
+	this.controlPanel = controlPanel;
+    }
+
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
+	return super.onKeyboardEvent(event);
+    }
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onEnvironmentEvent(event))
+	    return true;
+	return super.onEnvironmentEvent(event);
     }
 
     static private Item[] loadItems(Registry registry)
@@ -78,14 +99,15 @@ static private class Item
 	return items.toArray(new Item[items.size()]);
     }
 
-    static SoundsList create(Luwrain luwrain)
+    static SoundsList create(ControlPanel controlPanel)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(controlPanel, "controlPanel");
+	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.appearance = new DefaultListItemAppearance(params.environment);
 	params.name = "Звуки системных событий";
 	params.model = new FixedListModel(loadItems(luwrain.getRegistry()));
-	return new SoundsList(params);
+	return new SoundsList(controlPanel, params);
     }
 }

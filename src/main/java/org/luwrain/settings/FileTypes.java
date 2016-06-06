@@ -59,10 +59,30 @@ class FileTypes extends ListArea implements SectionArea
 	}
     }
 
-    FileTypes(ListArea.Params params)
+    private ControlPanel controlPanel;
+
+    FileTypes(ControlPanel controlPanel, ListArea.Params params)
     {
 	super(params);
+	NullCheck.notNull(controlPanel, "controlPanel");
+	this.controlPanel = controlPanel;
 	setClickHandler((area, index, obj)->editItem(obj));
+    }
+
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
+	return super.onKeyboardEvent(event);
+    }
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onEnvironmentEvent(event))
+	    return true;
+	return super.onEnvironmentEvent(event);
     }
 
     private boolean editItem(Object obj)
@@ -94,14 +114,15 @@ class FileTypes extends ListArea implements SectionArea
 	return toSort;
     }
 
-    static FileTypes create(Luwrain luwrain)
+    static FileTypes create(ControlPanel controlPanel)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(controlPanel, "controlPanel");
+	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.appearance = new DefaultListItemAppearance(params.environment);
 	params.name = "Типы файлов";
 	params.model = new FixedListModel(loadItems(luwrain.getRegistry()));
-	return new FileTypes(params);
+	return new FileTypes(controlPanel, params);
     }
 }

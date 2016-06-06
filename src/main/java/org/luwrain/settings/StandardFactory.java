@@ -8,16 +8,16 @@ public class StandardFactory implements Factory
 {
     static private final String ELEMENT_PREFIX = "org.luwrain.settings.StandardFactory:";
 
-    static private final Element hotKeys = new SimpleElement(StandardElements.KEYBOARD, ELEMENT_PREFIX + "HotKeys");
-    static private final Element fileTypes = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "FileTypes");
+    static private final Element hotKeys = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "HotKeys");
+    static private final Element fileTypes = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "FileTypes");
     static private final Element mainMenu = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "MainMenu");
     static private final Element sysInfo = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "SysInfo");
     static private final Element speechParams = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechParams");
     static private final Element speechChannels = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechChannels");
     static private final Element speechCurrent = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechCurrent");
 
-    static private final Element soundsList = new SimpleElement(StandardElements.SOUNDS, ELEMENT_PREFIX + "SoundsList");
-    static private final Element soundSchemes = new SimpleElement(StandardElements.SOUNDS, ELEMENT_PREFIX + "SoundSchemes");
+    static private final Element soundsList = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundsList");
+    static private final Element soundSchemes = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundSchemes");
 
     @Override public Element[] getElements()
     {
@@ -25,23 +25,25 @@ public class StandardFactory implements Factory
 	    StandardElements.ROOT,
 	    StandardElements.APPLICATIONS,
 	    StandardElements.UI,
+	    hotKeys,
+	    mainMenu,
+	    soundSchemes,
+	    soundsList,
+
 	    fileTypes,
-	    StandardElements.NETWORK,
-	    StandardElements.KEYBOARD,
-	    StandardElements.SOUNDS,
+	    StandardElements.INPUT_OUTPUT,
 	    StandardElements.SPEECH,
 	    StandardElements.BRAILLE,
+	    StandardElements.SOUND,
+	    StandardElements.KEYBOARD,
+	    StandardElements.NETWORK,
 	    sysInfo,
 	    StandardElements.HARDWARE,
 	    StandardElements.EXTENSIONS,
 	    StandardElements.WORKERS,
-	    hotKeys,
-	    mainMenu,
 	    speechParams,
 	    speechCurrent,
 	    speechChannels,
-	    soundSchemes,
-	    soundsList,
 	};
     }
 
@@ -59,12 +61,18 @@ public class StandardFactory implements Factory
 	    return new SimpleSection(StandardElements.ROOT, "Панель управления");
 	if (el.equals(StandardElements.APPLICATIONS))
 	    return new SimpleSection(StandardElements.APPLICATIONS, "Приложения");
+
+	if (el.equals(StandardElements.INPUT_OUTPUT))
+	    return new SimpleSection(StandardElements.INPUT_OUTPUT, "Ввод/вывод");
+
+
 	if (el.equals(StandardElements.KEYBOARD))
 	    return new SimpleSection(StandardElements.KEYBOARD, "Клавиатура");
-	if (el.equals(StandardElements.SOUNDS))
-	    return new SimpleSection(StandardElements.SOUNDS, "Звук");
+	if (el.equals(StandardElements.SOUND))
+	    return new SimpleSection(StandardElements.SOUND, "Звук");
 	if (el.equals(StandardElements.BRAILLE))
-	    return new BrailleSection();
+	    return new SimpleSection(StandardElements.BRAILLE, "Браиль", (controlPanel)->Braille.create(controlPanel));
+	    //	    return new BrailleSection();
 	if (el.equals(StandardElements.SPEECH))
 	    return new SimpleSection(StandardElements.SPEECH, "Речь");
 	if (el.equals(StandardElements.NETWORK))
@@ -80,9 +88,9 @@ public class StandardFactory implements Factory
 
 	//Other sections
 	if (el.equals(hotKeys))
-	    return new SimpleSection(hotKeys, "Общие горячие клавиши", (controlPanel)->HotKeys.create(controlPanel.getCoreInterface()));
+	    return new SimpleSection(hotKeys, "Горячие клавиши", (controlPanel)->HotKeys.create(controlPanel.getCoreInterface()));
 	if (el.equals(fileTypes))
-	    return new SimpleSection(fileTypes, "Типы файлов", (controlPanel)->FileTypes.create(controlPanel.getCoreInterface()));
+	    return new SimpleSection(fileTypes, "Типы файлов", (controlPanel)->FileTypes.create(controlPanel));
 	if (el.equals(mainMenu))
 	    return new SimpleSection(mainMenu, "Главное меню");
 	if (el.equals(sysInfo))
@@ -95,9 +103,9 @@ public class StandardFactory implements Factory
 	if (el.equals(speechChannels))
 	    return new SimpleSection(speechChannels, "Настройка каналов");
 	if (el.equals(soundsList))
-	    return new SimpleSection(soundsList, "Звуки системных событий", (controlPanel)->SoundsList.create(controlPanel.getCoreInterface()));
+	    return new SimpleSection(soundsList, "Звуки системных событий", (controlPanel)->SoundsList.create(controlPanel));
 	if (el.equals(soundSchemes))
-	    return new SimpleSection(soundSchemes, "Звуковые схемы", (controlPanel)->SoundSchemes.create(controlPanel.getCoreInterface()));
+	    return new SimpleSection(soundSchemes, "Звуковые схемы", (controlPanel)->SoundSchemes.create(controlPanel));
 	return null;
     }
 }

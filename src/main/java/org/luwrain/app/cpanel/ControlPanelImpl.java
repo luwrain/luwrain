@@ -49,12 +49,28 @@ class ControlPanelImpl implements org.luwrain.cpanel.ControlPanel
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	NullCheck.notNull(event, "event");
+	if (event.isSpecial() && !event.isModified())
+	    switch(event.getSpecial())
+	    {
+	    case TAB:
+		gotoSectionsTree();
+		return true;
+	    }
 	return false;
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	return false;
+	NullCheck.notNull(event, "event");
+	switch(event.getCode())
+	{
+	case CLOSE:
+	    close();
+	    return true;
+	default:
+	    return false;
+	}
     }
 
     @Override public Luwrain getCoreInterface()

@@ -318,7 +318,7 @@ public final class Luwrain implements EventConsumer
     {
 	NullCheck.notNull(text, "text");
 	silence();
-	environment.brlApi.writeText(text);
+	environment.getBraille().textToSpeak(text);
 	environment.getSpeech().speak(preprocess(text), 0, 0);
     }
 
@@ -577,6 +577,12 @@ public final class Luwrain implements EventConsumer
 	{
 	case "luwrain.version":
 	    return "0.5.2 (nightly)";
+	case "luwrain.braille.active":
+	    return environment.getBraille().isActive()?"1":"0";
+	case "luwrain.braille.driver":
+	    return environment.getBraille().getDriver();
+	case "luwrain.braille.error":
+	    return environment.getBraille().getErrorMessage();
 	default:
 	    if (propName.startsWith("luwrain.os.") || propName.startsWith("luwrain.hardware."))
 	    {

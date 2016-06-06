@@ -22,6 +22,7 @@ abstract class EnvironmentBase implements EventConsumer
 {
     protected final EventQueue eventQueue = new EventQueue();
     protected Speech speech = null;
+    protected final Braille braille = new Braille();
     protected Strings strings;
     protected boolean needForIntroduction = false;
     protected boolean introduceApp = false;
@@ -107,5 +108,10 @@ abstract class EnvironmentBase implements EventConsumer
     Speech getSpeech()
     {
 	return speech;
+    }
+
+    Braille getBraille()
+    {
+	return   braille;
     }
 }

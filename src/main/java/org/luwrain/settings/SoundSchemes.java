@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
@@ -82,11 +83,30 @@ class SoundSchemes extends ListArea implements SectionArea
 	}
     };
 
+    private ControlPanel controlPanel;
     private final FixedListModel model = new FixedListModel();
 
-    SoundSchemes(ListArea.Params params)
+    SoundSchemes(ControlPanel controlPanel, ListArea.Params params)
     {
 	super(params);
+	NullCheck.notNull(controlPanel, "controlPanel");
+	this.controlPanel = controlPanel;
+    }
+
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
+	return super.onKeyboardEvent(event);
+    }
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onEnvironmentEvent(event))
+	    return true;
+	return super.onEnvironmentEvent(event);
     }
 
     static private Item[] loadItems(Luwrain luwrain)
@@ -124,14 +144,15 @@ class SoundSchemes extends ListArea implements SectionArea
 return items.toArray(new Item[items.size()]);
     }
 
-    static SoundSchemes create(Luwrain luwrain)
+    static SoundSchemes create(ControlPanel controlPanel)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(controlPanel, "controlPanel");
+	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.appearance = new DefaultListItemAppearance(params.environment);
 	params.name = "Звуковые схемы";
 	params.model = new FixedListModel(loadItems(luwrain));
-	return new SoundSchemes(params);
+	return new SoundSchemes(controlPanel, params);
     }
 }

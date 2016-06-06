@@ -261,44 +261,40 @@ protected CommanderAppearance commanderAppearance;
 	model().load(current);
     }
 
-    public boolean find(String fileName, boolean announce)
-    {
-	NullCheck.notNull(fileName, "fileName");
-	if (fileName.isEmpty())
-	    throw new IllegalArgumentException("fileName may not be null");
-	if (isEmpty())
-	    return false;
-	int index = 0;
-	while(index < model().entries.length && !model().entries[index].baseName().equals(fileName))
-	    ++index;
-	if (index >= model().entries.length)
-	    return false;
-	hotPointY = index;
-	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
-	if (announce)
-	    commanderAppearance.announceEntry(model().entries[hotPointY], false);
-	return true;
-    }
-
-
-    public boolean find(Path path, boolean announce)
+    public boolean findPath(Path path, boolean announce)
     {
 	NullCheck.notNull(path, "path");
 	if (isEmpty())
 	    return false;
+	final Entry[] entries = model().entries;
 	int index = 0;
-	while(index < model().entries.length && !model().entries[index].path().equals(path))
+	while(index < entries.length && !entries[index].path().equals(path))
 	    ++index;
-	if (index >= model().entries.length)
+	if (index >= entries.length)
 	    return false;
-	hotPointY = index;
-	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
+	select(index, false);
 	if (announce)
-	    commanderAppearance.announceEntry(model().entries[hotPointY], false);
+	    commanderAppearance.announceEntry(entries[index], false);
 	return true;
     }
+
+    public boolean findFileName(String fileName, boolean announce)
+    {
+	NullCheck.notNull(fileName, "fileName");
+	if (isEmpty())
+	    return false;
+	final Entry[] entries = model().entries;
+	int index = 0;
+	while(index < entries.length && !entries[index].baseName().equals(fileName))
+	    ++index;
+	if (index >= entries.length)
+	    return false;
+	select(index, false);
+	if (announce)
+	    commanderAppearance.announceEntry(entries[index], false);
+	return true;
+    }
+
 
     /*
      * Returns the list of currently selected files. If user marked some
@@ -323,7 +319,7 @@ protected CommanderAppearance commanderAppearance;
 	    if (!paths.isEmpty())
 		return paths.toArray(new Path[paths.size()]);
 	}
-	final Entry e = cursorAtEntry();
+	final Entry e = selectedEntry();
 	if (e == null || e.type() == Entry.Type.PARENT)
 	    return new Path[0];
 	return new Path[]{e.path()};
@@ -349,12 +345,12 @@ protected CommanderAppearance commanderAppearance;
      *
      * @return The entry under the cursor
      */
-    public Path cursorAt()
+    public Path selectedPath()
     {
 	return !isEmpty() && hotPointY >= 0 && hotPointY < model().entries.length?model().entries[hotPointY].path():null;
     }
 
-    public Entry cursorAtEntry()
+    public Entry selectedEntry()
     {
 	return !isEmpty() && hotPointY >= 0 && hotPointY < model().entries.length?model().entries[hotPointY]:null;
     }
@@ -393,6 +389,11 @@ protected CommanderAppearance commanderAppearance;
 	notifyNewContent();
     }
 
+    public void open(Path path)
+    {
+	open(path, null);
+    }
+
     @Override public ModelImpl model()
     {
 	return (ModelImpl)model;
@@ -407,9 +408,6 @@ protected CommanderAppearance commanderAppearance;
     {
 	throw new UnsupportedOperationException("Changing list click handler for commander areas not allowed, use setClickHandler(CommanderArea.ClickHandler)instead");
     }
-
-
-
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
@@ -441,7 +439,7 @@ protected CommanderAppearance commanderAppearance;
 	return commanderAppearance.getCommanderName(model().current);
     }
 
-    private boolean onBackspace(KeyboardEvent event)
+    protected boolean onBackspace(KeyboardEvent event)
     {
 	//noContent() isn't applicable here, we should be able to leave the directory, even if it doesn't have any content
 	if (model().current == null)
@@ -488,7 +486,7 @@ protected CommanderAppearance commanderAppearance;
 	return res == ClickHandler.Result.OK?true:false;
     }
 
-    static private Entry[] loadEntries(Path path,
+    static protected Entry[] loadEntries(Path path,
 				       Filter filter, Comparator comparator)
     {
 	NullCheck.notNull(path, "path");
@@ -525,7 +523,7 @@ protected CommanderAppearance commanderAppearance;
 	return environment.staticStr(LangStatic.COMMANDER_NO_CONTENT);
     }
 
-    private void notifyNewContent()
+    protected void notifyNewContent()
     {
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);

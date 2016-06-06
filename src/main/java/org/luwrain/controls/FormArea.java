@@ -413,6 +413,13 @@ public class FormArea  extends NavigateArea
 	return true;
     }
 
+    public boolean addStatic(String itemName, String caption)
+    {
+	NullCheck.notNull(itemName, "itemName");
+	NullCheck.notNull(caption, "caption");
+	return addStatic(itemName, caption, "");
+    }
+
     public boolean multilineEditActivated()
     {
 	return multilineEdit != null && 
