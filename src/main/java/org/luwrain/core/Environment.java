@@ -52,7 +52,7 @@ class Environment extends EnvironmentAreas
     private RegionContent clipboard = null;
     private LaunchContext launchContext;
     private Settings.UserInterface uiSettings;
-    private final Braille braille = new Braille();
+    //    private final Braille braille = new Braille();
 
     Environment(String[] cmdLine, Registry registry,
 		OperatingSystem os, Speech speech,
@@ -101,7 +101,7 @@ class Environment extends EnvironmentAreas
 	windowManager = new WindowManager(interaction, screenContentManager);
 	extensions = new org.luwrain.core.extensions.Manager(interfaces);
 	extensions.load((ext)->interfaces.requestNew(ext, this));
-	braille.init(registry);
+	braille.init(registry, os.getBraille(), this);
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);

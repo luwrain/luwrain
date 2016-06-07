@@ -535,6 +535,7 @@ public final class Luwrain implements EventConsumer
 
     public String getProperty(String propName)
     {
+	System.out.println(propName);
 	NullCheck.notNull(propName, "propName");
 	if (propName.startsWith("luwrain.speech.channel."))
 	{
