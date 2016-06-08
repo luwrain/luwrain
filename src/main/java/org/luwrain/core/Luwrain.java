@@ -529,11 +529,10 @@ public final class Luwrain implements EventConsumer
 	switch(propName)
 	{
 	case "luwrain.dir.userhome":
-	    return environment.launchContextIface().userHomeDirAsPath();
 	case "luwrain.dir.data":
-	    return environment.launchContextIface().dataDirAsPath();
+	    return environment.getPaths().get(propName);
 	case "luwrain.dir.scripts":
-	    return environment.launchContextIface().scriptsDir();
+	    return environment.getPaths().get("luwrain.dir.data").resolve("scripts");
 	default:
 	    return null;
 	}
@@ -585,7 +584,7 @@ public final class Luwrain implements EventConsumer
 	case "luwrain.version":
 	    return "0.5.2 (nightly)";
 	case "luwrain.lang":
-	    return environment.launchContextIface().lang();
+	    return environment.getLang();
 	case "luwrain.braille.active":
 	    return environment.getBraille().isActive()?"1":"0";
 	case "luwrain.braille.driver":

@@ -16,7 +16,10 @@
 
 package org.luwrain.core;
 
+import java.util.*;
 import java.io.*;
+import java.nio.file.*;
+
 import org.luwrain.os.OperatingSystem;
 
 class Init
@@ -28,89 +31,44 @@ class Init
     static private final String  PREFIX_OS= "--os=";
     static private final String  PREFIX_LANG= "--lang=";
 
+    static private final String DEFAULT_LANG = "en";
     static private final String DEFAULT_INTERACTION_CLASS = "org.luwrain.interaction.javafx.JavaFxInteraction";
 
     private String[] cmdLine;
     private Registry registry;
     private Interaction interaction;
     private OperatingSystem os;
-    private Speech speech2;
-    private LaunchContext launchContext;
+    private Speech speech;
+    private final HashMap<String, Path> paths = new HashMap<String, Path>();
+    private String lang;
 
-    private void go(String[] args)
+    private void start(String[] args)
     {
+	NullCheck.notNull(args, "args");
 	this.cmdLine = args;
 	Log.debug("init", "command line has " + cmdLine.length + " arguments:");
 	for(String s: cmdLine)
 	    Log.debug("init", s);
 	if (init())
-	    new Environment(cmdLine, registry, os, speech2, interaction, launchContext).run();
+	    new Environment(cmdLine, registry, os, speech, interaction, paths, lang).run();
 	interaction.close();
 	System.exit(0);
     }
 
     private boolean init()
     {
-	//Registry
-	final String regDirPath = getFirstCmdLineOption(PREFIX_REGISTRY_DIR);
-	if (regDirPath == null || regDirPath.isEmpty())
-	{
-	    Log.fatal("init", "no \'" + PREFIX_REGISTRY_DIR + "\' command line option, Luwrain don\'t know where to get registry data");
+	if (!initRegistry())
 	    return false;
-	}
-	File regDir = new File(regDirPath);
-	if (!regDir.isAbsolute() || !regDir.isDirectory())
-	{
-	    Log.fatal("init", "registry location \'" + regDirPath + "\' isn\'t a directory or isn\'t an absolute path");
+	if (!initPathsAndLang())
 	    return false;
-	}
-	registry = new org.luwrain.registry.fsdir.RegistryImpl(regDir.getAbsolutePath());
-
-	//Launch context
-	final String dataDirPath = getFirstCmdLineOption(PREFIX_DATA_DIR);
-	if (dataDirPath == null || dataDirPath.isEmpty())
-	{
-	    Log.fatal("init", "no command line option \'" + PREFIX_DATA_DIR + "\', Luwrain doesn\'t know where its data is");
-	    return false;
-	}
-	final File dataDir = new File(dataDirPath);
-	if (!dataDir.isDirectory() || !dataDir.isAbsolute())
-	{
-	    Log.fatal("init", "data location \'" + dataDirPath + "\' isn\'t a directory or isn\'t an absolute path");
-	    return false;
-	}
-	final String userHomeDirPath = getFirstCmdLineOption(PREFIX_USER_HOME_DIR);
-	if (userHomeDirPath == null || userHomeDirPath.isEmpty())
-	{
-	    Log.fatal("init", "no command line option \'" + PREFIX_USER_HOME_DIR + "\', Luwrain doesn\'t know where user home files should be");
-	    return false;
-	}
-	final File userHomeDir = new File(userHomeDirPath);
-	if (!userHomeDir.isDirectory() || !userHomeDir.isAbsolute())
-	{
-	    Log.fatal("init", "user home location \'" + userHomeDirPath + "\' isn\'t a directory or isn\'t an absolute path");
-	    return false;
-	}
-	final String lang = getFirstCmdLineOption(PREFIX_LANG);
-	if (lang == null || lang.isEmpty())
-	{
-	    Log.fatal("init", "no chosen language, use command line option \'" + PREFIX_LANG + "\'");
-	    return false;
-	}
-	launchContext = new LaunchContext(dataDir.getAbsolutePath(), userHomeDir.getAbsolutePath(), lang);
-
 	if (!initOs())
 	    return false;
-	speech2 = new Speech(os, new CmdLineUtils(cmdLine), registry);
-	if (!speech2.init())
+	speech = new Speech(os, new CmdLineUtils(cmdLine), registry);
+	if (!speech.init())
 	{
 	    Log.fatal("init", "unable to initialize speech output, usually it means that there is no default channel");
 	    return false;
 	}
-	/*
-	if (!initSpeech())
-	    return false;
-	*/
 
 	//Interaction
 	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();
@@ -144,53 +102,57 @@ class Init
 	return true;
     }
 
-    /*
-    private boolean initSpeech()
+    private boolean initRegistry()
     {
-	final String backendClass = getFirstCmdLineOption(PREFIX_SPEECH);
-	if (backendClass == null || backendClass.isEmpty())
+	final String regDirPath = getFirstCmdLineOption(PREFIX_REGISTRY_DIR);
+	if (regDirPath == null || regDirPath.isEmpty())
 	{
-	    Log.fatal("init", "no speech back-end class in the command line (the \'--speech=\' option), Luwrain has no idea how to speak");
+	    Log.fatal("init", "no \'" + PREFIX_REGISTRY_DIR + "\' command line option, Luwrain don\'t know where to get registry data");
 	    return false;
 	}
-	Object o;
-	try {
-	    o = Class.forName(backendClass).newInstance();
-	}
-	catch (InstantiationException e)
+	File regDir = new File(regDirPath);
+	if (!regDir.isAbsolute() || !regDir.isDirectory())
 	{
-	    Log.fatal("init", "an error while creating a new instance of class " + backendClass + ":InstantiationException:" + e.getMessage());
-	    e.printStackTrace();
+	    Log.fatal("init", "registry location \'" + regDirPath + "\' isn\'t a directory or isn\'t an absolute path");
 	    return false;
 	}
-	catch (IllegalAccessException e)
-	{
-	    Log.fatal("init", "an error while creating a new instance of class " + backendClass + ":IllegalAccessException:" + e.getMessage());
-	    e.printStackTrace();
-	    return false;
-	}
-	catch (ClassNotFoundException e)
-	{
-	    Log.fatal("init", "an error while creating a new instance of class " + backendClass + ":ClassNotFoundException:" + e.getMessage());
-	    e.printStackTrace();
-	    return false;
-	}
-	if (!(o instanceof org.luwrain.speech.BackEnd))
-	{
-	    Log.fatal("init", "created instance of class " + backendClass + " is not an instance of org.luwrain.speech.BackEnd");
-	    return false;
-	}
-	speech = (org.luwrain.speech.BackEnd)o;
-	final String errorMessage = speech.init(cmdLine);
-	if (errorMessage != null)
-	{
-	    Log.fatal("init", "speech back-end initialization failed:" + errorMessage);
-	    return false;
-	}
-	Log.debug("init", "speech back-end " + backendClass + " is initialized successfully");
+	registry = new org.luwrain.registry.fsdir.RegistryImpl(regDir.getAbsolutePath());
 	return true;
     }
-    */
+
+    private boolean initPathsAndLang()
+    {
+	final String dataDirArg = getFirstCmdLineOption(PREFIX_DATA_DIR);
+	if (dataDirArg == null || dataDirArg.isEmpty())
+	{
+	    Log.fatal("init", "no command line option \'" + PREFIX_DATA_DIR + "\', Luwrain doesn\'t know where its data is");
+	    return false;
+	}
+	final Path dataDirPath = Paths.get(dataDirArg);
+	if (!Files.isDirectory(dataDirPath) || !dataDirPath.isAbsolute())
+	{
+	    Log.fatal("init", "data location \'" + dataDirArg + "\' isn\'t a directory or isn\'t an absolute path");
+	    return false;
+	}
+	String userHomeDir = getFirstCmdLineOption(PREFIX_USER_HOME_DIR);
+	if (userHomeDir == null || userHomeDir.isEmpty())
+	{
+	    userHomeDir = System.getProperty("user.home");
+	    Log.debug("init", "using user home directory path from virtual machine:" + userHomeDir);
+	}
+	final Path userHomeDirPath = Paths.get(userHomeDir);
+	if (!Files.isDirectory(userHomeDirPath) || !userHomeDirPath.isAbsolute())
+	{
+	    Log.fatal("init", "user home location \'" + userHomeDirPath + "\' isn\'t a directory or isn\'t an absolute path");
+	    return false;
+	}
+	lang = getFirstCmdLineOption(PREFIX_LANG);
+	if (lang == null || lang.isEmpty())
+	    lang = DEFAULT_LANG;
+	paths.put("luwrain.dir.userhome", userHomeDirPath);
+	paths.put("luwrain.dir.data", dataDirPath);
+	return true;
+    }
 
     private boolean initOs()
     {
@@ -228,7 +190,7 @@ class Init
 	    return false;
 	}
 	os = (org.luwrain.os.OperatingSystem)o;
-	if (!os.init(launchContext.dataDirAsPath().toString()))
+	if (!os.init(paths.get("luwrain.dir.data").toString()))
 	{
 	    Log.fatal("init", "unable to initialize operating system through " + os.getClass().getName());
 	    return false;
@@ -256,6 +218,6 @@ class Init
 
     static public void main(String[] args)
     {                    
-	new Init().go(args);
+	new Init().start(args);
     }
 }

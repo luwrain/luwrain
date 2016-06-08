@@ -16,7 +16,8 @@
 
 package org.luwrain.core;
 
-import org.luwrain.sounds.*;
+import java.util.*;
+import java.nio.file.*;
 
 abstract class EnvironmentBase implements EventConsumer
 {
@@ -24,6 +25,9 @@ abstract class EnvironmentBase implements EventConsumer
     protected Speech speech = null;
     protected final Braille braille = new Braille();
     protected Strings strings;
+    protected final SoundsPlayer sounds = new SoundsPlayer();
+    protected HashMap<String, Path> paths;
+    protected String lang;
     protected boolean needForIntroduction = false;
     protected boolean introduceApp = false;
 
@@ -59,7 +63,7 @@ abstract class EnvironmentBase implements EventConsumer
 
     void playSound(int code)
     {
-	EnvironmentSounds.play(code);
+	sounds.play(code);
     }
 
     protected void noAppsMessage()
@@ -113,5 +117,15 @@ abstract class EnvironmentBase implements EventConsumer
     Braille getBraille()
     {
 	return   braille;
+    }
+
+    Map<String, Path> getPaths()
+    {
+	return paths;
+    }
+
+    String getLang()
+    {
+	return lang;
     }
 }

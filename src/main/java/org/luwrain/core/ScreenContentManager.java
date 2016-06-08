@@ -17,7 +17,6 @@
 package org.luwrain.core;
 
 import org.luwrain.core.events.*;
-import org.luwrain.sounds.EnvironmentSounds;
 import org.luwrain.util.*;
 
 class ScreenContentManager

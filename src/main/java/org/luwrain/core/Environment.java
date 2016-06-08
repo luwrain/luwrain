@@ -50,26 +50,27 @@ class Environment extends EnvironmentAreas
     private final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
     private RegionContent clipboard = null;
-    private LaunchContext launchContext;
     private Settings.UserInterface uiSettings;
     //    private final Braille braille = new Braille();
 
     Environment(String[] cmdLine, Registry registry,
 		OperatingSystem os, Speech speech,
-		Interaction interaction, LaunchContext launchContext)
+		Interaction interaction, HashMap<String, Path> paths, String lang)
     {
-	this.cmdLine = org.luwrain.util.Strings.notNullArray(cmdLine);
-	this.registry = registry;
-	this.os = os;
-	this.speech = speech;
-	this.interaction = interaction;
-	this.launchContext = launchContext;
 	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(os, "os");
 	NullCheck.notNull(speech, "speech");
 	NullCheck.notNull(interaction, "interaction");
-	NullCheck.notNull(launchContext, "launchContext");
+	NullCheck.notNull(paths, "paths");
+	NullCheck.notNull(lang, "lang");
+	this.cmdLine = cmdLine;
+	this.registry = registry;
+	this.os = os;
+	this.speech = speech;
+	this.interaction = interaction;
+	this.paths = paths;
+	this.lang = lang;
 	interfaces.createObjForEnvironment(this);
     }
 
@@ -109,7 +110,7 @@ class Environment extends EnvironmentAreas
 	initI18n();
 	initObjects();
 	desktop.ready(i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME));
-	org.luwrain.sounds.EnvironmentSounds.init(registry, launchContext);
+	sounds.init(registry, paths.get("luwrain.dir.data"));
 	uiSettings = Settings.createUserInterface(registry);
     }
 
@@ -171,9 +172,9 @@ class Environment extends EnvironmentAreas
 		Log.error("core", "extension " + e.getClass().getName() + " has thrown an exception on i18n:" + ee.getMessage());
 		ee.printStackTrace();
 	    }
-	if (!i18n.chooseLang(launchContext.lang()))
+	if (!i18n.chooseLang(lang))
 	{
-	    Log.fatal("core", "unable to choose matching language for i18n, requested language is \'" + launchContext.lang() + "\'");
+	    Log.fatal("core", "unable to choose matching language for i18n, requested language is \'" + lang + "\'");
 	    return;
 	}
 	strings = (Strings)i18n.getStrings(STRINGS_OBJECT_NAME);
@@ -866,11 +867,6 @@ class Environment extends EnvironmentAreas
 	return i18n;
     }
 
-    LaunchContext launchContextIface()
-    {
-	return launchContext;
-    }
-
     void mainMenu()
     {
 	final MainMenu mainMenu = MainMenu.newMainMenu(interfaces.getObjForEnvironment(), strings);
@@ -1080,10 +1076,10 @@ class Environment extends EnvironmentAreas
     {
 	final Area activeArea = getValidActiveArea(false);
 	if (activeArea == null)
-	    return launchContext.userHomeDir();
+	    return paths.get("luwrain.dir.userhome").toString();
 	final CurrentDirQuery query = new CurrentDirQuery();
 	if (!activeArea.onAreaQuery(query) || !query.containsResult())
-	    return launchContext.userHomeDir();
+	    return paths.get("luwrain.dir.userhome").toString();
 	return query.getCurrentDir();
     }
 
@@ -1092,7 +1088,7 @@ class Environment extends EnvironmentAreas
 	switch(component)
 	{
 	case ENVIRONMENT_SOUNDS:
-	    org.luwrain.sounds.EnvironmentSounds.init(registry, launchContext);
+	    sounds.init(registry, paths.get("luwrain.dir.data"));
 	    break;
 	}
     }
