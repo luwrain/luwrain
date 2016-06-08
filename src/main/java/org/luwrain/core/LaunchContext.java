@@ -81,4 +81,10 @@ public class LaunchContext
 	NullCheck.notNull(scriptName, "scriptName");
 	return dataDirAsPath().resolve("scripts").resolve(scriptName);
     }
+
+    public Path scriptsDir()
+    {
+	return dataDirAsPath().resolve("scripts");
+    }
+
 }

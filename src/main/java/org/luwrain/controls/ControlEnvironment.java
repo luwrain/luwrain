@@ -36,7 +36,7 @@ int getAreaVisibleHeight(Area area);
     void popup(Popup popupObj);
     //    void setClipboard(String[] value);
     //    String[] getClipboard();
-    LaunchContext launchContext();
+    //    LaunchContext launchContext();
     String staticStr(int code);
     org.luwrain.core.Strings environmentStrings();
     void playSound(int code);

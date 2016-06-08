@@ -180,10 +180,12 @@ public final class Luwrain implements EventConsumer
 	environment.launchAppIface(shortcutName, args != null?args:new String[0]);
     }
 
+    /*
     public LaunchContext launchContext()
     {
 	return environment.launchContextIface();
     }
+    */
 
     public void message(String text)
     {
@@ -527,7 +529,11 @@ public final class Luwrain implements EventConsumer
 	switch(propName)
 	{
 	case "luwrain.dir.userhome":
-	    return launchContext().userHomeDirAsPath();
+	    return environment.launchContextIface().userHomeDirAsPath();
+	case "luwrain.dir.data":
+	    return environment.launchContextIface().dataDirAsPath();
+	case "luwrain.dir.scripts":
+	    return environment.launchContextIface().scriptsDir();
 	default:
 	    return null;
 	}
@@ -578,6 +584,8 @@ public final class Luwrain implements EventConsumer
 	{
 	case "luwrain.version":
 	    return "0.5.2 (nightly)";
+	case "luwrain.lang":
+	    return environment.launchContextIface().lang();
 	case "luwrain.braille.active":
 	    return environment.getBraille().isActive()?"1":"0";
 	case "luwrain.braille.driver":

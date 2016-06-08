@@ -101,10 +101,12 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	luwrain.popup(popupObj);
     }
 
+    /*
     @Override public LaunchContext launchContext()
     {
 	return luwrain.launchContext();
     }
+    **/
 
     @Override public String staticStr(int code)
     {

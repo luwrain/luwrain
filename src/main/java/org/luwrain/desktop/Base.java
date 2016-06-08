@@ -73,8 +73,8 @@ class Base
 	if (!introductionFile.trim().isEmpty())
 	{
 	    final String[] introduction = new File(introductionFile).isAbsolute()?
-	    readIntroduction(new File(introductionFile)):
-	    readIntroduction(new File(luwrain.launchContext().dataDirAsFile(), introductionFile));
+	    readIntroduction(Paths.get(introductionFile)):
+	    readIntroduction(luwrain.getPathProperty("luwrain.dir.data").resolve(introductionFile));
 	    model.setIntroduction(introduction);
 	    model.setClickHereLine(clickHereLine);
 	}
@@ -122,12 +122,11 @@ class Base
 	return false;
     }
 
-    static private String[] readIntroduction(File file)
+    static private String[] readIntroduction(Path path)
     {
-	NullCheck.notNull(file, "file");
+	NullCheck.notNull(path, "path");
 	try {
 	    final LinkedList<String> a = new LinkedList<String>();
-	    final Path path = file.toPath();
 	    try (Scanner scanner =  new Scanner(path, StandardCharsets.UTF_8.name()))
 		{
 		    while (scanner.hasNextLine())
