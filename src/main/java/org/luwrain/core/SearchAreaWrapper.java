@@ -44,6 +44,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	if (hotPointY < 0)
 	    hotPointY = 0;
 	environment.message("Режим поиска", Luwrain.MESSAGE_REGULAR);
+	environment.playSound(Sounds.SEARCH);
     }
 
     @Override public String getAreaName()
@@ -120,7 +121,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	}
 	if (hotPointY > getLineCount())
 	{
-	    environment.playSound(Sounds.MESSAGE_NOT_READY);
+	    environment.playSound(Sounds.BLOCKED);
 	    return true;
 	}
 	String line = getLine(hotPointY);
@@ -154,7 +155,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	    environment.onAreaNewHotPointIface(null, this);
 	    return true;
 	}
-	environment.playSound(Sounds.MESSAGE_NOT_READY);
+	environment.playSound(Sounds.BLOCKED);
 	return true;
     }
 
@@ -167,6 +168,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	    environment.setAreaIntroduction();
 	} else
 	    environment.message("Поиск отменён", Luwrain.MESSAGE_REGULAR);
+	environment.playSound(Sounds.CANCEL);
 	wrappingBase.resetReviewWrapper();
 	environment.onNewScreenLayout();
 	return true;

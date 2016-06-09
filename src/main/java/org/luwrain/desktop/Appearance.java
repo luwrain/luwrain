@@ -49,7 +49,7 @@ class Appearance implements ListArea.Appearance
 	if (item instanceof UniRefInfo)
 	{
 	    final UniRefInfo i = (UniRefInfo)item;
-	    luwrain.playSound(Sounds.NEW_LIST_ITEM);
+	    luwrain.playSound(Sounds.LIST_ITEM);
 	    if (flags.contains(Flags.BRIEF))
 		luwrain.say(i.title()); else
 		luwrain.say(i.toString());

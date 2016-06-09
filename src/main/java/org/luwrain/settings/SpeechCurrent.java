@@ -26,15 +26,33 @@ import org.luwrain.util.RegistryPath;
 
 class SpeechCurrent extends SimpleArea implements SectionArea
 {
-    SpeechCurrent(ControlEnvironment env, String name)
+    private ControlPanel controlPanel;
+
+    SpeechCurrent(ControlPanel controlPanel, String name)
     {
-	super(env, name);
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), name);
+	this.controlPanel = controlPanel;
     }
 
-    static SpeechCurrent create(Luwrain luwrain)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	final SpeechCurrent info = new SpeechCurrent(new DefaultControlEnvironment(luwrain), "Текущие речевые каналы");
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
+	return super.onKeyboardEvent(event);
+    }
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	if (controlPanel.onEnvironmentEvent(event))
+	    return true;
+	return super.onEnvironmentEvent(event);
+    }
+
+    static SpeechCurrent create(ControlPanel controlPanel)
+    {
+	NullCheck.notNull(controlPanel, "controlPanel");
+	final Luwrain luwrain = controlPanel.getCoreInterface();
+	final SpeechCurrent info = new SpeechCurrent(controlPanel, "Текущие речевые каналы");
 
 	info.beginLinesTrans();
 
@@ -51,11 +69,9 @@ class SpeechCurrent extends SimpleArea implements SectionArea
 	    info.addLine("Реализация: " + luwrain.getProperty(prefix + "class"));
 
 
-
 	    info.addLine("Поддерживает вывод звука напрямую на устройство: " + (luwrain.getProperty(prefix + "cansynthtospeakers").equals("1")?"Да":"Нет"));
 	    info.addLine("Поддерживает уведомление об окончании воспроизведения: " + (luwrain.getProperty(prefix + "cannotifywhenfinished").equals("1")?"Да":"Нет"));
 	    info.addLine("Поддерживает сохранения данных в поток: " + (luwrain.getProperty(prefix + "cansynthtostream").equals("1")?"Да":"Нет"));
-
 
 
 	    ++n;

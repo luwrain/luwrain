@@ -88,10 +88,12 @@ public interface Settings
     public interface SoundScheme 
     {
 	String getEventNotProcessed(String defValue);
-	String getGeneralError(String defValue);
-	String getMessageDone(String defValue);
-	String getMessageNotReady(String defValue);
-	String getMessageOk(String defValue);
+	String getCancel(String defValue);
+	String getError(String defValue);
+	String getFatal(String defValue);
+	String getDone(String defValue);
+	String getBlocked(String defValue);
+	String getOk(String defValue);
 	String getNoApplications(String defValue);
 	String getStartup(String defValue);
 	String getShutdown(String defValue);
@@ -101,21 +103,25 @@ public interface Settings
 	String getNoItemsBelow(String defValue);
 	String getNoLinesAbove(String defValue);
 	String getNoLinesBelow(String defValue);
-	String getNewListItem(String defValue);
+	String getListItem(String defValue);
 	String getIntroRegular(String defValue);
 	String getIntroPopup(String defValue);
 	String getIntroApp(String defValue);
-	String getCommanderNewLocation(String defValue);
+	String getCommanderLocation(String defValue);
 	String getGeneralTime(String defValue);
 	String getTermBell(String defValue);
 	String getDocSection(String defValue);
 	String getNoContent(String defValue);
+	String getSearch(String defValue);
+	String getDeleted(String defValue);
 
 	void setEventNotProcessed(String value);
-	void setGeneralError(String value);
-	void setMessageDone(String value);
-	void setMessageNotReady(String value);
-	void setMessageOk(String value);
+	void setCancel(String value);
+	void setError(String value);
+	void setFatal(String value);
+	void setDone(String value);
+	void setBlocked(String value);
+	void setOk(String value);
 	void setNoApplications(String value);
 	void setStartup(String value);
 	void setShutdown(String value);
@@ -125,15 +131,17 @@ public interface Settings
 	void setNoItemsBelow(String value);
 	void setNoLinesAbove(String value);
 	void setNoLinesBelow(String value);
-	void setNewListItem(String value);
+	void setListItem(String value);
 	void setIntroRegular(String value);
 	void setIntroPopup(String value);
 	void setIntroApp(String value);
-	void setCommanderNewLocation(String value);
+	void setCommanderLocation(String value);
 	void setGeneralTime(String value);
 	void setTermBell(String value);
 	void setDocSection(String value);
 	void setNoContent(String value);
+	void setSearch(String value);
+	void setDeleted(String value);
     }
 
     public interface UserInterface

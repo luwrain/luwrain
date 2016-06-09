@@ -122,10 +122,11 @@ class SoundsPlayer
 	setSoundFile(dataDir, scheme.getShutdown(""), Sounds.SHUTDOWN);
 	setSoundFile(dataDir, scheme.getMainMenu(""), Sounds.MAIN_MENU);
 	setSoundFile(dataDir, scheme.getMainMenuEmptyLine(""), Sounds.MAIN_MENU_EMPTY_LINE);
-	setSoundFile(dataDir, scheme.getGeneralError(""), Sounds.GENERAL_ERROR);
-	setSoundFile(dataDir, scheme.getMessageOk(""), Sounds.MESSAGE_OK);
-	setSoundFile(dataDir, scheme.getMessageDone(""), Sounds.MESSAGE_DONE);
-	setSoundFile(dataDir, scheme.getMessageNotReady(""), Sounds.MESSAGE_NOT_READY);
+	setSoundFile(dataDir, scheme.getError(""), Sounds.ERROR);
+	setSoundFile(dataDir, scheme.getFatal(""), Sounds.FATAL);
+	setSoundFile(dataDir, scheme.getOk(""), Sounds.OK);
+	setSoundFile(dataDir, scheme.getDone(""), Sounds.DONE);
+	setSoundFile(dataDir, scheme.getBlocked(""), Sounds.BLOCKED);
 	setSoundFile(dataDir, scheme.getIntroRegular(""), Sounds.INTRO_REGULAR);
 	setSoundFile(dataDir, scheme.getIntroPopup(""), Sounds.INTRO_POPUP);
 	setSoundFile(dataDir, scheme.getIntroApp(""), Sounds.INTRO_APP);
@@ -133,12 +134,15 @@ class SoundsPlayer
 	setSoundFile(dataDir, scheme.getNoItemsBelow(""), Sounds.NO_ITEMS_BELOW);
 	setSoundFile(dataDir, scheme.getNoLinesAbove(""), Sounds.NO_LINES_ABOVE);
 	setSoundFile(dataDir, scheme.getNoLinesBelow(""), Sounds.NO_LINES_BELOW);
-	setSoundFile(dataDir, scheme.getCommanderNewLocation(""), Sounds.COMMANDER_NEW_LOCATION);
-	setSoundFile(dataDir, scheme.getNewListItem(""), Sounds.NEW_LIST_ITEM);
+	setSoundFile(dataDir, scheme.getCommanderLocation(""), Sounds.COMMANDER_LOCATION);
+	setSoundFile(dataDir, scheme.getListItem(""), Sounds.LIST_ITEM);
 	setSoundFile(dataDir, scheme.getGeneralTime(""), Sounds.GENERAL_TIME);
 	setSoundFile(dataDir, scheme.getTermBell(""), Sounds.TERM_BELL);
 	setSoundFile(dataDir, scheme.getDocSection(""), Sounds.DOC_SECTION);
 	setSoundFile(dataDir, scheme.getNoContent(""), Sounds.NO_CONTENT);
+	setSoundFile(dataDir, scheme.getSearch(""), Sounds.SEARCH);
+	setSoundFile(dataDir, scheme.getDeleted(""), Sounds.DELETED);
+	setSoundFile(dataDir, scheme.getCancel(""), Sounds.CANCEL);
     }
 
     private void setSoundFile(Path dataDir, String fileName,

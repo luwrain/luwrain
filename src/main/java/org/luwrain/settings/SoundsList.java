@@ -76,10 +76,10 @@ static private class Item
 	final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(registry);
 	final LinkedList<Item> items = new LinkedList<Item>();
 		items.add(new Item(scheme, "Событие не обработано", scheme.getEventNotProcessed(""), null));
-	items.add(new Item(scheme, "Общая ошибка", scheme.getGeneralError(""), null));
-	items.add(new Item(scheme, "Сообщение о завершённой работе", scheme.getMessageDone(""), null));
-	items.add(new Item(scheme, "Сообщение о неприменимости действия", scheme.getMessageNotReady(""), null));
-	items.add(new Item(scheme, "Сообщение об успешной операции", scheme.getMessageOk(""), null));
+	items.add(new Item(scheme, "Общая ошибка", scheme.getError(""), null));
+	items.add(new Item(scheme, "Сообщение о завершённой работе", scheme.getDone(""), null));
+	items.add(new Item(scheme, "Сообщение о неприменимости действия", scheme.getBlocked(""), null));
+	items.add(new Item(scheme, "Сообщение об успешной операции", scheme.getOk(""), null));
 	items.add(new Item(scheme, "Нет запущенных приложений", scheme.getNoApplications(""), null));
 	items.add(new Item(scheme, "Загрузка системы", scheme.getStartup(""), null));
 	items.add(new Item(scheme, "Завершение работы", scheme.getShutdown(""), null));
@@ -89,11 +89,11 @@ static private class Item
 	items.add(new Item(scheme, "Элементы ниже отсутствуют", scheme.getNoItemsBelow(""), null));
 	items.add(new Item(scheme, "Строки выше отсутствуют", scheme.getNoLinesAbove(""), null));
 	items.add(new Item(scheme, "Строки ниже отсутствуют", scheme.getNoLinesBelow(""), null));
-	items.add(new Item(scheme, "Элемент списка", scheme.getNewListItem(""), null));
+	items.add(new Item(scheme, "Элемент списка", scheme.getListItem(""), null));
 	items.add(new Item(scheme, "Переход к новой области", scheme.getIntroRegular(""), null));
 	items.add(new Item(scheme, "Переход к всплывающей области", scheme.getIntroPopup(""), null));
 	items.add(new Item(scheme, "Переход к другому приложению", scheme.getIntroApp(""), null));
-	items.add(new Item(scheme, "Новая папка в обзоре файлов", scheme.getCommanderNewLocation(""), null));
+	items.add(new Item(scheme, "Новая папка в обзоре файлов", scheme.getCommanderLocation(""), null));
 	items.add(new Item(scheme, "Время", scheme.getGeneralTime(""), null));
 	items.add(new Item(scheme, "Сигнал в терминале", scheme.getTermBell(""), null));
 	return items.toArray(new Item[items.size()]);

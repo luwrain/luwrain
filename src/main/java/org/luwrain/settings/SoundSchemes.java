@@ -51,10 +51,10 @@ class SoundSchemes extends ListArea implements SectionArea
 		path = luwrain.getPathProperty("luwrain.dir.data").relativize(path);
 	    try {
 		scheme.setEventNotProcessed(path.resolve("event-not-processed.wav").toString());
-		scheme.setGeneralError(path.resolve("general-error.wav").toString());
-		scheme.setMessageDone(path.resolve("message-done.wav").toString());
-		scheme.setMessageNotReady(path.resolve("message-not-ready.wav").toString());
-		scheme.setMessageOk(path.resolve("message-ok.wav").toString());
+		scheme.setError(path.resolve("error.wav").toString());
+		scheme.setDone(path.resolve("done.wav").toString());
+		scheme.setBlocked(path.resolve("blocked.wav").toString());
+		scheme.setOk(path.resolve("ok.wav").toString());
 		scheme.setNoApplications(path.resolve("no-applications.wav").toString());
 		scheme.setStartup(path.resolve("startup.wav").toString());
 		scheme.setShutdown(path.resolve("shutdown.wav").toString());
@@ -64,11 +64,11 @@ class SoundSchemes extends ListArea implements SectionArea
 		scheme.setNoItemsBelow(path.resolve("no-items-below.wav").toString());
 		scheme.setNoLinesAbove(path.resolve("no-lines-above.wav").toString());
 		scheme.setNoLinesBelow(path.resolve("no-lines-below.wav").toString());
-		scheme.setNewListItem(path.resolve("new-list-item.wav").toString());
+		scheme.setListItem(path.resolve("list-item.wav").toString());
 		scheme.setIntroRegular(path.resolve("intro-regular.wav").toString());
 		scheme.setIntroPopup(path.resolve("intro-popup.wav").toString());
 		scheme.setIntroApp(path.resolve("intro-app.wav").toString());
-		scheme.setCommanderNewLocation(path.resolve("commander-new-location.wav").toString());
+		scheme.setCommanderLocation(path.resolve("commander-location.wav").toString());
 		scheme.setGeneralTime(path.resolve("general-time.wav").toString());
 		scheme.setTermBell(path.resolve("term-bell.wav").toString());
 	    }

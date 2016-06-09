@@ -34,7 +34,7 @@ public class DefaultListItemAppearance implements ListArea.Appearance
     {
 	NullCheck.notNull(item, "item");
 	NullCheck.notNull(flags, "flags");
-	environment.playSound(Sounds.NEW_LIST_ITEM);
+	environment.playSound(Sounds.LIST_ITEM);
 	environment.say(item.toString());
     }
 

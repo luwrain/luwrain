@@ -56,7 +56,8 @@ public class MultilineEdit
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (!event.isSpecial())
+	if (!event.isSpecial())//&&
+	    //	    (!event.isModified() || event.withShiftOnly()))
 	    return onChar(event);
 	if (event.isModified())
 	    return false;

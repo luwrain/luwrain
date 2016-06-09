@@ -65,7 +65,7 @@ public class CommanderUtils
 	@Override public void announceEntry(CommanderArea.Entry entry, boolean brief)
 	{
 	    NullCheck.notNull(entry, "entry");
-	    environment.playSound(Sounds.NEW_LIST_ITEM);
+	    environment.playSound(Sounds.LIST_ITEM);
 	    if (brief)
 		briefIntroduction(entry); else
 		fullIntroduction(entry);
@@ -117,7 +117,7 @@ public class CommanderUtils
 	@Override public  void announceLocation(Path path)
 	{
 	    NullCheck.notNull(path, "path");
-	    environment.playSound(Sounds.COMMANDER_NEW_LOCATION);
+	    environment.playSound(Sounds.COMMANDER_LOCATION);
 	    if (path.getFileName() != null)
 	    environment.say(path.getFileName().toString()); else
 		environment.say("Корневой каталог");//FIXME:

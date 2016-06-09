@@ -71,7 +71,7 @@ class ContextMenu extends ListPopup
 	    NullCheck.notNull(flags, "flags");
 	    final Action act = (Action)item;
 	    luwrain.silence();
-	    luwrain.playSound(Sounds.NEW_LIST_ITEM);
+	    luwrain.playSound(Sounds.LIST_ITEM);
 	    if (act.keyboardEvent() != null)
 		luwrain.say(act.title() + " " + act.keyboardEvent().toString()); else
 	    luwrain.say(act.title());

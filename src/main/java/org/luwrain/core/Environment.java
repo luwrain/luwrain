@@ -508,7 +508,7 @@ class Environment extends EnvironmentAreas
 	}
 	if (!event.isSpecial() &&
 	    EqualKeys.equalKeys(event.getChar(), 'x') &&
-	    event.withLeftAltOnly())
+	    event.withAltOnly())
 	{
 	    showCommandPopup();
 	    return true;
@@ -708,16 +708,16 @@ class Environment extends EnvironmentAreas
 	switch(semantic)
 	{
 	case Luwrain.MESSAGE_ERROR:
-	    playSound(Sounds.GENERAL_ERROR);
+	    playSound(Sounds.ERROR);
 	    break;
 	case Luwrain.MESSAGE_OK:
-	    playSound(Sounds.MESSAGE_OK);
+	    playSound(Sounds.OK);
 	    break;
 	case Luwrain.MESSAGE_DONE:
-	    playSound(Sounds.MESSAGE_DONE);
+	    playSound(Sounds.DONE);
 	    break;
 	case Luwrain.MESSAGE_NOT_READY:
-	    playSound(Sounds.MESSAGE_NOT_READY);
+	    playSound(Sounds.BLOCKED);
 	    break;
 	}
 	//	speechProc.silence();
@@ -1104,6 +1104,7 @@ class Environment extends EnvironmentAreas
 	    return;
 	}
 	message(strings.linesDeleted(), Luwrain.MESSAGE_REGULAR);
+	playSound(Sounds.DELETED);//FIXME:deleted
     }
 
     void onCutCommand()

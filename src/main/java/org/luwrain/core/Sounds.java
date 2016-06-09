@@ -26,13 +26,13 @@ public interface Sounds
     static public final int MAIN_MENU_EMPTY_LINE = 5;
 
     /** Confirms finishing of the operation not continuous in time*/
-    static public final int GENERAL_ERROR = 6;
+    static public final int ERROR = 6;
 
     /** Confirms finishing of the operation continuous in time*/
-    static public final int MESSAGE_DONE = 7;
+    static public final int DONE = 7;
 
-    static public final int MESSAGE_OK = 8;
-    static public final int MESSAGE_NOT_READY = 9;
+    static public final int OK = 8;
+    static public final int BLOCKED = 9;
     static public final int INTRO_REGULAR = 10;
     static public final int INTRO_POPUP = 11;
     static public final int INTRO_APP = 12;
@@ -40,10 +40,14 @@ public interface Sounds
     static public final int NO_ITEMS_ABOVE = 14;
     static public final int NO_LINES_BELOW = 15;
     static public final int NO_LINES_ABOVE = 16;
-    static public final int COMMANDER_NEW_LOCATION = 17;
-    static public final int NEW_LIST_ITEM = 18;
+    static public final int COMMANDER_LOCATION = 17;
+    static public final int LIST_ITEM = 18;
     static public final int GENERAL_TIME = 19;
     static public final int TERM_BELL = 20;
     static public final int DOC_SECTION = 21;
     static public final int NO_CONTENT = 22;
+    static public final int SEARCH = 23;
+    static public final int DELETED = 24;
+    static public final int FATAL = 25;
+    static public final int CANCEL = 26;
 }

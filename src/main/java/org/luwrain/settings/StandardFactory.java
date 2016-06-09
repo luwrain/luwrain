@@ -99,7 +99,7 @@ public class StandardFactory implements Factory
 	if (el.equals(speechParams))
 	    return new SimpleSection(speechParams, "Основные параметры", (controlPanel)->SpeechParams.create(controlPanel.getCoreInterface()));
 	if (el.equals(speechCurrent))
-	    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel.getCoreInterface()));
+	    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel));
 	if (el.equals(speechChannels))
 	    return new SimpleSection(speechChannels, "Настройка каналов");
 	if (el.equals(soundsList))
