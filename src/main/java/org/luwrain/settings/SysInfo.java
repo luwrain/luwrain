@@ -52,6 +52,11 @@ ControlEnvironment env, String name)
 	return super.onEnvironmentEvent(event);
     }
 
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
 
     static SysInfo create(ControlPanel controlPanel)
     {

@@ -37,6 +37,10 @@ class Braille extends FormArea implements SectionArea
 	return super.onEnvironmentEvent(event);
     }
 
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
 
     private void fillForm()
     {

@@ -22,29 +22,29 @@ import org.luwrain.core.events.*;
 class ControlPanelImpl implements org.luwrain.cpanel.ControlPanel
 {
     private Luwrain luwrain;
-    private Actions actions;
+    private ControlPanelApp app;
 
-    ControlPanelImpl(Luwrain luwrain, Actions actions)
+    ControlPanelImpl(Luwrain luwrain, ControlPanelApp app)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(actions, "actions");
+	NullCheck.notNull(app, "app");
 	this.luwrain = luwrain;
-	this.actions = actions;
+	this.app = app;
     }
 
     @Override public void close()
     {
-	actions.closeApp();
+	app.closeApp();
     }
 
     @Override public void gotoSectionsTree()
     {
-	actions.gotoSections();
+	app.gotoSections();
     }
 
     @Override public void refreshSectionsTree()
     {
-	actions.refreshSectionsTree();
+app.refreshSectionsTree();
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)

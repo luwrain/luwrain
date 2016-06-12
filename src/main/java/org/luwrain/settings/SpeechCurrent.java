@@ -48,6 +48,11 @@ class SpeechCurrent extends SimpleArea implements SectionArea
 	return super.onEnvironmentEvent(event);
     }
 
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
     static SpeechCurrent create(ControlPanel controlPanel)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");

@@ -109,6 +109,11 @@ class SoundSchemes extends ListArea implements SectionArea
 	return super.onEnvironmentEvent(event);
     }
 
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
     static private Item[] loadItems(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");

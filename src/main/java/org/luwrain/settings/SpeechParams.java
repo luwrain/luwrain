@@ -99,6 +99,11 @@ class SpeechParams extends NavigateArea implements SectionArea
 	return super.onEnvironmentEvent(event);
     }
 
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
     static SpeechParams create(ControlPanel controlPanel)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");

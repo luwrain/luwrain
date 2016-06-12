@@ -85,6 +85,11 @@ class FileTypes extends ListArea implements SectionArea
 	return super.onEnvironmentEvent(event);
     }
 
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
     private boolean editItem(Object obj)
     {
 	return false;

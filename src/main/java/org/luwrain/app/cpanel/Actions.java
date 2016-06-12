@@ -20,11 +20,11 @@ import org.luwrain.cpanel.Section;
 
 interface Actions
 {
-    boolean openSection(Object obj);
-    boolean onSectionsInsert();
-    boolean onSectionsDelete();
+    //    boolean openSection(Object obj);
+    //    boolean onSectionsInsert();
+    //    boolean onSectionsDelete();
     void closeApp();
-    boolean gotoOptions();
-    void gotoSections();
-    void refreshSectionsTree();
+    //    boolean gotoOptions();
+    //    void gotoSections();
+    //    void refreshSectionsTree();
 }

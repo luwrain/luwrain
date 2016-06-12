@@ -54,7 +54,7 @@ class PersonalInfoArea extends FormArea implements SectionArea
 	return "Персональная информация";
     }
 
-    boolean save()
+    @Override public boolean saveSectionData()
     {
 	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final Registry registry = luwrain.getRegistry();

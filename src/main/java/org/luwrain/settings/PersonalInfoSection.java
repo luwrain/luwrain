@@ -25,10 +25,6 @@ class PersonalInfoSection extends EmptySection
 
     @Override public boolean canCloseSection(ControlPanel controlPanel)
     {
-	if (area == null)
-	    return true;
-	if (!area.save())
-	    controlPanel.getCoreInterface().message("Во время сохранения сделанных изменений произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
-	return true;
+	return false;
     }
 }

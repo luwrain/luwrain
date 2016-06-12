@@ -56,7 +56,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	return true;
     }
 
-    @Override public boolean openSection(Object obj)
+    private  boolean openSection(Object obj)
     {
 	NullCheck.notNull(obj, "obj");
 	if (!(obj instanceof Section))
@@ -74,7 +74,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	return true;
     }
 
-    @Override public void refreshSectionsTree()
+    void refreshSectionsTree()
     {
 	//	sectionsModel.refresh();
     sectionsArea.refresh();
@@ -91,7 +91,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
     luwrain.onNewAreaLayout();
     }
 
-    @Override public boolean onSectionsInsert()
+    private boolean onSectionsInsert()
     {
 	final Object o = sectionsArea.selected();
 	if (o == null || !(o instanceof Section))
@@ -100,7 +100,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	return sect.onTreeInsert(iface);
     }
 
-    @Override public boolean onSectionsDelete()
+    private boolean onSectionsDelete()
     {
 	final Object o = sectionsArea.selected();
 	if (o == null || !(o instanceof Section))
@@ -117,7 +117,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	treeParams.environment = new DefaultControlEnvironment(luwrain);
 	treeParams.model = base.getTreeModel();
 	treeParams.name = strings.sectionsAreaName();
-	treeParams.clickHandler = (area, obj)->actions.openSection(obj);
+	treeParams.clickHandler = (area, obj)->openSection(obj);
 
 	sectionsArea = new TreeArea(treeParams){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -127,11 +127,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 			switch (event.getSpecial())
 			{
 			case TAB:
-			    return actions.gotoOptions();
-			case INSERT:
-			    return actions.onSectionsInsert();
-			case DELETE:
-			    return actions.onSectionsDelete();
+			    return gotoOptions();
 			}
 		    return super.onKeyboardEvent(event);
 		}
@@ -140,10 +136,6 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 		    switch (event.getCode())
 		    {
 		    case ACTION:
-			if (ActionEvent.isAction(event, "insert"))
-			    actions.onSectionsInsert();
-			if (ActionEvent.isAction(event, "delete"))
-			    actions.onSectionsDelete();
 			return true;
 		    case CLOSE:
 			actions.closeApp();
@@ -175,12 +167,12 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	return new AreaLayout(sectionsArea);
     }
 
-    @Override public void gotoSections()
+    void gotoSections()
     {
 	luwrain.setActiveArea(sectionsArea);
     }
 
-    @Override public boolean gotoOptions()
+    private boolean gotoOptions()
     {
 	if (currentSection == null || currentOptionsArea == null)
 	    return false;

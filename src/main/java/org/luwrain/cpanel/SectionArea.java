@@ -5,4 +5,5 @@ import org.luwrain.core.*;
 
 public interface SectionArea extends Area
 {
+    boolean saveSectionData();
 }

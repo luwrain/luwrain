@@ -49,6 +49,11 @@ class UserInterface extends FormArea implements SectionArea
 	return super.onEnvironmentEvent(event);
     }
 
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
     boolean save()
     {
 /*

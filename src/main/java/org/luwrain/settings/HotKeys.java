@@ -54,6 +54,11 @@ class HotKeys extends ListArea implements SectionArea
 	}
     }
 
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
     private ControlPanel controlPanel;
 
     HotKeys(ControlPanel controlPanel, ListArea.Params params)

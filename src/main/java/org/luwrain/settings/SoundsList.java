@@ -71,6 +71,11 @@ static private class Item
 	return super.onEnvironmentEvent(event);
     }
 
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
     static private Item[] loadItems(Registry registry)
     {
 	final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(registry);
