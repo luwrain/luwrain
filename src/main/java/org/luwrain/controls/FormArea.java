@@ -389,7 +389,6 @@ public class FormArea  extends NavigateArea
 	return addCheckbox(itemName, caption, initialState, null, true);
     }
 
-
     public boolean getCheckboxState(String itemName)
     {
 	NullCheck.notNull(itemName, "itemName");

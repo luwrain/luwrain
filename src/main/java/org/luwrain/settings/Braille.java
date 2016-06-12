@@ -12,12 +12,14 @@ class Braille extends FormArea implements SectionArea
 {
     private ControlPanel controlPanel;
     private Luwrain luwrain;
+    private Settings.Braille settings;
 
     Braille(ControlPanel controlPanel)
     {
 	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), "Брайль");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();
+	this.settings = Settings.createBraille(luwrain.getRegistry());
 	fillForm();
     }
 
@@ -39,13 +41,17 @@ class Braille extends FormArea implements SectionArea
 
     @Override public boolean saveSectionData()
     {
+	settings.setEnabled(getCheckboxState("enabled"));
 	return true;
     }
 
     private void fillForm()
     {
-	addStatic("activated", "Активировано:" + luwrain.getProperty("luwrain.braille.active"));
-	addStatic("driver", "Драйвер:" + luwrain.getProperty("luwrain.braille.driver"));
+	final boolean activated = luwrain.getProperty("luwrain.braille.active").equals("1");
+	addCheckbox("enabled", "Включена поддержка брайля:", settings.getEnabled(false));
+	addStatic("activated", "Активировано:" + (activated?"Да":"Нет"));
+	if (activated)
+	    addStatic("driver", "Драйвер:" + luwrain.getProperty("luwrain.braille.driver")); else
 	addStatic("error", "Текст ошибки:" + luwrain.getProperty("luwrain.braille.error"));
     }
 

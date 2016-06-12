@@ -95,6 +95,11 @@ public class RegistryKeys
 	return getProperty("core.InteractionParams");
     }
 
+    public String braille()
+    {
+	return "/org/luwrain/braille";
+    }
+
     public String speech()
     {
 	return getProperty("core.Speech");

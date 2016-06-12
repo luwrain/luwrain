@@ -44,6 +44,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 
     @Override public boolean onLaunch(Luwrain luwrain)
     {
+	NullCheck.notNull(luwrain, "luwrain");
 	final Object o = luwrain.i18n().getStrings(STRINGS_NAME);
 	if (o == null || !(o instanceof Strings))
 	    return false;
@@ -56,63 +57,8 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	return true;
     }
 
-    private  boolean openSection(Object obj)
-    {
-	NullCheck.notNull(obj, "obj");
-	if (!(obj instanceof Section))
-	    return false;
-	final Section sect = (Section)obj;
-	final SectionArea area = sect.getSectionArea(iface);
-	if (area == null)
-	    return false;
-	if (!mayCloseCurrentSection())
-	    return true;
-	currentSection = sect;
-	currentOptionsArea = area;
-	luwrain.onNewAreaLayout();
-	gotoOptions();
-	return true;
-    }
-
-    void refreshSectionsTree()
-    {
-	//	sectionsModel.refresh();
-    sectionsArea.refresh();
-    if (currentSection == null || currentOptionsArea == null)
-    {
-	currentSection = null;
-	currentOptionsArea = null;
-	return;
-    }
-    if (currentSection.isSectionEnabled())
-	return;
-    currentSection = null;
-    currentOptionsArea = null;
-    luwrain.onNewAreaLayout();
-    }
-
-    private boolean onSectionsInsert()
-    {
-	final Object o = sectionsArea.selected();
-	if (o == null || !(o instanceof Section))
-	    return false;
-	final Section sect = (Section)o;
-	return sect.onTreeInsert(iface);
-    }
-
-    private boolean onSectionsDelete()
-    {
-	final Object o = sectionsArea.selected();
-	if (o == null || !(o instanceof Section))
-	    return false;
-	final Section sect = (Section)o;
-	return sect.onTreeDelete(iface);
-    }
-
     private void createArea()
     {
-	final Actions actions = this;
-
 	final TreeArea.Params treeParams = new TreeArea.Params();
 	treeParams.environment = new DefaultControlEnvironment(luwrain);
 	treeParams.model = base.getTreeModel();
@@ -138,7 +84,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 		    case ACTION:
 			return true;
 		    case CLOSE:
-			actions.closeApp();
+			closeApp();
 			return true;
 		    }
 		    return false;
@@ -154,17 +100,39 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 		    if (flags.contains(Section.Flags.HAS_INSERT))
 			res.add(new Action("insert", "Добавить"));
 		    if (flags.contains(Section.Flags.HAS_DELETE))
-		    res.add(new Action("delete", "Удалить"));
+			res.add(new Action("delete", "Удалить"));
 		    return res.toArray(new Action[res.size()]);
 		}
 	    };
     }
 
-    @Override public AreaLayout getAreasToShow()
+    void refreshSectionsTree()
     {
-	if (currentSection != null && currentOptionsArea != null)
-	    return new AreaLayout(AreaLayout.LEFT_RIGHT, sectionsArea, currentOptionsArea);
-	return new AreaLayout(sectionsArea);
+	//FIXME:
+    sectionsArea.refresh();
+    }
+
+    private  boolean openSection(Object obj)
+    {
+	NullCheck.notNull(obj, "obj");
+	if (!(obj instanceof Section))
+	    return false;
+	final Section sect = (Section)obj;
+	final SectionArea area = sect.getSectionArea(iface);
+	if (area == null)
+	    return false;
+	if (currentOptionsArea != null)
+	{
+	    if (!currentOptionsArea.saveSectionData())
+		return true;
+	    currentOptionsArea = null;
+	    currentSection = null;
+	}
+	currentSection = sect;
+	currentOptionsArea = area;
+	luwrain.onNewAreaLayout();
+	gotoOptions();
+	return true;
     }
 
     void gotoSections()
@@ -180,11 +148,11 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	return true;
     }
 
-    private boolean mayCloseCurrentSection()
+    @Override public AreaLayout getAreasToShow()
     {
-	if (currentSection == null)
-	    return true;
-	return currentSection.canCloseSection(iface);
+	if (currentSection != null && currentOptionsArea != null)
+	    return new AreaLayout(AreaLayout.LEFT_RIGHT, sectionsArea, currentOptionsArea);
+	return new AreaLayout(sectionsArea);
     }
 
     @Override public String getAppName()
@@ -200,7 +168,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 
     @Override public void closeApp()
     {
-	if (!mayCloseCurrentSection())
+	if (currentOptionsArea != null && !currentOptionsArea.saveSectionData())
 	    return;
 	luwrain.closeApp();
     }

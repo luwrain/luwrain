@@ -160,6 +160,12 @@ public interface Settings
 	void setCyclingPopupLists(boolean value);
     }
 
+public interface Braille
+{
+    boolean getEnabled(boolean defValue);
+    void setEnabled(boolean value);
+}
+
     public interface SpeechParams
     {
 	int getPitch(int defValue);
@@ -196,6 +202,12 @@ public interface Settings
     static public SoundScheme createCurrentSoundScheme(Registry registry)
     {
 	return RegistryProxy.create(registry, keys.currentSoundScheme(), SoundScheme.class);
+    }
+
+    static public Braille createBraille(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, keys.braille(), Braille.class);
     }
 
     static public SpeechParams createSpeechParams(Registry registry)
