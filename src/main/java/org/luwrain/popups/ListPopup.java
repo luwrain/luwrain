@@ -25,11 +25,24 @@ import org.luwrain.util.*;
 
 public class ListPopup extends ListPopupBase
 {
-    private Object result;
+    protected Object result;
+
     public ListPopup(Luwrain luwrain, ListArea.Params params,
 		     Set<Popup.Flags> popupFlags)
     {
 	super(luwrain, params, popupFlags);
+    }
+
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (event.isSpecial() && !event.isModified())
+	    switch(event.getSpecial())
+	{
+case ENTER:
+return closing.doOk();
+ }
+return super.onKeyboardEvent(event);
     }
 
     @Override public boolean onOk()

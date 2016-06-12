@@ -23,46 +23,14 @@ import org.luwrain.popups.*;
 
 class ContextMenu extends ListPopup
 {
-    /*
-    static private class Model implements ListArea.Model
-    {
-	private Action[] actions;
-
-	Model(Action[] actions)
-	{
-	    this.actions = actions;
-	    NullCheck.notNull(actions, "actions");
-	}
-
-	@Override public int getItemCount()
-	{
-	    return actions.length;
-	}
-
-	@Override public Object getItem(int index)
-	{
-	    return actions[index];
-	}
-
-	@Override public boolean toggleMark(int index)
-    {
-	return false;
-    }
-
-	@Override public void refresh()
-	{
-	}
-    }
-    */
-
     static private class Appearance implements ListArea.Appearance
     {
 	private Luwrain luwrain;
 
 	Appearance(Luwrain luwrain)
 	{
-	    this.luwrain = luwrain;
 	    NullCheck.notNull(luwrain, "luwrain");
+	    this.luwrain = luwrain;
 	}
 
 	@Override public void announceItem(Object item, Set<Flags> flags)
@@ -104,7 +72,7 @@ class ContextMenu extends ListPopup
     }
 
     static private ListArea.Params constructParams(Luwrain luwrain, Action[] actions,
-Strings strings)
+						   Strings strings)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNullItems(actions, "actions");
@@ -114,6 +82,7 @@ Strings strings)
 	params.model = new FixedListModel(actions);
 	params.appearance = new Appearance(luwrain);
 	params.environment = new DefaultControlEnvironment(luwrain);
+	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());
 	return params;
     }
 }

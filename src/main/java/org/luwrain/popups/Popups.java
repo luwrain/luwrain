@@ -67,7 +67,6 @@ public class Popups
 	NullCheck.notNull(name, "name");
 	NullCheck.notNullItems(items, "items");
 	NullCheck.notNull(popupFlags, "popupFlags");
-	//	final Object[] items2 = items;
 	final ListArea.Model model = new ListArea.Model(){
 		@Override public int getItemCount() { return items.length; }
 		@Override public Object getItem(int index) { return index < items.length?items[index]:null; }
@@ -79,6 +78,7 @@ public class Popups
 	params.name = name;
 	params.model = model;
 	params.appearance = new DefaultListItemAppearance(params.environment);
+	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());
 	final ListPopup popup = new ListPopup(luwrain, params, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
@@ -128,6 +128,20 @@ public class Popups
 		    startWith, startWith, 
 		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
+
+    static public Path path(Luwrain luwrain,
+			    String name, String prefix,
+			    Path startWith)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(startWith, "startWith");
+	return path(luwrain, name, prefix,
+		    startWith, startWith, 
+		    (path)->{return true;}, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
+    }
+
 
     static public Path[] commanderMultiple(Luwrain luwrain, String name,
 					   Path path, int flags,

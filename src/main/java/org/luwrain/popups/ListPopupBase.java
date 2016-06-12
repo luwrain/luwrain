@@ -42,6 +42,7 @@ public class ListPopupBase extends ListArea implements Popup, PopupClosingReques
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
+	System.out.println(event.toString());
 	if (closing.onKeyboardEvent(event))
 	    return true;
 	return super.onKeyboardEvent(event);
@@ -54,9 +55,6 @@ public class ListPopupBase extends ListArea implements Popup, PopupClosingReques
 	    return true;
 	return super.onEnvironmentEvent(event);
     }
-
-
-
 
     @Override public boolean onOk()
     {

@@ -25,6 +25,8 @@ public class ListUtils
     static public class DefaultHotPointMoves implements ListArea.HotPointMoves 
     {
 	protected boolean hasEmptyLineTop = false;
+	protected boolean hasEmptyLineBottom = false;
+	protected boolean cycling = false;
 
 	@Override public int numberOfEmptyLinesTop()
 	{
@@ -33,24 +35,46 @@ public class ListUtils
 
 	    @Override public int numberOfEmptyLinesBottom()
 	    {
-		return 1;
+	    return hasEmptyLineBottom?1:0;
 	    }
 
 	    @Override public int oneLineUp(int index, int modelItemCount)
 	    {
-		return index > 0?index - 1:0;
+		if (modelItemCount < 1)
+		    return index;
+		if (cycling)
+		{
+		final int count = modelItemCount + (hasEmptyLineTop?1:0);//We don't need an empty line at the bottom
+		if (hasEmptyLineTop)
+		    return index > 1?index - 1:count - 1;
+		    return index > 0?index - 1:count - 1;
+		}
+		    return index > 0?index - 1:0;
 	    }
 
 	    @Override public int oneLineDown(int index, int modelItemCount)
 	    {
-		final int count = modelItemCount + (hasEmptyLineTop?1:0) + 1;
-		return (index + 1 < count)?index + 1:index;
+		if (modelItemCount < 1)
+		    return index;
+		    final int topIndex = hasEmptyLineTop?1:0;
+		    final int count = modelItemCount + topIndex;
+		if (cycling)
+		{
+		if (hasEmptyLineBottom)
+		    return index < count?index + 1:topIndex;
+		    return index + 1 < count?index + 1:topIndex;
+		}
+		if (hasEmptyLineBottom)
+		    return index < count?index + 1:index;
+		    return index + 1 < count?index + 1:index;
 	    }
 
 	@Override public void setFlags(Set<ListArea.Flags> flags)
 	{
 	    NullCheck.notNull(flags, "flags");
 	    hasEmptyLineTop = flags.contains(ListArea.Flags.EMPTY_LINE_TOP);
-	}
+	    hasEmptyLineBottom = flags.contains(ListArea.Flags.EMPTY_LINE_BOTTOM);
+	    cycling = flags.contains(ListArea.Flags.CYCLING);
 	}
     }
+}

@@ -27,7 +27,7 @@ import org.luwrain.util.*;
 
 public class ListArea  implements Area, RegionProvider
 {
-    public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM};
+    public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM, CYCLING};
 
     public interface Model
     {
@@ -67,6 +67,30 @@ public interface HotPointMoves
 	public ListClickHandler clickHandler;
 	public String name;
 	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
+
+	static public Set<Flags> loadRegularFlags(Registry registry)
+	{
+	    NullCheck.notNull(registry, "registry");
+	    final Set<Flags> res = EnumSet.noneOf(Flags.class);
+	    final Settings.UserInterface settings = Settings.createUserInterface(registry);
+	    if (settings.getEmptyLineUnderRegularLists(true))
+		res.add(Flags.EMPTY_LINE_BOTTOM);
+	    if (settings.getCyclingRegularLists(false))
+		res.add(Flags.CYCLING);
+	    return res;
+	}
+
+	static public Set<Flags> loadPopupFlags(Registry registry)
+	{
+	    NullCheck.notNull(registry, "registry");
+	    final Set<Flags> res = EnumSet.noneOf(Flags.class);
+	    final Settings.UserInterface settings = Settings.createUserInterface(registry);
+	    if (settings.getEmptyLineAbovePopupLists(true))
+		res.add(Flags.EMPTY_LINE_TOP);
+	    if (settings.getCyclingPopupLists(false))
+		res.add(Flags.CYCLING);
+	    return res;
+	}
     }
 
     protected final Region region = new Region(this);
