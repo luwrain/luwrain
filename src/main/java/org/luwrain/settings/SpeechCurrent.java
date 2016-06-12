@@ -68,11 +68,9 @@ class SpeechCurrent extends SimpleArea implements SectionArea
 	    info.addLine("По умолчанию: " + (luwrain.getProperty(prefix + "default").equals("1")?"Да":"Нет"));
 	    info.addLine("Реализация: " + luwrain.getProperty(prefix + "class"));
 
-
 	    info.addLine("Поддерживает вывод звука напрямую на устройство: " + (luwrain.getProperty(prefix + "cansynthtospeakers").equals("1")?"Да":"Нет"));
 	    info.addLine("Поддерживает уведомление об окончании воспроизведения: " + (luwrain.getProperty(prefix + "cannotifywhenfinished").equals("1")?"Да":"Нет"));
 	    info.addLine("Поддерживает сохранения данных в поток: " + (luwrain.getProperty(prefix + "cansynthtostream").equals("1")?"Да":"Нет"));
-
 
 	    ++n;
 	    info.addLine("");

@@ -8,6 +8,8 @@ public class StandardFactory implements Factory
 {
     static private final String ELEMENT_PREFIX = "org.luwrain.settings.StandardFactory:";
 
+    static private final Element personalInfo = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "PersonalInfo");
+    static private final Element uiGeneral = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "UIGeneral");
     static private final Element hotKeys = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "HotKeys");
     static private final Element fileTypes = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "FileTypes");
     static private final Element mainMenu = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "MainMenu");
@@ -23,14 +25,15 @@ public class StandardFactory implements Factory
     {
 	return new Element[]{
 	    StandardElements.ROOT,
-	    StandardElements.APPLICATIONS,
+	    personalInfo,
 	    StandardElements.UI,
+	    uiGeneral, 
 	    hotKeys,
 	    mainMenu,
 	    soundSchemes,
 	    soundsList,
-
 	    fileTypes,
+	    StandardElements.APPLICATIONS,
 	    StandardElements.INPUT_OUTPUT,
 	    StandardElements.SPEECH,
 	    StandardElements.BRAILLE,
@@ -55,57 +58,52 @@ public class StandardFactory implements Factory
     @Override public org.luwrain.cpanel.Section createSection(Element el)
     {
 	NullCheck.notNull(el, "el");
-
-	//Standard elements
 	if (el.equals(StandardElements.ROOT))
 	    return new SimpleSection(StandardElements.ROOT, "Панель управления");
 	if (el.equals(StandardElements.APPLICATIONS))
 	    return new SimpleSection(StandardElements.APPLICATIONS, "Приложения");
-
-	if (el.equals(StandardElements.INPUT_OUTPUT))
-	    return new SimpleSection(StandardElements.INPUT_OUTPUT, "Ввод/вывод");
-
-
-	if (el.equals(StandardElements.KEYBOARD))
-	    return new SimpleSection(StandardElements.KEYBOARD, "Клавиатура");
-	if (el.equals(StandardElements.SOUND))
-	    return new SimpleSection(StandardElements.SOUND, "Звук");
-	if (el.equals(StandardElements.BRAILLE))
-	    return new SimpleSection(StandardElements.BRAILLE, "Браиль", (controlPanel)->Braille.create(controlPanel));
-	    //	    return new BrailleSection();
-	if (el.equals(StandardElements.SPEECH))
-	    return new SimpleSection(StandardElements.SPEECH, "Речь");
-	if (el.equals(StandardElements.NETWORK))
-	    return new SimpleSection(StandardElements.NETWORK, "Сеть");
-	if (el.equals(StandardElements.HARDWARE))
-	    return new SimpleSection(StandardElements.HARDWARE, "Оборудование");
-	if (el.equals(StandardElements.UI))
-	    return new SimpleSection(StandardElements.UI, "Интерфейс пользователя");
-	if (el.equals(StandardElements.EXTENSIONS))
-	    return new SimpleSection(StandardElements.EXTENSIONS, "Расширения");
-	if (el.equals(StandardElements.WORKERS))
-	    return new SimpleSection(StandardElements.WORKERS, "Фоновые задачи");
-
-	//Other sections
-	if (el.equals(hotKeys))
-	    return new SimpleSection(hotKeys, "Горячие клавиши", (controlPanel)->HotKeys.create(controlPanel.getCoreInterface()));
-	if (el.equals(fileTypes))
-	    return new SimpleSection(fileTypes, "Типы файлов", (controlPanel)->FileTypes.create(controlPanel));
-	if (el.equals(mainMenu))
-	    return new SimpleSection(mainMenu, "Главное меню");
-	if (el.equals(sysInfo))
-	    return new SimpleSection(sysInfo, "Информация о системе", (controlPanel)->SysInfo.create(controlPanel.getCoreInterface()));
-
-	if (el.equals(speechParams))
-	    return new SimpleSection(speechParams, "Основные параметры", (controlPanel)->SpeechParams.create(controlPanel.getCoreInterface()));
-	if (el.equals(speechCurrent))
-	    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel));
-	if (el.equals(speechChannels))
-	    return new SimpleSection(speechChannels, "Настройка каналов");
-	if (el.equals(soundsList))
-	    return new SimpleSection(soundsList, "Звуки системных событий", (controlPanel)->SoundsList.create(controlPanel));
-	if (el.equals(soundSchemes))
-	    return new SimpleSection(soundSchemes, "Звуковые схемы", (controlPanel)->SoundSchemes.create(controlPanel));
-	return null;
+		if (el.equals(StandardElements.INPUT_OUTPUT))
+		    return new SimpleSection(StandardElements.INPUT_OUTPUT, "Ввод/вывод");
+		if (el.equals(StandardElements.KEYBOARD))
+		    return new SimpleSection(StandardElements.KEYBOARD, "Клавиатура");
+		if (el.equals(StandardElements.SOUND))
+		    return new SimpleSection(StandardElements.SOUND, "Звук");
+		if (el.equals(StandardElements.BRAILLE))
+		    return new SimpleSection(StandardElements.BRAILLE, "Браиль", (controlPanel)->Braille.create(controlPanel));
+		if (el.equals(StandardElements.SPEECH))
+		    return new SimpleSection(StandardElements.SPEECH, "Речь");
+		if (el.equals(StandardElements.NETWORK))
+		    return new SimpleSection(StandardElements.NETWORK, "Сеть");
+		if (el.equals(StandardElements.HARDWARE))
+		    return new SimpleSection(StandardElements.HARDWARE, "Оборудование");
+		if (el.equals(StandardElements.UI))
+		    return new SimpleSection(StandardElements.UI, "Интерфейс пользователя");
+		if (el.equals(StandardElements.EXTENSIONS))
+		    return new SimpleSection(StandardElements.EXTENSIONS, "Расширения");
+		if (el.equals(StandardElements.WORKERS))
+		    return new SimpleSection(StandardElements.WORKERS, "Фоновые задачи");
+		if (el.equals(uiGeneral))
+		    return new SimpleSection(uiGeneral, "Общие настройки", (controlPanel)->UserInterface.create(controlPanel));
+		if (el.equals(hotKeys))
+		    return new SimpleSection(hotKeys, "Горячие клавиши", (controlPanel)->HotKeys.create(controlPanel));
+		if (el.equals(personalInfo))
+		    return new SimpleSection(personalInfo, "Персональная информация");
+		if (el.equals(fileTypes))
+		    return new SimpleSection(fileTypes, "Типы файлов", (controlPanel)->FileTypes.create(controlPanel));
+		if (el.equals(mainMenu))
+		    return new SimpleSection(mainMenu, "Главное меню");
+		if (el.equals(sysInfo))
+		    return new SimpleSection(sysInfo, "Информация о системе", (controlPanel)->SysInfo.create(controlPanel));
+		if (el.equals(speechParams))
+		    return new SimpleSection(speechParams, "Основные параметры", (controlPanel)->SpeechParams.create(controlPanel));
+		if (el.equals(speechCurrent))
+		    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel));
+		if (el.equals(speechChannels))
+		    return new SimpleSection(speechChannels, "Настройка каналов");
+		if (el.equals(soundsList))
+		    return new SimpleSection(soundsList, "Звуки системных событий", (controlPanel)->SoundsList.create(controlPanel));
+		if (el.equals(soundSchemes))
+		    return new SimpleSection(soundSchemes, "Звуковые схемы", (controlPanel)->SoundSchemes.create(controlPanel));
+		return null;
     }
 }

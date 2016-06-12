@@ -11,17 +11,19 @@ class SpeechParams extends NavigateArea implements SectionArea
 {
     static private final int STEP = 5;
 
+    private ControlPanel controlPanel;
     private Luwrain luwrain;
     private String name;
 
-    SpeechParams(Luwrain luwrain,
+    SpeechParams(ControlPanel controlPanel,
 		 ControlEnvironment env, String name)
     {
 	super(env);
-	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(env, "env");
 	NullCheck.notNull(name, "name");
-	this.luwrain = luwrain;
+	this.controlPanel = controlPanel;
+	this.luwrain = controlPanel.getCoreInterface();
 	this.name = name;
     }
 
@@ -53,6 +55,8 @@ class SpeechParams extends NavigateArea implements SectionArea
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
 	if (!event.isSpecial() && !event.isModified())
 	    switch(event.getChar())
 	{
@@ -87,9 +91,17 @@ class SpeechParams extends NavigateArea implements SectionArea
 	return super.onKeyboardEvent(event);
     }
 
-    static SpeechParams create(Luwrain luwrain)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	return new SpeechParams(luwrain, new DefaultControlEnvironment(luwrain), "Параметры речи");
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onEnvironmentEvent(event))
+	    return true;
+	return super.onEnvironmentEvent(event);
+    }
+
+    static SpeechParams create(ControlPanel controlPanel)
+    {
+	NullCheck.notNull(controlPanel, "controlPanel");
+	return new SpeechParams(controlPanel, new DefaultControlEnvironment(controlPanel.getCoreInterface()), "Параметры речи");
     }
 }

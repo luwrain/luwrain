@@ -26,15 +26,38 @@ import org.luwrain.util.RegistryPath;
 
 class SysInfo extends SimpleArea implements SectionArea
 {
-    SysInfo(ControlEnvironment env, String name)
+    private ControlPanel controlPanel;
+
+    SysInfo(ControlPanel controlPanel,
+ControlEnvironment env, String name)
     {
 	super(env, name);
+	NullCheck.notNull(controlPanel, "controlPanel");
+	this.controlPanel = controlPanel;
     }
 
-    static SysInfo create(Luwrain luwrain)
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	final SysInfo sysInfo = new SysInfo(new DefaultControlEnvironment(luwrain), "Информация о системе");
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
+	return super.onKeyboardEvent(event);
+    }
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onEnvironmentEvent(event))
+	    return true;
+	return super.onEnvironmentEvent(event);
+    }
+
+
+    static SysInfo create(ControlPanel controlPanel)
+    {
+	NullCheck.notNull(controlPanel, "controlPanel");
+	final Luwrain luwrain = controlPanel.getCoreInterface();
+	final SysInfo sysInfo = new SysInfo(controlPanel, new DefaultControlEnvironment(luwrain), "Информация о системе");
 
 	sysInfo.beginLinesTrans();
 	sysInfo.addLine("Версия LUWRAIN: " + luwrain.getProperty("luwrain.version"));
