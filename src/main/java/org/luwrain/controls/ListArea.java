@@ -132,7 +132,7 @@ public interface HotPointMoves
 	return model;
     }
 
-    public Object selected()
+    public final Object selected()
     {
 	final int index = hotPointY - hotPointMoves.numberOfEmptyLinesTop();
 	return (index >= 0 && index < model.getItemCount())?model.getItem(index):null;
@@ -597,7 +597,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	return true;
     }
 
-    private boolean onArrowLeft(KeyboardEvent event)
+    protected boolean onArrowLeft(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;

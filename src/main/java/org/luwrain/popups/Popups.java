@@ -151,7 +151,9 @@ public class Popups
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	return popup.selected();
+	if (popup.marked().length > 0)
+	    return popup.marked();
+	return new Path[]{popup.selectedPath()};
     }
 
     static public Path commanderSingle(Luwrain luwrain, String name,
@@ -162,10 +164,7 @@ public class Popups
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	final Path[] res = popup.selected();
-	if (res == null || res.length != 1)
-	    return null;
-	return res[0];
+	return popup.selectedPath();
     }
 
     static public Partition mountedPartitions(Luwrain luwrain)

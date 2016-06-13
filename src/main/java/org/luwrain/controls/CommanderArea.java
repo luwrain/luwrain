@@ -125,7 +125,6 @@ static public class CommanderParams
 
     public static class AppearanceImpl implements ListArea.Appearance
     {
-	//	protected ControlEnvironment environment;
 	protected CommanderAppearance commanderAppearance;
 
 	public AppearanceImpl(CommanderAppearance commanderAppearance)
@@ -145,9 +144,9 @@ static public class CommanderParams
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
+	    System.out.println(item.getClass().getName());
 	    final Entry entry = (Entry)item;
 
-	    NullCheck.notNull(entry, "entry");
 	    final boolean marked = entry.marked();
 	    final CommanderArea.Entry.Type type = entry.type();
 	    final String name = commanderAppearance.getScreenLine(entry);
@@ -295,34 +294,15 @@ protected CommanderAppearance commanderAppearance;
 	return true;
     }
 
-
-    /*
-     * Returns the list of currently selected files. If user marked some
-     * files or directories, this method returns list of them, regardless what
-     * entry is under the cursor. Otherwise, this method returns exactly the
-     * entry under the current cursor position or an empty array, if the cursor is at
-     * the empty string in the bottom of the area. The parent directory entry
-     * is always ignored. This method never returns {@code >null}.
-     *
-     * @return The list of currently selected entries 
-     */
-    public Path[] selected()
+    public Path[] marked()
     {
-	if (isEmpty())
+	if (!selecting || isEmpty())
 	    return new Path[0];
-	if (selecting)
-	{
-	    final LinkedList<Path> paths = new LinkedList<Path>();
-	    for(Entry e: model().entries)
-		if (e.marked() && e.type() != Entry.Type.PARENT)
-		    paths.add(e.path());
-	    if (!paths.isEmpty())
-		return paths.toArray(new Path[paths.size()]);
-	}
-	final Entry e = selectedEntry();
-	if (e == null || e.type() == Entry.Type.PARENT)
-	    return new Path[0];
-	return new Path[]{e.path()};
+	final LinkedList<Path> paths = new LinkedList<Path>();
+	for(Entry e: model().entries)
+	    if (e.marked() && e.type() != Entry.Type.PARENT)
+		paths.add(e.path());
+	return paths.toArray(new Path[paths.size()]);
     }
 
     /**
@@ -337,17 +317,14 @@ protected CommanderAppearance commanderAppearance;
 	return model().current;
     }
 
-    /**
-     * Returns the entry exactly under the cursor. This method returns the
-     * entry without taking into account where the user marks are. If the cursor is at
-     * the empty line in the bottom of the area this method returns null. The parent directory entry is returned
-     * as usual.
-     *
-     * @return The entry under the cursor
-     */
     public Path selectedPath()
     {
-	return !isEmpty() && hotPointY >= 0 && hotPointY < model().entries.length?model().entries[hotPointY].path():null;
+	if (isEmpty())
+	    return null;
+	final Object res = selected();
+	if (res == null)
+	    return null;
+	return ((Entry)res).path();
     }
 
     public Entry selectedEntry()

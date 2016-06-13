@@ -93,10 +93,7 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 
     @Override public boolean onOk()
     {
-	final Path[] selected = selected();
-	if (selected  == null || selected.length < 1)
-	    return false;
-	return true;
+return marked().length > 0 || selectedPath() != null;
     }
 
     @Override public boolean onCancel()
