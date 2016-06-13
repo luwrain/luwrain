@@ -161,6 +161,7 @@ static public class CommanderParams
 		b.append("!");
 		break;
 	    case SYMLINK:
+	    case SYMLINK_DIR:
 		b.append("{");
 		break;
 	    default:
@@ -173,6 +174,7 @@ static public class CommanderParams
 		b.append("]");
 		break;
 	    case SYMLINK:
+	    case SYMLINK_DIR:
 		b.append("}");
 		break;
 	    }
