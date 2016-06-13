@@ -20,25 +20,27 @@ class Braille
 	    errorMessage = "No braille support in the operating system";
 	    return;
 	}
+	final Settings.Braille settings = Settings.createBraille(registry);
+	if (!settings.getEnabled(false))
+	    return;
 	final InitResult res = braille.init(eventConsumer);
-	//	System.out.println("res " + res.type());
 	if (res.success())
 	{
-	    //	    System.out.println("success");
 	    active = true;
 	    errorMessage = "";
 	} else
 	{
-	    //	    System.out.println("failure");
 	    active = false;
 	    errorMessage = res.message();
-	    //	    System.out.println(res.message());
 	}
     }
 
     void textToSpeak(String text)
     {
 	NullCheck.notNull(text, "text");
+	if (braille == null)
+	    return;
+	braille.writeText(text);
     }
 
     boolean isActive()
@@ -54,5 +56,15 @@ class Braille
     String getErrorMessage()
     {
 	return errorMessage;
+    }
+
+    int getDisplayWidth()
+    {
+	return braille != null?braille.getDisplayWidth():0;
+    }
+
+    int getDisplayHeight()
+    {
+	return braille != null?braille.getDisplayHeight():0;
     }
 }

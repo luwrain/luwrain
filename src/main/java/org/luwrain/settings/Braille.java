@@ -41,6 +41,7 @@ class Braille extends FormArea implements SectionArea
 
     @Override public boolean saveSectionData()
     {
+	System.out.println("saving " + getCheckboxState("enabled"));
 	settings.setEnabled(getCheckboxState("enabled"));
 	return true;
     }
@@ -51,8 +52,16 @@ class Braille extends FormArea implements SectionArea
 	addCheckbox("enabled", "Включена поддержка брайля:", settings.getEnabled(false));
 	addStatic("activated", "Активировано:" + (activated?"Да":"Нет"));
 	if (activated)
-	    addStatic("driver", "Драйвер:" + luwrain.getProperty("luwrain.braille.driver")); else
-	addStatic("error", "Текст ошибки:" + luwrain.getProperty("luwrain.braille.error"));
+	{
+	    addStatic("driver", "Драйвер:" + luwrain.getProperty("luwrain.braille.driver"));
+	    addStatic("display-width", "Ширина дисплея:" + luwrain.getProperty("luwrain.braille.displaywidth"));
+	    addStatic("display-height", "Высота дисплея:" + luwrain.getProperty("luwrain.braille.displayheight"));
+	} else
+	{
+	    final String error = luwrain.getProperty("luwrain.braille.error");
+	    if (!error.isEmpty())
+		addStatic("error", "Текст ошибки:" + error);
+	}
     }
 
     static Braille create(ControlPanel controlPanel)

@@ -190,6 +190,7 @@ public final class Luwrain implements EventConsumer
     public void message(String text)
     {
 	NullCheck.notNull(text, "text");
+	environment.getBraille().textToSpeak(text);
 	environment.message(text, MESSAGE_REGULAR);
     }
 
@@ -343,6 +344,7 @@ public final class Luwrain implements EventConsumer
 
     public void sayLetter(char letter)
     {
+	environment.getBraille().textToSpeak("" + letter);
 	switch(letter)
 	{
 	case ' ':
@@ -591,6 +593,10 @@ public final class Luwrain implements EventConsumer
 	    return environment.getBraille().getDriver();
 	case "luwrain.braille.error":
 	    return environment.getBraille().getErrorMessage();
+	case "luwrain.braille.displaywidth":
+	    return "" + environment.getBraille().getDisplayWidth();
+	case "luwrain.braille.displayheight":
+	    return "" + environment.getBraille().getDisplayHeight();
 	default:
 	    if (propName.startsWith("luwrain.os.") || propName.startsWith("luwrain.hardware."))
 	    {
