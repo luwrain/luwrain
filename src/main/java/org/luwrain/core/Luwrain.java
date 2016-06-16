@@ -329,6 +329,7 @@ public final class Luwrain implements EventConsumer
     {
 	NullCheck.notNull(text, "text");
 	silence();
+	environment.getBraille().textToSpeak(text);
 	if (text != null)
 	    environment.getSpeech().speak(preprocess(text), pitch, 0);
     }
