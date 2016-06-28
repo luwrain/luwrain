@@ -34,10 +34,10 @@ import org.luwrain .util.*;
  *
  * @see SimpleArea
  */
-public abstract class NavigateArea implements Area, HotPointControl
+public abstract class NavigateArea implements Area, HotPointControl, RegionProvider
 {
     protected ControlEnvironment environment;
-    protected final Region region = new Region(new LinesRegionProvider(this));
+    protected final Region region = new Region(this);
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
@@ -451,6 +451,34 @@ public abstract class NavigateArea implements Area, HotPointControl
     @Override public int getHotPointY()
     {
 	return hotPointY;
+    }
+
+    @Override public RegionContent getWholeRegion()
+    {
+	return new LinesRegionProvider(this).getWholeRegion();
+    }
+
+    @Override public RegionContent getRegion(int fromX, int fromY,
+					     int toX, int toY)
+    {
+	return new LinesRegionProvider(this).getRegion(fromX, fromY, toX, toY);
+    }
+
+    @Override public boolean deleteWholeRegion()
+    {
+	return false;
+    }
+
+    @Override public boolean deleteRegion(int fromX, int fromY,
+					  int toX, int toY)
+    {
+	return false;
+    }
+
+    @Override public     boolean insertRegion(int x, int y,
+					      RegionContent content)
+    {
+	return false;
     }
 
     protected int getValidLineCount()
