@@ -35,7 +35,8 @@ public class EnvironmentEvent extends Event
 		      READING_POINT,
 		      REGION_POINT,
 		      INSERT,
-		      DELETE
+		      DELETE,
+		      PROPERTIES,
     };
 
     private Code code;

@@ -500,6 +500,24 @@ class StandardCommands
 		}
 	    });
 
+	//properties
+	res.add(new Command() {
+		@Override public String getName()
+		{
+		    return "properties";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+
+		    final Area area = environment.getValidActiveArea(true);
+		    if (area == null)
+			return;
+		    if (!area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.PROPERTIES)))
+			environment.eventNotProcessedMessage();
+		}
+	    });
+
+
 
 	return res.toArray(new Command[res.size()]);
     }

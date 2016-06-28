@@ -1199,7 +1199,7 @@ class Environment extends EnvironmentAreas
 		    message(strings.appBlockedByPopup(), Luwrain.MESSAGE_ERROR);
     }
 
-    private Area getValidActiveArea(boolean speakMessages)
+    Area getValidActiveArea(boolean speakMessages)
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)

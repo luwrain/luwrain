@@ -79,6 +79,12 @@ abstract class EnvironmentBase implements EventConsumer
 	playSound(Sounds.EVENT_NOT_PROCESSED);
     }
 
+    void eventNotProcessedMessage()
+    {
+	speech.silence();
+	playSound(Sounds.EVENT_NOT_PROCESSED);
+    }
+
     protected void failureMessage()
     {
 	speech.silence();

@@ -37,20 +37,19 @@ import org.luwrain .util.*;
 public abstract class NavigateArea implements Area, HotPointControl
 {
     protected ControlEnvironment environment;
-    private final Region region = new Region(new LinesRegionProvider(this));
-    private int hotPointX = 0;
-    private int hotPointY = 0;
+    protected final Region region = new Region(new LinesRegionProvider(this));
+    protected int hotPointX = 0;
+    protected int hotPointY = 0;
 
     public NavigateArea(ControlEnvironment environment)
     {
-	this.environment = environment;
 	NullCheck.notNull(environment, "environment");
+	this.environment = environment;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	if (!event.isSpecial() || event.isModified())
 	    return false;
 	switch (event.getSpecial())
@@ -111,7 +110,7 @@ public abstract class NavigateArea implements Area, HotPointControl
 	return new Action[0];
     }
 
-    private boolean onHome(KeyboardEvent event)
+    protected boolean onHome(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -130,7 +129,7 @@ public abstract class NavigateArea implements Area, HotPointControl
 	return true;
     }
 
-    private boolean onEnd(KeyboardEvent event)
+    protected boolean onEnd(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -149,7 +148,7 @@ public abstract class NavigateArea implements Area, HotPointControl
 	return true;
     }
 
-    private boolean onAltHome(KeyboardEvent event)
+    protected boolean onAltHome(KeyboardEvent event)
     {
 	if (hotPointX >= 1 || hotPointY >= 1)
 	{
@@ -161,7 +160,7 @@ public abstract class NavigateArea implements Area, HotPointControl
 	return true;
     }
 
-    private boolean onAltEnd(KeyboardEvent event)
+    protected boolean onAltEnd(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -178,7 +177,7 @@ public abstract class NavigateArea implements Area, HotPointControl
 	return true;
     }
 
-    private boolean onArrowDown(KeyboardEvent event)
+    protected boolean onArrowDown(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -194,11 +193,11 @@ public abstract class NavigateArea implements Area, HotPointControl
 	//FIXME:do proper next line transition according to possible tab shifts;hotPointX = proper new position respecting tab sequences;
 	hotPointX = hotPointX <= nextLine.length()?hotPointX:nextLine.length();
 	environment.onAreaNewHotPoint(this);
-	introduceLine(hotPointY, nextLine);
+	announceLine(hotPointY, nextLine);
 	return true;
     }
 
-    private boolean onArrowUp(KeyboardEvent event)
+    protected boolean onArrowUp(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -214,11 +213,11 @@ public abstract class NavigateArea implements Area, HotPointControl
 	//FIXME:do proper next line transition according to possible tab shifts;hotPointX = proper new position respecting tab sequences;
 	hotPointX = hotPointX <= prevLine.length()?hotPointX:prevLine.length();
 	environment.onAreaNewHotPoint(this);
-	introduceLine(hotPointY, prevLine);
+	announceLine(hotPointY, prevLine);
 	return true;
     }
 
-    private boolean onArrowRight(KeyboardEvent event)
+    protected boolean onArrowRight(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -243,7 +242,7 @@ public abstract class NavigateArea implements Area, HotPointControl
 	return true;
     }
 
-    private boolean onArrowLeft(KeyboardEvent event )
+    protected boolean onArrowLeft(KeyboardEvent event )
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -269,7 +268,7 @@ public abstract class NavigateArea implements Area, HotPointControl
 	return true;
     }
 
-    private boolean onPageDown(KeyboardEvent event)
+    protected boolean onPageDown(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -284,11 +283,11 @@ public abstract class NavigateArea implements Area, HotPointControl
 	    hotPointY  += height;
 	hotPointX = 0;
 	environment.onAreaNewHotPoint(this);
-	introduceLine(hotPointY, getLineNotNull(hotPointY));
+	announceLine(hotPointY, getLineNotNull(hotPointY));
 	return true;
     }
 
-    private boolean onPageUp(KeyboardEvent event)
+    protected boolean onPageUp(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -303,11 +302,11 @@ public abstract class NavigateArea implements Area, HotPointControl
 	    hotPointY = 0;
 	hotPointX = 0;
 	environment.onAreaNewHotPoint(this);
-	introduceLine(hotPointY, getLineNotNull(hotPointY));
+	announceLine(hotPointY, getLineNotNull(hotPointY));
 	return true;
     }
 
-    private boolean onAltRight(KeyboardEvent event)
+    protected boolean onAltRight(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -337,7 +336,7 @@ public abstract class NavigateArea implements Area, HotPointControl
 	return true;
     }
 
-    private boolean onAltLeft(KeyboardEvent event )
+    protected boolean onAltLeft(KeyboardEvent event )
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -365,24 +364,24 @@ public abstract class NavigateArea implements Area, HotPointControl
 	return true;
     }
 
-    public void introduceLine(int index, String line)
+    public void announceLine(int index, String line)
     {
 	if (line == null || line.isEmpty())
 	    environment.hint(Hints.EMPTY_LINE); else
 	    environment.say(line);
     }
 
-    public void resetState(boolean introduce)
+    public void reset(boolean announce)
     {
 	EnvironmentEvent.resetRegionPoint(this);
 	hotPointX = 0;
 	hotPointY = 0;
 	environment.onAreaNewHotPoint(this);
-	if (introduce)
+	if (announce)
 	{
 	    final String line = getLineNotNull(0);
 	    if (!line.isEmpty())
-		introduceLine(0, line); else
+		announceLine(0, line); else
 		environment.hint(Hints.EMPTY_LINE);
 	}
     }
