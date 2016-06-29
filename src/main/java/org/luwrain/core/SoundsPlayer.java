@@ -143,6 +143,7 @@ class SoundsPlayer
 	setSoundFile(dataDir, scheme.getSearch(""), Sounds.SEARCH);
 	setSoundFile(dataDir, scheme.getDeleted(""), Sounds.DELETED);
 	setSoundFile(dataDir, scheme.getCancel(""), Sounds.CANCEL);
+	setSoundFile(dataDir, scheme.getRegionPoint(""), Sounds.REGION_POINT);
     }
 
     private void setSoundFile(Path dataDir, String fileName,

@@ -66,4 +66,9 @@ abstract class EnvironmentAreas extends EnvironmentBase
     {
 	return false;
     }
+
+    Luwrain getObjForEnvironment()
+    {
+	return interfaces.getObjForEnvironment();
+    }
 }

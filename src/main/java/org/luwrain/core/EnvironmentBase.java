@@ -134,4 +134,9 @@ abstract class EnvironmentBase implements EventConsumer
     {
 	return lang;
     }
+
+    Strings strings()
+    {
+	return strings;
+    }
 }

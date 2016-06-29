@@ -16,9 +16,11 @@
 
 package org.luwrain.core;
 
+import java.nio.file.*;
 import java.util.*;
 
 import org.luwrain.core.events.*;
+import org.luwrain.popups.*;
 import org.luwrain.os.OperatingSystem;
 
 class StandardCommands
@@ -129,9 +131,23 @@ class StandardCommands
 		{
 		    return "open";
 		}
-		@Override public void onCommand(Luwrain luwrain)
+		@Override public void onCommand(Luwrain luwrainArg)
 		{
-		    e.onOpenCommand();
+		    final Strings strings = environment.strings();
+		    final Luwrain luwrain = environment.getObjForEnvironment();
+	final Path current = Paths.get(luwrain.currentAreaDir());
+	final FilePopup popup = new FilePopup(luwrain, 
+					      strings.openPopupName(), strings.openPopupPrefix(), 
+					      null, current, current, 
+					      environment.uiSettings.getFilePopupSkipHidden(false)?EnumSet.of(FilePopup.Flags.SKIP_HIDDEN):EnumSet.noneOf(FilePopup.Flags.class),
+					      EnumSet.noneOf(Popup.Flags.class));
+	environment.popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
+	if (popup.closing.cancelled())
+	    return;
+	final Path res = popup.result();
+	final Area area = environment.getValidActiveArea(false);
+	if (area == null || !area.onEnvironmentEvent(new OpenEvent(res.toString())))
+	environment.openFiles(new String[]{res.toString()});
 		}
 	    });
 
@@ -183,7 +199,15 @@ class StandardCommands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.onRegionPointCommand();
+		    final Area area = environment.getValidActiveArea(true);
+		    if (area == null)
+			return;
+		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
+		    {
+			environment.message(environment.strings().regionPointSet(), Luwrain.MESSAGE_REGULAR); 
+			environment.playSound(Sounds.REGION_POINT);
+		    }else
+			environment.eventNotProcessedMessage();
 		}
 	    });
 
@@ -221,7 +245,17 @@ class StandardCommands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    environment.onDeleteCommand();
+
+	final Area area = environment.getValidActiveArea(true);
+	if (area == null)
+	    return;
+	if (!area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE)))
+	{
+	    environment.message(environment.strings().linesDeleted(), Luwrain.MESSAGE_REGULAR);
+	environment.playSound(Sounds.DELETED);
+
+	} else
+environment.eventNotProcessedMessage();
 		}
 	    });
 

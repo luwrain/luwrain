@@ -50,8 +50,7 @@ class Environment extends EnvironmentAreas
     private final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
     private RegionContent clipboard = null;
-    private Settings.UserInterface uiSettings;
-    //    private final Braille braille = new Braille();
+    Settings.UserInterface uiSettings;
 
     Environment(String[] cmdLine, Registry registry,
 		OperatingSystem os, Speech speech,
@@ -183,7 +182,7 @@ class Environment extends EnvironmentAreas
     void quit()
     {
 	final YesNoPopup popup = new YesNoPopup(new Luwrain(this), strings.quitPopupName(), strings.quitPopupText(), true, EnumSet.noneOf(Popup.Flags.class));
-	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
+	popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled() || !popup.result())
 	    return;
 	InitialEventLoopStopCondition.shouldContinue = false;
@@ -579,7 +578,7 @@ class Environment extends EnvironmentAreas
 	return true;
     }
 
-    private void popupImpl(Application app, Area area,
+    void popup(Application app, Area area,
 			   int popupPos, EventLoopStopCondition stopCondition,
 			   boolean noMultipleCopies, boolean isWeakPopup)
     {
@@ -802,7 +801,7 @@ class Environment extends EnvironmentAreas
 	NullCheck.notNull(stopCondition, "stopCondition");
 	if (interfaces.isSuitsForEnvironmentPopup(luwrainObject))
 	{
-	    popupImpl(null, popup, Popup.BOTTOM, stopCondition,
+	    popup(null, popup, Popup.BOTTOM, stopCondition,
 		      popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
 	    return;
 	}
@@ -812,7 +811,7 @@ class Environment extends EnvironmentAreas
 	    Log.warning("core", "somebody is trying to get a popup with fake Luwrain object");
 	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
 	}
-	popupImpl(app, popup, Popup.BOTTOM, stopCondition, 
+	popup(app, popup, Popup.BOTTOM, stopCondition, 
 		  popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
     }
 
@@ -872,8 +871,7 @@ class Environment extends EnvironmentAreas
 	final MainMenu mainMenu = MainMenu.newMainMenu(interfaces.getObjForEnvironment(), strings);
 	if (mainMenu == null)
 	    return;
-	//	playSound(Sounds.MAIN_MENU);
-	popupImpl(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
+	popup(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
 	final UniRefInfo result = mainMenu.result();
@@ -893,7 +891,7 @@ class Environment extends EnvironmentAreas
     {
 	final EditListPopup popup = new EditListPopup(new Luwrain(this), new EditListPopupUtils.FixedModel(commands.getCommandNames()),
 						      strings.commandPopupName(), strings.commandPopupPrefix(), "", EnumSet.noneOf(Popup.Flags.class));
-	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
+	popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
 	    if (!commands.run(popup.text().trim()))
@@ -974,7 +972,7 @@ class Environment extends EnvironmentAreas
 	    return;
 	}
 	final ContextMenu menu = new ContextMenu(interfaces.getObjForEnvironment(), actions, strings);
-	popupImpl(null, menu, Popup.RIGHT, menu.closing, true, true);
+	popup(null, menu, Popup.RIGHT, menu.closing, true, true);
 	if (menu.closing.cancelled())
 	    return;
 	final Object selected = menu.selected();
@@ -1006,16 +1004,6 @@ class Environment extends EnvironmentAreas
 	    speech.speak(line, 0, 0); else
 	    interfaces.getObjForEnvironment().hint(Hints.EMPTY_LINE);
 	needForIntroduction = false;
-    }
-
-    void onRegionPointCommand()
-    {
-	final Area activeArea = getValidActiveArea(true);
-	if (activeArea == null)
-	    return;
-	if (activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
-	    message(strings.regionPointSet(), Luwrain.MESSAGE_REGULAR); else
-	    areaInaccessibleMessage();
     }
 
     /**
@@ -1061,28 +1049,6 @@ class Environment extends EnvironmentAreas
 	return true;
     }
 
-    RegionContent currentAreaRegionIface(boolean issueErrorMessages)
-    {
-	final Area activeArea = getValidActiveArea(issueErrorMessages);
-	if (activeArea == null)
-	    return null;
-	final RegionQuery query = new RegionQuery();
-	if (!activeArea.onAreaQuery(query) || !query.containsResult())
-	    return null;
-	return query.getData();
-    }
-
-    String currentAreaDirIface()
-    {
-	final Area activeArea = getValidActiveArea(false);
-	if (activeArea == null)
-	    return paths.get("luwrain.dir.userhome").toString();
-	final CurrentDirQuery query = new CurrentDirQuery();
-	if (!activeArea.onAreaQuery(query) || !query.containsResult())
-	    return paths.get("luwrain.dir.userhome").toString();
-	return query.getCurrentDir();
-    }
-
     void reloadComponent(Luwrain.ReloadComponents component)
     {
 	switch(component)
@@ -1091,20 +1057,6 @@ class Environment extends EnvironmentAreas
 	    sounds.init(registry, paths.get("luwrain.dir.data"));
 	    break;
 	}
-    }
-
-    void onDeleteCommand()
-    {
-	final Area activeArea = getValidActiveArea(true);
-	if (activeArea == null)
-	    return;
-	if (!activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE)))
-	{
-	    areaInaccessibleMessage();
-	    return;
-	}
-	message(strings.linesDeleted(), Luwrain.MESSAGE_REGULAR);
-	playSound(Sounds.DELETED);//FIXME:deleted
     }
 
     void onCutCommand()
@@ -1147,24 +1099,6 @@ class Environment extends EnvironmentAreas
 	if (activeArea.onEnvironmentEvent(event))
 	    message(strings.linesInserted(clipboard.strings.length), Luwrain.MESSAGE_REGULAR); else
 	    areaInaccessibleMessage();
-    }
-
-    void onOpenCommand()
-    {
-	final Path current = Paths.get(currentAreaDirIface());
-	final FilePopup popup = new FilePopup(interfaces.getObjForEnvironment(), 
-					      strings.openPopupName(), strings.openPopupPrefix(), 
-					      null, current, current, 
-					      uiSettings.getFilePopupSkipHidden(false)?EnumSet.of(FilePopup.Flags.SKIP_HIDDEN):EnumSet.noneOf(FilePopup.Flags.class),
-					      EnumSet.noneOf(Popup.Flags.class));
-
-	popupImpl(null, popup, Popup.BOTTOM, popup.closing, true, true);
-	if (popup.closing.cancelled())
-	    return;
-	final Path res = popup.result();
-	final Area activeArea = getValidActiveArea(false);
-	if (activeArea == null || !activeArea.onEnvironmentEvent(new OpenEvent(res.toString())))
-	openFiles(new String[]{res.toString()});
     }
 
     void onCopyObjectUniRefCommand()

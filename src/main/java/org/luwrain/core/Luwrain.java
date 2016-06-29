@@ -21,6 +21,7 @@ import java.util.*;
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.speech.Channel;
 
 /**
@@ -88,7 +89,13 @@ public final class Luwrain implements EventConsumer
 
     public RegionContent currentAreaRegion(boolean issueErrorMessages)
     {
-	return environment.currentAreaRegionIface(issueErrorMessages);
+	final Area area = environment.getValidActiveArea(issueErrorMessages);
+	if (area == null)
+	    return null;
+	final RegionQuery query = new RegionQuery();
+	if (!area.onAreaQuery(query) || !query.containsResult())
+	    return null;
+	return query.getData();
     }
 
     public String currentAreaWord(boolean issueErrorMessages)
@@ -99,7 +106,13 @@ public final class Luwrain implements EventConsumer
     //Never returns null, returns user home dir if area doesn't speak about that
     public String currentAreaDir()
     {
-	return environment.currentAreaDirIface();
+	final Area area = environment.getValidActiveArea(false);
+	if (area == null)
+	    return getPathProperty("luwrain.dir.userhome").toString();
+	final CurrentDirQuery query = new CurrentDirQuery();
+	if (!area.onAreaQuery(query) || !query.containsResult())
+	    return getPathProperty("luwrain.dir.userhome").toString();
+	return query.getCurrentDir();
     }
 
     @Override public void enqueueEvent(Event e)

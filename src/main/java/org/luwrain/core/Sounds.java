@@ -50,4 +50,5 @@ public interface Sounds
     static public final int DELETED = 24;
     static public final int FATAL = 25;
     static public final int CANCEL = 26;
+    static public final int REGION_POINT = 27;
 }
