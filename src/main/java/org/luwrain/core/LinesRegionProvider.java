@@ -44,7 +44,7 @@ public class LinesRegionProvider implements RegionProvider
     }
 
     @Override public RegionContent getRegion(int fromX, int fromY,
-					int toX, int toY)
+					     int toX, int toY)
     {
 	final int count = lines.getLineCount();
 	if (count < 1)

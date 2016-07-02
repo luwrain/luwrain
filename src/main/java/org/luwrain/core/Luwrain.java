@@ -95,7 +95,7 @@ public final class Luwrain implements EventConsumer
 	final RegionQuery query = new RegionQuery();
 	if (!area.onAreaQuery(query) || !query.containsResult())
 	    return null;
-	return query.getData();
+	return query.getAnswer();
     }
 
     public String currentAreaWord(boolean issueErrorMessages)

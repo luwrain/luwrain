@@ -31,16 +31,14 @@ public class Region
 
     public Region(RegionProvider provider)
     {
-	this.provider = provider;
 	NullCheck.notNull(provider, "provider");
+	this.provider = provider;
     }
 
     public boolean onAreaQuery(AreaQuery query,
-			       int hotPointX,
-			       int hotPointY)
+			       int hotPointX, int hotPointY)
     {
-	if (query == null)
-	    return false;
+	NullCheck.notNull(query, "query");
 	if (hotPointX < 0 || hotPointY < 0)
 	    return false;
 	if (query.getQueryCode() == AreaQuery.CUT && (query instanceof CutQuery))
@@ -53,8 +51,7 @@ public class Region
     public boolean onEnvironmentEvent(EnvironmentEvent event,
 				      int hotPointX, int hotPointY)
     {
-	if (event == null)
-	    return false;
+	NullCheck.notNull(event, "event");
 	if (hotPointX < 0 || hotPointY < 0)
 	    return false;
 	switch(event.getCode())
@@ -80,15 +77,14 @@ public class Region
     }
 
     private boolean onRegionQuery(RegionQuery query,
-				 int hotPointX,
-				 int hotPointY)
+				 int hotPointX, int hotPointY)
     {
 	if (fromX < 0 || fromY < 0)
 	{
 	    final RegionContent res = provider.getWholeRegion();
 	    if (res == null)
 		return false;
-	    query.setData(res);
+	    query.answer(res);
 	    return true;
 	}
 	int x1, y1, x2, y2;
@@ -125,14 +121,14 @@ public class Region
 			final RegionContent res = provider.getWholeRegion();
 			if (res == null)
 			    return false;
-			query.setData(res);
+			query.answer(res);
 			return true;
 		    }
 	    }
 	final RegionContent res = provider.getRegion(x1, y1, x2, y2);
 	if (res == null)
 	    return false;
-	query.setData(res);
+	query.answer(res);
 	return true;
     }
 

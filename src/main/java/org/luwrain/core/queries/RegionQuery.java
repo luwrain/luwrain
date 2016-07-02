@@ -20,7 +20,7 @@ import org.luwrain.core.*;
 
 public class RegionQuery extends AreaQuery
 {
-    private RegionContent data = null;
+    private RegionContent answer = null;
 
     public RegionQuery()
     {
@@ -32,15 +32,17 @@ public class RegionQuery extends AreaQuery
 	super(desiredCode);
     }
 
-
-    public void setData(RegionContent data)
+    public void answer(RegionContent content)
     {
-	this.data = data;
+	NullCheck.notNull(content, "content");
+	if (this.answer != null)
+	    throw new IllegalArgumentException("This RegionQuery already has the answer");
+	this.answer = content;
 	resultTaken();
     }
 
-    public RegionContent getData()
+    public RegionContent getAnswer()
     {
-	return data;
+	return answer;
     }
 }

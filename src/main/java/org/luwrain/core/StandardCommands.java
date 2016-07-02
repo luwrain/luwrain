@@ -20,6 +20,7 @@ import java.nio.file.*;
 import java.util.*;
 
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
 import org.luwrain.os.OperatingSystem;
 
@@ -233,7 +234,24 @@ class StandardCommands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.onCutCommand();
+
+	final Area area = e.getValidActiveArea(true);
+	if (area == null)
+	    return;
+	final CutQuery query = new CutQuery();
+	if (!area.onAreaQuery(query) || !query.containsResult())
+	{
+	    e.eventNotProcessedMessage();
+	    return;
+	}
+	final RegionContent res = query.getAnswer();
+	if (res == null)
+	{
+	    e.eventNotProcessedMessage();
+		return;
+	}
+	e.clipboard = res;
+	    e.message("Вырезано строк: " + res.strings.length, Luwrain.MESSAGE_REGULAR);
 		}
 	    });
 
@@ -245,21 +263,19 @@ class StandardCommands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-
 	final Area area = environment.getValidActiveArea(true);
 	if (area == null)
 	    return;
-	if (!area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE)))
+	if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE)))
 	{
 	    environment.message(environment.strings().linesDeleted(), Luwrain.MESSAGE_REGULAR);
 	environment.playSound(Sounds.DELETED);
-
 	} else
 environment.eventNotProcessedMessage();
 		}
 	    });
 
-	//paste;
+	//paste
 	res.add(new Command() {
 		private Environment e = environment;
 		@Override public String getName()
@@ -268,7 +284,19 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.onPasteCommand();
+
+	if (e.clipboard == null || e.clipboard.isEmpty())
+	{
+	    e.message(e.strings().noClipboardContent(), Luwrain.MESSAGE_NOT_READY);
+	    return;
+	}
+	final Area area = e.getValidActiveArea(true);
+	if (area == null)
+	    return;
+	final InsertEvent event = new InsertEvent(e.clipboard);
+	if (area.onEnvironmentEvent(event))
+	    e.message(e.strings().linesInserted(e.clipboard.strings.length), Luwrain.MESSAGE_REGULAR); else
+	    e.eventNotProcessedMessage();
 		}
 	    });
 

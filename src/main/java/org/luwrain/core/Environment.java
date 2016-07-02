@@ -49,7 +49,7 @@ class Environment extends EnvironmentAreas
     private final SharedObjectManager sharedObjects = new SharedObjectManager();
     private final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
-    private RegionContent clipboard = null;
+    RegionContent clipboard = null;
     Settings.UserInterface uiSettings;
 
     Environment(String[] cmdLine, Registry registry,
@@ -1018,35 +1018,34 @@ class Environment extends EnvironmentAreas
      * @param speakAnnouncement Issue messages to the user to describe  the result of the operation (if false, everything goes silently)
      * @return True if the clipboard got new content, false otherwise
      */
-    boolean onCopyCommand(boolean speakAnnouncement)
+    void  onCopyCommand(boolean speakAnnouncement)
     {
 	final Area activeArea = getValidActiveArea(speakAnnouncement);
 	if (activeArea == null)
-	    return false;
+	    return;
 	final RegionQuery query = new RegionQuery();
 	if (!activeArea.onAreaQuery(query))
 	{
 	    if (speakAnnouncement)
 		areaInaccessibleMessage();
-	    return false;
+	    return;
 	}
 	if (!query.containsResult())
 	{
 	    if (speakAnnouncement)
 		areaInaccessibleMessage();
-	    return false;
+	    return;
 	}
-	final RegionContent res = query.getData();
+	final RegionContent res = query.getAnswer();
 	if (res == null)
 	{
 	    if (speakAnnouncement)
 		areaInaccessibleMessage();
-	    return false;
+	    return;
 	}
 	clipboard = res;
 	if (speakAnnouncement)
 	    message(strings.linesCopied(res.strings.length), Luwrain.MESSAGE_REGULAR);
-	return true;
     }
 
     void reloadComponent(Luwrain.ReloadComponents component)
@@ -1057,48 +1056,6 @@ class Environment extends EnvironmentAreas
 	    sounds.init(registry, paths.get("luwrain.dir.data"));
 	    break;
 	}
-    }
-
-    void onCutCommand()
-    {
-	final Area activeArea = getValidActiveArea(true);
-	if (activeArea == null)
-	    return;
-	final CutQuery query = new CutQuery();
-	if (!activeArea.onAreaQuery(query))
-	{
-	    areaInaccessibleMessage();
-	    return;
-	}
-	if (!query.containsResult())
-	{
-		areaInaccessibleMessage();
-	    return;
-	}
-	final RegionContent res = query.getData();
-	if (res == null)
-	{
-		areaInaccessibleMessage();
-		return;
-	}
-	clipboard = res;
-	    message("Вырезано строк: " + res.strings.length, Luwrain.MESSAGE_REGULAR);
-    }
-
-    void onPasteCommand()
-    {
-	if (clipboard == null || clipboard.isEmpty())
-	{
-	    message(strings.noClipboardContent(), Luwrain.MESSAGE_NOT_READY);
-	    return;
-	}
-	final Area activeArea = getValidActiveArea(true);
-	if (activeArea == null)
-	    return;
-	final InsertEvent event = new InsertEvent(clipboard);
-	if (activeArea.onEnvironmentEvent(event))
-	    message(strings.linesInserted(clipboard.strings.length), Luwrain.MESSAGE_REGULAR); else
-	    areaInaccessibleMessage();
     }
 
     void onCopyObjectUniRefCommand()
