@@ -27,7 +27,7 @@ import org.luwrain.core.events.*;
  * have an area with some static content, available for changing through
  * the operations of {@link MutableLines} interface.
  */
-public class SimpleArea extends NavigateArea implements MutableLines
+public class SimpleArea extends NavigationArea implements MutableLines
 {
     protected ControlEnvironment environment;
     protected String name = "";

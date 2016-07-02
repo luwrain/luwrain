@@ -7,7 +7,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SpeechParams extends NavigateArea implements SectionArea
+class SpeechParams extends NavigationArea implements SectionArea
 {
     static private final int STEP = 5;
 

@@ -34,14 +34,14 @@ import org.luwrain .util.*;
  *
  * @see SimpleArea
  */
-public abstract class NavigateArea implements Area, HotPointControl, RegionProvider
+public abstract class NavigationArea implements Area, HotPointControl, RegionProvider
 {
     protected ControlEnvironment environment;
     protected final Region region = new Region(this);
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
-    public NavigateArea(ControlEnvironment environment)
+    public NavigationArea(ControlEnvironment environment)
     {
 	NullCheck.notNull(environment, "environment");
 	this.environment = environment;

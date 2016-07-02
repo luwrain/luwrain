@@ -42,7 +42,7 @@ import org.luwrain.core.events.*;
  * reference. The purpose of this object every developer may define
  * completely freely as it could be convenient for a particular purpose.
  */
-public class FormArea  extends NavigateArea
+public class FormArea  extends NavigationArea
 {
     static public final int NONE = 0;
     static public final int EDIT = 1;
