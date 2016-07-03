@@ -23,21 +23,18 @@ import org.luwrain.core.*;
 public interface ControlEnvironment
 {
     void say(String text);
-    void sayStaticStr(int code);
+    void sayStaticStr(LangStatic id);
     void sayLetter(char letter);
     void hint(String text); 
     void hint(String text, int code);
     void hint(int code);
-    void hintStaticString(int id);
+    void hintStaticString(LangStatic id);
     void onAreaNewContent(Area area);
     void onAreaNewName(Area area);
     void onAreaNewHotPoint(Area area);
 int getAreaVisibleHeight(Area area);
     void popup(Popup popupObj);
-    //    void setClipboard(String[] value);
-    //    String[] getClipboard();
-    //    LaunchContext launchContext();
-    String staticStr(int code);
+    String staticStr(LangStatic id);
     org.luwrain.core.Strings environmentStrings();
     void playSound(int code);
     UniRefInfo getUniRefInfo(String uniRef);

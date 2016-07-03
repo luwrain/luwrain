@@ -48,66 +48,16 @@ class I18nImpl implements I18n, I18nExtension
 
     private Lang chosenLang;
     private String chosenLangName = "";
-    private String[] staticValueNames;
-
-    I18nImpl()
-    {
-	try {
-	    final Class c = Class.forName("org.luwrain.core.LangStatic");
-	    final java.lang.reflect.Field[] fields = c.getFields();
-	    int maxValue = 0;
-	    for(java.lang.reflect.Field f: fields)
-		if (f.getInt(null) > maxValue)
-		    maxValue = f.getInt(null);
-	    staticValueNames = new String[maxValue + 1];
-	    for(int i = 0;i < maxValue;++i)
-		staticValueNames[i] = null;
-	    for(java.lang.reflect.Field f: fields)
-		staticValueNames[f.getInt(null)] = convertStaticValueName(f.getName());
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	    staticValueNames = new String[0];
-	}
-    }
-
-    static String convertStaticValueName(String name)
-    {
-	final StringBuilder b = new StringBuilder();
-	boolean nextCap = true;
-	for(int i = 0;i < name.length();++i)
-	{
-	    final char c = name.charAt(i);
-	    if (c == '_')
-	    {
-		nextCap = true;
-		continue;
-	    }
-	    if (nextCap)
-		b.append(Character.toUpperCase(c)); else
-		b.append(Character.toLowerCase(c));
-	    nextCap = false;
-	}
-	return b.toString();
-    }
 
     @Override public String getPastTimeBrief(Date date)
     {
 	return ((Strings)getStrings("luwrain.environment")).pastTimeBrief(date);
     }
 
-    @Override public String[] getStaticValueNames()
+    @Override public String staticStr(LangStatic id)
     {
-	return staticValueNames;
-    }
-
-    @Override public String staticStr(int code)
-    {
-	if (chosenLang == null)
-	    return "#NO CHOSEN LANGUAGE#";
-	final String value = chosenLang.staticStr(code);
-	return value != null && !value.isEmpty()?value:"#NO STATIC VALUE#";
+	NullCheck.notNull(id, "id");
+	return getStaticStr(convertStaticValueName(id.toString()));
     }
 
     @Override public String getStaticStr(String id)
@@ -267,5 +217,25 @@ class I18nImpl implements I18n, I18nExtension
     String getChosenLangName()
     {
 	return chosenLangName;
+    }
+
+    static private String convertStaticValueName(String name)
+    {
+	final StringBuilder b = new StringBuilder();
+	boolean nextCap = true;
+	for(int i = 0;i < name.length();++i)
+	{
+	    final char c = name.charAt(i);
+	    if (c == '_')
+	    {
+		nextCap = true;
+		continue;
+	    }
+	    if (nextCap)
+		b.append(Character.toUpperCase(c)); else
+		b.append(Character.toLowerCase(c));
+	    nextCap = false;
+	}
+	return b.toString();
     }
 }

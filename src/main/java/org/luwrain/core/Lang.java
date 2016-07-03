@@ -16,50 +16,32 @@
 
 package org.luwrain.core;
 
-import java.util.*;
-
-abstract public class Lang
+/**
+ * The interface for classes implementing national languages. This
+ * interface has necessary operations to make environment comfortable for
+ * people speaking on some particular language.  If you would like to add
+ * support of some new foreign language, you certainly should start with
+ * this interface.
+ *
+ * @sa I18n
+ */
+public interface Lang
 {
-    protected final TreeMap<String, String> commandTitles = new TreeMap<String, String>();
-    protected final TreeMap<String, Object> stringObjs = new TreeMap<String, Object>();
+    /**
+     * Provides some statically stored string on corresponding national
+     *language. This method should process values related to environment
+     * itself, rather than taking care about particular applications. 
+     *
+     * @param id The identifier of the string
+     * @return Requested string or <code>null</code>, if <code>id</code> is unknown
+     */
+    String getStaticStr(String id);
 
-    abstract public String staticStr(int code);
-    abstract public String getStaticStr(String id);
-    abstract public String hasSpecialNameOfChar(char ch);
-
-    public String getCommandTitle(String command)
-    {
-	NullCheck.notNull(command, "command");
-	    if (!commandTitles.containsKey(command))
-		return command;
-	    return commandTitles.get(command);
-    }
-
-    public Object strings(String component)
-    {
-	NullCheck.notNull(component, "component");
-	    if (!stringObjs.containsKey(component))
-		return null;
-	    return stringObjs.get(component);
-    }
-
-	protected void addCommandTitle(String command, String title)
-	{
-	    NullCheck.notNull(command, "command");
-	    NullCheck.notNull(title, "title");
-	    if (command.trim().isEmpty())
-		throw new IllegalArgumentException("command may not be empty");
-	    if (title.isEmpty())
-		throw new IllegalArgumentException("title may not be empty");
-	    commandTitles.put(command, title);
-	}
-
-	protected void addStrings(String component, Object obj)
-	{
-	    NullCheck.notNull(component, "component");
-	    NullCheck.notNull(obj, "obj");
-	    if (component.isEmpty())
-		throw new IllegalArgumentException("component may not be empty");
-	    stringObjs.put(component, obj);
-	}
+    /**
+     * Provides some language-dependent name of the character in one or several words.
+     *
+     * @param ch The character to get name of
+     * @return The name of the given character
+     */
+    String hasSpecialNameOfChar(char ch);
 }

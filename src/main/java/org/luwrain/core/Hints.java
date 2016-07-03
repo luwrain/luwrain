@@ -42,7 +42,7 @@ public class Hints
     public static final int TABLE_BEGIN_OF_ROW = 21;
     public static final int TABLE_END_OF_ROW = 22;
 
-    static public int hintToStaticStrMap(int hintCode)
+    static public LangStatic hintToStaticStrMap(int hintCode)
     {
 	switch (hintCode)
 	{
@@ -85,7 +85,7 @@ public class Hints
 	case TABLE_END_OF_ROW:
 	    return LangStatic.TABLE_END_OF_ROW;
 	default:
-	    return -1;
+	    return null;
 	}
     }
 

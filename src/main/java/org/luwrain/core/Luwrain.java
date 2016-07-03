@@ -160,10 +160,10 @@ public final class Luwrain implements EventConsumer
 
     public boolean hint(int code)
     {
-	final int staticStrNum = Hints.hintToStaticStrMap(code);
-	if (staticStrNum < 0)
+	final LangStatic staticStrId = Hints.hintToStaticStrMap(code);
+	if (staticStrId == null)
 	    return false;
-	hint(i18n().staticStr(staticStrNum), code);
+	hint(i18n().staticStr(staticStrId), code);
 	return true;
     }
 
@@ -440,9 +440,10 @@ public final class Luwrain implements EventConsumer
 	environment.setActiveAreaIface(this, area);
     }
 
-    public String staticStr(int code)
+    public String staticStr(LangStatic id)
     {
-	return i18n().staticStr(code);
+	NullCheck.notNull(id, "id");
+	return i18n().staticStr(id);
     }
 
     public UniRefInfo getUniRefInfo(String uniRef)

@@ -34,9 +34,10 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	luwrain.say(text);
     }
 
-    @Override public void sayStaticStr(int code)
+    @Override public void sayStaticStr(LangStatic id)
     {
-	say(staticStr(code));
+	NullCheck.notNull(id, "id");
+	say(staticStr(id));
     }
 
     @Override public void sayLetter(char letter)
@@ -59,7 +60,7 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	luwrain.hint(code);
     }
 
-    @Override public void hintStaticString(int id)
+    @Override public void hintStaticString(LangStatic id)
     {
 	hint(staticStr(id));
     }
@@ -108,9 +109,10 @@ public class DefaultControlEnvironment implements ControlEnvironment
     }
     **/
 
-    @Override public String staticStr(int code)
+    @Override public String staticStr(LangStatic id)
     {
-	return luwrain.i18n().staticStr(code);
+	NullCheck.notNull(id, "id");
+	return luwrain.i18n().staticStr(id);
     }
 
     @Override public org.luwrain.core.Strings environmentStrings()

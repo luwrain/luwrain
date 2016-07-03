@@ -18,7 +18,6 @@ package org.luwrain.core;
 
 public interface I18nExtension
 {
-    String[] getStaticValueNames();
     void addCommandTitle(String lang,
 			 String command,
 			 String title);

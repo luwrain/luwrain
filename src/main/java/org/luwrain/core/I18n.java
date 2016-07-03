@@ -20,7 +20,7 @@ import java.util.*;
 
 public interface I18n
 {
-    String staticStr(int code);
+    String staticStr(LangStatic id);
     String getStaticStr(String id);
     String hasSpecialNameOfChar(char ch);
     String getCommandTitle(String command);
