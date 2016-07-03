@@ -26,8 +26,8 @@ import org.luwrain.util.*;
 public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointControl, EmbeddedEditLines, RegionProvider
 {
     protected Luwrain luwrain;
-    public final PopupClosing closing = new PopupClosing(this);
-    protected final Region region = new Region(this);
+    public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
+    protected final RegionTranslator region = new RegionTranslator(this);
     protected EmbeddedSingleLineEdit edit;
     protected String name;
     protected String prefix;

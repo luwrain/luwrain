@@ -22,14 +22,14 @@ import org.luwrain.core.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.core.events.*;
 
-public class Region
+public class RegionTranslator
 {
     private RegionProvider provider;
 
     private int fromX = -1;
     private int fromY  = -1;
 
-    public Region(RegionProvider provider)
+    public RegionTranslator(RegionProvider provider)
     {
 	NullCheck.notNull(provider, "provider");
 	this.provider = provider;

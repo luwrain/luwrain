@@ -23,7 +23,7 @@ import org.luwrain.util.*;
 public class SingleLineEdit implements RegionProvider
 {
     private ControlEnvironment environment;
-    private final Region region = new Region(this);
+    private final RegionTranslator region = new RegionTranslator(this);
     private SingleLineEditModel model;
 
     public SingleLineEdit(ControlEnvironment environment, SingleLineEditModel model)

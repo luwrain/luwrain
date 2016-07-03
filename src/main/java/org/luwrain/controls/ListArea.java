@@ -93,7 +93,7 @@ public interface HotPointMoves
 	}
     }
 
-    protected final Region region = new Region(this);
+    protected final RegionTranslator region = new RegionTranslator(this);
     protected ControlEnvironment environment;
     protected String areaName = "";
     protected Model model;

@@ -19,16 +19,16 @@ package org.luwrain.core;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class PopupClosing implements EventLoopStopCondition
+public class PopupClosingTranslator implements EventLoopStopCondition
 {
     private PopupClosingRequest request;
     private boolean shouldContinue = true; 
     private boolean cancelled = true;
 
-    public PopupClosing(PopupClosingRequest request)
+    public PopupClosingTranslator(PopupClosingRequest request)
     {
-	this.request = request;
 	NullCheck.notNull(request, "request");
+	this.request = request;
     }
 
     public boolean doOk()

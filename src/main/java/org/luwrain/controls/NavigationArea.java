@@ -37,7 +37,7 @@ import org.luwrain .util.*;
 public abstract class NavigationArea implements Area, HotPointControl, RegionProvider
 {
     protected ControlEnvironment environment;
-    protected final Region region = new Region(this);
+    protected final RegionTranslator region = new RegionTranslator(this);
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 

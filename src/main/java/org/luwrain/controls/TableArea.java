@@ -33,7 +33,7 @@ public class TableArea  implements Area
     static final public int INTRODUCTION_BRIEF = 1;
 
     private ControlEnvironment environment;
-    private final Region region = new Region(new LinesRegionProvider(this));
+    private final RegionTranslator region = new RegionTranslator(new LinesRegionProvider(this));
     private String name = "";
     private TableModel model;
     private TableAppearance appearance;

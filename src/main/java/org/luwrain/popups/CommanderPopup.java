@@ -33,7 +33,7 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
     public static final int ACCEPT_MULTIPLE_SELECTION = 16;
 
     protected Luwrain luwrain;
-    public final PopupClosing closing = new PopupClosing(this);
+    public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected String name;
     protected int flags;
     protected Set<Popup.Flags> popupFlags;

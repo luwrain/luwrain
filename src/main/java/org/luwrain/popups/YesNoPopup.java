@@ -25,7 +25,7 @@ import org.luwrain.core.queries.*;
 public class YesNoPopup implements Popup, PopupClosingRequest
 {
     protected Luwrain luwrain;
-    public final PopupClosing closing = new PopupClosing(this);
+    public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected String name = "";
     protected String text = "";
     protected boolean res;

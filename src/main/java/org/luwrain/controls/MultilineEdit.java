@@ -25,7 +25,7 @@ import org.luwrain.util.*;
 public class MultilineEdit
 {
     private ControlEnvironment environment;
-    private Region region;
+    private RegionTranslator region;
     private MultilineEditModel model;
 
     public MultilineEdit(ControlEnvironment environment, MultilineEditModel model)
@@ -35,7 +35,7 @@ public class MultilineEdit
 	NullCheck.notNull(environment, "environment");
 	NullCheck.notNull(model, "model");
 	final MultilineEdit edit = this;
-	region = new Region(new LinesRegionProvider(model){
+	region = new RegionTranslator(new LinesRegionProvider(model){
 		@Override public boolean insertRegion(int x, int y,
 						      RegionContent data)
 		{

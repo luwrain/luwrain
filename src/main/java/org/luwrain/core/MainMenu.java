@@ -93,7 +93,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
     }
 
     private Luwrain luwrain;
-    final PopupClosing closing = new PopupClosing(this);
+    final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     private Strings strings;
     private UniRefInfo result = null;
 
