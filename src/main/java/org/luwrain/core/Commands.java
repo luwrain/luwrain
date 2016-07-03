@@ -24,238 +24,237 @@ import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
 import org.luwrain.os.OperatingSystem;
 
-class StandardCommands
+class Commands
 {
     static private final int SPEECH_STEP = 5;
     static private final int VOLUME_STEP = 5;
+
     static Command[] createStandardCommands(Environment env)
     {
 	NullCheck.notNull(env, "env");
-	final Environment environment = env;
 	final LinkedList<Command> res = new LinkedList<Command>();
 
-	//Main menu;
+	//Main menu
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "main-menu";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.mainMenu();
+		    env.mainMenu();
 		}
 	    });
 
 	//Quit;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "quit";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.quit();
+		    env.quit();
 		}
 	    });
 
 	//search;
 	res.add(new Command() {
-		final private Environment e = environment;
+		//		final private Environment e = environment;
 		@Override public String getName()
 		{
 		    return "search";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.activateAreaSearch();
+		    env.activateAreaSearch();
 		}
 	    });
 
-	//ok;
+	//ok
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "ok";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.OK));
+		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.OK));
 		}
 	    });
 
-	//Cancel;
+	//Cancel
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "cancel";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CANCEL));
+		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CANCEL));
 		}
 	    });
 
-	//Close;
+	//Close
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "close";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLOSE));
+		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLOSE));
 		}
 	    });
 
-	//Save;
+	//Save
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "save";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.SAVE));
+		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.SAVE));
 		}
 	    });
 
 	//open;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		@Override public String getName()
 		{
 		    return "open";
 		}
 		@Override public void onCommand(Luwrain luwrainArg)
 		{
-		    final Strings strings = environment.strings();
-		    final Luwrain luwrain = environment.getObjForEnvironment();
+		    final Strings strings = env.strings();
+		    final Luwrain luwrain = env.getObjForEnvironment();
 	final Path current = Paths.get(luwrain.currentAreaDir());
 	final FilePopup popup = new FilePopup(luwrain, 
 					      strings.openPopupName(), strings.openPopupPrefix(), 
 					      null, current, current, 
-					      environment.uiSettings.getFilePopupSkipHidden(false)?EnumSet.of(FilePopup.Flags.SKIP_HIDDEN):EnumSet.noneOf(FilePopup.Flags.class),
+					      env.uiSettings.getFilePopupSkipHidden(false)?EnumSet.of(FilePopup.Flags.SKIP_HIDDEN):EnumSet.noneOf(FilePopup.Flags.class),
 					      EnumSet.noneOf(Popup.Flags.class));
-	environment.popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
+	env.popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
 	final Path res = popup.result();
-	final Area area = environment.getValidActiveArea(false);
+	final Area area = env.getValidActiveArea(false);
 	if (area == null || !area.onEnvironmentEvent(new OpenEvent(res.toString())))
-	environment.openFiles(new String[]{res.toString()});
+	env.openFiles(new String[]{res.toString()});
 		}
 	    });
 
 	//Introduce;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "introduce";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.introduceActiveArea();
+		    env.introduceActiveArea();
 		}
 	    });
 
 	//Refresh;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "refresh";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.REFRESH));
+		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.REFRESH));
 		}
 	    });
 
 	//introduce-line;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		@Override public String getName()
 		{
 		    return "introduce-line";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.onIntroduceLineCommand();
+		    env.onIntroduceLineCommand();
 		}
 	    });
 
 	//region-point;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		@Override public String getName()
 		{
 		    return "region-point";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = environment.getValidActiveArea(true);
+		    final Area area = env.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
 		    {
-			environment.message(environment.strings().regionPointSet(), Luwrain.MESSAGE_REGULAR); 
-			environment.playSound(Sounds.REGION_POINT);
+			env.message(env.strings().regionPointSet(), Luwrain.MESSAGE_REGULAR); 
+			env.playSound(Sounds.REGION_POINT);
 		    }else
-			environment.eventNotProcessedMessage();
+			env.eventNotProcessedMessage();
 		}
 	    });
 
 	//copy;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		@Override public String getName()
 		{
 		    return "copy";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    e.onCopyCommand(true);
+		    env.onCopyCommand(true);
 		}
 	    });
 
 	//cut;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		@Override public String getName()
 		{
 		    return "cut";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-
-	final Area area = e.getValidActiveArea(true);
+	final Area area = env.getValidActiveArea(true);
 	if (area == null)
 	    return;
 	final CutQuery query = new CutQuery();
 	if (!area.onAreaQuery(query) || !query.containsResult())
 	{
-	    e.eventNotProcessedMessage();
+	    env.eventNotProcessedMessage();
 	    return;
 	}
 	final RegionContent res = query.getAnswer();
 	if (res == null)
 	{
-	    e.eventNotProcessedMessage();
+	    env.eventNotProcessedMessage();
 		return;
 	}
-	e.clipboard = res;
-	    e.message("Вырезано строк: " + res.strings.length, Luwrain.MESSAGE_REGULAR);
+	env.clipboard = res;
+	    env.message("Вырезано строк: " + res.strings.length, Luwrain.MESSAGE_REGULAR);
 		}
 	    });
 
-	//delete;
+	//delete
 	res.add(new Command() {
 		@Override public String getName()
 		{
@@ -263,125 +262,124 @@ class StandardCommands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-	final Area area = environment.getValidActiveArea(true);
+	final Area area = env.getValidActiveArea(true);
 	if (area == null)
 	    return;
 	if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE)))
 	{
-	    environment.message(environment.strings().linesDeleted(), Luwrain.MESSAGE_REGULAR);
-	environment.playSound(Sounds.DELETED);
+	    env.message(env.strings().linesDeleted(), Luwrain.MESSAGE_REGULAR);
+	env.playSound(Sounds.DELETED);
 	} else
-environment.eventNotProcessedMessage();
+env.eventNotProcessedMessage();
 		}
 	    });
 
 	//paste
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		@Override public String getName()
 		{
 		    return "paste";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-
-	if (e.clipboard == null || e.clipboard.isEmpty())
+	if (env.clipboard == null || env.clipboard.isEmpty())
 	{
-	    e.message(e.strings().noClipboardContent(), Luwrain.MESSAGE_NOT_READY);
+	    env.message(env.strings().noClipboardContent(), Luwrain.MESSAGE_NOT_READY);
 	    return;
 	}
-	final Area area = e.getValidActiveArea(true);
+	final Area area = env.getValidActiveArea(true);
 	if (area == null)
 	    return;
-	final InsertEvent event = new InsertEvent(e.clipboard);
+	final InsertEvent event = new InsertEvent(env.clipboard);
 	if (area.onEnvironmentEvent(event))
-	    e.message(e.strings().linesInserted(e.clipboard.strings.length), Luwrain.MESSAGE_REGULAR); else
-	    e.eventNotProcessedMessage();
+	    env.message(env.strings().linesInserted(env.clipboard.strings.length), Luwrain.MESSAGE_REGULAR); else
+	    env.eventNotProcessedMessage();
 		}
 	    });
 
-	//Help;
+	//Help
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "help";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.HELP));
+		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.HELP));
 		}
 	    });
 
 	//Switch to next App;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "switch-next-app";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.onSwitchNextAppCommand();
+		    env.onSwitchNextAppCommand();
 		}
 	    });
 
 	//Switch to next area;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "switch-next-area";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.onSwitchNextAreaCommand();
+		    env.onSwitchNextAreaCommand();
 		}
 	    });
 
 	//Increase font size;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "increase-font-size";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.onIncreaseFontSizeCommand();
+		    env.onIncreaseFontSizeCommand();
 		}
 	    });
 
 	//Decrease font size;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "decrease-font-size";
 		}
 		public void onCommand(Luwrain luwrain)
 		{
-		    e.onDecreaseFontSizeCommand();
+		    env.onDecreaseFontSizeCommand();
 		}
 	    });
 
 	//control panel;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		@Override public String getName()
 		{
 		    return "control-panel";
 }
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(e.getControlPanelFactories());
-		    e.launchApp(app);
+		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(env.getControlPanelFactories());
+		    env.launchApp(app);
 		}
 	    });
 
 	//registry;
 	res.add(new Command() {
-		private Environment e = environment;
+		//		private Environment e = environment;
 		public String getName()
 		{
 		    return "registry";
@@ -389,7 +387,7 @@ environment.eventNotProcessedMessage();
 		public void onCommand(Luwrain luwrain)
 		{
 		    Application app = new org.luwrain.app.registry.RegistryApp();
-		    e.launchApp(app);
+		    env.launchApp(app);
 		}
 	    });
 
@@ -401,7 +399,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    environment.onContextMenuCommand();
+		    env.onContextMenuCommand();
 		}
 	    });
 
@@ -413,7 +411,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    environment.onCopyObjectUniRefCommand();
+		    env.onCopyObjectUniRefCommand();
 		}
 	    });
 
@@ -426,7 +424,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = environment.getSpeech();
+		    final Speech speech = env.getSpeech();
 		    speech.setPitch(speech.getPitch() + SPEECH_STEP);
 		    luwrain.message("Высота речи " + speech.getPitch());
 		}
@@ -440,7 +438,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = environment.getSpeech();
+		    final Speech speech = env.getSpeech();
 		    speech.setPitch(speech.getPitch() - SPEECH_STEP);
 		    luwrain.message("Высота речи " + speech.getPitch());
 		}
@@ -454,7 +452,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = environment.getSpeech();
+		    final Speech speech = env.getSpeech();
 		    speech.setRate(speech.getRate() - SPEECH_STEP);
 		    luwrain.message("Скорость речи " + (100 - speech.getRate()));
 		}
@@ -468,7 +466,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = environment.getSpeech();
+		    final Speech speech = env.getSpeech();
 		    speech.setRate(speech.getRate() + SPEECH_STEP);
 		    luwrain.message("Скорость речи " + (100 - speech.getRate()));
 		}
@@ -482,7 +480,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final OperatingSystem os = environment.os();
+		    final OperatingSystem os = env.os();
 		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() + VOLUME_STEP);
 		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
 		}
@@ -496,7 +494,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final OperatingSystem os = environment.os();
+		    final OperatingSystem os = env.os();
 		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() - VOLUME_STEP);
 		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
 		}
@@ -510,7 +508,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    environment.onReadAreaCommand();
+		    env.onReadAreaCommand();
 		}
 	    });
 
@@ -522,7 +520,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    environment.os().shutdown();
+		    env.os().shutdown();
 		}
 	    });
 
@@ -534,7 +532,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    environment.os().reboot();
+		    env.os().reboot();
 		}
 	    });
 
@@ -546,7 +544,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    environment.os().suspend(false);
+		    env.os().suspend(false);
 		}
 	    });
 
@@ -558,7 +556,7 @@ environment.eventNotProcessedMessage();
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    environment.onSayCurrentWordCommand();
+		    env.onSayCurrentWordCommand();
 		}
 	    });
 
@@ -571,11 +569,11 @@ environment.eventNotProcessedMessage();
 		@Override public void onCommand(Luwrain luwrain)
 		{
 
-		    final Area area = environment.getValidActiveArea(true);
+		    final Area area = env.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (!area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.PROPERTIES)))
-			environment.eventNotProcessedMessage();
+			env.eventNotProcessedMessage();
 		}
 	    });
 

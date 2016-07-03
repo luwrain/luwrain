@@ -115,7 +115,7 @@ class Environment extends EnvironmentAreas
 
     private void initObjects()
     {
-	final Command[] standardCommands = StandardCommands.createStandardCommands(this);
+	final Command[] standardCommands = Commands.createStandardCommands(this);
 	for(Command sc: standardCommands)
 	    commands.add(new Luwrain(this), sc);//FIXME:
 	commands.addOsCommands(interfaces.getObjForEnvironment(), registry);
