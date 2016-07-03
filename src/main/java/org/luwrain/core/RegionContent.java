@@ -18,31 +18,46 @@ package org.luwrain.core;
 
 final public class RegionContent
 {
-    public Object[] rawObjects = new Object[0];
-    public String[] strings = new String[0];
-    public String comment = "";
+private Object[] rawObjects = new Object[0];
+    private String[] strings = new String[0];
+    private String comment = "";
+
+    public RegionContent()
+    {
+    }
 
     public RegionContent(String[] strings)
     {
+	NullCheck.notNullItems(strings, "strings");
 	this.strings = strings;
     }
 
     public RegionContent(String[] strings, String comment)
     {
+	NullCheck.notNullItems(strings, "strings");
+	NullCheck.notNull(comment, "comment");
 	this.strings = strings;
 	this.comment = comment;
     }
 
     public RegionContent(String[] strings, Object[] rawObjects)
     {
+	NullCheck.notNullItems(strings, "strings");
+	NullCheck.notNullItems(rawObjects, "rawObjects");
+	if (strings.length != rawObjects.length)
+	    throw new IllegalArgumentException("strings and rawObjects must have equal number of items");
 	this.strings = strings;
 	this.rawObjects = rawObjects;
     }
 
-    public RegionContent(String[] strings,
-		    Object[] rawObjects,
+    public RegionContent(String[] strings, Object[] rawObjects,
 		    String comment)
     {
+	NullCheck.notNullItems(strings, "strings");
+	NullCheck.notNullItems(rawObjects, "rawObjects");
+	NullCheck.notNull(comment, "comment");
+	if (strings.length != rawObjects.length)
+	    throw new IllegalArgumentException("strings and rawObjects must have equal number of items");
 	this.strings = strings;
 	this.rawObjects = rawObjects;
 	this.comment = comment;
@@ -51,6 +66,24 @@ final public class RegionContent
     public boolean isEmpty()
     {
 	return strings == null || strings.length < 1;
+    }
+
+    public int getLineCount()
+    {
+	NullCheck.notNullItems(strings, "strings");
+	NullCheck.notNullItems(rawObjects, "rawObjects");
+	if (rawObjects.length > 0)
+	    return rawObjects.length;
+	int firstLine = -1;
+	int lastLine = -1;
+	for(int i = 0;i < strings.length;++i)
+	    if (!strings[i].isEmpty())
+	{
+	    if (firstLine < 0)
+		firstLine = i;
+	    lastLine = i;
+	}
+	return lastLine - firstLine + 1;
     }
 
     /**
@@ -72,4 +105,8 @@ final public class RegionContent
 	}
 	return b.toString();
     }
+
+    public String[] strings() {return strings;}
+    public Object[] rawObjects() {return rawObjects;}
+    public String comment() {return comment;}
 }

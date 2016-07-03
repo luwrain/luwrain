@@ -92,7 +92,7 @@ class I18nImpl implements I18n, I18nExtension
 	return b.toString();
     }
 
-    @Override public String pastTimeBrief(Date date)
+    @Override public String getPastTimeBrief(Date date)
     {
 	return ((Strings)getStrings("luwrain.environment")).pastTimeBrief(date);
     }
@@ -110,12 +110,21 @@ class I18nImpl implements I18n, I18nExtension
 	return value != null && !value.isEmpty()?value:"#NO STATIC VALUE#";
     }
 
+    @Override public String getStaticStr(String id)
+    {
+	NullCheck.notNull(id, "id");
+	if (chosenLang == null)
+	    return "#NO CHOSEN LANGUAGE#";
+	final String value = chosenLang.getStaticStr(id);
+	return value != null && !value.isEmpty()?value:"#NO STATIC VALUE \'" + id + "\'#";
+    }
+
     @Override public String hasSpecialNameOfChar(char ch)
     {
 	return chosenLang != null?chosenLang.hasSpecialNameOfChar(ch):null;
     }
 
-    @Override public String commandTitle(String command)
+    @Override public String getCommandTitle(String command)
     {
 	NullCheck.notNull(command, "command");
 	if (command.trim().isEmpty())

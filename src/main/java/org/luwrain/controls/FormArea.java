@@ -589,7 +589,7 @@ public class FormArea  extends NavigationArea
 	    return true;
 	return super.onKeyboardEvent(event);
     }
-    
+
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	//Insert command for a uniref;
@@ -601,10 +601,9 @@ public class FormArea  extends NavigationArea
 	    {
 		final InsertEvent insertEvent = (InsertEvent)event;
 		final RegionContent data = insertEvent.getData();
-		if (data == null || data.strings == null ||
-data.strings.length < 1 || data.strings[0] == null)
+		if (data.isEmpty())
 		    return false;
-		final UniRefInfo uniRefInfo = environment.getUniRefInfo(data.strings[0]);
+		final UniRefInfo uniRefInfo = environment.getUniRefInfo(data.strings()[0]);
 		if (uniRefInfo == null)
 		    return false;
 		items.get(index).uniRefInfo = uniRefInfo;

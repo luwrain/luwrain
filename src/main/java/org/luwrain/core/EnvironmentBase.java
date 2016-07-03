@@ -25,6 +25,7 @@ abstract class EnvironmentBase implements EventConsumer
     protected Speech speech = null;
     protected final Braille braille = new Braille();
     protected Strings strings;
+    private RegionContent clipboard = null;
     protected final SoundsPlayer sounds = new SoundsPlayer();
     protected HashMap<String, Path> paths;
     protected String lang;
@@ -138,5 +139,18 @@ abstract class EnvironmentBase implements EventConsumer
     Strings strings()
     {
 	return strings;
+    }
+
+    RegionContent getClipboard()
+    {
+	if (clipboard == null)
+	    return new RegionContent();
+	return clipboard;
+    }
+
+    void setClipboard(RegionContent newClipboard)
+    {
+	NullCheck.notNull(newClipboard, "newClipboard");
+	this.clipboard = clipboard;
     }
 }

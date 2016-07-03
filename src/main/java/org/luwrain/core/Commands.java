@@ -218,7 +218,23 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onCopyCommand(true);
+		    final Area area = env.getValidActiveArea(true);
+		    if (area == null)
+			return;
+		    final RegionQuery query = new RegionQuery();
+		    if (!area.onAreaQuery(query) || !query.containsResult())
+		    {
+			env.eventNotProcessedMessage();
+			return;
+		    }
+		    final RegionContent res = query.getAnswer();
+		    if (res == null)
+		    {
+			env.eventNotProcessedMessage();
+			return;
+		    }
+		    env.setClipboard(res);
+		    env.message(luwrain.i18n().getStaticStr("LinesCopied") + " " + res.getLineCount(), Luwrain.MESSAGE_REGULAR);
 		}
 	    },
 
@@ -245,8 +261,8 @@ class Commands
 			env.eventNotProcessedMessage();
 			return;
 		    }
-		    env.clipboard = res;
-		    env.message("Вырезано строк: " + res.strings.length, Luwrain.MESSAGE_REGULAR);
+		    env.setClipboard(res);
+		    env.message(luwrain.i18n().getStaticStr("LinesCut") + " " + res.getLineCount(), Luwrain.MESSAGE_REGULAR);
 		}
 	    },
 
@@ -278,7 +294,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    if (env.clipboard == null || env.clipboard.isEmpty())
+		    if (env.getClipboard().isEmpty())
 		    {
 			env.message(env.strings().noClipboardContent(), Luwrain.MESSAGE_NOT_READY);
 			return;
@@ -286,9 +302,9 @@ class Commands
 		    final Area area = env.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    final InsertEvent event = new InsertEvent(env.clipboard);
+		    final InsertEvent event = new InsertEvent(env.getClipboard ());
 		    if (area.onEnvironmentEvent(event))
-			env.message(env.strings().linesInserted(env.clipboard.strings.length), Luwrain.MESSAGE_REGULAR); else
+			env.message(luwrain.i18n().getStaticStr("LinesInserted") + " " + env.getClipboard().getLineCount(), Luwrain.MESSAGE_REGULAR); else
 			env.eventNotProcessedMessage();
 		}
 	    },
@@ -399,7 +415,29 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onCopyObjectUniRefCommand();
+		    final Area area = env.getValidActiveArea(true);
+		    if (area == null)
+			return;
+		    final ObjectUniRefQuery query = new ObjectUniRefQuery();
+		    if (!area.onAreaQuery(query) || !query.containsResult())
+		    {
+			env.eventNotProcessedMessage();
+			return;
+		    }
+		    final String uniRef = query.getUniRef();
+		    if (uniRef == null || uniRef.trim().isEmpty())
+		    {
+			env.eventNotProcessedMessage();
+			return;
+		    }
+		    final UniRefInfo uniRefInfo = env.getUniRefInfoIface(uniRef);
+		    if (uniRefInfo == null)
+		    {
+			env.eventNotProcessedMessage();
+			return;
+		    }
+		    env.message(uniRefInfo.toString(), Luwrain.MESSAGE_REGULAR);
+		    env.setClipboard(new RegionContent(new String[]{uniRef}));
 		}
 	    },
 

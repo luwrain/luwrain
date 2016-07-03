@@ -85,9 +85,9 @@ class Base
 		   RegionContent data)
     {
 	NullCheck.notNull(data, "data");
-	if (data.strings == null)
+	if (data.isEmpty())
 	    return false;
-	uniRefList.add(y - model.getFirstUniRefPos(), data.strings);
+	uniRefList.add(y - model.getFirstUniRefPos(), data.strings());
 	uniRefList.save();
 	return true;
     }

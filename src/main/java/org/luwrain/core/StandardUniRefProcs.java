@@ -60,7 +60,7 @@ class StandardUniRefProcs
 			return null;
 		    if (!uniRef.startsWith("command:"))
 			return null;
-		    return new UniRefInfo(uniRef, "", luwrain.i18n().commandTitle(uniRef.substring(8)));
+		    return new UniRefInfo(uniRef, "", luwrain.i18n().getCommandTitle(uniRef.substring(8)));
 		}
 		@Override public void openUniRef(String uniRef, Luwrain luwrain)
 		{

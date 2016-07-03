@@ -49,7 +49,6 @@ class Environment extends EnvironmentAreas
     private final SharedObjectManager sharedObjects = new SharedObjectManager();
     private final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
-    RegionContent clipboard = null;
     Settings.UserInterface uiSettings;
 
     Environment(String[] cmdLine, Registry registry,
@@ -1006,48 +1005,6 @@ class Environment extends EnvironmentAreas
 	needForIntroduction = false;
     }
 
-    /**
-     * Performs the copying of the content of the currently active area. This
-     * method gets currently active area, checks that it isn't blocked and
-     * performs region query, saving the result in the clipboard.  If {@code
-     * onRegionPointCommand} method has been called on the same area, the
-     * region is restricted by two points, otherwise the entire area content
-     * must be copied. The method fails if there is no active area, it is
-     * blocked or the area refuses to perform the region query. 
-     *
-     * @param speakAnnouncement Issue messages to the user to describe  the result of the operation (if false, everything goes silently)
-     * @return True if the clipboard got new content, false otherwise
-     */
-    void  onCopyCommand(boolean speakAnnouncement)
-    {
-	final Area activeArea = getValidActiveArea(speakAnnouncement);
-	if (activeArea == null)
-	    return;
-	final RegionQuery query = new RegionQuery();
-	if (!activeArea.onAreaQuery(query))
-	{
-	    if (speakAnnouncement)
-		areaInaccessibleMessage();
-	    return;
-	}
-	if (!query.containsResult())
-	{
-	    if (speakAnnouncement)
-		areaInaccessibleMessage();
-	    return;
-	}
-	final RegionContent res = query.getAnswer();
-	if (res == null)
-	{
-	    if (speakAnnouncement)
-		areaInaccessibleMessage();
-	    return;
-	}
-	clipboard = res;
-	if (speakAnnouncement)
-	    message(strings.linesCopied(res.strings.length), Luwrain.MESSAGE_REGULAR);
-    }
-
     void reloadComponent(Luwrain.ReloadComponents component)
     {
 	switch(component)
@@ -1056,33 +1013,6 @@ class Environment extends EnvironmentAreas
 	    sounds.init(registry, paths.get("luwrain.dir.data"));
 	    break;
 	}
-    }
-
-    void onCopyObjectUniRefCommand()
-    {
-	final Area activeArea = getValidActiveArea(true);
-	if (activeArea == null)
-	    return;
-	final ObjectUniRefQuery query = new ObjectUniRefQuery();
-	if (!activeArea.onAreaQuery(query) || !query.containsResult())
-	{
-	    failureMessage();
-	    return;
-	}
-	final String uniRef = query.getUniRef();
-	if (uniRef == null || uniRef.trim().isEmpty())
-	{
-	    failureMessage();
-	    return;
-	}
-	final UniRefInfo uniRefInfo = getUniRefInfoIface(uniRef);
-	if (uniRefInfo == null)
-	{
-	    failureMessage();
-	    return;
-	}
-	message(uniRefInfo.toString(), Luwrain.MESSAGE_REGULAR);
-	clipboard = new RegionContent(new String[]{uniRef});
     }
 
     private void areaBlockedMessage()

@@ -218,18 +218,16 @@ public class SingleLineEdit implements RegionProvider
     @Override public boolean insertRegion(int x, int y,
 					  RegionContent data)
     {
-	if (data.strings == null || data.strings.length < 1)
+	if (data.isEmpty())
 	    return false;
 	final StringBuilder b = new StringBuilder();
-	for(int i = 0;i < data.strings.length;++i)
+	for(int i = 0;i < data.strings().length;++i)
 	{
-	    if (data.strings[i] == null)
-		continue;
 	    if (b.length() > 0)
 		b.append(" ");
-	    b.append(data.strings[i]);
+	    b.append(data.strings()[i]);
 	}
-	final String text = b.toString();
+	final String text = new String(b);
 	if (text.isEmpty())
 	    return true;
 	final String line = model.getLine();

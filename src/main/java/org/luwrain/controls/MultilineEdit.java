@@ -177,6 +177,6 @@ return onEnter(event);
     private boolean insertRegion(int x, int y,
 					 RegionContent data)
     {
-	return model.insertRegion(x, y, org.luwrain.util.Strings.notNullArray(data.strings));
+	return model.insertRegion(x, y, org.luwrain.util.Strings.notNullArray(data.strings()));
     }
 }

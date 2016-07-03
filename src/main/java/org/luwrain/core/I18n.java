@@ -21,8 +21,9 @@ import java.util.*;
 public interface I18n
 {
     String staticStr(int code);
+    String getStaticStr(String id);
     String hasSpecialNameOfChar(char ch);
-    String commandTitle(String command);
+    String getCommandTitle(String command);
     Object getStrings(String component);
-    String pastTimeBrief(Date date);
+    String getPastTimeBrief(Date date);
 }
