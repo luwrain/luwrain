@@ -27,26 +27,21 @@ import org.luwrain.controls.*;
 
 public class CommanderPopup extends CommanderArea implements Popup, PopupClosingRequest
 {
-    public static final int ACCEPT_REGULAR_FILES = 1;
-    public static final int ACCEPT_DIRECTORIES = 2;
-    public static final int ACCEPT_ALL = ACCEPT_REGULAR_FILES | ACCEPT_DIRECTORIES;
-    public static final int ACCEPT_MULTIPLE_SELECTION = 16;
-
     protected Luwrain luwrain;
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected String name;
-    protected int flags;
     protected Set<Popup.Flags> popupFlags;
 
     public CommanderPopup(Luwrain luwrain, String name,
-			  Path path, int flags,
-			  Set<Popup.Flags> popupFlags)
+			  Path path, Set<Popup.Flags> popupFlags)
     {
-	super(constructParams(), null);
-	this.luwrain = luwrain;
-	this.name = name;
+	super(constructParams(luwrain), path);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
+	NullCheck.notNull(popupFlags, "popupFlags");
+	this.luwrain = luwrain;
+	this.name = name;
+	this.popupFlags = popupFlags;
     }
 
     public boolean onCommanderClick(Path current, Path[] selected)
@@ -56,6 +51,7 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
+	NullCheck.notNull(event, "event");
 	if (closing.onKeyboardEvent(event))
 	    return true;
 	if (!event.isSpecial() && !event.isModified())
@@ -72,15 +68,18 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 	    default:
 		return super.onKeyboardEvent(event);
 	    }
-	if (event.isSpecial() &&
-	    event.getSpecial() == KeyboardEvent.Special.ENTER &&
-	    event.withShiftOnly())
+	if (event.isSpecial() && event.withAltOnly())
+	    switch(event.getSpecial())
+	    {
+	    case ENTER:
 	    return openMountedPartitions();
+	    }
 	return super.onKeyboardEvent(event);
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
+	NullCheck.notNull(event, "event");
 	if (closing.onEnvironmentEvent(event))
 	    return true;
 	return super.onEnvironmentEvent(event);
@@ -125,8 +124,16 @@ return marked().length > 0 || selectedPath() != null;
 	return true;
     }
 
-    static private CommanderParams constructParams()
+    static private CommanderArea.Params constructParams(Luwrain luwrain)
     {
-	return null;
+	NullCheck.notNull(luwrain, "luwrain");
+	final CommanderArea.Params params = new CommanderArea.Params();
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.appearance = new CommanderUtils.DefaultAppearance(params.environment);
+	//    public CommanderArea.ClickHandler clickHandler;
+	params.selecting = false;
+	params.filter = new CommanderUtils.NoHiddenFilter();
+	params.comparator = new CommanderUtils.ByNameComparator();
+	return params;
     }
 }

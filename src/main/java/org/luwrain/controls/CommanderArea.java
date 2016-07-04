@@ -113,7 +113,7 @@ public Type type() { return type; }
 	Result onCommanderClick(CommanderArea area, Path path, boolean dir);
     }
 
-static public class CommanderParams
+static public class Params
 {
     public ControlEnvironment environment;
     public CommanderAppearance appearance;
@@ -250,7 +250,7 @@ protected CommanderAppearance commanderAppearance;
     protected CommanderArea.ClickHandler clickHandler;
     protected boolean selecting = false;
 
-    public CommanderArea(CommanderParams params, Path current)
+    public CommanderArea(Params params, Path current)
     {
 	super(constructListParams(params));
 	this.commanderAppearance = params.appearance;
@@ -524,7 +524,7 @@ protected CommanderAppearance commanderAppearance;
 	    return Entry.Type.SPECIAL;
 	}
 
-    static protected ListArea.Params constructListParams(CommanderParams params)
+    static protected ListArea.Params constructListParams(CommanderArea.Params params)
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.environment, "params.environment");

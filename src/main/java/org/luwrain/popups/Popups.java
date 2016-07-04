@@ -147,7 +147,7 @@ public class Popups
 					   Path path, int flags,
 					   Set<Popup.Flags> popupFlags)
     {
-	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, 0, popupFlags);
+	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -157,10 +157,13 @@ public class Popups
     }
 
     static public Path commanderSingle(Luwrain luwrain, String name,
-				       Path path, int flags,
-				       Set<Popup.Flags> popupFlags)
+				       Path path, Set<Popup.Flags> popupFlags)
     {
-	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, flags, popupFlags);
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(path, "path");
+	NullCheck.notNull(popupFlags, "popupFlags");
+	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;

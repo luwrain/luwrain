@@ -60,7 +60,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.isSpecial() && event.withShiftOnly())
+	if (event.isSpecial() && event.withAltOnly())
 	    switch(event.getSpecial())
 	    {
 	    case 	    ENTER:
@@ -85,7 +85,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	    file = file.getParentFile();
 	if (file == null || !file.isDirectory())
 	    return false;
-	final Path res = Popups.commanderSingle(luwrain, getAreaName() + ": ", file.toPath(), CommanderPopup.ACCEPT_ALL, EnumSet.noneOf(Popup.Flags.class));
+	final Path res = Popups.commanderSingle(luwrain, getAreaName() + ": ", file.toPath(), popupFlags);
 	if (res != null)
 	    setText(res.toAbsolutePath().toString(), "");
 	return true;
