@@ -183,41 +183,22 @@ public class Popups
 	return commanderSingle(luwrain, name, path, null, null, popupFlags);
     }
 
-    static public Partition mountedPartitions(Luwrain luwrain)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	return mountedPartitions(luwrain, DEFAULT_POPUP_FLAGS);
-    }
-
     static public Partition mountedPartitions(Luwrain luwrain, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(popupFlags, "popupFlags");
-	final PartitionsPopup popup = new PartitionsPopup(luwrain, new DefaultPartitionsPopupControl(luwrain, luwrain.getHardware()),
-							  "Выберите раздел:", popupFlags);
+	final PartitionsPopup popup = new PartitionsPopup(luwrain, (PartitionsPopup.Control)luwrain.getSharedObject("luwrain.partitionspopupcontrol"),
+							  luwrain.i18n().getStaticStr("PartitionsPopupName"), popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	final Object result = popup.result().getObject();
-	if (result == null)
-	    return null;
-	return (Partition)result;
+	return (Partition)popup.result().getObject();
     }
 
-    static public File mountedPartitionsAsFile(Luwrain luwrain)
+    static public Partition mountedPartitions(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	return mountedPartitionsAsFile(luwrain, DEFAULT_POPUP_FLAGS);
-    }
-
-    static public File mountedPartitionsAsFile(Luwrain luwrain, Set<Popup.Flags> popupFlags)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(popupFlags, "popupFlags");
-	final Partition result = mountedPartitions(luwrain, popupFlags);
-	if (result == null)
-	    return null;
-	return result.file();
+	return mountedPartitions(luwrain, DEFAULT_POPUP_FLAGS);
     }
 
     static public String fixedEditList(Luwrain luwrain,

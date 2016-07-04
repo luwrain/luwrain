@@ -14,14 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.popups;
+package org.luwrain.core;
 
 import java.util.*;
 
-import org.luwrain.core.*;
+import org.luwrain.popups.*;
 import org.luwrain.hardware.*;
 
-public class DefaultPartitionsPopupControl implements PartitionsPopup.Control
+class PartitionsPopupControl implements PartitionsPopup.Control
 {
     static private class PartWrapper implements PartitionsPopup.Partition
     {
@@ -30,6 +30,7 @@ public class DefaultPartitionsPopupControl implements PartitionsPopup.Control
 
 	PartWrapper(Partition part, Strings strings)
 	{
+	    NullCheck.notNull(part, "part");
 	    this.part = part;
 	    this.strings = strings;
 	}
@@ -56,8 +57,8 @@ public class DefaultPartitionsPopupControl implements PartitionsPopup.Control
 
 	DeviceWrapper(StorageDevice device)
 	{
-	    this.device = device;
 	    NullCheck.notNull(device, "device");
+	    this.device = device;
 	}
 
 	@Override public String toString()
@@ -65,24 +66,21 @@ public class DefaultPartitionsPopupControl implements PartitionsPopup.Control
 	    return device.model + " (" + device.devName + ")";
 	}
 
-	StorageDevice device()
-	{
-	    return device;
-	}
+	StorageDevice device() { return device; }
     }
 
     private Hardware hardware;
 private Strings strings;
 
-public DefaultPartitionsPopupControl(Luwrain luwrain, Hardware hardware)
+    PartitionsPopupControl(Luwrain luwrain, Hardware hardware)
 {
-    this.hardware = hardware;
     NullCheck.notNull(luwrain, "luwrain");
     NullCheck.notNull(hardware, "hardware");
+    this.hardware = hardware;
     this.strings = (Strings)luwrain.i18n().getStrings("luwrain.environment");
 }
 
-@Override public PartitionsPopup.Partition[] getPartitions()
+    @Override public PartitionsPopup.Partition[] getPartitions()
     {
 	final Partition[] parts = hardware.getMountedPartitions();
 	if (parts == null || parts.length < 1)
@@ -93,18 +91,18 @@ public DefaultPartitionsPopupControl(Luwrain luwrain, Hardware hardware)
 	return res;
     }
 
-	@Override public String[] getStorageDevicesIntroduction()
+    @Override public String[] getStorageDevicesIntroduction()
     {
 	final Object[] devices = getStorageDevices();
 	if (devices == null || devices.length < 1)
 	    return new String[]{"", "Нет подключённых съёмных накопителей"};
 	return new String[]{
 	    "",
-"Подключенные съёмные накопители:"
+	    "Подключенные съёмные накопители:"
 	};
     }
 
-	@Override public Object[] getStorageDevices()
+    @Override public Object[] getStorageDevices()
     {
 	final StorageDevice[] devices = hardware.getStorageDevices();
 	if (devices == null || devices.length < 1)
@@ -116,7 +114,7 @@ public DefaultPartitionsPopupControl(Luwrain luwrain, Hardware hardware)
 	return res.toArray(new DeviceWrapper[res.size()]);
     }
 
-	@Override public int attachStorageDevice(Object device)
+    @Override public int attachStorageDevice(Object device)
     {
 	if (device == null || !(device instanceof DeviceWrapper))
 	    return -1;
@@ -124,7 +122,7 @@ public DefaultPartitionsPopupControl(Luwrain luwrain, Hardware hardware)
 	return hardware.mountAllPartitions(wrapper.device());
     }
 
-	@Override public int detachStorageDevice(Object device)
+    @Override public int detachStorageDevice(Object device)
     {
 	if (device == null || !(device instanceof DeviceWrapper))
 	    return -1;

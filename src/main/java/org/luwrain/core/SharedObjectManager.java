@@ -22,38 +22,33 @@ import org.luwrain.core.extensions.*;
 
 class SharedObjectManager
 {
-    class Entry 
+    private class Entry 
     {
-	public Extension extension;
-	public String name = "";
-	public SharedObject sharedObject;
+Extension extension;
+String name = "";
+SharedObject sharedObject;
 
-	public Entry(Extension extension,
-		     String name,
+Entry(Extension extension, String name,
 		     SharedObject sharedObject)
 	{
+	    NullCheck.notNull(name, "name");
+	    NullCheck.notNull(sharedObject, "sharedObject");
 	    this.extension = extension;
 	    this.name = name;
 	    this.sharedObject = sharedObject;
-	    if (extension == null)
-		throw new NullPointerException("extension may not be null");
-	    if (name == null)
-		throw new NullPointerException("name may not be null");
 	    if (name.trim().isEmpty())
 		throw new IllegalArgumentException("name may not be empty");
-	    if (sharedObject == null)
-		throw new NullPointerException("sharedObject may not be null");
 	}
     }
 
-    private TreeMap<String, Entry> sharedObjects = new TreeMap<String, Entry>();
+    private final TreeMap<String, Entry> sharedObjects = new TreeMap<String, Entry>();
 
-    public boolean add(Extension extension, SharedObject sharedObject)
+    //Standard shared objects
+    private PartitionsPopupControl partitionsPopupControl;
+
+boolean add(Extension extension, SharedObject sharedObject)
     {
-	if (extension == null)
-	    throw new NullPointerException("extension may not be null");
-	if (sharedObject == null)
-	    throw new NullPointerException("sharedObject may not be null");
+	NullCheck.notNull(sharedObject, "sharedObject");
 	final String name = sharedObject.getName();
 	if (name == null || name.trim().isEmpty())
 	    return false;
@@ -63,24 +58,39 @@ class SharedObjectManager
 	return true;
     }
 
-    public Object getSharedObject(String name)
+Object getSharedObject(String name)
     {
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (name.trim().isEmpty())
-	    throw new IllegalArgumentException("name may not be empty");
+	NullCheck.notNull(name, "name");
 	if (!sharedObjects.containsKey(name))
 	    return null;
 	return sharedObjects.get(name).sharedObject.getSharedObject();
     }
 
-    public String[] getSharedObjectsNames()
+String[] getSharedObjectsNames()
     {
-	Vector<String> res = new Vector<String>();
+	final LinkedList<String> res = new LinkedList<String>();
 	for(Map.Entry<String, Entry> e: sharedObjects.entrySet())
 	    res.add(e.getKey());
-	String[] str = res.toArray(new String[res.size()]);
+	final String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);
 	return str;
+    }
+
+    void createStandardObjects(Environment env)
+    {
+	NullCheck.notNull(env, "env");
+	if (partitionsPopupControl == null)
+	    partitionsPopupControl = new PartitionsPopupControl(env.getObjForEnvironment(), env.getHardware());
+
+	add(null, new SharedObject(){
+		@Override public String getName()
+		{
+		    return "luwrain.partitionspopupcontrol";
+		}
+		@Override public Object getSharedObject()
+		{
+		    return partitionsPopupControl;
+		}
+	    });
     }
 }

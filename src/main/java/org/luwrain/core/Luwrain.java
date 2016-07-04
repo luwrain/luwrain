@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 
-import org.luwrain.os.OperatingSystem;
+//import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
@@ -308,11 +308,6 @@ public final class Luwrain implements EventConsumer
 	environment.openFiles(fileNames);
     }
 
-    public OperatingSystem os()
-    {
-	return environment.os();
-    }
-
     public void playSound(int code)
     {
 	environment.playSound(code);
@@ -465,10 +460,12 @@ public final class Luwrain implements EventConsumer
 	return openUniRef(uniRefInfo.value());
     }
 
+    /*
     public Hardware getHardware()
     {
 	return environment.getHardware();
     }
+    */
 
     public org.luwrain.browser.Browser createBrowser()
     {

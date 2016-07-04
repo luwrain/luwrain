@@ -118,6 +118,7 @@ class Environment extends EnvironmentAreas
 	for(Command sc: standardCommands)
 	    commands.add(new Luwrain(this), sc);//FIXME:
 	commands.addOsCommands(interfaces.getObjForEnvironment(), registry);
+	sharedObjects.createStandardObjects(this);
 
 	final UniRefProc[] standardUniRefProcs = StandardUniRefProcs.createStandardUniRefProcs(interfaces.getObjForEnvironment(), strings);
 	for(UniRefProc proc: standardUniRefProcs)
@@ -921,7 +922,7 @@ class Environment extends EnvironmentAreas
 	return uniRefProcs.open(uniRef);
     }
 
-    public Hardware getHardware()
+    Hardware getHardware()
     {
 	return os.getHardware();
     }

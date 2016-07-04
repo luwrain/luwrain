@@ -34,20 +34,20 @@ public class PartitionsPopup extends ListPopupBase
     public interface Control
     {
 	Partition[] getPartitions();
-	String[] getStorageDevicesIntroduction();
 	Object[] getStorageDevices();
+	String[] getStorageDevicesIntroduction();
 	int attachStorageDevice(Object device);
 	int detachStorageDevice(Object dev);
     }
 
-    static private class Appearance implements ListArea.Appearance
+    static protected class Appearance implements ListArea.Appearance
     {
-	private Luwrain luwrain;
+	protected Luwrain luwrain;
 
 	Appearance(Luwrain luwrain)
 	{
-	    this.luwrain = luwrain;
 	    NullCheck.notNull(luwrain, "luwrain");
+	    this.luwrain = luwrain;
 	}
 
 	@Override public void announceItem(Object item, Set<Flags> flags)
@@ -63,9 +63,9 @@ public class PartitionsPopup extends ListPopupBase
 		    value = part.getFullTitle();
 	    } else
 		value = item.toString();
-	if (!value.trim().isEmpty())
-	    luwrain.say(value); else
-	    luwrain.hint(Hints.EMPTY_LINE);
+	    if (!value.trim().isEmpty())
+		luwrain.say(value); else
+		luwrain.hint(Hints.EMPTY_LINE);
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
@@ -91,15 +91,15 @@ public class PartitionsPopup extends ListPopupBase
 	}
     }
 
-    static private class Model implements ListArea.Model
+    static protected class Model implements ListArea.Model
     {
-	private Control control;
-	private Object[] items;
+	protected Control control;
+	protected Object[] items;
 
 	Model(Control control)
 	{
-	    this.control = control;
 	    NullCheck.notNull(control, "control");
+	    this.control = control;
 	    refresh();
 	}
 
@@ -122,21 +122,20 @@ public class PartitionsPopup extends ListPopupBase
 	}
 
 	@Override public void refresh()
-    {
-	final LinkedList res = new LinkedList();
-	for(Object o: control.getPartitions())
-	    res.add(o);
-
-	for(Object o: control.getStorageDevicesIntroduction())
-	    res.add(o);
-	for(Object o: control.getStorageDevices())
-	    res.add(o);
-	items = res.toArray(new Object[res.size()]);
+	{
+	    final LinkedList res = new LinkedList();
+	    for(Object o: control.getPartitions())
+		res.add(o);
+	    for(Object o: control.getStorageDevicesIntroduction())
+		res.add(o);
+	    for(Object o: control.getStorageDevices())
+		res.add(o);
+	    items = res.toArray(new Object[res.size()]);
+	}
     }
-    }
 
-    private Control control;
-    private Partition result = null;
+    protected Control control;
+    protected Partition result = null;
 
     public PartitionsPopup(Luwrain luwrain, Control control,
 			   String name, Set<Popup.Flags> popupFlags)
@@ -157,6 +156,9 @@ public class PartitionsPopup extends ListPopupBase
 	if (event.isSpecial() || !event.isModified())
 	    switch(event.getSpecial())
 	    {
+	    case ENTER:
+		closing.doOk();
+		return true;
 	    case INSERT:
 		return attach();
 	    case DELETE:

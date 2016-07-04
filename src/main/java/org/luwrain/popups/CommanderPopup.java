@@ -81,14 +81,13 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 		setFilter(new CommanderUtils.NoHiddenFilter());
 		refresh();
 		return true;
-	    default:
-		return super.onKeyboardEvent(event);
 	    }
 	if (event.isSpecial() && event.withAltOnly())
 	    switch(event.getSpecial())
 	    {
 	    case ENTER:
-	    return openMountedPartitions();
+		openMountedPartitions();
+		return true;
 	    }
 	return super.onKeyboardEvent(event);
     }
@@ -141,13 +140,12 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	return popupFlags;
     }
 
-    private boolean openMountedPartitions()
+    private void openMountedPartitions()
     {
-	final File f = Popups.mountedPartitionsAsFile(luwrain, EnumSet.noneOf(Popup.Flags.class));
-	if (f == null)
-	    return true;
-	open(f.toPath(), null);
-	return true;
+	final org.luwrain.hardware.Partition part = Popups.mountedPartitions(luwrain, popupFlags);
+	if (part == null)
+	    return;
+	open(part.file().toPath(), null);
     }
 
     static private CommanderArea.Params constructParams(Luwrain luwrain)
