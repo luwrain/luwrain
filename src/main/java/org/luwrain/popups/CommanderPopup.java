@@ -25,15 +25,18 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 //import org.luwrain.util.*;
 
-public class CommanderPopup extends CommanderArea implements Popup, PopupClosingRequest
+public class CommanderPopup extends CommanderArea implements CommanderArea.ClickHandler, Popup, PopupClosingRequest
 {
     protected Luwrain luwrain;
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected String name;
+    protected FilePopup.Acceptance acceptance = null;
     protected Set<Popup.Flags> popupFlags;
+    protected Path result;
 
     public CommanderPopup(Luwrain luwrain, String name,
-			  Path path, Set<Popup.Flags> popupFlags)
+			  Path path, FilePopup.Acceptance acceptance,
+			  CommanderArea.ClickHandler clickHandler, Set<Popup.Flags> popupFlags)
     {
 	super(constructParams(luwrain), path);
 	NullCheck.notNull(luwrain, "luwrain");
@@ -42,11 +45,24 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 	this.luwrain = luwrain;
 	this.name = name;
 	this.popupFlags = popupFlags;
+	this.acceptance = acceptance;
+	setClickHandler(clickHandler != null?clickHandler:this);
     }
 
-    public boolean onCommanderClick(Path current, Path[] selected)
+    @Override public ClickHandler.Result onCommanderClick(CommanderArea area, Path path, boolean dir)
     {
-	return closing.doOk();
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(path, "path");
+	if (dir)
+	    return ClickHandler.Result.OPEN_DIR;
+	result = path;
+	closing.doOk();
+	return ClickHandler.Result.OK;
+    }
+
+    public Path result()
+    {
+	return result;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -80,9 +96,17 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (closing.onEnvironmentEvent(event))
+	switch(event.getCode())
+	{
+	case OK:
+	    result = opened();
+	    closing.doOk();
 	    return true;
-	return super.onEnvironmentEvent(event);
+	default:
+	    if (closing.onEnvironmentEvent(event))
+		return true;
+	    return super.onEnvironmentEvent(event);
+	}
     }
 
     @Override public String getAreaName()
@@ -92,7 +116,9 @@ public class CommanderPopup extends CommanderArea implements Popup, PopupClosing
 
     @Override public boolean onOk()
     {
-return marked().length > 0 || selectedPath() != null;
+	if (result() == null)
+	    return false;
+	return acceptance != null?acceptance.pathAcceptable(result()):true;
     }
 
     @Override public boolean onCancel()

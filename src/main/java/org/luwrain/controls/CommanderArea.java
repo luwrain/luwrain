@@ -144,7 +144,6 @@ static public class Params
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
-	    System.out.println(item.getClass().getName());
 	    final Entry entry = (Entry)item;
 
 	    final boolean marked = entry.marked();

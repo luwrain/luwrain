@@ -143,6 +143,7 @@ public class Popups
     }
 
 
+    /*
     static public Path[] commanderMultiple(Luwrain luwrain, String name,
 					   Path path, int flags,
 					   Set<Popup.Flags> popupFlags)
@@ -155,6 +156,22 @@ public class Popups
 	    return popup.marked();
 	return new Path[]{popup.selectedPath()};
     }
+    */
+
+    static public Path commanderSingle(Luwrain luwrain, String name,
+				       Path path, FilePopup.Acceptance acceptance,
+				       CommanderArea.ClickHandler clickHandler, Set<Popup.Flags> popupFlags)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(path, "path");
+	NullCheck.notNull(popupFlags, "popupFlags");
+	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, acceptance, clickHandler, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.result();
+    }
 
     static public Path commanderSingle(Luwrain luwrain, String name,
 				       Path path, Set<Popup.Flags> popupFlags)
@@ -163,11 +180,7 @@ public class Popups
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(path, "path");
 	NullCheck.notNull(popupFlags, "popupFlags");
-	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, popupFlags);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.selectedPath();
+	return commanderSingle(luwrain, name, path, null, null, popupFlags);
     }
 
     static public Partition mountedPartitions(Luwrain luwrain)

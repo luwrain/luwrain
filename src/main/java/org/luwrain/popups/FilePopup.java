@@ -78,16 +78,16 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 
     private boolean openCommanderPopup()
     {
-	File file = result().toFile();
-	if (file == null)
+	Path path = result();
+	if (path == null)
 	    return false;
-	if (!file.isDirectory())
-	    file = file.getParentFile();
-	if (file == null || !file.isDirectory())
+	if (!Files.isDirectory(path))
+	    path = path.getParent();
+	if (path == null || !Files.isDirectory(path))
 	    return false;
-	final Path res = Popups.commanderSingle(luwrain, getAreaName() + ": ", file.toPath(), popupFlags);
+	final Path res = Popups.commanderSingle(luwrain, getAreaName() + ": ", path, popupFlags);
 	if (res != null)
-	    setText(res.toAbsolutePath().toString(), "");
+	    setText(res.toString(), "");
 	return true;
     }
 
