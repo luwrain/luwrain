@@ -66,19 +66,17 @@ class ContextMenu extends ListPopup
 	}
     }
 
-    ContextMenu(Luwrain luwrain, Action[] actions, Strings strings)
+    ContextMenu(Luwrain luwrain, Action[] actions)
     {
-	super(luwrain, constructParams(luwrain, actions, strings), EnumSet.noneOf(Popup.Flags.class));
+	super(luwrain, constructParams(luwrain, actions), EnumSet.noneOf(Popup.Flags.class));
     }
 
-    static private ListArea.Params constructParams(Luwrain luwrain, Action[] actions,
-						   Strings strings)
+    static private ListArea.Params constructParams(Luwrain luwrain, Action[] actions)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNullItems(actions, "actions");
-	NullCheck.notNull(strings, "strings");
 	final ListArea.Params params = new ListArea.Params();
-	params.name = strings.contextMenuName();
+	params.name = luwrain.i18n().getStaticStr("ContextMenuName");
 	params.model = new FixedListModel(actions);
 	params.appearance = new Appearance(luwrain);
 	params.environment = new DefaultControlEnvironment(luwrain);

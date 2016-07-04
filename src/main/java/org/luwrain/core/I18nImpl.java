@@ -51,7 +51,11 @@ class I18nImpl implements I18n, I18nExtension
 
     @Override public String getPastTimeBrief(Date date)
     {
-	return ((Strings)getStrings("luwrain.environment")).pastTimeBrief(date);
+	NullCheck.notNull(date, "date");
+	if (chosenLang == null)
+	    return "#NO CHOSEN LANGUAGE#";
+	final String value = chosenLang.pastTimeBrief(date);
+	return value != null?value:"";
     }
 
     @Override public String staticStr(LangStatic id)

@@ -35,7 +35,6 @@ public interface ControlEnvironment
 int getAreaVisibleHeight(Area area);
     void popup(Popup popupObj);
     String staticStr(LangStatic id);
-    org.luwrain.core.Strings environmentStrings();
     void playSound(int code);
     UniRefInfo getUniRefInfo(String uniRef);
 }

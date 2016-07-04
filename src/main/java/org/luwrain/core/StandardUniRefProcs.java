@@ -18,10 +18,9 @@ package org.luwrain.core;
 
 class StandardUniRefProcs
 {
-    static UniRefProc[] createStandardUniRefProcs(Luwrain l, Strings s)
+    static UniRefProc[] createStandardUniRefProcs(Luwrain l)
     {
 	final Luwrain luwrain = l;
-	final Strings strings = s;
 	return new UniRefProc[]{
 
 	    //file;
@@ -36,7 +35,7 @@ class StandardUniRefProcs
 			return null;
 		    if (!uniRef.startsWith("file:"))
 			return null;
-		    return new UniRefInfo(uniRef, strings.uniRefPrefix("file"), uniRef.substring(5));
+		    return new UniRefInfo(uniRef, luwrain.i18n().getStaticStr("UniRefPrefixFile"), uniRef.substring(5));
 		}
 		public void openUniRef(String uniRef, Luwrain luwrain)
 		{

@@ -120,7 +120,7 @@ class Environment extends EnvironmentAreas
 	commands.addOsCommands(interfaces.getObjForEnvironment(), registry);
 	sharedObjects.createStandardObjects(this);
 
-	final UniRefProc[] standardUniRefProcs = StandardUniRefProcs.createStandardUniRefProcs(interfaces.getObjForEnvironment(), strings);
+	final UniRefProc[] standardUniRefProcs = StandardUniRefProcs.createStandardUniRefProcs(interfaces.getObjForEnvironment());
 	for(UniRefProc proc: standardUniRefProcs)
 	    uniRefProcs.add(new Luwrain(this), proc);//FIXME:
 
@@ -176,12 +176,11 @@ class Environment extends EnvironmentAreas
 	    Log.fatal("core", "unable to choose matching language for i18n, requested language is \'" + lang + "\'");
 	    return;
 	}
-	strings = (Strings)i18n.getStrings(STRINGS_OBJECT_NAME);
     }
 
     void quit()
     {
-	final YesNoPopup popup = new YesNoPopup(new Luwrain(this), strings.quitPopupName(), strings.quitPopupText(), true, EnumSet.noneOf(Popup.Flags.class));
+	final YesNoPopup popup = new YesNoPopup(new Luwrain(this), i18n.getStaticStr("QuitPopupName"), i18n.getStaticStr("QuitPopupText"), true, Popups.DEFAULT_POPUP_FLAGS);
 	popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled() || !popup.result())
 	    return;
@@ -244,7 +243,7 @@ class Environment extends EnvironmentAreas
 	{
 	    e.printStackTrace();
 	    interfaces.release(o);
-	    message(strings.appLaunchNoEnoughMemory(), Luwrain.MESSAGE_ERROR);
+	    message(i18n.getStaticStr("AppLaunchNoEnoughMemory"), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
 	catch (Exception e)
@@ -318,7 +317,7 @@ class Environment extends EnvironmentAreas
 	    throw new IllegalArgumentException("Trying to close a desktop");
 	if (apps.hasPopupOfApp(app))
 	{
-	    message(strings.appCloseHasPopup(), Luwrain.MESSAGE_ERROR);
+	    message(i18n.getStaticStr("AppCloseHasPopup"), Luwrain.MESSAGE_ERROR);
 	    return;
 	}
 	apps.closeApp(app);
@@ -488,7 +487,7 @@ class Environment extends EnvironmentAreas
 	if (commandName != null)
 	{
 	    if (!commands.run(commandName))
-		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
+		message(i18n.getStaticStr("NoCommand"), Luwrain.MESSAGE_ERROR);
 	    return true;
 	}
 	if (event.isSpecial())
@@ -763,14 +762,14 @@ class Environment extends EnvironmentAreas
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() + 5); 
 	windowManager.redraw();
-	message(strings.fontSize(interaction.getFontSize()), Luwrain.MESSAGE_REGULAR);
+	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MESSAGE_REGULAR);
     }
 
     void onDecreaseFontSizeCommand()
     {
 	interaction.setDesirableFontSize(interaction.getFontSize() - 5); 
 	windowManager.redraw();
-	message(strings.fontSize(interaction.getFontSize()), Luwrain.MESSAGE_REGULAR);
+	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MESSAGE_REGULAR);
     }
 
     void openFiles(String[] fileNames)
@@ -868,7 +867,7 @@ class Environment extends EnvironmentAreas
 
     void mainMenu()
     {
-	final MainMenu mainMenu = MainMenu.newMainMenu(interfaces.getObjForEnvironment(), strings);
+	final MainMenu mainMenu = MainMenu.newMainMenu(getObjForEnvironment());
 	if (mainMenu == null)
 	    return;
 	popup(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
@@ -890,12 +889,12 @@ class Environment extends EnvironmentAreas
     private void showCommandPopup()
     {
 	final EditListPopup popup = new EditListPopup(new Luwrain(this), new EditListPopupUtils.FixedModel(commands.getCommandNames()),
-						      strings.commandPopupName(), strings.commandPopupPrefix(), "", EnumSet.noneOf(Popup.Flags.class));
+						      i18n.getStaticStr("CommandPopupName"), i18n.getStaticStr("CommandPopupPrefix"), "", EnumSet.noneOf(Popup.Flags.class));
 	popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
 	    if (!commands.run(popup.text().trim()))
-		message(strings.noCommand(), Luwrain.MESSAGE_ERROR);
+		message(i18n.getStaticStr("NoCommand"), Luwrain.MESSAGE_ERROR);
     }
 
     OperatingSystem os()
@@ -971,7 +970,7 @@ class Environment extends EnvironmentAreas
 	    areaInaccessibleMessage();
 	    return;
 	}
-	final ContextMenu menu = new ContextMenu(interfaces.getObjForEnvironment(), actions, strings);
+	final ContextMenu menu = new ContextMenu(getObjForEnvironment(), actions);
 	popup(null, menu, Popup.RIGHT, menu.closing, true, true);
 	if (menu.closing.cancelled())
 	    return;
@@ -1018,7 +1017,7 @@ class Environment extends EnvironmentAreas
 
     private void areaBlockedMessage()
     {
-		    message(strings.appBlockedByPopup(), Luwrain.MESSAGE_ERROR);
+	message(i18n.getStaticStr("AppBlockedByPopup"), Luwrain.MESSAGE_ERROR);
     }
 
     Area getValidActiveArea(boolean speakMessages)
@@ -1055,7 +1054,7 @@ class Environment extends EnvironmentAreas
 	readingChannel = speech.getReadingChannel();
 if (readingChannel == null)
 {
-    message(strings.noReadingChannel(), Luwrain.MESSAGE_ERROR);
+    message(i18n.getStaticStr("NoReadingChannel"), Luwrain.MESSAGE_ERROR);
     return;
 }
 	Log.debug("core", "using the channel \'" + readingChannel.getChannelName() + " for area reading");

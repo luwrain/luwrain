@@ -136,11 +136,10 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrainArg)
 		{
-		    final Strings strings = env.strings();
 		    final Luwrain luwrain = env.getObjForEnvironment();
 		    final Path current = Paths.get(luwrain.currentAreaDir());
 		    final FilePopup popup = new FilePopup(luwrain, 
-							  strings.openPopupName(), strings.openPopupPrefix(), 
+							  luwrain.i18n().getStaticStr("OpenPopupName"), luwrain.i18n().getStaticStr("OpenPopupPrefix"), 
 							  null, current, current, 
 							  env.uiSettings.getFilePopupSkipHidden(false)?EnumSet.of(FilePopup.Flags.SKIP_HIDDEN):EnumSet.noneOf(FilePopup.Flags.class),
 							  EnumSet.noneOf(Popup.Flags.class));
@@ -203,7 +202,7 @@ class Commands
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
 		    {
-			env.message(env.strings().regionPointSet(), Luwrain.MESSAGE_REGULAR); 
+			env.message(luwrain.i18n().getStaticStr("RegionPointSet"), Luwrain.MESSAGE_REGULAR); 
 			env.playSound(Sounds.REGION_POINT);
 		    }else
 			env.eventNotProcessedMessage();
@@ -279,7 +278,7 @@ class Commands
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE)))
 		    {
-			env.message(env.strings().linesDeleted(), Luwrain.MESSAGE_REGULAR);
+			env.message(luwrain.i18n().getStaticStr("LinesDeleted"), Luwrain.MESSAGE_REGULAR);
 			env.playSound(Sounds.DELETED);
 		    } else
 			env.eventNotProcessedMessage();
@@ -296,7 +295,7 @@ class Commands
 		{
 		    if (env.getClipboard().isEmpty())
 		    {
-			env.message(env.strings().noClipboardContent(), Luwrain.MESSAGE_NOT_READY);
+			env.message(luwrain.i18n().getStaticStr("NoClipboardContent"), Luwrain.MESSAGE_ERROR);
 			return;
 		    }
 		    final Area area = env.getValidActiveArea(true);

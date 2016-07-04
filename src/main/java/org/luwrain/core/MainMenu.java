@@ -94,7 +94,6 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 
     private Luwrain luwrain;
     final PopupClosingTranslator closing = new PopupClosingTranslator(this);
-    private Strings strings;
     private UniRefInfo result = null;
 
     private MainMenu(Luwrain luwrain, ListArea.Params params)
@@ -188,10 +187,9 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	return result;
     }
 
-    static MainMenu newMainMenu(Luwrain luwrain, Strings strings)
+    static MainMenu newMainMenu(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(strings, "strings");
 		final Registry registry = luwrain.getRegistry();
 	final RegistryKeys keys = new RegistryKeys();
 	final String[] dirs = registry.getDirectories(keys.mainMenuSections());
@@ -206,7 +204,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	{
 	    final String path = RegistryPath.join(keys.mainMenuSections(), s);
 	    final Settings.MainMenuSection proxy = Settings.createMainMenuSection(registry, path);
-	    final Section sect = loadSection(luwrain, proxy, strings);
+	    final Section sect = loadSection(luwrain, proxy);
 	    if (sect != null)
 		sects.add(sect);
 	}
@@ -221,16 +219,15 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.model = new FixedListModel(objs.toArray(new Object[objs.size()]));
 	params.appearance = new Appearance(luwrain);
-	params.name = strings.mainMenuName();
+	params.name = luwrain.i18n().getStaticStr("MainMenuName");
 	final MainMenu mainMenu = new MainMenu(luwrain, params);
 mainMenu.setClickHandler(mainMenu);
 return mainMenu;
     }
 
-    static private Section loadSection(Luwrain luwrain, Settings.MainMenuSection proxy,
-				       Strings strings)
+    static private Section loadSection(Luwrain luwrain, Settings.MainMenuSection proxy)
     {
-	final String title = strings.mainMenuSection(proxy.getTitle(""));
+	final String title = sectionName(proxy.getTitle(""));
 	final String[] refs = proxy.getUniRefs("").split("\\\\:", -1);
 	final LinkedList<UniRefInfo> uniRefs = new LinkedList<UniRefInfo>();
 	for(String s: refs)
@@ -242,5 +239,10 @@ return mainMenu;
 		uniRefs.add(uniRef);
 	}
 	return new Section(title, uniRefs.toArray(new UniRefInfo[uniRefs.size()]));
+    }
+
+    static private String sectionName(String name)
+    {
+	return name;
     }
 }

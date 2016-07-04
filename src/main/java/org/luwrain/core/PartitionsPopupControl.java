@@ -25,20 +25,36 @@ class PartitionsPopupControl implements PartitionsPopup.Control
 {
     static private class PartWrapper implements PartitionsPopup.Partition
     {
+	private Luwrain luwrain;
 	private org.luwrain.hardware.Partition part;
-	private Strings strings;
 
-	PartWrapper(Partition part, Strings strings)
+	PartWrapper(Luwrain luwrain, Partition part)
 	{
+	    NullCheck.notNull(luwrain, "luwrain");
 	    NullCheck.notNull(part, "part");
+	    this.luwrain = luwrain;
 	    this.part = part;
-	    this.strings = strings;
 	}
 
 	@Override public String getFullTitle()
 	{
-	    return strings.partitionTitle(part);
+
+	switch(part.type())
+	{
+	case Partition.ROOT:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRoot");
+	case Partition.USER_HOME:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemUserHome");
+	case Partition.REGULAR:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRegular") + " " + part.name();
+	case Partition.REMOTE:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemote") + " " + part.name();
+	case Partition.REMOVABLE:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemovable") + " " + part.name();
+	default:
+	    return part.name();
 	}
+    }
 
 	@Override public String getBriefTitle()
 	{
@@ -69,15 +85,15 @@ class PartitionsPopupControl implements PartitionsPopup.Control
 	StorageDevice device() { return device; }
     }
 
+    private Luwrain luwrain;
     private Hardware hardware;
-private Strings strings;
 
     PartitionsPopupControl(Luwrain luwrain, Hardware hardware)
 {
     NullCheck.notNull(luwrain, "luwrain");
     NullCheck.notNull(hardware, "hardware");
+    this.luwrain = luwrain;
     this.hardware = hardware;
-    this.strings = (Strings)luwrain.i18n().getStrings("luwrain.environment");
 }
 
     @Override public PartitionsPopup.Partition[] getPartitions()
@@ -87,7 +103,7 @@ private Strings strings;
 	    return new PartWrapper[0];
 	final PartWrapper[] res = new PartWrapper[parts.length];
 	for(int i = 0;i < parts.length;++i)
-	    res[i] = new PartWrapper(parts[i], strings);
+	    res[i] = new PartWrapper(luwrain, parts[i]);
 	return res;
     }
 

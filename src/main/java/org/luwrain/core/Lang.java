@@ -44,4 +44,8 @@ public interface Lang
      * @return The name of the given character
      */
     String hasSpecialNameOfChar(char ch);
+
+    //FIXME:
+    String pastTimeBrief(java.util.Date date);
+
 }

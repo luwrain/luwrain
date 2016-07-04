@@ -24,7 +24,6 @@ abstract class EnvironmentBase implements EventConsumer
     protected final EventQueue eventQueue = new EventQueue();
     protected Speech speech = null;
     protected final Braille braille = new Braille();
-    protected Strings strings;
     private RegionContent clipboard = null;
     protected final SoundsPlayer sounds = new SoundsPlayer();
     protected HashMap<String, Path> paths;
@@ -35,6 +34,7 @@ abstract class EnvironmentBase implements EventConsumer
     //True means the event is processed and there is no need to process it again;
     abstract protected boolean onEvent(Event event);
     abstract protected void introduce(EventLoopStopCondition stopCondition);
+    abstract Luwrain getObjForEnvironment();
 
     protected void eventLoop(EventLoopStopCondition stopCondition)
     {
@@ -71,7 +71,7 @@ abstract class EnvironmentBase implements EventConsumer
     {
 	speech.silence(); 
 	playSound(Sounds.NO_APPLICATIONS);
-	speech.speak(strings.noLaunchedApps(), 0, 0);
+	speech.speak(getObjForEnvironment().i18n().getStaticStr("NoLaunchedApps"), 0, 0);
     }
 
     protected void areaInaccessibleMessage()
@@ -134,11 +134,6 @@ abstract class EnvironmentBase implements EventConsumer
     String getLang()
     {
 	return lang;
-    }
-
-    Strings strings()
-    {
-	return strings;
     }
 
     RegionContent getClipboard()
