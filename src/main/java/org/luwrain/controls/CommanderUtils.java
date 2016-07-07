@@ -75,7 +75,7 @@ public class CommanderUtils
 	{
 	    final String name = entry.baseName();
 	    if (entry.type() == Type.PARENT)
-		environment.hint(environment.staticStr(LangStatic.COMMANDER_PARENT_DIRECTORY)); else
+		environment.hint(environment.getStaticStr("CommanderParentDirectory")); else
 		if (name.trim().isEmpty())
 		    environment.hint(Hints.EMPTY_LINE); else
 		    environment.say(entry.baseName());
@@ -85,7 +85,7 @@ public class CommanderUtils
 	{
 	    if (entry.type() == Type.PARENT)
 	    {
-		environment.hint(environment.staticStr(LangStatic.COMMANDER_PARENT_DIRECTORY));
+		environment.hint(environment.getStaticStr("CommanderParentDirectory"));
 		return;
 	    }
 	    final String name = entry.baseName();
@@ -99,18 +99,18 @@ public class CommanderUtils
 	    switch(entry.type())
 	    {
 	    case DIR:
-		res += (" " + environment.staticStr(LangStatic.COMMANDER_DIRECTORY));
+		res += (" " + environment.getStaticStr("CommanderDirectory"));
 		break;
 	    case SYMLINK:
 	    case SYMLINK_DIR:
-		res += (" " + environment.staticStr(LangStatic.COMMANDER_SYMLINK));
+		res += (" " + environment.getStaticStr("CommanderSymlink"));
 		break;
 	    case SPECIAL:
-		res += (" " + environment.staticStr(LangStatic.COMMANDER_SPECIAL));
+		res += (" " + environment.getStaticStr("CommanderSpecial"));
 		break;
 	    }
 	    if (entry.marked())
-		res = environment.staticStr(LangStatic.COMMANDER_SELECTED) + " " + res;
+		res = environment.getStaticStr("CommanderSelected") + " " + res;
 	    environment.say(res);
 	}
 

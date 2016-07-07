@@ -58,6 +58,16 @@ class I18nImpl implements I18n, I18nExtension
 	return value != null?value:"";
     }
 
+    @Override public String getNumberStr(int count, String entities)
+    {
+	NullCheck.notNull(entities, "entities");
+	if (chosenLang == null)
+	    return "#NO CHOSEN LANGUAGE#";
+	final String value = chosenLang.getNumberStr(count, entities);
+	return value != null?value:"";
+
+    }
+
     @Override public String staticStr(LangStatic id)
     {
 	NullCheck.notNull(id, "id");

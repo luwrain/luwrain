@@ -35,6 +35,7 @@ public interface ControlEnvironment
 int getAreaVisibleHeight(Area area);
     void popup(Popup popupObj);
     String staticStr(LangStatic id);
+    String getStaticStr(String id);
     void playSound(int code);
     UniRefInfo getUniRefInfo(String uniRef);
 }

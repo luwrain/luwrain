@@ -146,6 +146,6 @@ abstract class EnvironmentBase implements EventConsumer
     void setClipboard(RegionContent newClipboard)
     {
 	NullCheck.notNull(newClipboard, "newClipboard");
-	this.clipboard = clipboard;
+	this.clipboard = newClipboard;
     }
 }

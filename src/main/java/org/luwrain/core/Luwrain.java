@@ -18,8 +18,6 @@ package org.luwrain.core;
 
 import java.util.*;
 
-//import org.luwrain.os.OperatingSystem;
-import org.luwrain.hardware.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.speech.Channel;
@@ -286,6 +284,18 @@ public final class Luwrain implements EventConsumer
     {
 	environment.announceActiveAreaIface();
     }
+
+    public void setClipboard(RegionContent content)
+    {
+	NullCheck.notNull(content, "content");
+	environment.setClipboard(content);
+    }
+
+    public RegionContent getClipboard()
+    {
+	return environment.getClipboard();
+    }
+
 
 
     //Doesn't produce any announcement

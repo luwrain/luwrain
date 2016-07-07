@@ -30,7 +30,15 @@ public class PropertiesProxy
 								final String value = prop.getProperty(prefix + name);
 								if (value == null)
 								    return "#No value: " + prefix + name + "#";
+								if (value.indexOf("$") < 0)
 								return value.trim();
+								final StringBuilder b = new StringBuilder();
+								for(int i = 0;i < value.length();++i)
+								    if (value.charAt(i) != '$' || i + 1 >= value.length() ||
+									value.charAt(i + 1) < '0' || value.charAt(i + 1) > '9')
+									b.append(value.charAt(i)); else
+									b.append(args[value.charAt(++i) - '1'].toString());
+								return new String(b).toString();
 							    });
     }
 }

@@ -42,7 +42,7 @@ public class CommanderArea extends ListArea
 
     static public class Entry
     {
-	enum Type {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
+	public enum Type {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
 
 	protected Path path;
 	protected Type type;
@@ -498,7 +498,7 @@ protected CommanderAppearance commanderAppearance;
 
     @Override protected String noContentStr()
     {
-	return environment.staticStr(LangStatic.COMMANDER_NO_CONTENT);
+	return environment.getStaticStr("CommanderNoContent");
     }
 
     protected void notifyNewContent()

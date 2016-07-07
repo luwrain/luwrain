@@ -26,4 +26,5 @@ public interface I18n
     String getCommandTitle(String command);
     Object getStrings(String component);
     String getPastTimeBrief(Date date);
+    String getNumberStr(int count, String entities);
 }

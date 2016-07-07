@@ -47,5 +47,6 @@ public interface Lang
 
     //FIXME:
     String pastTimeBrief(java.util.Date date);
+    String getNumberStr(int count, String entities);
 
 }

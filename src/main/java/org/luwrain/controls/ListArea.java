@@ -388,7 +388,7 @@ public interface HotPointMoves
     @Override public String getLine(int index)
     {
 	if (isEmpty())
-	    return index == 0?environment.staticStr(LangStatic.LIST_NO_CONTENT):"";
+	    return index == 0?environment.getStaticStr("ListNoContent"):"";
 	final int modelIndex = index - hotPointMoves.numberOfEmptyLinesTop();
 	if (modelIndex < 0 || modelIndex >= model.getItemCount())
 	    return "";
@@ -872,7 +872,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 
     protected String noContentStr()
     {
-	return environment.staticStr(LangStatic.LIST_NO_CONTENT);
+	return environment.getStaticStr("ListNoContent");
     }
 
     protected void announceChar(String  line, int pos)
