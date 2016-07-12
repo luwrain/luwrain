@@ -69,7 +69,7 @@ class SpeechControlPanelFactory implements Factory
 	    final Settings.SpeechChannelBase settings = Settings.createSpeechChannelBase(registry, path);
 	    settings.setType(res.toString());
 	    settings.setName(luwrain.i18n().getStaticStr("CpNewSpeechChannelName") + " " + num);
-	    Return true;
+	    return true;
     }
 
     static private Element[] readChannelsData(Element parent,
