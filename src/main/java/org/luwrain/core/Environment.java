@@ -52,20 +52,20 @@ class Environment extends EnvironmentAreas
     Settings.UserInterface uiSettings;
 
     Environment(String[] cmdLine, Registry registry,
-		OperatingSystem os, Speech speech,
-		Interaction interaction, HashMap<String, Path> paths, String lang)
+		OperatingSystem os, Interaction interaction, 
+		HashMap<String, Path> paths, String lang)
     {
 	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(os, "os");
-	NullCheck.notNull(speech, "speech");
+	//	NullCheck.notNull(speech, "speech");
 	NullCheck.notNull(interaction, "interaction");
 	NullCheck.notNull(paths, "paths");
 	NullCheck.notNull(lang, "lang");
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	this.os = os;
-	this.speech = speech;
+	//	this.speech = speech;
 	this.interaction = interaction;
 	this.paths = paths;
 	this.lang = lang;
@@ -94,6 +94,7 @@ class Environment extends EnvironmentAreas
 
     private void init()
     {
+	speech = new Speech(new CmdLine(cmdLine), registry);
 	desktop.onLaunch(interfaces.requestNew(desktop, this));
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
@@ -102,7 +103,8 @@ class Environment extends EnvironmentAreas
 	extensions.load((ext)->interfaces.requestNew(ext, this));
 	initI18n();
 	initObjects();
-	speech.init();
+	if (!speech.init())
+	    Log.warning("core", "unable to initialize speech core, very likely LUWRAIN will be silent");
 	braille.init(registry, os.getBraille(), this);
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();

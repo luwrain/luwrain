@@ -47,7 +47,7 @@ class UniRefList
 	final LinkedList<UniRefInfo> res = new LinkedList<UniRefInfo>();
 	for(String v: values)
 	{
-	    final String s = check.stringAny(RegistryPath.join(registryKeys.desktopUniRefs(), v), "");
+	    final String s = check.stringAny(Registry.join(registryKeys.desktopUniRefs(), v), "");
 	    if (s.isEmpty())
 		continue;
 	    final UniRefInfo uniRef = luwrain.getUniRefInfo(s);
@@ -103,13 +103,13 @@ class UniRefList
 	final String[] values = registry.getValues(registryKeys.desktopUniRefs());
 	if (values != null)
 	    for(String v: values)
-		registry.deleteValue(RegistryPath.join(registryKeys.desktopUniRefs(), v));
+		registry.deleteValue(Registry.join(registryKeys.desktopUniRefs(), v));
 	for(int i = 0;i < uniRefs.length;++i)
 	{
 	    String name = "" + (i + 1);
 	    while (name.length() < 6)
 		name = "0" + name;
-	    registry.setString(RegistryPath.join(registryKeys.desktopUniRefs(), name), uniRefs[i].value());
+	    registry.setString(Registry.join(registryKeys.desktopUniRefs(), name), uniRefs[i].value());
 	}
     }
 }

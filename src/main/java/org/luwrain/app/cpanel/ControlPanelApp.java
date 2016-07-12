@@ -82,7 +82,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 		    switch (event.getCode())
 		    {
 		    case ACTION:
-			return true;
+			return onTreeAction(event);
 		    case CLOSE:
 			closeApp();
 			return true;
@@ -91,17 +91,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 		}
 		@Override public Action[] getAreaActions()
 		{
-		    final Object selected = selected();
-		    if (selected == null || !(selected instanceof Section))
-			return new Action[0];
-		    final Section sect = (Section)selected;
-		    final Set<Section.Flags> flags = sect.getSectionFlags();
-		    final LinkedList<Action> res = new LinkedList<Action>();
-		    if (flags.contains(Section.Flags.HAS_INSERT))
-			res.add(new Action("insert", "Добавить"));
-		    if (flags.contains(Section.Flags.HAS_DELETE))
-			res.add(new Action("delete", "Удалить"));
-		    return res.toArray(new Action[res.size()]);
+		    return getTreeActions();
 		}
 	    };
     }
@@ -110,6 +100,26 @@ public class ControlPanelApp implements Application, MonoApp, Actions
     {
 	//FIXME:
     sectionsArea.refresh();
+    }
+
+    private Action[] getTreeActions()
+    {
+		    final Object selected = sectionsArea.selected();
+		    if (selected == null || !(selected instanceof Section))
+			return new Action[0];
+		    final Section sect = (Section)selected;
+		    final Action[] res = sect.getSectionActions();
+		    return res != null?res:new Action[0];
+    }
+
+    private boolean onTreeAction(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+		    final Object selected = sectionsArea.selected();
+		    if (selected == null || !(selected instanceof Section))
+			return false;
+		    final Section sect = (Section)selected;
+		    return sect.onSectionActionEvent(luwrain, sectionsArea, event);
     }
 
     private  boolean openSection(Object obj)

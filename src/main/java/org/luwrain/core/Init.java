@@ -22,7 +22,14 @@ import java.nio.file.*;
 
 import org.luwrain.os.OperatingSystem;
 
-class Init
+/**
+ * The main class to launch LUWRAIN. All basic initialization is
+ * implemented here (interaction, registry, operating system etc),
+ * including first processing of command line options. This class
+ * contains {@code main()} static method which should be used to launch
+ * Java virtual machine with LUWRAIN.
+ */
+public class Init
 {
     static private final String  PREFIX_INTERACTION = "--interaction=";
     static private final String  PREFIX_REGISTRY_DIR = "--registry-dir=";
@@ -38,22 +45,8 @@ class Init
     private Registry registry;
     private Interaction interaction;
     private OperatingSystem os;
-    private Speech speech;
     private final HashMap<String, Path> paths = new HashMap<String, Path>();
     private String lang;
-
-    private void start(String[] args)
-    {
-	NullCheck.notNull(args, "args");
-	this.cmdLine = args;
-	Log.debug("init", "command line has " + cmdLine.length + " arguments:");
-	for(String s: cmdLine)
-	    Log.debug("init", s);
-	if (init())
-	    new Environment(cmdLine, registry, os, speech, interaction, paths, lang).run();
-	interaction.close();
-	System.exit(0);
-    }
 
     private boolean init()
     {
@@ -63,21 +56,11 @@ class Init
 	    return false;
 	if (!initOs())
 	    return false;
-	speech = new Speech(os, new CmdLineUtils(cmdLine), registry);
-	/*
-	if (!speech.init())
-	{
-	    Log.fatal("init", "unable to initialize speech output, usually it means that there is no default channel");
-	    return false;
-	}
-	*/
-
-	//Interaction
 	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();
 	interactionParams.loadFromRegistry(registry);
 	Object o;
 	try {
-	final String interactionClass = getFirstCmdLineOption(PREFIX_INTERACTION);
+	    final String interactionClass = getFirstCmdLineOption(PREFIX_INTERACTION);
 	    if (interactionClass != null && !interactionClass.isEmpty())
 		o = Class.forName(interactionClass).newInstance(); else
 		o = Class.forName(DEFAULT_INTERACTION_CLASS).newInstance();
@@ -100,7 +83,6 @@ class Init
 	    Log.fatal("init", "interaction initialization failed");
 	    return false;
 	}
-
 	return true;
     }
 
@@ -201,6 +183,29 @@ class Init
 	return true;
     }
 
+    private void start(String[] args)
+    {
+	NullCheck.notNull(args, "args");
+	this.cmdLine = args;
+	Log.debug("init", "command line has " + cmdLine.length + " arguments:");
+	for(String s: cmdLine)
+	    Log.debug("init", s);
+	if (init())
+	    new Environment(cmdLine, registry, os, interaction, paths, lang).run();
+	interaction.close();
+	System.exit(0);
+    }
+
+    /**
+     * The main entry point to launch LUWRAIN.
+     *
+     * @param args The command line arguments mentioned by user on virtual machine launch
+     */
+    static public void main(String[] args)
+    {                    
+	new Init().start(args);
+    }
+
     private String getFirstCmdLineOption(String prefix)
     {
 	NullCheck.notNull(prefix, "prefix");
@@ -216,10 +221,5 @@ class Init
 		return s.substring(prefix.length());
 	}
 	return null;
-    }
-
-    static public void main(String[] args)
-    {                    
-	new Init().start(args);
     }
 }

@@ -22,7 +22,6 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
-import org.luwrain.util.RegistryPath;
 
 class HotKeys extends ListArea implements SectionArea
 {
@@ -100,7 +99,7 @@ class HotKeys extends ListArea implements SectionArea
 	{
 	    if (d.trim().isEmpty())
 		continue;
-	    final String path = RegistryPath.join(registryKeys.globalKeys(), d);
+	    final String path = Registry.join(registryKeys.globalKeys(), d);
 	    res.add(new Item(Settings.createHotKey(registry, path), d));
 	}
 final Item[] toSort = res.toArray(new Item[res.size()]);

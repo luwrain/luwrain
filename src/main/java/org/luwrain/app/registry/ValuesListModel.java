@@ -20,7 +20,6 @@ import java.util.*;
 
 import org.luwrain.controls.ListArea;
 import org.luwrain.core.Registry;
-import org.luwrain.util.RegistryPath;
 
 class ValuesListModel implements ListArea.Model
 {
@@ -80,7 +79,7 @@ class ValuesListModel implements ListArea.Model
 	    v.type = registry.getTypeOf(s);
 	    v.name = s;
 	    v.parentDir = dirPath;
-	    final String valuePath = RegistryPath.join(dirPath, s);
+	    final String valuePath = Registry.join(dirPath, s);
 	    switch(v.type)
 	    {
 	    case Registry.INTEGER:

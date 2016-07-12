@@ -179,6 +179,9 @@ public interface Braille
     public interface SpeechChannelBase
     {
 	String getType(String defValue);
+	String getName(String defValue);
+	void setType(String value);
+	void setName(String value);
     }
 
     static public InteractionParams createInteractionParams(Registry registry)

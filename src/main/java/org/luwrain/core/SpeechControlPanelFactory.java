@@ -3,8 +3,9 @@ package org.luwrain.core;
 
 import java.util.*;
 
+import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
-import org.luwrain.util.*;
+import org.luwrain.popups.Popups;
 
 class SpeechControlPanelFactory implements Factory
 {
@@ -40,11 +41,35 @@ class SpeechControlPanelFactory implements Factory
     {
 	NullCheck.notNull(el, "el");
 	if (el.equals(channelsElement))
-	    return new SimpleSection(channelsElement, "Речевые каналы");
+	    return new SimpleSection(channelsElement, luwrain.i18n().getStaticStr("CpSpeechChannels"), null,
+				     new Action[]{new Action("add-speech-channel", luwrain.i18n().getStaticStr("CpAddNewSpeechChannel"))}, (luwrain, area, event)->onActionEvent(luwrain, area, event));
 	if (!(el instanceof ChannelElement))
 	return null;
 	final ChannelElement c = (ChannelElement)el;
 	return speech.getSettingsSection(c.type(), el, c.path());
+    }
+
+    private boolean onActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(event, "event");
+	if (!ActionEvent.isAction(event, "add-speech-channel"))
+	return false;
+	final String[] types = "voiceman:command:emacspeak".split(":", -1);
+	Arrays.sort(types);
+	    final Object res = Popups.fixedList(luwrain, luwrain.i18n().getStaticStr("CpAddNewSpeechChannelPopupName"), types);
+	    if (res == null)
+		return true;
+	    final RegistryKeys keys = new RegistryKeys();
+	    final Registry registry = luwrain.getRegistry();
+	    final int num = Registry.nextFreeNum(registry, keys.speechChannels());
+	    final String path = Registry.join(keys.speechChannels(), "" + num); 
+	    registry.addDirectory(path);
+	    final Settings.SpeechChannelBase settings = Settings.createSpeechChannelBase(registry, path);
+	    settings.setType(res.toString());
+	    settings.setName(luwrain.i18n().getStaticStr("CpNewSpeechChannelName") + " " + num);
+	    Return true;
     }
 
     static private Element[] readChannelsData(Element parent,
@@ -55,7 +80,7 @@ class SpeechControlPanelFactory implements Factory
 	final String[] dirs = registry.getDirectories(path);
 	for(String s: dirs)
 	{
-	    final String dir = RegistryPath.join(path, s);
+	    final String dir = Registry.join(path, s);
 	    final Settings.SpeechChannelBase channelBase = Settings.createSpeechChannelBase(registry, dir);
 	    final String type = channelBase.getType("");
 	    if (type.isEmpty() || !speech.hasFactoryForType(type))

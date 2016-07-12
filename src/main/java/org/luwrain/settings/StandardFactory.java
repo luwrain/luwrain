@@ -15,7 +15,7 @@ public class StandardFactory implements Factory
     static private final Element mainMenu = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "MainMenu");
     static private final Element sysInfo = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "SysInfo");
     static private final Element speechParams = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechParams");
-    static private final Element speechChannels = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechChannels");
+    //    static private final Element speechChannels = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechChannels");
     static private final Element speechCurrent = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechCurrent");
 
     static private final Element soundsList = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundsList");
@@ -46,7 +46,7 @@ public class StandardFactory implements Factory
 	    StandardElements.WORKERS,
 	    speechParams,
 	    speechCurrent,
-	    speechChannels,
+	    //	    speechChannels,
 	};
     }
 
@@ -98,8 +98,10 @@ public class StandardFactory implements Factory
 		    return new SimpleSection(speechParams, "Основные параметры", (controlPanel)->SpeechParams.create(controlPanel));
 		if (el.equals(speechCurrent))
 		    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel));
+		/*
 		if (el.equals(speechChannels))
 		    return new SimpleSection(speechChannels, "Настройка каналов");
+		*/
 		if (el.equals(soundsList))
 		    return new SimpleSection(soundsList, "Звуки системных событий", (controlPanel)->SoundsList.create(controlPanel));
 		if (el.equals(soundSchemes))

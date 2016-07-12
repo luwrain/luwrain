@@ -19,6 +19,7 @@ package org.luwrain.cpanel;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 
 public class SimpleSection implements Section
 {
@@ -27,10 +28,16 @@ public class SimpleSection implements Section
 	SectionArea newSectionArea(ControlPanel controlPanel);
     }
 
+public interface ActionHandler
+{
+    boolean onSectionActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event);
+}
+
     protected Element element;
-    protected AreaFactory areaFactory = null;
     protected String name;
-    protected Set<Section.Flags> flags = EnumSet.noneOf(Section.Flags.class);
+    protected AreaFactory areaFactory = null;
+    protected ActionHandler actionHandler = null;
+    protected Action[] actions = new Action[0];
 
     private SectionArea area = null;
 
@@ -53,26 +60,16 @@ public class SimpleSection implements Section
     }
 
     public SimpleSection(Element element, String name,
-			 AreaFactory areaFactory, Set<Section.Flags> flags)
+			 AreaFactory areaFactory, Action[] actions, ActionHandler actionHandler)
     {
 	NullCheck.notNull(element, "element");
 	NullCheck.notNull(name, "name");
-	NullCheck.notNull(flags, "flags");
+	NullCheck.notNullItems(actions, "actions");
 	this.element = element;
 	this.name = name;
 	this.areaFactory = areaFactory;
-	this.flags = flags;
-    }
-
-    public void setAreaFactory(AreaFactory areaFactory)
-    {
-	this.areaFactory = areaFactory;
-    }
-
-    public void setSectionFlags(Set<Section.Flags> flags)
-    {
-	NullCheck.notNull(flags, "flags");
-	this.flags = flags;
+	this.actions = actions;
+	this.actionHandler = actionHandler;
     }
 
     @Override public SectionArea getSectionArea(ControlPanel controlPanel)
@@ -91,29 +88,19 @@ public class SimpleSection implements Section
 	return element;
     }
 
-    @Override public boolean canCloseSection(ControlPanel controlPanel)
+    @Override public Action[] getSectionActions()
     {
-	return true;
+	return actions;
     }
 
-    @Override public boolean onTreeInsert(ControlPanel controlPanel)
+    @Override public boolean onSectionActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event)
     {
-	return false;
-    }
-
-    @Override public boolean onTreeDelete(ControlPanel controlPanel)
-    {
-	return false;
-    }
-
-    @Override public boolean isSectionEnabled()
-    {
-	return true;
-    }
-
-    @Override public Set<Flags> getSectionFlags()
-    {
-	return flags;
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(event, "event");
+	if (actionHandler == null)
+	    return false;
+	return actionHandler.onSectionActionEvent(luwrain, area, event);
     }
 
     @Override public String toString()

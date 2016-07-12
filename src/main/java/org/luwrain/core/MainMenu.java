@@ -202,7 +202,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	final LinkedList<Section> sects = new LinkedList<Section>();
 	for(String s: dirs)
 	{
-	    final String path = RegistryPath.join(keys.mainMenuSections(), s);
+	    final String path = Registry.join(keys.mainMenuSections(), s);
 	    final Settings.MainMenuSection proxy = Settings.createMainMenuSection(registry, path);
 	    final Section sect = loadSection(luwrain, proxy);
 	    if (sect != null)

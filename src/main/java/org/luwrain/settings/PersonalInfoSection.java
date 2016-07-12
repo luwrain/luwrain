@@ -22,9 +22,4 @@ class PersonalInfoSection extends EmptySection
     {
 	return "Персональная информация";
     }
-
-    @Override public boolean canCloseSection(ControlPanel controlPanel)
-    {
-	return false;
-    }
 }

@@ -4,8 +4,6 @@ package org.luwrain.core;
 import java.util.*;
 
 import org.luwrain.speech.*;
-import org.luwrain.os.*;
-import org.luwrain.util.RegistryPath;
 
 class Speech
 {
@@ -15,20 +13,16 @@ class Speech
     private final HashMap<String, Factory> factories = new HashMap<String, Factory>();
     private final HashMap<String, Channel> channels = new HashMap<String, Channel>();
     private Channel defaultChannel = null;
-    private OperatingSystem os;
-    private CmdLineUtils cmdLine;
+    private CmdLine cmdLine;
     private Registry registry;
     private Settings.SpeechParams settings;
     private int pitch = 50;
     private int rate = 50;
 
-    Speech(OperatingSystem os,
-	   CmdLineUtils cmdLine, Registry registry)
+    Speech(CmdLine cmdLine, Registry registry)
     {
-	NullCheck.notNull(os, "os");
 	NullCheck.notNull(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
-	this.os = os;
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	settings = Settings.createSpeechParams(registry);
@@ -221,7 +215,7 @@ class Speech
 	final String[] dirs = registry.getDirectories(path);
 	for(String s: dirs)
 	{
-	    final String dir = RegistryPath.join(path, s);
+	    final String dir = Registry.join(path, s);
 	    Log.debug("core", "trying the channel from " + dir);
 	    final Settings.SpeechChannelBase channelBase = Settings.createSpeechChannelBase(registry, dir);
 	    final String type = channelBase.getType("");

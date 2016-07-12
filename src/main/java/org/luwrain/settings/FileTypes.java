@@ -22,7 +22,6 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
-import org.luwrain.util.RegistryPath;
 
 class FileTypes extends ListArea implements SectionArea
 {
@@ -102,7 +101,7 @@ class FileTypes extends ListArea implements SectionArea
 	final LinkedList<Item> res = new LinkedList<Item>();
 	for(String s: registry.getValues(registryKeys.fileTypes()))
 	{
-	    final String path = RegistryPath.join(registryKeys.fileTypes(), s);
+	    final String path = Registry.join(registryKeys.fileTypes(), s);
 	    if (s.trim().isEmpty() || registry.getTypeOf(path) != Registry.STRING)
 		continue;
 	    final String value = registry.getString(path);

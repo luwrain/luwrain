@@ -17,20 +17,14 @@
 package org.luwrain.cpanel;
 
 import java.util.*;
+
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 
 public interface Section
 {
-    public enum Flags {
-	HAS_INSERT,
-	HAS_DELETE,
-    };
-
     SectionArea getSectionArea(ControlPanel controlPanel);
     Element getElement();
-    boolean canCloseSection(ControlPanel controlPanel);
-    boolean onTreeInsert(ControlPanel controlPanel);
-    boolean onTreeDelete(ControlPanel controlPanel);
-    boolean isSectionEnabled();
-    Set<Flags> getSectionFlags();
+    Action[] getSectionActions();
+    boolean onSectionActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event);
 }

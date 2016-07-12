@@ -22,7 +22,6 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
-import org.luwrain.util.RegistryPath;
 
 class SysInfo extends SimpleArea implements SectionArea
 {

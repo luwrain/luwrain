@@ -1,5 +1,6 @@
 /*
    Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2015-2016 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of the LUWRAIN.
 
@@ -14,32 +15,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.cpanel;
+package org.luwrain.speech;
 
-import java.util.*;
-
-import org.luwrain.core.*;
-import org.luwrain.core.events.*;
-
-public class EmptySection implements Section
+public interface Voice
 {
-    @Override public SectionArea getSectionArea(ControlPanel controlPanel)
-    {
-	return null;
-    }
-
-    @Override public Element getElement()
-    {
-	return null;
-    }
-
-    @Override public Action[] getSectionActions()
-    {
-	return new Action[0];
-    }
-
-    @Override public boolean onSectionActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event)
-    {
-	return false;
-    }
+    boolean isMale();
+    String getVoiceName();
 }
