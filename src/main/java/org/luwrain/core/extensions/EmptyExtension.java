@@ -59,6 +59,11 @@ public class EmptyExtension implements Extension
 	return new UniRefProc[0];
     }
 
+    @Override public org.luwrain.speech.Factory[] getSpeechFactories(Luwrain luwrain)
+    {
+	return new org.luwrain.speech.Factory[0];
+    }
+
     @Override public void close()
     {
     }

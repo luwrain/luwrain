@@ -105,6 +105,11 @@ public class RegistryKeys
 	return getProperty("core.Speech");
     }
 
+    public String speechChannels()
+    {
+	return "/org/luwrain/speech/channels";
+    }
+
     public String speechCharsToSkip()
     {
 	return getProperty("speech.CharsToSkip");

@@ -100,6 +100,7 @@ public class Manager
 	    loadedExt.sharedObjects = getSharedObjects(ext, iface);
 	    loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
 	    loadedExt.controlPanelFactories = getControlPanelFactories(ext, iface);
+	    loadedExt.speechFactories = getSpeechFactories(ext, iface);
 	    res.add(loadedExt);
 	}
 	extensions = res.toArray(new LoadedExtension[res.size()]);
@@ -197,6 +198,19 @@ public class Manager
 	}
     }
 
+    private org.luwrain.speech.Factory[] getSpeechFactories(Extension ext, Luwrain luwrain)
+    {
+	try {
+	    final org.luwrain.speech.Factory[] res = ext.getSpeechFactories(luwrain);
+	    return res != null?res:new org.luwrain.speech.Factory[0];
+	}
+	catch (Exception ee)
+	{
+	    Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of speech factories:" + ee.getMessage());
+	    ee.printStackTrace();
+	    return new org.luwrain.speech.Factory[0];
+	}
+    }
 
     private String[] getExtensionsList()
     {

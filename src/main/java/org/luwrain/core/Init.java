@@ -64,11 +64,13 @@ class Init
 	if (!initOs())
 	    return false;
 	speech = new Speech(os, new CmdLineUtils(cmdLine), registry);
+	/*
 	if (!speech.init())
 	{
 	    Log.fatal("init", "unable to initialize speech output, usually it means that there is no default channel");
 	    return false;
 	}
+	*/
 
 	//Interaction
 	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();

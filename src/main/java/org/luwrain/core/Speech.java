@@ -12,7 +12,8 @@ class Speech
     static private final String SPEECH_PREFIX = "--speech=";
     static private final String ADD_SPEECH_PREFIX = "--add-speech=";
 
-    private final Vector<Channel> channels = new Vector<Channel>();
+    private final HashMap<String, Factory> factories = new HashMap<String, Factory>();
+    private final HashMap<String, Channel> channels = new HashMap<String, Channel>();
     private Channel defaultChannel = null;
     private OperatingSystem os;
     private CmdLineUtils cmdLine;
@@ -24,7 +25,6 @@ class Speech
     Speech(OperatingSystem os,
 	   CmdLineUtils cmdLine, Registry registry)
     {
-
 	NullCheck.notNull(os, "os");
 	NullCheck.notNull(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
@@ -37,36 +37,45 @@ class Speech
     boolean init()
     {
 	final String speechArg = cmdLine.getFirstArg(SPEECH_PREFIX);
-	if (speechArg != null)
+	if (speechArg != null && !speechArg.isEmpty())
 	{
 	    Log.debug("core", "trying to initialize speech channel for main speech output with arguments line \'" + speechArg + "\', skipping all channels in the registry");
 	    final Channel main = loadChannelByStr(speechArg);
 	    if (main == null)
 	    {
-		Log.error("core", "unable to initialize main speech channel with arguments line \'" + speechArg + "\'");
+		Log.error("core", "unable to initialize default speech channel with arguments line \'" + speechArg + "\'");
 		return false;
 	    }
+	    channels.put(main.getChannelName(), main);
 	    final String[] additional = cmdLine.getArgs(ADD_SPEECH_PREFIX);
 	    final LinkedList<Channel> res = new LinkedList<Channel>();
-	    channels.add(main);
 	    for(String s: additional)
 	    {
 		Log.debug("core", "initializing addition speech channel with arguments line \'" + s + "\'");
 		final Channel c = loadChannelByStr(s);
 		if (c != null)
-channels.add(c);
+		{
+		    final String name = c.getChannelName();
+		    if (channels.containsKey(name))
+		    {
+			Log.error("core", "speech channel name \'" + name + "\' used more than ones");
+			return false;
+		    }
+		    channels.put(name, c);
+		}
 	    }
 	    defaultChannel = main;
 	} else
 	{
-	loadRegistryChannels();
-	if (!chooseDefaultChannel())
-	{
-	    Log.error("core", "unable to choose the default channel");
-	    return false;
+	    //from registry
+	    loadRegistryChannels();
+	    if (!chooseDefaultChannel())
+	    {
+		Log.error("core", "unable to choose the default speech channel");
+		return false;
+	    }
 	}
-	}
-	Log.debug("core", "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
+	Log.info("core", "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
 	pitch = settings.getPitch(50);
 	rate = settings.getRate(50);
 	if (pitch < 0)
@@ -82,103 +91,27 @@ channels.add(c);
 	return true;
     }
 
-    private void loadRegistryChannels()
-    {
-	Log.debug("core", "loading registry speech channels");
-	final String path = "/org/luwrain/speech/channels";
-	final String[] dirs = registry.getDirectories(path);
-	for(String s: dirs)
-	{
-	    final String dir = RegistryPath.join(path, s);
-	    Log.debug("core", "trying the channel from " + dir);
-	    final Settings.SpeechChannelBase channelBase = Settings.createSpeechChannelBase(registry, dir);
-	    final String type = channelBase.getType("");
-	    Log.debug("core", "channel\'s type is \'" + type + "\'");
-	    if (type.isEmpty())
-	    {
-		Log.warning("core", "no type information in speech channel registry directory at " + dir);
-		continue;
-	    }
-	    final Channel channel = os.loadSpeechChannel(type);
-	    if (channel == null)
-	    {
-		Log.error("core", "the OS unable to load a speech channel of type \'" + type + "\'");
-		continue;
-	    }
-	    if (!channel.initByRegistry(registry, dir))
-	    {
-		Log.error("core", "speech channel " + channel.getClass().getName() + " loaded from the registry directory " + s + " refused to be initialized");
-		continue;
-	    }
-	    channels.add(channel);
-	    Log.info("core", "registry speech channel " + channel.getChannelName() + "(" + dir + ") successfully loaded");
-	}
-    }
-
-    private Channel loadChannelByStr(String arg)
-    {
-	Log.debug("core", "trying to prepare new speech channel with complete arguments line \'" + arg + "\'");
-	if (arg.isEmpty())
-	{
-	    Log.warning("core", "an empty value of speech channel parameters in command line option, skipping");
-	    return null;
-	}
-	final String[] params = arg.split(":", -1);
-	final String type = params[0];
-	Log.debug("core", "asking the operating system to prepare new speech channel of type \'" + type + "\'");
-	final Channel res = os.loadSpeechChannel(params[0]);
-	if (res == null)
-	{
-	    Log.error("core", "the operating system is unable to load new speech channel of type \'" + type + "\'");
-	    return null;
-	}
-	Log.debug("core", "initializing the newly created channel");
-	if (!res.initByArgs(params.length <= 1?new String[0]:Arrays.copyOfRange(params, 1, params.length)))
-	{
-	    Log.error("core", "newly created channel of type \'" + type + "\' refuses to initialize, complete arguments line is \'" + arg + "\'");
-	    return null;
-	}
-	    return res;
-    }
-
-    private boolean chooseDefaultChannel()
-    {
-	Channel any = null;
-	for(Channel c: channels)
-	{
-	    if (!c.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_SPEAKERS))
-		continue;
-	    any = c;
-	    if (c.isDefault())
-	    {
-		defaultChannel = c;
-		return true;
-	    }
-	}
-	if (any == null)
-	{
-	    Log.error("core", "unable to select a default speech channel capable of synthesizing to speakers");
-	    return false;
-	}
-	defaultChannel = any;
-	return true;
-    }
-
     void speak(String text, int relPitch, int relRate)
     {
+	NullCheck.notNull(text, "text");
+	if (defaultChannel == null)
+	    return;
 	defaultChannel.silence();
-	if (text != null)
-	    defaultChannel.speak(text, null, relPitch, relRate);
+	defaultChannel.speak(text, null, relPitch, relRate);
     }
 
     void speakLetter(char letter, int relPitch, int relRate)
     {
+	if (defaultChannel == null)
+	    return;
 	defaultChannel.silence();
 	defaultChannel.speakLetter(letter, null, relPitch, relRate);
     }
 
     void silence()
     {
+	if (defaultChannel == null)
+	    return;
 	defaultChannel.silence();
     }
 
@@ -224,14 +157,14 @@ channels.add(c);
 	return false;
     }
 
-    //Never returns default channe;
+    //Never returns default channe
     Channel[] getChannelsByCond(Set<Channel.Features> cond)
     {
 	NullCheck.notNull(cond, "cond");
 	final LinkedList<Channel> res = new LinkedList<Channel>();
-	for(Channel c: channels)
-	    if (c != defaultChannel && c.getFeatures().containsAll(cond))
-		res.add(c);
+	for(Map.Entry<String, Channel> e: channels.entrySet())
+	    if (e.getValue() != defaultChannel && e.getValue().getFeatures().containsAll(cond))
+		res.add(e.getValue());
 	return res.toArray(new Channel[res.size()]);
     }
 
@@ -245,12 +178,164 @@ channels.add(c);
 
     Channel[] getAllChannels()
     {
-	return channels.toArray(new Channel[channels.size()]);
+	final LinkedList<Channel> res = new LinkedList<Channel>();
+	for(Map.Entry<String, Channel> e: channels.entrySet())
+	    res.add(e.getValue());
+	return res.toArray(new Channel[res.size()]);
     }
 
     boolean isDefaultChannel(Channel channel)
     {
 	NullCheck.notNull(channel, "channel");
 	return channel == defaultChannel;
+    }
+
+    boolean addFactory(Factory factory)
+    {
+	NullCheck.notNull(factory, "factory");
+	factories.put(factory.getServedChannelType(), factory);
+	return true;
+    }
+
+    boolean hasFactoryForType(String type)
+    {
+	NullCheck.notNull(type, "type");
+	return factories.containsKey(type);
+    }
+
+    org.luwrain.cpanel.Section getSettingsSection(String type,
+						  org.luwrain.cpanel.Element el, String path)
+    {
+	NullCheck.notNull(type, "type");
+	NullCheck.notNull(el, "el");
+	NullCheck.notNull(path, "path");
+	if (!factories.containsKey(type))
+	    return null;
+	return factories.get(type).newSettingsSection(el, path);
+    }
+
+    private void loadRegistryChannels()
+    {
+	Log.debug("core", "loading registry speech channels");
+	final String path = new RegistryKeys().speechChannels();
+	final String[] dirs = registry.getDirectories(path);
+	for(String s: dirs)
+	{
+	    final String dir = RegistryPath.join(path, s);
+	    Log.debug("core", "trying the channel from " + dir);
+	    final Settings.SpeechChannelBase channelBase = Settings.createSpeechChannelBase(registry, dir);
+	    final String type = channelBase.getType("");
+	    Log.debug("core", "channel\'s type is \'" + type + "\'");
+	    if (type.isEmpty())
+	    {
+		Log.error("core", "no type information in " + dir);
+		continue;
+	    }
+	    /*
+	    final Channel channel = os.loadSpeechChannel(type);
+	    if (channel == null)
+	    {
+		Log.error("core", "the OS unable to load a speech channel of type \'" + type + "\'");
+		continue;
+	    }
+	    if (!channel.initByRegistry(registry, dir))
+	    {
+		Log.error("core", "speech channel " + channel.getClass().getName() + " loaded from the registry directory " + s + " refused to be initialized");
+		continue;
+	    }
+	    */
+
+	    if (!factories.containsKey(type))
+	    {
+		Log.error("core", "no speech factory which is able to servc speech channels of type \'" + type + "\'");
+		continue;
+	    }
+	    final Factory factory = factories.get(type);
+
+	    final Channel channel = factory.newChannel();
+	    if (channel == null)
+	    {
+		Log.error("core", "speech factory of type \'" + type + "\' is unable to create a channel instance");
+		continue;
+	    }
+	    if (!channel.initByRegistry(registry, dir))
+	    {
+		Log.error("core", "speech channel " + channel.getClass().getName() + " unable to initialize by registry data in " + dir);
+		continue;
+	    }
+
+	    final String name = channel.getChannelName();
+	    if (name.isEmpty())
+	    {
+		Log.error("core", "no speech channel name in " + dir);
+		continue;
+	    }
+	    if (channels.containsKey(name))
+	    {
+		Log.error("core", "speech channels name \'" + name + " used more than ones, using only the first");
+		continue;
+	    }
+	    channels.put(channel.getChannelName(), channel);
+	    Log.info("core", "registry speech channel " + name + "(" + dir + ") successfully loaded");
+	}
+    }
+
+    private Channel loadChannelByStr(String arg)
+    {
+	Log.debug("core", "trying to prepare new speech channel with complete arguments line \'" + arg + "\'");
+	if (arg.isEmpty())
+	{
+	    Log.warning("core", "an empty value of speech channel arguments in command line option, skipping");
+	    return null;
+	}
+	final String[] params = arg.split(":", -1);
+	final String type = params[0];
+	if (!factories.containsKey(type))
+	{
+	    Log.error("core", "no speech factory to serve channel type \'" + type + "\'");
+	}
+	final Factory factory = factories.get(type);
+	final Channel res = factory.newChannel();
+	if (res == null)
+	{
+	    Log.error("core", "the factory is unable to load new speech channel of type \'" + type + "\'");
+	    return null;
+	}
+	Log.debug("core", "initializing the newly created channel");
+	if (!res.initByArgs(params.length <= 1?new String[0]:Arrays.copyOfRange(params, 1, params.length)))
+	{
+	    Log.error("core", "newly created channel of type \'" + type + "\' refuses to initialize, complete arguments line is \'" + arg + "\'");
+	    return null;
+	}
+	if (res.getChannelName().isEmpty())
+	{
+	    Log.error("core", "newly created channel of type \'" + type + "\' has an empty name");
+	    return null;
+	}
+	return res;
+    }
+
+    private boolean chooseDefaultChannel()
+    {
+	Channel any = null;
+	for(Map.Entry<String, Channel> e: channels.entrySet())
+	{
+	    final Channel c = e.getValue();
+	    if (!c.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_SPEAKERS))
+		continue;
+	    any = c;
+	    if (c.isDefault())
+	    {
+		defaultChannel = c;
+		return true;
+	    }
+	}
+	if (any == null)
+	{
+	    Log.error("core", "unable to select a default speech channel capable of synthesizing to speakers");
+	    return false;
+	}
+	defaultChannel = any;
+	return true;
     }
 }

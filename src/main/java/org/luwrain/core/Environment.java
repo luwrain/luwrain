@@ -100,13 +100,13 @@ class Environment extends EnvironmentAreas
 	windowManager = new WindowManager(interaction, screenContentManager);
 	extensions = new org.luwrain.core.extensions.Manager(interfaces);
 	extensions.load((ext)->interfaces.requestNew(ext, this));
+	initI18n();
+	initObjects();
+	speech.init();
 	braille.init(registry, os.getBraille(), this);
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
-
-	initI18n();
-	initObjects();
 	desktop.ready(i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME));
 	sounds.init(registry, paths.get("luwrain.dir.data"));
 	uiSettings = Settings.createUserInterface(registry);
@@ -128,13 +128,14 @@ class Environment extends EnvironmentAreas
 	for(LoadedExtension e: allExt)
 	{
 	    final Extension ext = e.ext;
-	    //Shortcuts;
+	    //Shortcuts
 	    for(Shortcut s: e.shortcuts)
 		if (s != null)
 		{
 		    if (!shortcuts.add(s))
 			Log.warning("core", "shortcut \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shortcuts manager to be registered");
 		}
+
 	    //Shared objects
 	    for(SharedObject s: e.sharedObjects)
 		if (s != null)
@@ -142,6 +143,7 @@ class Environment extends EnvironmentAreas
 		    if (!sharedObjects.add(ext, s))
 			    Log.warning("core", "the shared object \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shared objects manager to be registered");
 		}
+
 	    //UniRefProcs
 	    for(UniRefProc p: e.uniRefProcs)
 		if (p != null)
@@ -149,6 +151,7 @@ class Environment extends EnvironmentAreas
 		    if (!uniRefProcs.add(e.luwrain, p))
 			    Log.warning("core", "the uniRefProc \'" + p.getUniRefType() + "\' of extension " + e.getClass().getName() + " has been refused by  the uniRefProcs manager to be registered");
 		}
+
 	    //Commands
 	    for(Command c: e.commands)
 		if (c != null)
@@ -156,7 +159,13 @@ class Environment extends EnvironmentAreas
 		    if (!commands.add(e.luwrain, c))
 			Log.warning("core", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
 		}
-	}
+
+	    //speech factories
+	    for(org.luwrain.speech.Factory f: e.speechFactories)
+		if (!speech.addFactory(f))
+		    Log.warning("core", "speech factory \'" + f.getServedChannelType() + "\' of extension " + e.getClass().getName() + " has been refused by  speech core to be registered");
+		}
+
     }
 
     private void initI18n()
@@ -929,6 +938,7 @@ class Environment extends EnvironmentAreas
     org.luwrain.cpanel.Factory[] getControlPanelFactories()
     {
 	final LinkedList<org.luwrain.cpanel.Factory> res = new LinkedList<org.luwrain.cpanel.Factory>();
+	res.add(new SpeechControlPanelFactory(getObjForEnvironment(), speech));
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
 	    if (e.controlPanelFactories != null)
