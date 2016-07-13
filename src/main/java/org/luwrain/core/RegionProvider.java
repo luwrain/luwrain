@@ -27,7 +27,7 @@ import org.luwrain.core.RegionContent;
  * processing and coordinates checking ({@code Region} class takes care
  * of this).
  *
- * @see Region
+ * @see RegionTranslator
  */
 public interface RegionProvider
 {

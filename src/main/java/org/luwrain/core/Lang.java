@@ -23,7 +23,7 @@ package org.luwrain.core;
  * support of some new foreign language, you certainly should start with
  * this interface.
  *
- * @sa I18n
+ * @see I18n
  */
 public interface Lang
 {
