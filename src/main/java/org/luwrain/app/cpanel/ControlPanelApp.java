@@ -98,7 +98,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 
     void refreshSectionsTree()
     {
-	//FIXME:
+	base.refreshTreeItems();
     sectionsArea.refresh();
     }
 
@@ -119,7 +119,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 		    if (selected == null || !(selected instanceof Section))
 			return false;
 		    final Section sect = (Section)selected;
-		    return sect.onSectionActionEvent(luwrain, sectionsArea, event);
+		    return sect.onSectionActionEvent(iface, (ActionEvent)event);
     }
 
     private  boolean openSection(Object obj)

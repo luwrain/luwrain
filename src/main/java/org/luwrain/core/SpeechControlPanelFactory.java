@@ -42,20 +42,20 @@ class SpeechControlPanelFactory implements Factory
 	NullCheck.notNull(el, "el");
 	if (el.equals(channelsElement))
 	    return new SimpleSection(channelsElement, luwrain.i18n().getStaticStr("CpSpeechChannels"), null,
-				     new Action[]{new Action("add-speech-channel", luwrain.i18n().getStaticStr("CpAddNewSpeechChannel"))}, (luwrain, area, event)->onActionEvent(luwrain, area, event));
+				     new Action[]{new Action("add-speech-channel", luwrain.i18n().getStaticStr("CpAddNewSpeechChannel"))}, (controlPanel, event)->onActionEvent(controlPanel, event));
 	if (!(el instanceof ChannelElement))
 	return null;
 	final ChannelElement c = (ChannelElement)el;
 	return speech.getSettingsSection(c.type(), el, c.path());
     }
 
-    private boolean onActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event)
+    private boolean onActionEvent(ControlPanel controlPanel, EnvironmentEvent event)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(area, "area");
+	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(event, "event");
 	if (!ActionEvent.isAction(event, "add-speech-channel"))
 	return false;
+	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final String[] types = "voiceman:command:emacspeak".split(":", -1);
 	Arrays.sort(types);
 	    final Object res = Popups.fixedList(luwrain, luwrain.i18n().getStaticStr("CpAddNewSpeechChannelPopupName"), types);

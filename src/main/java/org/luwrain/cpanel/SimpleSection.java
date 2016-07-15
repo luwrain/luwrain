@@ -30,7 +30,7 @@ public class SimpleSection implements Section
 
 public interface ActionHandler
 {
-    boolean onSectionActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event);
+    boolean onSectionActionEvent(ControlPanel controlPanel, ActionEvent event);
 }
 
     protected Element element;
@@ -93,14 +93,13 @@ public interface ActionHandler
 	return actions;
     }
 
-    @Override public boolean onSectionActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event)
+    @Override public boolean onSectionActionEvent(ControlPanel controlPanel, ActionEvent event)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(area, "area");
+	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(event, "event");
 	if (actionHandler == null)
 	    return false;
-	return actionHandler.onSectionActionEvent(luwrain, area, event);
+	return actionHandler.onSectionActionEvent(controlPanel, event);
     }
 
     @Override public String toString()

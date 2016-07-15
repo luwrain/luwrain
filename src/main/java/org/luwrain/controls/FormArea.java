@@ -218,7 +218,6 @@ public class FormArea  extends NavigationArea
 	return addEdit(itemName, caption, initialText, null, true);
     }
 
-
     public boolean addEdit(String itemName, String caption,
 			   String initialText, Object obj, boolean enabled)
     {
@@ -254,7 +253,6 @@ public class FormArea  extends NavigationArea
 	environment.onAreaNewContent(this);
 	//FIXME:Check if the old hot point position is still valid
     }
-
 
     public String getEnteredText(String itemName)
     {
@@ -400,7 +398,6 @@ public class FormArea  extends NavigationArea
 	return false;
     }
 
-
     public boolean addStatic(String itemName, String caption,
 			     Object obj)
     {
@@ -487,6 +484,13 @@ public class FormArea  extends NavigationArea
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
+    }
+
+    public boolean activateMultilineEdit(String caption, String lines)
+    {
+	NullCheck.notNull(caption, "caption");
+	NullCheck.notNull(lines, "lines");
+	return activateMultilineEdit(caption, lines, true);
     }
 
     public String getMultilineEditText()

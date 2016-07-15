@@ -102,7 +102,6 @@ treeItems.put(e, new TreeItem(e, treeItem.factory));
 	treeItem.onDemandFilled = true;
     }
 
-
     TreeArea.Model getTreeModel()
     {
 	return treeModel;

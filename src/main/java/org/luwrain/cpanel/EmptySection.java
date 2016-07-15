@@ -38,7 +38,7 @@ public class EmptySection implements Section
 	return new Action[0];
     }
 
-    @Override public boolean onSectionActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event)
+    @Override public boolean onSectionActionEvent(ControlPanel controlPanel, ActionEvent event)
     {
 	return false;
     }

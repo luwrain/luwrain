@@ -26,5 +26,5 @@ public interface Section
     SectionArea getSectionArea(ControlPanel controlPanel);
     Element getElement();
     Action[] getSectionActions();
-    boolean onSectionActionEvent(Luwrain luwrain, Area area, EnvironmentEvent event);
+    boolean onSectionActionEvent(ControlPanel controlPanel, ActionEvent event);
 }
