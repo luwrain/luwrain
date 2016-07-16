@@ -254,7 +254,7 @@ protected MultilineEdit multilineEdit;
     }
 
     public boolean addList(String itemName, String caption,
-			   Object initialSelectedItem, FormListChoosing listChoosing,
+			   Object initialSelectedItem, ListChoosing listChoosing,
 			   Object obj, boolean enabled)
     {
 	NullCheck.notNull(itemName, "itemName");
@@ -478,7 +478,7 @@ protected MultilineEdit multilineEdit;
 	    if (getHotPointY() < items.size() && items.get(getHotPointY()).type == Type.LIST)
 	{
 	    final Item item = items.get(getHotPointY());
-	    final Object newSelectedItem = item.listChoosing.chooseItem(this, item.name, item.selectedListItem); 
+	    final Object newSelectedItem = item.listChoosing.chooseFormListItem(this, item.name, item.selectedListItem); 
 	    if (newSelectedItem == null)
 		return true;
 	    item.selectedListItem = newSelectedItem;
@@ -662,6 +662,11 @@ protected MultilineEdit multilineEdit;
 	return x >= multilineEditHotPoint.offsetX() && y >= multilineEditHotPoint.offsetY();
     }
 
+    public interface ListChoosing
+    {
+	Object chooseFormListItem(Area area, String formItemName, Object currentSelected);
+    }
+
     static protected class Item implements EmbeddedEditLines
     {
 	Type type;
@@ -683,7 +688,7 @@ protected MultilineEdit multilineEdit;
 	protected Object staticObject;
 	//For lists
 protected Object selectedListItem = null;
-protected FormListChoosing listChoosing;
+protected ListChoosing listChoosing;
 	//For checkboxes
 	boolean checkboxState;
 

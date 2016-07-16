@@ -22,57 +22,6 @@ import java.util.*;
 
 public class TreeArea implements Area
 {
-    public interface ClickHandler
-    {
-	boolean onTreeClick(TreeArea area, Object obj);
-    }
-
-    public interface Model
-    {
-	Object getRoot();
-	void beginChildEnumeration(Object obj);
-	int getChildCount(Object parent);
-	Object getChild(Object parent, int index);
-	void endChildEnumeration(Object obj);
-    }
-
-    static public class Params
-    {
-	public ControlEnvironment environment;
-	public Model model;
-	public String name;
-	public ClickHandler clickHandler;
-    }
-
-    static protected class Node
-    {
-	Object obj;
-	boolean leaf = true;
-	Node children[];//If children is null but node is not leaf it means closed node without any info about content;
-	Node parent;
-
-	String title()
-	{
-	    return obj != null?obj.toString():"";
-	}
-
-	void makeLeaf()
-	{
-	    children = null;
-	    leaf = true;
-	} 
-    }
-
-    static protected class VisibleItem
-    {
-	enum Type {LEAF, CLOSED, OPENED};
-
-	Type type = Type.LEAF;
-	String title = "";
-	int level = 0;
-	Node node;
-    }
-
     protected ControlEnvironment environment;
     protected Model model;
     protected String name = "";
@@ -275,7 +224,7 @@ public class TreeArea implements Area
     }
 
     //Changes only 'leaf' and 'children' fields;
-    private void fillChildrenForNonLeaf(Node node)
+    protected void fillChildrenForNonLeaf(Node node)
     {
 	if (node == null || node.obj == null)
 	    return;
@@ -312,7 +261,7 @@ public class TreeArea implements Area
 	model.endChildEnumeration(node.obj);
     }
 
-    private Node constructNode(Object obj, Node parent, boolean fillChildren)
+    protected Node constructNode(Object obj, Node parent, boolean fillChildren)
     {
 	if (obj == null)
 	    return null;
@@ -325,7 +274,7 @@ public class TreeArea implements Area
 	return node;
     }
 
-    private void refreshNode(Node node)
+    protected void refreshNode(Node node)
     {
 	if (node == null || node.obj == null)
 	    return;
@@ -378,7 +327,7 @@ public class TreeArea implements Area
 	    refreshNode(n);
     }
 
-    private boolean onKeySpace(KeyboardEvent event)
+    protected boolean onKeySpace(KeyboardEvent event)
     {
 	if (event.isModified() || items == null)
 	    return false;
@@ -390,7 +339,7 @@ public class TreeArea implements Area
 	return true;
     }
 
-    private boolean onKeyEnter(KeyboardEvent event)
+    protected boolean onKeyEnter(KeyboardEvent event)
     {
 	if (event.isModified() || items == null || hotPointY >= items.length)
 	    return false;
@@ -419,7 +368,7 @@ public class TreeArea implements Area
 	    return false;
     }
 
-    private boolean onKeyDown(KeyboardEvent event, boolean briefIntroduction)
+    protected boolean onKeyDown(KeyboardEvent event, boolean briefAnnouncement)
     {
 	if (event.isModified() || items == null)
 	    return false;
@@ -436,13 +385,13 @@ public class TreeArea implements Area
 	} else
 	{
 	    hotPointX = getInitialHotPointX(hotPointY);
-	    environment.say(constructLineForSpeech(items[hotPointY], briefIntroduction));
+announce(items[hotPointY], briefAnnouncement);
 	}
 	environment.onAreaNewHotPoint(this );
 	return true;
     }
 
-    private boolean onKeyUp(KeyboardEvent event, boolean briefIntroduction)
+    protected boolean onKeyUp(KeyboardEvent event, boolean briefAnnouncement)
     {
 	if (event.isModified() || items == null)
 	    return false;
@@ -453,12 +402,12 @@ public class TreeArea implements Area
 	}
 	--hotPointY;
 	hotPointX = getInitialHotPointX(hotPointY);
-	environment.say(constructLineForSpeech(items[hotPointY], briefIntroduction));
+announce(items[hotPointY], briefAnnouncement);
 	environment.onAreaNewHotPoint(this );
 	return true;
     }
 
-    private boolean onKeyRight(KeyboardEvent event)
+    protected boolean onKeyRight(KeyboardEvent event)
     {
 	if (event.isModified() ||
 	    items == null || hotPointY >= items.length)
@@ -485,7 +434,7 @@ public class TreeArea implements Area
 	return true;
     }
 
-    private boolean onKeyLeft(KeyboardEvent event)
+    protected boolean onKeyLeft(KeyboardEvent event)
     {
 	if (event.isModified() ||
 	    items == null || hotPointY >= items.length)
@@ -510,7 +459,7 @@ public class TreeArea implements Area
 	return true;
     }
 
-    private VisibleItem[] generateVisibleItems(Node node, int level)
+    protected VisibleItem[] generateVisibleItems(Node node, int level)
     {
 	if (node == null)
 	    return null;
@@ -543,14 +492,14 @@ public class TreeArea implements Area
 	return res;
     }
 
-    private VisibleItem[] generateAllVisibleItems()
+    protected VisibleItem[] generateAllVisibleItems()
     {
 	if (root == null)
 	    return null;
 	return generateVisibleItems(root, 0);
     }
 
-    private boolean isLeaf(Object o)
+    protected boolean isLeaf(Object o)
     {
 	NullCheck.notNull(o, "o");
 	model.beginChildEnumeration(o);
@@ -559,13 +508,20 @@ public class TreeArea implements Area
 	return res;
     }
 
-    private String constructLineForSpeech(VisibleItem item, boolean briefIntroduction)
+    protected void announce(VisibleItem item, boolean briefAnnouncement)
     {
-	if (item == null)
-	    return environment.staticStr(LangStatic.EMPTY_LINE);//FIXME:
-	String res = (item.title != null && !item.title.trim().isEmpty())?item.title.trim():environment.staticStr(LangStatic.EMPTY_LINE);
-	if (briefIntroduction)
-	    return res;
+	NullCheck.notNull(item, "item");
+	if (item.title.isEmpty())
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return;
+	}
+	if (briefAnnouncement)
+	{
+	    environment.say(item.title);
+	    return;
+	}
+	String res = item.title;
 	switch (item.type)
 	{
 	case OPENED:
@@ -575,10 +531,10 @@ public class TreeArea implements Area
 	    res = environment.staticStr(LangStatic.TREE_COLLAPSED) + " " + res;
 	    break;
 	}
-	return res + " " + environment.staticStr(LangStatic.TREE_LEVEL) + " " + (item.level + 1);
-    }
+	environment.say(res + " " + environment.staticStr(LangStatic.TREE_LEVEL) + " " + (item.level + 1));
+}
 
-    private String constructLineForScreen(VisibleItem item)
+    protected String constructLineForScreen(VisibleItem item)
     {
 	if (item == null)
 	    return "";
@@ -599,10 +555,58 @@ public class TreeArea implements Area
 	return res + (item.title != null?item.title:"");
     }
 
-    private int getInitialHotPointX(int index)
+protected int getInitialHotPointX(int index)
     {
 	if (items == null ||  index >= items.length)
 	    return 0;
 	return (items[index].level * 2) + 2;
+    }
+
+    public interface ClickHandler
+    {
+	boolean onTreeClick(TreeArea area, Object obj);
+    }
+
+    public interface Model
+    {
+	Object getRoot();
+	void beginChildEnumeration(Object obj);
+	int getChildCount(Object parent);
+	Object getChild(Object parent, int index);
+	void endChildEnumeration(Object obj);
+    }
+
+    static public class Params
+    {
+	public ControlEnvironment environment;
+	public String name;
+	public Model model;
+	public ClickHandler clickHandler;
+    }
+
+    static protected class Node
+    {
+	Object obj = null;
+	Node parent = null;
+	Node children[] = null;//If children is null and node is not a leaf, it means this is a closed node without any info about its content
+	boolean leaf = true;
+
+	void makeLeaf()
+	{
+	    children = null;
+	    leaf = true;
+	} 
+
+	String title() { return obj != null?obj.toString():""; }
+    }
+
+    static protected class VisibleItem
+    {
+	enum Type {LEAF, CLOSED, OPENED};
+
+	Type type = Type.LEAF;
+	String title = "";
+	int level = 0;
+	Node node;
     }
 }
