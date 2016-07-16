@@ -21,6 +21,7 @@ import org.luwrain.core.*;
 public class EnvironmentEvent extends Event
 {
     public enum Code {OK,
+		      ANNOUNCE_LINE,
 		      CANCEL,
 		      CLOSE,
 		      SAVE,

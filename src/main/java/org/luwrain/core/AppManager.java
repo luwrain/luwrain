@@ -446,6 +446,13 @@ class AppManager
 	popups.lastElement().stopCondition.cancel();
     }
 
+    void sendBroadcastEvent(org.luwrain.core.events.EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	for(LaunchedApp a: apps)
+	    a.sendBroadcastEvent(event);
+    }
+
     private boolean isDefaultApp(Application app)
     {
 	if (app == null || defaultApp == null)

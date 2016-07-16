@@ -163,7 +163,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
     {
 	if (accept )
 	{
-	    if (!area.onEnvironmentEvent(new MoveHotPointEvent(hotPointX, hotPointY)))
+	    if (!area.onEnvironmentEvent(new MoveHotPointEvent(hotPointX, hotPointY, false)))
 		return false;
 	    environment.setAreaIntroduction();
 	} else

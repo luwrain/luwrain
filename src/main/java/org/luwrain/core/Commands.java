@@ -177,15 +177,35 @@ class Commands
 		}
 	    },
 
-	    //introduce-line
+	    //announce-line
 	    new Command() {
 		@Override public String getName()
 		{
-		    return "introduce-line";
+		    return "announce-line";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onIntroduceLineCommand();
+		    final Area area = env.getValidActiveArea(true);
+		    if (area == null)
+			return;
+		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.ANNOUNCE_LINE)))
+			return;
+		    final int hotPointY = area.getHotPointY();
+		    if (hotPointY >= area.getLineCount())
+		    {
+			env.eventNotProcessedMessage();
+			return;
+		    }
+		    final String line = area.getLine(hotPointY);
+		    if (line == null)
+		    {
+			env.eventNotProcessedMessage();
+			return;
+		    }
+		    if (!line.trim().isEmpty())
+			env.getSpeech().speak(line, 0, 0); else
+			env.getObjForEnvironment().hint(Hints.EMPTY_LINE);
+		    env.needForIntroduction = false;
 		}
 	    },
 

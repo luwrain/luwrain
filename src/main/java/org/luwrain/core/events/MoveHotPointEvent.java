@@ -20,31 +20,28 @@ import org.luwrain.core.*;
 
 public class MoveHotPointEvent extends EnvironmentEvent
 {
-    private int newHotPointX;
-    private int newHotPointY;
+protected int newHotPointX;
+    protected int newHotPointY;
+    protected boolean precisely;
 
     MoveHotPointEvent(Code customCode,
-		      int newHotPointX, int newHotPointY)
+		      int newHotPointX, int newHotPointY, boolean precisely)
     {
 	super(customCode);
 	this.newHotPointX = newHotPointX;
 	this.newHotPointY = newHotPointY;
+	this.precisely = precisely;
     }
 
-    public MoveHotPointEvent(int newHotPointX, int newHotPointY)
+    public MoveHotPointEvent(int newHotPointX, int newHotPointY, boolean precisely)
     {
 	super(Code.MOVE_HOT_POINT);
 	this.newHotPointX = newHotPointX;
 	this.newHotPointY = newHotPointY;
+	this.precisely = precisely;
     }
 
-    public int getNewHotPointX()
-    {
-	return newHotPointX;
-    }
-
-    public int getNewHotPointY()
-    {
-	return newHotPointY;
-    }
+    public int getNewHotPointX() { return newHotPointX; }
+    public int getNewHotPointY() { return newHotPointY; }
+    public boolean precisely() {return precisely;}
 }

@@ -164,4 +164,11 @@ class LaunchedApp extends LaunchedAppBase
 	    a[i] = areaWrappings[i].getEffectiveArea();
 	return new AreaLayout(layoutType, a);
     }
+
+    void sendBroadcastEvent(org.luwrain.core.events.EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	for(AreaWrapping w: areaWrappings)
+	    w.getEffectiveArea().onEnvironmentEvent(event);
+    }
 }

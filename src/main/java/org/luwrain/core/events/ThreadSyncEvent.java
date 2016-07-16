@@ -30,10 +30,12 @@ public class ThreadSyncEvent extends EnvironmentEvent
 	NullCheck.notNull(destArea, "destArea");
     }
 
+    /*
     @Override public Code getCode()
     {
 	return Code.THREAD_SYNC;
     }
+    */
 
     public Area getDestArea()
     {

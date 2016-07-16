@@ -25,6 +25,6 @@ public class ReadingPointEvent extends MoveHotPointEvent
 
     public ReadingPointEvent(int newHotPointX, int newHotPointY)
     {
-	super(Code.READING_POINT, newHotPointX, newHotPointY);
+	super(Code.READING_POINT, newHotPointX, newHotPointY, false);
     }
 }

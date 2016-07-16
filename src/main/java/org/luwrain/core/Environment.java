@@ -993,30 +993,6 @@ class Environment extends EnvironmentAreas
 	    areaInaccessibleMessage();
     }
 
-    void onIntroduceLineCommand()
-    {
-	final Area activeArea = getValidActiveArea(true);
-	if (activeArea == null)
-	    return;
-	final int hotPointY = activeArea.getHotPointY();
-	if (hotPointY >= activeArea.getLineCount())
-	{
-	    failureMessage();
-	    return;
-	}
-	//FIXME:Offer to the area to introduce line by itself;
-	final String line = activeArea.getLine(hotPointY);
-	if (line == null)
-	{
-	    failureMessage();
-	    return;
-	}
-	if (!line.trim().isEmpty())
-	    speech.speak(line, 0, 0); else
-	    interfaces.getObjForEnvironment().hint(Hints.EMPTY_LINE);
-	needForIntroduction = false;
-    }
-
     void reloadComponent(Luwrain.ReloadComponents component)
     {
 	switch(component)

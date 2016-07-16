@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import org.luwrain.core.events.*;
+
 abstract class EnvironmentAreas extends EnvironmentBase
 {
     protected ScreenContentManager screenContentManager;
@@ -65,6 +67,12 @@ abstract class EnvironmentAreas extends EnvironmentBase
     protected boolean isAreaBlockedBySecurity(Area area)
     {
 	return false;
+    }
+
+    void sendBroadcastMessage(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	apps.sendBroadcastEvent(event);
     }
 
     Luwrain getObjForEnvironment()

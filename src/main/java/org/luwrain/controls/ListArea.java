@@ -304,6 +304,8 @@ public class ListArea  implements Area, RegionProvider
 	case REFRESH:
 	    refresh();
 	    return true;
+	case ANNOUNCE_LINE:
+	    return onAnnounceLine();
 	case OK:
 	    return onOk(event);
 	case READING_POINT:
@@ -371,6 +373,20 @@ public class ListArea  implements Area, RegionProvider
     {
 	NullCheck.notNull(areaName, "areaName");
 	this.areaName = areaName;
+    }
+
+    protected boolean onAnnounceLine()
+    {
+	if (isEmpty())
+	    return false;
+	final Object item = selected();
+	if (item == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
+	appearance.announceItem(item, NONE_APPEARANCE_FLAGS);
+	return true;
     }
 
     protected boolean onMoveHotPoint(MoveHotPointEvent event)
