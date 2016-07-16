@@ -29,69 +29,8 @@ public class ListArea  implements Area, RegionProvider
 {
     public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM, CYCLING};
 
-    public interface Model
-    {
-	int getItemCount();
-	Object getItem(int index);
-	boolean toggleMark(int index);
-	void refresh();
-    }
-
-    public interface Appearance
-    {
-	public enum Flags { BRIEF };
-
-	void announceItem(Object item, Set<Flags> flags);
-	String getScreenAppearance(Object item, Set<Flags> flags);
-	int getObservableLeftBound(Object item);
-	int getObservableRightBound(Object item);
-    }
-
     static protected final Set<Appearance.Flags> NONE_APPEARANCE_FLAGS = EnumSet.noneOf(Appearance.Flags.class);
     static protected final Set<Appearance.Flags> BRIEF_ANNOUNCEMENT_ONLY = EnumSet.of(Appearance.Flags.BRIEF);
-
-public interface HotPointMoves 
-{
-    int numberOfEmptyLinesTop();
-    int numberOfEmptyLinesBottom();
-    int oneLineUp(int index, int modelLineCount);
-    int oneLineDown(int index, int modelLineCount);
-    void setFlags(Set<Flags> flags);
-}
-
-    static public class Params
-    {
-	public ControlEnvironment environment;
-	public Model model;
-    public Appearance appearance;
-	public ListClickHandler clickHandler;
-	public String name;
-	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
-
-	static public Set<Flags> loadRegularFlags(Registry registry)
-	{
-	    NullCheck.notNull(registry, "registry");
-	    final Set<Flags> res = EnumSet.noneOf(Flags.class);
-	    final Settings.UserInterface settings = Settings.createUserInterface(registry);
-	    if (settings.getEmptyLineUnderRegularLists(true))
-		res.add(Flags.EMPTY_LINE_BOTTOM);
-	    if (settings.getCyclingRegularLists(false))
-		res.add(Flags.CYCLING);
-	    return res;
-	}
-
-	static public Set<Flags> loadPopupFlags(Registry registry)
-	{
-	    NullCheck.notNull(registry, "registry");
-	    final Set<Flags> res = EnumSet.noneOf(Flags.class);
-	    final Settings.UserInterface settings = Settings.createUserInterface(registry);
-	    if (settings.getEmptyLineAbovePopupLists(true))
-		res.add(Flags.EMPTY_LINE_TOP);
-	    if (settings.getCyclingPopupLists(false))
-		res.add(Flags.CYCLING);
-	    return res;
-	}
-    }
 
     protected final RegionTranslator region = new RegionTranslator(this);
     protected ControlEnvironment environment;
@@ -100,7 +39,7 @@ public interface HotPointMoves
     protected Appearance appearance;
     protected Set<Flags> flags;
     protected ListClickHandler clickHandler;
-    protected HotPointMoves hotPointMoves = new ListUtils.DefaultHotPointMoves();
+    protected ItemsLayout itemsLayout = new ListUtils.DefaultItemsLayout();
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
@@ -118,7 +57,7 @@ public interface HotPointMoves
 	this.clickHandler = params.clickHandler;
 	this.areaName = params.name;
 	this.flags = params.flags;
-	hotPointMoves.setFlags(params.flags);
+	itemsLayout.setFlags(params.flags);
 	resetHotPoint();
     }
 
@@ -132,15 +71,32 @@ public interface HotPointMoves
 	return model;
     }
 
+    /**
+     * Returns the object in the model corresponding to current hot point
+     * position.  If the model is empty or hot point is on an empty line,
+     * this method always returns {@code null}. 
+     *
+     * @return The object in the model associated with the currently selected line or {@code null} if there is no any
+     */
     public final Object selected()
     {
-	final int index = hotPointY - hotPointMoves.numberOfEmptyLinesTop();
+	final int index = hotPointY - itemsLayout.numberOfEmptyLinesTop();
 	return (index >= 0 && index < model.getItemCount())?model.getItem(index):null;
     }
 
-    public int selectedIndex()
+    /**
+     * The index of the item in the model which is under the hot point in
+     * this list. This method returns the index in the model, not on the
+     * screen. It means that the value returned by this method may be
+     * different than the value returned by {@code getHotPointY()} (but may
+     * be equal as well). If the list is empty or an empty line is selected,
+     * this method returns -1. 
+     *
+     * @return The index of the selected line in the model or -1 if there is no any
+     */
+    public final int selectedIndex()
     {
-	final int index = hotPointY - hotPointMoves.numberOfEmptyLinesTop();
+	final int index = hotPointY - itemsLayout.numberOfEmptyLinesTop();
 	return (index >= 0 && index < model.getItemCount())?index:-1;
     }
 
@@ -196,7 +152,7 @@ public interface HotPointMoves
     {
 	if (index < 0 || index >= model.getItemCount())
 	    return false;
-	hotPointY = index + hotPointMoves.numberOfEmptyLinesTop();
+	hotPointY = index + itemsLayout.numberOfEmptyLinesTop();
 	final Object item = model.getItem(index);
 	if (item != null)
 	{
@@ -381,7 +337,7 @@ public interface HotPointMoves
 
     @Override public int getLineCount()
     {
-	final int res = model.getItemCount() + hotPointMoves.numberOfEmptyLinesTop() + hotPointMoves.numberOfEmptyLinesBottom();
+	final int res = model.getItemCount() + itemsLayout.numberOfEmptyLinesTop() + itemsLayout.numberOfEmptyLinesBottom();
 	return res>= 1?res:1;
     }
 
@@ -389,7 +345,7 @@ public interface HotPointMoves
     {
 	if (isEmpty())
 	    return index == 0?environment.getStaticStr("ListNoContent"):"";
-	final int modelIndex = index - hotPointMoves.numberOfEmptyLinesTop();
+	final int modelIndex = index - itemsLayout.numberOfEmptyLinesTop();
 	if (modelIndex < 0 || modelIndex >= model.getItemCount())
 	    return "";
 	final Object res = model.getItem(modelIndex);
@@ -411,13 +367,13 @@ public interface HotPointMoves
 	return areaName;
     }
 
-    public void setName(String areaName)
+    public void setAreaName(String areaName)
     {
 	NullCheck.notNull(areaName, "areaName");
 	this.areaName = areaName;
     }
 
-    private boolean onMoveHotPoint(MoveHotPointEvent event)
+    protected boolean onMoveHotPoint(MoveHotPointEvent event)
     {
 	final int x = event.getNewHotPointX();
 	final int y = event.getNewHotPointY();
@@ -438,7 +394,7 @@ public interface HotPointMoves
 	return true;
     }
 
-    private boolean onVoicedFragmentQuery(VoicedFragmentQuery query)
+    protected boolean onVoicedFragmentQuery(VoicedFragmentQuery query)
     {
 	NullCheck.notNull(query, "query");
 	final int count = model.getItemCount();
@@ -455,7 +411,7 @@ public interface HotPointMoves
 	return true;
     }
 
-    private boolean onChar(KeyboardEvent event)
+    protected boolean onChar(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;
@@ -490,8 +446,8 @@ public interface HotPointMoves
     {
 	if (noContent())
 	    return true;
-	final int newHotPointY = hotPointMoves.oneLineDown(hotPointY, model.getItemCount());
-	if (newHotPointY == hotPointY)
+	final int newHotPointY = itemsLayout.oneLineDown(hotPointY, model.getItemCount());
+	if (newHotPointY < 0)
 	{
 	    environment.hint(Hints.NO_ITEMS_BELOW);
 		return true;
@@ -505,8 +461,8 @@ public interface HotPointMoves
     {
 	if (noContent())
 	return true;
-	final int newHotPointY = hotPointMoves.oneLineUp(hotPointY, model.getItemCount());
-	if (newHotPointY == hotPointY)
+	final int newHotPointY = itemsLayout.oneLineUp(hotPointY, model.getItemCount());
+	if (newHotPointY < 0)
 	{
 	    environment.hint(Hints.NO_ITEMS_ABOVE);
 	    return true;
@@ -554,7 +510,9 @@ public interface HotPointMoves
     {
 	if (noContent())
 	    return true;
-	hotPointY = model.getItemCount();
+	hotPointY = model.getItemCount() + itemsLayout.numberOfEmptyLinesTop();
+	if (itemsLayout.numberOfEmptyLinesBottom() <= 0)
+	    --hotPointY;
 	onNewHotPointY(false);
 	return true;
     }
@@ -563,7 +521,7 @@ public interface HotPointMoves
     {
 	if (noContent())
 	    return true;
-	hotPointY = 0;
+	hotPointY = itemsLayout.numberOfEmptyLinesTop();
 	onNewHotPointY(false);
 	return true;
     }
@@ -572,19 +530,19 @@ public interface HotPointMoves
     {
 	if (noContent())
 	    return true;
-	final Object item = model.getItem(hotPointY);
+	final Object item = selected();
 	if (item == null)
 	{
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
-	if (line == null || line.isEmpty())
+	NullCheck.notNull(line, "line");
+	if (line.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	//	final int leftBound = appearance.getObservableLeftBound(item);
 final int rightBound = appearance.getObservableRightBound(item);
 	if (hotPointX >= rightBound)
 	{
@@ -608,13 +566,13 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
-	if (line == null || line.isEmpty())
+	NullCheck.notNull(line, "line");
+	if (line.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final int leftBound = appearance.getObservableLeftBound(item);
-	//	final int rightBound = appearance.getObservableRightBound(item);
 	if (hotPointX <= leftBound)
 	{
 	    environment.hint(Hints.BEGIN_OF_LINE);
@@ -637,7 +595,8 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
-	if (line == null || line.isEmpty())
+	NullCheck.notNull(line, "line");
+	if (line.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
@@ -675,7 +634,8 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
-	if (line == null || line.isEmpty())
+	NullCheck.notNull(line, "line");
+	if (line.isEmpty())
 	{
 	    environment.hint(Hints.EMPTY_LINE);
 	    return true;
@@ -711,6 +671,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
+	NullCheck.notNull(line, "line");
 	hotPointX = appearance.getObservableRightBound(item);
 	environment.hint(Hints.END_OF_LINE);
 	environment.onAreaNewHotPoint(this);
@@ -728,11 +689,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
-	if (line == null)
-	{
-	    environment.hint(Hints.EMPTY_LINE);
-	    return true;
-	}
+	NullCheck.notNull(line, "line");
 	hotPointX = appearance.getObservableLeftBound(item);
 	announceChar(line, hotPointX);
 	environment.onAreaNewHotPoint(this);
@@ -747,7 +704,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (!model.toggleMark(index))
 	    return false;
 	environment.onAreaNewContent(this);
-	if (index + 1 < model.getItemCount() || hotPointMoves.numberOfEmptyLinesBottom() > 0)
+	if (index + 1 < model.getItemCount() || itemsLayout.numberOfEmptyLinesBottom() > 0)
 	{
 	    ++hotPointY;
 	    onNewHotPointY(false); 
@@ -760,7 +717,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (isEmpty() || clickHandler == null)
 	    return false;
 	    final int count = model.getItemCount();
-	    final int index = hotPointY - hotPointMoves.numberOfEmptyLinesTop();
+	    final int index = hotPointY - itemsLayout.numberOfEmptyLinesTop();
 	    if (index < 0 || index >= count)
 		return false;
 	    return clickHandler.onListClick(this, index, model.getItem(index));
@@ -770,12 +727,11 @@ final int rightBound = appearance.getObservableRightBound(item);
     {
 	if (clickHandler == null)
 	    return false;
-	    final int count = model.getItemCount();
-	    if (count < 1)
-		return false;
-	    if (hotPointY < 0 || hotPointY >= count)
-		return false;
-	    return clickHandler.onListClick(this, hotPointY, model.getItem(hotPointY));
+	final int index = selectedIndex();
+	final Object item = selected();
+	if (index < 0 || item == null)
+	    return false;
+	    return clickHandler.onListClick(this, index, item);
     }
 
     @Override public RegionContent getWholeRegion()
@@ -837,7 +793,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 
     protected void onNewHotPointY(boolean briefAnnouncement)
     {
-	final int index = hotPointY - hotPointMoves.numberOfEmptyLinesTop();
+	final int index = hotPointY - itemsLayout.numberOfEmptyLinesTop();
 	final int count = model.getItemCount();
 	if (index < 0 || index >= count)
 	{
@@ -858,17 +814,6 @@ final int rightBound = appearance.getObservableRightBound(item);
 	hotPointX = appearance.getObservableLeftBound(item);
 	environment.onAreaNewHotPoint(this);
     }
-
-    /*
-    private int getInitialHotPointX(Object item)
-    {
-	if (item == null)
-	    return 0;
-	final String line = appearance.getScreenAppearance(item, 0);
-	final int leftBound = appearance.getObservableLeftBound(item);
-	return leftBound < line.length()?leftBound:line.length();
-    }
-    */
 
     protected String noContentStr()
     {
@@ -892,4 +837,67 @@ final int rightBound = appearance.getObservableRightBound(item);
 	}
 	return false;
     }
+
+    public interface Model
+    {
+	int getItemCount();
+	Object getItem(int index);
+	boolean toggleMark(int index);
+	void refresh();
+    }
+
+    public interface Appearance
+    {
+	public enum Flags { BRIEF };
+
+	void announceItem(Object item, Set<Flags> flags);
+	String getScreenAppearance(Object item, Set<Flags> flags);
+	int getObservableLeftBound(Object item);
+	int getObservableRightBound(Object item);
+    }
+
+public interface ItemsLayout
+{
+    int numberOfEmptyLinesTop();
+    int numberOfEmptyLinesBottom();
+    int oneLineUp(int index, int modelLineCount);
+    int oneLineDown(int index, int modelLineCount);
+    void setFlags(Set<Flags> flags);
+}
+
+    static public class Params
+    {
+	public ControlEnvironment environment;
+	public Model model;
+    public Appearance appearance;
+	public ListClickHandler clickHandler;
+	public String name;
+	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
+
+	static public Set<Flags> loadRegularFlags(Registry registry)
+	{
+	    NullCheck.notNull(registry, "registry");
+	    final Set<Flags> res = EnumSet.noneOf(Flags.class);
+	    final Settings.UserInterface settings = Settings.createUserInterface(registry);
+	    if (settings.getEmptyLineUnderRegularLists(true))
+		res.add(Flags.EMPTY_LINE_BOTTOM);
+	    if (settings.getCyclingRegularLists(false))
+		res.add(Flags.CYCLING);
+	    return res;
+	}
+
+	static public Set<Flags> loadPopupFlags(Registry registry)
+	{
+	    NullCheck.notNull(registry, "registry");
+	    final Set<Flags> res = EnumSet.noneOf(Flags.class);
+	    final Settings.UserInterface settings = Settings.createUserInterface(registry);
+	    if (settings.getEmptyLineAbovePopupLists(true))
+		res.add(Flags.EMPTY_LINE_TOP);
+	    if (settings.getCyclingPopupLists(false))
+		res.add(Flags.CYCLING);
+	    return res;
+	}
+    }
+
+
 }

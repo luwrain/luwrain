@@ -22,7 +22,7 @@ import org.luwrain.core.NullCheck;
 
 public class ListUtils
 {
-    static public class DefaultHotPointMoves implements ListArea.HotPointMoves 
+    static public class DefaultItemsLayout implements ListArea.ItemsLayout 
     {
 	protected boolean hasEmptyLineTop = false;
 	protected boolean hasEmptyLineBottom = false;
@@ -41,7 +41,7 @@ public class ListUtils
 	    @Override public int oneLineUp(int index, int modelItemCount)
 	    {
 		if (modelItemCount < 1)
-		    return index;
+		    return -1;
 		if (cycling)
 		{
 		final int count = modelItemCount + (hasEmptyLineTop?1:0);//We don't need an empty line at the bottom
@@ -55,7 +55,7 @@ public class ListUtils
 	    @Override public int oneLineDown(int index, int modelItemCount)
 	    {
 		if (modelItemCount < 1)
-		    return index;
+		    return -1;
 		    final int topIndex = hasEmptyLineTop?1:0;
 		    final int count = modelItemCount + topIndex;
 		if (cycling)
@@ -65,8 +65,8 @@ public class ListUtils
 		    return index + 1 < count?index + 1:topIndex;
 		}
 		if (hasEmptyLineBottom)
-		    return index < count?index + 1:index;
-		    return index + 1 < count?index + 1:index;
+		    return index < count?index + 1:-1;
+		    return index + 1 < count?index + 1:-1;
 	    }
 
 	@Override public void setFlags(Set<ListArea.Flags> flags)
