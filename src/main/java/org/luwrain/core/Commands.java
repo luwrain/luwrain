@@ -620,6 +620,23 @@ class Commands
 		}
 	    },
 
-	};
+	    //hot-info
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "hot-info";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final Date date = new Date();
+		    final Calendar cal = GregorianCalendar.getInstance();
+		    cal.setTime(date);
+		    luwrain.say("Время" + 
+				luwrain.i18n().getNumberStr(cal.get(Calendar.HOUR_OF_DAY), "hours") + " " + 
+				luwrain.i18n().getNumberStr(cal.get(Calendar.MINUTE), "minutes"));
+		}
+	    },
+
+	};    
     }
 }
