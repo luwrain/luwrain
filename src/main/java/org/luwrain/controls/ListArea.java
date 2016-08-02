@@ -346,7 +346,7 @@ public class ListArea  implements Area, RegionProvider
     @Override public String getLine(int index)
     {
 	if (isEmpty())
-	    return index == 0?environment.getStaticStr("ListNoContent"):"";
+	    return index == 0?noContentStr():"";
 	final int modelIndex = index - itemsLayout.numberOfEmptyLinesTop();
 	if (modelIndex < 0 || modelIndex >= model.getItemCount())
 	    return "";

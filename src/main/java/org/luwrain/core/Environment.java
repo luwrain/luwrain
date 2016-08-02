@@ -778,6 +778,8 @@ class Environment extends EnvironmentAreas
 
     void onDecreaseFontSizeCommand()
     {
+	if (interaction.getFontSize() < 15)
+	    return;
 	interaction.setDesirableFontSize(interaction.getFontSize() - 5); 
 	windowManager.redraw();
 	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MESSAGE_REGULAR);
