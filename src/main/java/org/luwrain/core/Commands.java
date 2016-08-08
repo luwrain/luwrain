@@ -401,6 +401,20 @@ class Commands
 		}
 	    },
 
+	    //console
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "console";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final Application app = new org.luwrain.app.console.ConsoleApp();
+		    env.launchApp(app);
+		}
+	    },
+
+
 	    //registry
 	    new Command() {
 		@Override public String getName()
