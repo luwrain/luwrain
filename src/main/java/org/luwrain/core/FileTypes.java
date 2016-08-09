@@ -18,78 +18,129 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.io.*;
-
-import org.luwrain.util.RegistryAutoCheck;
+import java.nio.file.*;
 
 public class FileTypes
 {
-    private Map<String, String> fileTypes = new TreeMap<String, String>();
+    private final HashMap<String, String> fileTypes = new HashMap<String, String>();
 
-    public String[] chooseShortcuts(String[] fileNames)
+    void load(Registry registry)
     {
-	if (fileNames == null)
-	    throw new NullPointerException("fileNames may not be null");
-	LinkedList<String> res = new LinkedList<String>();
-	for(String s: fileNames)
-	{
-	    if (s == null)
-	    {
-		res.add("");
-		continue;
-	    }
-	    final File f = new File(s);
-	    if (!f.exists())
-	    {
-		res.add("notepad");
-		continue;
-	    }
-	    if (f.isDirectory())
-	    {
-		res.add("commander");
-		continue;
-	    }
-	    final String ext = getExtension(s);
-	    if (ext == null || ext.trim().isEmpty() || !fileTypes.containsKey(ext.toLowerCase()))
-	    {
-		res.add("notepad");
-		continue;
-	    }
-	    res.add(fileTypes.get(ext.toLowerCase()));
-	}
-	return res.toArray(new String[res.size()]);
-    }
-
-    public void load(Registry registry)
-    {
-	final RegistryAutoCheck check = new RegistryAutoCheck(registry, "environment");
+	NullCheck.notNull(registry, "registry");
 	final String path = new RegistryKeys().fileTypes();
 	final String[] values= registry.getValues(path);
-	if (values == null || values.length < 1)
+	if (values.length < 1)
 	    return;
 	for(String v: values)
 	{
 	    if (v.trim().isEmpty())
 		continue;
-	    final String vv = check.stringAny(path + "/" + v, "");
-	    if (vv.trim().isEmpty())
+	    final String valuePath = Registry.join(path, v);
+	    if (registry.getTypeOf(valuePath) != Registry.STRING)
+	    {
+		Log.warning("core", "registry value " + valuePath + " is not a string");
 		continue;
-	    fileTypes.put(v.trim().toLowerCase(), vv.trim());
+	    }
+	    final String value = registry.getString(valuePath).trim();
+	    if (value.isEmpty())
+		continue;
+	    fileTypes.put(v.trim().toLowerCase(), value);
 	}
+    }
+
+    void launch(Environment env, Registry registry, String[] files)
+    {
+	NullCheck.notNull(env, "env");
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notNullItems(files, "files");
+	final RegistryKeys registryKeys = new RegistryKeys();
+	final String[] shortcuts = chooseShortcuts(files);
+	final HashMap<String, LinkedList<String> > lists = new HashMap<String, LinkedList<String> >();
+	for(int i = 0;i < files.length;++i)
+	{
+	    final String s = shortcuts[i];
+	    final String f = files[i];
+	    if (s.isEmpty())
+		continue;
+	    if (lists.containsKey(s))
+	    {
+		lists.get(s).add(f);
+		continue;
+	    }
+	    final LinkedList<String> l = new LinkedList<String>();
+	    l.add(f);
+	    lists.put(s, l);
+	}
+	for(Map.Entry<String, LinkedList<String> > e: lists.entrySet())
+	{
+	    final String shortcut = e.getKey();
+	    final Settings.FileTypeAppInfo info = Settings.createFileTypeAppInfo(registry, Registry.join(registryKeys.fileTypesAppInfo(), shortcut));
+	    final boolean takesMultiple = info.getTakesMultiple(false);
+	    final boolean takesUrls = info.getTakesUrls(false);
+	    final String[] toOpen = e.getValue().toArray(new String[e.getValue().size()]);
+	    if (takesUrls)
+		for(int i = 0;i < toOpen.length;++i)
+		{
+		    final Path p = Paths.get(toOpen[i]);
+		    try {
+			toOpen[i] = p.toUri().toURL().toString();
+		    }
+		    catch(java.net.MalformedURLException exc)
+		    {
+			Log.warning("core", "unable to generate URL for path " + toOpen[i] + " which is requested to open");
+		    }
+		}
+	    if (!takesMultiple)
+	    {
+		for(String f: toOpen)
+		    env.launchAppIface(shortcut, new String[]{f});
+	    } else
+		env.launchAppIface(shortcut, toOpen);
+	}
+    }
+
+    private String[] chooseShortcuts(String[] fileNames)
+    {
+	NullCheck.notEmptyItems(fileNames, "fileNames");
+	final LinkedList<String> res = new LinkedList<String>();
+	for(String s: fileNames)
+	{
+	    if (s.isEmpty())
+	    {
+		res.add("");
+		continue;
+	    }
+	    final Path path = Paths.get(s);
+	    if (!Files.exists(path))
+	    {
+		res.add("notepad");
+		continue;
+	    }
+	    if (Files.isDirectory(path))
+	    {
+		res.add("commander");
+		continue;
+	    }
+	    final String ext = getExtension(s).trim().toLowerCase();
+	    if (ext.trim().isEmpty() || !fileTypes.containsKey(ext))
+	    {
+		res.add("notepad");
+		continue;
+	    }
+	    res.add(fileTypes.get(ext));
+	}
+	return res.toArray(new String[res.size()]);
     }
 
     static public String getExtension(String fileName)
     {
-	NullCheck.notNull(fileName, "fileName");
-	if (fileName.isEmpty())
-	    throw new IllegalArgumentException("fileName may not be empty");
-	final String name = new File(fileName).getName();
+	NullCheck.notEmpty(fileName, "fileName");
+	final Path path = Paths.get(fileName);
+	final String name = path.getFileName().toString();
 	if (name.isEmpty())
 	    return "";
-	int dotPos = -1;
-	for(int i = 0;i < name.length();++i)
-	    if (name.charAt(i) == '.')
-		dotPos = i;
-	if (dotPos == 0 || dotPos + 1 >= name.length())
+	int dotPos = name.lastIndexOf(".");
+	if (dotPos < 1 || dotPos + 1 >= name.length())
 	    return "";
 	return name.substring(dotPos + 1);
     }

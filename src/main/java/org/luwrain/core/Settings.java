@@ -20,6 +20,14 @@ public interface Settings
 {
     static public RegistryKeys keys = new RegistryKeys();
 
+public interface FileTypeAppInfo
+{
+    boolean getTakesUrls(boolean defValue);
+    boolean getTakesMultiple(boolean defValue);
+    void setTakesUrls(boolean value);
+    void setTakesMultiple(boolean value);
+}
+
     public interface InteractionParams
     {
 	int getWindowLeft(int defValue);
@@ -225,5 +233,8 @@ public interface Braille
 	return RegistryProxy.create(registry, path, SpeechChannelBase.class);
     }
 
-
+    static public FileTypeAppInfo createFileTypeAppInfo(Registry registry, String path)
+    {
+	return RegistryProxy.create(registry, path, FileTypeAppInfo.class);
+    }
 }

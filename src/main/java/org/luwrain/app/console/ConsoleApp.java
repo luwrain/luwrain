@@ -80,8 +80,9 @@ public class ConsoleApp implements Application, MonoApp
 	return MonoApp.Result.BRING_FOREGROUND;
     }
 
-private void closeApp()
+    private void closeApp()
     {
+	Log.removeListener(listener);
 	luwrain.closeApp();
     }
 }

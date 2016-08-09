@@ -787,16 +787,10 @@ class Environment extends EnvironmentAreas
 
     void openFiles(String[] fileNames)
     {
-	if (fileNames == null || fileNames.length < 1)
+	NullCheck.notEmptyItems(fileNames, "fileNames");
+	if (fileNames.length < 1)
 	    return;
-	for(String s: fileNames)
-	    if (s == null)
-		return;
-	final String[] shortcuts = fileTypes.chooseShortcuts(fileNames);
-	if (shortcuts.length != fileNames.length)
-	    return;
-	for(int i = 0;i < shortcuts.length;++i)
-	    launchAppIface(shortcuts[i], new String[]{fileNames[i]});
+	fileTypes.launch(this, registry, fileNames);
     }
 
     Registry  registry()

@@ -125,6 +125,12 @@ public class RegistryKeys
 	return getProperty("core.FileTypes");
     }
 
+    public String fileTypesAppInfo()
+    {
+	return "/org/luwrain/file-types/app-info";
+    }
+
+
     public String ui()
     {
 	return getProperty("core.UI");
