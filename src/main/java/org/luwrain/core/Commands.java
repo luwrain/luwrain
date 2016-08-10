@@ -153,11 +153,11 @@ class Commands
 		}
 	    },
 
-	    //Introduce
+	    //announcee
 	    new Command() {
 		@Override public String getName()
 		{
-		    return "introduce";
+		    return "announce";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
