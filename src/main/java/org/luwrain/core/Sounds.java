@@ -21,6 +21,8 @@ public enum Sounds
     BLOCKED,
     CANCEL,
     COMMANDER_LOCATION,
+    COPIED,
+    CUT,
     DELETED,
     DOC_SECTION,
     DONE,

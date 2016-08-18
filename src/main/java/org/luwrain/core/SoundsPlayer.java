@@ -142,6 +142,8 @@ class SoundsPlayer
 	setSoundFile(dataDir, scheme.getCancel(""), Sounds.CANCEL);
 	setSoundFile(dataDir, scheme.getRegionPoint(""), Sounds.REGION_POINT);
 	setSoundFile(dataDir, scheme.getPaste(""), Sounds.PASTE);
+	setSoundFile(dataDir, scheme.getCopied(""), Sounds.COPIED);
+	setSoundFile(dataDir, scheme.getCut(""), Sounds.CUT);
     }
 
     private void setSoundFile(Path dataDir, String fileName,

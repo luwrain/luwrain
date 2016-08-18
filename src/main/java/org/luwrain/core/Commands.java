@@ -253,7 +253,7 @@ class Commands
 			return;
 		    }
 		    env.setClipboard(res);
-		    env.message(luwrain.i18n().getStaticStr("LinesCopied") + " " + res.getLineCount(), Luwrain.MESSAGE_REGULAR);
+		    env.message(luwrain.i18n().getStaticStr("LinesCopied") + " " + res.getLineCount(), Sounds.COPIED);
 		}
 	    },
 
@@ -281,7 +281,7 @@ class Commands
 			return;
 		    }
 		    env.setClipboard(res);
-		    env.message(luwrain.i18n().getStaticStr("LinesCut") + " " + res.getLineCount(), Luwrain.MESSAGE_REGULAR);
+		    env.message(luwrain.i18n().getStaticStr("LinesCut") + " " + res.getLineCount(), Sounds.CUT);
 		}
 	    },
 
@@ -298,8 +298,7 @@ class Commands
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE)))
 		    {
-			env.message(luwrain.i18n().getStaticStr("LinesDeleted"), Luwrain.MESSAGE_REGULAR);
-			env.playSound(Sounds.DELETED);
+			env.message(luwrain.i18n().getStaticStr("LinesDeleted"), Sounds.DELETED);
 		    } else
 			env.eventNotProcessedMessage();
 		}
@@ -324,9 +323,7 @@ class Commands
 		    final InsertEvent event = new InsertEvent(env.getClipboard ());
 		    if (area.onEnvironmentEvent(event))
 		    {
-			luwrain.silence();
-luwrain.message(luwrain.i18n().getStaticStr("LinesInserted") + " " + env.getClipboard().getLineCount());
-luwrain.playSound(Sounds.PASTE);
+			env.message(luwrain.i18n().getStaticStr("LinesInserted") + " " + env.getClipboard().getLineCount(), Sounds.PASTE);
 		} else
 			env.eventNotProcessedMessage();
 		}

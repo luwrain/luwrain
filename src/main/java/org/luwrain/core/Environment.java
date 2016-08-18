@@ -737,6 +737,21 @@ class Environment extends EnvironmentAreas
 	interaction.endDrawSession();
     }
 
+    void message(String text, Sounds sound)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(sound, "sound");
+	if (text.trim().isEmpty())
+	    return;
+	needForIntroduction = false;
+	    playSound(sound);
+	speech.speak(text, Luwrain.PITCH_MESSAGE, 0);
+	interaction.startDrawSession();
+	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
+	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text, true);
+	interaction.endDrawSession();
+    }
+
     private void introduceActiveApp()
     {
 	final Application app = apps.getActiveApp();

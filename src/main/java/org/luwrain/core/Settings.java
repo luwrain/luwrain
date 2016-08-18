@@ -99,6 +99,8 @@ public interface FileTypeAppInfo
 	String getCancel(String defValue);
 	String getRegionPoint(String defValue);
 	String getPaste(String defValue);
+	String getCopied(String defValue);
+	String getCut(String defValue);
 	String getError(String defValue);
 	String getFatal(String defValue);
 	String getDone(String defValue);
@@ -129,6 +131,8 @@ public interface FileTypeAppInfo
 	void setCancel(String value);
 	void setRegionPoint(String value);
 	void setPaste(String value);
+	void setCopied(String value);
+	void setCut(String value);
 	void setError(String value);
 	void setFatal(String value);
 	void setDone(String value);
