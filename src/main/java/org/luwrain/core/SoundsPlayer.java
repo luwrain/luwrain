@@ -17,7 +17,7 @@ class SoundsPlayer
 
 	Player(String fileName)
 	{
-	    NullCheck.notNull(fileName, "fileName");
+	    NullCheck.notEmpty(fileName, "fileName");
 	    this.fileName = fileName;
 	}
 
@@ -84,24 +84,21 @@ class SoundsPlayer
 	}
     }
 
-    private final Vector<String> soundFiles = new Vector<String>();
+    private final HashMap<Sounds, String> soundFiles = new HashMap<Sounds, String>();
     private Player previous;
 
-    void play(int index)
+    void play(Sounds sound)
     {
-	if (index >= soundFiles.size())
-	{
-	    Log.error("core", "sound index " + index + " is too large");
+	if (sound == null)
 	    return;
-	}
-	if (soundFiles.get(index) == null)
+	if (!soundFiles.containsKey(sound) || soundFiles.get(sound).isEmpty())
 	{
-	    Log.error("core", "no sound with index " + index);
+	    Log.error("core", "no sound for playing:" + sound);
 	    return;
 	}
 	if (previous != null)
 	    previous.interruptPlayback = true;
-	previous = new Player(soundFiles.elementAt(index));
+	previous = new Player(soundFiles.get(sound));
 	final Thread t = new Thread(previous);
 	t.start();
     }
@@ -148,15 +145,14 @@ class SoundsPlayer
     }
 
     private void setSoundFile(Path dataDir, String fileName,
-			      int index)
+			      Sounds sound)
     {
+NullCheck.notNull(sound, "sound");
 	if (fileName.isEmpty())
 	    return;
-	if (index >= soundFiles.size())
-	    soundFiles.setSize(index + 1);
 	Path path = Paths.get(fileName);
 	if (!path.isAbsolute())
 	    path = dataDir.resolve(path);
-	soundFiles.set(index, path.toString());
+	soundFiles.put(sound, path.toString());
     }
 }

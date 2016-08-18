@@ -16,40 +16,35 @@
 
 package org.luwrain.core;
 
-public interface Sounds
+public enum Sounds
 {
-    static public final int EVENT_NOT_PROCESSED = 0;
-    static public final int NO_APPLICATIONS = 1;
-    static public final int STARTUP = 2;
-    static public final int SHUTDOWN = 3;
-    static public final int MAIN_MENU = 4;
-    static public final int MAIN_MENU_EMPTY_LINE = 5;
-
-    /** Confirms finishing of the operation not continuous in time*/
-    static public final int ERROR = 6;
-
-    /** Confirms finishing of the operation continuous in time*/
-    static public final int DONE = 7;
-
-    static public final int OK = 8;
-    static public final int BLOCKED = 9;
-    static public final int INTRO_REGULAR = 10;
-    static public final int INTRO_POPUP = 11;
-    static public final int INTRO_APP = 12;
-    static public final int NO_ITEMS_BELOW = 13;
-    static public final int NO_ITEMS_ABOVE = 14;
-    static public final int NO_LINES_BELOW = 15;
-    static public final int NO_LINES_ABOVE = 16;
-    static public final int COMMANDER_LOCATION = 17;
-    static public final int LIST_ITEM = 18;
-    static public final int GENERAL_TIME = 19;
-    static public final int TERM_BELL = 20;
-    static public final int DOC_SECTION = 21;
-    static public final int NO_CONTENT = 22;
-    static public final int SEARCH = 23;
-    static public final int DELETED = 24;
-    static public final int FATAL = 25;
-    static public final int CANCEL = 26;
-    static public final int REGION_POINT = 27;
-    static public final int PASTE = 28;
+    BLOCKED,
+    CANCEL,
+    COMMANDER_LOCATION,
+    DELETED,
+    DOC_SECTION,
+    DONE,
+    ERROR,
+    EVENT_NOT_PROCESSED,
+    FATAL,
+    GENERAL_TIME,
+    INTRO_APP,
+    INTRO_POPUP,
+    INTRO_REGULAR,
+    LIST_ITEM,
+    MAIN_MENU,
+    MAIN_MENU_EMPTY_LINE,
+    NO_APPLICATIONS,
+    NO_CONTENT,
+    NO_ITEMS_ABOVE,
+    NO_ITEMS_BELOW,
+    NO_LINES_ABOVE,
+    NO_LINES_BELOW,
+    OK,
+    PASTE,
+    REGION_POINT,
+    SEARCH,
+    SHUTDOWN,
+    STARTUP,
+    TERM_BELL,
 }

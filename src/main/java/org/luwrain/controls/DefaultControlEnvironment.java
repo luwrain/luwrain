@@ -122,9 +122,10 @@ public class DefaultControlEnvironment implements ControlEnvironment
     }
 
 
-    @Override public void playSound(int code)
+    @Override public void playSound(Sounds sound)
     {
-	luwrain.playSound(code);
+	NullCheck.notNull(sound, "sound");
+	luwrain.playSound(sound);
     }
 
     @Override public UniRefInfo getUniRefInfo(String uniRef)

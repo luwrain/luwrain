@@ -89,7 +89,7 @@ public class Hints
 	}
     }
 
-    static public int hintToSoundMap(int hintCode)
+    static public Sounds hintToSoundMap(int hintCode)
     {
 	switch (hintCode)
 	{
@@ -112,7 +112,7 @@ public class Hints
 	case NO_CONTENT:
 	    return Sounds.NO_CONTENT;
 	default:
-	    return -1;
+	    return null;
 	}
     }
 } 

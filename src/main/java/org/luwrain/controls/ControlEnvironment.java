@@ -36,6 +36,6 @@ int getAreaVisibleHeight(Area area);
     void popup(Popup popupObj);
     String staticStr(LangStatic id);
     String getStaticStr(String id);
-    void playSound(int code);
+    void playSound(Sounds sound);
     UniRefInfo getUniRefInfo(String uniRef);
 }

@@ -62,9 +62,10 @@ abstract class EnvironmentBase implements EventConsumer
 	eventQueue.putEvent(e);
     }
 
-    void playSound(int code)
+    void playSound(Sounds sound)
     {
-	sounds.play(code);
+	NullCheck.notNull(sound, "sound");
+	sounds.play(sound);
     }
 
     protected void noAppsMessage()

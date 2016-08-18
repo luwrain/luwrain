@@ -149,9 +149,9 @@ public final class Luwrain implements EventConsumer
     public void hint(String text, int code)
     {
 	NullCheck.notNull(text, "text");
-	final int soundId = Hints.hintToSoundMap(code);
-	if (soundId >= 0)
-	    playSound(soundId);
+	final Sounds sound = Hints.hintToSoundMap(code);
+	if (sound != null)
+	    playSound(sound);
 	if (environment.onStandardHint(code))
 	    hint(text);
     }
@@ -318,9 +318,20 @@ public final class Luwrain implements EventConsumer
 	environment.openFiles(fileNames);
     }
 
-    public void playSound(int code)
+    /**
+    /**
+    * Plays one of the system sounds.  This method takes an identifier of
+    * the system sound, stops any previous playing, if there was any, and
+    * plays. The exact sound is selected depending on user's
+    * settings. Please node that sounds playing isn't interfering with
+    * speech. 
+    *
+    * @param sound The identifier of the sound to play
+    */
+    public void playSound(Sounds sound)
     {
-	environment.playSound(code);
+	NullCheck.notNull(sound, "sound");
+	environment.playSound(sound);
     }
 
     public void popup(Popup popup)
