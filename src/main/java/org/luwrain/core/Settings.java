@@ -98,6 +98,7 @@ public interface FileTypeAppInfo
 	String getEventNotProcessed(String defValue);
 	String getCancel(String defValue);
 	String getRegionPoint(String defValue);
+	String getPaste(String defValue);
 	String getError(String defValue);
 	String getFatal(String defValue);
 	String getDone(String defValue);
@@ -127,6 +128,7 @@ public interface FileTypeAppInfo
 	void setEventNotProcessed(String value);
 	void setCancel(String value);
 	void setRegionPoint(String value);
+	void setPaste(String value);
 	void setError(String value);
 	void setFatal(String value);
 	void setDone(String value);

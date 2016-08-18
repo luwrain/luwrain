@@ -323,7 +323,11 @@ class Commands
 			return;
 		    final InsertEvent event = new InsertEvent(env.getClipboard ());
 		    if (area.onEnvironmentEvent(event))
-			env.message(luwrain.i18n().getStaticStr("LinesInserted") + " " + env.getClipboard().getLineCount(), Luwrain.MESSAGE_REGULAR); else
+		    {
+			luwrain.silence();
+luwrain.message(luwrain.i18n().getStaticStr("LinesInserted") + " " + env.getClipboard().getLineCount());
+luwrain.playSound(Sounds.PASTE);
+		} else
 			env.eventNotProcessedMessage();
 		}
 	    },
@@ -645,9 +649,11 @@ class Commands
 		    final Date date = new Date();
 		    final Calendar cal = GregorianCalendar.getInstance();
 		    cal.setTime(date);
+		    luwrain.silence();
 		    luwrain.say("Время" + 
 				luwrain.i18n().getNumberStr(cal.get(Calendar.HOUR_OF_DAY), "hours") + " " + 
 				luwrain.i18n().getNumberStr(cal.get(Calendar.MINUTE), "minutes"));
+				luwrain.playSound(Sounds.GENERAL_TIME);
 		}
 	    },
 
