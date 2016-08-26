@@ -23,6 +23,7 @@ import org.luwrain.core.*;
 public interface ControlEnvironment
 {
     void say(String text);
+    void say(String text, Sounds sound);
     void sayStaticStr(LangStatic id);
     void sayLetter(char letter);
     void hint(String text); 

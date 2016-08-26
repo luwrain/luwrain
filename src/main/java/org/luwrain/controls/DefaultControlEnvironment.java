@@ -34,6 +34,14 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	luwrain.say(text);
     }
 
+    @Override public void say(String text, Sounds sound)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(sound, "sound");
+	luwrain.say(text, sound);
+    }
+
+
     @Override public void sayStaticStr(LangStatic id)
     {
 	NullCheck.notNull(id, "id");

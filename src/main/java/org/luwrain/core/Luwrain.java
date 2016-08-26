@@ -354,6 +354,14 @@ public final class Luwrain implements EventConsumer
 	environment.getSpeech().speak(preprocess(text), 0, 0);
     }
 
+    public void say(String text, Sounds sound)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(sound, "sound");
+	playSound(sound);
+	say(text);
+    }
+
     public void say(String text, int pitch)
     {
 	NullCheck.notNull(text, "text");
