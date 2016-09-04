@@ -25,7 +25,7 @@ public class ListUtils
     static public class DefaultItemsLayout implements ListArea.ItemsLayout 
     {
 	protected boolean hasEmptyLineTop = false;
-	protected boolean hasEmptyLineBottom = false;
+	protected boolean hasEmptyLineBottom = true;
 	protected boolean cycling = false;
 
 	@Override public int numberOfEmptyLinesTop()
@@ -45,27 +45,34 @@ public class ListUtils
 		if (cycling)
 		{
 		final int count = modelItemCount + (hasEmptyLineTop?1:0);//We don't need an empty line at the bottom
+		/* Possibly we need additional option to enable this
 		if (hasEmptyLineTop)
 		    return index > 1?index - 1:count - 1;
+		*/
 		    return index > 0?index - 1:count - 1;
 		}
-		    return index > 0?index - 1:0;
+		    return index > 0?index - 1:-1;
 	    }
 
 	    @Override public int oneLineDown(int index, int modelItemCount)
 	    {
 		if (modelItemCount < 1)
 		    return -1;
-		    final int topIndex = hasEmptyLineTop?1:0;
-		    final int count = modelItemCount + topIndex;
+		//		    final int topIndex = hasEmptyLineTop?1:0;
+		//		    final int count = modelItemCount + topIndex;
+		final int count = modelItemCount + (hasEmptyLineTop?1:0) + (hasEmptyLineBottom?1:0);
 		if (cycling)
 		{
+		    /*
 		if (hasEmptyLineBottom)
 		    return index < count?index + 1:topIndex;
-		    return index + 1 < count?index + 1:topIndex;
+		    */
+		    return index + 1 < count?index + 1:0;
 		}
+		/*
 		if (hasEmptyLineBottom)
 		    return index < count?index + 1:-1;
+		*/
 		    return index + 1 < count?index + 1:-1;
 	    }
 

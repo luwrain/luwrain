@@ -169,6 +169,11 @@ public class ListArea  implements Area, RegionProvider
 	return true;
     }
 
+    public int itemIndexOnLine(int index)
+    {
+	return index;
+    }
+
     public void reset(boolean introduce)
     {
 	EnvironmentEvent.resetRegionPoint(this);

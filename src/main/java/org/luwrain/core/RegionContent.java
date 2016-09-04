@@ -103,7 +103,7 @@ private Object[] rawObjects = new Object[0];
 	    b.append(" ");
 	    b.append(strings[i]);
 	}
-	return b.toString();
+	return new String(b);
     }
 
     public String[] strings() {return strings;}

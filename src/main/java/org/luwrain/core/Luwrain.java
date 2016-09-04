@@ -23,21 +23,32 @@ import org.luwrain.core.queries.*;
 import org.luwrain.speech.Channel;
 
 /**
- * The main gate to the LUWRAIN core for applications. This class is the
- * single point which all applications have for the access to system
- * functions.  All other classes considered as parts of LUWRAIN API
- * (e.g. from packages {@code org.luwrain.controls} or 
- * {@code org.luwrain.popups}) just wrap the instances of this class. In other
- * words, this class is an interface to the features of the LUWRAIN core.
+ * The main bridge for applications and extensions purposed for communication with
+ * LUWRAIN core. This class is a central object to be used by
+ * applications and extensions to call system routines. Applications and
+ * extensions never have the access with the level deeper than this
+ * class. The packages like {@code org.luwrain.controls} or 
+ * {@code org.luwrain.popups} always wrap the instance of {@code Luwrain} class
+ * (meaning, are unable to give more access to system core than provided
+ * with given instance of {@code Luwrain} class).
  * <p>
- * On every application launch, the environment creates new instance of this
- * class which is provided to the application object through 
- * {@code Application.onLaunch()} method.  All methods of this class which deal with the
- * environment always give the {@code this} reference. Therefore, the
- * environment is always aware which application has issued the particular request.
- * With this behaviour  the {@code Luwrain} class does the
- * identification function, and applications should try to keep the reference
- * to this class in secret.
+ * The core creates new instance of this class for each newly launched
+ * application or loaded extension. Therefore, the environment is always
+ * aware which application oor extension has issued the particular
+ * request. Applications get the object associated with them through
+ * {@code onLaunch()} method. Extensions get the corresponding instance
+ * through the argument for the methods they override (it is always the
+ * same instance provided this way just for convenience). Everybody is
+ * encouraged to keep provided instance in secret. 
+ * <p>
+ * It could be slightly confusing that the extension and the applications
+ * launched by this extension get different instances of {@code Luwrain}
+ * class, but it's necessary to distinguish multiple instances of the
+ * particular application (while an extension can be loaded only once).
+ * <p>
+ * Various instance of {@code Luwrain} class may provide different level
+ * of access.  It is necessary to make extensions using more accurate and
+ * transparent.
  */
 public final class Luwrain implements EventConsumer
 {
@@ -576,6 +587,10 @@ public final class Luwrain implements EventConsumer
 	    return environment.getPaths().get(propName);
 	case "luwrain.dir.scripts":
 	    return environment.getPaths().get("luwrain.dir.data").resolve("scripts");
+	case "luwrain.dir.properties":
+	    return environment.getPaths().get("luwrain.dir.data").resolve("properties");
+	case "luwrain.dir.sounds":
+	    return environment.getPaths().get("luwrain.dir.data").resolve("sounds");
 	default:
 	    return null;
 	}

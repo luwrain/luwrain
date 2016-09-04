@@ -80,7 +80,8 @@ class ContextMenu extends ListPopup
 	params.model = new FixedListModel(actions);
 	params.appearance = new Appearance(luwrain);
 	params.environment = new DefaultControlEnvironment(luwrain);
-	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());
+	//	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());
+	params.flags = EnumSet.of(ListArea.Flags.CYCLING, ListArea.Flags.EMPTY_LINE_TOP);
 	return params;
     }
 }

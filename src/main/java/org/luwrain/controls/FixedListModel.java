@@ -16,6 +16,8 @@
 
 package org.luwrain.controls;
 
+import java.util.*;
+
 import org.luwrain.core.NullCheck;
 
 public class FixedListModel implements ListArea.Model
@@ -29,9 +31,8 @@ public class FixedListModel implements ListArea.Model
 
     public FixedListModel(Object[] items)
     {
-	this.items = items;
-	NullCheck.notNull(items, "items");
 	NullCheck.notNullItems(items, "items");
+	this.items = items;
     }
 
     public void setItems(Object[] items)
@@ -43,6 +44,29 @@ public class FixedListModel implements ListArea.Model
     public void clear()
     {
 	items = new Object[0];
+    }
+
+    public Object[] getItems()
+    {
+	return items;
+    }
+
+    public void add(Object o)
+    {
+	NullCheck.notNull(o, "o");
+	items = Arrays.copyOf(items, items.length + 1);
+	items[items.length - 1] = o;
+    }
+
+    public boolean delete(int index)
+    {
+	if (index < 0 || index >= items.length)
+	    return false;
+	if (index + 1 < items.length)
+	    for(int i = index;i < items.length - 1;++i)
+		items[index] = items[index + 1];
+	items = Arrays.copyOf(items, items.length - 1);
+	return true;
     }
 
     @Override public int getItemCount()

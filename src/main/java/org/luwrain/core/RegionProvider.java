@@ -73,5 +73,5 @@ public interface RegionProvider
      * @return True if the object supports the operation and the data has been inserted, false otherwise
      */
     boolean insertRegion(int x, int y,
-			 RegionContent heldData);
+			 RegionContent content);
 }

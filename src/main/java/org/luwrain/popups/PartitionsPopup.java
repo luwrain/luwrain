@@ -138,9 +138,9 @@ public class PartitionsPopup extends ListPopupBase
     protected Partition result = null;
 
     public PartitionsPopup(Luwrain luwrain, Control control,
-			   String name, Set<Popup.Flags> popupFlags)
+			   String name, Set<Popup.Flags> popupFlags, Set<ListArea.Flags> listFlags)
     {
-	super(luwrain, constructParams(luwrain, control, name), popupFlags);
+	super(luwrain, constructParams(luwrain, control, name, listFlags), popupFlags);
 	NullCheck.notNull(control, "control");
 	this.control = control;
     }
@@ -213,16 +213,18 @@ public class PartitionsPopup extends ListPopupBase
     }
 
     static private ListArea.Params constructParams(Luwrain luwrain, Control control,
-String name)
+						   String name, Set<ListArea.Flags> listFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(control, "control");
 	NullCheck.notNull(name, "name");
+	NullCheck.notNull(listFlags, "listFlags");
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.name = name;
 	params.model = new Model(control);
 	params.appearance = new Appearance(luwrain);
+	params.flags = listFlags;
 	return params;
     }
 }

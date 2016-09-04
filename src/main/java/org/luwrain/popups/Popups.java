@@ -78,7 +78,8 @@ public class Popups
 	params.name = name;
 	params.model = model;
 	params.appearance = new DefaultListItemAppearance(params.environment);
-	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());
+	//	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());
+	params.flags = EnumSet.of(ListArea.Flags.CYCLING, ListArea.Flags.EMPTY_LINE_TOP);
 	final ListPopup popup = new ListPopup(luwrain, params, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
@@ -188,7 +189,7 @@ public class Popups
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(popupFlags, "popupFlags");
 	final PartitionsPopup popup = new PartitionsPopup(luwrain, (PartitionsPopup.Control)luwrain.getSharedObject("luwrain.partitionspopupcontrol"),
-							  luwrain.i18n().getStaticStr("PartitionsPopupName"), popupFlags);
+							  luwrain.i18n().getStaticStr("PartitionsPopupName"), popupFlags, EnumSet.of(ListArea.Flags.CYCLING, ListArea.Flags.EMPTY_LINE_TOP));
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;

@@ -628,6 +628,13 @@ protected MultilineEdit multilineEdit;
 	return name;
     }
 
+    public void setAreaName(String name)
+    {
+	NullCheck.notNull(name, "name");
+	this.name = name;
+	//FIXME:	environment.onNewAreaName(this);
+    }
+
     private void updateEditsPos()
     {
 	for(int i = 0;i < items.size();++i)
