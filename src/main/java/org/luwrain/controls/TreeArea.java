@@ -155,6 +155,7 @@ public class TreeArea implements Area
     public void refresh()
     {
 	final Object oldSelected = selected();
+	final int oldHotPointY = hotPointY;
 	Object newRoot = model.getRoot();
 	if (newRoot == null)
 	{
@@ -170,12 +171,17 @@ public class TreeArea implements Area
 	    root = constructNode(model.getRoot(), null, true); //true means expand children;
 	items = generateAllVisibleItems();
 	environment.onAreaNewContent(this);
-	if (oldSelected != null)
+	if (oldSelected == null)
+		selectFirstItem(); else
 	{
 	    if (!selectObject(oldSelected))
-		selectFirstItem();
-	} else
+	{
+	    if (items != null && oldHotPointY < items.length)
+		hotPointY = oldHotPointY; else 
 	    selectEmptyLastLine();
+	    environment.onAreaNewHotPoint(this);
+	}
+	}
     }
 
     public Object selected()
@@ -191,7 +197,7 @@ public class TreeArea implements Area
 	    return false;
 	int k;
 	for(k = 0;k < items.length;++k)
-	    if (items[k].node.obj.equals(obj))//FIXME:equals;
+	    if (items[k].node.obj.equals(obj))
 		break;
 	if (k >= items.length)
 	    return false;
