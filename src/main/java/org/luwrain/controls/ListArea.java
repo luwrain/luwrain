@@ -71,6 +71,11 @@ public class ListArea  implements Area, RegionProvider
 	return model;
     }
 
+    public Appearance getAppearance()
+    {
+	return appearance;
+    }
+
     /**
      * Returns the object in the model corresponding to current hot point
      * position.  If the model is empty or hot point is on an empty line,
