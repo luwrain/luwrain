@@ -35,6 +35,8 @@ class StandardUniRefProcs
 			return null;
 		    if (!uniRef.startsWith("file:"))
 			return null;
+		    if (uniRef.indexOf("ncc.html") >= 0)
+			return new UniRefInfo(uniRef, "Учебник", "\"Обществознание\"");
 		    return new UniRefInfo(uniRef, luwrain.i18n().getStaticStr("UniRefPrefixFile"), uniRef.substring(5));
 		}
 		public void openUniRef(String uniRef, Luwrain luwrain)
