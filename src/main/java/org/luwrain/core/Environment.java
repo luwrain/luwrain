@@ -911,7 +911,22 @@ class Environment extends EnvironmentAreas
     private void showCommandPopup()
     {
 	final EditListPopup popup = new EditListPopup(new Luwrain(this), new EditListPopupUtils.FixedModel(commands.getCommandNames()),
-						      i18n.getStaticStr("CommandPopupName"), i18n.getStaticStr("CommandPopupPrefix"), "", EnumSet.noneOf(Popup.Flags.class));
+						      i18n.getStaticStr("CommandPopupName"), i18n.getStaticStr("CommandPopupPrefix"), "", EnumSet.noneOf(Popup.Flags.class)){
+		@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    NullCheck.notNull(query, "query");
+		    switch(query.getQueryCode())
+		    {
+		    case AreaQuery.OBJECT_UNIREF:
+			if (text.trim().isEmpty())
+			    return false;
+			((ObjectUniRefQuery)query).answer("command:" + text().trim());
+			return true;
+		    default:
+			return super.onAreaQuery(query);
+		    }
+		}
+	    };
 	popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
@@ -1058,7 +1073,7 @@ if (readingChannel == null)
 }
 	Log.debug("core", "using the channel \'" + readingChannel.getChannelName() + " for area reading");
 	final VoicedFragmentQuery query = new VoicedFragmentQuery();
-	if (activeArea.onAreaQuery(query) && query.containsResult())
+	if (activeArea.onAreaQuery(query) && query.hasAnswer())
 	    startReading(activeArea, query.text(), query.nextPointX(), query.nextPointY()); else
 	    startReadingGeneralText(activeArea, activeArea.getHotPointX(), activeArea.getHotPointY());
 	    return;
@@ -1092,7 +1107,7 @@ if (readingChannel == null)
 	NullCheck.notNull(area, "area");
 	area.onEnvironmentEvent(new ReadingPointEvent(nextPointX, nextPointY));
 	final VoicedFragmentQuery query = new VoicedFragmentQuery();
-	if (area.onAreaQuery(query) && query.containsResult())
+	if (area.onAreaQuery(query) && query.hasAnswer())
 	    startReading(area, query.text(), query.nextPointX(), query.nextPointY()); else
 	    startReadingGeneralText(area, nextPointX, nextPointY);
     }

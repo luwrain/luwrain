@@ -33,7 +33,7 @@ public class CurrentDirQuery extends AreaQuery
 	if (this.currentDir != null)
 	    throw new IllegalArgumentException("currentDir may not be set twice");
 	this.currentDir = currentDir;
-	resultTaken();
+answerTaken();
     }
 
     public String getCurrentDir()

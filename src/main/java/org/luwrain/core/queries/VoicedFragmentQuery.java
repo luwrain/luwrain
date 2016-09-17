@@ -36,7 +36,7 @@ public class VoicedFragmentQuery extends AreaQuery
 	this.text = text;
 	this.nextPointX = nextPointX;
 	this.nextPointY = nextPointY;
-	resultTaken();
+	answerTaken();
     }
 
     public String text()

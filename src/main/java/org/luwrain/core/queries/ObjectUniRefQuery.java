@@ -27,16 +27,16 @@ public class ObjectUniRefQuery extends AreaQuery
 	super(OBJECT_UNIREF);
     }
 
-    public void setUniRef(String uniRef)
+    public void answer(String uniRef)
     {
 	NullCheck.notNull(uniRef, "uniRef");
-	if (this.uniRef != null)
+	if (hasAnswer())
 	    throw new IllegalArgumentException("uniRef may not be set twice");
 	this.uniRef = uniRef;
-	resultTaken();
+answerTaken();
     }
 
-    public String getUniRef()
+    public String getAnswer()
     {
 	return uniRef;
     }

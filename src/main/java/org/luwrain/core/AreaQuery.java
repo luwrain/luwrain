@@ -25,7 +25,7 @@ public class AreaQuery extends Event
     static public final int VOICED_FRAGMENT = 4;
 
     private int code;
-    private boolean containsResult = false;
+    private boolean hasAnswer = false;
 
     public AreaQuery(int code)
     {
@@ -38,13 +38,13 @@ public class AreaQuery extends Event
 	return code;
     }
 
-    public boolean containsResult()
+    public boolean hasAnswer()
     {
-	return containsResult;
+	return hasAnswer;
     }
 
-    protected void resultTaken()
+    protected void answerTaken()
     {
-	containsResult = true;
+	hasAnswer = true;
     }
 }

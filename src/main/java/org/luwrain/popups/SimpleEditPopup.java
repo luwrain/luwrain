@@ -23,6 +23,17 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
+/**
+ * Shows a popup for input of single line of text. This class is an
+ * implementation of {@link org.luwrain.core.Popup} interface with
+ * functionality to let user to give single line of text without any
+ * completion and helping features. This class takes a short line which
+ * will be shown before the input describing the purpose of expected
+ * value. As well, this class takes acceptance object which prevents
+ * input of undesirable values. 
+ *
+ * @see ListPopup EditListPopup FilePopup 
+ */
 public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointControl, EmbeddedEditLines, RegionProvider
 {
     protected Luwrain luwrain;
@@ -33,10 +44,11 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
     protected String prefix;
     protected String text;
     protected int pos;
+    protected Acceptance acceptance;
     protected Set<Popup.Flags> popupFlags;
 
     public SimpleEditPopup(Luwrain luwrain, String name,
-			    String prefix, String text,
+			   String prefix, String text,
 			   Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -51,6 +63,26 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 	this.popupFlags = popupFlags;
 	this.pos = prefix.length() + text.length();
 	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, prefix.length(), 0);
+	this.acceptance = null;
+    }
+
+    public SimpleEditPopup(Luwrain luwrain, String name,
+			   String prefix, String text,
+			   Set<Popup.Flags> popupFlags, Acceptance acceptance)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(popupFlags, "popupFlags");
+	this.luwrain = luwrain;
+	this.name = name ;
+	this.prefix = prefix;
+	this.text = text;
+	this.popupFlags = popupFlags;
+	this.pos = prefix.length() + text.length();
+	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, prefix.length(), 0);
+	this.acceptance = acceptance;
     }
 
     @Override public int getLineCount()
@@ -371,5 +403,10 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
     @Override public Set<Popup.Flags> getPopupFlags()
     {
 	return popupFlags;
+    }
+
+    public interface Acceptance 
+    {
+	boolean inputLineAcceptable(String inputLine);
     }
 }

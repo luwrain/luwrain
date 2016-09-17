@@ -102,7 +102,7 @@ public final class Luwrain implements EventConsumer
 	if (area == null)
 	    return null;
 	final RegionQuery query = new RegionQuery();
-	if (!area.onAreaQuery(query) || !query.containsResult())
+	if (!area.onAreaQuery(query) || !query.hasAnswer())
 	    return null;
 	return query.getAnswer();
     }
@@ -119,7 +119,7 @@ public final class Luwrain implements EventConsumer
 	if (area == null)
 	    return getPathProperty("luwrain.dir.userhome").toString();
 	final CurrentDirQuery query = new CurrentDirQuery();
-	if (!area.onAreaQuery(query) || !query.containsResult())
+	if (!area.onAreaQuery(query) || !query.hasAnswer())
 	    return getPathProperty("luwrain.dir.userhome").toString();
 	return query.getCurrentDir();
     }

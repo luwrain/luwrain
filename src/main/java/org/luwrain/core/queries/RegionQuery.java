@@ -38,7 +38,7 @@ public class RegionQuery extends AreaQuery
 	if (this.answer != null)
 	    throw new IllegalArgumentException("This RegionQuery already has the answer");
 	this.answer = content;
-	resultTaken();
+	answerTaken();
     }
 
     public RegionContent getAnswer()

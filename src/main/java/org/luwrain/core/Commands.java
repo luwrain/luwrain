@@ -241,7 +241,7 @@ class Commands
 		    if (area == null)
 			return;
 		    final RegionQuery query = new RegionQuery();
-		    if (!area.onAreaQuery(query) || !query.containsResult())
+		    if (!area.onAreaQuery(query) || !query.hasAnswer())
 		    {
 			env.eventNotProcessedMessage();
 			return;
@@ -269,7 +269,7 @@ class Commands
 		    if (area == null)
 			return;
 		    final CutQuery query = new CutQuery();
-		    if (!area.onAreaQuery(query) || !query.containsResult())
+		    if (!area.onAreaQuery(query) || !query.hasAnswer())
 		    {
 			env.eventNotProcessedMessage();
 			return;
@@ -453,12 +453,12 @@ class Commands
 		    if (area == null)
 			return;
 		    final ObjectUniRefQuery query = new ObjectUniRefQuery();
-		    if (!area.onAreaQuery(query) || !query.containsResult())
+		    if (!area.onAreaQuery(query) || !query.hasAnswer())
 		    {
 			env.eventNotProcessedMessage();
 			return;
 		    }
-		    final String uniRef = query.getUniRef();
+		    final String uniRef = query.getAnswer();
 		    if (uniRef == null || uniRef.trim().isEmpty())
 		    {
 			env.eventNotProcessedMessage();
