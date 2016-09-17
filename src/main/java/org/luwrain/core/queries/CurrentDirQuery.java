@@ -16,28 +16,31 @@
 
 package org.luwrain.core.queries;
 
+import java.nio.file.*;
+
 import org.luwrain.core.*;
 
 public class CurrentDirQuery extends AreaQuery
 {
-    private String currentDir = null;
+    protected String answer = null;
 
     public CurrentDirQuery()
     {
 	super(CURRENT_DIR);
     }
 
-    public void setCurrentDir(String currentDir)
+    public void answer(String currentDir)
     {
-	NullCheck.notNull(currentDir, "currentDir");
-	if (this.currentDir != null)
-	    throw new IllegalArgumentException("currentDir may not be set twice");
-	this.currentDir = currentDir;
+	NullCheck.notEmpty(currentDir, "currentDir");
+	secondAnswerCheck();
+	if (!Paths.get(currentDir).isAbsolute())
+	    throw new IllegalArgumentException("currentDir must be absolute");
+	this.answer = currentDir;
 answerTaken();
     }
 
-    public String getCurrentDir()
+    public String getAnswer()
     {
-	return currentDir;
+	return answer;
     }
 }

@@ -404,7 +404,7 @@ protected CommanderAppearance commanderAppearance;
 	if (query.getQueryCode() == AreaQuery.CURRENT_DIR)
 	{
 	    final CurrentDirQuery currentDirQuery = (CurrentDirQuery)query;
-	    currentDirQuery.setCurrentDir(model().current.toString());
+	    currentDirQuery.answer(model().current.toString());
 	    return true;
 	}
 	return super.onAreaQuery(query);

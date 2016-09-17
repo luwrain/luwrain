@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-public class AreaQuery extends Event
+abstract public class AreaQuery extends Event
 {
     static public final int REGION = 0;
     static public final int OBJECT_UNIREF = 1;
@@ -33,10 +33,12 @@ public class AreaQuery extends Event
 	this.code = code;
     }
 
-    public int getQueryCode()
+    public final int getQueryCode()
     {
 	return code;
     }
+
+    abstract public Object getAnswer();
 
     public boolean hasAnswer()
     {
@@ -47,4 +49,10 @@ public class AreaQuery extends Event
     {
 	hasAnswer = true;
     }
+
+    protected void secondAnswerCheck()
+    {
+	if (hasAnswer())
+	    throw new IllegalArgumentException("Answer may not be made twice");
+    } 
 }

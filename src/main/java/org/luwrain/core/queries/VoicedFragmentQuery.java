@@ -39,7 +39,7 @@ public class VoicedFragmentQuery extends AreaQuery
 	answerTaken();
     }
 
-    public String text()
+    @Override public String getAnswer()
     {
 	return text;
     }

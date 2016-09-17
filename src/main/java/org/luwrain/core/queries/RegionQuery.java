@@ -32,7 +32,7 @@ public class RegionQuery extends AreaQuery
 	super(desiredCode);
     }
 
-    public void answer(RegionContent content)
+public void answer(RegionContent content)
     {
 	NullCheck.notNull(content, "content");
 	if (this.answer != null)
@@ -41,7 +41,7 @@ public class RegionQuery extends AreaQuery
 	answerTaken();
     }
 
-    public RegionContent getAnswer()
+    @Override public RegionContent getAnswer()
     {
 	return answer;
     }

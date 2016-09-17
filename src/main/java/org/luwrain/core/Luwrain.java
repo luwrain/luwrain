@@ -121,7 +121,7 @@ public final class Luwrain implements EventConsumer
 	final CurrentDirQuery query = new CurrentDirQuery();
 	if (!area.onAreaQuery(query) || !query.hasAnswer())
 	    return getPathProperty("luwrain.dir.userhome").toString();
-	return query.getCurrentDir();
+	return query.getAnswer();
     }
 
     @Override public void enqueueEvent(Event e)

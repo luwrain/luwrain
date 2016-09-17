@@ -1074,7 +1074,7 @@ if (readingChannel == null)
 	Log.debug("core", "using the channel \'" + readingChannel.getChannelName() + " for area reading");
 	final VoicedFragmentQuery query = new VoicedFragmentQuery();
 	if (activeArea.onAreaQuery(query) && query.hasAnswer())
-	    startReading(activeArea, query.text(), query.nextPointX(), query.nextPointY()); else
+	    startReading(activeArea, query.getAnswer(), query.nextPointX(), query.nextPointY()); else
 	    startReadingGeneralText(activeArea, activeArea.getHotPointX(), activeArea.getHotPointY());
 	    return;
     }
@@ -1108,7 +1108,7 @@ if (readingChannel == null)
 	area.onEnvironmentEvent(new ReadingPointEvent(nextPointX, nextPointY));
 	final VoicedFragmentQuery query = new VoicedFragmentQuery();
 	if (area.onAreaQuery(query) && query.hasAnswer())
-	    startReading(area, query.text(), query.nextPointX(), query.nextPointY()); else
+	    startReading(area, query.getAnswer(), query.nextPointX(), query.nextPointY()); else
 	    startReadingGeneralText(area, nextPointX, nextPointY);
     }
 
