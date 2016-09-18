@@ -69,12 +69,6 @@ abstract class EnvironmentAreas extends EnvironmentBase
 	return false;
     }
 
-    void sendBroadcastMessage(EnvironmentEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	apps.sendBroadcastEvent(event);
-    }
-
     Luwrain getObjForEnvironment()
     {
 	return interfaces.getObjForEnvironment();

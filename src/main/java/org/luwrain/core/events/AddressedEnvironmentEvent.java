@@ -18,10 +18,31 @@ package org.luwrain.core.events;
 
 import org.luwrain.core.*;
 
-public class ThreadSyncEvent extends AddressedEnvironmentEvent
+public class AddressedEnvironmentEvent extends EnvironmentEvent
 {
-    public ThreadSyncEvent(Area destArea)
+    private Area destArea;
+    private Object instanceObj = null;
+
+    public AddressedEnvironmentEvent(Area destArea, Code code)
     {
-	super(destArea, Code.THREAD_SYNC);
+	super(code);
+	NullCheck.notNull(destArea, "destArea");
+	this.destArea = destArea;
+    }
+
+    public Area getDestArea()
+    {
+	return destArea;
+    }
+
+    public void setInstanceObj(Object instanceObj)
+    {
+	NullCheck.notNull(instanceObj, "instanceObj");
+	this.instanceObj = instanceObj;
+    }
+
+    public Object getInstanceObj()
+    {
+	return instanceObj;
     }
 }

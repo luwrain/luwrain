@@ -662,11 +662,4 @@ public final class Luwrain implements EventConsumer
 	    return "";
 	}
     }
-
-    public boolean sendBroadcastMessage(EnvironmentEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	environment.sendBroadcastMessage(event);
-	return true;
-    }
 }

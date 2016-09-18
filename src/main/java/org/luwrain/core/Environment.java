@@ -378,11 +378,27 @@ class Environment extends EnvironmentAreas
 		return onRunnableEvent((RunnableEvent)event);
 	    if (event instanceof KeyboardEvent)
 		return onKeyboardEvent(translateKeyboardEvent((KeyboardEvent)event));
-	    if (event instanceof ThreadSyncEvent)
-		return onThreadSyncEvent((ThreadSyncEvent)event);
+	    if (event instanceof AddressedEnvironmentEvent)
+		return onAddressedEnvironmentEvent((AddressedEnvironmentEvent)event);
 	    if (event instanceof EnvironmentEvent)
-		return onEnvironmentEvent((EnvironmentEvent)event);
-	    Log.warning("core", "unknown event class:" + event.getClass().getName());
+	    {
+		final EnvironmentEvent environmentEvent = (EnvironmentEvent)event;
+		if (environmentEvent.getType() == null)
+		{
+		    Log.warning("core", "an environment event with null type in main event loop, skipping");
+		    return true;
+		}
+		switch(environmentEvent.getType())
+		{
+		case REGULAR:
+		    return onEnvironmentEvent(environmentEvent);
+		case BROADCAST:
+		    return onBroadcastEnvironmentEvent(environmentEvent);
+		default:
+		    return true;
+		}
+	    }
+	    Log.warning("core", "unknown event class of the event in main event loop:" + event.getClass().getName());
 	    return true;
 	}
 	catch (Exception e)
@@ -568,23 +584,28 @@ class Environment extends EnvironmentAreas
 	return true;
     }
 
-    private boolean onThreadSyncEvent(ThreadSyncEvent event)
+    private boolean onAddressedEnvironmentEvent(AddressedEnvironmentEvent event)
     {
+	NullCheck.notNull(event, "event");
 	final Area destArea = event.getDestArea();
 	if (destArea == null)
-	{
-	    Log.warning("core", "thread sync event to the blocked area " + destArea.getClass().getName());
 	    return true;
-	}
-	//FIXME:if the area is blocked we should reject the event;
+	//FIXME:if the area is blocked we should reject the event; 	    Log.warning("core", "thread sync event to the blocked area " + destArea.getClass().getName());
 	try {
 		destArea.onEnvironmentEvent(event);
 		}
 	catch (Throwable e)
 	{
-	    Log.error("core", "exception while processing thread sync event:" + e.getMessage());
+	    Log.error("core", "exception while processing addressed environment event to area of class " + destArea.getClass().getName() + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    e.printStackTrace();
 	}
+	return true;
+    }
+
+private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	apps.sendBroadcastEvent(event);
 	return true;
     }
 
