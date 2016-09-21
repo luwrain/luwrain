@@ -309,11 +309,15 @@ public class ListArea  implements Area, RegionProvider
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return false;
 	switch (event.getCode())
 	{
 	case REFRESH:
 	    refresh();
 	    return true;
+	case INTRODUCE:
+	    return onAnnounce();
 	case ANNOUNCE_LINE:
 	    return onAnnounceLine();
 	case OK:
@@ -383,6 +387,18 @@ public class ListArea  implements Area, RegionProvider
     {
 	NullCheck.notNull(areaName, "areaName");
 	this.areaName = areaName;
+    }
+
+    protected boolean onAnnounce()
+    {
+	environment.playSound(Sounds.INTRO_REGULAR);
+	String item = "";
+	if (selected() != null)
+	    item = appearance.getScreenAppearance(selected(), EnumSet.noneOf(Appearance.Flags.class)).trim();
+	if (!item.isEmpty())
+	    item = " " + item;
+	environment.say(getAreaName() + item);
+	return true;
     }
 
     protected boolean onAnnounceLine()
