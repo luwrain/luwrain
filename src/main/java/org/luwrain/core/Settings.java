@@ -18,7 +18,19 @@ package org.luwrain.core;
 
 public interface Settings
 {
+    static final String PERSONAL_INFO_PATH = "/org/luwrain/personal";
+
     static public RegistryKeys keys = new RegistryKeys();
+
+    public interface PersonalInfo
+    {
+	String getFullName(String defValue);
+	String getDefaultMailAddress(String defValue);
+	String getSignature(String defValue);
+	void setFullName(String value);
+	void setDefaultMailAddress(String value);
+	void setSignature(String value);
+    }
 
 public interface FileTypeAppInfo
 {
@@ -242,5 +254,11 @@ public interface Braille
     static public FileTypeAppInfo createFileTypeAppInfo(Registry registry, String path)
     {
 	return RegistryProxy.create(registry, path, FileTypeAppInfo.class);
+    }
+
+    static public PersonalInfo createPersonalInfo(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, PERSONAL_INFO_PATH, PersonalInfo.class);
     }
 }

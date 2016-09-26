@@ -112,6 +112,7 @@ public class Manager
 	for(LoadedExtension e: extensions)
 	{
 	    try {
+		Log.debug("extensions", "closing extension " + e.ext.getClass().getName());
 		e.ext.close();
 	    }
 	    catch (Throwable t)

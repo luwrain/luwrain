@@ -192,7 +192,9 @@ public class Init
 	    Log.debug("init", s);
 	if (init())
 	    new Environment(cmdLine, registry, os, interaction, paths, lang).run();
+	Log.debug("init", "closing interaction");
 	interaction.close();
+	Log.info("init", "exiting LUWRAIN normally");
 	System.exit(0);
     }
 

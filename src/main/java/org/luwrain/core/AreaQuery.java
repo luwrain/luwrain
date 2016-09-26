@@ -24,6 +24,8 @@ abstract public class AreaQuery extends Event
     static public final int CUT = 3;
     static public final int VOICED_FRAGMENT = 4;
 
+    static public final int BEGIN_READING = 5;
+
     private int code;
     private boolean hasAnswer = false;
 

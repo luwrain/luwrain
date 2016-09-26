@@ -88,8 +88,10 @@ class Environment extends EnvironmentAreas
 		Thread.currentThread().interrupt();
 	    }
 	eventLoop(new InitialEventLoopStopCondition());
+	Log.debug("core", "event loop finished");
 	interaction.stopInputEventsAccepting();
 	extensions.close();
+	Log.debug("core", "environment closed");
     }
 
     private void init()
@@ -908,8 +910,12 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	return i18n;
     }
 
+    //    private org.luwrain.core.util.OggPlayer oggPlayer = null;
     void mainMenu()
     {
+	//	oggPlayer = new org.luwrain.core.util.OggPlayer("file:///tmp/proba.ogg");
+	//oggPlayer.start();
+
 	final MainMenu mainMenu = MainMenu.newMainMenu(getObjForEnvironment());
 	if (mainMenu == null)
 	    return;
