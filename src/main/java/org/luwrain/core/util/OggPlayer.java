@@ -36,8 +36,6 @@
  * POSSIBILITY OF SUCH DAMAGE.                                                  
  */                                                                             
 
-
-
 package org.luwrain.core.util;
 
 import com.jcraft.jogg.*;                                                       
@@ -60,7 +58,7 @@ public class OggPlayer extends Thread
     private URLConnection urlConnection = null;                                 
     private InputStream inputStream = null;                                     
     private byte[] buffer = null;                                                       
-    private int bufferSize = 2048;                                                      
+    private final int bufferSize = 2048;
     private int count = 0;                                                              
     private int index = 0;                                                              
     private byte[] convertedBuffer;                                                     
@@ -77,12 +75,14 @@ public class OggPlayer extends Thread
     private Comment jorbisComment = new Comment();                              
     private Info jorbisInfo = new Info();                                       
 
+    private boolean toContinue = true;
+
     public OggPlayer(String pUrl)                                                  
     {                                                                           
         configureInputStream(getUrl(pUrl));                                     
     }                                                                           
 
-    public URL getUrl(String pUrl)                                              
+    private URL getUrl(String pUrl)                                              
     {                                                                           
         URL url = null;                                                         
 	try                                                                     
@@ -136,15 +136,16 @@ public class OggPlayer extends Thread
             return;                                                             
         }                                                                       
         initializeJOrbis();                                                     
-        if(readHeader())                                                        
-        {                                                                       
-            if(initializeSound())                                               
-            {                                                                   
+        if(readHeader() && initializeSound())
                 readBody();                                                     
-            }                                                                   
-        }                                                                       
         cleanUp();                                                              
-    }                                                                           
+    }                                                                          
+
+    public void stopPlay()
+    {
+	toContinue = false;
+	outputLine.stop();
+    }
 
     private void initializeJOrbis()                                             
     {                                                                           
@@ -152,7 +153,7 @@ public class OggPlayer extends Thread
         joggSyncState.init();                                                   
         joggSyncState.buffer(bufferSize);                                       
         buffer = joggSyncState.data;                                            
-        debugOutput("Done initializing JOrbis.");                               
+	debugOutput("Done initializing JOrbis.");                               
     }                                                                           
 
     private boolean readHeader()                                                
@@ -162,8 +163,7 @@ public class OggPlayer extends Thread
         int packet = 1;                                                         
         while(needMoreData)                                                     
         {                                                                       
-            try                                                                 
-            {                                                                   
+            try {
                 count = inputStream.read(buffer, index, bufferSize);            
             }                                                                   
             catch(IOException exception)                                        
@@ -284,7 +284,7 @@ public class OggPlayer extends Thread
     private boolean initializeSound()                                           
     {                                                                           
         debugOutput("Initializing the sound system.");                          
-        convertedBufferSize = bufferSize * 2;                                   
+        convertedBufferSize = bufferSize * 2;
         convertedBuffer = new byte[convertedBufferSize];                        
         jorbisDspState.synthesis_init(jorbisInfo);                              
         jorbisBlock.init(jorbisDspState);                                       
@@ -335,28 +335,25 @@ public class OggPlayer extends Thread
     {                                                                           
         debugOutput("Reading the body.");                                       
         boolean needMoreData = true;                                            
-	while(needMoreData)                                                     
+	while(needMoreData && toContinue)
         {                                                                       
             switch(joggSyncState.pageout(joggPage))                             
             {                                                                   
 	    case -1:                                                        
-                {                                                               
                     debugOutput("There is a hole in the data. We proceed.");    
-                }                                                               
+		    break;
 	    case 0:                                                         
-                {                                                               
                     break;                                                      
-                }                                                               
 	    case 1:                                                         
                 {                                                               
-                    // Give the page to the StreamState object.                 
                     joggStreamState.pagein(joggPage);                           
                     if(joggPage.granulepos() == 0)                              
                     {                                                           
                         needMoreData = false;                                   
                         break;                                                  
                     }                                                           
-                    processPackets: while(true)                                 
+                    processPackets:
+while(true)
                     {                                                           
                         switch(joggStreamState.packetout(joggPacket))           
                         {                                                       
@@ -370,9 +367,7 @@ public class OggPlayer extends Thread
                                 break processPackets;                           
                             }                                                   
 			case 1:                                             
-                            {                                                   
                                 decodeCurrentPacket();                          
-                            }                                                   
                         }                                                       
                     }                                                           
                     if(joggPage.eos() != 0) 
@@ -383,13 +378,12 @@ public class OggPlayer extends Thread
             {                                                                   
                 index = joggSyncState.buffer(bufferSize);                       
                 buffer = joggSyncState.data;                                    
-                try                                                             
-                {                                                               
+                try {                                                               
                     count = inputStream.read(buffer, index, bufferSize);        
                 }                                                               
                 catch(Exception e)                                              
                 {                                                               
-                    System.err.println(e);                                      
+		    e.printStackTrace();
                     return;                                                     
                 }                                                               
                 joggSyncState.wrote(count);                                     
@@ -422,21 +416,13 @@ public class OggPlayer extends Thread
     {                                                                           
         int samples;                                                            
         if(jorbisBlock.synthesis(joggPacket) == 0)                              
-        {                                                                       
             jorbisDspState.synthesis_blockin(jorbisBlock);                      
-        }                                                                       
         int range;                                                              
-        while((samples = jorbisDspState.synthesis_pcmout(pcmInfo, pcmIndex))    
-	      > 0)                                                                
+        while((samples = jorbisDspState.synthesis_pcmout(pcmInfo, pcmIndex)) > 0)
         {                                                                       
             if(samples < convertedBufferSize)                                   
-            {                                                                   
-                range = samples;                                                
-            }                                                                   
-            else                                                                
-            {                                                                   
+                range = samples; else
                 range = convertedBufferSize;                                    
-            }                                                                   
             for(int i = 0; i < jorbisInfo.channels; i++)                        
             {                                                                   
                 int sampleIndex = i * 2;                                        
@@ -444,23 +430,20 @@ public class OggPlayer extends Thread
                 {                                                               
                     int value = (int) (pcmInfo[0][i][pcmIndex[i] + j] * 32767); 
                     if(value > 32767)                                           
-                    {                                                           
                         value = 32767;                                          
-                    }                                                           
                     if(value < -32768)                                          
-                    {                                                           
                         value = -32768;                                         
-                    }                                                           
-                    if(value < 0) value = value | 32768;                        
+                    if(value < 0) 
+			value = value | 32768;                        
                     convertedBuffer[sampleIndex] = (byte) (value);              
                     convertedBuffer[sampleIndex + 1] = (byte) (value >>> 8);    
                     sampleIndex += 2 * (jorbisInfo.channels);                   
                 }                                                               
             }                                                                   
-            outputLine.write(convertedBuffer, 0, 2 * jorbisInfo.channels        
-			     * range);                                                       
+	    if (toContinue)
+            outputLine.write(convertedBuffer, 0, 2 * jorbisInfo.channels * range);
             jorbisDspState.synthesis_read(range);                               
-        }                                                                       
+	}
     }                                                                           
 
     private void debugOutput(String output)                                     
