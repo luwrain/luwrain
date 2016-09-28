@@ -105,7 +105,7 @@ class CommandManager
 		Log.warning("environment", "registry value " + commandValue + " supposed to be a string but it isn\'t a string");
 		continue;
 	    }
-	    add(luwrain, new OsCommand(s, registry.getString(commandValue)));
+	    add(luwrain, new OsCommands(s, registry.getString(commandValue)));
 	}
     }
 }

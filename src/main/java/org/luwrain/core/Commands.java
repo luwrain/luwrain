@@ -654,6 +654,32 @@ class Commands
 		}
 	    },
 
+	    //run
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "run";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final SimpleEditPopup popup = new SimpleEditPopup(env.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", Popups.DEFAULT_POPUP_FLAGS);
+		    env.popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
+		    if (popup.closing.cancelled() || popup.text().trim().isEmpty())
+			return;
+		    luwrain.runOsCommand(popup.text().trim(), (line)->{}, (exitCode, output)->{
+			    if (output.length >= 1)
+			    {
+			    			    final StringBuilder b = new StringBuilder();
+						    b.append(output[0]);
+						    for(int i = 1;i < output.length;++i)
+							b.append(" " + output[i]);
+						    luwrain.runInMainThread(()->luwrain.message(new String(b), exitCode == 0?Luwrain.MESSAGE_DONE:Luwrain.MESSAGE_ERROR));
+			    }
+			});
+		}
+	    },
+
+
 	};    
     }
 }

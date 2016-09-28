@@ -18,12 +18,12 @@ package org.luwrain.core;
 
 import java.io.*;
 
-class OsCommand implements Command
+class OsCommands implements Command
 {
     private String name = "";
     private String command = "";
 
-    public OsCommand(String name, String command)
+    public OsCommands(String name, String command)
     {
 	this.name = name;
 	this.command = command;

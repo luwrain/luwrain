@@ -910,12 +910,8 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	return i18n;
     }
 
-    //    private org.luwrain.core.util.OggPlayer oggPlayer = null;
     void mainMenu()
     {
-	//	oggPlayer = new org.luwrain.core.util.OggPlayer("file:///tmp/proba.ogg");
-	//oggPlayer.start();
-
 	final MainMenu mainMenu = MainMenu.newMainMenu(getObjForEnvironment());
 	if (mainMenu == null)
 	    return;
