@@ -34,7 +34,8 @@ abstract class EnvironmentAreas extends EnvironmentBase
     protected void onNewActiveArea()
     {
 	if (screenContentManager.isPopupActive())
-	    soundManager.playBackground(SoundManager.Predefined.POPUP);
+	    soundManager.playBackground(SoundManager.Predefined.POPUP); else
+	    soundManager.stopBackgroudn();
     }
 
     //Returns an effective area for the specified one

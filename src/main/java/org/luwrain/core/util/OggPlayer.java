@@ -1,4 +1,5 @@
 /*                                                                              
+ * Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
  * Copyright © Jon Kristensen, 2008.                                          
  * All rights reserved.                                                         
  *                                                                              
@@ -69,14 +70,14 @@ public class OggPlayer extends Thread
 
     private SourceDataLine outputLine = null;                                   
 
-    private Packet joggPacket = new Packet();                                   
-    private Page joggPage = new Page();                                         
-    private StreamState joggStreamState = new StreamState();                    
-    private SyncState joggSyncState = new SyncState();                          
-    private DspState jorbisDspState = new DspState();                           
-    private Block jorbisBlock = new Block(jorbisDspState);                      
-    private Comment jorbisComment = new Comment();                              
-    private Info jorbisInfo = new Info();                                       
+    private Packet joggPacket = null;
+    private Page joggPage = null;
+    private StreamState joggStreamState = null;
+    private SyncState joggSyncState = null;
+    private DspState jorbisDspState = null;
+    private Block jorbisBlock = null;
+    private Comment jorbisComment = null;
+    private Info jorbisInfo = null;
 
     private boolean toContinue = true;
     private boolean loop = true;
@@ -88,35 +89,20 @@ public class OggPlayer extends Thread
 	this.urlToPlay = urlToPlay;
     }                                                                           
 
-    private URL getUrl() throws MalformedURLException
-    {                                                                           
-return new URL(urlToPlay);
-    }
-
-    /*
-    private void openInputStream(URL url) throws IOException
-    {                                                                           
-	NullCheck.notNull(url, "url");
-            final URLConnection urlConnection = url.openConnection();
-        if(urlConnection != null)                                               
-                inputStream = urlConnection.getInputStream();                   
-    }                                                                           
-
-    private void closeInputStream() throws IOException
+synchronized     public void stopPlaying()
     {
-            if(inputStream != null)
-inputStream.close();
-	    inputStream = null;
+	Log.debug("ogg", "stopping");
+	toContinue = false;
+	outputLine.stop();
     }
-    */
 
     @Override public void run()                                                           
     {                                                                           
 	try {
-	if (!loop)
-	    mainWork(); else
-	    while (toContinue)
-		mainWork();
+	    if (!loop)
+		mainWork(); else
+		while (toContinue)
+		    mainWork();
 	}
 	catch(Exception e)
 	{
@@ -125,38 +111,35 @@ inputStream.close();
 	}
     }
 
-    private void mainWork() throws MalformedURLException, IOException
-	{
-	    //	    openInputStream(getUrl());
-	    inputStream = getUrl().openStream();
-        initializeJOrbis();                                                     
-        if(readHeader() && initializeSound())
-                readBody();                                                     
-        cleanUp();                                                              
-	//	closeInputStream();
-	inputStream.close();
-	inputStream = null;
-	}
-
-    public void stopPlay()
+    private void mainWork() throws MalformedURLException, IOException, LineUnavailableException
     {
-	toContinue = false;
-	outputLine.stop();
+	try {
+	    inputStream = new URL(urlToPlay).openStream();
+	    init();
+	    if(readHeader() && initSound())
+		readBody();                                                     
+	}
+	finally 
+	{
+	    cleanUp();                                                              
+	    inputStream.close();
+	    inputStream = null;
+	}
     }
 
-    private void initializeJOrbis()                                             
+    private void init()
     {                                                                           
 	Log.debug("ogg", "initializing JOrbis");
 	index = 0;
 	count = 0;
-joggPacket = new Packet();                                   
-joggPage = new Page();                                         
-joggStreamState = new StreamState();                    
-joggSyncState = new SyncState();                          
-jorbisDspState = new DspState();                           
-jorbisBlock = new Block(jorbisDspState);                      
-jorbisComment = new Comment();                              
-jorbisInfo = new Info();                                       
+	joggPacket = new Packet();                                   
+	joggPage = new Page();                                         
+	joggStreamState = new StreamState();                    
+	joggSyncState = new SyncState();                          
+	jorbisDspState = new DspState();                           
+	jorbisBlock = new Block(jorbisDspState);                      
+	jorbisComment = new Comment();                              
+	jorbisInfo = new Info();                                       
         joggSyncState.init();                                                   
         joggSyncState.buffer(bufferSize);                                       
         buffer = joggSyncState.data;                                            
@@ -280,57 +263,31 @@ jorbisInfo = new Info();
 	return true;                                                            
     }                                                                           
 
-    private boolean initializeSound()                                           
+    synchronized private boolean initSound() throws LineUnavailableException//, IllegalStateException
     {                                                                           
-        debugOutput("Initializing the sound system.");                          
+	Log.debug("ogg", "initializing the sound system");
         convertedBufferSize = bufferSize * 2;
         convertedBuffer = new byte[convertedBufferSize];                        
         jorbisDspState.synthesis_init(jorbisInfo);                              
         jorbisBlock.init(jorbisDspState);                                       
         int channels = jorbisInfo.channels;                                     
         int rate = jorbisInfo.rate;                                             
-        AudioFormat audioFormat = new AudioFormat((float) rate, 16, channels,   
-						  true, false);                                                       
-        DataLine.Info datalineInfo = new DataLine.Info(SourceDataLine.class,    
-						       audioFormat, AudioSystem.NOT_SPECIFIED);                            
+        final AudioFormat audioFormat = new AudioFormat((float) rate, 16, channels, true, false);                                                       
+        DataLine.Info datalineInfo = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);                            
         if(!AudioSystem.isLineSupported(datalineInfo))                          
         {                                                                       
-            System.err.println("Audio output line is not supported.");          
+	    Log.error("ogg", "audio output line is not supported");
             return false;                                                       
         }                                                                       
-        try                                                                     
-        {                                                                       
-            outputLine = (SourceDataLine) AudioSystem.getLine(datalineInfo);    
-            outputLine.open(audioFormat);                                       
-        }                                                                       
-        catch(LineUnavailableException exception)                               
-        {                                                                       
-            System.out.println("The audio output line could not be opened due " 
-			       + "to resource restrictions.");                                 
-            System.err.println(exception);                                      
-            return false;                                                       
-        }                                                                       
-        catch(IllegalStateException exception)                                  
-        {                                                                       
-            System.out.println("The audio output line is already open.");       
-            System.err.println(exception);                                      
-            return false;                                                       
-        }                                                                       
-        catch(SecurityException exception)                                      
-        {                                                                       
-            System.out.println("The audio output line could not be opened due " 
-			       + "to security restrictions.");                                 
-            System.err.println(exception);                                      
-            return false;                                                       
-        }                                                                       
+	outputLine = (SourceDataLine) AudioSystem.getLine(datalineInfo);    
+	outputLine.open(audioFormat);                                       
         outputLine.start();                                                     
         pcmInfo = new float[1][][];                                             
         pcmIndex = new int[jorbisInfo.channels];                                
-	debugOutput("Done initializing the sound system.");                     
 	return true;                                                            
     }                                                                           
 
-    private void readBody()                                                     
+    private void readBody() throws IOException
     {                                                                           
 	Log.debug("ogg", "reading the body");
         boolean needMoreData = true;                                            
@@ -352,7 +309,7 @@ jorbisInfo = new Info();
                         break;                                                  
                     }                                                           
                     processPackets:
-while(true)
+while(toContinue)
                     {                                                           
                         switch(joggStreamState.packetout(joggPacket))           
                         {                                                       
@@ -368,22 +325,11 @@ while(true)
 			needMoreData = false;               
 		}
 	    } //switch()
-	    System.out.println("needMoreData=" + needMoreData);
             if(needMoreData)                                                    
             {                                                                   
                 index = joggSyncState.buffer(bufferSize);                       
                 buffer = joggSyncState.data;                                    
-                try {                                                               
-		    System.out.println("index=" + index);
                     count = inputStream.read(buffer, index, bufferSize);        
-		    System.out.println("count=" + count);
-                }                                                               
-                catch(IOException e)                                              
-                {                                                               
-		    Log.error("ogg", "unable to read more data:" + e.getMessage());
-		    e.printStackTrace();
-                    return;                                                     
-                }                                                               
                 joggSyncState.wrote(count);                                     
                 if(count == 0) 
 		    needMoreData = false;                            
@@ -392,15 +338,15 @@ while(true)
 	Log.debug("ogg", "body reading finished");
     }                                                                           
 
-    private void cleanUp()                                                      
+    synchronized private void cleanUp()                                                      
     {                                                                           
+	outputLine.close();
 	Log.debug("ogg", "cleaning up");
         joggStreamState.clear();                                                
         jorbisBlock.clear();                                                    
         jorbisDspState.clear();                                                 
         jorbisInfo.clear();                                                     
         joggSyncState.clear();                                                  
-	debugOutput("Done cleaning up.");                                       
     }                                                                           
 
     private void decodeCurrentPacket()                                          
@@ -409,7 +355,7 @@ while(true)
         if(jorbisBlock.synthesis(joggPacket) == 0)                              
             jorbisDspState.synthesis_blockin(jorbisBlock);                      
         int range;                                                              
-        while((samples = jorbisDspState.synthesis_pcmout(pcmInfo, pcmIndex)) > 0)
+        while((samples = jorbisDspState.synthesis_pcmout(pcmInfo, pcmIndex)) > 0 && toContinue)
         {                                                                       
             if(samples < convertedBufferSize)                                   
                 range = samples; else
@@ -432,7 +378,9 @@ while(true)
                 }                                                               
             }                                                                   
 	    if (toContinue)
+		synchronized(this) {
             outputLine.write(convertedBuffer, 0, 2 * jorbisInfo.channels * range);
+		}
             jorbisDspState.synthesis_read(range);                               
 	}
     }                                                                           
@@ -442,4 +390,3 @@ while(true)
 	System.out.println("Debug: " + output);
     }                                                                           
 }                                                                               
-

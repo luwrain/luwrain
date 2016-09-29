@@ -29,4 +29,11 @@ POPUP
 	    playBackground("file:///home/luwrain/git/data/sounds/background/popup1.ogg");
 	}
     }
+
+    void stopBackgroudn()
+    {
+	if (oggPlayer != null)
+	    oggPlayer.stopPlaying();
+	oggPlayer = null;
+    }
 }
