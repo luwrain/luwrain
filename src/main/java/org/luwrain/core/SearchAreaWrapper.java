@@ -170,7 +170,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	    environment.message("Поиск отменён", Luwrain.MESSAGE_REGULAR);
 	environment.playSound(Sounds.CANCEL);
 	wrappingBase.resetReviewWrapper();
-	environment.onNewScreenLayout();
+	environment.onNewAreasLayout();
 	return true;
     }
 

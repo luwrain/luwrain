@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 
 abstract class EnvironmentAreas extends EnvironmentBase
 {
@@ -25,17 +26,33 @@ abstract class EnvironmentAreas extends EnvironmentBase
     protected final InterfaceManager interfaces = new InterfaceManager();
     protected AppManager apps;
 
-    protected void onNewScreenLayout()
+    protected void onNewAreasLayout()
     {
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
+	updateBackgroundSound(null);
     }
 
-    protected void onNewActiveArea()
+    protected void updateBackgroundSound(Area updateFor)
     {
+	final Area area = getValidActiveArea(false);
+	if (area != null && (updateFor == null || area == updateFor))
+	{
+	    final BackgroundSoundQuery query = new BackgroundSoundQuery();
+	    if (AreaQuery.ask(area, query))
+	    {
+		final BackgroundSoundQuery.Answer answer = query.getAnswer();
+		if (answer.isUrl())
+		    soundManager.playBackground(answer.getUrl()); else
+		    soundManager.playBackground(answer.getBkgSound()); 
+		return;
+	    }
+	}
+	if (updateFor != null)
+	    return;
 	if (screenContentManager.isPopupActive())
-	    soundManager.playBackground(SoundManager.Predefined.POPUP); else
-	    soundManager.stopBackgroudn();
+	    soundManager.playBackground(BkgSounds.POPUP); else
+	    soundManager.stopBackground();
     }
 
     //Returns an effective area for the specified one
@@ -80,4 +97,6 @@ abstract class EnvironmentAreas extends EnvironmentBase
     {
 	return interfaces.getObjForEnvironment();
     }
+
+    abstract Area getValidActiveArea(boolean speakMessages);
 }

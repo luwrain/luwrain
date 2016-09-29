@@ -5,35 +5,34 @@ import org.luwrain.core.util.OggPlayer;
 
 class SoundManager
 {
-    enum Predefined {
-POPUP
-    };
-
-    private OggPlayer oggPlayer = null;
+    private OggPlayer bkgOggPlayer = null;
 
     void playBackground(String url)
     {
 	NullCheck.notEmpty(url, "url");
-	if (oggPlayer != null)
-	    oggPlayer.stop();
-	oggPlayer = new OggPlayer(url);
-	oggPlayer.start();
+	stopBackground();
+	bkgOggPlayer = new OggPlayer(url);
+	bkgOggPlayer.start();
     }
 
-    void playBackground(Predefined predefined)
+    void playBackground(BkgSounds bkgSound)
     {
-	NullCheck.notNull(predefined, "predefined");
-	switch(predefined)
+	NullCheck.notNull(bkgSound, "bkgSound");
+	switch(bkgSound)
 	{
 	case POPUP:
 	    playBackground("file:///home/luwrain/git/data/sounds/background/popup1.ogg");
+	    return;
+	case FETCHING:
+	    playBackground("file:///home/luwrain/git/data/sounds/background/fetching1.ogg");
+	    return;
 	}
     }
 
-    void stopBackgroudn()
+    void stopBackground()
     {
-	if (oggPlayer != null)
-	    oggPlayer.stopPlaying();
-	oggPlayer = null;
+	if (bkgOggPlayer != null)
+	    bkgOggPlayer.stopPlaying();
+	bkgOggPlayer = null;
     }
 }

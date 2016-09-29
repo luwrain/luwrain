@@ -238,6 +238,7 @@ class Environment extends EnvironmentAreas
 		if (res == MonoApp.Result.BRING_FOREGROUND)
 		{
 		    apps.setActiveApp(a);
+		    onNewAreasLayout();
 	needForIntroduction = true;
 	introduceApp = true;
 		    return;
@@ -272,8 +273,7 @@ class Environment extends EnvironmentAreas
 	    interfaces.release(o);
 	    return; 
 	}
-	screenContentManager.updatePopupState();
-	windowManager.redraw();
+	onNewAreasLayout();
 	needForIntroduction = true;
 	introduceApp = true;
     }
@@ -335,15 +335,14 @@ class Environment extends EnvironmentAreas
 	}
 	apps.closeApp(app);
 	interfaces.release(instance);
-	onNewScreenLayout();
+	onNewAreasLayout();
 	setAppIntroduction();
     }
 
     void onSwitchNextAppCommand()
     {
 	apps.switchNextApp();
-	screenContentManager.updatePopupState();
-	windowManager.redraw();
+	onNewAreasLayout();
 	needForIntroduction = true;
 	introduceApp = true;
     }
@@ -363,7 +362,7 @@ class Environment extends EnvironmentAreas
 	    return;
 	}
 	apps.refreshAreaLayoutOfApp(app);
-	onNewScreenLayout();
+	onNewAreasLayout();
     }
 
     void onSwitchNextAreaCommand()
@@ -623,13 +622,11 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	final PopupEventLoopStopCondition popupStopCondition = new PopupEventLoopStopCondition(stopCondition);
 	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies, isWeakPopup);
 	screenContentManager.setPopupActive();
-	onNewScreenLayout();
-	onNewActiveArea();
+	onNewAreasLayout();
 	introduceActiveArea();
 	eventLoop(popupStopCondition);
 	apps.closeLastPopup();
-	onNewScreenLayout();
-	onNewActiveArea();
+onNewAreasLayout();
 	setAreaIntroduction();
     }
 
@@ -643,8 +640,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	apps.setActiveAreaOfApp(app, area);
 	if (apps.isAppActive(app) && !screenContentManager.isPopupActive())
 	    setAreaIntroduction();
-	onNewScreenLayout();
-	onNewActiveArea();
+	onNewAreasLayout();
     }
 
     void onAreaNewHotPointIface(Luwrain instance, Area area)
@@ -676,6 +672,16 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	    return;
 	windowManager.redrawArea(effectiveArea);
     }
+
+    void onAreaNewBackgroundSound(Luwrain instance, Area area)
+    {
+	NullCheck.notNull(area, "area");
+	final Area effectiveArea = getEffectiveAreaFor(instance, area);
+	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
+	    return;
+	updateBackgroundSound(effectiveArea);
+    }
+
 
     //May return -1
     int getAreaVisibleHeightIface(Luwrain instance, Area area)
@@ -1016,7 +1022,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 					  return new SearchAreaWrapper(areaToWrap, e, wrappingBase);
 				      }
 				  });
-	onNewScreenLayout();
+	onNewAreasLayout();
     }
 
     void onContextMenuCommand()
@@ -1056,7 +1062,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	message(i18n.getStaticStr("AppBlockedByPopup"), Luwrain.MESSAGE_ERROR);
     }
 
-    Area getValidActiveArea(boolean speakMessages)
+    @Override Area getValidActiveArea(boolean speakMessages)
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)

@@ -268,6 +268,13 @@ public final class Luwrain implements EventConsumer
 	environment.onAreaNewNameIface(this, area);
     }
 
+    public void onAreaNewBackgroundSound(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	environment.onAreaNewBackgroundSound(this, area);
+    }
+
+
     //May return -1 if area is not shown on the screen;
     public int getAreaVisibleHeight(Area area)
     {
