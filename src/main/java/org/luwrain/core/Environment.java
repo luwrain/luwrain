@@ -622,12 +622,10 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	    apps.onNewPopupOpening(app, area.getClass());
 	final PopupEventLoopStopCondition popupStopCondition = new PopupEventLoopStopCondition(stopCondition);
 	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies, isWeakPopup);
-	if (screenContentManager.setPopupActive())
-	{
-	    introduceActiveArea();
-	    windowManager.redraw();
-	    onNewActiveArea();
-	}
+	screenContentManager.setPopupActive();
+	onNewScreenLayout();
+	onNewActiveArea();
+	introduceActiveArea();
 	eventLoop(popupStopCondition);
 	apps.closeLastPopup();
 	onNewScreenLayout();

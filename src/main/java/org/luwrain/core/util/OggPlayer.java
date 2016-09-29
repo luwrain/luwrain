@@ -52,11 +52,14 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;                            
 import javax.sound.sampled.SourceDataLine;                                      
 
+import org.luwrain.core.*;
+
 public class OggPlayer extends Thread                                       
 {                                                                               
     private final boolean debugMode = true;                                     
-    private URLConnection urlConnection = null;                                 
+    //    private URLConnection urlConnection = null;                                 
     private InputStream inputStream = null;                                     
+
     private byte[] buffer = null;                                                       
     private final int bufferSize = 2048;
     private int count = 0;                                                              
@@ -66,80 +69,75 @@ public class OggPlayer extends Thread
     private SourceDataLine outputLine = null;                                   
     private float[][][] pcmInfo;                                                
     private int[] pcmIndex;                                                     
-    private Packet joggPacket = new Packet();                                   
-    private Page joggPage = new Page();                                         
-    private StreamState joggStreamState = new StreamState();                    
-    private SyncState joggSyncState = new SyncState();                          
-    private DspState jorbisDspState = new DspState();                           
-    private Block jorbisBlock = new Block(jorbisDspState);                      
-    private Comment jorbisComment = new Comment();                              
-    private Info jorbisInfo = new Info();                                       
+
+    private final Packet joggPacket = new Packet();                                   
+    private final Page joggPage = new Page();                                         
+    private final StreamState joggStreamState = new StreamState();                    
+    private final SyncState joggSyncState = new SyncState();                          
+    private final DspState jorbisDspState = new DspState();                           
+    private final Block jorbisBlock = new Block(jorbisDspState);                      
+    private final Comment jorbisComment = new Comment();                              
+    private final Info jorbisInfo = new Info();                                       
 
     private boolean toContinue = true;
+    private boolean loop = true;
+    private String urlToPlay = "";
 
-    public OggPlayer(String pUrl)                                                  
+    public OggPlayer(String urlToPlay)
     {                                                                           
-        configureInputStream(getUrl(pUrl));                                     
+	NullCheck.notEmpty(urlToPlay, "urlToPlay");
+	this.urlToPlay = urlToPlay;
     }                                                                           
 
-    private URL getUrl(String pUrl)                                              
+    private URL getUrl() throws MalformedURLException
     {                                                                           
-        URL url = null;                                                         
-	try                                                                     
-        {                                                                       
-            url = new URL(pUrl);                                                
-        }                                                                       
-        catch(MalformedURLException exception)                                  
-        {                                                                       
-            System.err.println("Malformed \"url\" parameter: \"" + pUrl + "\"");
-        }                                                                       
-	return url;                                                             
-    }                                                                           
+return new URL(urlToPlay);
+    }
 
-    private void configureInputStream(URL pUrl)                                 
+    /*
+    private void openInputStream(URL url) throws IOException
     {                                                                           
-        try                                                                     
-        {                                                                       
-            urlConnection = pUrl.openConnection();                              
-        }                                                                       
-        catch(UnknownServiceException exception)                                
-        {                                                                       
-            System.err.println("The protocol does not support input.");         
-        }                                                                       
-        catch(IOException exception)                                            
-        {                                                                       
-            System.err.println("An I/O error occoured while trying create the " 
-			       + "URL connection.");                                           
-        }                                                                       
+	NullCheck.notNull(url, "url");
+            final URLConnection urlConnection = url.openConnection();
         if(urlConnection != null)                                               
-        {                                                                       
-            try                                                                 
-            {                                                                   
                 inputStream = urlConnection.getInputStream();                   
-            }                                                                   
-            catch(IOException exception)                                        
-            {                                                                   
-                System.err                                                      
-		.println("An I/O error occoured while trying to get an "    
-			 + "input stream from the URL.");                        
-                System.err.println(exception);                                  
-            }                                                                   
-        }                                                                       
     }                                                                           
+
+    private void closeInputStream() throws IOException
+    {
+            if(inputStream != null)
+inputStream.close();
+	    inputStream = null;
+    }
+    */
 
     @Override public void run()                                                           
     {                                                                           
-        if(inputStream == null)                                                 
-        {                                                                       
-            System.err.println("We don't have an input stream and therefor "    
-			       + "cannot continue.");                                          
-            return;                                                             
-        }                                                                       
+	try {
+	if (!loop)
+	    mainWork(); else
+	    while (toContinue)
+		mainWork();
+	}
+	catch(Exception e)
+	{
+	    Log.error("ogg", "unexpected exception while playing:" + e.getClass().getName() + ":" + e.getMessage());
+	    e.printStackTrace();
+	}
+    }
+
+    private void mainWork() throws MalformedURLException, IOException
+	{
+	    //	    openInputStream(getUrl());
+	    inputStream = getUrl().openStream();
         initializeJOrbis();                                                     
         if(readHeader() && initializeSound())
                 readBody();                                                     
         cleanUp();                                                              
-    }                                                                          
+	//	closeInputStream();
+	inputStream.close();
+	inputStream = null;
+	}
 
     public void stopPlay()
     {
@@ -149,28 +147,23 @@ public class OggPlayer extends Thread
 
     private void initializeJOrbis()                                             
     {                                                                           
-        debugOutput("Initializing JOrbis.");                                    
+	Log.debug("ogg", "initializing JOrbis");
+	index = 0;
+
+
         joggSyncState.init();                                                   
         joggSyncState.buffer(bufferSize);                                       
         buffer = joggSyncState.data;                                            
-	debugOutput("Done initializing JOrbis.");                               
     }                                                                           
 
-    private boolean readHeader()                                                
+    private boolean readHeader() throws IOException
     {                                                                           
-        debugOutput("Starting to read the header.");                            
+	Log.debug("ogg", "starting header reading");
         boolean needMoreData = true;                                            
         int packet = 1;                                                         
         while(needMoreData)                                                     
         {                                                                       
-            try {
                 count = inputStream.read(buffer, index, bufferSize);            
-            }                                                                   
-            catch(IOException exception)                                        
-            {                                                                   
-                System.err.println("Could not read from the input stream.");    
-                System.err.println(exception);                                  
-            }                                                                   
             joggSyncState.wrote(count);                                         
             switch(packet)                                                      
             {                                                                   
@@ -333,14 +326,14 @@ public class OggPlayer extends Thread
 
     private void readBody()                                                     
     {                                                                           
-        debugOutput("Reading the body.");                                       
+	Log.debug("ogg", "reading the body");
         boolean needMoreData = true;                                            
 	while(needMoreData && toContinue)
         {                                                                       
             switch(joggSyncState.pageout(joggPage))                             
             {                                                                   
 	    case -1:                                                        
-                    debugOutput("There is a hole in the data. We proceed.");    
+		Log.debug("ogg", "there is a hole in the data");
 		    break;
 	    case 0:                                                         
                     break;                                                      
@@ -358,31 +351,30 @@ while(true)
                         switch(joggStreamState.packetout(joggPacket))           
                         {                                                       
 			case -1:                                            
-                            {                                                   
-                                debugOutput("There is a hole in the data, we "  
-					    + "continue though.");                      
-                            }                                                   
+				Log.debug("ogg", "there is a hole in the data");
 			case 0:                                             
-                            {                                                   
                                 break processPackets;                           
-                            }                                                   
 			case 1:                                             
                                 decodeCurrentPacket();                          
-                        }                                                       
-                    }                                                           
-                    if(joggPage.eos() != 0) 
+			} //switch()
+		    } //while(true)
+                    if(joggPage.eos() != 0)
 			needMoreData = false;               
-                }                                                               
-            }                                                                   
+		}
+	    } //switch()
+	    System.out.println("needMoreData=" + needMoreData);
             if(needMoreData)                                                    
             {                                                                   
                 index = joggSyncState.buffer(bufferSize);                       
                 buffer = joggSyncState.data;                                    
                 try {                                                               
+		    System.out.println("index=" + index);
                     count = inputStream.read(buffer, index, bufferSize);        
+		    System.out.println("count=" + count);
                 }                                                               
-                catch(Exception e)                                              
+                catch(IOException e)                                              
                 {                                                               
+		    Log.error("ogg", "unable to read more data:" + e.getMessage());
 		    e.printStackTrace();
                     return;                                                     
                 }                                                               
@@ -391,24 +383,17 @@ while(true)
 		    needMoreData = false;                            
             }                                                                   
         }                                                                       
-        debugOutput("Done reading the body.");                                  
+	Log.debug("ogg", "body reading finished");
     }                                                                           
 
     private void cleanUp()                                                      
     {                                                                           
-        debugOutput("Cleaning up.");                                            
+	Log.debug("ogg", "cleaning up");
         joggStreamState.clear();                                                
         jorbisBlock.clear();                                                    
         jorbisDspState.clear();                                                 
         jorbisInfo.clear();                                                     
         joggSyncState.clear();                                                  
-        try                                                                     
-        {                                                                       
-            if(inputStream != null) inputStream.close();                        
-        }                                                                       
-        catch(Exception e)                                                      
-        {                                                                       
-        }                                                                       
 	debugOutput("Done cleaning up.");                                       
     }                                                                           
 
