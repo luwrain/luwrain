@@ -37,11 +37,7 @@ public interface Popup extends Area
 	NO_MULTIPLE_COPIES, WEAK, STRONG,
     };
 
-        static public final int INVALID = -1;
-    static public final int TOP = 0;
-    static public final int BOTTOM = 1;
-    static public final int LEFT = 2;
-    static public final int RIGHT = 3;
+    public enum Position{TOP, BOTTOM, LEFT, RIGHT};
 
     static public final int NO_MULTIPLE_COPIES = 1;
     static public final int WEAK = 2;

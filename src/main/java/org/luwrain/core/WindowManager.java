@@ -250,7 +250,7 @@ win.area == null)
 	    preferableHeight = 2;
 	int maxHeight = (bottom - top + 1) - MIN_RANGE_VERTICAL - 1;//1 is for splitter;
 	final int maxWidth = (right - left + 1) - MIN_RANGE_HORIZONTAL - 1;//1 is for splitter;
-	if (maxHeight > MAX_TOP_BOTTOM_POPUP_HEIGHT && (win.popupPlace == Popup.TOP || win.popupPlace == Popup.BOTTOM))
+	if (maxHeight > MAX_TOP_BOTTOM_POPUP_HEIGHT && (win.popupPos == Popup.Position.TOP || win.popupPos == Popup.Position.BOTTOM))
 	    maxHeight = MAX_TOP_BOTTOM_POPUP_HEIGHT;
 	if (maxWidth < MIN_RANGE_HORIZONTAL || maxHeight < MIN_RANGE_VERTICAL)
 	{
@@ -261,9 +261,9 @@ win.area == null)
 	final int popupWidth = preferableWidth <= maxWidth?preferableWidth:maxWidth;
 	final int popupHeight = preferableHeight <= maxHeight?preferableHeight:maxHeight;
 	int anotherLeft, anotherTop, anotherRight, anotherBottom;
-	switch(win.popupPlace)
+	switch(win.popupPos)
 	{
-	case Popup.LEFT:
+	case LEFT:
 	    win.x = left;
 	    win.y = top;
 	    win.width = popupWidth;
@@ -274,7 +274,7 @@ win.area == null)
 	    anotherBottom = bottom;
 	    interaction.drawVerticalLine(top, bottom, left + popupWidth);
 	    break;
-	case Popup.TOP:
+	case TOP:
 	    win.x = left;
 	    win.y = top;
 	    win.width = right - left + 1;
@@ -285,7 +285,7 @@ win.area == null)
 	    anotherBottom = bottom;
 	    interaction.drawHorizontalLine(left, right, top + popupHeight);
 	    break;
-	case Popup.RIGHT:
+	case RIGHT:
 	    win.x = right - popupWidth + 1;
 	    win.y = top;
 	    win.width = popupWidth;
@@ -296,7 +296,7 @@ win.area == null)
 	    anotherBottom = bottom;
 	    interaction.drawVerticalLine(top, bottom, right - popupWidth);
 	    break;
-	case Popup.BOTTOM:
+	case BOTTOM:
 	    win.x = left;
 	    win.y = bottom - popupHeight + 1;
 	    win.width = right - left + 1;

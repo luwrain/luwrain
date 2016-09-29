@@ -20,14 +20,14 @@ class OpenedPopup
 {
     Application app;
     int index;//Popup index in the corresponding application
-    int position;
+    Popup.Position position;
     PopupEventLoopStopCondition stopCondition;
     boolean noMultipleCopies;
     boolean isWeak; 
 
     OpenedPopup(Application app,
 		       int index,
-		       int position,
+		       Popup.Position position,
 		       PopupEventLoopStopCondition stopCondition,
 		       boolean noMultipleCopies,
 		       boolean isWeak)

@@ -31,6 +31,12 @@ abstract class EnvironmentAreas extends EnvironmentBase
 	windowManager.redraw();
     }
 
+    protected void onNewActiveArea()
+    {
+	if (screenContentManager.isPopupActive())
+	    soundManager.playBackground(SoundManager.Predefined.POPUP);
+    }
+
     //Returns an effective area for the specified one
     //Returns null if specified area not known in applications and areas managers 
     //Instance is not mandatory but can increase speed of search

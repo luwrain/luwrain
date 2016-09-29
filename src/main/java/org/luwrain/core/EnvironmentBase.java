@@ -26,6 +26,7 @@ abstract class EnvironmentBase implements EventConsumer
     protected final Braille braille = new Braille();
     private RegionContent clipboard = null;
     protected final SoundsPlayer sounds = new SoundsPlayer();
+    protected final SoundManager soundManager = new SoundManager();
     protected HashMap<String, Path> paths;
     protected String lang;
     protected boolean needForIntroduction = false;

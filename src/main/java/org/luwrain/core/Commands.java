@@ -143,7 +143,7 @@ class Commands
 							  null, current, current, 
 							  env.uiSettings.getFilePopupSkipHidden(false)?EnumSet.of(FilePopup.Flags.SKIP_HIDDEN):EnumSet.noneOf(FilePopup.Flags.class),
 							  EnumSet.noneOf(Popup.Flags.class));
-		    env.popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
+		    env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
 		    if (popup.closing.cancelled())
 			return;
 		    final Path res = popup.result();
@@ -663,7 +663,7 @@ class Commands
 		@Override public void onCommand(Luwrain luwrain)
 		{
 		    final SimpleEditPopup popup = new SimpleEditPopup(env.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", Popups.DEFAULT_POPUP_FLAGS);
-		    env.popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
+		    env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
 		    if (popup.closing.cancelled() || popup.text().trim().isEmpty())
 			return;
 		    luwrain.runOsCommand(popup.text().trim(), (line)->{}, (exitCode, output)->{

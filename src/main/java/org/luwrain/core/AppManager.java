@@ -205,10 +205,11 @@ class AppManager
 
     //null app means environment popup;
     void addNewPopup(Application app, Area area,
-			    int position, PopupEventLoopStopCondition stopCondition,
+			    Popup.Position position, PopupEventLoopStopCondition stopCondition,
 			    boolean noMultipleCopies, boolean isWeak)
     {
 	NullCheck.notNull(area, "area");
+	NullCheck.notNull(position, "position");
 	NullCheck.notNull(stopCondition, "stopCondition");
 	LaunchedAppBase launchedApp;
 	if (app != null)
@@ -395,10 +396,10 @@ class AppManager
 	return true;
     }
 
-    int getPositionOfLastPopup()
+    Popup.Position getPositionOfLastPopup()
     {
 	if (popups.isEmpty())
-	    return Popup.INVALID;
+	    return null;
 	return popups.lastElement().position;
     }
 

@@ -192,18 +192,18 @@ class ScreenContentManager
 	if (isPopupOpened())
 	{
 	    Window popupWindow = new Window(apps.getAppOfLastPopup(), apps.getEffectiveAreaOfLastPopup(), apps.getPositionOfLastPopup());
-	    switch(popupWindow.popupPlace)
+	    switch(popupWindow.popupPos)
 	    {
-	    case Popup.BOTTOM:
+	    case BOTTOM:
 		windows.addBottom(popupWindow);
 		break;
-	    case Popup.TOP:
+	    case TOP:
 		windows.addTop(popupWindow);
 		break;
-	    case Popup.LEFT:
+	    case LEFT:
 		windows.addLeftSide(popupWindow);
 		break;
-	    case Popup.RIGHT:
+	    case RIGHT:
 		windows.addRightSide(popupWindow);
 		break;
 	    }

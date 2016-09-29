@@ -21,7 +21,7 @@ class Window
     Application app;
     Area area;
     boolean popup = false;
-    int popupPlace;
+Popup.Position popupPos;
     int x = 0;
     int y = 0;
     int width = 0;
@@ -37,12 +37,12 @@ class Window
     }
 
     Window(Application app, Area area,
-	   int popupPlace)
+	   Popup.Position popupPos)
     {
 	this.app = app;
 	this.area = area;
 	this.popup = true;
-	this.popupPlace = popupPlace;
+	this.popupPos = popupPos;
     }
 
     void markInvisible()

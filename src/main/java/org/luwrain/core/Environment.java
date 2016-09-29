@@ -194,7 +194,7 @@ class Environment extends EnvironmentAreas
     void quit()
     {
 	final YesNoPopup popup = new YesNoPopup(new Luwrain(this), i18n.getStaticStr("QuitPopupName"), i18n.getStaticStr("QuitPopupText"), true, Popups.DEFAULT_POPUP_FLAGS);
-	popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
+	popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled() || !popup.result())
 	    return;
 	InitialEventLoopStopCondition.shouldContinue = false;
@@ -612,26 +612,26 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
     }
 
     void popup(Application app, Area area,
-			   int popupPos, EventLoopStopCondition stopCondition,
+			   Popup.Position pos, EventLoopStopCondition stopCondition,
 			   boolean noMultipleCopies, boolean isWeakPopup)
     {
 	NullCheck.notNull(area, "area");
+	NullCheck.notNull(pos, "pos");
 	NullCheck.notNull(stopCondition, "stopCondition");
-	if (popupPos != Popup.TOP && popupPos != Popup.BOTTOM && 
-	    popupPos != Popup.LEFT && popupPos != Popup.RIGHT)
-	    throw new IllegalArgumentException("Illegal popup position " + popupPos);
 	if (noMultipleCopies)
 	    apps.onNewPopupOpening(app, area.getClass());
 	final PopupEventLoopStopCondition popupStopCondition = new PopupEventLoopStopCondition(stopCondition);
-	apps.addNewPopup(app, area, popupPos, popupStopCondition, noMultipleCopies, isWeakPopup);
+	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies, isWeakPopup);
 	if (screenContentManager.setPopupActive())
 	{
 	    introduceActiveArea();
 	    windowManager.redraw();
+	    onNewActiveArea();
 	}
 	eventLoop(popupStopCondition);
 	apps.closeLastPopup();
 	onNewScreenLayout();
+	onNewActiveArea();
 	setAreaIntroduction();
     }
 
@@ -646,6 +646,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	if (apps.isAppActive(app) && !screenContentManager.isPopupActive())
 	    setAreaIntroduction();
 	onNewScreenLayout();
+	onNewActiveArea();
     }
 
     void onAreaNewHotPointIface(Luwrain instance, Area area)
@@ -845,7 +846,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	NullCheck.notNull(stopCondition, "stopCondition");
 	if (interfaces.isSuitsForEnvironmentPopup(luwrainObject))
 	{
-	    popup(null, popup, Popup.BOTTOM, stopCondition,
+	    popup(null, popup, Popup.Position.BOTTOM, stopCondition,
 		      popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
 	    return;
 	}
@@ -855,7 +856,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	    Log.warning("core", "somebody is trying to get a popup with fake Luwrain object");
 	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
 	}
-	popup(app, popup, Popup.BOTTOM, stopCondition, 
+	popup(app, popup, Popup.Position.BOTTOM, stopCondition, 
 		  popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
     }
 
@@ -915,7 +916,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	final MainMenu mainMenu = MainMenu.newMainMenu(getObjForEnvironment());
 	if (mainMenu == null)
 	    return;
-	popup(null, mainMenu, Popup.LEFT, mainMenu.closing, true, true);
+	popup(null, mainMenu, Popup.Position.LEFT, mainMenu.closing, true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
 	final UniRefInfo result = mainMenu.result();
@@ -950,7 +951,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 		    }
 		}
 	    };
-	popup(null, popup, Popup.BOTTOM, popup.closing, true, true);
+	popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return;
 	    if (!commands.run(popup.text().trim()))
@@ -1032,7 +1033,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	    return;
 	}
 	final ContextMenu menu = new ContextMenu(getObjForEnvironment(), actions);
-	popup(null, menu, Popup.RIGHT, menu.closing, true, true);
+	popup(null, menu, Popup.Position.RIGHT, menu.closing, true, true);
 	if (menu.closing.cancelled())
 	    return;
 	final Object selected = menu.selected();
