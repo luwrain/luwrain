@@ -596,6 +596,12 @@ public final class Luwrain implements EventConsumer
 	}
     }
 
+    OsCommand runOsCommand(String cmd)
+    {
+	NullCheck.notEmpty(cmd, "cmd");
+	return runOsCommand(cmd, null, null);
+    }
+
     OsCommand runOsCommand(String cmd, OsCommand.Output output)
     {
 	NullCheck.notEmpty(cmd, "cmd");

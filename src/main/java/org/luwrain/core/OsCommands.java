@@ -18,50 +18,58 @@ package org.luwrain.core;
 
 import java.io.*;
 
-class OsCommands implements Command
+class OsCommands
 {
-    private String name = "";
-    private String command = "";
-
-    public OsCommands(String name, String command)
+    static class OsCommand implements Command
     {
-	this.name = name;
-	this.command = command;
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (command == null)
-	    throw new NullPointerException("command may not be null");
-	if (name.trim().isEmpty())
-	    throw new IllegalArgumentException("name may not be empty");
-    }
+	private String name = "";
+	private String command = "";
+	private boolean showResultingMessage = true;
 
-    @Override public String getName()
-    {
-	return name;
-    }
-
-    @Override public void onCommand(Luwrain luwrain)
-    {
-	Process p;
-	try {
-		p = Runtime.getRuntime().exec(command);
-		p.waitFor();
-	    }
-	    catch (IOException e)
-	    {
-		e.printStackTrace();
-	    }
-	    catch (InterruptedException e)
-	    {
-		e.printStackTrace();
-	    }
-	/*
-	BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	String line = "";
-	while ((line = reader.readLine())!= null)
+	boolean init(Settings.OsCommand settings)
 	{
-	    sb.append(line + "\n");
+	    NullCheck.notNull(settings, "settings");
+	    name = settings.getName("");
+	    Log.debug("cmd", name);
+	    if (name.trim().isEmpty())
+		return false;
+	    command = settings.getCommand("");
+	    showResultingMessage = settings.getShowResultingMessage(showResultingMessage);
+	    return true;
 	}
-	*/
+
+	@Override public String getName()
+	{
+	    return name;
+	}
+
+	@Override public void onCommand(Luwrain luwrain)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    if (showResultingMessage)
+		luwrain.runOsCommand(command, (line)->{}, (exitCode, lines)->{
+			luwrain.runInMainThread(()->issueResultingMessage(luwrain, exitCode, lines));
+		    }); else
+		luwrain.runOsCommand(command);
+	}
+    }
+
+    static void issueResultingMessage(Luwrain luwrain, int exitCode, String[] lines)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNullItems(lines, "lines");
+	final StringBuilder b = new StringBuilder();
+	if (lines.length >= 1)
+	{
+	    b.append(lines[0]);
+	    for(int i = 1;i < lines.length;++i)
+		b.append(" " + lines[i]);
+	}
+	final String text = new String(b).trim();
+	if (!text.isEmpty())
+	    luwrain.message(text, exitCode == 0?Luwrain.MESSAGE_DONE:Luwrain.MESSAGE_ERROR); else
+	    if (exitCode == 0)
+		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFinishedSuccessfully"), Luwrain.MESSAGE_DONE); else
+		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFailed"), Luwrain.MESSAGE_ERROR);
     }
 }

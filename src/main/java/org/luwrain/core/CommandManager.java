@@ -88,24 +88,13 @@ class CommandManager
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(registry, "registry");
-	final String path = new RegistryKeys().commandsOs();
-	final String[] subdirs = registry.getDirectories(path);
-	if (subdirs == null)
-	    return;
-	for(String s: subdirs)
+	for(String s: registry.getDirectories(Settings.OS_COMMANDS_PATH))
 	{
 	    if (s.trim().isEmpty())
-	    {
-		Log.warning("environment", "registry directory " + path + " contains a subdirectory with an empty name");
 		continue;
-	    }
-	    final String commandValue = path + "/" + s + "/command";
-	    if (registry.getTypeOf(commandValue) != Registry.STRING)
-	    {
-		Log.warning("environment", "registry value " + commandValue + " supposed to be a string but it isn\'t a string");
-		continue;
-	    }
-	    add(luwrain, new OsCommands(s, registry.getString(commandValue)));
+	    final OsCommands.OsCommand cmd = new OsCommands.OsCommand();
+	    if (cmd.init(Settings.createOsCommand(registry, Registry.join(Settings.OS_COMMANDS_PATH, s))))
+	    add(luwrain, cmd);
 	}
     }
 }

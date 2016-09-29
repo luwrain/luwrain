@@ -18,9 +18,17 @@ package org.luwrain.core;
 
 public interface Settings
 {
+    static final String OS_COMMANDS_PATH = "/org/luwrain/os/commands";
     static final String PERSONAL_INFO_PATH = "/org/luwrain/personal";
 
     static public RegistryKeys keys = new RegistryKeys();
+
+public interface OsCommand
+{
+    String getName(String defValue);
+    String getCommand(String defValue);
+    boolean getShowResultingMessage(boolean defValue);
+}
 
     public interface PersonalInfo
     {
@@ -260,5 +268,13 @@ public interface Braille
     {
 	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, PERSONAL_INFO_PATH, PersonalInfo.class);
+    }
+
+    static public OsCommand createOsCommand(Registry registry, String path)
+    {
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notEmpty(path, "path");
+	//	Log.debug("cmd", path);
+    return RegistryProxy.create(registry, path, OsCommand.class);
     }
 }

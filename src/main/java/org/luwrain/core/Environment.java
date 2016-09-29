@@ -121,7 +121,7 @@ class Environment extends EnvironmentAreas
 	final Command[] standardCommands = Commands.createStandardCommands(this);
 	for(Command sc: standardCommands)
 	    commands.add(new Luwrain(this), sc);//FIXME:
-	commands.addOsCommands(interfaces.getObjForEnvironment(), registry);
+	commands.addOsCommands(getObjForEnvironment(), registry);
 	sharedObjects.createStandardObjects(this);
 
 	final UniRefProc[] standardUniRefProcs = StandardUniRefProcs.createStandardUniRefProcs(interfaces.getObjForEnvironment());
