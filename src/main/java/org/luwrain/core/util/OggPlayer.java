@@ -56,28 +56,27 @@ import org.luwrain.core.*;
 
 public class OggPlayer extends Thread                                       
 {                                                                               
-    private final boolean debugMode = true;                                     
-    //    private URLConnection urlConnection = null;                                 
     private InputStream inputStream = null;                                     
 
-    private byte[] buffer = null;                                                       
     private final int bufferSize = 2048;
+    private byte[] buffer = null;                                                       
     private int count = 0;                                                              
     private int index = 0;                                                              
-    private byte[] convertedBuffer;                                                     
+    private byte[] convertedBuffer = null;
     private int convertedBufferSize;                                                    
-    private SourceDataLine outputLine = null;                                   
-    private float[][][] pcmInfo;                                                
-    private int[] pcmIndex;                                                     
+    private float[][][] pcmInfo = null;
+    private int[] pcmIndex = null;
 
-    private final Packet joggPacket = new Packet();                                   
-    private final Page joggPage = new Page();                                         
-    private final StreamState joggStreamState = new StreamState();                    
-    private final SyncState joggSyncState = new SyncState();                          
-    private final DspState jorbisDspState = new DspState();                           
-    private final Block jorbisBlock = new Block(jorbisDspState);                      
-    private final Comment jorbisComment = new Comment();                              
-    private final Info jorbisInfo = new Info();                                       
+    private SourceDataLine outputLine = null;                                   
+
+    private Packet joggPacket = new Packet();                                   
+    private Page joggPage = new Page();                                         
+    private StreamState joggStreamState = new StreamState();                    
+    private SyncState joggSyncState = new SyncState();                          
+    private DspState jorbisDspState = new DspState();                           
+    private Block jorbisBlock = new Block(jorbisDspState);                      
+    private Comment jorbisComment = new Comment();                              
+    private Info jorbisInfo = new Info();                                       
 
     private boolean toContinue = true;
     private boolean loop = true;
@@ -149,8 +148,15 @@ inputStream.close();
     {                                                                           
 	Log.debug("ogg", "initializing JOrbis");
 	index = 0;
-
-
+	count = 0;
+joggPacket = new Packet();                                   
+joggPage = new Page();                                         
+joggStreamState = new StreamState();                    
+joggSyncState = new SyncState();                          
+jorbisDspState = new DspState();                           
+jorbisBlock = new Block(jorbisDspState);                      
+jorbisComment = new Comment();                              
+jorbisInfo = new Info();                                       
         joggSyncState.init();                                                   
         joggSyncState.buffer(bufferSize);                                       
         buffer = joggSyncState.data;                                            
@@ -433,7 +439,7 @@ while(true)
 
     private void debugOutput(String output)                                     
     {                                                                           
-        if(debugMode) System.out.println("Debug: " + output);                   
+	System.out.println("Debug: " + output);
     }                                                                           
 }                                                                               
 
