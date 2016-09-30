@@ -26,6 +26,16 @@ class SoundManager
 	case FETCHING:
 	    playBackground("file:///home/luwrain/git/data/sounds/background/fetching1.ogg");
 	    return;
+
+	case MAIN_MENU:
+	    playBackground("file:///home/luwrain/git/data/sounds/background/mainmenu1.ogg");
+	    return;
+
+
+	case SEARCH:
+	    playBackground("file:///home/luwrain/git/data/sounds/background/search1.ogg");
+	    return;
+
 	}
     }
 

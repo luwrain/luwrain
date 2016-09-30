@@ -93,7 +93,8 @@ synchronized     public void stopPlaying()
     {
 	Log.debug("ogg", "stopping");
 	toContinue = false;
-	outputLine.stop();
+	if (outputLine != null)
+	    outputLine.stop();
     }
 
     @Override public void run()                                                           

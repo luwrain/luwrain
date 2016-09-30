@@ -24,4 +24,5 @@ public enum BkgSounds
     WIFI,
     PROPERTIES,
     SEARCH,
+    MAIN_MENU,
 };

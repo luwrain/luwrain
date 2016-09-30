@@ -19,10 +19,10 @@ package org.luwrain.core;
 import java.util.*;
 
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.controls.*;
-import org.luwrain.util.*;
 
-public class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
+class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 {
     static private class Section
     {
@@ -159,6 +159,19 @@ public class MainMenu extends ListArea implements PopupClosingRequest, ListClick
 	    return true;
 	default:
 	return super.onEnvironmentEvent(event);
+	}
+    }
+
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	NullCheck.notNull(query, "query");
+	switch(query.getQueryCode())
+	{
+	case AreaQuery.BACKGROUND_SOUND:
+	    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.MAIN_MENU));
+	    return true;
+	default:
+	    return super.onAreaQuery(query);
 	}
     }
 

@@ -10,10 +10,12 @@ class SoundsPlayer
 {
     static private class Player implements Runnable
     {
-    private static final int BUF_SIZE = 16;//Large this value causes delay on interruption;
+    private static final int BUF_SIZE = 512;
+
 	private String fileName;
-	boolean interruptPlayback = false;
+	private boolean interruptPlayback = false;
 	boolean finished = false;
+private SourceDataLine audioLine = null;
 
 	Player(String fileName)
 	{
@@ -21,65 +23,54 @@ class SoundsPlayer
 	    this.fileName = fileName;
 	}
 
-	public void run()
+	@Override public void run()
 	{
+	    try {
+	    try {
 	    final File soundFile = new File(fileName);
 	    if (!soundFile.exists())
 		return;
-	    AudioInputStream audioInputStream = null;
-	    try {
-		audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-	    }
-	    catch (UnsupportedAudioFileException e)
-	    {
-		//FIXME:Log warning;
-		return;
-	    }
-	    catch (IOException e)
-	    {
-		//FIXME:log warning;
-		return;
-	    }
+	    final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
 	    final AudioFormat format = audioInputStream.getFormat();
-	    SourceDataLine audioLine = null;
-	    DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-	    try {
+	    final DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+	    synchronized (this) {
 		audioLine = (SourceDataLine) AudioSystem.getLine(info);
 		audioLine.open(format);
+		audioLine.start();
 	    }
-	    catch (LineUnavailableException e)
-	    {
-		//FIXME:Log warning;
-		return;
-	    }
-	    catch (Exception e)
-	    {
-		//FIXME:Log exception;
-		return;
-	    }
-	    audioLine.start();
 	    int bytesRead = 0;
 	    byte[] buf = new byte[BUF_SIZE];
-	    try {
 		while (bytesRead != -1 && !interruptPlayback)
 		{
 		    bytesRead = audioInputStream.read(buf, 0, buf.length);
+		    System.out.println("bytesRead=" + bytesRead);
 		    if (bytesRead >= 0)
+			synchronized (this) {
 			audioLine.write(buf, 0, bytesRead);
+			}
 		}
-		if (interruptPlayback)
-		    audioLine.flush();
-	    }
-	    catch (IOException e)
-	    {
-		//FIXMe:Log message;
-		return;
-	    }
+		audioLine.drain();
+	}
 	    finally
 	    {
-		audioLine.drain();
+		if (audioLine != null)
 		audioLine.close();
 		finished = true;
+	    }
+	    }
+	    catch(UnsupportedAudioFileException | IOException | LineUnavailableException e)
+	    {
+		e.printStackTrace();
+	    }
+		}
+
+	synchronized void stopPlaying()
+	{
+	    interruptPlayback = true;
+	    if (audioLine != null)
+	    {
+		audioLine.flush();
+	    audioLine.stop();
 	    }
 	}
     }
@@ -97,10 +88,9 @@ class SoundsPlayer
 	    return;
 	}
 	if (previous != null)
-	    previous.interruptPlayback = true;
+	    previous.stopPlaying();
 	previous = new Player(soundFiles.get(sound));
-	final Thread t = new Thread(previous);
-	t.start();
+	new Thread(previous).start();
     }
 
     boolean finished()
@@ -157,4 +147,4 @@ NullCheck.notNull(sound, "sound");
 	    path = dataDir.resolve(path);
 	soundFiles.put(sound, path.toString());
     }
-}
+    }

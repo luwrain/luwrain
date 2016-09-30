@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
 class SearchAreaWrapper implements Area, AreaWrapper
@@ -43,7 +44,7 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	    hotPointX = 0;
 	if (hotPointY < 0)
 	    hotPointY = 0;
-	environment.message("Режим поиска", Luwrain.MESSAGE_REGULAR);
+	environment.message(environment.i18nIface().getStaticStr("SearchMode"), Luwrain.MESSAGE_REGULAR);
 	environment.playSound(Sounds.SEARCH);
     }
 
@@ -100,14 +101,22 @@ class SearchAreaWrapper implements Area, AreaWrapper
 	return area.onEnvironmentEvent(event);
     }
 
-    @Override public boolean onAreaQuery(AreaQuery query)
-    {
-	return area.onAreaQuery(query);
-    }
-
     @Override public Action[] getAreaActions()
     {
-	return area.getAreaActions();
+	return new Action[0];
+    }
+
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	NullCheck.notNull(query, "query");
+	switch(query.getQueryCode())
+	{
+	case AreaQuery.BACKGROUND_SOUND:
+	    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.SEARCH));
+	    return true;
+	default:
+	    return area.onAreaQuery(query);
+	}
     }
 
     private boolean onNewChar(char c)
