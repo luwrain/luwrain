@@ -559,11 +559,11 @@ class Commands
 		}
 	    },
 
-	    //read-area
+	    //listen
 	    new Command() {
 		@Override public String getName()
 		{
-		    return "read-area";
+		    return "listen";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
