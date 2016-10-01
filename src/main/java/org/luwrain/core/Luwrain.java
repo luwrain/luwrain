@@ -606,22 +606,30 @@ public final class Luwrain implements EventConsumer
     OsCommand runOsCommand(String cmd)
     {
 	NullCheck.notEmpty(cmd, "cmd");
-	return runOsCommand(cmd, null, null);
+	return runOsCommand(cmd, "", null, null);
     }
 
-    OsCommand runOsCommand(String cmd, OsCommand.Output output)
+    OsCommand runOsCommand(String cmd, String dir)
     {
 	NullCheck.notEmpty(cmd, "cmd");
-	return environment.os().runOsCommand(cmd, output, null);
+	NullCheck.notNull(dir, "dir");
+	return runOsCommand(cmd, dir, null, null);
     }
 
-    OsCommand runOsCommand(String cmd, 
+    OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output)
+    {
+	NullCheck.notEmpty(cmd, "cmd");
+	NullCheck.notNull(dir, "dir");
+	return runOsCommand(cmd, dir, output, null);
+    }
+
+    OsCommand runOsCommand(String cmd, String dir,
 			   OsCommand.Output output, OsCommand.Listener listener)
     {
 	NullCheck.notEmpty(cmd, "cmd");
-	return environment.os().runOsCommand(cmd, output, listener);
+	NullCheck.notNull(dir, "dir");
+	return environment.os().runOsCommand(cmd, (!dir.isEmpty())?dir:getPathProperty("luwrain.dir.userhome").toString(), output, listener);
     }
-
 
     public String getProperty(String propName)
     {

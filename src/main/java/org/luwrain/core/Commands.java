@@ -666,15 +666,18 @@ class Commands
 		    env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
 		    if (popup.closing.cancelled() || popup.text().trim().isEmpty())
 			return;
-		    luwrain.runOsCommand(popup.text().trim(), (line)->{}, (exitCode, output)->{
-			    if (output.length >= 1)
-			    {
-			    			    final StringBuilder b = new StringBuilder();
-						    b.append(output[0]);
-						    for(int i = 1;i < output.length;++i)
-							b.append(" " + output[i]);
-						    luwrain.runInMainThread(()->luwrain.message(new String(b), exitCode == 0?Luwrain.MESSAGE_DONE:Luwrain.MESSAGE_ERROR));
-			    }
+		    final String dir;
+		    final Area area = env.getValidActiveArea(false);
+		    if (area != null)
+		    {
+			final CurrentDirQuery query = new CurrentDirQuery();
+			if (AreaQuery.ask(area, query))
+			    dir = query.getAnswer(); else
+			    dir = "";
+		    } else
+			dir = "";
+		    luwrain.runOsCommand(popup.text().trim(), dir, (line)->{}, (exitCode, output)->{
+			luwrain.runInMainThread(()->OsCommands.issueResultingMessage(luwrain, exitCode, output));
 			});
 		}
 	    },

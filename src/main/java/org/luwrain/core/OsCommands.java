@@ -47,7 +47,7 @@ class OsCommands
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
 	    if (showResultingMessage)
-		luwrain.runOsCommand(command, (line)->{}, (exitCode, lines)->{
+		luwrain.runOsCommand(command, "", (line)->{}, (exitCode, lines)->{
 			luwrain.runInMainThread(()->issueResultingMessage(luwrain, exitCode, lines));
 		    }); else
 		luwrain.runOsCommand(command);
