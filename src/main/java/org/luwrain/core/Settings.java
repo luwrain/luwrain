@@ -16,10 +16,19 @@
 
 package org.luwrain.core;
 
+import java.util.*;
+
 public interface Settings
 {
     static final String OS_COMMANDS_PATH = "/org/luwrain/os/commands";
+    static final String I18N_PATH = "/org/luwrain/i18n";
     static final String PERSONAL_INFO_PATH = "/org/luwrain/personal";
+
+public interface I18n
+{
+    String getCharsets(String defValue);
+    void setCharsets(String value);
+}
 
     static public RegistryKeys keys = new RegistryKeys();
 
@@ -276,5 +285,24 @@ public interface Braille
 	NullCheck.notEmpty(path, "path");
 	//	Log.debug("cmd", path);
     return RegistryProxy.create(registry, path, OsCommand.class);
+    }
+
+    static public I18n createI18n(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, I18N_PATH, I18n.class);
+    }
+
+    static public String[] getI18nCharsets(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	final String value = createI18n(registry).getCharsets("");
+	if (value.trim().isEmpty())
+	    return new String[0];
+	final LinkedList<String> res = new LinkedList<String>();
+	for(String s: value.split(":", -1))
+	    if (!s.trim().isEmpty())
+		res.add(s.trim());
+	return res.toArray(new String[res.size()]);
     }
 }
