@@ -60,27 +60,28 @@ import org.luwrain.core.*;
 public class EnvironmentEvent extends Event
 {
     public enum Type {
-REGULAR,
-BROADCAST};
+	REGULAR,
+	BROADCAST};
 
-    public enum Code {OK,
-		      ANNOUNCE_LINE,
-		      CANCEL,
-		      CLOSE,
-		      SAVE,
-		      REFRESH,
-		      INTRODUCE,
-		      HELP,
-		      THREAD_SYNC,
-		      MESSAGE,
-		      ACTION,
-		      OPEN,
-		      MOVE_HOT_POINT,
-		      LISTENING_FINISHED,
-		      REGION_POINT,
-		      INSERT,
-		      DELETE,
-		      PROPERTIES,
+    public enum Code {
+	ACTION,
+	ANNOUNCE_LINE,
+	CANCEL,
+	CLOSE,
+	DELETE,
+	HELP,
+	INSERT,
+	INTRODUCE,
+	LISTENING_FINISHED,
+	MESSAGE,
+	MOVE_HOT_POINT,
+	OK,
+	OPEN,
+	PROPERTIES,
+	REFRESH,
+	REGION_POINT,
+	SAVE,
+	THREAD_SYNC,
     };
 
     private Code code;
