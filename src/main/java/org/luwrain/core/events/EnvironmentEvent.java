@@ -59,7 +59,9 @@ import org.luwrain.core.*;
  */
 public class EnvironmentEvent extends Event
 {
-    public enum Type {REGULAR, BROADCAST};
+    public enum Type {
+REGULAR,
+BROADCAST};
 
     public enum Code {OK,
 		      ANNOUNCE_LINE,
@@ -74,7 +76,6 @@ public class EnvironmentEvent extends Event
 		      ACTION,
 		      OPEN,
 		      MOVE_HOT_POINT,
-		      READING_POINT,
 		      LISTENING_FINISHED,
 		      REGION_POINT,
 		      INSERT,

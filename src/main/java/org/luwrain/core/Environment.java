@@ -25,7 +25,6 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.os.OperatingSystem;
 import org.luwrain.hardware.*;
-import org.luwrain.speech.Channel;
 
 class Environment extends EnvironmentAreas
 {
@@ -34,7 +33,6 @@ class Environment extends EnvironmentAreas
 
     private final String[] cmdLine;
     private final  Registry registry;
-    private Channel readingChannel = null;
     private AreaListening listening = null;
     private final OperatingSystem os;
     private final Interaction interaction;
@@ -461,10 +459,6 @@ class Environment extends EnvironmentAreas
 
     private boolean onKeyboardEvent(KeyboardEvent event)
     {
-	/*
-	if (readingChannel != null)
-	    cancelAreaReading();
-	*/
 	stopAreaListening();
 	if (keyboardEventForEnvironment(event))
 	    return true;
@@ -1106,27 +1100,6 @@ onNewAreasLayout();
 	listening = null;
     }
 
-    void onReadAreaCommand()
-    {
-	final Area activeArea = getValidActiveArea(true);
-	if (activeArea == null)
-	    return;
-	if (readingChannel != null)
-	    cancelAreaReading();
-	readingChannel = speech.getReadingChannel();
-if (readingChannel == null)
-{
-    message(i18n.getStaticStr("NoReadingChannel"), Luwrain.MESSAGE_ERROR);
-    return;
-}
-	Log.debug("core", "using the channel \'" + readingChannel.getChannelName() + " for area reading");
-	final VoicedFragmentQuery query = new VoicedFragmentQuery();
-	if (activeArea.onAreaQuery(query) && query.hasAnswer())
-	    startReading(activeArea, query.getAnswer(), query.nextPointX(), query.nextPointY()); else
-	    startReadingGeneralText(activeArea, activeArea.getHotPointX(), activeArea.getHotPointY());
-	    return;
-    }
-
     String currentAreaWordIface(boolean issueErrorMessages)
     {
 	final Area activeArea = getValidActiveArea(issueErrorMessages);
@@ -1143,92 +1116,8 @@ if (readingChannel == null)
 	    areaInaccessibleMessage();
     }
 
-
     String[] getAllShortcutNames()
     {
 	return shortcuts.getShortcutNames();
-    }
-
-    private void fragmentReadingFinished(Area area, String text,
-					 int nextPointX, int nextPointY)
-    {
-	NullCheck.notNull(area, "area");
-	area.onEnvironmentEvent(new ReadingPointEvent(nextPointX, nextPointY));
-	final VoicedFragmentQuery query = new VoicedFragmentQuery();
-	if (area.onAreaQuery(query) && query.hasAnswer())
-	    startReading(area, query.getAnswer(), query.nextPointX(), query.nextPointY()); else
-	    startReadingGeneralText(area, nextPointX, nextPointY);
-    }
-
-    private void startReadingGeneralText(Area area,
-					 int fromPosX, int fromPosY)
-    {
-	NullCheck.notNull(area, "area");
-	Log.debug("core", "reading general text of area " + area.getAreaName() + " from (" + fromPosX + "," + fromPosY + ")");
-	final StringBuilder b = new StringBuilder();
-	final int count = area.getLineCount();
-	if (fromPosY >= count)
-	    return;
-	int index = fromPosY;
-	String line = area.getLine(index);
-	if (line == null)
-	    return;
-	if (fromPosX < line.length())
-	    line = line.substring(fromPosX); else
-	    line = "";
-	int pos = 0;
-	while(true)
-	{
-	while (pos < line.length() && 
-	       line.charAt(pos) != '.' && line.charAt(pos) != '!' && line.charAt(pos) != '?')
-	    ++pos;
-	if (pos >= line.length())
-	{
-	    b.append(line);
-	    pos = 0;
-	    ++index;
-	    if (index >= count)
-		break;
-	    line = area.getLine(index);
-	    if (line == null)
-		return;
-	    continue;
-	}
-	b.append(line.substring(0, pos + 1));
-	break;
-	}
-	int nextPosX = pos + 1;
-	int nextPosY = index;
-	if (nextPosX >= line.length())
-	{
-	    nextPosX = 0;
-	    //We may be careless that nextPosY would be greater than number of lines, a corresponding check will be performed on next step
-	    ++nextPosY;
-	}
-	//If it is still a first line, we must restore a text to fromPosX
-	if (nextPosY == fromPosY)
-	    nextPosX += fromPosX;
-	startReading(area, new String(b), nextPosX, nextPosY);
-    }
-
-    private void startReading(Area area, String text,
-			      int nextPointX, int nextPointY)
-    {
-	if (readingChannel == null)//No area reading is active currently
-	    return;
-	final Channel.Listener listener = new Channel.Listener(){
-		@Override public void onFinished(long id)
-		{
-		    enqueueEvent(new RunnableEvent(()->{fragmentReadingFinished(area, text, nextPointX, nextPointY);}));
-		}};
-	readingChannel.speak(text, listener, 0, 0);
-    }
-
-    private void cancelAreaReading()
-    {
-	if (readingChannel == null)
-	    return;
-	readingChannel.silence();
-	readingChannel = null;
     }
 }

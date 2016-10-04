@@ -22,7 +22,7 @@ abstract public class AreaQuery extends Event
     static public final int OBJECT_UNIREF = 1;
     static public final int CURRENT_DIR = 2;
     static public final int CUT = 3;
-    static public final int VOICED_FRAGMENT = 4;
+    //    static public final int VOICED_FRAGMENT = 4;
 
     static public final int BEGIN_LISTENING = 5;
 

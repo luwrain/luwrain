@@ -105,12 +105,14 @@ public class ListArea  implements Area, RegionProvider
 	return (index >= 0 && index < model.getItemCount())?index:-1;
     }
 
+    /*
     public void selectEmptyLine()
     {
 	hotPointX = 0;
 	hotPointY = model.getItemCount();
 	environment.onAreaNewHotPoint(this);
     }
+    */
 
     /**
      * Searches for the item in the model and sets hot point on it. Given an
@@ -176,7 +178,18 @@ public class ListArea  implements Area, RegionProvider
 
     public int itemIndexOnLine(int index)
     {
-	return index;
+	final int linesTop = itemsLayout.numberOfEmptyLinesTop();
+	if (index < linesTop)
+	    return -1;
+	if (index - linesTop < model.getItemCount())
+	    return index - linesTop;
+	return -1;
+    }
+
+    public int getLineIndexByItemIndex(int index)
+    {
+	final int linesTop = itemsLayout.numberOfEmptyLinesTop();
+	return index + linesTop;
     }
 
     public void reset(boolean introduce)
@@ -322,7 +335,10 @@ public class ListArea  implements Area, RegionProvider
 	    return onAnnounceLine();
 	case OK:
 	    return onOk(event);
-	case READING_POINT:
+	case LISTENING_FINISHED:
+	    if (event instanceof ListeningFinishedEvent)
+		return onListeningFinishedEvent((ListeningFinishedEvent)event);
+	    return false;
 	case MOVE_HOT_POINT:
 	    if (event instanceof MoveHotPointEvent)
 		return onMoveHotPoint((MoveHotPointEvent)event);
@@ -337,9 +353,9 @@ public class ListArea  implements Area, RegionProvider
 	NullCheck.notNull(query, "query");
 	switch(query.getQueryCode())
 	{
-	case AreaQuery.VOICED_FRAGMENT:
-	    if (query instanceof VoicedFragmentQuery)
-		return onVoicedFragmentQuery((VoicedFragmentQuery)query); else
+	case AreaQuery.BEGIN_LISTENING:
+	    if (query instanceof BeginListeningQuery)
+		return onBeginListeningQuery((BeginListeningQuery)query);
 		return false;
 	default:
 	    return region.onAreaQuery(query, hotPointX, hotPointY);
@@ -417,39 +433,83 @@ public class ListArea  implements Area, RegionProvider
 
     protected boolean onMoveHotPoint(MoveHotPointEvent event)
     {
+	NullCheck.notNull(event, "event");
 	final int x = event.getNewHotPointX();
 	final int y = event.getNewHotPointY();
-	if (y >= model.getItemCount())
+	final int newY;
+	if (y >= getLineCount())
 	{
-	    hotPointY = model.getItemCount();
+	    if (event.precisely())
+		return false;
+newY = getLineCount() - 1;
+	} else
+newY = y;
+	    if (itemIndexOnLine(newY) >= 0)
+	    {
+		//Line with item, not empty
+		final Object item = model.getItem(itemIndexOnLine(newY));
+		final int leftBound = appearance.getObservableLeftBound(item);
+final int rightBound = appearance.getObservableRightBound(item);
+		if (event.precisely() &&
+		    (x < leftBound || x > rightBound))
+		    return false;
+		hotPointY = newY;
+		hotPointX = x;
+		if (hotPointX < leftBound)
+		    hotPointX = leftBound;
+		if (hotPointX > rightBound)
+		    hotPointX = rightBound;
+		environment.onAreaNewHotPoint(this);
+		return true;
+	    }
+	    //On empty line
+	    hotPointY = newY;
 	    hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
-	return true;
-	}
-	final Object o = model.getItem(y);
-	if (x < appearance.getObservableLeftBound(o) ||
-	    x > appearance.getObservableRightBound(o))
+	    environment.onAreaNewHotPoint(this);
+	    return true;
+    }
+
+    protected boolean onBeginListeningQuery(BeginListeningQuery query)
+    {
+	NullCheck.notNull(query, "query");
+	final int index = selectedIndex();
+	if (index < 0)
 	    return false;
-	hotPointX = x;
-	hotPointY = y;
-	environment.onAreaNewHotPoint(this);
+	final int count = model.getItemCount();
+	if (index >= count)
+	    return false;
+	final Object current = model.getItem(index);
+	final String text = appearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS).substring(hotPointX, appearance.getObservableRightBound(current));
+	//	Log.debug("listen", appearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS));
+	//	Log.debug("listen", "" + hotPointX);
+	if (text.isEmpty() && index + 1 >= count)
+	    return false;
+	if (index + 1 < count)
+	{
+	    final Object next = model.getItem(index + 1);
+	    query.answer(new BeginListeningQuery.Answer(text, new ListeningInfo(index + 1, appearance.getObservableLeftBound(next))));
+	} else
+	    query.answer(new BeginListeningQuery.Answer(text, new ListeningInfo(index, appearance.getObservableRightBound(current))));
 	return true;
     }
 
-    protected boolean onVoicedFragmentQuery(VoicedFragmentQuery query)
+    protected boolean onListeningFinishedEvent(ListeningFinishedEvent event)
     {
-	NullCheck.notNull(query, "query");
-	final int count = model.getItemCount();
-	if (hotPointY >= count)
+	NullCheck.notNull(event, "event");
+	if (!(event.getExtraInfo() instanceof ListeningInfo))
 	    return false;
-	final Object current = model.getItem(hotPointY);
-	final String text = appearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS).substring(hotPointX, appearance.getObservableRightBound(current));
-	if (hotPointY + 1 < count)
-	{
-	    final Object next = model.getItem(hotPointY + 1);
-	    query.answer(text, appearance.getObservableLeftBound(next), hotPointY + 1);
-	} else
-	    query.answer(text, 0, hotPointY + 1);
+	final ListeningInfo info = (ListeningInfo)event.getExtraInfo();
+	final int count = model.getItemCount();
+	if (info.itemIndex >= count)
+	    return false;
+	final Object item = model.getItem(info.itemIndex);
+	final int leftBound = appearance.getObservableLeftBound(item);
+	final int rightBound = appearance.getObservableRightBound(item);
+	if (info.pos < leftBound || info.pos > rightBound)
+	    return false;
+	hotPointY = getLineIndexByItemIndex(info.itemIndex);
+	hotPointX = info.pos;
+	environment.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -941,5 +1001,15 @@ public interface ItemsLayout
 	}
     }
 
+static protected class ListeningInfo
+{
+    final int itemIndex;
+    final int pos;
 
+    ListeningInfo(int itemIndex, int pos)
+    {
+	this.itemIndex = itemIndex;
+	this.pos = pos;
+    }
+}
 }
