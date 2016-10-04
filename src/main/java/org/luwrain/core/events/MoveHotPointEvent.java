@@ -20,9 +20,9 @@ import org.luwrain.core.*;
 
 public class MoveHotPointEvent extends EnvironmentEvent
 {
-protected int newHotPointX;
-    protected int newHotPointY;
-    protected boolean precisely;
+protected final int newHotPointX;
+    protected final int newHotPointY;
+    protected final boolean precisely;
 
     MoveHotPointEvent(Code customCode,
 		      int newHotPointX, int newHotPointY, boolean precisely)

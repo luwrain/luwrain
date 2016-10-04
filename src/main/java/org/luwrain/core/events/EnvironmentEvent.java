@@ -75,7 +75,7 @@ public class EnvironmentEvent extends Event
 		      OPEN,
 		      MOVE_HOT_POINT,
 		      READING_POINT,
-		      READING_FINISHED,
+		      LISTENING_FINISHED,
 		      REGION_POINT,
 		      INSERT,
 		      DELETE,

@@ -91,7 +91,7 @@ public class OggPlayer extends Thread
 
 synchronized     public void stopPlaying()
     {
-	Log.debug("ogg", "stopping");
+	//	Log.debug("ogg", "stopping");
 	toContinue = false;
 	if (outputLine != null)
 	    outputLine.stop();
@@ -130,7 +130,7 @@ synchronized     public void stopPlaying()
 
     private void init()
     {                                                                           
-	Log.debug("ogg", "initializing JOrbis");
+	//	Log.debug("ogg", "initializing JOrbis");
 	index = 0;
 	count = 0;
 	joggPacket = new Packet();                                   
@@ -148,7 +148,7 @@ synchronized     public void stopPlaying()
 
     private boolean readHeader() throws IOException
     {                                                                           
-	Log.debug("ogg", "starting header reading");
+	//	Log.debug("ogg", "starting header reading");
         boolean needMoreData = true;                                            
         int packet = 1;                                                         
         while(needMoreData)                                                     
@@ -266,7 +266,7 @@ synchronized     public void stopPlaying()
 
     synchronized private boolean initSound() throws LineUnavailableException//, IllegalStateException
     {                                                                           
-	Log.debug("ogg", "initializing the sound system");
+	//	Log.debug("ogg", "initializing the sound system");
         convertedBufferSize = bufferSize * 2;
         convertedBuffer = new byte[convertedBufferSize];                        
         jorbisDspState.synthesis_init(jorbisInfo);                              
@@ -290,14 +290,14 @@ synchronized     public void stopPlaying()
 
     private void readBody() throws IOException
     {                                                                           
-	Log.debug("ogg", "reading the body");
+	//	Log.debug("ogg", "reading the body");
         boolean needMoreData = true;                                            
 	while(needMoreData && toContinue)
         {                                                                       
             switch(joggSyncState.pageout(joggPage))                             
             {                                                                   
 	    case -1:                                                        
-		Log.debug("ogg", "there is a hole in the data");
+		//		Log.debug("ogg", "there is a hole in the data");
 		    break;
 	    case 0:                                                         
                     break;                                                      
@@ -315,7 +315,7 @@ while(toContinue)
                         switch(joggStreamState.packetout(joggPacket))           
                         {                                                       
 			case -1:                                            
-				Log.debug("ogg", "there is a hole in the data");
+			    //				Log.debug("ogg", "there is a hole in the data");
 			case 0:                                             
                                 break processPackets;                           
 			case 1:                                             
@@ -336,13 +336,13 @@ while(toContinue)
 		    needMoreData = false;                            
             }                                                                   
         }                                                                       
-	Log.debug("ogg", "body reading finished");
+	//	Log.debug("ogg", "body reading finished");
     }                                                                           
 
     synchronized private void cleanUp()                                                      
     {                                                                           
 	outputLine.close();
-	Log.debug("ogg", "cleaning up");
+	//	Log.debug("ogg", "cleaning up");
         joggStreamState.clear();                                                
         jorbisBlock.clear();                                                    
         jorbisDspState.clear();                                                 

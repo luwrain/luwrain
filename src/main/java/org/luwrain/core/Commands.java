@@ -567,7 +567,8 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onReadAreaCommand();
+		    //		    env.onReadAreaCommand();
+		    env.startAreaListening();
 		}
 	    },
 

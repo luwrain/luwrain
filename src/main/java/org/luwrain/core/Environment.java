@@ -32,11 +32,12 @@ class Environment extends EnvironmentAreas
     static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
-    private String[] cmdLine;
-    private Registry registry;
+    private final String[] cmdLine;
+    private final  Registry registry;
     private Channel readingChannel = null;
-    private OperatingSystem os;
-    private Interaction interaction;
+    private AreaListening listening = null;
+    private final OperatingSystem os;
+    private final Interaction interaction;
 
     private org.luwrain.core.extensions.Manager extensions;
     private final org.luwrain.desktop.App desktop = new org.luwrain.desktop.App();
@@ -58,14 +59,12 @@ class Environment extends EnvironmentAreas
 	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(os, "os");
-	//	NullCheck.notNull(speech, "speech");
 	NullCheck.notNull(interaction, "interaction");
 	NullCheck.notNull(paths, "paths");
 	NullCheck.notNull(lang, "lang");
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	this.os = os;
-	//	this.speech = speech;
 	this.interaction = interaction;
 	this.paths = paths;
 	this.lang = lang;
@@ -462,8 +461,11 @@ class Environment extends EnvironmentAreas
 
     private boolean onKeyboardEvent(KeyboardEvent event)
     {
+	/*
 	if (readingChannel != null)
 	    cancelAreaReading();
+	*/
+	stopAreaListening();
 	if (keyboardEventForEnvironment(event))
 	    return true;
 	switch(popupBlocking())
@@ -1084,6 +1086,24 @@ onNewAreasLayout();
 	    return null;
 	}
 	return activeArea;
+    }
+
+    void startAreaListening()
+    {
+	final Area activeArea = getValidActiveArea(true);
+	if (activeArea == null)
+	    return;
+	stopAreaListening();
+	listening = new AreaListening(getObjForEnvironment(), speech, activeArea);
+	listening.start();
+    }
+
+    void stopAreaListening()
+    {
+	if (listening == null)
+	    return;
+	listening.cancel();
+	listening = null;
     }
 
     void onReadAreaCommand()
