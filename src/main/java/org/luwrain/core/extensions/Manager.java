@@ -48,7 +48,7 @@ public class Manager
 	{
 	    if (s == null || s.trim().isEmpty())
 		continue;
-	    Log.debug("extensions", "loading extension " + s);
+	    Log.debug("core", "loading extension " + s);
 	    Object o;
 	    try {
 		o = Class.forName(s).newInstance();
@@ -60,17 +60,17 @@ public class Manager
 	    }
 	    catch (IllegalAccessException e)
 	    {
-		Log.error("extensions", "loading of extension " + s + " failed:illegal access:" + e.getMessage());
+		Log.error("core", "loading of extension " + s + " failed:illegal access:" + e.getMessage());
 		continue;
 	    }
 	    catch (ClassNotFoundException e)
 	    {
-		Log.error("extensions", "loading of extension " + s + " failed:class not found:" + e.getMessage());
+		Log.error("core", "loading of extension " + s + " failed:class not found:" + e.getMessage());
 		continue;
 	    }
 	    if (!(o instanceof Extension))
 	    {
-		Log.error("extensions", "loading of extension " + s + " failed: this object isn\'t an instance of org.luwrain.core.Extension");
+		Log.error("core", "loading of extension " + s + " failed: this object isn\'t an instance of org.luwrain.core.Extension");
 		continue;
 	    }
 	    final Extension ext = (Extension)o;
@@ -81,14 +81,14 @@ public class Manager
 	    }
 	    catch (Exception ee)
 	    {
-		Log.error("extensions", "loading of extension " + s + " failed: unexpected exception:" + ee.getMessage());
+		Log.error("core", "loading of extension " + s + " failed: unexpected exception:" + ee.getMessage());
 		ee.printStackTrace();
 		interfaces.release(iface);
 		continue;
 	    }
 	    if (message != null)
 	    {
-		Log.error("extensions", "loading of extension " + s + " failed: " + message);
+		Log.error("core", "loading of extension " + s + " failed: " + message);
 		interfaces.release(iface);
 		continue;
 	    }
@@ -104,7 +104,7 @@ public class Manager
 	    res.add(loadedExt);
 	}
 	extensions = res.toArray(new LoadedExtension[res.size()]);
-	Log.debug("extensions", "loaded " + extensions.length + " extensions");
+	Log.debug("core", "loaded " + extensions.length + " extensions");
     }
 
     public void close()
@@ -112,7 +112,7 @@ public class Manager
 	for(LoadedExtension e: extensions)
 	{
 	    try {
-		Log.debug("extensions", "closing extension " + e.ext.getClass().getName());
+		Log.debug("core", "closing extension " + e.ext.getClass().getName());
 		e.ext.close();
 	    }
 	    catch (Throwable t)
@@ -137,7 +137,7 @@ public class Manager
 	}
 	catch (Exception ee)
 	{
-	    Log.error("extensions", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shortcuts:" + ee.getMessage());
+	    Log.error("core", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shortcuts:" + ee.getMessage());
 	    ee.printStackTrace();
 	    return new Shortcut[0];
 	}
