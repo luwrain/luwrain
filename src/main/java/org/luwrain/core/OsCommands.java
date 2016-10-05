@@ -54,6 +54,52 @@ class OsCommands
 	}
     }
 
+    static class OsShortcut implements Shortcut
+    {
+	private final Luwrain luwrain;
+	private String name = "";
+	private String command = "";
+	private boolean showResultingMessage = true;
+
+	OsShortcut(Luwrain luwrain)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    this.luwrain = luwrain;
+	}
+
+	boolean init(Settings.OsShortcut settings)
+	{
+	    NullCheck.notNull(settings, "settings");
+	    name = settings.getName("");
+	    Log.debug("cmd", name);
+	    if (name.trim().isEmpty())
+		return false;
+	    command = settings.getCommand("");
+	    showResultingMessage = settings.getShowResultingMessage(showResultingMessage);
+	    return true;
+	}
+
+	@Override public String getName()
+	{
+	    return name;
+	}
+
+	@Override public Application[] prepareApp(String[] args)
+	{
+	    NullCheck.notNullItems(args, "args");
+	    final StringBuilder b = new StringBuilder();
+	    b.append(command);
+	    for(String a: args)
+		b.append(" \'" + a.replaceAll("\'", "\'\\\'\'") + "\'");
+	    if (showResultingMessage)
+		luwrain.runOsCommand(new String(b), "", (line)->{}, (exitCode, lines)->{
+			luwrain.runInMainThread(()->issueResultingMessage(luwrain, exitCode, lines));
+		    }); else
+		luwrain.runOsCommand(new String(b));
+	    return null;
+	}
+    }
+
     static void issueResultingMessage(Luwrain luwrain, int exitCode, String[] lines)
     {
 	NullCheck.notNull(luwrain, "luwrain");

@@ -88,6 +88,7 @@ class CommandManager
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(registry, "registry");
+	registry.addDirectory(Settings.OS_COMMANDS_PATH);
 	for(String s: registry.getDirectories(Settings.OS_COMMANDS_PATH))
 	{
 	    if (s.trim().isEmpty())

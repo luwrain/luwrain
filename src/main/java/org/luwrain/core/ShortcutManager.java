@@ -86,4 +86,20 @@ class ShortcutManager
 		}
 	    });
     }
+
+    void addOsShortcuts(Luwrain luwrain, Registry registry)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(registry, "registry");
+	registry.addDirectory(Settings.OS_SHORTCUTS_PATH);
+	for(String s: registry.getDirectories(Settings.OS_SHORTCUTS_PATH))
+	{
+	    if (s.trim().isEmpty())
+		continue;
+	    final OsCommands.OsShortcut shortcut = new OsCommands.OsShortcut(luwrain);
+	    if (shortcut.init(Settings.createOsShortcut(registry, Registry.join(Settings.OS_SHORTCUTS_PATH, s))))
+	    add(shortcut);
+	}
+    }
+
 }

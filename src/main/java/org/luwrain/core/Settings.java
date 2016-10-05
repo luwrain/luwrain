@@ -21,6 +21,7 @@ import java.util.*;
 public interface Settings
 {
     static final String OS_COMMANDS_PATH = "/org/luwrain/os/commands";
+    static final String OS_SHORTCUTS_PATH = "/org/luwrain/os/shortcuts";
     static final String I18N_PATH = "/org/luwrain/i18n";
     static final String PERSONAL_INFO_PATH = "/org/luwrain/personal";
 
@@ -33,6 +34,13 @@ public interface I18n
     static public RegistryKeys keys = new RegistryKeys();
 
 public interface OsCommand
+{
+    String getName(String defValue);
+    String getCommand(String defValue);
+    boolean getShowResultingMessage(boolean defValue);
+}
+
+public interface OsShortcut
 {
     String getName(String defValue);
     String getCommand(String defValue);
@@ -283,9 +291,16 @@ public interface Braille
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notEmpty(path, "path");
-	//	Log.debug("cmd", path);
     return RegistryProxy.create(registry, path, OsCommand.class);
     }
+
+    static public OsShortcut createOsShortcut(Registry registry, String path)
+    {
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notEmpty(path, "path");
+    return RegistryProxy.create(registry, path, OsShortcut.class);
+    }
+
 
     static public I18n createI18n(Registry registry)
     {
