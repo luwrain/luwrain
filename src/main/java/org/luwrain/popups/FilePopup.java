@@ -32,8 +32,8 @@ public class FilePopup extends EditListPopup
 	boolean pathAcceptable(Path path);
     }
 
-    private Path defPath;
-    private Acceptance acceptance;
+    private final Path defPath;
+    private final Acceptance acceptance;
 
     public FilePopup(Luwrain luwrain, String name,
 		     String prefix, Acceptance acceptance,

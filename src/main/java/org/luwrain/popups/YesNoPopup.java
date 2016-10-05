@@ -24,13 +24,13 @@ import org.luwrain.core.queries.*;
 
 public class YesNoPopup implements Popup, PopupClosingRequest
 {
-    protected Luwrain luwrain;
+    protected final Luwrain luwrain;
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
-    protected String name = "";
+    protected final String name;
     protected String text = "";
     protected boolean res;
-    protected boolean defaultRes;
-    protected Set<Popup.Flags> popupFlags;
+    protected final boolean defaultRes;
+    protected final Set<Popup.Flags> popupFlags;
 
     public YesNoPopup(Luwrain luwrain,
 		      String name, String text,

@@ -27,11 +27,11 @@ import org.luwrain.controls.*;
 
 public class CommanderPopup extends CommanderArea implements CommanderArea.ClickHandler, Popup, PopupClosingRequest
 {
-    protected Luwrain luwrain;
+    protected final Luwrain luwrain;
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
-    protected String name;
-    protected FilePopup.Acceptance acceptance = null;
-    protected Set<Popup.Flags> popupFlags;
+    protected final String name;
+    protected final FilePopup.Acceptance acceptance;
+    protected final Set<Popup.Flags> popupFlags;
     protected Path result;
 
     public CommanderPopup(Luwrain luwrain, String name,

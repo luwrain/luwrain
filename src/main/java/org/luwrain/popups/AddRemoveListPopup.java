@@ -71,8 +71,8 @@ public class AddRemoveListPopup extends ListPopupBase
 	Object getNewItemToAdd();
     }
 
-    protected RemoveConfirmation removeConfirmation;
-    protected ItemsSource itemsSource;
+    protected final RemoveConfirmation removeConfirmation;
+    protected final ItemsSource itemsSource;
 
     public AddRemoveListPopup(Luwrain luwrain, String name,
 			      Object[] items, ItemsSource itemsSource, RemoveConfirmation removeConfirmation,

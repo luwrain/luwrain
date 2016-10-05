@@ -24,117 +24,7 @@ import org.luwrain.controls.*;
 
 public class PartitionsPopup extends ListPopupBase
 {
-    public interface Partition 
-    {
-	String getFullTitle();
-	String getBriefTitle();
-	Object getObject();
-    }
-
-    public interface Control
-    {
-	Partition[] getPartitions();
-	Object[] getStorageDevices();
-	String[] getStorageDevicesIntroduction();
-	int attachStorageDevice(Object device);
-	int detachStorageDevice(Object dev);
-    }
-
-    static protected class Appearance implements ListArea.Appearance
-    {
-	protected Luwrain luwrain;
-
-	Appearance(Luwrain luwrain)
-	{
-	    NullCheck.notNull(luwrain, "luwrain");
-	    this.luwrain = luwrain;
-	}
-
-	@Override public void announceItem(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flag ");
-	    String value;
-	    if (item instanceof Partition)
-	    {
-		final Partition part = (Partition)item;
-		if (flags.contains(Flags.BRIEF))
-		    value = part.getBriefTitle(); else
-		    value = part.getFullTitle();
-	    } else
-		value = item.toString();
-	    if (!value.trim().isEmpty())
-		luwrain.say(value); else
-		luwrain.hint(Hints.EMPTY_LINE);
-	}
-
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    if (item instanceof Partition)
-	    {
-		final Partition part = (Partition)item;
-		return part.getFullTitle();
-	    }
-	    return item.toString();
-	}
-
-	@Override public int getObservableLeftBound(Object item)
-	{
-	    return 0;
-	}
-
-	@Override public int getObservableRightBound(Object item)
-	{
-	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
-	}
-    }
-
-    static protected class Model implements ListArea.Model
-    {
-	protected Control control;
-	protected Object[] items;
-
-	Model(Control control)
-	{
-	    NullCheck.notNull(control, "control");
-	    this.control = control;
-	    refresh();
-	}
-
-	@Override public int getItemCount()
-	{
-	    return items != null?items.length:0;
-	}
-
-	@Override public Object getItem(int index)
-	{
-	    if (items == null ||
-		index < 0 || index >= items.length)
-		return null;
-	    return items[index];
-	}
-
-	@Override public boolean toggleMark(int index)
-	{
-	    return false;
-	}
-
-	@Override public void refresh()
-	{
-	    final LinkedList res = new LinkedList();
-	    for(Object o: control.getPartitions())
-		res.add(o);
-	    for(Object o: control.getStorageDevicesIntroduction())
-		res.add(o);
-	    for(Object o: control.getStorageDevices())
-		res.add(o);
-	    items = res.toArray(new Object[res.size()]);
-	}
-    }
-
-    protected Control control;
+    protected final Control control;
     protected Partition result = null;
 
     public PartitionsPopup(Luwrain luwrain, Control control,
@@ -226,5 +116,115 @@ public class PartitionsPopup extends ListPopupBase
 	params.appearance = new Appearance(luwrain);
 	params.flags = listFlags;
 	return params;
+    }
+
+    public interface Partition 
+    {
+	String getFullTitle();
+	String getBriefTitle();
+	Object getObject();
+    }
+
+    public interface Control
+    {
+	Partition[] getPartitions();
+	Object[] getStorageDevices();
+	String[] getStorageDevicesIntroduction();
+	int attachStorageDevice(Object device);
+	int detachStorageDevice(Object dev);
+    }
+
+    static protected class Appearance implements ListArea.Appearance
+    {
+	protected final Luwrain luwrain;
+
+	Appearance(Luwrain luwrain)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    this.luwrain = luwrain;
+	}
+
+	@Override public void announceItem(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flag ");
+	    final String value;
+	    if (item instanceof Partition)
+	    {
+		final Partition part = (Partition)item;
+		if (flags.contains(Flags.BRIEF))
+		    value = part.getBriefTitle(); else
+		    value = part.getFullTitle();
+	    } else
+		value = item.toString();
+	    if (!value.trim().isEmpty())
+		luwrain.say(value); else
+		luwrain.hint(Hints.EMPTY_LINE);
+	}
+
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    if (item instanceof Partition)
+	    {
+		final Partition part = (Partition)item;
+		return part.getFullTitle();
+	    }
+	    return item.toString();
+	}
+
+	@Override public int getObservableLeftBound(Object item)
+	{
+	    return 0;
+	}
+
+	@Override public int getObservableRightBound(Object item)
+	{
+	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
+	}
+    }
+
+    static protected class Model implements ListArea.Model
+    {
+	protected final Control control;
+	protected Object[] items;
+
+	Model(Control control)
+	{
+	    NullCheck.notNull(control, "control");
+	    this.control = control;
+	    refresh();
+	}
+
+	@Override public int getItemCount()
+	{
+	    return items != null?items.length:0;
+	}
+
+	@Override public Object getItem(int index)
+	{
+	    if (items == null ||
+		index < 0 || index >= items.length)
+		return null;
+	    return items[index];
+	}
+
+	@Override public boolean toggleMark(int index)
+	{
+	    return false;
+	}
+
+	@Override public void refresh()
+	{
+	    final LinkedList res = new LinkedList();
+	    for(Object o: control.getPartitions())
+		res.add(o);
+	    for(Object o: control.getStorageDevicesIntroduction())
+		res.add(o);
+	    for(Object o: control.getStorageDevices())
+		res.add(o);
+	    items = res.toArray(new Object[res.size()]);
+	}
     }
 }

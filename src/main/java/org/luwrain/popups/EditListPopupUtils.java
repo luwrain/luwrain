@@ -36,7 +36,7 @@ public class EditListPopupUtils
 		return "";
 	    final String[] items = new String[fullItems.length];
 	    for(int i = 0;i < fullItems.length;++i)
-		items[i] = fullItems[i].value();
+		items[i] = fullItems[i].value;
 	    Vector<String> m = new Vector<String>();
 	    for(String s: items)
 		//	    if (beginning.isEmpty() || s.indexOf(beginning) == 0)
@@ -70,7 +70,7 @@ public class EditListPopupUtils
 		return new String[0];
 	    final String[] items = new String[fullItems.length];
 	    for(int i = 0;i < fullItems.length;++i)
-		items[i] = fullItems[i].value();
+		items[i] = fullItems[i].value;
 	    if (beginning == null || beginning.isEmpty())
 		return items;
 	    Vector<String> matching = new Vector<String>();
@@ -87,15 +87,15 @@ public class EditListPopupUtils
 	    final Item emptyItem = getEmptyItem(text);
 	    if (emptyItem == null)
 		return null;
-	    if (text.compareTo(emptyItem.value()) <= 0)
+	    if (text.compareTo(emptyItem.value) <= 0)
 		return null;
 	    final Item[] items = getItems(text);
 	    if (items == null || items.length <= 1)
 		return null;
-	    if (text.compareTo(items[0].value()) <= 0)
+	    if (text.compareTo(items[0].value) <= 0)
 		return emptyItem;
 	    for(int i = 1;i < items.length;++i)
-		if (text.compareTo(items[i].value()) <= 0)
+		if (text.compareTo(items[i].value) <= 0)
 		    return items[i - 1];
 	    return items[items.length - 1];
 	}
@@ -107,10 +107,10 @@ public class EditListPopupUtils
 		return (items != null && items.length > 0)?items[0]:null;
 	    if (items == null || items.length <= 1)
 		return null;
-	    if (text.compareTo(items[items.length - 1].value()) >= 0)
+	    if (text.compareTo(items[items.length - 1].value) >= 0)
 		return null;
 	    for(int i = items.length - 2;i >= 0;--i)
-		if (text.compareTo(items[i].value()) >= 0)
+		if (text.compareTo(items[i].value) >= 0)
 		    return items[i + 1];
 	    return items[0];
 	}

@@ -26,8 +26,8 @@ import org.luwrain.util.*;
 public class ListPopupBase extends ListArea implements Popup, PopupClosingRequest
 {
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
-    protected Luwrain luwrain;
-    protected Set<Popup.Flags> popupFlags;
+    protected final Luwrain luwrain;
+    protected final Set<Popup.Flags> popupFlags;
 
     public ListPopupBase(Luwrain luwrain, ListArea.Params params, 
 			 Set<Popup.Flags> popupFlags)

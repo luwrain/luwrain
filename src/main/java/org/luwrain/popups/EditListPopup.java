@@ -27,8 +27,8 @@ public class EditListPopup extends SimpleEditPopup
 
     static public class Item implements Comparable
     {
-	protected String value;
-	protected String announcement;
+	public final String value;
+	public final String announcement;
 
 	public Item()
 	{
@@ -51,9 +51,10 @@ public class EditListPopup extends SimpleEditPopup
 	    this.announcement = value;
 	}
 
+	/*
 	public String value() { return value; }
 	public String announcement() { return announcement; }
-
+	*/
 	@Override public String toString()
 	{
 	    return value;
@@ -77,7 +78,7 @@ public class EditListPopup extends SimpleEditPopup
 	Item getListPopupNextItem(String text);
     }
 
-    protected Model model;
+    protected final Model model;
 
     public EditListPopup(Luwrain luwrain, EditListPopup.Model model,
 			 String name, String prefix,
@@ -147,11 +148,11 @@ public class EditListPopup extends SimpleEditPopup
 	    luwrain.hint(Hints.NO_ITEMS_ABOVE);
 	    return;
 	}
-	final String value = briefIntroduction?item.announcement():item.value();
+	final String value = briefIntroduction?item.announcement:item.value;
 	if (value.isEmpty())
 	    luwrain.hint(Hints.EMPTY_LINE); else
 	    luwrain.say(value);
-	setText(item.value(), "");
+	setText(item.value, "");
     }
 
     private void onKeyDown(boolean briefIntroduction)
@@ -162,10 +163,10 @@ public class EditListPopup extends SimpleEditPopup
 	    luwrain.hint(Hints.NO_ITEMS_BELOW);
 	    return;
 	}
-	final String value = briefIntroduction?item.announcement():item.value();
+	final String value = briefIntroduction?item.announcement:item.value;
 	if (value.isEmpty())
 	    luwrain.hint(Hints.EMPTY_LINE); else
 	    luwrain.say(value);
-	setText(item.value(), "");
+	setText(item.value, "");
     }
 }
