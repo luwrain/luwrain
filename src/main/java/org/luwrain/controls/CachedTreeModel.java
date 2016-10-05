@@ -22,19 +22,19 @@ import org.luwrain.core.NullCheck;
 
 public class CachedTreeModel implements TreeArea.Model
 {
-static private class CacheItem
-{
-    Object parent;
-    Object[] objs = new Object[0];
-
-CacheItem(Object parent)
+    static protected class CacheItem
     {
-	NullCheck.notNull(parent, "parent");
-	this.parent = parent;
-    }
-}
+	private final Object parent;
+	private Object[] objs = new Object[0];
 
-    private CachedTreeModelSource source;
+	CacheItem(Object parent)
+	{
+	    NullCheck.notNull(parent, "parent");
+	    this.parent = parent;
+	}
+    }
+
+    private final CachedTreeModelSource source;
     private  final LinkedList<CacheItem> cache = new LinkedList<CacheItem>();
 
     public CachedTreeModel(CachedTreeModelSource source)
@@ -47,14 +47,6 @@ CacheItem(Object parent)
     {
 	return source.getRoot();
     }
-
-    /*
-    @Override public boolean isLeaf(Object node)
-    {
-	final Object[] objs = source.getChildObjs(node);
-	return objs == null || objs.length < 1;
-    }
-    */
 
     @Override public void beginChildEnumeration(Object node)
     {

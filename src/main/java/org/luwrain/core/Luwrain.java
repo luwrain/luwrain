@@ -62,12 +62,6 @@ public final class Luwrain implements EventConsumer
     public static final int PITCH_HINT = -25;
     public static final int PITCH_MESSAGE = -25;
 
-    /*
-      public static final int RATE_HIGH = org.luwrain.speech.BackEnd.HIGH;
-      public static final int RATE_NORMAL = org.luwrain.speech.BackEnd.NORMAL;
-      public static final int RATE_LOW = org.luwrain.speech.BackEnd.LOW;
-    */
-
     /** The message has no any typical semantics*/
     static public final int MESSAGE_REGULAR = 0;
 
@@ -83,7 +77,7 @@ public final class Luwrain implements EventConsumer
     /** The message must be issued with a sound announcement indicating the critical error*/
     static public final int MESSAGE_ERROR = 4;
 
-    private Environment environment;
+    private final Environment environment;
     private String charsToSkip = "";
 
     Luwrain(Environment environment)

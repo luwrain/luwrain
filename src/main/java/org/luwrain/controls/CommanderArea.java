@@ -37,15 +37,14 @@ import org.luwrain.os.*;
 public class CommanderArea extends ListArea
 {
     static public final String PARENT_DIR = "..";
-
     public enum Flags {MARKING};
 
     static public class Entry
     {
 	public enum Type {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
 
-	protected Path path;
-	protected Type type;
+	final Path path;
+	final Type type;
 	protected boolean marked;
 
 	Entry(Path path) throws IOException
@@ -80,8 +79,8 @@ public class CommanderArea extends ListArea
 	    marked = !marked;
 	}
 
-	public Path path() { return path; }
-public Type type() { return type; }
+	public Path getPath() { return path; }
+public Type getType() { return type; }
 	public boolean marked() { return marked; }
 	public String baseName() { return path.getFileName().toString(); }
 
@@ -94,25 +93,6 @@ public Type type() { return type; }
 	}
     }
 
-    public interface Filter
-{
-    boolean commanderEntrySuits(Entry entry);
-}
-
-    public interface CommanderAppearance 
-    {
-	String getCommanderName(Path path);
-	String getScreenLine(Entry entry);
-	void announceLocation(Path path);
-	void announceEntry(Entry entry, boolean brief);
-    }
-
-    public interface ClickHandler
-    {
-	public enum Result {OPEN_DIR, OK, REJECTED};
-	Result onCommanderClick(CommanderArea area, Path path, boolean dir);
-    }
-
 static public class Params
 {
     public ControlEnvironment environment;
@@ -123,131 +103,9 @@ static public class Params
     public Comparator comparator = new CommanderUtils.ByNameComparator();
 }
 
-    public static class AppearanceImpl implements ListArea.Appearance
-    {
-	protected CommanderAppearance commanderAppearance;
-
-	public AppearanceImpl(CommanderAppearance commanderAppearance)
-	{
-	    NullCheck.notNull(commanderAppearance, "commanderAppearance");
-	    this.commanderAppearance = commanderAppearance;
-	}
-
-	@Override public void announceItem(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    commanderAppearance.announceEntry((Entry)item, flags.contains(Flags.BRIEF));
-	}
-
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    final Entry entry = (Entry)item;
-
-	    final boolean marked = entry.marked();
-	    final CommanderArea.Entry.Type type = entry.type();
-	    final String name = commanderAppearance.getScreenLine(entry);
-	    final StringBuilder b = new StringBuilder();
-	    b.append(marked?"*":" ");
-	    switch(type)
-	    {
-	    case DIR:
-		b.append("[");
-		break;
-	    case SPECIAL:
-		b.append("!");
-		break;
-	    case SYMLINK:
-	    case SYMLINK_DIR:
-		b.append("{");
-		break;
-	    default:
-		b.append(" ");
-	    }
-	    b.append(name);
-	    switch(type)
-	    {
-	    case DIR:
-		b.append("]");
-		break;
-	    case SYMLINK:
-	    case SYMLINK_DIR:
-		b.append("}");
-		break;
-	    }
-	    return new String(b);
-	}
-
-	@Override public int getObservableLeftBound(Object item)
-	{
-	    return 2;
-	}
-
-	@Override public int getObservableRightBound(Object item)
-	{
-	    NullCheck.notNull(item, "item");
-	    return commanderAppearance.getScreenLine((Entry)item).length() + 2;
-	}
-    }
-
-    static public class ModelImpl implements ListArea.Model
-    {
-	boolean marking = true;
-Filter filter = null;
-	Comparator comparator = null;
-
-	Path current;
-	Entry[] entries;//null means the content is inaccessible
-
-	ModelImpl(Filter filter, Comparator comparator)
-	{
-	    //filter may be null
-	    NullCheck.notNull(comparator, "comparator");
-	    this.filter = filter;
-	    this.comparator = comparator;
-	}
-
-	void load(Path path)
-	{
-	    NullCheck.notNull(path, "path");
-	    current = path;
-	    entries = loadEntries(path, filter, comparator);
-	}
-
-	@Override public int getItemCount()
-	{
-	    return entries != null?entries.length:0;
-	}
-
-	@Override public Object getItem(int index)
-	{
-	    return (entries != null && index < entries.length)?entries[index]:null;
-	}
-
-	@Override public boolean toggleMark(int index)
-	{
-	    if (!marking)
-		return false;
-	    if (entries == null ||
-		index < 0 || index >= entries.length)
-		return false;
-	    if (entries[index].type() == Entry.Type.PARENT)
-		return false;
-	    entries[index].toggleMark();
-	    return true;
-	}
-
-	@Override public void refresh()
-	{
-	    entries = loadEntries(current, filter, comparator);
-	}
-    }
-
-protected CommanderAppearance commanderAppearance;
-    protected CommanderArea.ClickHandler clickHandler;
-    protected boolean selecting = false;
+    protected final CommanderAppearance commanderAppearance;
+    protected final boolean selecting;
+    protected CommanderArea.ClickHandler clickHandler = null;
 
     public CommanderArea(Params params, Path current)
     {
@@ -268,7 +126,7 @@ protected CommanderAppearance commanderAppearance;
 	    return false;
 	final Entry[] entries = model().entries;
 	int index = 0;
-	while(index < entries.length && !entries[index].path().equals(path))
+	while(index < entries.length && !entries[index].path.equals(path))
 	    ++index;
 	if (index >= entries.length)
 	    return false;
@@ -301,8 +159,8 @@ protected CommanderAppearance commanderAppearance;
 	    return new Path[0];
 	final LinkedList<Path> paths = new LinkedList<Path>();
 	for(Entry e: model().entries)
-	    if (e.marked() && e.type() != Entry.Type.PARENT)
-		paths.add(e.path());
+	    if (e.marked() && e.type != Entry.Type.PARENT)
+		paths.add(e.path);
 	return paths.toArray(new Path[paths.size()]);
     }
 
@@ -325,7 +183,7 @@ protected CommanderAppearance commanderAppearance;
 	final Object res = selected();
 	if (res == null)
 	    return null;
-	return ((Entry)res).path();
+	return ((Entry)res).path;
     }
 
     public Entry selectedEntry()
@@ -434,21 +292,21 @@ protected CommanderAppearance commanderAppearance;
     {
 	NullCheck.notNull(entry, "entry");
 	final Path parent = model().current.getParent();
-	if (entry.type() == Entry.Type.PARENT && parent != null)
+	if (entry.type == Entry.Type.PARENT && parent != null)
 	{
 	    open(parent, model().current.getFileName().toString());
 	    commanderAppearance.announceLocation(model().current);
 									return true;
 	}
-	if (entry.type() == Entry.Type.DIR || entry.type() == Entry.Type.SYMLINK_DIR)
+	if (entry.type == Entry.Type.DIR || entry.type == Entry.Type.SYMLINK_DIR)
 	{
 	    ClickHandler.Result res = ClickHandler.Result.OPEN_DIR;
 	    if (this.clickHandler != null)
-		res = this.clickHandler.onCommanderClick(this, entry.path(), true);
+		res = this.clickHandler.onCommanderClick(this, entry.path, true);
 	    switch(res)
 	    {
 	    case OPEN_DIR:
-		open(entry.path(), null);
+		open(entry.path, null);
 		commanderAppearance.announceLocation(model().current);
 		return true;
 	    case OK:
@@ -460,7 +318,7 @@ protected CommanderAppearance commanderAppearance;
 	} //directory
 	ClickHandler.Result res = ClickHandler.Result.REJECTED;
 	if (this.clickHandler != null)
-	    res = this.clickHandler.onCommanderClick(this, entry.path(), false);
+	    res = this.clickHandler.onCommanderClick(this, entry.path, false);
 	return res == ClickHandler.Result.OK?true:false;
     }
 
@@ -535,4 +393,146 @@ protected CommanderAppearance commanderAppearance;
 	listParams.name = "#CommanderArea#";//Never used, getAreaName() overridden
 	return listParams;
     }
+
+    public interface Filter
+{
+    boolean commanderEntrySuits(Entry entry);
+}
+
+    public interface CommanderAppearance 
+    {
+	String getCommanderName(Path path);
+	String getScreenLine(Entry entry);
+	void announceLocation(Path path);
+	void announceEntry(Entry entry, boolean brief);
+    }
+
+    public interface ClickHandler
+    {
+	public enum Result {OPEN_DIR, OK, REJECTED};
+	Result onCommanderClick(CommanderArea area, Path path, boolean dir);
+    }
+
+    public static class AppearanceImpl implements ListArea.Appearance
+    {
+	protected final CommanderAppearance commanderAppearance;
+
+	public AppearanceImpl(CommanderAppearance commanderAppearance)
+	{
+	    NullCheck.notNull(commanderAppearance, "commanderAppearance");
+	    this.commanderAppearance = commanderAppearance;
+	}
+
+	@Override public void announceItem(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    commanderAppearance.announceEntry((Entry)item, flags.contains(Flags.BRIEF));
+	}
+
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    final Entry entry = (Entry)item;
+	    final boolean marked = entry.marked();
+	    final CommanderArea.Entry.Type type = entry.type;
+	    final String name = commanderAppearance.getScreenLine(entry);
+	    final StringBuilder b = new StringBuilder();
+	    b.append(marked?"*":" ");
+	    switch(type)
+	    {
+	    case DIR:
+		b.append("[");
+		break;
+	    case SPECIAL:
+		b.append("!");
+		break;
+	    case SYMLINK:
+	    case SYMLINK_DIR:
+		b.append("{");
+		break;
+	    default:
+		b.append(" ");
+	    }
+	    b.append(name);
+	    switch(type)
+	    {
+	    case DIR:
+		b.append("]");
+		break;
+	    case SYMLINK:
+	    case SYMLINK_DIR:
+		b.append("}");
+		break;
+	    }
+	    return new String(b);
+	}
+
+	@Override public int getObservableLeftBound(Object item)
+	{
+	    return 2;
+	}
+
+	@Override public int getObservableRightBound(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    return commanderAppearance.getScreenLine((Entry)item).length() + 2;
+	}
+    }
+
+    static public class ModelImpl implements ListArea.Model
+    {
+	boolean marking = true;
+Filter filter = null;
+	Comparator comparator = null;
+
+	Path current;
+	Entry[] entries;//null means the content is inaccessible
+
+	ModelImpl(Filter filter, Comparator comparator)
+	{
+	    //filter may be null
+	    NullCheck.notNull(comparator, "comparator");
+	    this.filter = filter;
+	    this.comparator = comparator;
+	}
+
+	void load(Path path)
+	{
+	    NullCheck.notNull(path, "path");
+	    current = path;
+	    entries = loadEntries(path, filter, comparator);
+	}
+
+	@Override public int getItemCount()
+	{
+	    return entries != null?entries.length:0;
+	}
+
+	@Override public Object getItem(int index)
+	{
+	    return (entries != null && index < entries.length)?entries[index]:null;
+	}
+
+	@Override public boolean toggleMark(int index)
+	{
+	    if (!marking)
+		return false;
+	    if (entries == null ||
+		index < 0 || index >= entries.length)
+		return false;
+	    if (entries[index].type == Entry.Type.PARENT)
+		return false;
+	    entries[index].toggleMark();
+	    return true;
+	}
+
+	@Override public void refresh()
+	{
+	    entries = loadEntries(current, filter, comparator);
+	}
+    }
+
+
 }

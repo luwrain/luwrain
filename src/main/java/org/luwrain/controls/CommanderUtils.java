@@ -24,10 +24,10 @@ public class CommanderUtils
 	@Override public boolean commanderEntrySuits(CommanderArea.Entry entry)
 	{
 	    NullCheck.notNull(entry, "entry");
-	    if (entry.type() == Type.PARENT)
+	    if (entry.type == Type.PARENT)
 		return true;
 	    try {
-		return !Files.isHidden(entry.path());
+		return !Files.isHidden(entry.path);
 	    }
 	    catch(IOException e)
 	    {
@@ -74,7 +74,7 @@ public class CommanderUtils
 	private void briefIntroduction(CommanderArea.Entry entry)
 	{
 	    final String name = entry.baseName();
-	    if (entry.type() == Type.PARENT)
+	    if (entry.type == Type.PARENT)
 		environment.hint(environment.getStaticStr("CommanderParentDirectory")); else
 		if (name.trim().isEmpty())
 		    environment.hint(Hints.EMPTY_LINE); else
@@ -83,20 +83,20 @@ public class CommanderUtils
 
 	private void fullIntroduction(CommanderArea.Entry entry)
 	{
-	    if (entry.type() == Type.PARENT)
+	    if (entry.type == Type.PARENT)
 	    {
 		environment.hint(environment.getStaticStr("CommanderParentDirectory"));
 		return;
 	    }
 	    final String name = entry.baseName();
 	    if (name.trim().isEmpty() && !entry.marked() && 
-		entry.type() == Type.REGULAR)
+		entry.type == Type.REGULAR)
 	    {
 		environment.hint(Hints.EMPTY_LINE);
 		return;
 	    }
 	    String res = name;
-	    switch(entry.type())
+	    switch(entry.type)
 	    {
 	    case DIR:
 		res += (" " + environment.getStaticStr("CommanderDirectory"));
@@ -143,15 +143,15 @@ public class CommanderUtils
 		return 0;
 	    final CommanderArea.Entry i1 = (CommanderArea.Entry)o1;
 	    final CommanderArea.Entry i2 = (CommanderArea.Entry)o2;
-	    if (i1.type() == Type.PARENT)
-		return i2.type() == Type.PARENT?0:-1;
-	    if (i2.type() == Type.PARENT)
-		return i2.type() == Type.PARENT?0:1;
-	    if (Files.isDirectory(i1.path()) && Files.isDirectory(i2.path()))//We don't use Entry.type() because it  returns symlink even on a directory
+	    if (i1.type == Type.PARENT)
+		return i2.type == Type.PARENT?0:-1;
+	    if (i2.type == Type.PARENT)
+		return i2.type == Type.PARENT?0:1;
+	    if (Files.isDirectory(i1.path) && Files.isDirectory(i2.path))//We don't use Entry.type() because it  returns symlink even on a directory
 		return i1.baseName().compareTo(i2.baseName());
-	    if (Files.isDirectory(i1.path()))
+	    if (Files.isDirectory(i1.path))
 		return -1;
-	    if (Files.isDirectory(i2.path()))
+	    if (Files.isDirectory(i2.path))
 		return 1;
 	    return i1.baseName().compareTo(i2.baseName());
 	}

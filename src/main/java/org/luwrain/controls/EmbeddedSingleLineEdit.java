@@ -21,12 +21,12 @@ import org.luwrain.core.events.*;
 
 public class EmbeddedSingleLineEdit implements SingleLineEditModel
 {
-    private ControlEnvironment environment;
-    private EmbeddedEditLines lines;
-    private HotPointControl hotPointInfo;
-    private int posX;
-    private int posY;
-    private SingleLineEdit edit;
+    protected final ControlEnvironment environment;
+    protected final SingleLineEdit edit;
+    protected final EmbeddedEditLines lines;
+    protected final HotPointControl hotPointInfo;
+    protected int posX;
+    protected int posY;
 
     /**
      * @param environment The control environment for this edit

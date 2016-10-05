@@ -32,12 +32,12 @@ public class TableArea  implements Area
 {
     static final public int INTRODUCTION_BRIEF = 1;
 
-    private ControlEnvironment environment;
-    private final RegionTranslator region = new RegionTranslator(new LinesRegionProvider(this));
-    private String name = "";
-    private TableModel model;
-    private TableAppearance appearance;
-    private TableClickHandler clickHandler;
+    protected final ControlEnvironment environment;
+    protected final RegionTranslator region = new RegionTranslator(new LinesRegionProvider(this));
+    protected String name = "";
+    protected final TableModel model;
+    protected final TableAppearance appearance;
+    protected TableClickHandler clickHandler = null;
 
     private int initialHotPointX = 0;
     private int hotPointX = 0;

@@ -46,15 +46,15 @@ public class FormArea  extends NavigationArea
 {
     public enum Type { EDIT, CHECKBOX, LIST, STATIC, UNIREF, MULTILINE };
 
-    protected ControlEnvironment environment;
+    protected final ControlEnvironment environment;
     protected String name = "";
     protected final Vector<Item> items = new Vector<Item>();
 
-protected MutableLinesImpl multilineEditLines;
+    protected MutableLinesImpl multilineEditLines = null;
     protected final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
-    protected String multilineEditCaption;
-    protected MultilineEditModel multilineEditModel;
-protected MultilineEdit multilineEdit;
+    protected String multilineEditCaption = null;
+    protected MultilineEditModel multilineEditModel = null;
+    protected MultilineEdit multilineEdit = null;
     protected boolean multilineEditEnabled = true;//FIXME:
 
     public FormArea(ControlEnvironment environment)

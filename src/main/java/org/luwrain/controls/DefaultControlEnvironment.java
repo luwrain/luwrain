@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 
 public class DefaultControlEnvironment implements ControlEnvironment
 {
-    private Luwrain luwrain;
+    private final Luwrain luwrain;
 
     public DefaultControlEnvironment(Luwrain luwrain)
     {

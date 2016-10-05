@@ -29,7 +29,7 @@ import org.luwrain.core.events.*;
  */
 public class SimpleArea extends NavigationArea implements MutableLines
 {
-    protected ControlEnvironment environment;
+    protected final ControlEnvironment environment;
     protected String name = "";
     protected final MutableLinesImpl content = new MutableLinesImpl();
     protected boolean transOpened = false;

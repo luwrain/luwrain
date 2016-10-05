@@ -21,47 +21,24 @@ import org.luwrain.core.events.*;
 
 public class EditArea extends SimpleArea
 {
-    public interface ChangeListener
-    {
-	void onEditChange();
-    }
-
-    private ControlEnvironment environment;
-    private MultilineEdit edit;
-    private ChangeListener listener = null;
-
-    public EditArea(ControlEnvironment environment)
-    {
-	super(environment);
-	this.environment = environment;
-	NullCheck.notNull(environment, "environment");
-    }
-
-    public EditArea(ControlEnvironment environment, String name)
-    {
-	super(environment, name);
-	this.environment = environment;
-	NullCheck.notNull(environment, "environment");
-	createEdit();
-    }
-
-    public EditArea(ControlEnvironment environment, String name,
-		    String[] content)
-    {
-	super(environment, name, content);
-	this.environment = environment;
-	NullCheck.notNull(environment, "environment");
-	createEdit();
-    }
+    protected final ControlEnvironment environment;
+    protected final MultilineEdit edit;
+    protected final ChangeListener listener;
 
     public EditArea(ControlEnvironment environment, String name,
 		    String[] content, ChangeListener listener)
     {
 	super(environment, name, content);
+	NullCheck.notNull(environment, "environment");
 	this.environment = environment;
 	this.listener = listener;
-	NullCheck.notNull(environment, "environment");
-	createEdit();
+	edit = new MultilineEdit(environment, new MultilineEditModelChangeListener(new MultilineEditModelTranslator(this, this)){
+		@Override public void onMultilineEditChange()
+		{
+		    if (listener != null)
+			listener.onEditChange();
+		}
+	    });
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -93,15 +70,8 @@ public class EditArea extends SimpleArea
 	return "\t";
     }
 
-    private void createEdit()
+    public interface ChangeListener
     {
-	//	final EditArea thisArea = this;
-	edit = new MultilineEdit(environment, new MultilineEditModelChangeListener(new MultilineEditModelTranslator(this, this)){
-		@Override public void onMultilineEditChange()
-		{
-		    if (listener != null)
-			listener.onEditChange();
-		}
-	    });
+	void onEditChange();
     }
 }

@@ -24,9 +24,9 @@ import org.luwrain.util.*;
 
 public class MultilineEdit
 {
-    private ControlEnvironment environment;
-    private RegionTranslator region;
-    private MultilineEditModel model;
+    protected final ControlEnvironment environment;
+    protected final RegionTranslator region;
+    protected final MultilineEditModel model;
 
     public MultilineEdit(ControlEnvironment environment, MultilineEditModel model)
     {

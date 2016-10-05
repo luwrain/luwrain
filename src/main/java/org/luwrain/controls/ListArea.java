@@ -633,11 +633,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (noContent())
 	    return true;
 	final Object item = selected();
-	if (item == null)
-	{
-	    environment.hint(Hints.EMPTY_LINE);
-	    return true;
-	}
+	NullCheck.notNull(item, "item");
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
@@ -652,7 +648,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return true;
 	}
 	++hotPointX;
-	announceChar(line, hotPointX);
+	announceChar(line, hotPointX, rightBound);
 	environment.onAreaNewHotPoint(this);
 	return true;
     }
@@ -662,11 +658,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (noContent())
 	    return true;
 	final Object item = selected();
-	if (item == null)
-	{
-	    environment.hint(Hints.EMPTY_LINE);
-	    return true;
-	}
+	NullCheck.notNull(item, "item");
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
@@ -675,13 +667,14 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return true;
 	}
 	final int leftBound = appearance.getObservableLeftBound(item);
+	final int rightBound = appearance.getObservableRightBound(item);
 	if (hotPointX <= leftBound)
 	{
 	    environment.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
 	--hotPointX;
-	announceChar(line, hotPointX);
+	announceChar(line, hotPointX, rightBound);
 	environment.onAreaNewHotPoint(this);
 	return true;
     }
@@ -785,15 +778,11 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (noContent())
 	    return true;
 	final Object item = selected();
-	if (item == null)
-	{
-	    environment.hint(Hints.EMPTY_LINE);
-	    return true;
-	}
+	NullCheck.notNull(item, "item");
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	hotPointX = appearance.getObservableLeftBound(item);
-	announceChar(line, hotPointX);
+	announceChar(line, hotPointX, appearance.getObservableRightBound(item));
 	environment.onAreaNewHotPoint(this);
 	return true;
     }
@@ -922,10 +911,10 @@ final int rightBound = appearance.getObservableRightBound(item);
 	return environment.getStaticStr("ListNoContent");
     }
 
-    protected void announceChar(String  line, int pos)
+    protected void announceChar(String  line, int pos, int rightBound)
     {
 	NullCheck.notNull(line, "line");
-	if (pos < line.length())
+	if (pos < rightBound)
 	    environment.sayLetter(line.charAt(pos)); else
 	    environment.hint(Hints.END_OF_LINE);
     }

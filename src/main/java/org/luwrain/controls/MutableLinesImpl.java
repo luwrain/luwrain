@@ -23,7 +23,7 @@ import org.luwrain.util.Strings;
 
 public class MutableLinesImpl implements MutableLines
 {
-    private final Vector<String> lines = new Vector<String>();
+    protected final Vector<String> lines = new Vector<String>();
 
     public MutableLinesImpl()
     {

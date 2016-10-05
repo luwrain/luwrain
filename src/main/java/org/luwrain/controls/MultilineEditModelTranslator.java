@@ -23,9 +23,9 @@ import org.luwrain.core.*;
 
 public class MultilineEditModelTranslator implements MultilineEditModel
 {
-    private MutableLines lines;
-    private HotPointControl hotPoint;
-    private String tabSeq = "\t";
+    protected final MutableLines lines;
+    protected final HotPointControl hotPoint;
+    protected String tabSeq = "\t";
 
     public MultilineEditModelTranslator(MutableLines lines, HotPointControl hotPoint)
     {

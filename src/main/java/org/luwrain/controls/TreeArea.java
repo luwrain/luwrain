@@ -22,14 +22,14 @@ import java.util.*;
 
 public class TreeArea implements Area
 {
-    protected ControlEnvironment environment;
-    protected Model model;
+    protected final ControlEnvironment environment;
+    protected final Model model;
     protected String name = "";
-    protected Node root;
-    protected VisibleItem[] items;
+    protected Node root = null;
+    protected VisibleItem[] items = null;
     protected int hotPointX = 0;
     protected int hotPointY = 0;
-    protected ClickHandler clickHandler;
+    protected ClickHandler clickHandler = null;
 
     public TreeArea(Params params)    
     {
@@ -61,11 +61,13 @@ public class TreeArea implements Area
 	return model;
     }
 
+    /*
     public void setModel(Model model)
     {
 	NullCheck.notNull(model, "model");
 	this.model = model;
     }
+    */
 
 
     public int getLineCount()
