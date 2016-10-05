@@ -84,6 +84,7 @@ class Environment extends EnvironmentAreas
 	    {
 		Thread.currentThread().interrupt();
 	    }
+	soundManager.startingMode();
 	eventLoop(new InitialEventLoopStopCondition());
 	Log.debug("core", "event loop finished");
 	interaction.stopInputEventsAccepting();
@@ -208,10 +209,12 @@ class Environment extends EnvironmentAreas
 	for(int i = 0;i < args.length;++i)
 	    Log.info("core", "args[" + i + "]: " + args[i]);
 	final Application[] app = shortcuts.prepareApp(shortcutName, args != null?args:new String[0]);
-	if (app != null)
-	    for(Application a: app)
-		if (a != null)
-		    launchApp(a);
+	if (app == null)
+	    return;
+	soundManager.stopStartingMode();
+	for(Application a: app)
+	    if (a != null)
+		launchApp(a);
     }
 
     void launchApp(Application app)
@@ -270,6 +273,7 @@ class Environment extends EnvironmentAreas
 	    interfaces.release(o);
 	    return; 
 	}
+	soundManager.stopStartingMode();
 	onNewAreasLayout();
 	needForIntroduction = true;
 	introduceApp = true;
@@ -365,7 +369,7 @@ class Environment extends EnvironmentAreas
     void onSwitchNextAreaCommand()
     {
 	screenContentManager.activateNextArea();
-	windowManager.redraw();
+	onNewAreasLayout();
 	introduceActiveArea();
     }
 
