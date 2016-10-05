@@ -24,19 +24,19 @@ class SoundManager
 	switch(bkgSound)
 	{
 	case STARTING:
-	    playBackground("file:///home/luwrain/git/data/sounds/background/starting1.ogg");
+	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/starting1.ogg");
 	    return;
 	case POPUP:
-	    playBackground("file:///home/luwrain/git/data/sounds/background/popup1.ogg");
+	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/popup1.ogg");
 	    return;
 	case FETCHING:
-	    playBackground("file:///home/luwrain/git/data/sounds/background/fetching1.ogg");
+	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/fetching1.ogg");
 	    return;
 	case MAIN_MENU:
-	    playBackground("file:///home/luwrain/git/data/sounds/background/mainmenu1.ogg");
+	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/mainmenu1.ogg");
 	    return;
 	case SEARCH:
-	    playBackground("file:///home/luwrain/git/data/sounds/background/search1.ogg");
+	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/search1.ogg");
 	    return;
 	}
     }

@@ -442,9 +442,8 @@ class Environment extends EnvironmentAreas
 
     @Override public void introduce(EventLoopStopCondition stopCondition)
     {
-	if (stopCondition == null)
-	    throw new NullPointerException("stopCondition may not be null");
-	if (needForIntroduction && stopCondition.continueEventLoop())
+	NullCheck.notNull(stopCondition, "stopCondition");
+	if (needForIntroduction && stopCondition.continueEventLoop() && listening == null)
 	{
 	    if (introduceApp)
 		introduceActiveApp(); else
@@ -1091,6 +1090,7 @@ onNewAreasLayout();
 	if (activeArea == null)
 	    return;
 	stopAreaListening();
+	speech.silence();
 	listening = new AreaListening(getObjForEnvironment(), speech, activeArea);
 	listening.start();
     }
