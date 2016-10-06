@@ -53,7 +53,16 @@ public class ListPopupBase extends ListArea implements Popup, PopupClosingReques
 	NullCheck.notNull(event, "event");
 	if (closing.onEnvironmentEvent(event))
 	    return true;
+	switch(event.getCode())
+	{
+	case INTRODUCE:
+	    luwrain.silence();
+	    luwrain.playSound(Sounds.INTRO_POPUP);
+	    luwrain.say(getAreaName());
+	    return true;
+	default:
 	return super.onEnvironmentEvent(event);
+	}
     }
 
     @Override public boolean onOk()
