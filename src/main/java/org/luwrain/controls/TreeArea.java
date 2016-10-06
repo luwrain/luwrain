@@ -96,35 +96,45 @@ public class TreeArea implements Area
 
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	//Space;
-	if (!event.isSpecial())
-	{
-	    if (event.getChar() == ' ')
-		return onKeySpace(event);
-	    return false;
-	}
+	NullCheck.notNull(event, "event");
 	if (items == null || items.length < 1)
 	{
 	    environment.hint(Hints.NO_CONTENT);
 	    return true;
 	}
-	switch (event.getSpecial())
-	{
-	case ENTER:
-	    return onKeyEnter(event);
-	case ARROW_DOWN:
-	    return onKeyDown(event, false);
-	case ALTERNATIVE_ARROW_DOWN:
-	    return onKeyDown(event, true);
-	case ARROW_UP:
-	    return onKeyUp(event, false);
-	case ALTERNATIVE_ARROW_UP:
-	    return onKeyUp(event, true);
-	case ARROW_RIGHT:
-	    return onKeyRight(event);
-	case ARROW_LEFT:
-	    return onKeyLeft(event);
-	}
+	//Space
+	if (!event.isSpecial() && event.isModified())
+	    switch(event.getChar())
+	    {
+	    case ' ':
+		return onKeySpace(event);
+	    }
+	if (event.isSpecial() && event.withShiftOnly())
+	    switch(event.getSpecial())
+	    {
+	    case ARROW_LEFT:
+		return onKeyLeft(event);
+	    case ARROW_RIGHT:
+		return onKeyRight(event);
+	    }
+	if (event.isSpecial() && !event.isModified())
+	    switch (event.getSpecial())
+	    {
+	    case ENTER:
+		return onKeySpace(event);
+	    case ARROW_DOWN:
+		return onKeyDown(event, false);
+	    case ALTERNATIVE_ARROW_DOWN:
+		return onKeyDown(event, true);
+	    case ARROW_UP:
+		return onKeyUp(event, false);
+	    case ALTERNATIVE_ARROW_UP:
+		return onKeyUp(event, true);
+	    case ARROW_RIGHT:
+		return onExpand(event);
+	    case ARROW_LEFT:
+		return onCollapse(event);
+	    }
 	return false;
     }
 
@@ -337,11 +347,11 @@ public class TreeArea implements Area
 
     protected boolean onKeySpace(KeyboardEvent event)
     {
-	if (event.isModified() || items == null)
+	if (items == null)
 	    return false;
 	if (hotPointY >= items.length)
 	    return false;
-	VisibleItem item = items[hotPointY];
+	final VisibleItem item = items[hotPointY];
 	if (item.node.obj != null)
 	    onClick(item.node.obj);
 	return true;
@@ -351,7 +361,7 @@ public class TreeArea implements Area
     {
 	if (event.isModified() || items == null || hotPointY >= items.length)
 	    return false;
-	VisibleItem item = items[hotPointY];
+	final VisibleItem item = items[hotPointY];
 	if (item.type == VisibleItem.Type.LEAF)
 	{
 	    onClick(item.node.obj);
@@ -374,6 +384,50 @@ public class TreeArea implements Area
 		return true;
 	    }
 	    return false;
+    }
+
+    protected boolean onExpand(KeyboardEvent event)
+    {
+	if (event.isModified() || items == null || hotPointY >= items.length)
+	    return false;
+	final VisibleItem item = items[hotPointY];
+	switch(item.type)
+	{
+	case LEAF:
+	case OPENED:
+	    return false;
+	case CLOSED:
+	    fillChildrenForNonLeaf(item.node);
+	    items = generateAllVisibleItems();
+	    //		environment.hint(Hints.TREE_BRANCH_EXPANDED);
+	    environment.say("Раскрыто");
+		environment.onAreaNewContent(this);
+		return true;
+	default:
+	    return false;
+	}
+    }
+
+    protected boolean onCollapse(KeyboardEvent event)
+    {
+	if (event.isModified() || items == null || hotPointY >= items.length)
+	    return false;
+	final VisibleItem item = items[hotPointY];
+	switch(item.type)
+	{
+	case LEAF:
+	case CLOSED:
+	    return false;
+	case OPENED:
+		item.node.children = null;
+		items = generateAllVisibleItems();
+		//		environment.hint(Hints.TREE_BRANCH_COLLAPSED);
+		environment.say("Свёрнуто");
+		environment.onAreaNewContent(this);
+		return true;
+	default:
+	    return false;
+	}
     }
 
     protected boolean onKeyDown(KeyboardEvent event, boolean briefAnnouncement)
@@ -417,8 +471,7 @@ announce(items[hotPointY], briefAnnouncement);
 
     protected boolean onKeyRight(KeyboardEvent event)
     {
-	if (event.isModified() ||
-	    items == null || hotPointY >= items.length)
+	if (items == null || hotPointY >= items.length)
 	    return false;
 	final String value = items[hotPointY].title;
 	final int offset = getInitialHotPointX(hotPointY);
@@ -444,8 +497,7 @@ announce(items[hotPointY], briefAnnouncement);
 
     protected boolean onKeyLeft(KeyboardEvent event)
     {
-	if (event.isModified() ||
-	    items == null || hotPointY >= items.length)
+	if (items == null || hotPointY >= items.length)
 	    return false;
 	final String value = items[hotPointY].title;
 	final int offset = getInitialHotPointX(hotPointY);
