@@ -73,7 +73,7 @@ class Environment extends EnvironmentAreas
     {
 	init();
 	interaction.startInputEventsAccepting(this);
-	//	EnvironmentSounds.play(Sounds.STARTUP);//FIXME:
+	windowManager.redraw();
 	playSound(Sounds.STARTUP);//FIXME:
 	final String greeting = uiSettings.getLaunchGreeting("");
 	if (!greeting.trim().isEmpty())
