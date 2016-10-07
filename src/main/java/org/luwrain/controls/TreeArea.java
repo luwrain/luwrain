@@ -103,7 +103,7 @@ public class TreeArea implements Area
 	    return true;
 	}
 	//Space
-	if (!event.isSpecial() && event.isModified())
+	if (!event.isSpecial() && !event.isModified())
 	    switch(event.getChar())
 	    {
 	    case ' ':
@@ -121,7 +121,7 @@ public class TreeArea implements Area
 	    switch (event.getSpecial())
 	    {
 	    case ENTER:
-		return onKeySpace(event);
+		return onKeyEnter(event);
 	    case ARROW_DOWN:
 		return onKeyDown(event, false);
 	    case ALTERNATIVE_ARROW_DOWN:

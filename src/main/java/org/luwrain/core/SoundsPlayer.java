@@ -43,7 +43,7 @@ private SourceDataLine audioLine = null;
 		while (bytesRead != -1 && !interruptPlayback)
 		{
 		    bytesRead = audioInputStream.read(buf, 0, buf.length);
-		    System.out.println("bytesRead=" + bytesRead);
+		    //		    System.out.println("bytesRead=" + bytesRead);
 		    if (bytesRead >= 0)
 			synchronized (this) {
 			audioLine.write(buf, 0, bytesRead);
