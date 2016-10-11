@@ -35,6 +35,12 @@ class SoundManager
 	case MAIN_MENU:
 	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/mainmenu1.ogg");
 	    return;
+
+	case WIFI:
+	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/wifi1.ogg");
+	    return;
+
+
 	case SEARCH:
 	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/search1.ogg");
 	    return;
