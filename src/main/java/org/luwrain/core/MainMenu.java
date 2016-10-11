@@ -64,7 +64,7 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 		return;
 	    }
 	    luwrain.silence();
-	    luwrain.playSound(Sounds.LIST_ITEM);
+	    luwrain.playSound(Sounds.MAIN_MENU_ITEM);
 	    luwrain.say(item.toString());
 	}
 

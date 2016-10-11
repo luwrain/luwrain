@@ -29,14 +29,13 @@ public class ObjectUniRefQuery extends AreaQuery
 
     public void answer(String uniRef)
     {
-	NullCheck.notNull(uniRef, "uniRef");
-	if (hasAnswer())
-	    throw new IllegalArgumentException("uniRef may not be set twice");
+	NullCheck.notEmpty(uniRef, "uniRef");
+	secondAnswerCheck();
 	this.uniRef = uniRef;
 answerTaken();
     }
 
-    public String getAnswer()
+    @Override public String getAnswer()
     {
 	return uniRef;
     }

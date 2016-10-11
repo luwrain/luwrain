@@ -64,12 +64,12 @@ private SourceDataLine audioLine = null;
 	    }
 		}
 
-	synchronized void stopPlaying()
+	void stopPlaying()
 	{
 	    interruptPlayback = true;
 	    if (audioLine != null)
 	    {
-		audioLine.flush();
+		//		audioLine.flush();
 	    audioLine.stop();
 	    }
 	}
@@ -108,6 +108,7 @@ private SourceDataLine audioLine = null;
 	setSoundFile(dataDir, scheme.getStartup(""), Sounds.STARTUP);
 	setSoundFile(dataDir, scheme.getShutdown(""), Sounds.SHUTDOWN);
 	setSoundFile(dataDir, scheme.getMainMenu(""), Sounds.MAIN_MENU);
+	setSoundFile(dataDir, scheme.getMainMenuItem(""), Sounds.MAIN_MENU_ITEM);
 	setSoundFile(dataDir, scheme.getMainMenuEmptyLine(""), Sounds.MAIN_MENU_EMPTY_LINE);
 	setSoundFile(dataDir, scheme.getError(""), Sounds.ERROR);
 	setSoundFile(dataDir, scheme.getFatal(""), Sounds.FATAL);
@@ -123,6 +124,7 @@ private SourceDataLine audioLine = null;
 	setSoundFile(dataDir, scheme.getNoLinesBelow(""), Sounds.NO_LINES_BELOW);
 	setSoundFile(dataDir, scheme.getCommanderLocation(""), Sounds.COMMANDER_LOCATION);
 	setSoundFile(dataDir, scheme.getListItem(""), Sounds.LIST_ITEM);
+	setSoundFile(dataDir, scheme.getParagraph(""), Sounds.PARAGRAPH);
 	setSoundFile(dataDir, scheme.getGeneralTime(""), Sounds.GENERAL_TIME);
 	setSoundFile(dataDir, scheme.getTermBell(""), Sounds.TERM_BELL);
 	setSoundFile(dataDir, scheme.getDocSection(""), Sounds.DOC_SECTION);

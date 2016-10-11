@@ -36,7 +36,10 @@ abstract class EnvironmentAreas extends EnvironmentBase
     protected void updateBackgroundSound(Area updateFor)
     {
 	final Area area = getValidActiveArea(false);
-	if (area != null && (updateFor == null || area == updateFor))
+	//Requested area is not active, we may do nothing
+	if (updateFor != null && area != updateFor)
+	    return;
+	if (area != null)
 	{
 	    final BackgroundSoundQuery query = new BackgroundSoundQuery();
 	    if (AreaQuery.ask(area, query))
@@ -47,9 +50,13 @@ abstract class EnvironmentAreas extends EnvironmentBase
 		    soundManager.playBackground(answer.getBkgSound()); 
 		return;
 	    }
-	}
-	if (updateFor != null)
+	    if (updateFor != null)
+	    {
+	    soundManager.stopBackground();
 	    return;
+	    }
+	}
+	//General update, checking only for popups
 	if (screenContentManager.isPopupActive())
 	    soundManager.playBackground(BkgSounds.POPUP); else
 	    soundManager.stopBackground();

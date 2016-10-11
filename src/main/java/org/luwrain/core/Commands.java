@@ -453,7 +453,7 @@ class Commands
 		    if (area == null)
 			return;
 		    final ObjectUniRefQuery query = new ObjectUniRefQuery();
-		    if (!area.onAreaQuery(query) || !query.hasAnswer())
+		    if (!AreaQuery.ask(area, query))
 		    {
 			env.eventNotProcessedMessage();
 			return;
@@ -470,7 +470,7 @@ class Commands
 			env.eventNotProcessedMessage();
 			return;
 		    }
-		    env.message(uniRefInfo.toString(), Luwrain.MESSAGE_REGULAR);
+		    env.message(uniRefInfo.toString(), Luwrain.MESSAGE_OK);
 		    env.setClipboard(new RegionContent(new String[]{uniRef}));
 		}
 	    },

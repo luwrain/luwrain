@@ -23,34 +23,12 @@ import org.luwrain.core.extensions.*;
 
 class UniRefProcManager
 {
-    static private class Entry 
-    {
-	Luwrain luwrain;
-	String uniRefType;
-	UniRefProc uniRefProc;
-
-	Entry(Luwrain luwrain, String uniRefType,
-	      UniRefProc uniRefProc)
-	{
-	    this.luwrain = luwrain;
-	    this.uniRefType = uniRefType;
-	    this.uniRefProc = uniRefProc;
-	    NullCheck.notNull(luwrain, "luwrain");
-	    NullCheck.notNull(uniRefType, "uniRefType");
-	    NullCheck.notNull(uniRefProc, "uniRefProc");
-	    if (uniRefType.trim().isEmpty())
-		throw new IllegalArgumentException("uniRefType may not be empty");
-	}
-    }
-
     private final TreeMap<String, Entry> uniRefProcs = new TreeMap<String, Entry>();
 
     boolean add(Luwrain luwrain, UniRefProc uniRefProc)
     {
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (uniRefProc == null)
-	    throw new NullPointerException("uniRefProc may not be null");
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(uniRefProc, "uniRefProc");
 	final String uniRefType = uniRefProc.getUniRefType();
 	if (uniRefType == null || uniRefType.trim().isEmpty())
 	    return false;
@@ -62,12 +40,10 @@ class UniRefProcManager
 
     UniRefInfo getInfo(String uniRef)
     {
-	NullCheck.notNull(uniRef, "uniRef");
-	if (uniRef.trim().isEmpty())
-	    throw new IllegalArgumentException("uniRef may not be empty");
+	NullCheck.notEmpty(uniRef, "uniRef");
 	final String uniRefType = getUniRefType(uniRef);
 	if (uniRefType == null || uniRefType.trim().isEmpty() ||
-!uniRefProcs.containsKey(uniRefType))
+	    !uniRefProcs.containsKey(uniRefType))
 	    return new UniRefInfo(uniRef);
 	final Entry entry = uniRefProcs.get(uniRefType);
 	return entry.uniRefProc.getUniRefInfo(uniRef);
@@ -75,10 +51,7 @@ class UniRefProcManager
 
     boolean open(String uniRef)
     {
-	if (uniRef == null)
-	    throw new NullPointerException("uniRef may not be null");
-	if (uniRef.trim().isEmpty())
-	    throw new IllegalArgumentException("uniRef may not be empty");
+	NullCheck.notEmpty(uniRef, "uniRef");
 	final String uniRefType = getUniRefType(uniRef);
 	if (uniRefType == null || uniRefType.trim().isEmpty())
 	    return false;
@@ -95,5 +68,25 @@ class UniRefProcManager
 	if (pos < 1)
 	    return null;
 	return uniRef.substring(0, pos);
+    }
+
+    static private class Entry 
+    {
+	final Luwrain luwrain;
+	final String uniRefType;
+	final UniRefProc uniRefProc;
+
+	Entry(Luwrain luwrain, 
+	      String uniRefType, UniRefProc uniRefProc)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    NullCheck.notNull(uniRefType, "uniRefType");
+	    NullCheck.notNull(uniRefProc, "uniRefProc");
+	    if (uniRefType.trim().isEmpty())
+		throw new IllegalArgumentException("uniRefType may not be empty");
+	    this.luwrain = luwrain;
+	    this.uniRefType = uniRefType;
+	    this.uniRefProc = uniRefProc;
+	}
     }
 }

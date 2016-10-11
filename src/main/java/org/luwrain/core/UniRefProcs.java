@@ -16,40 +16,66 @@
 
 package org.luwrain.core;
 
-class StandardUniRefProcs
+class UniRefProcs
 {
-    static UniRefProc[] createStandardUniRefProcs(Luwrain l)
+    static UniRefProc[] createStandardUniRefProcs(Luwrain luwrain)
     {
-	final Luwrain luwrain = l;
+	NullCheck.notNull(luwrain, "luwrain");
 	return new UniRefProc[]{
 
-	    //file;
+	    //file
 	    new UniRefProc() {
+		static private final String PREFIX = "file:";
 		@Override public String getUniRefType()
 		{
 		    return "file";
 		}
 		@Override public UniRefInfo getUniRefInfo(String uniRef)
 		{
-		    if (uniRef == null || uniRef.isEmpty())
-			return null;
-		    if (!uniRef.startsWith("file:"))
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    if (!uniRef.startsWith(PREFIX))
 			return null;
 		    if (uniRef.indexOf("ncc.html") >= 0)
 			return new UniRefInfo(uniRef, "Учебник", "\"Обществознание\"");
 		    return new UniRefInfo(uniRef, luwrain.i18n().getStaticStr("UniRefPrefixFile"), uniRef.substring(5));
 		}
-		public void openUniRef(String uniRef, Luwrain luwrain)
+		@Override public void openUniRef(String uniRef, Luwrain luwrain)
 		{
-		    if (uniRef == null || uniRef.isEmpty())
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    NullCheck.notNull(luwrain, "luwrain");
+		    if (!uniRef.startsWith(PREFIX))
 			return;
-		    if (!uniRef.startsWith("file:"))
-			return;
-		    luwrain.openFile(uniRef.substring(5));
+		    luwrain.openFile(uniRef.substring(PREFIX.length()));
 		}
 	    },
 
-	    //command;
+	    //url
+	    new UniRefProc() {
+		static private final String PREFIX = "url:";
+		@Override public String getUniRefType()
+		{
+		    return "url";
+		}
+		@Override public UniRefInfo getUniRefInfo(String uniRef)
+		{
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    if (!uniRef.startsWith(PREFIX))
+			return null;
+		    return new UniRefInfo(uniRef, "", uniRef.substring(PREFIX.length()));
+		}
+		@Override public void openUniRef(String uniRef, Luwrain luwrain)
+		{
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    NullCheck.notNull(luwrain, "luwrain");
+		    if (!uniRef.startsWith(PREFIX))
+			return;
+		    luwrain.launchApp("reader", new String[]{uniRef.substring(PREFIX.length())});
+		}
+	    },
+
+
+
+	    //command
 	    new UniRefProc() {
 		@Override public String getUniRefType()
 		{

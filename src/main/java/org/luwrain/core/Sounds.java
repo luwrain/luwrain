@@ -36,6 +36,7 @@ public enum Sounds
     LIST_ITEM,
     MAIN_MENU,
     MAIN_MENU_EMPTY_LINE,
+    MAIN_MENU_ITEM,
     NO_APPLICATIONS,
     NO_CONTENT,
     NO_ITEMS_ABOVE,
@@ -49,4 +50,5 @@ public enum Sounds
     SHUTDOWN,
     STARTUP,
     TERM_BELL,
+    PARAGRAPH,
 }

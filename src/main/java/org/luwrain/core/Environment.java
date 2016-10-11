@@ -122,7 +122,7 @@ class Environment extends EnvironmentAreas
 	commands.addOsCommands(getObjForEnvironment(), registry);
 	shortcuts.addOsShortcuts(getObjForEnvironment(), registry);
 	sharedObjects.createStandardObjects(this);
-	final UniRefProc[] standardUniRefProcs = StandardUniRefProcs.createStandardUniRefProcs(interfaces.getObjForEnvironment());
+	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(getObjForEnvironment());
 	for(UniRefProc proc: standardUniRefProcs)
 	    uniRefProcs.add(new Luwrain(this), proc);//FIXME:
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();

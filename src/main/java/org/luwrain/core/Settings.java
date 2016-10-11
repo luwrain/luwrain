@@ -147,6 +147,7 @@ public interface FileTypeAppInfo
 	String getStartup(String defValue);
 	String getShutdown(String defValue);
 	String getMainMenu(String defValue);
+	String getMainMenuItem(String defValue);
 	String getMainMenuEmptyLine(String defValue);
 	String getNoItemsAbove(String defValue);
 	String getNoItemsBelow(String defValue);
@@ -163,6 +164,7 @@ public interface FileTypeAppInfo
 	String getNoContent(String defValue);
 	String getSearch(String defValue);
 	String getDeleted(String defValue);
+	String getParagraph(String defValue);
 
 	void setEventNotProcessed(String value);
 	void setCancel(String value);
@@ -179,6 +181,7 @@ public interface FileTypeAppInfo
 	void setStartup(String value);
 	void setShutdown(String value);
 	void setMainMenu(String value);
+	void setMainMenuItem(String value);
 	void setMainMenuEmptyLine(String value);
 	void setNoItemsAbove(String value);
 	void setNoItemsBelow(String value);
@@ -192,6 +195,7 @@ public interface FileTypeAppInfo
 	void setGeneralTime(String value);
 	void setTermBell(String value);
 	void setDocSection(String value);
+	void setParagraph(String value);
 	void setNoContent(String value);
 	void setSearch(String value);
 	void setDeleted(String value);

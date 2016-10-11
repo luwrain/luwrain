@@ -99,21 +99,15 @@ synchronized     public void stopPlaying()
 
     @Override public void run()                                                           
     {                                                                           
-	try {
 	    if (!loop)
 		mainWork(); else
 		while (toContinue)
 		    mainWork();
-	}
-	catch(Exception e)
-	{
-	    Log.error("ogg", "unexpected exception while playing:" + e.getClass().getName() + ":" + e.getMessage());
-	    e.printStackTrace();
-	}
     }
 
-    private void mainWork() throws MalformedURLException, IOException, LineUnavailableException
+    private void mainWork()// throws MalformedURLException, IOException, LineUnavailableException
     {
+	try {
 	try {
 	    inputStream = new URL(urlToPlay).openStream();
 	    init();
@@ -125,6 +119,12 @@ synchronized     public void stopPlaying()
 	    cleanUp();                                                              
 	    inputStream.close();
 	    inputStream = null;
+	}
+	}
+	catch(Exception e)
+	{
+	    Log.error("ogg", "unexpected exception while playing:" + e.getClass().getName() + ":" + e.getMessage());
+	    e.printStackTrace();
 	}
     }
 
