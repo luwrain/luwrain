@@ -24,6 +24,8 @@ import org.luwrain.core.*;
 
 public class Manager
 {
+    static private final String EXTENSIONS_LIST_PREFIX = "--extensions=";
+
     public interface InterfaceRequest 
     {
 	Luwrain getInterfaceObj(Extension ext);
@@ -41,7 +43,22 @@ public class Manager
     public void load(InterfaceRequest interfaceRequest, CmdLine cmdLine)
     {
 	LinkedList<LoadedExtension> res = new LinkedList<LoadedExtension>();
-	final String[] extensionsList = getExtensionsList();
+	// get extensions list from command line or jar-s manifests
+	String[] extensionsList = null;
+	final String[] cmdlineExtList = cmdLine.getArgs(EXTENSIONS_LIST_PREFIX);
+	if(cmdlineExtList.length > 0)
+	{
+		// command line list prefix specified
+		for(String s: cmdlineExtList)
+		{
+		extensionsList=s.split(":",-1);
+		break; // FIXME: this code stops read multiple --extensions prefix and load list from only first, or replace string.split(...) command to read first prefix
+		}
+	} else
+	{
+		// load extensions list from manifest files
+		extensionsList = getExtensionsList();
+	}
 	if (extensionsList == null || extensionsList.length < 1)
 	    return;
 	for(String s: extensionsList)
