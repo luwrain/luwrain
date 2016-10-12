@@ -38,7 +38,7 @@ public class Manager
 	NullCheck.notNull(interfaces, "interfaces");
     }
 
-    public void load(InterfaceRequest interfaceRequest)
+    public void load(InterfaceRequest interfaceRequest, CmdLine cmdLine)
     {
 	LinkedList<LoadedExtension> res = new LinkedList<LoadedExtension>();
 	final String[] extensionsList = getExtensionsList();

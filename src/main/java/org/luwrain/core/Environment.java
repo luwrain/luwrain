@@ -100,7 +100,7 @@ class Environment extends EnvironmentAreas
 	screenContentManager = new ScreenContentManager(apps);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	extensions = new org.luwrain.core.extensions.Manager(interfaces);
-	extensions.load((ext)->interfaces.requestNew(ext, this));
+	extensions.load((ext)->interfaces.requestNew(ext, this), new CmdLine(cmdLine));
 	initI18n();
 	initObjects();
 	if (!speech.init())
