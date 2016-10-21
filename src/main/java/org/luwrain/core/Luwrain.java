@@ -50,7 +50,7 @@ import org.luwrain.speech.Channel;
  * of access.  It is necessary to make extensions using more accurate and
  * transparent.
  */
-public final class Luwrain implements EventConsumer
+public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProperties
 {
     public enum ReloadComponents {
 	ENVIRONMENT_SOUNDS,
@@ -578,7 +578,7 @@ public final class Luwrain implements EventConsumer
 	return b.toString();
     }
 
-    public java.nio.file.Path getPathProperty(String propName)
+    @Override public java.nio.file.Path getPathProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
 	return environment.getCoreProperties().getPathProperty(propName);
@@ -612,10 +612,9 @@ public final class Luwrain implements EventConsumer
 	return environment.os().runOsCommand(cmd, (!dir.isEmpty())?dir:getPathProperty("luwrain.dir.userhome").toString(), output, listener);
     }
 
-    public String getProperty(String propName)
+    @Override public String getProperty(String propName)
     {
-	System.out.println(propName);
-	NullCheck.notNull(propName, "propName");
+	NullCheck.notEmpty(propName, "propName");
 	if (propName.startsWith("luwrain.speech.channel."))
 	{
 	    final String arg = propName.substring("luwrain.speech.channel.".length());
@@ -655,10 +654,6 @@ public final class Luwrain implements EventConsumer
 	}
 	switch(propName)
 	{
-	case "luwrain.version":
-	    return "0.5.2 (nightly)";
-	case "luwrain.lang":
-	    return environment.getLang();
 	case "luwrain.braille.active":
 	    return environment.getBraille().isActive()?"1":"0";
 	case "luwrain.braille.driver":
@@ -675,7 +670,7 @@ public final class Luwrain implements EventConsumer
 		final String res = environment.os().getProperty(propName);
 		return res != null?res:"";
 	    }
-	    return "";
+	    return environment.getCoreProperties().getProperty(propName);
 	}
     }
 }

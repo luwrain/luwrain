@@ -53,6 +53,18 @@ public class Init
 	this.cmdLine = new CmdLine(cmdLine);
     }
 
+    private String getSystemProperty(String propName)
+    {
+	NullCheck.notEmpty(propName, "propName");
+			   switch(propName)
+			   {
+			   case "luwrain.lang":
+			       return lang;
+			   default:
+			       return coreProps.getProperty(propName);
+			   }
+    }
+
     private Path getSystemPath(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
@@ -207,7 +219,7 @@ return true;
 				@Override public String getProperty(String propName)
 				{
 				    NullCheck.notNull(propName, "propName");
-				    return coreProps.getProperty(propName);
+				    return getSystemProperty(propName);
 				}
 				@Override public Path getPathProperty(String propName)
 				{
