@@ -31,7 +31,7 @@ class Environment extends EnvironmentAreas
     static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
-    private final String[] cmdLine;
+    private final CmdLine cmdLine;
     private final  Registry registry;
     private AreaListening listening = null;
     private final OperatingSystem os;
@@ -50,21 +50,21 @@ class Environment extends EnvironmentAreas
 
     Settings.UserInterface uiSettings;
 
-    Environment(String[] cmdLine, Registry registry,
+    Environment(CmdLine cmdLine, Registry registry,
 		OperatingSystem os, Interaction interaction, 
-		HashMap<String, Path> paths, String lang)
+		org.luwrain.base.CoreProperties coreProps, String lang)
     {
-	NullCheck.notNullItems(cmdLine, "cmdLine");
+	NullCheck.notNull(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(os, "os");
 	NullCheck.notNull(interaction, "interaction");
-	NullCheck.notNull(paths, "paths");
+	NullCheck.notNull(coreProps, "coreProps");
 	NullCheck.notNull(lang, "lang");
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	this.os = os;
 	this.interaction = interaction;
-	this.paths = paths;
+	this.coreProps = coreProps;
 	this.lang = lang;
 	interfaces.createObjForEnvironment(this);
     }
@@ -94,13 +94,13 @@ class Environment extends EnvironmentAreas
 
     private void init()
     {
-	speech = new Speech(new CmdLine(cmdLine), registry);
+	speech = new Speech(cmdLine, registry);
 	desktop.onLaunch(interfaces.requestNew(desktop, this));
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	extensions = new org.luwrain.core.extensions.Manager(interfaces);
-	extensions.load((ext)->interfaces.requestNew(ext, this), new CmdLine(cmdLine));
+	extensions.load((ext)->interfaces.requestNew(ext, this), cmdLine);
 	initI18n();
 	initObjects();
 	if (!speech.init())
@@ -110,7 +110,7 @@ class Environment extends EnvironmentAreas
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
 	desktop.ready(i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME));
-	sounds.init(registry, paths.get("luwrain.dir.data"));
+	sounds.init(registry, coreProps.getPathProperty("luwrain.dir.data"));
 	uiSettings = Settings.createUserInterface(registry);
     }
 
@@ -1050,7 +1050,7 @@ onNewAreasLayout();
 	switch(component)
 	{
 	case ENVIRONMENT_SOUNDS:
-	    sounds.init(registry, paths.get("luwrain.dir.data"));
+	    sounds.init(registry, coreProps.getPathProperty("luwrain.dir.data"));
 	    break;
 	}
     }

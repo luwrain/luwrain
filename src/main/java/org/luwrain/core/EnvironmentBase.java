@@ -27,7 +27,7 @@ abstract class EnvironmentBase implements EventConsumer
     private RegionContent clipboard = null;
     protected final SoundsPlayer sounds = new SoundsPlayer();
     protected final SoundManager soundManager = new SoundManager();
-    protected HashMap<String, Path> paths;
+    protected org.luwrain.base.CoreProperties coreProps;
     protected String lang;
     protected boolean needForIntroduction = false;
     protected boolean introduceApp = false;
@@ -128,9 +128,9 @@ abstract class EnvironmentBase implements EventConsumer
 	return   braille;
     }
 
-    Map<String, Path> getPaths()
+    org.luwrain.base.CoreProperties getCoreProperties()
     {
-	return paths;
+	return coreProps;
     }
 
     String getLang()

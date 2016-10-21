@@ -580,21 +580,8 @@ public final class Luwrain implements EventConsumer
 
     public java.nio.file.Path getPathProperty(String propName)
     {
-	NullCheck.notNull(propName, "propName");
-	switch(propName)
-	{
-	case "luwrain.dir.userhome":
-	case "luwrain.dir.data":
-	    return environment.getPaths().get(propName);
-	case "luwrain.dir.scripts":
-	    return environment.getPaths().get("luwrain.dir.data").resolve("scripts");
-	case "luwrain.dir.properties":
-	    return environment.getPaths().get("luwrain.dir.data").resolve("properties");
-	case "luwrain.dir.sounds":
-	    return environment.getPaths().get("luwrain.dir.data").resolve("sounds");
-	default:
-	    return null;
-	}
+	NullCheck.notEmpty(propName, "propName");
+	return environment.getCoreProperties().getPathProperty(propName);
     }
 
     OsCommand runOsCommand(String cmd)
