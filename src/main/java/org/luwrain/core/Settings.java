@@ -24,6 +24,7 @@ public interface Settings
     static final String OS_SHORTCUTS_PATH = "/org/luwrain/os/shortcuts";
     static final String I18N_PATH = "/org/luwrain/i18n";
     static final String PERSONAL_INFO_PATH = "/org/luwrain/personal";
+    static final String BACKGROUND_SOUNDS_PATH = "/org/luwrain/sounds/background";
 
 public interface I18n
 {
@@ -128,6 +129,16 @@ public interface FileTypeAppInfo
 	void setTitle(String value);
 	String getUniRefs(String defValue);
 	void setUniRefs(String value);
+    }
+
+    public interface BackgroundSounds
+    {
+	String getStarting(String defValue);
+	String getPopup(String defValue);
+	String getFetching(String defValue);
+	String getMainMenu(String defValue);
+	String getWifi(String defValue);
+	String getSearch(String defValue);
     }
 
     public interface SoundScheme 
@@ -263,6 +274,13 @@ public interface Braille
     {
 	return RegistryProxy.create(registry, keys.currentSoundScheme(), SoundScheme.class);
     }
+
+    static public BackgroundSounds createBackgroundSounds(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, BACKGROUND_SOUNDS_PATH, BackgroundSounds.class);
+    }
+
 
     static public Braille createBraille(Registry registry)
     {

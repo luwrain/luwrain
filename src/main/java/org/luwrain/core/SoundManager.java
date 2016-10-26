@@ -1,16 +1,34 @@
 
 package org.luwrain.core;
 
+import java.net.*;
+import java.io.*;
+import java.nio.file.*;
+
 import org.luwrain.core.util.OggPlayer;
 
 class SoundManager
 {
+    private final Settings.BackgroundSounds sett;
+    private final Path soundsDir;
     private OggPlayer bkgOggPlayer = null;
     private boolean startingMode = false;
 
+    SoundManager(Registry registry, org.luwrain.base.CoreProperties coreProps)
+    {
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notNull(coreProps, "coreProps");
+	this.sett = Settings.createBackgroundSounds(registry);
+	this.soundsDir = coreProps.getPathProperty("luwrain.dir.sounds");
+    }
+
+
+
     void playBackground(String url)
     {
-	NullCheck.notEmpty(url, "url");
+	NullCheck.notNull(url, "url");
+	if (url.isEmpty())
+	    return;
 	stopBackground();
 	bkgOggPlayer = new OggPlayer(url);
 	bkgOggPlayer.start();
@@ -24,25 +42,22 @@ class SoundManager
 	switch(bkgSound)
 	{
 	case STARTING:
-	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/starting1.ogg");
+	    playBackground(getFileUrl(sett.getStarting("")));
 	    return;
 	case POPUP:
-	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/popup1.ogg");
+	    playBackground(getFileUrl(sett.getPopup("")));
 	    return;
 	case FETCHING:
-	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/fetching1.ogg");
+	    playBackground(getFileUrl(sett.getFetching("")));
 	    return;
 	case MAIN_MENU:
-	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/mainmenu1.ogg");
+	    playBackground(getFileUrl(sett.getMainMenu("")));
 	    return;
-
 	case WIFI:
-	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/wifi1.ogg");
+	    playBackground(getFileUrl(sett.getWifi("")));
 	    return;
-
-
 	case SEARCH:
-	    playBackground("file:///home/luwrain/luwrain/data/sounds/background/search1.ogg");
+	    playBackground(getFileUrl(sett.getSearch("")));
 	    return;
 	}
     }
@@ -70,5 +85,23 @@ class SoundManager
 	    return;
 	startingMode = false;
 	stopBackground();
+    }
+
+    private String getFileUrl(String fileName)
+    {
+	NullCheck.notNull(fileName, "fileName");
+	if (fileName.isEmpty())
+	    return "";
+	Path path = Paths.get(fileName);
+	if (!path.isAbsolute())
+	    path = soundsDir.resolve(path);
+	try {
+	    return path.toUri().toURL().toString();
+	}
+	catch(MalformedURLException e)
+	{
+	    Log.warning("core", "unable to construct sound file URL using string \'" + fileName + "\'");
+	    return fileName;
+	}
     }
 }

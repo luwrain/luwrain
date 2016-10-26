@@ -31,8 +31,7 @@ class Environment extends EnvironmentAreas
     static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
-    private final CmdLine cmdLine;
-    private final  Registry registry;
+
     private AreaListening listening = null;
     private final OperatingSystem os;
     private final Interaction interaction;
@@ -54,18 +53,11 @@ class Environment extends EnvironmentAreas
 		OperatingSystem os, Interaction interaction, 
 		org.luwrain.base.CoreProperties coreProps, String lang)
     {
-	NullCheck.notNull(cmdLine, "cmdLine");
-	NullCheck.notNull(registry, "registry");
+	super(cmdLine, registry, coreProps, lang);
 	NullCheck.notNull(os, "os");
 	NullCheck.notNull(interaction, "interaction");
-	NullCheck.notNull(coreProps, "coreProps");
-	NullCheck.notNull(lang, "lang");
-	this.cmdLine = cmdLine;
-	this.registry = registry;
 	this.os = os;
 	this.interaction = interaction;
-	this.coreProps = coreProps;
-	this.lang = lang;
 	interfaces.createObjForEnvironment(this);
     }
 

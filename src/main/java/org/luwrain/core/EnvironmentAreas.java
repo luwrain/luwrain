@@ -26,6 +26,12 @@ abstract class EnvironmentAreas extends EnvironmentBase
     protected final InterfaceManager interfaces = new InterfaceManager();
     protected AppManager apps;
 
+    protected EnvironmentAreas(CmdLine cmdLine, Registry registry,
+			       org.luwrain.base.CoreProperties coreProps, String lang)
+    {
+	super(cmdLine, registry, coreProps, lang);
+    }
+
     protected void onNewAreasLayout()
     {
 	screenContentManager.updatePopupState();

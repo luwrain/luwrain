@@ -21,16 +21,32 @@ import java.nio.file.*;
 
 abstract class EnvironmentBase implements EventConsumer
 {
+    protected final CmdLine cmdLine;
+    protected final  Registry registry;
     protected final EventQueue eventQueue = new EventQueue();
     protected Speech speech = null;
     protected final Braille braille = new Braille();
     private RegionContent clipboard = null;
     protected final SoundsPlayer sounds = new SoundsPlayer();
-    protected final SoundManager soundManager = new SoundManager();
-    protected org.luwrain.base.CoreProperties coreProps;
-    protected String lang;
+    protected final SoundManager soundManager;
+    protected final org.luwrain.base.CoreProperties coreProps;
+    protected final String lang;
     protected boolean needForIntroduction = false;
     protected boolean introduceApp = false;
+
+    protected EnvironmentBase(CmdLine cmdLine, Registry registry,
+			      org.luwrain.base.CoreProperties coreProps, String lang)
+    {
+	NullCheck.notNull(cmdLine, "cmdLine");
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notNull(coreProps, "coreProps");
+	NullCheck.notEmpty(lang, "lang");
+	this.cmdLine = cmdLine;
+	this.registry = registry;
+	this.coreProps = coreProps;
+	this.lang = lang;
+	this.soundManager = new SoundManager(registry, coreProps);
+    }
 
     //True means the event is processed and there is no need to process it again;
     abstract protected boolean onEvent(Event event);
