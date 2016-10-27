@@ -104,6 +104,12 @@ private SourceDataLine audioLine = null;
 	NullCheck.notNull(dataDir, "dataDir");
 	final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(registry);
 	setSoundFile(dataDir, scheme.getEventNotProcessed(""), Sounds.EVENT_NOT_PROCESSED);
+	setSoundFile(dataDir, scheme.getEndOfLine(""), Sounds.END_OF_LINE);
+
+	setSoundFile(dataDir, scheme.getEmptyLine(""), Sounds.EMPTY_LINE);
+
+	setSoundFile(dataDir, scheme.getChatMessage(""), Sounds.CHAT_MESSAGE);
+
 	setSoundFile(dataDir, scheme.getNoApplications(""), Sounds.NO_APPLICATIONS);
 	setSoundFile(dataDir, scheme.getStartup(""), Sounds.STARTUP);
 	setSoundFile(dataDir, scheme.getShutdown(""), Sounds.SHUTDOWN);

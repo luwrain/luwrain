@@ -27,6 +27,7 @@ public enum Sounds
     DOC_SECTION,
     DONE,
     ERROR,
+    END_OF_LINE,
     EVENT_NOT_PROCESSED,
     FATAL,
     GENERAL_TIME,
@@ -51,4 +52,6 @@ public enum Sounds
     STARTUP,
     TERM_BELL,
     PARAGRAPH,
+    CHAT_MESSAGE,
+    EMPTY_LINE,
 }

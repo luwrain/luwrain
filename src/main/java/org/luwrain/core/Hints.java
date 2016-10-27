@@ -107,10 +107,13 @@ public class Hints
 	    return Sounds.NO_LINES_ABOVE;
 	case END_OF_TEXT:
 	case END_OF_LINE:
+	    return Sounds.END_OF_LINE;
 	case NO_LINES_BELOW:
 	    return Sounds.NO_LINES_BELOW;
 	case NO_CONTENT:
 	    return Sounds.NO_CONTENT;
+	case EMPTY_LINE:
+	    return Sounds.EMPTY_LINE;
 	default:
 	    return null;
 	}

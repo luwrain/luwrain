@@ -153,6 +153,9 @@ public interface FileTypeAppInfo
 	String getFatal(String defValue);
 	String getDone(String defValue);
 	String getBlocked(String defValue);
+	String getEndOfLine(String defValue);
+	String getChatMessage(String defValue);
+	String getEmptyLine(String defValue);
 	String getOk(String defValue);
 	String getNoApplications(String defValue);
 	String getStartup(String defValue);
@@ -177,9 +180,12 @@ public interface FileTypeAppInfo
 	String getDeleted(String defValue);
 	String getParagraph(String defValue);
 
+	void setChatMessage(String value);
+	void setEmptyLine(String value);
 	void setEventNotProcessed(String value);
 	void setCancel(String value);
 	void setRegionPoint(String value);
+	void setEndOfLine(String value);
 	void setPaste(String value);
 	void setCopied(String value);
 	void setCut(String value);
