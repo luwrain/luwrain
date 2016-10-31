@@ -151,6 +151,22 @@ name, prefix, text, popupFlags);
 
     static public Path path(Luwrain luwrain,
 			    String name, String prefix,
+			    Path startWith, Path defaultPath, FilePopup.Acceptance acceptance)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(startWith, "startWith");
+	NullCheck.notNull(defaultPath, "defaultPath");
+	NullCheck.notNull(acceptance, "acceptance");
+	return path(luwrain, name, prefix,
+		    startWith, defaultPath, 
+		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
+    }
+
+
+    static public Path path(Luwrain luwrain,
+			    String name, String prefix,
 			    Path startWith, FilePopup.Acceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
