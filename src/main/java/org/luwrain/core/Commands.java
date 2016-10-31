@@ -34,6 +34,8 @@ class Commands
     static private final int SPEECH_STEP = 5;
     static private final int VOLUME_STEP = 5;
 
+    static private final Set<String> osCmdHistory = new HashSet<String>();
+
     /** Creates the set of standard commands.
      *
      * @param env The environment object to process commands on
@@ -663,10 +665,16 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
+		    /*
 		    final SimpleEditPopup popup = new SimpleEditPopup(env.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", Popups.DEFAULT_POPUP_FLAGS);
 		    env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
 		    if (popup.closing.cancelled() || popup.text().trim().isEmpty())
 			return;
+		    */
+		    final String cmd = Popups.editWithHistory(env.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
+		    if (cmd == null)
+			return;
+
 		    final String dir;
 		    final Area area = env.getValidActiveArea(false);
 		    if (area != null)
@@ -677,7 +685,7 @@ class Commands
 			    dir = "";
 		    } else
 			dir = "";
-		    luwrain.runOsCommand(popup.text().trim(), dir, (line)->{}, (exitCode, output)->{
+		    luwrain.runOsCommand(cmd.trim(), dir, (line)->{}, (exitCode, output)->{
 			luwrain.runInMainThread(()->OsCommands.issueResultingMessage(luwrain, exitCode, output));
 			});
 		}

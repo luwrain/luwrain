@@ -59,6 +59,39 @@ public class Popups
 	return popup.text ();
     }
 
+    static public String editWithHistory(Luwrain luwrain,
+				String name, String prefix, String text, 
+				Set<String> history, Set<Popup.Flags> popupFlags)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(history, "history");
+	NullCheck.notNull(popupFlags, "popupFlags");
+	final EditListPopup popup = new EditListPopup(luwrain, 
+							new EditListPopupUtils.FixedModel(history.toArray(new String[history.size()])),
+name, prefix, text, popupFlags);
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	history.add(popup.text());
+	return popup.text ();
+    }
+
+    static public String editWithHistory(Luwrain luwrain,
+				String name, String prefix, String text, 
+				Set<String> history)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(history, "history");
+	return editWithHistory(luwrain, name, prefix, text, history, DEFAULT_POPUP_FLAGS);
+    }
+
+
     static public Object fixedList(Luwrain luwrain,
 				   String name, final Object[] items,
 				   Set<Popup.Flags> popupFlags)
