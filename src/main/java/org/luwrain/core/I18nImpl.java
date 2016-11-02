@@ -58,6 +58,30 @@ class I18nImpl implements I18n, I18nExtension
 	return value != null?value:"";
     }
 
+    @Override public String getExceptionDescr(Exception e)
+    {
+	NullCheck.notNull(e, "e");
+	if (e instanceof java.nio.file.NoSuchFileException)
+	    return e.getMessage() + ":нет такого файла";
+	if (e instanceof java.nio.file.AccessDeniedException)
+	    return e.getMessage() + ":отказано в доступе";
+	if (e instanceof java.nio.file.DirectoryNotEmptyException)
+	    return e.getMessage() + ":каталог не пуст";
+	if (e instanceof java.nio.file.DirectoryNotEmptyException)
+	    return e.getMessage() + ":каталог не пуст";
+	if (e instanceof java.nio.file.FileAlreadyExistsException)
+	    return e.getMessage() + ":файл уже существует";
+	if (e instanceof java.nio.file.InvalidPathException)
+	    return e.getMessage() + ":неверно оформленный путь к файлу";
+	if (e instanceof java.nio.file.NotDirectoryException)
+	    return e.getMessage() + ":не является каталогом";
+	if (e instanceof java.nio.file.NotLinkException)
+	    return e.getMessage() + ":не является ссылкой";
+	if (e instanceof java.nio.file.ReadOnlyFileSystemException)
+	    return e.getMessage() + ":файловая система доступна только для чтения";
+	return e.getMessage() + ":" + e.getClass().getName();
+    }
+
     @Override public String getNumberStr(int count, String entities)
     {
 	NullCheck.notNull(entities, "entities");

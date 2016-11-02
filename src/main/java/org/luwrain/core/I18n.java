@@ -27,4 +27,5 @@ public interface I18n
     Object getStrings(String component);
     String getPastTimeBrief(Date date);
     String getNumberStr(int count, String entities);
+    String getExceptionDescr(Exception e);
 }

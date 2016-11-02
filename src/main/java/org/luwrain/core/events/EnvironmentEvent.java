@@ -82,6 +82,7 @@ public class EnvironmentEvent extends Event
 	REGION_POINT,
 	SAVE,
 	THREAD_SYNC,
+	USER,
     };
 
     private Code code;
