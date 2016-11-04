@@ -1,16 +1,23 @@
-<project name="luwrain" default="jar" basedir=".">
+<project name="luwrain" default="jar" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+
   <path id="classpath">
     <pathelement location="."/>
     <fileset dir="lib">
       <include name="**/*.jar"/>
     </fileset>
   </path>
+
   <path id="mainjar">
     <pathelement location="."/>
     <fileset dir="jar">
       <include name="**/*.jar"/>
     </fileset>
   </path>
+
+  <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+    uri="javafx:com.sun.javafx.tools.ant"
+    classpath="/opt/java/lib/ant-javafx.jar"/>
+
   <target name="clean">
     <delete dir="build"/>
     <delete dir="jar"/>
@@ -53,6 +60,7 @@
       </fileset>
     </jar>
   </target>
+
   <target name="javadoc">
     <mkdir dir="api"/>
     <javadoc classpathref="classpath" destdir="api" defaultexcludes="yes" author="false" version="true" use="true" windowtitle="Accessible environment Luwrain" private="false">
@@ -63,6 +71,7 @@
       <bottom><![CDATA[<i>Visit <a href="http://luwrain.org">luwrain.org</a> for more information</i>]]></bottom>
     </javadoc>
   </target>
+
   <target name="junit" depends="jar-tests">
     <junit printsummary="yes">
       <classpath>
@@ -76,5 +85,20 @@
         </fileset>
       </batchtest>
     </junit>
+  </target>
+
+  <target name="package">
+    <delete dir="pkg"/>
+    <fx:deploy width="100" height="100" nativeBundles="exe" outdir="pkg" outfile="Luwrain">
+      <fx:application name="LUWRAIN" mainClass="org.luwrain.core.Init"/>
+      <fx:info title="Luwrain" vendor="Luwrain"/>
+      <fx:preferences shortcut="true"/>
+      <fx:resources>
+        <fx:fileset dir="../data" includes="**"/>
+        <fx:fileset dir="../lib-stage4" includes="luwrain*.jar"/>
+        <fx:fileset dir=".." includes="lib/*.jar"/>
+        <!-- 				<fx:fileset dir="../../../../extensions-mssapi/build/jni" includes="*.dll"/> -->
+      </fx:resources>
+    </fx:deploy>
   </target>
 </project>
