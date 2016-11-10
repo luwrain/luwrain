@@ -31,26 +31,40 @@ import org.luwrain.os.OperatingSystem;
  */
 public class Init
 {
+    static private final String  PREFIX_PKG_LAUNCH = "--pkg-launch";
     static private final String  PREFIX_DATA_DIR = "--data-dir=";
     static private final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
     static private final String  PREFIX_USER_DATA_DIR = "--user-data-dir=";
     static private final String  PREFIX_LANG= "--lang=";
 
+    static private final String ENV_APP_DATA = "APPDATA";
+    static private final String ENV_USER_PROFILE = "USERPROFILE";
+    static private final String DEFAULT_USER_DATA_DIR_WINDOWS = "Luwrain";
+    static private final String DEFAULT_USER_DATA_DIR_LINUX = ".luwrain";
+
     private final CmdLine cmdLine;
     private final CoreProperties coreProps = new CoreProperties();
-    private Path dataDir = null;
-    private Path userDataDir = null;
-    private Path userHomeDir = null;
-    private String lang;
+    private final Path dataDir;
+    private final Path userDataDir;
+    private final Path userHomeDir;
+    private final String lang;
 
     private Registry registry;
     private Interaction interaction;
     private OperatingSystem os;
 
-    private Init(String[] cmdLine)
+    private Init(String[] cmdLine, String lang,
+		 Path dataDir, Path userDataDir)
     {
 	NullCheck.notNullItems(cmdLine, "cmdLine");
+	NullCheck.notEmpty(lang, "lang");
+	NullCheck.notNull(dataDir, "dataDir");
+	NullCheck.notNull(userDataDir, "userDataDir");
 	this.cmdLine = new CmdLine(cmdLine);
+	this.lang = lang;
+	this.dataDir = dataDir;
+	this.userDataDir = userDataDir;
+	this.userHomeDir = Paths.get(System.getProperty("user.home"));
     }
 
     private String getSystemProperty(String propName)
@@ -86,8 +100,6 @@ public class Init
     }
     private boolean init()
     {
-	if (!processCmdLine())
-	    return false;
 	coreProps.load(dataDir.resolve("properties"), userDataDir.resolve("properties"));
 	registry = new org.luwrain.registry.fsdir.RegistryImpl(userDataDir.resolve("registry").toString());
 	if (!initOs())
@@ -175,40 +187,6 @@ public class Init
 	return true;
     }
 
-    private boolean processCmdLine()
-    {
-String userHomeStr = cmdLine.getFirstArg(PREFIX_USER_HOME_DIR);
-if (userHomeStr == null)
-    userHomeStr = System.getProperty("user.home");
-if (userHomeStr == null || userHomeStr.isEmpty())
-{
-    Log.fatal("init", "unable to find user home directory (useful command line option is \'" + PREFIX_USER_HOME_DIR + "\')");
-    return false;
-}
-userHomeDir = Paths.get(userHomeStr);
-final String userDataStr = cmdLine.getFirstArg(PREFIX_USER_DATA_DIR);
-if (userDataStr == null || userDataStr.isEmpty())
-{
-    Log.fatal("init", "unable to find user data directory (useful command line option is \'" + PREFIX_USER_DATA_DIR + "\')");
-    return false;
-}
-userDataDir = Paths.get(userDataStr);
-final String dataStr = cmdLine.getFirstArg(PREFIX_DATA_DIR);
-if (dataStr == null || dataStr.isEmpty())
-{
-    Log.fatal("init", "unable to find data directory (useful command line option is \'" + PREFIX_DATA_DIR + "\')");
-    return false;
-}
-dataDir = Paths.get(dataStr);
-lang = cmdLine.getFirstArg(PREFIX_LANG);
-if (lang == null)
-    lang = "";
-Log.debug("init", "data dir:" + dataDir.toString());
-Log.debug("init", "user data dir:" + userDataDir.toString());
-Log.debug("init", "user home dir:" + userHomeDir.toString());
-return true;
-    }
-
     private void start()
     {
 	Log.info("init", "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
@@ -242,27 +220,100 @@ return true;
      *
      * @param args The command line arguments mentioned by user on virtual machine launch
      */
-    static public void main(String[] args)
+    static public void main(String[] args) throws IOException
     {                    
-	new Init(args).start();
+	final Path userDataDir = prepareUserDataDir(); 
+	if (userDataDir == null)
+	    System.exit(1);
+	new Init(args, "ru", Paths.get("data"), userDataDir).start();
     }
 
-    /*
-    private String getFirstCmdLineOption(String prefix)
+    static private Path prepareUserDataDir()
     {
-	NullCheck.notNull(prefix, "prefix");
-	if (prefix.isEmpty())
-	    throw new IllegalArgumentException("prefix may not be empty");
-	if (cmdLine == null)
-	    return null;
-	for(String s: cmdLine)
-	{
-	    if (s == null)
-		continue;
-	    if (s.startsWith(prefix))
-		return s.substring(prefix.length());
+	final Path userDataDir = detectUserDataDir();
+	Log.debug("init", "user data directory detected as " + userDataDir.toString());
+	final Path registryDir = userDataDir.resolve("registry");
+	final Path sqliteDir = userDataDir.resolve("sqlite");
+	try {
+	    if (!Files.exists(registryDir))
+	    {
+		copyDir(Paths.get("registry"), registryDir);
+		copyDir(Paths.get("i18n", "ru"), registryDir);
+		createRegistryFiles(registryDir.resolve("org"));
+	    }
+	    if (!Files.exists(sqliteDir))
+		copyDir(Paths.get("sqlite"), sqliteDir);
+	    Files.createDirectories(userDataDir.resolve("extensions"));
+	    Files.createDirectories(userDataDir.resolve("properties"));
 	}
-	return null;
+	catch(IOException e)
+	{
+	    Log.fatal("init", "unable to prepare user data directory:" + e.getClass().getName() + ":" + e.getMessage());
+	    return null;
+	}
+	Log.debug("init", "user data directory prepared");
+	return userDataDir;
     }
-    */
+
+    static private void createRegistryFiles(Path dest) throws IOException
+    {
+	NullCheck.notNull(dest, "dest");
+	if (!Files.exists(dest.resolve("strings.txt")))
+	    Files.createFile(dest.resolve("strings.txt"));
+	if (!Files.exists(dest.resolve("integers.txt")))
+	    Files.createFile(dest.resolve("integers.txt"));
+	if (!Files.exists(dest.resolve("booleans.txt")))
+	    Files.createFile(dest.resolve("booleans.txt"));
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dest)) {
+		for (Path p : directoryStream) 
+		{
+		    final Path newDest = dest.resolve(p.getFileName());
+		    if (Files.isDirectory(newDest))
+			createRegistryFiles(newDest);
+		}
+	    }
+    }
+
+
+    static private void copyDir(Path fromDir, Path dest) throws IOException
+    {
+	NullCheck.notNull(fromDir, "fromDir");
+	NullCheck.notNull(dest, "dest");
+	Files.createDirectories(dest);
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(fromDir)) {
+		for (Path p : directoryStream) 
+		{
+		    final Path newDest = dest.resolve(p.getFileName());
+		    if (Files.isDirectory(p))
+		    {
+			Files.createDirectories(newDest);
+			copyDir(p, newDest);
+		    } else
+		    {
+			final InputStream is = Files.newInputStream(p);
+			try {
+			    Files.copy(is, newDest, StandardCopyOption.REPLACE_EXISTING);
+			}
+			finally {
+			    is.close();
+			}
+		    }
+		}
+	    } 
+    }
+
+    static private Path detectUserDataDir()
+    {
+	if(System.getenv().containsKey(ENV_APP_DATA) && !System.getenv().get(ENV_APP_DATA).trim().isEmpty())
+	{
+	    final Path appData = Paths.get(System.getenv().get(ENV_APP_DATA));
+	    return appData.resolve(DEFAULT_USER_DATA_DIR_WINDOWS);
+	}
+	if(System.getenv().containsKey(ENV_USER_PROFILE) && !System.getenv().get(ENV_USER_PROFILE).trim().isEmpty())
+	{
+	    final Path userProfile = Paths.get(System.getenv().get(ENV_USER_PROFILE));
+	    return userProfile.resolve("Local Settings").resolve("Application Data").resolve(DEFAULT_USER_DATA_DIR_WINDOWS);
+	}
+	return Paths.get(System.getProperty("user.home")).resolve(DEFAULT_USER_DATA_DIR_LINUX);
+    }
 }
