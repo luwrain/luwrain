@@ -222,6 +222,8 @@ public class Init
      */
     static public void main(String[] args) throws IOException
     {                    
+	addJarsToClassPath("jar");
+	addJarsToClassPath("lib");
 	final Path userDataDir = prepareUserDataDir(); 
 	if (userDataDir == null)
 	    System.exit(1);
@@ -315,5 +317,20 @@ public class Init
 	    return userProfile.resolve("Local Settings").resolve("Application Data").resolve(DEFAULT_USER_DATA_DIR_WINDOWS);
 	}
 	return Paths.get(System.getProperty("user.home")).resolve(DEFAULT_USER_DATA_DIR_LINUX);
+    }
+
+    static private void addJarsToClassPath(String dirName)
+    {
+	NullCheck.notEmpty(dirName, "dirName");
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(dirName))) {
+		for (Path p : directoryStream) 
+		{
+		    final java.net.URL url = p.toUri().toURL();
+		    ClassPath.addUrl(url);
+		}
+	    }
+	catch(IOException e)
+	{
+	}
     }
 }
