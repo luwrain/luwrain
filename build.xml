@@ -1,4 +1,4 @@
-<project name="luwrain" default="jar" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<project name="luwrain" default="jar" basedir=".">
 
   <path id="classpath">
     <pathelement location="."/>
@@ -13,10 +13,6 @@
       <include name="**/*.jar"/>
     </fileset>
   </path>
-
-  <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
-    uri="javafx:com.sun.javafx.tools.ant"
-    classpath="/opt/java/lib/ant-javafx.jar"/>
 
   <target name="clean">
     <delete dir="build"/>
@@ -87,39 +83,4 @@
     </junit>
   </target>
 
-  <target name="fxjar">
-    <delete dir="fxjar"/>
-<fx:jar destfile="fxjar/luwrain.jar">
-<fx:platform javafx="2.1+" j2se="7.0"/>
-        <fx:application name="LUWRAIN"
-                mainClass="org.luwrain.core.Init"/>
-             <fx:resources>
-            <fx:fileset dir="../lib" includes="*.jar"/>
-        </fx:resources>
-                        <fileset dir="build/main"/>
-        <manifest>
-            <attribute name="Implementation-Vendor" value="Samples Team"/>
-            <attribute name="Implementation-Version" value="1.0"/>
-        </manifest>
-</fx:jar>
-</target>
-
-
-
-
-  <target name="package">
-    <delete dir="pkg"/>
-    <fx:deploy nativeBundles="image" width="100" height="100" outdir="pkg" outfile="Luwrain">
-      <fx:application name="LUWRAIN" mainClass="org.luwrain.core.Init"/>
-      <fx:info title="Luwrain" vendor="Luwrain"/>
-      <fx:preferences shortcut="true"/>
-      <fx:resources>
-        <fx:fileset dir="../data" includes="**"/>
-        <fx:fileset dir="../luwrain/jar" includes="luwrain.jar"/>
-<!--         <fx:fileset dir="../lib-stage4" includes="luwrain*.jar"/>-->
-        <fx:fileset dir=".." includes="lib/*.jar"/>
-        <!-- 				<fx:fileset dir="../../../../extensions-mssapi/build/jni" includes="*.dll"/> -->
-      </fx:resources>
-    </fx:deploy>
-  </target>
 </project>
