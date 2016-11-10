@@ -20,6 +20,15 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
+/**
+ * Implementation of editing behaviour for the line of text. This class
+ * handles typing of characters, as well as backspace and delete keys.
+ * It doesn't provide navigating functions, so should be used in
+ * conjunction with some navigation handler over the text (for example,
+ * with {@link NavigationArea}).
+ *
+ * @see MultilineEdit
+ */
 public class SingleLineEdit implements RegionProvider
 {
     protected final ControlEnvironment environment;
@@ -28,12 +37,10 @@ public class SingleLineEdit implements RegionProvider
 
     public SingleLineEdit(ControlEnvironment environment, SingleLineEditModel model)
     {
+	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(model, "model");
 	this.environment = environment;
 	this.model = model;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (model == null)
-	    throw new NullPointerException("model may not be null");
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -59,6 +66,8 @@ public class SingleLineEdit implements RegionProvider
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (event.getType() !=EnvironmentEvent.Type.REGULAR)
+	    return false;
 	return region.onEnvironmentEvent(event, model.getHotPointX(), 0);
     }
 
@@ -67,7 +76,7 @@ public class SingleLineEdit implements RegionProvider
 	return region.onAreaQuery(query, model.getHotPointX(), 0);
     }
 
-    private boolean onBackspace(KeyboardEvent event)
+    protected boolean onBackspace(KeyboardEvent event)
     {
 	final String line = model.getLine();
 	if (line == null)
@@ -87,7 +96,7 @@ public class SingleLineEdit implements RegionProvider
 	return true;
     }
 
-    private boolean onDelete(KeyboardEvent event)
+    protected boolean onDelete(KeyboardEvent event)
     {
 	final String line = model.getLine();
 	if (line == null)
@@ -112,7 +121,7 @@ public class SingleLineEdit implements RegionProvider
 	return true;
     }
 
-    private boolean onTab(KeyboardEvent event)
+    protected boolean onTab(KeyboardEvent event)
     {
 	final String line = model.getLine();
 	if (line == null)
@@ -134,7 +143,7 @@ public class SingleLineEdit implements RegionProvider
 	return true;
     }
 
-    private boolean onCharacter(KeyboardEvent event)
+    protected boolean onCharacter(KeyboardEvent event)
     {
 	String line = model.getLine();
 	if (line == null)

@@ -44,6 +44,9 @@ public class EmbeddedSingleLineEdit implements SingleLineEditModel
 	this.hotPointInfo = hotPointInfo;
 	this.posX = posX;
 	this.posY = posY;
+	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(lines, "lines");
+	NullCheck.notNull(hotPointInfo, "hotPointInfo");
 	edit = new SingleLineEdit(environment, this);
     }
 
@@ -78,28 +81,28 @@ public class EmbeddedSingleLineEdit implements SingleLineEditModel
 	return edit.onAreaQuery(query);
 	}
 
-    public String getLine()
+    @Override public String getLine()
     {
 	return lines.getEmbeddedEditLine(posX, posY);
     }
 
-    public void setLine(String text)
+    @Override public void setLine(String text)
     {
 	lines.setEmbeddedEditLine(posX, posY, text);
     }
 
-    public int getHotPointX()
+    @Override public int getHotPointX()
     {
 	int value = hotPointInfo.getHotPointX();
 	return value >= posX?value - posX:0;
     }
 
-    public void setHotPointX(int value)
+    @Override public void setHotPointX(int value)
     {
 	hotPointInfo.setHotPointX(value + posX);
     }
 
-    public String getTabSeq()
+    @Override public String getTabSeq()
     {
 	return "\t";//FIXME:
     }
