@@ -361,7 +361,6 @@ public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProper
     public void say(String text)
     {
 	NullCheck.notNull(text, "text");
-	silence();
 	environment.getBraille().textToSpeak(text);
 	environment.getSpeech().speak(preprocess(text), 0, 0);
     }
@@ -377,19 +376,15 @@ public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProper
     public void say(String text, int pitch)
     {
 	NullCheck.notNull(text, "text");
-	silence();
 	environment.getBraille().textToSpeak(text);
-	if (text != null)
-	    environment.getSpeech().speak(preprocess(text), pitch, 0);
+	environment.getSpeech().speak(preprocess(text), pitch, 0);
     }
 
     public void say(String text,
 		    int pitch, int rate)
     {
 	NullCheck.notNull(text, "text");
-	silence();
-	if (text != null)
-	    environment.getSpeech().speak(preprocess(text), pitch, rate);
+	environment.getSpeech().speak(preprocess(text), pitch, rate);
     }
 
     public void sayLetter(char letter)
@@ -406,10 +401,7 @@ public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProper
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
-	{
-	    silence();
-	    environment.getSpeech().speakLetter(letter, 0, 0);
-	} else
+	    environment.getSpeech().speakLetter(letter, 0, 0); else
 	    hint(value); 
     }
 
@@ -426,10 +418,7 @@ public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProper
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
-	{
-	    silence();
-	    environment.getSpeech().speakLetter(letter, pitch, 0);
-	} else
+	    environment.getSpeech().speakLetter(letter, pitch, 0); else
 	    hint(value); 
     }
 
@@ -447,10 +436,7 @@ public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProper
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
-	{
-	    silence();
-	    environment.getSpeech().speakLetter(letter, pitch, rate);
-	} else
+	    environment.getSpeech().speakLetter(letter, pitch, rate); else
 	    hint(value); 
     }
 

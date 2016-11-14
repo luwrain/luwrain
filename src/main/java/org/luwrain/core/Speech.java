@@ -85,21 +85,21 @@ class Speech
 	return true;
     }
 
+    //Always cancels any previous text to speak
     void speak(String text, int relPitch, int relRate)
     {
 	NullCheck.notNull(text, "text");
 	if (defaultChannel == null)
 	    return;
-	defaultChannel.silence();
-	defaultChannel.speak(text, null, relPitch, relRate);
+	defaultChannel.speak(text, null, relPitch, relRate, true);
     }
 
+    //Always cancels any previous text to speak
     void speakLetter(char letter, int relPitch, int relRate)
     {
 	if (defaultChannel == null)
 	    return;
-	defaultChannel.silence();
-	defaultChannel.speakLetter(letter, null, relPitch, relRate);
+	defaultChannel.speakLetter(letter, null, relPitch, relRate, true);
     }
 
     void silence()

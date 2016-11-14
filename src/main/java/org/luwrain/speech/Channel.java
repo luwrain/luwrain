@@ -71,11 +71,14 @@ public interface Channel
      * @param listener A listener object to catch the moment of finishing the speaking (may be null and may be ignord)
      * @param relPitch Relative value of desired pitch (0 means to use default)
      * @param relPitch Relative value of desired rate (0 means to use default)
+     * @param cancelPrevious Cancel previous text to speak, if there is any
      * @return An identifier of the accepted task
      */
     long speak(String text, Listener listener,
-int relPitch, int relRate);
-    long speakLetter(char letter, Listener listener, int relPitch, int relRate);
+	       int relPitch, int relRate,
+boolean cancelPrevious);
+
+    long speakLetter(char letter, Listener listener, int relPitch, int relRate, boolean cancelPrevious);
 
     //Cancels speaking, listener will never get onFinished call
     void silence();

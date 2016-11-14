@@ -76,7 +76,7 @@ onFinish(null, null);
 		{
 		    luwrain.runInMainThread(()->onFinish(text, extraInfo));
 		}};
-channel .speak(text, listener, 0, 0);
+	channel .speak(text, listener, 0, 0, false);
     }
 
     private void startGeneral()
