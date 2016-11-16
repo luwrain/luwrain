@@ -94,6 +94,10 @@ public class Init
 	    return dataDir.resolve("properties");
 	case "luwrain.dir.sounds":
 	    return dataDir.resolve("sounds");
+	case "luwrain.dir.userdata":
+	    return userDataDir;
+	case "luwrain.dir.appdata":
+	    return userDataDir.resolve("app");
 	default:
 	    return coreProps.getPathProperty(propName);
 	}

@@ -17,6 +17,8 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.io.*;
+import java.nio.file.*;
 
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
@@ -127,6 +129,36 @@ public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProper
 	    threadSync.setInstanceObj(this);
 	}
 	environment.enqueueEvent(e);
+    }
+
+    /**
+     * Returns a path to the directory where the application may safely store
+     * its auxiliary data. The returned directory, if it it isn't {@code null},
+     * always exists and always belongs to the current user. Meaning,
+     * different users get different directories for the same
+     * application. Application must be identified with some short string. We
+     * discourage using application names starting with "luwrain.", because
+     * such names are usually used by the applications from LUWRAIN standard
+     * distribution.
+     *
+     * @param appName A short string for application identification, the same application name will result in the same directory
+     * @return The application data directory or {@code null} if the directory cannot be created
+     */
+    public Path getAppDataDir(String appName)
+    {
+	NullCheck.notEmpty(appName, "appName");
+	if (appName.indexOf("/") >= 0)
+	    throw new IllegalArgumentException("appName contains illegal characters");
+	final Path res = getPathProperty("luwrain.dir.appdata").resolve(appName);
+	try {
+	    Files.createDirectories(res);
+	    return res;
+	}
+	catch(IOException e)
+	{
+	    Log.error("core", "unable to prepare application data directory:" + res.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    return null;
+	}
     }
 
     public     void closeApp()
