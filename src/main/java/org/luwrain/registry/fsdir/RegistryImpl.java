@@ -28,16 +28,15 @@ import org.luwrain.registry.PathParser;
 
 public class RegistryImpl implements Registry
 {
-    private String base = "";
-    private Directory root;
+    private final String base;
+    private final Directory root;
 
-    public RegistryImpl(String base)
+    public RegistryImpl(java.nio.file.Path base)
     {
-	this.base = base;
 	NullCheck.notNull(base, "base");
-	if (base.isEmpty())
-	    throw new IllegalArgumentException("base may not be empty");
-	root = new Directory("root", new File(base));
+	this.base = base.toString();
+	System.out.println("!!! " + base);
+	this.root = new Directory("root", base.toFile());
     }
 
     @Override public synchronized boolean addDirectory(String path)
