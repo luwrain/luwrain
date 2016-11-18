@@ -105,7 +105,7 @@ public class Init
     private boolean init()
     {
 	coreProps.load(dataDir.resolve("properties"), userDataDir.resolve("properties"));
-	registry = new org.luwrain.registry.fsdir.RegistryImpl(userDataDir.resolve("registry").toString());
+	registry = new org.luwrain.registry.fsdir.RegistryImpl(userDataDir.resolve("registry"));
 	if (!initOs())
 	    return false;
 	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();
@@ -226,6 +226,12 @@ public class Init
      */
     static public void main(String[] args) throws IOException
     {                    
+	final PrintStream log = new PrintStream(new BufferedOutputStream(new FileOutputStream(Paths.get(System.getProperty("user.home")).resolve("luwrain-debug.txt").toFile())), true);
+    System.setOut(log);
+    System.setErr(log);
+
+
+
 	addJarsToClassPath("jar");
 	addJarsToClassPath("lib");
 	final Path userDataDir = prepareUserDataDir(); 
