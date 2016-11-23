@@ -20,14 +20,15 @@ import java.util.*;
 import java.io.IOException;
 import java.io.File;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.Log;
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.registry.Path;
 import org.luwrain.registry.PathParser;
 
 public class RegistryImpl implements Registry
 {
+    static final String LOG_COMPONENT = "fsdir";
+
+
     private final String base;
     private final Directory root;
 
@@ -72,9 +73,8 @@ public class RegistryImpl implements Registry
 	}
 	catch(IOException e)
 	{
-	    Log.error("fsdir", "error while creating registry directory " + p.toString() + ":" + e.getMessage());
-	    e.printStackTrace();
-	    return false;
+	    Log.error("fsdir", "error while creating registry directory " + p.toString() + ":" + e.getClass() + ":" + e.getMessage());
+	    throw new RegistryException(e);
 	}
 	return true;
     }
@@ -92,12 +92,11 @@ public class RegistryImpl implements Registry
 	    Path parent = p.getParentOfDir();
 	    d = findDirectory(parent.dirItems());//Should never return null
 	    d.refreshDeleted();
-	    return true;
+	return true;
 	}
 	catch(IOException e)
 	{
-	    Log.error("registrr", "error while opening registry directory " + p.toString() + ":" + e.getMessage());
-	    e.printStackTrace();
+	    onIoException(e, "unable to delete directory:" + p.toString());
 	    return false;
 	}
     }
@@ -115,7 +114,7 @@ public class RegistryImpl implements Registry
 	}
 	catch(IOException e)
 	{
-	    Log.error("registry", "error while deleting a value " + p.toString() + " from registry:" + e.getMessage());
+	    onIoException(e, "unable to delete registry value:" + p.toString());
 	    return false;
 	}
     }
@@ -133,8 +132,7 @@ public class RegistryImpl implements Registry
 	}
 	catch (IOException e)
 	{
-	    Log.error("registry", "error reading boolean value " + p.toString() + ":" + e.getMessage());
-	    e.printStackTrace();
+	    onIoException(e, "unable to read boolean  value:" + e.getMessage());
 	    return false;
 	}
     }
@@ -150,8 +148,7 @@ public class RegistryImpl implements Registry
 	}
 	catch (IOException e)
 	{
-	    Log.error("registry", "error while reading list of subdirectories of " + p.toString() + ":" + e.getMessage());
-	    e.printStackTrace();
+	    onIoException(e, "unable to read list of subdirectories in " + p.toString());
 	    return null;
 	}
     }
@@ -169,8 +166,7 @@ public class RegistryImpl implements Registry
 	}
 	catch (IOException e)
 	{
-	    Log.error("registry", "error reading integer value " + p.toString() + ":" + e.getMessage());
-	    e.printStackTrace();
+	    onIoException(e, "unable to read integer value:" + e.getMessage());
 	    return 0;
 	}
     }
@@ -189,8 +185,7 @@ public class RegistryImpl implements Registry
 	}
 	catch (IOException e)
 	{
-	    Log.error("registry", "error reading string value " + p.toString() + ":" + e.getMessage());
-	    e.printStackTrace();
+	    onIoException(e, "unable to read string value:" + e.getMessage());
 	    return "";
 	}
     }
@@ -393,5 +388,13 @@ final Path p = PathParser.parseAsDirectory(path);
 	if (p == null)
 	    throw new IllegalArgumentException("meaningless path");
 	return p;
+    }
+
+    private void onIoException(IOException e, String msg) throws RegistryException
+    {
+	NullCheck.notNull(e, "e");
+	NullCheck.notNull(msg, "msg");
+	Log.error(LOG_COMPONENT, msg + ":" + e.getClass().getName() + ":" + e.getMessage());
+	throw new RegistryException(msg, e);
     }
 }

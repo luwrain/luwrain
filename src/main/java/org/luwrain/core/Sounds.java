@@ -54,4 +54,5 @@ public enum Sounds
     SHUTDOWN,
     STARTUP,
     TERM_BELL,
+    TABLE_CELL,
 }

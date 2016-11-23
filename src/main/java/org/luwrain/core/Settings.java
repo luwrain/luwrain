@@ -179,6 +179,7 @@ public interface FileTypeAppInfo
 	String getShutdown(String defValue);
 	String getStartup(String defValue);
 	String getTermBell(String defValue);
+	String getTableCell(String defValue);
 	void setBlocked(String value);
 	void setCancel(String value);
 	void setChatMessage(String value);
@@ -215,6 +216,7 @@ public interface FileTypeAppInfo
 	void setShutdown(String value);
 	void setStartup(String value);
 	void setTermBell(String value);
+	void setTableCell(String value);
     }
 
     public interface UserInterface

@@ -133,6 +133,7 @@ private SourceDataLine audioLine = null;
 	setSoundFile(dataDir, scheme.getParagraph(""), Sounds.PARAGRAPH);
 	setSoundFile(dataDir, scheme.getGeneralTime(""), Sounds.GENERAL_TIME);
 	setSoundFile(dataDir, scheme.getTermBell(""), Sounds.TERM_BELL);
+	setSoundFile(dataDir, scheme.getTableCell(""), Sounds.TABLE_CELL);
 	setSoundFile(dataDir, scheme.getDocSection(""), Sounds.DOC_SECTION);
 	setSoundFile(dataDir, scheme.getNoContent(""), Sounds.NO_CONTENT);
 	setSoundFile(dataDir, scheme.getSearch(""), Sounds.SEARCH);

@@ -29,24 +29,22 @@ class Directory
     static final String INTEGERS_VALUES_FILE = "integers.txt";
     static final String BOOLEANS_VALUES_FILE = "booleans.txt";
 
-    private String name = "";
-    private File dir;
+    private final String name;
+    private final File dir;
     private Vector<Directory> subdirs;
     private TreeMap<String, Value> values;
 
     Directory(String name, File dir)
     {
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(dir, "dir");
 	this.name = name;
 	this.dir = dir;
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(dir, "dir");
-	if (name.isEmpty())
-	    throw new IllegalArgumentException("name may not be empty");
 	if (!dir.isAbsolute())
 	    throw new IllegalArgumentException("dir should denote an absolute path");
     }
 
-    String name()
+    String getName()
     {
 	return name;
     }
@@ -94,7 +92,7 @@ class Directory
 	    throw new IllegalArgumentException("dirName may not be empty");
 	loadSubdirs();
 	for(Directory s: subdirs)
-	    if (dirName.equals(s.name()))
+	    if (dirName.equals(s.getName()))
 		return s;
 	return null;
     }
@@ -224,7 +222,7 @@ class Directory
 	loadSubdirs();
 	final LinkedList<String> v = new LinkedList<String>();
 	for (Directory d: subdirs)
-	    v.add(d.name());
+	    v.add(d.getName());
 	return v.toArray(new String[v.size()]);
     }
 
