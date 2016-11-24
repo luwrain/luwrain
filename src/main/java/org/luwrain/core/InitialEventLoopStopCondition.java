@@ -1,7 +1,7 @@
 /*
    Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
+   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -16,9 +16,9 @@
 
 package org.luwrain.core;
 
-public class InitialEventLoopStopCondition implements EventLoopStopCondition
+class InitialEventLoopStopCondition implements EventLoopStopCondition
 {
-    static public boolean shouldContinue = true;//FIXME:No static members
+    static boolean shouldContinue = true;//FIXME:No static members
 
     public boolean continueEventLoop()
     {
