@@ -370,7 +370,7 @@ class Environment extends EnvironmentAreas
 	    if (event instanceof RunnableEvent)
 		return onRunnableEvent((RunnableEvent)event);
 	    if (event instanceof KeyboardEvent)
-		return onKeyboardEvent(translateKeyboardEvent((KeyboardEvent)event));
+		return onKeyboardEvent(Keyboard.translate((KeyboardEvent)event));
 	    if (event instanceof AddressedEnvironmentEvent)
 		return onAddressedEnvironmentEvent((AddressedEnvironmentEvent)event);
 	    if (event instanceof EnvironmentEvent)
@@ -853,44 +853,6 @@ onNewAreasLayout();
 	popup(app, popup, Popup.Position.BOTTOM, stopCondition, 
 		  popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
     }
-
-    private KeyboardEvent translateKeyboardEvent(KeyboardEvent event)
-    {
-	if (event == null)
-	    return null;
-	if (!event.isSpecial() || !event.withControlOnly())
-	    return event;
-	switch (event.getSpecial())
-	{
-	case ARROW_UP:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_UP, ' ');
-	case ARROW_DOWN:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_DOWN, ' ');
-	case ARROW_LEFT:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_LEFT, ' ');
-	case ARROW_RIGHT:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_RIGHT, ' ');
-	case PAGE_DOWN:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_PAGE_DOWN, ' ');
-	case PAGE_UP:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_PAGE_UP, ' ');
-	case HOME:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_HOME, ' ');
-	case END:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_END, ' ');
-	case DELETE:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_DELETE, ' ');
-	default:
-	    return event;
-	}
-    }
-
-    /*
-    BackEnd speech()
-    {
-	return speech;
-    }
-    */
 
     /**
      * @return true if this hint should be spoken as well
