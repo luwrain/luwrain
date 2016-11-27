@@ -23,7 +23,7 @@ import java.nio.charset.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.util.RegistryAutoCheck;
+//import org.luwrain.util.RegistryAutoCheck;
 
 class Base
 {
@@ -67,9 +67,9 @@ class Base
     void setReady(String lang)
     {
 	clickHereLine = strings.clickHereToCancelIntroduction(); 
-	final RegistryAutoCheck check = new RegistryAutoCheck(luwrain.getRegistry());
 	uniRefList.load();
-	final String introductionFile = check.stringAny(registryKeys.desktopIntroductionFile(), "");
+	final Settings.Desktop sett = Settings.createDesktop(luwrain.getRegistry());
+	final String introductionFile = sett.getIntroductionFile("");
 	if (!introductionFile.trim().isEmpty())
 	{
 	    final String[] introduction = new File(introductionFile).isAbsolute()?

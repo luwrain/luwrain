@@ -42,12 +42,14 @@ class UniRefList
 
     void load()
     {
-	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
 	final String[] values = registry.getValues(registryKeys.desktopUniRefs());
 	final LinkedList<UniRefInfo> res = new LinkedList<UniRefInfo>();
 	for(String v: values)
 	{
-	    final String s = check.stringAny(Registry.join(registryKeys.desktopUniRefs(), v), "");
+	    final String path = Registry.join(Settings.DESKTOP_UNIREFS_PATH, v);
+	    if (registry.getTypeOf(path) != Registry.STRING)
+		continue;
+	    final String s = registry.getString(path);
 	    if (s.isEmpty())
 		continue;
 	    final UniRefInfo uniRef = luwrain.getUniRefInfo(s);

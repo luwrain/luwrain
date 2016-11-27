@@ -25,6 +25,14 @@ public interface Settings
     static final String I18N_PATH = "/org/luwrain/i18n";
     static final String PERSONAL_INFO_PATH = "/org/luwrain/personal";
     static final String BACKGROUND_SOUNDS_PATH = "/org/luwrain/sounds/background";
+    static final String DESKTOP_PATH = "/org/luwrain/desktop";
+    static final String DESKTOP_UNIREFS_PATH = "/org/luwrain/desktop/unirefs";
+
+    public interface Desktop
+    {
+	String getIntroductionFile(String defValue);
+	void setIntroductionFile(String value);
+    }
 
 public interface I18n
 {
@@ -348,5 +356,11 @@ public interface Braille
 	    if (!s.trim().isEmpty())
 		res.add(s.trim());
 	return res.toArray(new String[res.size()]);
+    }
+
+    static public Desktop createDesktop(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, DESKTOP_PATH, Desktop.class);
     }
 }

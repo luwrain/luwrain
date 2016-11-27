@@ -9,18 +9,22 @@ import org.luwrain.util.*;
 
 class PersonalInfoArea extends FormArea implements SectionArea
 {
-    private ControlPanel controlPanel;
-    private final RegistryKeys registryKeys = new RegistryKeys();
+    private final ControlPanel controlPanel;
+    private final Luwrain luwrain;
+    private final Registry registry;
+    private final Settings.PersonalInfo sett;
 
     PersonalInfoArea(ControlPanel controlPanel)
     {
 	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
-	this.controlPanel = controlPanel;
 	NullCheck.notNull(controlPanel, "controlPanel");
-	final RegistryAutoCheck check = new RegistryAutoCheck(controlPanel.getCoreInterface().getRegistry());
-	addEdit("name", "Полное имя:", check.stringAny(registryKeys.personalFullName(), ""), null, true);
-	addEdit("address", "Основной адрес электронной почты:", check.stringAny(registryKeys.personalDefaultMailAddress(), ""), null, true);
-	activateMultilineEdit("Текст подписи в сообщениях электронной почты:", check.stringAny(registryKeys.personalSignature(), ""), true);
+	this.controlPanel = controlPanel;
+	this.luwrain = controlPanel.getCoreInterface();
+	this.registry = luwrain.getRegistry();
+this.sett = Settings.createPersonalInfo(luwrain.getRegistry());
+addEdit("name", "Полное имя:", sett.getFullName(""), null, true);
+addEdit("address", "Основной адрес электронной почты:", sett.getDefaultMailAddress(""), null, true);
+activateMultilineEdit("Текст подписи в сообщениях электронной почты:", sett.getSignature(""), true);
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -58,12 +62,9 @@ class PersonalInfoArea extends FormArea implements SectionArea
     {
 	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final Registry registry = luwrain.getRegistry();
-	if (!registry.setString(registryKeys.personalFullName(), getEnteredText("name")))
-	    return false;
-	if (!registry.setString(registryKeys.personalDefaultMailAddress(), getEnteredText("address")))
-	    return false;
-	if (!registry.setString(registryKeys.personalSignature(), getMultilineEditText()))
-	    return false;
+	sett.setFullName(getEnteredText("name"));
+	sett.setDefaultMailAddress(getEnteredText("address"));
+	sett.setSignature(getMultilineEditText());
 	return true;
     }
 }
