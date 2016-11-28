@@ -304,8 +304,7 @@ class Environment extends EnvironmentAreas
 	    interfaces.release(o);
 	    return; 
 	}
-	screenContentManager.updatePopupState();
-	windowManager.redraw();
+	onNewAreasLayout();
 	needForIntroduction = true;
 	introduceApp = true;
     }
