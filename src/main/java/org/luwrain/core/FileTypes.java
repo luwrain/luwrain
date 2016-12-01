@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.net.*;
 import java.io.*;
 import java.nio.file.*;
 
@@ -144,4 +145,17 @@ public class FileTypes
 	    return "";
 	return name.substring(dotPos + 1);
     }
+
+    static public String getExtension(URL url)
+    {
+	NullCheck.notEmpty(url, "url");
+	final String name = url.getFile();
+	if (name.isEmpty())
+	    return "";
+	final int dotPos = name.lastIndexOf(".");
+	if (dotPos < 1 || dotPos + 1 >= name.length())
+	    return "";
+	return name.substring(dotPos + 1);
+    }
+
 }

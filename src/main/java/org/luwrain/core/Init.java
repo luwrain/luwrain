@@ -230,8 +230,6 @@ public class Init
     System.setOut(log);
     System.setErr(log);
 
-
-
 	addJarsToClassPath("jar");
 	addJarsToClassPath("lib");
 	final Path userDataDir = prepareUserDataDir(); 
