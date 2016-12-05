@@ -83,7 +83,8 @@ class Model implements ListArea.Model
 
     void setIntroduction(String[] text)
     {
-	introduction = org.luwrain.util.Strings.notNullArray(text);
+	NullCheck.notNullItems(text, "text");
+	introduction =text;
     }
 
     void setClickHereLine(String line)

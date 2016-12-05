@@ -19,7 +19,7 @@ package org.luwrain.controls;
 import java.util.Vector;
 import org.luwrain.core.NullCheck;
 import org.luwrain.core.MutableLines;
-import org.luwrain.util.Strings;
+//import org.luwrain.util.Strings;
 
 public class MutableLinesImpl implements MutableLines
 {
@@ -31,7 +31,8 @@ public class MutableLinesImpl implements MutableLines
 
     public MutableLinesImpl(String[] lines)
     {
-	final String[] l = Strings.notNullArray(lines);
+	NullCheck.notNullItems(lines, "lines");
+	final String[] l = lines;
 	for(String ll: l)
 	    this.lines.add(ll);
     }
@@ -66,7 +67,8 @@ public class MutableLinesImpl implements MutableLines
 
     public void setLines(String[] lines)
     {
-	final String[] l = Strings.notNullArray(lines);
+	NullCheck.notNullItems(lines, "lines");
+	final String[] l = lines;
 	this.lines.clear();
 	for(String ll: l)
 	    this.lines.add(ll);

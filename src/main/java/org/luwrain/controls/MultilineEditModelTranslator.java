@@ -146,7 +146,8 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 
     @Override public boolean insertRegion(int x, int y, String[] content)
     {
-	final String[] text = org.luwrain.util.Strings.notNullArray(content);
+	NullCheck.notNullItems(content, "content");
+	final String[] text = content;
 	if (text.length < 1)
 	    return true;
 	final String firstLine = text[0];
@@ -158,7 +159,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	    while(lines.getLineCount() < y)
 		lines.addLine("");
 	    if (x > 0)
-		lines.addLine(org.luwrain.util.Strings.sameCharString(' ', x) + text[0]); else
+		lines.addLine(TextUtils.sameCharString(' ', x) + text[0]); else
 		lines.addLine(text[0]);
 	    for(int i = 1;i < text.length;++i)
 		lines.addLine(text[i]);

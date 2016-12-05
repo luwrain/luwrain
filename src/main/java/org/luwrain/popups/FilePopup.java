@@ -122,7 +122,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	    if (!path.isAbsolute())
 	    {
 		base = defPath;
-		path = base.resolve(path);
+		path = defPath.resolve(path);
 	    }
 	    if (context.endsWith(getSeparator()) && Files.exists(path) && Files.isDirectory(path))
 		return new EditListPopup.Item(context);
@@ -145,15 +145,21 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	@Override public String getCompletion(String beginning)
 	{
 	    final String res = super.getCompletion(beginning);
-	    final String path = beginning + (res != null?res:"");
+	    NullCheck.notNull(res, "res");
+	    /*
+	    final String path = beginning + (res;
 	    if (!path.isEmpty() && path.endsWith(getSeparator()))
 		return res;
 	    Path pp = Paths.get(path);
 	    if (!pp.isAbsolute())
 		pp = defPath.resolve(pp);
-	    if (Files.exists(pp) && Files.isDirectory(pp))
+	    if (!Files.exists(pp) || !Files.isDirectory(pp))
+		return res;
+
 		return res + getSeparator();
 	    return res;
+	    */
+	    return "fixme";
 	}
 
 	protected Item[] readDirectory(Path path, Path base)
