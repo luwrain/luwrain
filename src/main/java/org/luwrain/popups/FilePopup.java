@@ -82,52 +82,34 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	{
 	    NullCheck.notNull(defPath, "defPath");
 	    this.defPath = defPath;
+	    if (!defPath.isAbsolute())
+		throw new IllegalArgumentException("defPath must be absolute");
 	    this.skipHidden = skipHidden;
 	}
 
 	@Override protected EditListPopup.Item[] getItems(String context)
 	{
-	    Path path = null;
-	    Path base = null;
-	    final String from = context != null?context:"";
-	    final Path fromPath = Paths.get(from);
-	    final boolean hadTrailingSlash = from.endsWith(getSeparator());
-	    if (!from.isEmpty() && fromPath.isAbsolute())
+	    NullCheck.notNull(context, "context");
+	    if (context.isEmpty())
+		return readDirectory(defPath, defPath);
+	    final Path contextPath = Paths.get(context);
+	    NullCheck.notNull(contextPath, "contextPath");
+	    final Path base;
+	    Path path;
+	    if (contextPath.isAbsolute())
 	    {
 		base = null;
-		path = fromPath;
+		path = contextPath;
 	    } else
-		if (from.isEmpty())
-		{
-		    base = defPath;
-		    path = defPath;
-		} else
-		{
-		    base = defPath;
-		    path = defPath.resolve(fromPath);
-		}
-	    if (!from.isEmpty() && !hadTrailingSlash)
+	    {
+		base = defPath;
+		path = defPath.resolve(contextPath);
+	    }
+	    if (!context.endsWith(getSeparator()) && path.getParent() != null)
 		path = path.getParent();
 	    if (!Files.exists(path) || !Files.isDirectory(path))
 		return new Item[0];
-	    final LinkedList<Item> items = new LinkedList<Item>();
-	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
-		    for (Path pp : directoryStream) 
-			if (!skipHidden || !Files.isHidden(pp))
-			{
-			if (base != null)
-			    items.add(new Item(base.relativize(pp).toString(), pp.getFileName().toString())); else
-			    items.add(new Item(pp.toString(), pp.getFileName().toString()));
-			}
-		} 
-	    catch (IOException e) 
-	    {
-		e.printStackTrace();
-		return new Item[0];
-	    }
-	    final EditListPopup.Item[] res = items.toArray(new EditListPopup.Item[items.size()]);
-	    Arrays.sort(res);
-	    return res;
+	    return readDirectory(path, base);
 	}
 
 	@Override protected EditListPopup.Item getEmptyItem(String context)
@@ -172,6 +154,30 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	    if (Files.exists(pp) && Files.isDirectory(pp))
 		return res + getSeparator();
 	    return res;
+	}
+
+	protected Item[] readDirectory(Path path, Path base)
+	{
+	    NullCheck.notNull(path, "path");
+	    final LinkedList<Item> items = new LinkedList<Item>();
+	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
+		    for (Path pp : directoryStream) 
+			if (!skipHidden || !Files.isHidden(pp))
+			{
+			    if (base != null)
+				items.add(new Item(base.relativize(pp).toString(), pp.getFileName().toString())); else
+				items.add(new Item(pp.toString(), pp.getFileName().toString()));
+			}
+		    final Item[] res = items.toArray(new Item[items.size()]);
+		    Arrays.sort(res);
+		    return res;
+		}
+	    catch (IOException e) 
+	    {
+		Log.error("core", "unable to read content of " + path.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
+		e.printStackTrace();
+		return new Item[0];
+	    }
 	}
 
 	static String getPathWithTrailingSlash(Path p)
