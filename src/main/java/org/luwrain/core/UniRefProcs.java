@@ -61,6 +61,9 @@ class UniRefProcs
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    if (!uniRef.startsWith(PREFIX))
 			return null;
+
+		    if (uniRef.indexOf("ncc.html") >= 0)
+		    return new UniRefInfo(uniRef, "", "Учебник \"Обществознание\"");
 		    return new UniRefInfo(uniRef, "", uniRef.substring(PREFIX.length()));
 		}
 		@Override public void openUniRef(String uniRef, Luwrain luwrain)

@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.popups;
 
@@ -42,11 +27,8 @@ public class FilePopup extends EditListPopup
     {
 	super(luwrain, new Model(defPath, flags .contains(Flags.SKIP_HIDDEN)), 
 name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
-	//	this.path = path;
 	this.defPath = defPath;
 	this.acceptance = acceptance;
-	//	NullCheck.notNull(file, "file");
-	NullCheck.notNull(defPath, "defPath");
     }
 
     public Path result()
@@ -93,14 +75,14 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 
     static protected class Model extends EditListPopupUtils.DynamicModel
     {
-	protected Path defPath;
-	protected boolean skipHidden = false;
+	protected final Path defPath;
+	protected final boolean skipHidden;
 
 	Model(Path defPath, boolean skipHidden)
 	{
+	    NullCheck.notNull(defPath, "defPath");
 	    this.defPath = defPath;
 	    this.skipHidden = skipHidden;
-	    NullCheck.notNull(defPath, "defPath");
 	}
 
 	@Override protected EditListPopup.Item[] getItems(String context)
@@ -109,7 +91,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	    Path base = null;
 	    final String from = context != null?context:"";
 	    final Path fromPath = Paths.get(from);
-	    final boolean hadTrailingSlash = from.endsWith(separator());
+	    final boolean hadTrailingSlash = from.endsWith(getSeparator());
 	    if (!from.isEmpty() && fromPath.isAbsolute())
 	    {
 		base = null;
@@ -150,7 +132,8 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 
 	@Override protected EditListPopup.Item getEmptyItem(String context)
 	{
-	    if (context == null || context.isEmpty())
+	    NullCheck.notNull(context, "context");
+	    if (context.isEmpty())
 		return new EditListPopup.Item();
 	    Path base = null;
 	    Path path = Paths.get(context);
@@ -159,7 +142,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 		base = defPath;
 		path = base.resolve(path);
 	    }
-	    if (context.endsWith(separator()) && Files.exists(path) && Files.isDirectory(path))
+	    if (context.endsWith(getSeparator()) && Files.exists(path) && Files.isDirectory(path))
 		return new EditListPopup.Item(context);
 	    path = path.getParent();
 	    if (path != null)
@@ -169,7 +152,7 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 		if (Files.exists(path) && Files.isDirectory(path) && 
 		    !path.equals(path.getRoot()) &&
 		    (base == null || !base.equals(path)))
-		    suffix = separator();
+		    suffix = getSeparator();
 		if (base != null)
 		    return new EditListPopup.Item(base.relativize(path).toString() + suffix);
 		return new EditListPopup.Item(path.toString() + suffix);
@@ -181,25 +164,29 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	{
 	    final String res = super.getCompletion(beginning);
 	    final String path = beginning + (res != null?res:"");
-	    if (!path.isEmpty() && path.endsWith(separator()))
+	    if (!path.isEmpty() && path.endsWith(getSeparator()))
 		return res;
 	    Path pp = Paths.get(path);
 	    if (!pp.isAbsolute())
 		pp = defPath.resolve(pp);
 	    if (Files.exists(pp) && Files.isDirectory(pp))
-		return res + separator();
+		return res + getSeparator();
 	    return res;
 	}
 
 	static String getPathWithTrailingSlash(Path p)
 	{
 	    NullCheck.notNull(p, "p");
+	    final String str = p.toString();
+	    //Checking if there is nothing to do
+	    if (str.endsWith(getSeparator()))
+		return str;
 	    if (Files.exists(p) && Files.isDirectory(p))
-		return p.toString() + separator();
-	    return p.toString();
+		return str + getSeparator();
+	    return str;
 	}
 
-	static private String separator()
+	static protected String getSeparator()
 	{
 	    return FileSystems.getDefault().getSeparator();
 	}
