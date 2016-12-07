@@ -28,7 +28,7 @@ public class FileTypes
     void load(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-	final String path = new RegistryKeys().fileTypes();
+	final String path = Settings.FILE_TYPES_PATH;
 	final String[] values= registry.getValues(path);
 	if (values.length < 1)
 	    return;
@@ -75,7 +75,7 @@ public class FileTypes
 	for(Map.Entry<String, LinkedList<String> > e: lists.entrySet())
 	{
 	    final String shortcut = e.getKey();
-	    final Settings.FileTypeAppInfo info = Settings.createFileTypeAppInfo(registry, Registry.join(registryKeys.fileTypesAppInfo(), shortcut));
+	    final Settings.FileTypeAppInfo info = Settings.createFileTypeAppInfo(registry, Registry.join(Settings.FILE_TYPES_APP_INFO_PATH, shortcut));
 	    final boolean takesMultiple = info.getTakesMultiple(false);
 	    final boolean takesUrls = info.getTakesUrls(false);
 	    final String[] toOpen = e.getValue().toArray(new String[e.getValue().size()]);

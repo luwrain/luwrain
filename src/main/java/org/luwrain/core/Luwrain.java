@@ -88,8 +88,9 @@ public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProper
 	this.environment = environment;
 	Registry registry = environment.registry();
 	RegistryKeys keys = new RegistryKeys();
-	if (registry.getTypeOf(keys.speechCharsToSkip()) == Registry.STRING)
-	    charsToSkip = registry.getString(keys.speechCharsToSkip());
+	final String path = "/org/luwrain/speech/preprocess-cchars-to-skip";
+	if (registry.getTypeOf(path) == Registry.STRING)
+	    charsToSkip = registry.getString(path);
     }
 
     public RegionContent currentAreaRegion(boolean issueErrorMessages)

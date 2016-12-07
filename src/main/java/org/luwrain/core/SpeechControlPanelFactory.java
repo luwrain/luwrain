@@ -78,8 +78,8 @@ class SpeechControlPanelFactory implements Factory
 		return true;
 	    final RegistryKeys keys = new RegistryKeys();
 	    final Registry registry = luwrain.getRegistry();
-	    final int num = Registry.nextFreeNum(registry, keys.speechChannels());
-	    final String path = Registry.join(keys.speechChannels(), "" + num); 
+	    final int num = Registry.nextFreeNum(registry, Settings.SPEECH_CHANNELS_PATH);
+	    final String path = Registry.join(Settings.SPEECH_CHANNELS_PATH, "" + num); 
 	    registry.addDirectory(path);
 	    final Settings.SpeechChannelBase settings = Settings.createSpeechChannelBase(registry, path);
 	    settings.setType(res.toString());
@@ -91,7 +91,7 @@ class SpeechControlPanelFactory implements Factory
 					      Registry registry, Speech speech)
     {
 	final LinkedList<Element> res = new LinkedList<Element>();
-	final String path = new RegistryKeys().speechChannels();
+	final String path = Settings.SPEECH_CHANNELS_PATH;
 	final String[] dirs = registry.getDirectories(path);
 	for(String s: dirs)
 	{

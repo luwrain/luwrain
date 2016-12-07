@@ -95,8 +95,6 @@ public class TableArea  implements Area
 	    throw new NullPointerException("model may not be null");
 	if (appearance == null)
 	    throw new NullPointerException("appearance may not be null");
-	//	if (clickHandler == null)
-	//	    throw new NullPointerException("clickHandler may not be null");
 	if (name == null)
 	    throw new NullPointerException("name may not be null");
 	//	refresh();
@@ -181,6 +179,11 @@ public class TableArea  implements Area
     {
 	//FIXME:
 	return -1;
+    }
+
+    public void setClickHandler(TableClickHandler clickHandler)
+    {
+	this.clickHandler = clickHandler;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)

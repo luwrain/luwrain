@@ -20,6 +20,16 @@ import java.util.*;
 
 public interface Settings
 {
+    static final String FILE_TYPES_APP_INFO_PATH = "/org/luwrain/file-types/app-info";
+    static final String FILE_TYPES_PATH = "/org/luwrain/file-types";
+    static final String SPEECH_CHANNELS_PATH = "/org/luwrain/speech/channels";
+    static final String GLOBAL_KEYS_PATH = "/org/luwrain/global-keys";
+    static final String MAIN_MENU_SECTIONS_PATH = "/org/luwrain/main-menu/sections";
+    static final String SPEECH_PATH = "/org/luwrain/speech";
+    static final String BRAILLE_PATH = "/org/luwrain/braille";
+    static final String CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/current-scheme";
+    static final String UI_PATH = "/org/luwrain/ui";
+    static final String INTERACTION_PARAMS_PATH = "/org/luwrain/interaction";
     static final String OS_COMMANDS_PATH = "/org/luwrain/os/commands";
     static final String OS_SHORTCUTS_PATH = "/org/luwrain/os/shortcuts";
     static final String I18N_PATH = "/org/luwrain/i18n";
@@ -40,7 +50,6 @@ public interface I18n
     void setCharsets(String value);
 }
 
-    static public RegistryKeys keys = new RegistryKeys();
 
 public interface OsCommand
 {
@@ -267,7 +276,7 @@ public interface Braille
 
     static public InteractionParams createInteractionParams(Registry registry)
     {
-	return RegistryProxy.create(registry, keys.interactionParams(), InteractionParams.class);
+	return RegistryProxy.create(registry, INTERACTION_PARAMS_PATH, InteractionParams.class);
     }
 
     static public HotKey createHotKey(Registry registry, String path)
@@ -282,12 +291,12 @@ public interface Braille
 
     static public UserInterface createUserInterface(Registry registry)
     {
-	return RegistryProxy.create(registry, keys.ui(), UserInterface.class);
+	return RegistryProxy.create(registry, UI_PATH, UserInterface.class);
     }
 
     static public SoundScheme createCurrentSoundScheme(Registry registry)
     {
-	return RegistryProxy.create(registry, keys.currentSoundScheme(), SoundScheme.class);
+	return RegistryProxy.create(registry, CURRENT_SOUND_SCHEME_PATH, SoundScheme.class);
     }
 
     static public BackgroundSounds createBackgroundSounds(Registry registry)
@@ -300,12 +309,12 @@ public interface Braille
     static public Braille createBraille(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-	return RegistryProxy.create(registry, keys.braille(), Braille.class);
+	return RegistryProxy.create(registry, BRAILLE_PATH, Braille.class);
     }
 
     static public SpeechParams createSpeechParams(Registry registry)
     {
-	return RegistryProxy.create(registry, keys.speech(), SpeechParams.class);
+	return RegistryProxy.create(registry, SPEECH_PATH, SpeechParams.class);
     }
 
     static public SpeechChannelBase createSpeechChannelBase(Registry registry, String path)

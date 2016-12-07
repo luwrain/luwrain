@@ -205,7 +205,7 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 	NullCheck.notNull(luwrain, "luwrain");
 		final Registry registry = luwrain.getRegistry();
 	final RegistryKeys keys = new RegistryKeys();
-	final String[] dirs = registry.getDirectories(keys.mainMenuSections());
+	final String[] dirs = registry.getDirectories(Settings.MAIN_MENU_SECTIONS_PATH);
 	if (dirs == null || dirs.length < 1)
 	{
 	    Log.warning("core", "no main menu sections in the registry");
@@ -215,7 +215,7 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 	final LinkedList<Section> sects = new LinkedList<Section>();
 	for(String s: dirs)
 	{
-	    final String path = Registry.join(keys.mainMenuSections(), s);
+	    final String path = Registry.join(Settings.MAIN_MENU_SECTIONS_PATH, s);
 	    final Settings.MainMenuSection proxy = Settings.createMainMenuSection(registry, path);
 	    final Section sect = loadSection(luwrain, proxy);
 	    if (sect != null)

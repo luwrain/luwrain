@@ -226,7 +226,7 @@ class Speech
     private void loadRegistryChannels()
     {
 	Log.debug("core", "loading registry speech channels");
-	final String path = new RegistryKeys().speechChannels();
+	final String path = Settings.SPEECH_CHANNELS_PATH;
 	final String[] dirs = registry.getDirectories(path);
 	for(String s: dirs)
 	{

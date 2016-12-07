@@ -99,9 +99,9 @@ class FileTypes extends ListArea implements SectionArea
 	NullCheck.notNull(registry, "registry");
 	final org.luwrain.core.RegistryKeys registryKeys = new org.luwrain.core.RegistryKeys();
 	final LinkedList<Item> res = new LinkedList<Item>();
-	for(String s: registry.getValues(registryKeys.fileTypes()))
+	for(String s: registry.getValues(Settings.FILE_TYPES_PATH))
 	{
-	    final String path = Registry.join(registryKeys.fileTypes(), s);
+	    final String path = Registry.join(Settings.FILE_TYPES_PATH, s);
 	    if (s.trim().isEmpty() || registry.getTypeOf(path) != Registry.STRING)
 		continue;
 	    final String value = registry.getString(path);
