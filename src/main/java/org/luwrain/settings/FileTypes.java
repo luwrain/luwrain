@@ -97,7 +97,6 @@ class FileTypes extends ListArea implements SectionArea
     static private Item[] loadItems(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-	final org.luwrain.core.RegistryKeys registryKeys = new org.luwrain.core.RegistryKeys();
 	final LinkedList<Item> res = new LinkedList<Item>();
 	for(String s: registry.getValues(Settings.FILE_TYPES_PATH))
 	{

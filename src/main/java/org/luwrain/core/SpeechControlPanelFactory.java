@@ -76,7 +76,6 @@ class SpeechControlPanelFactory implements Factory
 	    final Object res = Popups.fixedList(luwrain, luwrain.i18n().getStaticStr("CpAddNewSpeechChannelPopupName"), types);
 	    if (res == null)
 		return true;
-	    final RegistryKeys keys = new RegistryKeys();
 	    final Registry registry = luwrain.getRegistry();
 	    final int num = Registry.nextFreeNum(registry, Settings.SPEECH_CHANNELS_PATH);
 	    final String path = Registry.join(Settings.SPEECH_CHANNELS_PATH, "" + num); 

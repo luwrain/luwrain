@@ -87,7 +87,6 @@ public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProper
 	NullCheck.notNull(environment, "environment");
 	this.environment = environment;
 	Registry registry = environment.registry();
-	RegistryKeys keys = new RegistryKeys();
 	final String path = "/org/luwrain/speech/preprocess-cchars-to-skip";
 	if (registry.getTypeOf(path) == Registry.STRING)
 	    charsToSkip = registry.getString(path);

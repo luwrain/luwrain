@@ -204,7 +204,6 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
     {
 	NullCheck.notNull(luwrain, "luwrain");
 		final Registry registry = luwrain.getRegistry();
-	final RegistryKeys keys = new RegistryKeys();
 	final String[] dirs = registry.getDirectories(Settings.MAIN_MENU_SECTIONS_PATH);
 	if (dirs == null || dirs.length < 1)
 	{

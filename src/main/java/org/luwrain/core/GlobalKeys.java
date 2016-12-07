@@ -56,7 +56,6 @@ class GlobalKeys
 
     public void loadFromRegistry()
     {
-	RegistryKeys registryKeys = new RegistryKeys();
 	final String globalKeysDir = Settings.GLOBAL_KEYS_PATH;
 	String[] dirs = registry.getDirectories(Settings.GLOBAL_KEYS_PATH);
 	if (dirs != null)

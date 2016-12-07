@@ -54,7 +54,6 @@ public class FileTypes
 	NullCheck.notNull(env, "env");
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNullItems(files, "files");
-	final RegistryKeys registryKeys = new RegistryKeys();
 	final String[] shortcuts = chooseShortcuts(files);
 	final HashMap<String, LinkedList<String> > lists = new HashMap<String, LinkedList<String> >();
 	for(int i = 0;i < files.length;++i)
