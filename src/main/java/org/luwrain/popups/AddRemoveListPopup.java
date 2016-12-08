@@ -9,58 +9,6 @@ import org.luwrain.controls.*;
 
 public class AddRemoveListPopup extends ListPopupBase
 {
-    static public class Model implements ListArea.Model
-    {
-	private final Vector items = new Vector();
-
-	public Model(Object[] items)
-	{
-	    if (items == null || items.length < 1)
-		return;
-	    this.items.setSize(items.length);
-	    for(int i = 0;i < items.length;++i)
-		this.items.set(i, items[i]);
-	}
-
-	public Object[] getAllItems()
-	{
-	    return items.toArray(new Object[items.size()]);
-	}
-
-	public void add(Object o)
-	{
-	    if (o == null)
-		return;
-	    items.add(o);
-	}
-
-	public void remove(Object o)
-	{
-	    if (o == null)
-		return;
-	    items.remove(o);
-	}
-
-	@Override public int getItemCount()
-	{
-	    return items.size();
-	}
-
-	@Override public Object getItem(int index)
-	{
-	    return index >= 0 && index < items.size()?items.get(index):null;
-	}
-
-	@Override public void refresh()
-	{
-	}
-
-	@Override public boolean toggleMark(int index)
-	{
-	    return false;
-	}
-    }
-
     public interface RemoveConfirmation
     {
 	boolean mayRemove(Object o);
@@ -106,7 +54,7 @@ public class AddRemoveListPopup extends ListPopupBase
 	final Object newObj = itemsSource.getNewItemToAdd();
 	if (newObj == null)
 	    return false;
-	final Model m = (Model)model;
+	final FixedListModel m = (FixedListModel)model;
 	m.add(newObj);
 	refresh();
 	return true;
@@ -120,7 +68,7 @@ public class AddRemoveListPopup extends ListPopupBase
 	    return false;
 	if (!removeConfirmation.mayRemove(item))
 	    return true;
-	final Model m = (Model)model;
+	final FixedListModel m = (FixedListModel)model;
 	m.remove(item);
 	refresh();
 	return true;
@@ -128,8 +76,8 @@ public class AddRemoveListPopup extends ListPopupBase
 
     public Object[] result()
     {
-	final Model m = (Model)model;
-	return m.getAllItems();
+	final FixedListModel m = (FixedListModel)model;
+	return m.getItems();
     }
 
     static private ListArea.Params constructParams(Luwrain luwrain, 
@@ -141,7 +89,7 @@ public class AddRemoveListPopup extends ListPopupBase
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.name = name;
-	params.model = new Model(items);
+	params.model = new FixedListModel(items);
 	params.appearance = new DefaultListItemAppearance(params.environment);
 	return params;
     }
