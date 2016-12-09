@@ -31,7 +31,6 @@ class Base
     private UniRefList uniRefList;
     private Model model;
     private Appearance appearance;
-    private final RegistryKeys registryKeys = new RegistryKeys();
     private String clickHereLine;
 
     boolean init(Luwrain luwrain)
@@ -104,7 +103,8 @@ class Base
 	{
 	    model.setIntroduction(null);
 	    model.refresh();
-	    luwrain.getRegistry().deleteValue(registryKeys.desktopIntroductionFile());
+	    final Settings.Desktop sett = Settings.createDesktop(luwrain.getRegistry());
+	    sett.setIntroductionFile("");
 	    return true;
 	}
 	if (obj instanceof UniRefInfo)

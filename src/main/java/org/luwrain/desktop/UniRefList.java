@@ -25,7 +25,6 @@ class UniRefList
 {
     private Luwrain luwrain;
     private Registry registry;
-    private final RegistryKeys registryKeys = new RegistryKeys();
     private UniRefInfo[] uniRefs = new UniRefInfo[0];
 
     UniRefList(Luwrain luwrain)
@@ -42,7 +41,7 @@ class UniRefList
 
     void load()
     {
-	final String[] values = registry.getValues(registryKeys.desktopUniRefs());
+	final String[] values = registry.getValues(Settings.DESKTOP_UNIREFS_PATH);
 	final LinkedList<UniRefInfo> res = new LinkedList<UniRefInfo>();
 	for(String v: values)
 	{
@@ -102,16 +101,16 @@ class UniRefList
 
     void save()
     {
-	final String[] values = registry.getValues(registryKeys.desktopUniRefs());
+	final String[] values = registry.getValues(Settings.DESKTOP_UNIREFS_PATH);
 	if (values != null)
 	    for(String v: values)
-		registry.deleteValue(Registry.join(registryKeys.desktopUniRefs(), v));
+		registry.deleteValue(Registry.join(Settings.DESKTOP_UNIREFS_PATH, v));
 	for(int i = 0;i < uniRefs.length;++i)
 	{
 	    String name = "" + (i + 1);
 	    while (name.length() < 6)
 		name = "0" + name;
-	    registry.setString(Registry.join(registryKeys.desktopUniRefs(), name), uniRefs[i].value());
+	    registry.setString(Registry.join(Settings.DESKTOP_UNIREFS_PATH, name), uniRefs[i].value());
 	}
     }
 }

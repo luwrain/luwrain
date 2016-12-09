@@ -36,7 +36,7 @@ public interface Settings
     static final String PERSONAL_INFO_PATH = "/org/luwrain/personal";
     static final String BACKGROUND_SOUNDS_PATH = "/org/luwrain/sounds/background";
     static final String DESKTOP_PATH = "/org/luwrain/desktop";
-    static final String DESKTOP_UNIREFS_PATH = "/org/luwrain/desktop/unirefs";
+    static public final String DESKTOP_UNIREFS_PATH = "/org/luwrain/desktop/unirefs";
 
     public interface Desktop
     {
