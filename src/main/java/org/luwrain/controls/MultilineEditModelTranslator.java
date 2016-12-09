@@ -66,7 +66,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	lines.setLine(lineIndex, line.substring(0, pos) + line.substring(pos + 1));
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() > pos)
 	    hotPoint.setHotPointX(hotPoint.getHotPointX() - 1);
-	endEditTrans();
+	endEditTrans(true);
 	return line.charAt(pos);
     }
 
@@ -96,7 +96,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 		    if (hotPoint.getHotPointX() >= toPos)
 			hotPoint.setHotPointX(hotPoint.getHotPointX() - (toPos - fromPos));
 	    }
-	    endEditTrans();
+	    endEditTrans(true);
 	    return true;
 	}
 	final String firstLine = lines.getLine(fromY);
@@ -123,7 +123,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	    } else
 		if (hotPoint.getHotPointY() > toY)
 		    hotPoint.setHotPointY(hotPoint.getHotPointY() - toY + fromY);
-	endEditTrans();
+	endEditTrans(true);
 	return true;
     }
 
@@ -149,7 +149,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	    if (needToMoveHotPoint)
 		hotPoint.setHotPointX(text[text.length - 1].length());
 	    hotPoint.setHotPointY(lines.getLineCount() - 1);
-	    endEditTrans();
+	    endEditTrans(false);
 	    return true;
 	}
 	if (text.length == 1)
@@ -164,7 +164,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	    lines.setLine(y, line.substring(0, x) + firstLine + line.substring(x));
 	    if (needToMoveHotPoint)
 		hotPoint.setHotPointX(hotPoint.getHotPointX() + firstLine.length());
-	    endEditTrans();
+	    endEditTrans(false);
 	    return true;
 	}
 	//New text has multiple lines
@@ -185,7 +185,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 		hotPoint.setHotPointY(y + text.length - 1);
 		hotPoint.setHotPointX(hotPoint.getHotPointX() - x + lastLine.length());
 	    }
-	endEditTrans();
+	endEditTrans(false);
 	return true;
     }
 
@@ -202,7 +202,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	lines.setLine(lineIndex, line.substring(0, pos) + (str != null?str:"") + line.substring(pos));
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
 	    hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
-	endEditTrans();
+	endEditTrans(false);
     }
 
     @Override public void mergeLines(int firstLineIndex)
@@ -220,7 +220,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	} else
 	    if (hotPoint.getHotPointY() > firstLineIndex + 1)
 		hotPoint.setHotPointY(hotPoint.getHotPointY() - 1);
-	endEditTrans();
+	endEditTrans(false);
     }
 
     @Override public String splitLines(int pos, int lineIndex)
@@ -242,7 +242,7 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	} else
 	    if (hotPoint.getHotPointY() > lineIndex)
 		hotPoint.setHotPointY(hotPoint.getHotPointY() + 1);
-	endEditTrans();
+	endEditTrans(false);
 	return lines.getLine(lineIndex + 1);
     }
 
@@ -252,8 +252,11 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	hotPoint.beginHotPointTrans();
     }
 
-    private void endEditTrans()
+    private void endEditTrans(boolean cleanSingleEmptyLine)
     {
+	if (cleanSingleEmptyLine)
+	    if (lines.getLineCount() == 1 && lines.getLine(0).isEmpty())
+		lines.removeLine(0);
 	hotPoint.endHotPointTrans();
 	lines.endLinesTrans();
     }

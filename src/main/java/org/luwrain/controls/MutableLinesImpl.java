@@ -38,8 +38,6 @@ public class MutableLinesImpl implements MutableLines
 
     @Override public void endLinesTrans()
     {
-	if (lines.size() == 1 && lines.get(0).isEmpty())
-	    lines.clear();
     }
 
     @Override public int getLineCount()
