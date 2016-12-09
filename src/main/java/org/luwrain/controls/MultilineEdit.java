@@ -15,10 +15,10 @@ public class MultilineEdit
 
     public MultilineEdit(ControlEnvironment environment, MultilineEditModel model)
     {
-	this.environment = environment;
-	this.model = model;
 	NullCheck.notNull(environment, "environment");
 	NullCheck.notNull(model, "model");
+	this.environment = environment;
+	this.model = model;
 	final MultilineEdit edit = this;
 	region = new RegionTranslator(new LinesRegionProvider(model){
 		@Override public boolean insertRegion(int x, int y,
@@ -63,17 +63,19 @@ return onEnter(event);
 
     public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return false;
 	return region.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY());
     }
 
     public boolean onAreaQuery(AreaQuery query)
     {
+	NullCheck.notNull(query, "query");
 	return region.onAreaQuery(query, model.getHotPointX(), model.getHotPointY());
     }
 
-    private boolean onBackspace(KeyboardEvent event)
+    protected boolean onBackspace(KeyboardEvent event)
     {
 	if (model.getHotPointY() >= model.getLineCount())
 	    return false;
@@ -152,13 +154,13 @@ return onEnter(event);
 	    return true;
     }
 
-    private boolean deleteRegion(int fromX, int fromY,
-					  int toX, int toY)
+    protected boolean deleteRegion(int fromX, int fromY,
+				   int toX, int toY)
     {
 	return model.deleteRegion(fromX, fromY, toX, toY);
 }
 
-    private boolean insertRegion(int x, int y,
+    protected boolean insertRegion(int x, int y,
 					 RegionContent data)
     {
 	return model.insertRegion(x, y, data.strings());
