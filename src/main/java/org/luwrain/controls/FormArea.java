@@ -88,7 +88,7 @@ public class FormArea  extends NavigationArea
 	    return null;
 	if (index < items.size())
 	    return items.get(index).type;
-	return multilineEditActivated()?Type.MULTILINE:null;
+	return isMultilineEditActivated()?Type.MULTILINE:null;
     }
 
     public int getItemCount()
@@ -325,14 +325,14 @@ public class FormArea  extends NavigationArea
 	return addStatic(itemName, caption, "");
     }
 
-    public boolean multilineEditActivated()
+    public boolean isMultilineEditActivated()
     {
 	return multilineEdit != null && multilineEditModel != null && multilineEditCaption != null;
     }
 
-    public boolean multilineEditEnabled()
+    public boolean isMultilineEditEnabled()
     {
-	return multilineEditActivated() && multilineEditEnabled;
+	return isMultilineEditActivated() && multilineEditEnabled;
     }
 
     public boolean multilineEditHasCaption()
@@ -359,7 +359,7 @@ public class FormArea  extends NavigationArea
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(model, "model");
-	if (multilineEditActivated())
+	if (isMultilineEditActivated())
 	    return false;
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = null;
@@ -376,7 +376,7 @@ public class FormArea  extends NavigationArea
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(lines, "lines");
-	if (multilineEditActivated())
+	if (isMultilineEditActivated())
 	    return false;
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = new MutableLinesImpl(lines);
@@ -490,7 +490,7 @@ public class FormArea  extends NavigationArea
 		i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		i.onKeyboardEvent(event))
 		return true;
-	if (multilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
+	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
 	    multilineEdit.onKeyboardEvent(event))
 	    return true;
 	return super.onKeyboardEvent(event);
@@ -524,7 +524,7 @@ public class FormArea  extends NavigationArea
 	    if (i.isEnabledEdit() && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		i.onEnvironmentEvent(event))
 		return true;
-	if (multilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
+	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
 	    multilineEdit.onEnvironmentEvent(event))
 	    return true;
 	return super.onEnvironmentEvent(event);
@@ -537,7 +537,7 @@ public class FormArea  extends NavigationArea
 	    if (i.isEnabledEdit() && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		    i.onAreaQuery(query))
 		    return true;
-	if (multilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
+	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
 	    multilineEdit.onAreaQuery(query))
 	    return true;
 	return super.onAreaQuery(query);
@@ -546,7 +546,7 @@ public class FormArea  extends NavigationArea
     @Override public int getLineCount()
     {
 	int res = items.size();
-	if (!multilineEditActivated())
+	if (!isMultilineEditActivated())
 	    return res + 1;
 	final int count = multilineEditModel.getLineCount();
 	res += count;
@@ -580,7 +580,7 @@ public class FormArea  extends NavigationArea
 		return "FIXME";
 	    }
 	}
-	if (!multilineEditActivated())
+	if (!isMultilineEditActivated())
 	    return "";
 	final int pos = index - items.size();
 	if (multilineEditHasCaption())
@@ -632,7 +632,7 @@ public class FormArea  extends NavigationArea
 		final Item item = items.get(i);
 		item.edit.setNewPos(item.caption.length(), i);
 	    }
-	if (!multilineEditActivated())
+	if (!isMultilineEditActivated())
 	    return;
 	int offset = items.size();
 	if (multilineEditHasCaption())
