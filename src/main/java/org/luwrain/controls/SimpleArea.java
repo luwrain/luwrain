@@ -64,12 +64,14 @@ public class SimpleArea extends NavigationArea implements MutableLines
 
     @Override public void beginLinesTrans()
     {
+	content.beginLinesTrans();
 	transOpened = true;
     }
 
     @Override public void endLinesTrans()
     {
 	transOpened = false;
+	content.endLinesTrans();
 	environment.onAreaNewContent(this);
     }
 

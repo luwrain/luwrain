@@ -355,8 +355,7 @@ public class FormArea  extends NavigationArea
 	return multilineEditHotPoint;
     }
 
-    public boolean activateMultilineEdit(String caption, MultilineEditModel model,
-					  boolean enabled)
+    public boolean activateMultilineEdit(String caption, MultilineEditModel model, boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(model, "model");
