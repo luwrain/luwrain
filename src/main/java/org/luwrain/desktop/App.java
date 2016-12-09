@@ -20,7 +20,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 
-public class App implements Application, Actions
+public class App implements Application
 {
     static public final String STRINGS_NAME = "luwrain.desktop";
 
@@ -42,7 +42,7 @@ public class App implements Application, Actions
 	return luwrain.i18n().getStaticStr("Desktop");
     }
 
-    @Override public boolean onInsertRegion(int x, int y, RegionContent data)
+    private boolean onInsertRegion(int x, int y, RegionContent data)
     {
 	if (!base.insert(x, y, data))
 	    return false;
@@ -50,7 +50,7 @@ public class App implements Application, Actions
 	return true;
     }
 
-    @Override public boolean onDeleteRegion(int x, int y)
+    private boolean onDeleteRegion(int x, int y)
     {
 	if (!base.delete(x, y))
 	    return false;
@@ -58,7 +58,7 @@ public class App implements Application, Actions
 	return true;
     }
 
-    @Override public boolean onClick(int index, Object obj)
+    private boolean onClick(int index, Object obj)
     {
 	if (!base.onClick(index, obj))
 	    return false;
