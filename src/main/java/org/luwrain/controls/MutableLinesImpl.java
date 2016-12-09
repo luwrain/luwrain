@@ -105,7 +105,7 @@ public class MutableLinesImpl implements MutableLines
 
     public String getWholeText()
     {
-	if (lines.size() == 1)
+	if (lines.size() == 0)
 	    return "";
 	if (lines.size() == 1)
 	    return lines.get(0);
