@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.controls;
 
@@ -88,7 +73,7 @@ public class FormArea  extends NavigationArea
     public boolean hasItemWithName(String itemName)
     {
 	NullCheck.notNull(itemName, "itemName");
-	if (itemName.trim().isEmpty())
+	if (itemName.isEmpty())
 	    return false;
 	for(Item i: items)
 	    if (i.name.equals(itemName))
@@ -127,9 +112,7 @@ public class FormArea  extends NavigationArea
 
     public Object getItemObjByName(String itemName)
     {
-	NullCheck.notNull(itemName, "itemName");
-	if (itemName.trim().isEmpty())
-	    return null;
+	NullCheck.notEmpty(itemName, "itemName");
 	for(Item i: items)
 	    if (i.name.equals(itemName))
 		return i.obj;
@@ -138,23 +121,25 @@ public class FormArea  extends NavigationArea
 
     public boolean addEdit(String itemName, String caption)
     {
+	NullCheck.notEmpty(itemName, "itemName");
+	NullCheck.notNull(caption, "caption");
 	return addEdit(itemName, caption, "");
     }
 
-    public boolean addEdit(String itemName, String caption,
-			   String initialText)
+    public boolean addEdit(String itemName, String caption, String initialText)
     {
+	NullCheck.notEmpty(itemName, "itemName");
+	NullCheck.notNull(caption, "caption");
+	NullCheck.notNull(initialText, "initialText");
 	return addEdit(itemName, caption, initialText, null, true);
     }
 
     public boolean addEdit(String itemName, String caption,
 			   String initialText, Object obj, boolean enabled)
     {
-	NullCheck.notNull(itemName, "itemName");
+	NullCheck.notEmpty(itemName, "itemName");
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(initialText, "initialText");
-	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
-	    return false;
 	final Item item = new Item(environment, this);
 	item.type = Type.EDIT;
 	item.name = itemName;
@@ -207,10 +192,8 @@ public class FormArea  extends NavigationArea
     public boolean addUniRef(String itemName, String caption,
 			   String initialUniRef, Object obj, boolean enabled)
     {
-	NullCheck.notNull(itemName, "itemName");
+	NullCheck.notEmpty(itemName, "itemName");
 	NullCheck.notNull(caption, "caption");
-	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
-	    return false;
 	final Item item = new Item(environment, this);
 	item.type = Type.UNIREF;
 	item.name = itemName;
@@ -222,7 +205,6 @@ public class FormArea  extends NavigationArea
 		return false;
 	} else
 	    item.uniRefInfo = null;
-
 	item.obj = obj;
 	item.enabled = enabled;
 	items.add(item);
