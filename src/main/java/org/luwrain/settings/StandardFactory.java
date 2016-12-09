@@ -91,7 +91,7 @@ public class StandardFactory implements Factory
 		if (el.equals(StandardElements.WORKERS))
 		    return new SimpleSection(StandardElements.WORKERS, "Фоновые задачи");
 		if (el.equals(uiGeneral))
-		    return new SimpleSection(uiGeneral, "Общие настройки", (controlPanel)->UserInterface.create(controlPanel));
+		    return new SimpleSection(uiGeneral, luwrain.i18n().getStaticStr("CpUserInterfaceGeneral"), (controlPanel)->UserInterface.create(controlPanel));
 		if (el.equals(hotKeys))
 		    return new SimpleSection(hotKeys, "Горячие клавиши", (controlPanel)->HotKeys.create(controlPanel));
 		if (el.equals(personalInfo))

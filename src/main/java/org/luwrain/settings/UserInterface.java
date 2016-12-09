@@ -1,3 +1,4 @@
+//Reads and saves
 
 package org.luwrain.settings;
 
@@ -5,32 +6,31 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
-//import org.luwrain.util.*;
 
 class UserInterface extends FormArea implements SectionArea
 {
-    private ControlPanel controlPanel;
-    private Luwrain luwrain;
-    private Settings.UserInterface settings;
+    private final ControlPanel controlPanel;
+    private final Luwrain luwrain;
+    private final Settings.UserInterface sett;
 
     UserInterface(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), controlPanel.getCoreInterface().i18n().getStaticStr("CpUserInterfaceGeneral"));
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();
-	settings = Settings.createUserInterface(luwrain.getRegistry());
+	this.sett = Settings.createUserInterface(luwrain.getRegistry());
 	fillForm();
     }
 
     private void fillForm()
     {
-	addEdit("launch-greeting", "Текст голосового приветствия при запуске:", settings.getLaunchGreeting(""));
-	addCheckbox("file-popup-skip-hidden", "Исключать скрытые файлы в о всплывающих окнах:", settings.getFilePopupSkipHidden(false));
-	addCheckbox("empty-line-under-regular-lists", "Добавлять пустую строку в конце списков:", settings.getEmptyLineUnderRegularLists(false));
-	addCheckbox("empty-line-above-popup-lists", "Добавлять пустую строку в начало всплывающих списков:", settings.getEmptyLineAbovePopupLists(false));
-	addCheckbox("cycling-regular-lists", "Зацикливать навигацию по спискам:", settings.getCyclingRegularLists(false));
-	addCheckbox("cycling-popup-lists", "Зацикливать навигацию по всплывающим спискам:", settings.getCyclingPopupLists(false));
+	addEdit("launch-greeting", luwrain.i18n().getStaticStr("CpLaunchingGreetingText"), sett.getLaunchGreeting(""));
+	//	addCheckbox("file-popup-skip-hidden", "Исключать скрытые файлы в о всплывающих окнах:", settings.getFilePopupSkipHidden(false));
+	//	addCheckbox("empty-line-under-regular-lists", "Добавлять пустую строку в конце списков:", settings.getEmptyLineUnderRegularLists(false));
+	//	addCheckbox("empty-line-above-popup-lists", "Добавлять пустую строку в начало всплывающих списков:", settings.getEmptyLineAbovePopupLists(false));
+	//	addCheckbox("cycling-regular-lists", "Зацикливать навигацию по спискам:", settings.getCyclingRegularLists(false));
+	//	addCheckbox("cycling-popup-lists", "Зацикливать навигацию по всплывающим спискам:", settings.getCyclingPopupLists(false));
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -51,6 +51,7 @@ class UserInterface extends FormArea implements SectionArea
 
     @Override public boolean saveSectionData()
     {
+	sett.setLaunchGreeting(getEnteredText("launch-greeting"));
 	return true;
     }
 

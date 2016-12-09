@@ -17,7 +17,7 @@ class PersonalInfo extends FormArea implements SectionArea
 
     PersonalInfo(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), controlPanel.getCoreInterface().i18n().getStaticStr("CpPersonalInfoSection"));
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();
@@ -58,10 +58,5 @@ fillForm();
 	if (controlPanel.onEnvironmentEvent(event))
 	    return true;
 	return super.onEnvironmentEvent(event);
-    }
-
-    @Override public String getAreaName()
-    {
-	return "Персональная информация";
     }
 }
