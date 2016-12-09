@@ -18,13 +18,14 @@ package org.luwrain.core;
 
 public class TextUtils
 {
-    public static String getLastWord(String text, int upToPos)
+    static public String getLastWord(String text, int upToPos)
     {
+	NullCheck.notNull(text, "text");
 	String word = new String();
 	boolean broken = false;
-	for(int i = 0;i < text.length() && i < upToPos;i++)
+	for(int i = 0;i < text.length() && i < upToPos;++i)
 	{
-	    char c = text.charAt(i);
+	    final char c = text.charAt(i);
 	if (Character.getType(c) == Character.UPPERCASE_LETTER ||
 	    Character.getType(c) == Character.LOWERCASE_LETTER ||
 	    Character.getType(c) == Character.DECIMAL_DIGIT_NUMBER)

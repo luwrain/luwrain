@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.controls;
 
@@ -106,7 +91,7 @@ return onEnter(event);
 	return true;
     }
 
-    private boolean onDelete(KeyboardEvent event)
+    protected boolean onDelete(KeyboardEvent event)
     {
 	if (model.getHotPointY() >= model.getLineCount())
 	    return false;
@@ -128,7 +113,7 @@ return onEnter(event);
 	return true;
     }
 
-    private boolean onTab(KeyboardEvent event)
+    protected boolean onTab(KeyboardEvent event)
     {
 	final String tabSeq = model.getTabSeq();
 	if (tabSeq == null)
@@ -138,7 +123,7 @@ return onEnter(event);
 	    return true;
     }
 
-    private boolean onEnter(KeyboardEvent event)
+    protected boolean onEnter(KeyboardEvent event)
     {
 	final String line = model.splitLines(model.getHotPointX(), model.getHotPointY());
 	if (line == null || line.isEmpty())
@@ -147,20 +132,19 @@ return onEnter(event);
 	return true;
     }
 
-    private boolean onChar(KeyboardEvent event)
+    protected boolean onChar(KeyboardEvent event)
     {
 	final char c = event.getChar();
-	String line = model.getLine(model.getHotPointY());
-	if (line == null)
-	    line = "";
+	final String line = model.getLine(model.getHotPointY());
+	NullCheck.notNull(line, "line");
 	model.insertChars(model.getHotPointX(), model.getHotPointY(), "" + c);
 	if (Character.isSpace(c))
 	{
-	    int pos = model.getHotPointX();
-	    if (pos > line.length())
-		pos = line.length();
-	    final String lastWord = TextUtils.getLastWord(line, pos);
-		if (lastWord != null && !lastWord.isEmpty())
+	    final String newLine = model.getLine(model.getHotPointY());
+	    final int pos = Math.min(model.getHotPointX(), newLine.length());
+	    final String lastWord = TextUtils.getLastWord(newLine, pos);
+	    NullCheck.notNull(lastWord, "lastWord");
+		if (!lastWord.isEmpty())
 		    environment.say(lastWord); else
 		    environment.hint(Hints.SPACE);
 	} else
