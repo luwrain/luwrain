@@ -1,7 +1,7 @@
 /*
    Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
+   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -19,80 +19,55 @@ package org.luwrain.desktop;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.popups.Popups;
 
 public class App implements Application
 {
     static public final String STRINGS_NAME = "luwrain.desktop";
 
     private Luwrain luwrain;
-    private final Base base = new Base();
+    private Base base = null;
     private ListArea area;
 
     @Override public boolean onLaunch(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
-	if (!base.init(luwrain))
-	    return false;
+	base = new Base(luwrain);
 	createArea();
 	return true;
     }
 
-    @Override public String getAppName()
+    //Runs by the core when language extensions loaded 
+    public void ready()
     {
-	return luwrain.i18n().getStaticStr("Desktop");
-    }
-
-    private boolean onInsertRegion(int x, int y, RegionContent data)
-    {
-	if (!base.insert(x, y, data))
-	    return false;
-	area.refresh();
-	return true;
-    }
-
-    private boolean onDeleteRegion(int x, int y)
-    {
-	if (!base.delete(x, y))
-	    return false;
-	area.refresh();
-	return true;
-    }
-
-    private boolean onClick(int index, Object obj)
-    {
-	if (!base.onClick(index, obj))
-	    return false;
-	area.refresh();
-	return  true;
+	base.load();
+	luwrain.onAreaNewName(area);
     }
 
     private void createArea()
     {
-	final Luwrain l = luwrain;
-	final ListClickHandler handler = new ListClickHandler(){
-		@Override public boolean onListClick(ListArea area, int index,
-						     Object obj)
-		{
-		    return onClick(index, obj);
-		}
-	    };
-
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
-	params.model = base.getModel();
-	params.appearance = base.getAppearance();
-	params.clickHandler = handler;
+	params.model = base.model;
+	params.appearance = base.appearance;
 	params.name = luwrain.i18n().getStaticStr("Desktop");
 
 	area = new ListArea(params) {
+
 		      @Override public boolean onKeyboardEvent(KeyboardEvent event)
 		      {
 			  NullCheck.notNull(event, "event");
 			  if (event.isSpecial() && !event.isModified())
 			      switch(event.getSpecial())
-			      {
+			     { 
 			      case DELETE:
-				  return onDeleteRegion(getHotPointX(), getHotPointY());
+				  /*
+				  if (!Popups.confirmDefaultNo(luwrain, luwrain.i18n().getStaticStr("DesktopDeleteConfirmPopupName"), luwrain.i18n().getStaticStr("DesktopDeleteConfirmPopupText")))
+				      return true;
+				  */
+				  if (base.delete(getHotPointX(), getHotPointY()))
+				  refresh();
+				  return true;
 			      }
 		    return super.onKeyboardEvent(event);
 		}
@@ -103,8 +78,8 @@ public class App implements Application
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
-			l.silence();
-			l.playSound(Sounds.NO_APPLICATIONS);
+			luwrain.silence();
+			luwrain.playSound(Sounds.NO_APPLICATIONS);
 			luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"));
 			return true;
 		    default:
@@ -114,7 +89,10 @@ public class App implements Application
 
     @Override public boolean insertRegion(int x, int y, RegionContent data)
 		{
-		    return onInsertRegion(x, y, data);
+		    if (!base.insert(x, y, data))
+			return false;
+		    refresh();
+		    return true;
 		}
 
 		@Override public String getAreaName()
@@ -122,7 +100,22 @@ public class App implements Application
 		    return luwrain.i18n().getStaticStr("Desktop");
 		}
 	    };
+
+    area.setClickHandler((area, index, obj)->{
+	    if (!base.onClick(index, obj))
+		return false;
+	    area.refresh();
+	    return true;
+	});
     }
+
+    @Override public String getAppName()
+    {
+	return luwrain.i18n().getStaticStr("Desktop");
+    }
+
+
+
 
     @Override public AreaLayout getAreasToShow()
     {

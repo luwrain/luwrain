@@ -101,7 +101,7 @@ class Environment extends EnvironmentAreas
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
-	//	desktop.ready(i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME));
+	desktop.ready(/*i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME)*/);
 	sounds.init(registry, coreProps.getPathProperty("luwrain.dir.data"));
 	uiSettings = Settings.createUserInterface(registry);
     }

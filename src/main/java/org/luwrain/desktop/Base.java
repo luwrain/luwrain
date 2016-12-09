@@ -1,7 +1,7 @@
 /*
    Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
+   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -23,43 +23,27 @@ import java.nio.charset.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-//import org.luwrain.util.RegistryAutoCheck;
 
 class Base
 {
-    private Luwrain luwrain;
+    private final Luwrain luwrain;
     private UniRefList uniRefList;
-    private Model model;
-    private Appearance appearance;
-    private String clickHereLine;
+    final Model model;
+    final Appearance appearance;
+    private String clickHereLine = "#click here#";
 
-    boolean init(Luwrain luwrain)
+    Base(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	uniRefList = new UniRefList(luwrain);
-	clickHereLine = luwrain.i18n().getStaticStr("DesktopClickHereToCancelIntroduction");
-	return true;
+	this.uniRefList = new UniRefList(luwrain);
+	this.model = new Model(luwrain, uniRefList);
+	this.appearance = new Appearance(luwrain);
     }
 
-    Model getModel()
+    void load()
     {
-	if (model != null)
-	    return model;
-	model = new Model(luwrain, uniRefList);
-	return model;
-    }
-
-    Appearance getAppearance()
-    {
-	if (appearance != null)
-	    return appearance;
-	appearance = new Appearance(luwrain);
-	return appearance;
-    }
-
-    void setReady(String lang)
-    {
+	this.clickHereLine = luwrain.i18n().getStaticStr("DesktopClickHereToCancelIntroduction");
 	uniRefList.load();
 	final Settings.Desktop sett = Settings.createDesktop(luwrain.getRegistry());
 	final String introductionFile = sett.getIntroductionFile("");

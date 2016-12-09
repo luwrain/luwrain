@@ -1,7 +1,7 @@
 /*
    Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
+   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -23,7 +23,7 @@ import org.luwrain.controls.*;
 
 class Appearance implements ListArea.Appearance
 {
-    private Luwrain luwrain;
+    private final Luwrain luwrain;
 
     public Appearance(Luwrain luwrain)
     {

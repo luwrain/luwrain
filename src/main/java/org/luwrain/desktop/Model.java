@@ -1,7 +1,7 @@
 /*
    Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
+   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -23,19 +23,19 @@ import org.luwrain.controls.*;
 
 class Model implements ListArea.Model
 {
-    private Luwrain luwrain;
+    private final Luwrain luwrain;
+    private final UniRefList uniRefList;
     private Object[] items;
-    private UniRefList uniRefList;
     private String[] introduction;
     private String clickHereLine = null;
     private int firstUniRefPos = 0;
 
     Model(Luwrain luwrain, UniRefList uniRefList)
     {
-	this.luwrain = luwrain;
-	this.uniRefList = uniRefList;
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(uniRefList, "uniRefList");
+	this.luwrain = luwrain;
+	this.uniRefList = uniRefList;
     }
 
     @Override public int getItemCount()
@@ -83,7 +83,6 @@ class Model implements ListArea.Model
 
     void setIntroduction(String[] text)
     {
-	NullCheck.notNullItems(text, "text");
 	introduction =text;
     }
 
