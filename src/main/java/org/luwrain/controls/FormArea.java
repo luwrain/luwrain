@@ -32,8 +32,8 @@ public class FormArea  extends NavigationArea
     public enum Type { EDIT, CHECKBOX, LIST, STATIC, UNIREF, MULTILINE };
 
     protected final ControlEnvironment environment;
-    protected String name = "";
     protected final Vector<Item> items = new Vector<Item>();
+    protected String name = "";
 
     protected MutableLinesImpl multilineEditLines = null;
     protected final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
@@ -147,7 +147,7 @@ public class FormArea  extends NavigationArea
 	item.enabled = enabled;
 	item.edit = new EmbeddedSingleLineEdit(environment, item, this, item.caption.length(), items.size());
 	items.add(item);
-	updateEditsPos();
+	updateControlsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -204,7 +204,7 @@ public class FormArea  extends NavigationArea
 	item.obj = obj;
 	item.enabled = enabled;
 	items.add(item);
-	updateEditsPos();
+	updateControlsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -247,7 +247,7 @@ public class FormArea  extends NavigationArea
 	item.obj = obj;
 	item.enabled = enabled;
 	items.add(item);
-	updateEditsPos();
+	updateControlsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -277,7 +277,7 @@ public class FormArea  extends NavigationArea
 	item.obj = obj;
 	item.enabled = enabled;
 	items.add(item);
-	updateEditsPos();
+	updateControlsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -312,7 +312,7 @@ public class FormArea  extends NavigationArea
 	    item.caption = caption;
 	    item.obj = obj;
 	    items.add(item);
-	    updateEditsPos();
+	    updateControlsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -327,13 +327,17 @@ public class FormArea  extends NavigationArea
 
     public boolean multilineEditActivated()
     {
-	return multilineEdit != null && 
-	multilineEditModel != null && multilineEditCaption != null;
+	return multilineEdit != null && multilineEditModel != null && multilineEditCaption != null;
     }
 
     public boolean multilineEditEnabled()
     {
 	return multilineEditActivated() && multilineEditEnabled;
+    }
+
+    public boolean multilineEditHasCaption()
+    {
+	return multilineEditCaption != null && !multilineEditCaption.isEmpty();
     }
 
     /**
@@ -363,14 +367,13 @@ public class FormArea  extends NavigationArea
 	this.multilineEditModel = wrapMultilineEditModel(model);
 	this.multilineEdit = new MultilineEdit(environment, model);
 	multilineEditEnabled = enabled;
-	updateEditsPos();
+	updateControlsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
     }
 
-    public boolean activateMultilineEdit(String caption, String lines,
-					  boolean enabled)
+    public boolean activateMultilineEdit(String caption, String lines, boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(lines, "lines");
@@ -381,7 +384,7 @@ public class FormArea  extends NavigationArea
 	this.multilineEditModel = wrapMultilineEditModel(new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint));
 	this.multilineEdit = new MultilineEdit(environment, multilineEditModel);
 	multilineEditEnabled = enabled;
-	updateEditsPos();
+	updateControlsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -396,7 +399,7 @@ public class FormArea  extends NavigationArea
 
     public String getMultilineEditText()
     {
-	return multilineEditLines != null?multilineEditLines.getWholeText():null;
+	return multilineEditLines != null?multilineEditLines.getWholeText():"";
     }
 
     public boolean removeItemOnLine(int index)
@@ -404,7 +407,7 @@ public class FormArea  extends NavigationArea
 	if (index < 0 || index >= items.size())
 	    return false;
 	items.remove(index);
-	updateEditsPos();
+	updateControlsPos();
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -419,7 +422,7 @@ public class FormArea  extends NavigationArea
 	    if (items.get(i).name.equals(itemName))
 	    {
 		items.remove(i);
-		updateEditsPos();
+		updateControlsPos();
 		environment.onAreaNewContent(this);
 		environment.onAreaNewHotPoint(this);
 		return true;
@@ -442,7 +445,6 @@ public class FormArea  extends NavigationArea
 		return true;
 	    }
 	}
-
 	if (	    event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.ENTER &&
 		    !event.isModified())
 	{
@@ -497,7 +499,10 @@ public class FormArea  extends NavigationArea
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	//Insert command for a uniref;
+	NullCheck.notNull(event, "event");
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return super.onEnvironmentEvent(event);
+	//Insert command for a uniref
 	if (event.getCode() == EnvironmentEvent.Code.INSERT && (event instanceof InsertEvent))
 	{
 	    final int index = getHotPointY();
@@ -515,14 +520,11 @@ public class FormArea  extends NavigationArea
 		environment.onAreaNewContent(this);
 		return true;
 	    }
-
 	}
-
 	for(Item i: items)
-		if (i.type == Type.EDIT && i.edit != null &&
-		    i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
-		    i.onEnvironmentEvent(event))
-		    return true;
+	    if (i.isEnabledEdit() && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
+		i.onEnvironmentEvent(event))
+		return true;
 	if (multilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
 	    multilineEdit.onEnvironmentEvent(event))
 	    return true;
@@ -531,9 +533,9 @@ public class FormArea  extends NavigationArea
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
+	NullCheck.notNull(query, "query");
 	for(Item i: items)
-		if (i.type == Type.EDIT && i.edit != null &&
-		    i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
+	    if (i.isEnabledEdit() && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		    i.onAreaQuery(query))
 		    return true;
 	if (multilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
@@ -551,7 +553,7 @@ public class FormArea  extends NavigationArea
 	res += count;
 	if (count == 0)
 	    ++res;
-	if (multilineEditCaption != null && !multilineEditCaption.isEmpty())
+	if (multilineEditHasCaption())
 	    ++res;
 	return res;
     }
@@ -582,7 +584,7 @@ public class FormArea  extends NavigationArea
 	if (!multilineEditActivated())
 	    return "";
 	final int pos = index - items.size();
-	if (!multilineEditCaption.isEmpty())
+	if (multilineEditHasCaption())
 	{
 	    if (pos == 0)
 		return multilineEditCaption;
@@ -607,24 +609,42 @@ public class FormArea  extends NavigationArea
 	//FIXME:	environment.onNewAreaName(this);
     }
 
-    private void updateEditsPos()
+    protected Item findItemByIndex(int index)
+    {
+	if (index < 0 || index >= items.size())
+	    return null;
+	return items.get(index);
+    }
+
+    protected Item findItemByName(String itemName)
+    {
+	NullCheck.notEmpty(itemName, "itemName");
+	for(Item i: items)
+	    if (i.name.equals(itemName))
+		return i;
+	return null;
+    }
+
+    protected void updateControlsPos()
     {
 	for(int i = 0;i < items.size();++i)
 	    if (items.get(i).type == Type.EDIT)
 	    {
 		final Item item = items.get(i);
-		item.edit.setNewPos(item.caption != null?item.caption.length():0, i);
+		item.edit.setNewPos(item.caption.length(), i);
 	    }
 	if (!multilineEditActivated())
 	    return;
 	int offset = items.size();
-	if (multilineEditCaption != null && !multilineEditCaption.isEmpty())
+	if (multilineEditHasCaption())
 	    ++offset;
 	multilineEditHotPoint.setOffsetY(offset);
     }
 
-    private MultilineEditModel wrapMultilineEditModel(MultilineEditModel model)
+    //Adds listener to notify about multiline edit text or hot point changing
+    protected MultilineEditModel wrapMultilineEditModel(MultilineEditModel model)
     {
+	NullCheck.notNull(model, "model");
 	final ControlEnvironment env = environment;
 	final Area thisArea = this;
 	return new MultilineEditModelChangeListener(model){
@@ -636,7 +656,7 @@ public class FormArea  extends NavigationArea
 	};
     }
 
-    private boolean isMultilineEditCovering(int x, int y)
+    protected boolean isMultilineEditCovering(int x, int y)
     {
 	return x >= multilineEditHotPoint.offsetX() && y >= multilineEditHotPoint.offsetY();
     }
@@ -697,6 +717,11 @@ Type type, String name)
 	boolean onAreaQuery(AreaQuery query)
 	{
 	    return edit != null?edit.onAreaQuery(query):false;
+	}
+
+	boolean isEnabledEdit()
+	{
+	    return type == Type.EDIT && edit != null && enabled;
 	}
 
 	@Override public String getEmbeddedEditLine(int editPosX, int editPosY)
