@@ -140,9 +140,7 @@ public class FormArea  extends NavigationArea
 	NullCheck.notEmpty(itemName, "itemName");
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(initialText, "initialText");
-	final Item item = new Item(environment, this);
-	item.type = Type.EDIT;
-	item.name = itemName;
+	final Item item = new Item(environment, this, Type.EDIT, itemName);
 	item.caption = caption;
 	item.enteredText = initialText;
 	item.obj = obj;
@@ -194,9 +192,7 @@ public class FormArea  extends NavigationArea
     {
 	NullCheck.notEmpty(itemName, "itemName");
 	NullCheck.notNull(caption, "caption");
-	final Item item = new Item(environment, this);
-	item.type = Type.UNIREF;
-	item.name = itemName;
+	final Item item = new Item(environment, this, Type.UNIREF, itemName);
 	item.caption = caption;
 	if (initialUniRef != null && !initialUniRef.trim().isEmpty())
 	{
@@ -244,9 +240,7 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(listChoosing, "listChoosing");
 	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
 	    return false;
-	final Item item = new Item(environment, this);
-	item.type = Type.LIST;
-	item.name = itemName;
+	final Item item = new Item(environment, this, Type.LIST, itemName);
 	item.caption = caption;
 	item.selectedListItem = initialSelectedItem;
 	item.listChoosing = listChoosing;
@@ -277,9 +271,7 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(caption, "caption");
 	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
 	    return false;
-	final Item item = new Item(environment, this);
-	item.type = Type.CHECKBOX;
-	item.name = itemName;
+	final Item item = new Item(environment, this, Type.CHECKBOX, itemName);
 	item.caption = caption;
 	item.checkboxState = initialState;
 	item.obj = obj;
@@ -316,9 +308,7 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(caption, "caption");
 	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
 	    return false;
-	final Item item = new Item(environment, this);
-	item.type = Type.STATIC;
-	item.name = itemName;
+	final Item item = new Item(environment, this, Type.STATIC, itemName);
 	    item.caption = caption;
 	    item.obj = obj;
 	    items.add(item);
@@ -658,15 +648,15 @@ public class FormArea  extends NavigationArea
 
     static protected class Item implements EmbeddedEditLines
     {
-	Type type;
-	String name;
+	final Type type;
+	final String name;
 	String caption;
 	Object obj;
 	boolean enabled = true;
 
 //A couple of variables needed for sending notifications about changing of text
-	protected ControlEnvironment environment;
-	protected Area area;
+	protected final ControlEnvironment environment;
+	protected final Area area;
 
 	//For edits
 	protected String enteredText = "";
@@ -681,12 +671,17 @@ protected ListChoosing listChoosing;
 	//For checkboxes
 	boolean checkboxState;
 
-	Item(ControlEnvironment environment, Area area)
+	Item(ControlEnvironment environment, Area area, 
+Type type, String name)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    NullCheck.notNull(area, "area");
+	    NullCheck.notNull(type, "type");
+	    NullCheck.notNull(name, "name");
 	    this.environment = environment;
 	    this.area = area;
+	    this.type = type;
+	    this.name = name;
 	}
 
 	boolean onKeyboardEvent(KeyboardEvent event)
@@ -718,5 +713,4 @@ protected ListChoosing listChoosing;
 	    environment.onAreaNewContent(area);
 	}
     }
-
 }
