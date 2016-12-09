@@ -25,14 +25,13 @@ public class App implements Application, Actions
     static public final String STRINGS_NAME = "luwrain.desktop";
 
     private Luwrain luwrain;
-    private final TempStrings strings = new TempStrings();
     private final Base base = new Base();
     private ListArea area;
 
     @Override public boolean onLaunch(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
-	if (!base.init(luwrain, strings))
+	if (!base.init(luwrain))
 	    return false;
 	createArea();
 	return true;
@@ -40,10 +39,10 @@ public class App implements Application, Actions
 
     @Override public String getAppName()
     {
-	return strings.appName();
+	return luwrain.i18n().getStaticStr("Desktop");
     }
 
-    @Override public boolean onInsert(int x, int y, RegionContent data)
+    @Override public boolean onInsertRegion(int x, int y, RegionContent data)
     {
 	if (!base.insert(x, y, data))
 	    return false;
@@ -51,7 +50,7 @@ public class App implements Application, Actions
 	return true;
     }
 
-    @Override public boolean onDelete(int x, int y)
+    @Override public boolean onDeleteRegion(int x, int y)
     {
 	if (!base.delete(x, y))
 	    return false;
@@ -67,24 +66,14 @@ public class App implements Application, Actions
 	return  true;
     }
 
-    public void ready(String lang, Object o)
-    {
-	if (o != null && (o instanceof Strings))
-	    this.strings.setStrings((Strings)o);
-	base.setReady(lang);
-    }
-
     private void createArea()
     {
 	final Luwrain l = luwrain;
-	final Actions actions = this;
-	final Strings s = strings;
-
 	final ListClickHandler handler = new ListClickHandler(){
 		@Override public boolean onListClick(ListArea area, int index,
 						     Object obj)
 		{
-		    return actions.onClick(index, obj);
+		    return onClick(index, obj);
 		}
 	    };
 
@@ -93,7 +82,7 @@ public class App implements Application, Actions
 	params.model = base.getModel();
 	params.appearance = base.getAppearance();
 	params.clickHandler = handler;
-	params.name = strings.appName();
+	params.name = luwrain.i18n().getStaticStr("Desktop");
 
 	area = new ListArea(params) {
 		      @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -103,10 +92,11 @@ public class App implements Application, Actions
 			      switch(event.getSpecial())
 			      {
 			      case DELETE:
-				  return actions.onDelete(getHotPointX(), getHotPointY());
+				  return onDeleteRegion(getHotPointX(), getHotPointY());
 			      }
 		    return super.onKeyboardEvent(event);
 		}
+
 		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -115,19 +105,21 @@ public class App implements Application, Actions
 		    case CLOSE:
 			l.silence();
 			l.playSound(Sounds.NO_APPLICATIONS);
-			l.message(s.noApplications());
+			luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"));
 			return true;
 		    default:
 			return super.onEnvironmentEvent(event);
 		    }
 		}
+
     @Override public boolean insertRegion(int x, int y, RegionContent data)
 		{
-		    return actions.onInsert(x, y, data);
+		    return onInsertRegion(x, y, data);
 		}
+
 		@Override public String getAreaName()
 		{
-		    return strings.appName();
+		    return luwrain.i18n().getStaticStr("Desktop");
 		}
 	    };
     }

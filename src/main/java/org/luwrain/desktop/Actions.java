@@ -20,7 +20,7 @@ import org.luwrain.core.RegionContent;
 
 interface Actions
 {
-    boolean onInsert(int x, int y, RegionContent data);
-    boolean onDelete(int x, int y);
+    boolean onInsertRegion(int x, int y, RegionContent data);
+    boolean onDeleteRegion(int x, int y);
     boolean onClick(int index, Object object);
 }

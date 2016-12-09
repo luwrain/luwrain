@@ -24,14 +24,11 @@ import org.luwrain.controls.*;
 class Appearance implements ListArea.Appearance
 {
     private Luwrain luwrain;
-    private Strings strings;
 
-    public Appearance(Luwrain luwrain, Strings strings)
+    public Appearance(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(strings, "strings");
 	this.luwrain = luwrain;
-	this.strings = strings;
     }
 
     @Override public void announceItem(Object item, Set<Flags> flags)

@@ -28,23 +28,18 @@ import org.luwrain.controls.*;
 class Base
 {
     private Luwrain luwrain;
-    private Strings strings;
     private UniRefList uniRefList;
     private Model model;
     private Appearance appearance;
     private final RegistryKeys registryKeys = new RegistryKeys();
     private String clickHereLine;
 
-    boolean init(Luwrain luwrain, Strings strings)
+    boolean init(Luwrain luwrain)
     {
+	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.strings = strings;
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (strings == null)
-	    throw new NullPointerException("strings may not be null");
 	uniRefList = new UniRefList(luwrain);
-	clickHereLine = strings.clickHereToCancelIntroduction(); 
+	clickHereLine = luwrain.i18n().getStaticStr("DesktopClickHereToCancelIntroduction");
 	return true;
     }
 
@@ -60,13 +55,12 @@ class Base
     {
 	if (appearance != null)
 	    return appearance;
-	appearance = new Appearance(luwrain, strings);
+	appearance = new Appearance(luwrain);
 	return appearance;
     }
 
     void setReady(String lang)
     {
-	clickHereLine = strings.clickHereToCancelIntroduction(); 
 	uniRefList.load();
 	final Settings.Desktop sett = Settings.createDesktop(luwrain.getRegistry());
 	final String introductionFile = sett.getIntroductionFile("");
