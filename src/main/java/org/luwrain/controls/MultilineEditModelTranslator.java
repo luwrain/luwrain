@@ -225,12 +225,13 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 
     @Override public String splitLines(int pos, int lineIndex)
     {
-	if (lineIndex < 0 || lineIndex >= lines.getLineCount())
+	if (lineIndex < 0)
 	    return "";
 	beginEditTrans();
+	while(lineIndex >= lines.getLineCount())
+	    lines.addLine("");
 	String line = lines.getLine(lineIndex);
-	if (line == null)
-	    line = "";
+	NullCheck.notNull(line, "line");
 	while (line.length() < pos)
 	    line += ' ';
 	lines.setLine(lineIndex, line.substring(0, pos));
@@ -246,13 +247,13 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	return lines.getLine(lineIndex + 1);
     }
 
-    private void beginEditTrans()
+    protected void beginEditTrans()
     {
 	lines.beginLinesTrans();
 	hotPoint.beginHotPointTrans();
     }
 
-    private void endEditTrans(boolean cleanSingleEmptyLine)
+    protected void endEditTrans(boolean cleanSingleEmptyLine)
     {
 	if (cleanSingleEmptyLine)
 	    if (lines.getLineCount() == 1 && lines.getLine(0).isEmpty())

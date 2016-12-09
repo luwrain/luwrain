@@ -68,8 +68,7 @@ public class MutableLinesImpl implements MutableLines
     @Override public void setLine(int index, String line)
     {
 	NullCheck.notNull(line, "line");
-	while(lines.size() <= index)
-	    lines.add("");
+	if (index >= 0 && index < lines.size())
 	lines.set(index, line);
     }
 
@@ -88,8 +87,7 @@ public class MutableLinesImpl implements MutableLines
 	    lines.insertElementAt(line, index);
 	    return;
 	}
-	while(lines.size() < index)
-	    lines.add("");
+	if (lines.size() == index)
 	lines.add(line);
     }
 

@@ -128,7 +128,8 @@ return onEnter(event);
     protected boolean onEnter(KeyboardEvent event)
     {
 	final String line = model.splitLines(model.getHotPointX(), model.getHotPointY());
-	if (line == null || line.isEmpty())
+	NullCheck.notNull(line, "line");
+	if (line.isEmpty())
 	    environment.hint(Hints.EMPTY_LINE); else
 	    environment.say(line);
 	return true;
