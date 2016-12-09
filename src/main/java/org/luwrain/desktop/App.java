@@ -23,14 +23,13 @@ import org.luwrain.popups.Popups;
 
 public class App implements Application
 {
-    static public final String STRINGS_NAME = "luwrain.desktop";
-
     private Luwrain luwrain;
     private Base base = null;
     private ListArea area;
 
     @Override public boolean onLaunch(Luwrain luwrain)
     {
+	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	base = new Base(luwrain);
 	createArea();
@@ -54,21 +53,21 @@ public class App implements Application
 
 	area = new ListArea(params) {
 
-		      @Override public boolean onKeyboardEvent(KeyboardEvent event)
-		      {
-			  NullCheck.notNull(event, "event");
-			  if (event.isSpecial() && !event.isModified())
-			      switch(event.getSpecial())
-			     { 
-			      case DELETE:
-				  /*
-				  if (!Popups.confirmDefaultNo(luwrain, luwrain.i18n().getStaticStr("DesktopDeleteConfirmPopupName"), luwrain.i18n().getStaticStr("DesktopDeleteConfirmPopupText")))
-				      return true;
-				  */
-				  if (base.delete(getHotPointX(), getHotPointY()))
-				  refresh();
-				  return true;
-			      }
+		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		{
+		    NullCheck.notNull(event, "event");
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
+			{ 
+			case DELETE:
+			    /*
+			    if (!Popups.confirmDefaultNo(luwrain, luwrain.i18n().getStaticStr("DesktopDeleteConfirmPopupName"), luwrain.i18n().getStaticStr("DesktopDeleteConfirmPopupText")))
+				return true;
+			    */
+			    if (base.delete(getHotPointX(), getHotPointY()))
+				refresh();
+			    return true;
+			}
 		    return super.onKeyboardEvent(event);
 		}
 
@@ -87,7 +86,7 @@ public class App implements Application
 		    }
 		}
 
-    @Override public boolean insertRegion(int x, int y, RegionContent data)
+		@Override public boolean insertRegion(int x, int y, RegionContent data)
 		{
 		    if (!base.insert(x, y, data))
 			return false;
@@ -101,21 +100,18 @@ public class App implements Application
 		}
 	    };
 
-    area.setClickHandler((area, index, obj)->{
-	    if (!base.onClick(index, obj))
-		return false;
-	    area.refresh();
-	    return true;
-	});
+	area.setClickHandler((area, index, obj)->{
+		if (!base.onClick(index, obj))
+		    return false;
+		area.refresh();
+		return true;
+	    });
     }
 
     @Override public String getAppName()
     {
 	return luwrain.i18n().getStaticStr("Desktop");
     }
-
-
-
 
     @Override public AreaLayout getAreasToShow()
     {
