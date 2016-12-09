@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.controls;
 
@@ -29,21 +14,21 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 
     public MultilineEditModelTranslator(MutableLines lines, HotPointControl hotPoint)
     {
-	this.lines = lines;
-	this.hotPoint = hotPoint;
 	NullCheck.notNull(lines, "lines");
 	NullCheck.notNull(hotPoint, "hotPoint");
+	this.lines = lines;
+	this.hotPoint = hotPoint;
     }
 
     public MultilineEditModelTranslator(MutableLines lines, HotPointControl hotPoint,
 					String tabSeq)
     {
-	this.lines = lines;
-	this.hotPoint = hotPoint;
-	this.tabSeq = tabSeq;
 	NullCheck.notNull(lines, "lines");
 	NullCheck.notNull(hotPoint, "hotPoint");
 	NullCheck.notNull(tabSeq, "tabSeq");
+	this.lines = lines;
+	this.hotPoint = hotPoint;
+	this.tabSeq = tabSeq;
     }
 
     @Override public int getHotPointX()
@@ -74,8 +59,8 @@ public class MultilineEditModelTranslator implements MultilineEditModel
     @Override public char deleteChar(int pos, int lineIndex)
     {
 	final String line = lines.getLine(lineIndex);
-	if (line == null ||
-	    pos < 0 || pos >= line.length())
+	NullCheck.notNull(line, "line");
+	if (pos < 0 || pos >= line.length())
 	    return '\0';
 	beginEditTrans();
 	lines.setLine(lineIndex, line.substring(0, pos) + line.substring(pos + 1));
@@ -88,18 +73,18 @@ public class MultilineEditModelTranslator implements MultilineEditModel
     @Override public boolean deleteRegion(int fromX, int fromY,
 					  int toX, int toY)
     {
-	if (lines.getLineCount() < 1 ||
-	    fromY > toY ||
+	if (lines.getLineCount() < 1 || fromY > toY ||
 	    (fromY == toY && fromX > toX) ||
 	    toY >= lines.getLineCount())
 	    return false;
 	if (fromY == toY)
 	{
 	    final String line = lines.getLine(fromY);
-	    if (line == null || line.isEmpty())
+	    NullCheck.notNull(line, "line");
+	    if (line.isEmpty())
 		return false;
-	    final int fromPos = fromX < line.length()?fromX:line.length();
-	    final int toPos = toX < line.length()?toX:line.length();
+	    final int fromPos = Math.min(fromX, line.length());
+	    final int toPos = Math.min(toX, line.length());
 	    if (fromPos >= toPos)
 		return false;
 	    beginEditTrans();
@@ -115,13 +100,11 @@ public class MultilineEditModelTranslator implements MultilineEditModel
 	    return true;
 	}
 	final String firstLine = lines.getLine(fromY);
-	if (firstLine == null)
-	    return false;
-	final int fromPos = fromX < firstLine.length()?fromX:firstLine.length();
+					 NullCheck.notNull(firstLine, "firstLine");
+					 final int fromPos = Math.min(fromX, firstLine.length());
 	final String endingLine = lines.getLine(toY);
-	if (endingLine == null)
-	    return false;
-	final int toPos = toX <endingLine.length()?toX:endingLine.length();
+					 NullCheck.notNull(endingLine, "endingLine");
+					 final int toPos = Math.min(toX, endingLine.length());
 	beginEditTrans();
 	lines.setLine(fromY, firstLine.substring(0, fromPos) + endingLine.substring(toPos));
 	for(int i = fromY + 1;i <= toY;++i)
