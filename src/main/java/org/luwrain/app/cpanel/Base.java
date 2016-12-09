@@ -12,7 +12,7 @@ class Base
 {
     private Luwrain luwrain;
     private Factory[] factories;
-    private final StandardFactory standardFactory = new StandardFactory();
+    private StandardFactory standardFactory;
     private HashMap<Element, TreeItem> treeItems = new HashMap<Element, TreeItem>();
     private SectionsTreeModelSource treeModelSource;
     private CachedTreeModel treeModel;
@@ -22,6 +22,7 @@ class Base
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNullItems(factories, "factories");
 	this.luwrain = luwrain;
+	this.standardFactory = new StandardFactory(luwrain);
 	this.factories = factories;
 	treeModelSource = new SectionsTreeModelSource(this, 
 treeItems);

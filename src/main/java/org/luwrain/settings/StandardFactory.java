@@ -1,7 +1,7 @@
 
 package org.luwrain.settings;
 
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
 
 public class StandardFactory implements Factory
@@ -20,6 +20,14 @@ public class StandardFactory implements Factory
 
     static private final Element soundsList = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundsList");
     static private final Element soundSchemes = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundSchemes");
+
+    private final Luwrain luwrain;
+
+    public StandardFactory(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	this.luwrain = luwrain;
+    }
 
     @Override public Element[] getElements()
     {
@@ -87,7 +95,7 @@ public class StandardFactory implements Factory
 		if (el.equals(hotKeys))
 		    return new SimpleSection(hotKeys, "Горячие клавиши", (controlPanel)->HotKeys.create(controlPanel));
 		if (el.equals(personalInfo))
-		    return new SimpleSection(personalInfo, "Персональная информация");
+		    return new SimpleSection(personalInfo, luwrain.i18n().getStaticStr("CpPersonalInfoSection"), (controlPanel)->{return new PersonalInfo(controlPanel);});
 		if (el.equals(fileTypes))
 		    return new SimpleSection(fileTypes, "Типы файлов", (controlPanel)->FileTypes.create(controlPanel));
 		if (el.equals(mainMenu))

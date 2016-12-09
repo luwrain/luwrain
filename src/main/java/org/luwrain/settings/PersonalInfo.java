@@ -7,14 +7,14 @@ import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.util.*;
 
-class PersonalInfoArea extends FormArea implements SectionArea
+class PersonalInfo extends FormArea implements SectionArea
 {
     private final ControlPanel controlPanel;
     private final Luwrain luwrain;
     private final Registry registry;
     private final Settings.PersonalInfo sett;
 
-    PersonalInfoArea(ControlPanel controlPanel)
+    PersonalInfo(ControlPanel controlPanel)
     {
 	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
 	NullCheck.notNull(controlPanel, "controlPanel");
@@ -22,40 +22,14 @@ class PersonalInfoArea extends FormArea implements SectionArea
 	this.luwrain = controlPanel.getCoreInterface();
 	this.registry = luwrain.getRegistry();
 this.sett = Settings.createPersonalInfo(luwrain.getRegistry());
-addEdit("name", "Полное имя:", sett.getFullName(""), null, true);
-addEdit("address", "Основной адрес электронной почты:", sett.getDefaultMailAddress(""), null, true);
-activateMultilineEdit("Текст подписи в сообщениях электронной почты:", sett.getSignature(""), true);
+fillForm();
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    private void fillForm()
     {
-	NullCheck.notNull(event, "event");
-	if (event.isSpecial() && !event.isModified())
-	    switch(event.getSpecial())
-	    {
-	    case TAB:
-		controlPanel.gotoSectionsTree ();
-		return true;
-	    }
-	return super.onKeyboardEvent(event);
-    }
-
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	switch(event.getCode())
-	{
-	case CLOSE:
-	    controlPanel.close();
-	    return true;
-	default:
-	    return super.onEnvironmentEvent(event);
-	}
-    }
-
-    @Override public String getAreaName()
-    {
-	return "Персональная информация";
+	addEdit("name", luwrain.i18n().getStaticStr("CpPersonalInfoFullName"), sett.getFullName(""), null, true);
+	addEdit("address", luwrain.i18n().getStaticStr("CpPersonalInfoMailAddress"), sett.getDefaultMailAddress(""), null, true);
+	activateMultilineEdit(luwrain.i18n().getStaticStr("CpPersonalInfoSignature"), sett.getSignature(""), true);
     }
 
     @Override public boolean saveSectionData()
@@ -66,5 +40,27 @@ activateMultilineEdit("Текст подписи в сообщениях эле�
 	sett.setDefaultMailAddress(getEnteredText("address"));
 	sett.setSignature(getMultilineEditText());
 	return true;
+    }
+
+
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
+	return super.onKeyboardEvent(event);
+    }
+
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onEnvironmentEvent(event))
+	    return true;
+	return super.onEnvironmentEvent(event);
+    }
+
+    @Override public String getAreaName()
+    {
+	return "Персональная информация";
     }
 }
