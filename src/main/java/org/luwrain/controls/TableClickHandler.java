@@ -18,7 +18,7 @@ package org.luwrain.controls;
 
 public interface TableClickHandler
 {
-    boolean onClick(TableModel model,
+    boolean onClick(TableArea.Model model,
 		    int col,
 		    int row,
 		    Object obj);

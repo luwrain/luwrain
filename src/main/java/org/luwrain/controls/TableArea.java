@@ -32,11 +32,34 @@ public class TableArea  implements Area
 {
     static final public int INTRODUCTION_BRIEF = 1;
 
+public interface Model
+{
+    int getRowCount();
+    int getColCount();
+    Object getCell(int col, int row);
+    Object getRow(int index);
+    Object getCol(int index);
+    void refresh();
+}
+
+public interface Appearance
+{
+    void announceRow(TableArea.Model model, int index, int flags);
+    int getInitialHotPointX(TableArea.Model model);
+    String getCellText(TableArea.Model model, int col, int row);
+    String getRowPrefix(TableArea.Model model, int index);
+int getColWidth(TableArea.Model model, int  colIndex);
+}
+
+
+
+
+
     protected final ControlEnvironment environment;
     protected final RegionTranslator region = new RegionTranslator(new LinesRegionProvider(this));
     protected String name = "";
-    protected final TableModel model;
-    protected final TableAppearance appearance;
+    protected final Model model;
+    protected final TableArea.Appearance appearance;
     protected TableClickHandler clickHandler = null;
 
     private int initialHotPointX = 0;
@@ -45,7 +68,7 @@ public class TableArea  implements Area
     private int[] colWidth;
     private int cellShift = 0;
 
-    public TableArea(ControlEnvironment environment, TableModel model)
+    public TableArea(ControlEnvironment environment, TableArea.Model model)
     {
 	this.environment = environment;
 	this.model = model;
@@ -59,7 +82,7 @@ public class TableArea  implements Area
     }
 
     public TableArea(ControlEnvironment environment,
-		     TableModel model,
+		     TableArea.Model model,
 		     String name)
     {
 	this.environment = environment;
@@ -77,8 +100,8 @@ public class TableArea  implements Area
     }
 
     public TableArea(ControlEnvironment environment,
-		     TableModel model,
-		    TableAppearance appearance,
+		     TableArea.Model model,
+		    TableArea.Appearance appearance,
 		     TableClickHandler clickHandler,
 		     String name)
     {
@@ -522,7 +545,7 @@ public class TableArea  implements Area
 	cellShift = 0;
 	environment.onAreaNewHotPoint(this);
 	if (hotPointY < count)
-	    appearance.introduceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0); else
+	    appearance.announceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0); else
 	    environment.hint(Hints.EMPTY_LINE);
     }
 

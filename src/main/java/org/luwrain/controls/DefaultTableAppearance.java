@@ -18,7 +18,7 @@ package org.luwrain.controls;
 
 import org.luwrain.core.*;
 
-public class DefaultTableAppearance implements TableAppearance
+public class DefaultTableAppearance implements TableArea.Appearance
 {
     private ControlEnvironment environment = null;
 
@@ -27,7 +27,7 @@ public class DefaultTableAppearance implements TableAppearance
 	this.environment = environment;
     }
 
-    public void introduceRow(TableModel model,
+    @Override public void announceRow(TableArea.Model model,
 			     int index,
 			     int flags)
     {
@@ -44,12 +44,12 @@ public class DefaultTableAppearance implements TableAppearance
 	    environment.hint(Hints.EMPTY_LINE);
     }
 
-    public int getInitialHotPointX(TableModel model)
+    @Override public int getInitialHotPointX(TableArea.Model model)
     {
 	return 0;
     }
 
-    public String getCellText(TableModel model, int col, int row)
+    @Override public String getCellText(TableArea.Model model, int col, int row)
     {
 	if (model == null)
 	    return "";
@@ -60,12 +60,12 @@ public class DefaultTableAppearance implements TableAppearance
 	return text != null?text:"";
     }
 
-    public String getRowPrefix(TableModel model, int index)
+    @Override public String getRowPrefix(TableArea.Model model, int index)
     {
 	return "";
     }
 
-    public int getColWidth(TableModel model, int  colIndex)
+    @Override public int getColWidth(TableArea.Model model, int  colIndex)
     {
 	if (model == null)
 	    return 0;
