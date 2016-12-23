@@ -126,7 +126,7 @@ public class CommanderArea extends ListArea
 	return getListModel().current;
     }
 
-    public Path selectedPath()
+    public Path getSelectedPath()
     {
 	if (isEmpty())
 	    return null;
@@ -136,14 +136,13 @@ public class CommanderArea extends ListArea
 	return ((Entry)res).path;
     }
 
-    public Entry selectedEntry()
+    public Entry getSelectedEntry()
     {
 	return !isEmpty() && hotPointY >= 0 && hotPointY < getListModel().entries.length?getListModel().entries[hotPointY]:null;
     }
 
-    public void setFilter(Filter filter)
+    public void setCommanderFilter(Filter filter)
     {
-	NullCheck.notNull(filter, "filter");
 	//	this.filter = filter;
     }
 
@@ -206,6 +205,7 @@ public class CommanderArea extends ListArea
 	    }
 	return super.onKeyboardEvent(event);
     }
+
     @Override public boolean onAreaQuery(AreaQuery query)
     {
 	NullCheck.notNull(query, "query");
@@ -272,8 +272,20 @@ public class CommanderArea extends ListArea
 	return res == ClickHandler.Result.OK?true:false;
     }
 
+    @Override protected String noContentStr()
+    {
+	return environment.getStaticStr("CommanderNoContent");
+    }
+
+    protected void notifyNewContent()
+    {
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+	environment.onAreaNewName(this);
+    }
+
     static protected Entry[] loadEntries(Path path,
-				       Filter filter, Comparator comparator)
+					 Filter filter, Comparator comparator)
     {
 	NullCheck.notNull(path, "path");
 	NullCheck.notNull(filter, "filter");
@@ -299,21 +311,9 @@ public class CommanderArea extends ListArea
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    Log.error("core", "unable to read the directory " + path + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    return null;
 	}
-    }
-
-    @Override protected String noContentStr()
-    {
-	return environment.getStaticStr("CommanderNoContent");
-    }
-
-    protected void notifyNewContent()
-    {
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
-	environment.onAreaNewName(this);
     }
 
     static protected Entry.Type readType(Path path) throws IOException
@@ -470,8 +470,8 @@ public Type getType() { return type; }
     static public class ModelImpl implements ListArea.Model
     {
 	boolean marking = true;
-Filter filter = null;
-	Comparator comparator = null;
+final Filter filter;
+	final Comparator comparator;
 
 	Path current;
 	Entry[] entries;//null means the content is inaccessible
@@ -519,6 +519,4 @@ Filter filter = null;
 	    entries = loadEntries(current, filter, comparator);
 	}
     }
-
-
 }

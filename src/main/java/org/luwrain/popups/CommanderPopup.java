@@ -74,11 +74,11 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	    switch(event.getChar())
 	    {
 	    case '=':
-		setFilter(new CommanderUtils.AllFilesFilter());
+		setCommanderFilter(new CommanderUtils.AllFilesFilter());
 		refresh();
 		return true;
 	    case '-':
-		setFilter(new CommanderUtils.NoHiddenFilter());
+		setCommanderFilter(new CommanderUtils.NoHiddenFilter());
 		refresh();
 		return true;
 	    }
