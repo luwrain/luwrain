@@ -48,22 +48,22 @@ public class CommanderArea extends ListArea
 	public ControlEnvironment environment;
 	public CommanderArea.Appearance appearance;
 	public CommanderArea.ClickHandler clickHandler;
-	public boolean selecting = false;
 	public Filter filter = null;//FIXME:
 	public Comparator comparator = new CommanderUtils.ByNameComparator();
+	public Set<Flags> flags = EnumSet.noneOf(Flags.class);
     }
 
     protected final CommanderArea.Appearance appearance;
-    protected final boolean selecting;
     protected CommanderArea.ClickHandler clickHandler = null;
 
     public CommanderArea(Params params, Path current)
     {
-	super(constructListParams(params));
+	super(prepareListParams(params));
+	NullCheck.notNull(params.flags, "params.flags");
 	this.appearance = params.appearance;
 	this.clickHandler = params.clickHandler;
-	this.selecting = params.selecting;
 	super.setClickHandler((area, index, obj)->clickImpl(index, (Entry)obj));
+	getListModel().marking = params.flags.contains(Flags.MARKING);
 	if (!Files.isDirectory(current))
 	    throw new IllegalArgumentException("current must address a directory");
 	getListModel().load(current);
@@ -105,7 +105,7 @@ public class CommanderArea extends ListArea
 
     public Path[] marked()
     {
-	if (!selecting || isEmpty())
+	if (!getListModel().marking || isEmpty())
 	    return new Path[0];
 	final LinkedList<Path> paths = new LinkedList<Path>();
 	for(Entry e: getListModel().entries)
@@ -143,8 +143,15 @@ public class CommanderArea extends ListArea
 
     public void setCommanderFilter(Filter filter)
     {
-	//	this.filter = filter;
+	getListModel().filter = filter;
     }
+
+    public void setCommanderFilterwComparator(Comparator comparator)
+    {
+	NullCheck.notNull(comparator, "comparator");
+	getListModel().comparator = comparator;
+    }
+
 
     public boolean isEmpty()
     {
@@ -331,16 +338,17 @@ public class CommanderArea extends ListArea
 	    return Entry.Type.SPECIAL;
 	}
 
-    static protected ListArea.Params constructListParams(CommanderArea.Params params)
+    static protected ListArea.Params prepareListParams(CommanderArea.Params params)
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.environment, "params.environment");
 	NullCheck.notNull(params.comparator, "params.comparator");
+	NullCheck.notNull(params.appearance, "params.appearance");
 	final ListArea.Params listParams = new ListArea.Params();
 	listParams.environment = params.environment;
 	listParams.model = new ModelImpl(params.filter, params.comparator);
 	listParams.appearance = new AppearanceImpl(params.appearance);
-	listParams.name = "#CommanderArea#";//Never used, getAreaName() overridden
+	listParams.name = "";//Never used, getAreaName() overrides
 	return listParams;
     }
 
@@ -470,8 +478,8 @@ public Type getType() { return type; }
     static public class ModelImpl implements ListArea.Model
     {
 	boolean marking = true;
-final Filter filter;
-	final Comparator comparator;
+	Filter filter;
+Comparator comparator;
 
 	Path current;
 	Entry[] entries;//null means the content is inaccessible

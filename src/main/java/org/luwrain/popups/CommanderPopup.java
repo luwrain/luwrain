@@ -155,7 +155,7 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.appearance = new CommanderUtils.DefaultAppearance(params.environment);
 	//    public CommanderArea.ClickHandler clickHandler;
-	params.selecting = false;
+	//	params.selecting = false;
 	params.filter = new CommanderUtils.NoHiddenFilter();
 	params.comparator = new CommanderUtils.ByNameComparator();
 	return params;
