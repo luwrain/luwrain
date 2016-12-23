@@ -65,7 +65,7 @@ class FileTypes extends ListArea implements SectionArea
 	super(params);
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
-	setClickHandler((area, index, obj)->editItem(obj));
+	setListClickHandler((area, index, obj)->editItem(obj));
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)

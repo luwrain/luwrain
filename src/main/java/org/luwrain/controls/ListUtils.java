@@ -22,66 +22,11 @@ import org.luwrain.core.NullCheck;
 
 public class ListUtils
 {
-    static public class DefaultItemsLayout implements ListArea.ItemsLayout 
+    static public class DefaultTransition implements ListArea.Transition
     {
-	protected boolean hasEmptyLineTop = false;
-	protected boolean hasEmptyLineBottom = true;
-	protected boolean cycling = false;
-
-	@Override public int numberOfEmptyLinesTop()
+	@Override public State transition(State current)
 	{
-	    return hasEmptyLineTop?1:0;
-	}
-
-	    @Override public int numberOfEmptyLinesBottom()
-	    {
-	    return hasEmptyLineBottom?1:0;
-	    }
-
-	    @Override public int oneLineUp(int index, int modelItemCount)
-	    {
-		if (modelItemCount < 1)
-		    return -1;
-		if (cycling)
-		{
-		final int count = modelItemCount + (hasEmptyLineTop?1:0);//We don't need an empty line at the bottom
-		/* Possibly we need additional option to enable this
-		if (hasEmptyLineTop)
-		    return index > 1?index - 1:count - 1;
-		*/
-		    return index > 0?index - 1:count - 1;
-		}
-		    return index > 0?index - 1:-1;
-	    }
-
-	    @Override public int oneLineDown(int index, int modelItemCount)
-	    {
-		if (modelItemCount < 1)
-		    return -1;
-		//		    final int topIndex = hasEmptyLineTop?1:0;
-		//		    final int count = modelItemCount + topIndex;
-		final int count = modelItemCount + (hasEmptyLineTop?1:0) + (hasEmptyLineBottom?1:0);
-		if (cycling)
-		{
-		    /*
-		if (hasEmptyLineBottom)
-		    return index < count?index + 1:topIndex;
-		    */
-		    return index + 1 < count?index + 1:0;
-		}
-		/*
-		if (hasEmptyLineBottom)
-		    return index < count?index + 1:-1;
-		*/
-		    return index + 1 < count?index + 1:-1;
-	    }
-
-	@Override public void setFlags(Set<ListArea.Flags> flags)
-	{
-	    NullCheck.notNull(flags, "flags");
-	    hasEmptyLineTop = flags.contains(ListArea.Flags.EMPTY_LINE_TOP);
-	    hasEmptyLineBottom = flags.contains(ListArea.Flags.EMPTY_LINE_BOTTOM);
-	    cycling = flags.contains(ListArea.Flags.CYCLING);
+	    return null;
 	}
     }
 }

@@ -233,7 +233,7 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 	params.appearance = new Appearance(luwrain);
 	params.name = luwrain.i18n().getStaticStr("MainMenuName");
 	final MainMenu mainMenu = new MainMenu(luwrain, params);
-mainMenu.setClickHandler(mainMenu);
+mainMenu.setListClickHandler(mainMenu);
 return mainMenu;
     }
 

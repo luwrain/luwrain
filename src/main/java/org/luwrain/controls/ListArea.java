@@ -12,19 +12,77 @@ import org.luwrain.util.*;
 
 public class ListArea  implements Area, RegionProvider
 {
-    public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM, CYCLING};
+    public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM};
+
+    public interface Model
+    {
+	int getItemCount();
+	Object getItem(int index);
+	boolean toggleMark(int index);
+	void refresh();
+    }
+
+    public interface Appearance
+    {
+	public enum Flags { BRIEF };
+
+	void announceItem(Object item, Set<Flags> flags);
+	String getScreenAppearance(Object item, Set<Flags> flags);
+	int getObservableLeftBound(Object item);
+	int getObservableRightBound(Object item);
+    }
+
+public interface Transition
+{
+public enum Type{ONE_LINE_TOP, ONE_LINE_BOTTOM};
+
+static public class State
+{
+    public enum Type{EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM, ITEM_INDEX};
+
+    public final Type type;
+    public final int itemIndex;
+
+    public State(Type type)
+    {
+	NullCheck.notNull(type, "type");
+	this.type = type;
+	this.itemIndex = -1;
+    }
+
+    public State(int itemIndex)
+    {
+	this.type = Type.ITEM_INDEX;
+	this.itemIndex = itemIndex;
+    }
+}
+
+    State transition(State fromState);
+}
+
+    static public class Params
+    {
+	public ControlEnvironment environment;
+	public Model model;
+    public Appearance appearance;
+	public Transition transition;
+	public ListClickHandler clickHandler;
+	public String name;
+	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
+    }
 
     static protected final Set<Appearance.Flags> NONE_APPEARANCE_FLAGS = EnumSet.noneOf(Appearance.Flags.class);
     static protected final Set<Appearance.Flags> BRIEF_ANNOUNCEMENT_ONLY = EnumSet.of(Appearance.Flags.BRIEF);
 
     protected final RegionTranslator region = new RegionTranslator(this);
-    protected ControlEnvironment environment;
+    protected final ControlEnvironment environment;
     protected String areaName = "";
-    protected Model model;
-    protected Appearance appearance;
-    protected Set<Flags> flags;
+    protected final Model model;
+    protected final Appearance appearance;
+    protected final Transition transition;
+    protected final Set<Flags> flags;
     protected ListClickHandler clickHandler;
-    protected ItemsLayout itemsLayout = new ListUtils.DefaultItemsLayout();
+
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
@@ -34,19 +92,21 @@ public class ListArea  implements Area, RegionProvider
 	NullCheck.notNull(params.environment, "params.environment");
 	NullCheck.notNull(params.model, "params.model");
 	NullCheck.notNull(params.appearance, "params.appearance");
+	NullCheck.notNull(params.transition, "params.transition");
 	NullCheck.notNull(params.name, "params.name");
 	NullCheck.notNull(params.flags, "params.flags");
 	this.environment = params.environment;
 	this.model = params.model;
 	this.appearance = params.appearance;
+	this.transition = params.transition;
 	this.clickHandler = params.clickHandler;
 	this.areaName = params.name;
 	this.flags = params.flags;
-	itemsLayout.setFlags(params.flags);
+	//	itemsLayout.setFlags(params.flags);
 	resetHotPoint();
     }
 
-    public void setClickHandler(ListClickHandler clickHandler)
+    public void setListClickHandler(ListClickHandler clickHandler)
     {
 	this.clickHandler = clickHandler;
     }
@@ -56,7 +116,7 @@ public class ListArea  implements Area, RegionProvider
 	return model;
     }
 
-    public Appearance getAppearance()
+    public Appearance getListAppearance()
     {
 	return appearance;
     }
@@ -70,7 +130,7 @@ public class ListArea  implements Area, RegionProvider
      */
     public final Object selected()
     {
-	final int index = hotPointY - itemsLayout.numberOfEmptyLinesTop();
+	final int index = selectedIndex();
 	return (index >= 0 && index < model.getItemCount())?model.getItem(index):null;
     }
 
@@ -86,18 +146,8 @@ public class ListArea  implements Area, RegionProvider
      */
     public final int selectedIndex()
     {
-	final int index = hotPointY - itemsLayout.numberOfEmptyLinesTop();
-	return (index >= 0 && index < model.getItemCount())?index:-1;
+	return getItemIndexOnLine(hotPointY);
     }
-
-    /*
-    public void selectEmptyLine()
-    {
-	hotPointX = 0;
-	hotPointY = model.getItemCount();
-	environment.onAreaNewHotPoint(this);
-    }
-    */
 
     /**
      * Searches for the item in the model and sets hot point on it. Given an
@@ -111,7 +161,7 @@ public class ListArea  implements Area, RegionProvider
      * @param introduce Must be true if it is necessary to introduce the object, once it's found
      * @return True if the request object is found, false otherwise
      */
-    public boolean find(Object obj, boolean introduce)
+    public boolean select(Object obj, boolean introduce)
     {
 	NullCheck.notNull(obj, "obj");
 	for(int i = 0;i < model.getItemCount();++i)
@@ -144,7 +194,8 @@ public class ListArea  implements Area, RegionProvider
     {
 	if (index < 0 || index >= model.getItemCount())
 	    return false;
-	hotPointY = index + itemsLayout.numberOfEmptyLinesTop();
+	final int emptyCountAbove = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
+	hotPointY = index + emptyCountAbove;
 	final Object item = model.getItem(index);
 	if (item != null)
 	{
@@ -161,9 +212,9 @@ public class ListArea  implements Area, RegionProvider
 	return true;
     }
 
-    public int itemIndexOnLine(int index)
+    public int getItemIndexOnLine(int index)
     {
-	final int linesTop = itemsLayout.numberOfEmptyLinesTop();
+	final int linesTop = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	if (index < linesTop)
 	    return -1;
 	if (index - linesTop < model.getItemCount())
@@ -173,14 +224,17 @@ public class ListArea  implements Area, RegionProvider
 
     public int getLineIndexByItemIndex(int index)
     {
-	final int linesTop = itemsLayout.numberOfEmptyLinesTop();
+	final int count = 0;
+	if (index < 0 || index >= count)
+	    return -1;
+	final int linesTop = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	return index + linesTop;
     }
 
-    public void reset(boolean introduce)
+    public void reset(boolean announce)
     {
 	EnvironmentEvent.resetRegionPoint(this);
-	resetHotPoint(introduce);
+	resetHotPoint(announce);
     }
 
     public void resetHotPoint()
@@ -257,8 +311,6 @@ public class ListArea  implements Area, RegionProvider
 	NullCheck.notNull(event, "event");
 	if (!event.isSpecial() && (!event.isModified() || event.withShiftOnly()))
 	    return onChar(event);
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
 	if (!event.isSpecial() || event.isModified())
 	    return false;
 	switch(event.getSpecial())
@@ -354,7 +406,10 @@ public class ListArea  implements Area, RegionProvider
 
     @Override public int getLineCount()
     {
-	final int res = model.getItemCount() + itemsLayout.numberOfEmptyLinesTop() + itemsLayout.numberOfEmptyLinesBottom();
+	final int emptyCountTop = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
+	final int emptyCountBottom = flags.contains(Flags.EMPTY_LINE_BOTTOM)?1:0;
+
+	final int res = model.getItemCount() + emptyCountTop + emptyCountBottom;
 	return res>= 1?res:1;
     }
 
@@ -362,10 +417,10 @@ public class ListArea  implements Area, RegionProvider
     {
 	if (isEmpty())
 	    return index == 0?noContentStr():"";
-	final int modelIndex = index - itemsLayout.numberOfEmptyLinesTop();
-	if (modelIndex < 0 || modelIndex >= model.getItemCount())
+	final int itemIndex = getItemIndexOnLine(index);
+	if (itemIndex < 0 || itemIndex >= model.getItemCount())
 	    return "";
-	final Object res = model.getItem(modelIndex);
+	final Object res = model.getItem(itemIndex);
 	return res != null?appearance.getScreenAppearance(res, NONE_APPEARANCE_FLAGS):"";
     }
 
@@ -381,6 +436,7 @@ public class ListArea  implements Area, RegionProvider
 
     @Override public String getAreaName()
     {
+	NullCheck.notNull(areaName, "areaName");
 	return areaName;
     }
 
@@ -388,6 +444,7 @@ public class ListArea  implements Area, RegionProvider
     {
 	NullCheck.notNull(areaName, "areaName");
 	this.areaName = areaName;
+	environment.onAreaNewName(this);
     }
 
     protected boolean onAnnounce()
@@ -429,10 +486,10 @@ public class ListArea  implements Area, RegionProvider
 newY = getLineCount() - 1;
 	} else
 newY = y;
-	    if (itemIndexOnLine(newY) >= 0)
+	    if (getItemIndexOnLine(newY) >= 0)
 	    {
 		//Line with item, not empty
-		final Object item = model.getItem(itemIndexOnLine(newY));
+		final Object item = model.getItem(getItemIndexOnLine(newY));
 		final int leftBound = appearance.getObservableLeftBound(item);
 final int rightBound = appearance.getObservableRightBound(item);
 		if (event.precisely() &&
@@ -533,89 +590,81 @@ final int rightBound = appearance.getObservableRightBound(item);
 
     protected boolean onArrowDown(KeyboardEvent event, boolean briefAnnouncement)
     {
-	if (noContent())
-	    return true;
-	final int newHotPointY = itemsLayout.oneLineDown(hotPointY, model.getItemCount());
-	if (newHotPointY < 0)
-	{
-	    environment.hint(Hints.NO_ITEMS_BELOW);
-		return true;
-	}
-	hotPointY = newHotPointY;
-	onNewHotPointY(briefAnnouncement);
-	return true;
+	return false;
     }
 
     protected boolean onArrowUp(KeyboardEvent event, boolean briefAnnouncement)
     {
-	if (noContent())
-	return true;
-	final int newHotPointY = itemsLayout.oneLineUp(hotPointY, model.getItemCount());
-	if (newHotPointY < 0)
-	{
-	    environment.hint(Hints.NO_ITEMS_ABOVE);
-	    return true;
-	}
-	hotPointY = newHotPointY;
-	    onNewHotPointY(briefAnnouncement);
-	return true;
+	return false;
     }
 
-    private boolean onPageDown(KeyboardEvent event, boolean briefAnnouncement)
+    protected boolean onPageDown(KeyboardEvent event, boolean briefAnnouncement)
     {
+	return false;
+    }
+
+    protected boolean onPageUp(KeyboardEvent event, boolean briefAnnouncement)
+    {
+	return false;
+    }
+
+    protected boolean onEnd(KeyboardEvent event)
+    {
+	return false;
+    }
+
+    protected boolean onHome(KeyboardEvent event)
+    {
+	return false;
+    }
+
+    protected boolean onLineTransition(Transition.Type type, int hint, boolean briefAnnouncement)
+    {
+	NullCheck.notNull(type, "type");
+	//	NullCheck.notNull(hint, "hint");
 	if (noContent())
 	    return true;
+	final int index = selectedIndex();
 	final int count = model.getItemCount();
-	if (hotPointY >= count)
+	final int emptyCountTop = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
+	final Transition.State current;
+	if (index >= 0)
+current = new Transition.State(index); else
+	if (flags.contains(Flags.EMPTY_LINE_TOP) && hotPointY == 0)
+	    current = new Transition.State(Transition.State.Type.EMPTY_LINE_TOP); else
+	if (flags.contains(Flags.EMPTY_LINE_BOTTOM) && hotPointY == count + emptyCountTop)
+current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
+	    return false;
+	final Transition.State newState = transition.transition(current);
+	if (newState == null)
 	{
-	    environment.hint(Hints.NO_ITEMS_BELOW);
-		return true;
-	}
-	hotPointY += environment.getAreaVisibleHeight(this);
-	if (hotPointY >= count)
-	    hotPointY = count;
-	onNewHotPointY(briefAnnouncement);
-	return true;
-    }
-
-    private boolean onPageUp(KeyboardEvent event, boolean briefAnnouncement)
-    {
-	if (noContent())
-	    return true;
-	if (hotPointY <= 0)
-	{
-	    environment.hint(Hints.NO_ITEMS_ABOVE);
+	    environment.hint(hint);
 	    return true;
 	}
-	final int height = environment.getAreaVisibleHeight(this);
-	if (hotPointY > height)
-	hotPointY -= height; else
+	switch(newState.type)
+	{
+	case EMPTY_LINE_TOP:
+	    if (!flags.contains(Flags.EMPTY_LINE_TOP))
+		return false;
 	    hotPointY = 0;
+	    break;
+	case EMPTY_LINE_BOTTOM:
+	    if (!flags.contains(Flags.EMPTY_LINE_BOTTOM))
+		return false;
+	    hotPointY = count + emptyCountTop;
+	    break;
+	case ITEM_INDEX:
+	    if (newState.itemIndex < 0 || newState.itemIndex >= count)
+		return false;
+	    hotPointY = newState.itemIndex + emptyCountTop;
+	default:
+	    return false;
+	}
 	onNewHotPointY(briefAnnouncement);
 	return true;
     }
 
-    private boolean onEnd(KeyboardEvent event)
-    {
-	if (noContent())
-	    return true;
-	hotPointY = model.getItemCount() + itemsLayout.numberOfEmptyLinesTop();
-	if (itemsLayout.numberOfEmptyLinesBottom() <= 0)
-	    --hotPointY;
-	onNewHotPointY(false);
-	return true;
-    }
-
-    private boolean onHome(KeyboardEvent event)
-    {
-	if (noContent())
-	    return true;
-	hotPointY = itemsLayout.numberOfEmptyLinesTop();
-	onNewHotPointY(false);
-	return true;
-    }
-
-    private boolean onArrowRight(KeyboardEvent event)
+protected boolean onArrowRight(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;
@@ -782,7 +831,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (!model.toggleMark(index))
 	    return false;
 	environment.onAreaNewContent(this);
-	if (index + 1 < model.getItemCount() || itemsLayout.numberOfEmptyLinesBottom() > 0)
+	if (hotPointY + 1 < getLineCount())
 	{
 	    ++hotPointY;
 	    onNewHotPointY(false); 
@@ -794,11 +843,9 @@ final int rightBound = appearance.getObservableRightBound(item);
     {
 	if (isEmpty() || clickHandler == null)
 	    return false;
-	    final int count = model.getItemCount();
-	    final int index = hotPointY - itemsLayout.numberOfEmptyLinesTop();
-	    if (index < 0 || index >= count)
-		return false;
-	    return clickHandler.onListClick(this, index, model.getItem(index));
+	if (selected() == null || selectedIndex() < 0)
+	    return false;
+	return clickHandler.onListClick(this, selectedIndex(), selected());
     }
 
     private boolean onOk(EnvironmentEvent event)
@@ -871,9 +918,8 @@ final int rightBound = appearance.getObservableRightBound(item);
 
     protected void onNewHotPointY(boolean briefAnnouncement)
     {
-	final int index = hotPointY - itemsLayout.numberOfEmptyLinesTop();
-	final int count = model.getItemCount();
-	if (index < 0 || index >= count)
+	final int index = selectedIndex();
+	if (index < 0)
 	{
 	    environment.hint(Hints.EMPTY_LINE);
 	    hotPointX = 0;
@@ -930,66 +976,6 @@ return line.substring(leftBound, rightBound);
 	return false;
     }
 
-    public interface Model
-    {
-	int getItemCount();
-	Object getItem(int index);
-	boolean toggleMark(int index);
-	void refresh();
-    }
-
-    public interface Appearance
-    {
-	public enum Flags { BRIEF };
-
-	void announceItem(Object item, Set<Flags> flags);
-	String getScreenAppearance(Object item, Set<Flags> flags);
-	int getObservableLeftBound(Object item);
-	int getObservableRightBound(Object item);
-    }
-
-public interface ItemsLayout
-{
-    int numberOfEmptyLinesTop();
-    int numberOfEmptyLinesBottom();
-    int oneLineUp(int index, int modelLineCount);
-    int oneLineDown(int index, int modelLineCount);
-    void setFlags(Set<Flags> flags);
-}
-
-    static public class Params
-    {
-	public ControlEnvironment environment;
-	public Model model;
-    public Appearance appearance;
-	public ListClickHandler clickHandler;
-	public String name;
-	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
-
-	static public Set<Flags> loadRegularFlags(Registry registry)
-	{
-	    NullCheck.notNull(registry, "registry");
-	    final Set<Flags> res = EnumSet.noneOf(Flags.class);
-	    final Settings.UserInterface settings = Settings.createUserInterface(registry);
-	    if (settings.getEmptyLineUnderRegularLists(true))
-		res.add(Flags.EMPTY_LINE_BOTTOM);
-	    if (settings.getCyclingRegularLists(false))
-		res.add(Flags.CYCLING);
-	    return res;
-	}
-
-	static public Set<Flags> loadPopupFlags(Registry registry)
-	{
-	    NullCheck.notNull(registry, "registry");
-	    final Set<Flags> res = EnumSet.noneOf(Flags.class);
-	    final Settings.UserInterface settings = Settings.createUserInterface(registry);
-	    if (settings.getEmptyLineAbovePopupLists(true))
-		res.add(Flags.EMPTY_LINE_TOP);
-	    if (settings.getCyclingPopupLists(false))
-		res.add(Flags.CYCLING);
-	    return res;
-	}
-    }
 
 static protected class ListeningInfo
 {

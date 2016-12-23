@@ -100,7 +100,7 @@ public class App implements Application
 		}
 	    };
 
-	area.setClickHandler((area, index, obj)->{
+	area.setListClickHandler((area, index, obj)->{
 		if (!base.onClick(index, obj))
 		    return false;
 		area.refresh();

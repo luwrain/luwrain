@@ -62,7 +62,7 @@ public class CommanderArea extends ListArea
 	NullCheck.notNull(params.flags, "params.flags");
 	this.appearance = params.appearance;
 	this.clickHandler = params.clickHandler;
-	super.setClickHandler((area, index, obj)->clickImpl(index, (Entry)obj));
+	super.setListClickHandler((area, index, obj)->clickImpl(index, (Entry)obj));
 	getListModel().marking = params.flags.contains(Flags.MARKING);
 	if (!Files.isDirectory(current))
 	    throw new IllegalArgumentException("current must address a directory");
@@ -198,7 +198,7 @@ hotPointX = super.appearance.getObservableLeftBound(selected()); else
 	this.clickHandler = clickHandler;
     }
 
-    @Override public void setClickHandler(ListClickHandler clickHandler)
+    @Override public void setListClickHandler(ListClickHandler clickHandler)
     {
 	throw new UnsupportedOperationException("Changing list click handler for commander areas not allowed, use setClickHandler(CommanderArea.ClickHandler)instead");
     }
