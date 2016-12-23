@@ -90,7 +90,7 @@ public class AddRemoveListPopup extends ListPopupBase
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.name = name;
 	params.model = new ListUtils.FixedModel(items);
-	params.appearance = new DefaultListItemAppearance(params.environment);
+	params.appearance = new ListUtils.DefaultAppearance(params.environment);
 	return params;
     }
 }

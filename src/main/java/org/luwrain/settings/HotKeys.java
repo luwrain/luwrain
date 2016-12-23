@@ -112,7 +112,7 @@ return toSort;
 	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
-	params.appearance = new DefaultListItemAppearance(params.environment);
+	params.appearance = new ListUtils.DefaultAppearance(params.environment);
 	params.name = "Общие горячие клавиши";
 	params.model = new ListUtils.FixedModel(loadItems(luwrain.getRegistry()));
 	return new HotKeys(controlPanel, params);

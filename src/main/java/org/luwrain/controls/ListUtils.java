@@ -7,6 +7,42 @@ import org.luwrain.core.*;
 
 public class ListUtils
 {
+    static public class DefaultAppearance implements ListArea.Appearance
+    {
+	protected final ControlEnvironment environment;
+
+	public DefaultAppearance(ControlEnvironment environment)
+	{
+	    NullCheck.notNull(environment, "environment");
+	    this.environment = environment;
+	}
+
+	@Override public void announceItem(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    environment.playSound(Sounds.LIST_ITEM);
+	    environment.say(item.toString());
+	}
+
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    return item.toString();
+	}
+
+	@Override public int getObservableLeftBound(Object item)
+	{
+	    return 0;
+	}
+
+	@Override public int getObservableRightBound(Object item)
+	{
+	    return item != null?item.toString().length():0;
+	}
+    }
+
     static public class DefaultTransition implements ListArea.Transition
     {
 	@Override public State transition(Type type, State fromState, int itemCount,
