@@ -152,7 +152,6 @@ public class CommanderArea extends ListArea
 	getListModel().comparator = comparator;
     }
 
-
     public boolean isEmpty()
     {
 	return getListModel().entries == null || getListModel().entries.length < 1;
@@ -253,7 +252,7 @@ public class CommanderArea extends ListArea
 	{
 	    open(parent, getListModel().current.getFileName().toString());
 	    appearance.announceLocation(getListModel().current);
-									return true;
+	    return true;
 	}
 	if (entry.type == Entry.Type.DIR || entry.type == Entry.Type.SYMLINK_DIR)
 	{
@@ -329,14 +328,14 @@ public class CommanderArea extends ListArea
 	final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
 	if (attr.isDirectory())
 	    return Entry.Type.DIR;
-	    if (attr.isSymbolicLink())
-		if (Files.isDirectory(path))
-		    return Entry.Type.SYMLINK_DIR; else
-		    return Entry.Type.SYMLINK;
-	    if (attr.isRegularFile())
-		return Entry.Type.REGULAR;
-	    return Entry.Type.SPECIAL;
-	}
+	if (attr.isSymbolicLink())
+	    if (Files.isDirectory(path))
+		return Entry.Type.SYMLINK_DIR; else
+		return Entry.Type.SYMLINK;
+	if (attr.isRegularFile())
+	    return Entry.Type.REGULAR;
+	return Entry.Type.SPECIAL;
+    }
 
     static protected ListArea.Params prepareListParams(CommanderArea.Params params)
     {
@@ -393,7 +392,7 @@ public class CommanderArea extends ListArea
 	}
 
 	public Path getPath() { return path; }
-public Type getType() { return type; }
+	public Type getType() { return type; }
 	public boolean marked() { return marked; }
 	public String baseName() { return path.getFileName().toString(); }
 
@@ -479,7 +478,7 @@ public Type getType() { return type; }
     {
 	boolean marking = true;
 	Filter filter;
-Comparator comparator;
+	Comparator comparator;
 
 	Path current;
 	Entry[] entries;//null means the content is inaccessible
