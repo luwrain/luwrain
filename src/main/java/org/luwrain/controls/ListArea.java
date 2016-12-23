@@ -227,7 +227,7 @@ public class ListArea  implements Area, RegionProvider
 
     public int getLineIndexByItemIndex(int index)
     {
-	final int count = 0;
+	final int count = model.getItemCount();
 	if (index < 0 || index >= count)
 	    return -1;
 	final int linesTop = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
@@ -576,13 +576,17 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    beginning = name.substring(0, pos);
 	} else
 	    beginning = "";
+	Log.debug("list", "beginning:" + beginning);
 	final String mustBegin = beginning + c;
 	for(int i = 0;i < count;++i)
 	{
+	    Log.debug("list", "checking:" + i);
 	    final String name = getObservableSubstr(model.getItem(i));
+	    Log.debug("list", "name:" + name);
 	    if (!name.startsWith(mustBegin))
 		continue;
 	    hotPointY = getLineIndexByItemIndex(i);
+	    Log.debug("list", "hotPointY:" + hotPointY);
 	    ++hotPointX;
 	    appearance.announceItem(model.getItem(hotPointY), NONE_APPEARANCE_FLAGS);
 	    environment.onAreaNewHotPoint(this);

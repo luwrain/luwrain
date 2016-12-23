@@ -114,7 +114,7 @@ return toSort;
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.appearance = new DefaultListItemAppearance(params.environment);
 	params.name = "Общие горячие клавиши";
-	params.model = new FixedListModel(loadItems(luwrain.getRegistry()));
+	params.model = new ListUtils.FixedModel(loadItems(luwrain.getRegistry()));
 	return new HotKeys(controlPanel, params);
     }
 }

@@ -125,7 +125,7 @@ class FileTypes extends ListArea implements SectionArea
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.appearance = new DefaultListItemAppearance(params.environment);
 	params.name = "Типы файлов";
-	params.model = new FixedListModel(loadItems(luwrain.getRegistry()));
+	params.model = new ListUtils.FixedModel(loadItems(luwrain.getRegistry()));
 	return new FileTypes(controlPanel, params);
     }
 }

@@ -112,7 +112,7 @@ static private class Item
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.appearance = new DefaultListItemAppearance(params.environment);
 	params.name = "Звуки системных событий";
-	params.model = new FixedListModel(loadItems(luwrain.getRegistry()));
+	params.model = new ListUtils.FixedModel(loadItems(luwrain.getRegistry()));
 	return new SoundsList(controlPanel, params);
     }
 }

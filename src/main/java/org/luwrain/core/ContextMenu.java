@@ -77,7 +77,7 @@ class ContextMenu extends ListPopup
 	NullCheck.notNullItems(actions, "actions");
 	final ListArea.Params params = new ListArea.Params();
 	params.name = luwrain.i18n().getStaticStr("ContextMenuName");
-	params.model = new FixedListModel(actions);
+	params.model = new ListUtils.FixedModel(actions);
 	params.appearance = new Appearance(luwrain);
 	params.environment = new DefaultControlEnvironment(luwrain);
 	//	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());

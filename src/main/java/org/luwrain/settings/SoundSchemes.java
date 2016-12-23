@@ -84,7 +84,7 @@ class SoundSchemes extends ListArea implements SectionArea
     };
 
     private ControlPanel controlPanel;
-    private final FixedListModel model = new FixedListModel();
+    private final ListUtils.FixedModel model = new ListUtils.FixedModel();
 
     SoundSchemes(ControlPanel controlPanel, ListArea.Params params)
     {
@@ -157,7 +157,7 @@ return items.toArray(new Item[items.size()]);
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.appearance = new DefaultListItemAppearance(params.environment);
 	params.name = "Звуковые схемы";
-	params.model = new FixedListModel(loadItems(luwrain));
+	params.model = new ListUtils.FixedModel(loadItems(luwrain));
 	return new SoundSchemes(controlPanel, params);
     }
 }

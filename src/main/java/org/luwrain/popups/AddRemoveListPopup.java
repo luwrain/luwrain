@@ -54,7 +54,7 @@ public class AddRemoveListPopup extends ListPopupBase
 	final Object newObj = itemsSource.getNewItemToAdd();
 	if (newObj == null)
 	    return false;
-	final FixedListModel m = (FixedListModel)model;
+	final ListUtils.FixedModel m = (ListUtils.FixedModel)model;
 	m.add(newObj);
 	refresh();
 	return true;
@@ -68,7 +68,7 @@ public class AddRemoveListPopup extends ListPopupBase
 	    return false;
 	if (!removeConfirmation.mayRemove(item))
 	    return true;
-	final FixedListModel m = (FixedListModel)model;
+	final ListUtils.FixedModel m = (ListUtils.FixedModel)model;
 	m.remove(item);
 	refresh();
 	return true;
@@ -76,7 +76,7 @@ public class AddRemoveListPopup extends ListPopupBase
 
     public Object[] result()
     {
-	final FixedListModel m = (FixedListModel)model;
+	final ListUtils.FixedModel m = (ListUtils.FixedModel)model;
 	return m.getItems();
     }
 
@@ -89,7 +89,7 @@ public class AddRemoveListPopup extends ListPopupBase
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.name = name;
-	params.model = new FixedListModel(items);
+	params.model = new ListUtils.FixedModel(items);
 	params.appearance = new DefaultListItemAppearance(params.environment);
 	return params;
     }

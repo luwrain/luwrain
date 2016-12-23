@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.controls;
 
@@ -70,4 +55,49 @@ public class ListUtils
 	    }
 	}
     }
+
+    static public class FixedModel extends Vector implements ListArea.Model
+    {
+	public FixedModel()
+	{
+	}
+
+	public FixedModel(Object[] items)
+	{
+	    NullCheck.notNullItems(items, "items");
+	    setItems(items);
+	}
+
+	public void setItems(Object[] items)
+	{
+	    NullCheck.notNullItems(items, "items");
+	    setSize(items.length);
+	    for(int i = 0;i < items.length;++i)
+		set(i, items[i]);
+	}
+
+	public Object[] getItems()
+	{
+	    return toArray(new Object[size()]);
+	}
+
+	@Override public int getItemCount()
+	{
+	    return size();
+	}
+
+	@Override public Object getItem(int index)
+	{
+	    return get(index);
+	}
+
+	@Override public void refresh()
+	{
+	}
+
+	@Override public boolean toggleMark(int index)
+	{
+	    return false;
+	}
+}
 }
