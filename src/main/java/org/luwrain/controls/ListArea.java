@@ -504,24 +504,26 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return true;
 	final int count = model.getItemCount();
 	final char c = event.getChar();
-	String beginning = "";
-	if (hotPointY < count)
+	final String beginning;
+	if (selected() != null)
 	{
-	    if (hotPointX >= appearance.getObservableRightBound(model.getItem(hotPointY)))
+	    if (hotPointX >= appearance.getObservableRightBound(selected()))
 		return false;
-	    final String name = appearance.getScreenAppearance(model.getItem(hotPointY), NONE_APPEARANCE_FLAGS);
-	    final int pos = hotPointX < name.length()?hotPointX:name.length();
+	    final String name = getObservableSubstr(selected());
+	    final int pos = Math.min(hotPointX - appearance.getObservableLeftBound(selected()), name.length());
+	    if (pos < 0)
+		return false;
 	    beginning = name.substring(0, pos);
-	}
+	} else
+	    beginning = "";
 	final String mustBegin = beginning + c;
 	for(int i = 0;i < count;++i)
 	{
-	    final String name = appearance.getScreenAppearance(model.getItem(i), NONE_APPEARANCE_FLAGS);
+	    final String name = getObservableSubstr(model.getItem(i));
 	    if (!name.startsWith(mustBegin))
 		continue;
-	    hotPointY = i;
+	    hotPointY = getLineIndexByItemIndex(i);
 	    ++hotPointX;
-	    //	    onNewHotPointY(false);
 	    appearance.announceItem(model.getItem(hotPointY), NONE_APPEARANCE_FLAGS);
 	    environment.onAreaNewHotPoint(this);
 	    return true;
@@ -889,6 +891,20 @@ final int rightBound = appearance.getObservableRightBound(item);
 	appearance.announceItem(item, briefAnnouncement?BRIEF_ANNOUNCEMENT_ONLY:NONE_APPEARANCE_FLAGS);
 	hotPointX = appearance.getObservableLeftBound(item);
 	environment.onAreaNewHotPoint(this);
+    }
+
+    protected String getObservableSubstr(Object item)
+    {
+	NullCheck.notNull(item, "item");
+final String line = 	    appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
+NullCheck.notNull(line, "line");
+if (line.isEmpty())
+return "";
+final int leftBound = Math.min(appearance.getObservableLeftBound(item), line.length());
+final int rightBound = Math.min(appearance.getObservableRightBound(item), line.length());
+if (leftBound >= rightBound)
+    return "";
+return line.substring(leftBound, rightBound);
     }
 
     protected String noContentStr()

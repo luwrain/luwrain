@@ -93,7 +93,7 @@ public class CommanderArea extends ListArea
 	    return false;
 	final Entry[] entries = getListModel().entries;
 	int index = 0;
-	while(index < entries.length && !entries[index].baseName().equals(fileName))
+	while(index < entries.length && !entries[index].getBaseName().equals(fileName))
 	    ++index;
 	if (index >= entries.length)
 	    return false;
@@ -164,20 +164,23 @@ public class CommanderArea extends ListArea
 	if (!Files.isDirectory(path))
 	    throw new IllegalArgumentException("path must address a directory");
 	getListModel().load(path);
-	hotPointX = 0;
 	hotPointY = 0;
 	if (isEmpty())
 	{
+	hotPointX = 0;
 	    notifyNewContent();
 	    return;
 	}
 	if (desiredSelected != null && !desiredSelected.isEmpty())
 	    for(hotPointY = 0;hotPointY < getListModel().entries.length;++hotPointY)
-		if (getListModel().entries[hotPointY].baseName().equals(desiredSelected))
+		if (getListModel().entries[hotPointY].getBaseName().equals(desiredSelected))
 		    break;
 	if (hotPointY >= getListModel().entries.length)
 	    hotPointY = 0;
-	notifyNewContent();
+	if (selected() != null)
+hotPointX = super.appearance.getObservableLeftBound(selected()); else
+	    hotPointX = 0;
+	    	notifyNewContent();
     }
 
     public void open(Path path)
@@ -394,7 +397,7 @@ public class CommanderArea extends ListArea
 	public Path getPath() { return path; }
 	public Type getType() { return type; }
 	public boolean marked() { return marked; }
-	public String baseName() { return path.getFileName().toString(); }
+	public String getBaseName() { return path.getFileName().toString(); }
 
 	@Override public boolean equals(Object o)
 	{

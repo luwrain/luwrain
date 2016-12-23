@@ -7,6 +7,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
+import org.luwrain.controls.CommanderArea.Entry;
 import org.luwrain.controls.CommanderArea.Entry.Type;
 
 public class CommanderUtils
@@ -54,7 +55,7 @@ public class CommanderUtils
 
     static public class DefaultAppearance implements CommanderArea.Appearance
     {
-	protected ControlEnvironment environment;
+	protected final ControlEnvironment environment;
 
 	public DefaultAppearance(ControlEnvironment environment)
 	{
@@ -71,24 +72,24 @@ public class CommanderUtils
 		fullIntroduction(entry);
 	}
 
-	private void briefIntroduction(CommanderArea.Entry entry)
+protected void briefIntroduction(CommanderArea.Entry entry)
 	{
-	    final String name = entry.baseName();
+	    final String name = entry.getBaseName();
 	    if (entry.type == Type.PARENT)
 		environment.hint(environment.getStaticStr("CommanderParentDirectory")); else
 		if (name.trim().isEmpty())
 		    environment.hint(Hints.EMPTY_LINE); else
-		    environment.say(entry.baseName());
+		    environment.say(entry.getBaseName());
 	}
 
-	private void fullIntroduction(CommanderArea.Entry entry)
+	protected void fullIntroduction(CommanderArea.Entry entry)
 	{
 	    if (entry.type == Type.PARENT)
 	    {
 		environment.hint(environment.getStaticStr("CommanderParentDirectory"));
 		return;
 	    }
-	    final String name = entry.baseName();
+	    final String name = entry.getBaseName();
 	    if (name.trim().isEmpty() && !entry.marked() && 
 		entry.type == Type.REGULAR)
 	    {
@@ -126,7 +127,9 @@ public class CommanderUtils
 	@Override public String getScreenLine(CommanderArea.Entry entry)
 	{
 	    NullCheck.notNull(entry, "entry");
-	    return entry.baseName();
+	    if (entry.getType() == Entry.Type.PARENT)
+		return "..";
+	    return entry.getBaseName();
 	}
 
 	@Override public String getCommanderName(Path path)
@@ -148,12 +151,12 @@ public class CommanderUtils
 	    if (i2.type == Type.PARENT)
 		return i2.type == Type.PARENT?0:1;
 	    if (Files.isDirectory(i1.path) && Files.isDirectory(i2.path))//We don't use Entry.type() because it  returns symlink even on a directory
-		return i1.baseName().compareTo(i2.baseName());
+		return i1.getBaseName().compareTo(i2.getBaseName());
 	    if (Files.isDirectory(i1.path))
 		return -1;
 	    if (Files.isDirectory(i2.path))
 		return 1;
-	    return i1.baseName().compareTo(i2.baseName());
+	    return i1.getBaseName().compareTo(i2.getBaseName());
 	}
     }
 }
