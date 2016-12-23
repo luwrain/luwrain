@@ -116,7 +116,7 @@ static public class Params
 	super.setClickHandler((area, index, obj)->clickImpl(index, (Entry)obj));
 	if (!Files.isDirectory(current))
 	    throw new IllegalArgumentException("current must address a directory");
-	model().load(current);
+	getListModel().load(current);
     }
 
     public boolean findPath(Path path, boolean announce)
@@ -124,7 +124,7 @@ static public class Params
 	NullCheck.notNull(path, "path");
 	if (isEmpty())
 	    return false;
-	final Entry[] entries = model().entries;
+	final Entry[] entries = getListModel().entries;
 	int index = 0;
 	while(index < entries.length && !entries[index].path.equals(path))
 	    ++index;
@@ -141,7 +141,7 @@ static public class Params
 	NullCheck.notNull(fileName, "fileName");
 	if (isEmpty())
 	    return false;
-	final Entry[] entries = model().entries;
+	final Entry[] entries = getListModel().entries;
 	int index = 0;
 	while(index < entries.length && !entries[index].baseName().equals(fileName))
 	    ++index;
@@ -158,7 +158,7 @@ static public class Params
 	if (!selecting || isEmpty())
 	    return new Path[0];
 	final LinkedList<Path> paths = new LinkedList<Path>();
-	for(Entry e: model().entries)
+	for(Entry e: getListModel().entries)
 	    if (e.marked() && e.type != Entry.Type.PARENT)
 		paths.add(e.path);
 	return paths.toArray(new Path[paths.size()]);
@@ -173,7 +173,7 @@ static public class Params
      */
     public Path opened()
     {
-	return model().current;
+	return getListModel().current;
     }
 
     public Path selectedPath()
@@ -188,7 +188,7 @@ static public class Params
 
     public Entry selectedEntry()
     {
-	return !isEmpty() && hotPointY >= 0 && hotPointY < model().entries.length?model().entries[hotPointY]:null;
+	return !isEmpty() && hotPointY >= 0 && hotPointY < getListModel().entries.length?getListModel().entries[hotPointY]:null;
     }
 
     public void setFilter(Filter filter)
@@ -199,7 +199,7 @@ static public class Params
 
     public boolean isEmpty()
     {
-	return model().entries == null || model().entries.length < 1;
+	return getListModel().entries == null || getListModel().entries.length < 1;
     }
 
     //Doesn't produce any speech announcement
@@ -208,7 +208,7 @@ static public class Params
 	NullCheck.notNull(path, "path");
 	if (!Files.isDirectory(path))
 	    throw new IllegalArgumentException("path must address a directory");
-	model().load(path);
+	getListModel().load(path);
 	hotPointX = 0;
 	hotPointY = 0;
 	if (isEmpty())
@@ -217,10 +217,10 @@ static public class Params
 	    return;
 	}
 	if (desiredSelected != null && !desiredSelected.isEmpty())
-	    for(hotPointY = 0;hotPointY < model().entries.length;++hotPointY)
-		if (model().entries[hotPointY].baseName().equals(desiredSelected))
+	    for(hotPointY = 0;hotPointY < getListModel().entries.length;++hotPointY)
+		if (getListModel().entries[hotPointY].baseName().equals(desiredSelected))
 		    break;
-	if (hotPointY >= model().entries.length)
+	if (hotPointY >= getListModel().entries.length)
 	    hotPointY = 0;
 	notifyNewContent();
     }
@@ -230,7 +230,7 @@ static public class Params
 	open(path, null);
     }
 
-    @Override public ModelImpl model()
+    @Override public ModelImpl getListModel()
     {
 	return (ModelImpl)model;
     }
@@ -262,7 +262,7 @@ static public class Params
 	if (query.getQueryCode() == AreaQuery.CURRENT_DIR)
 	{
 	    final CurrentDirQuery currentDirQuery = (CurrentDirQuery)query;
-	    currentDirQuery.answer(model().current.toString());
+	    currentDirQuery.answer(getListModel().current.toString());
 	    return true;
 	}
 	return super.onAreaQuery(query);
@@ -270,32 +270,32 @@ static public class Params
 
     @Override public String getAreaName()
     {
-	if (model().current == null)
+	if (getListModel().current == null)
 	    return "-";
-	return commanderAppearance.getCommanderName(model().current);
+	return commanderAppearance.getCommanderName(getListModel().current);
     }
 
     protected boolean onBackspace(KeyboardEvent event)
     {
 	//noContent() isn't applicable here, we should be able to leave the directory, even if it doesn't have any content
-	if (model().current == null)
+	if (getListModel().current == null)
 	    return false;
-	final Path parent = model().current.getParent();
+	final Path parent = getListModel().current.getParent();
 	if (parent == null)
 	    return false;
-	open(parent, model().current.getFileName().toString());
-	commanderAppearance.announceLocation(model().current);
+	open(parent, getListModel().current.getFileName().toString());
+	commanderAppearance.announceLocation(getListModel().current);
 	return true;
     }
 
     protected boolean clickImpl(int index, Entry entry)
     {
 	NullCheck.notNull(entry, "entry");
-	final Path parent = model().current.getParent();
+	final Path parent = getListModel().current.getParent();
 	if (entry.type == Entry.Type.PARENT && parent != null)
 	{
-	    open(parent, model().current.getFileName().toString());
-	    commanderAppearance.announceLocation(model().current);
+	    open(parent, getListModel().current.getFileName().toString());
+	    commanderAppearance.announceLocation(getListModel().current);
 									return true;
 	}
 	if (entry.type == Entry.Type.DIR || entry.type == Entry.Type.SYMLINK_DIR)
@@ -307,7 +307,7 @@ static public class Params
 	    {
 	    case OPEN_DIR:
 		open(entry.path, null);
-		commanderAppearance.announceLocation(model().current);
+		commanderAppearance.announceLocation(getListModel().current);
 		return true;
 	    case OK:
 		return true;
