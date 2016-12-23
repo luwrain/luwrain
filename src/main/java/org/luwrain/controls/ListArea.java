@@ -14,6 +14,9 @@ public class ListArea  implements Area, RegionProvider
 {
     public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM};
 
+    static protected final Set<Appearance.Flags> NONE_APPEARANCE_FLAGS = EnumSet.noneOf(Appearance.Flags.class);
+    static protected final Set<Appearance.Flags> BRIEF_ANNOUNCEMENT_ONLY = EnumSet.of(Appearance.Flags.BRIEF);
+
     public interface Model
     {
 	int getItemCount();
@@ -32,47 +35,47 @@ public class ListArea  implements Area, RegionProvider
 	int getObservableRightBound(Object item);
     }
 
-public interface Transition
-{
-public enum Type{ONE_LINE_TOP, ONE_LINE_BOTTOM};
-
-static public class State
-{
-    public enum Type{EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM, ITEM_INDEX};
-
-    public final Type type;
-    public final int itemIndex;
-
-    public State(Type type)
+    public interface Transition
     {
-	NullCheck.notNull(type, "type");
-	this.type = type;
-	this.itemIndex = -1;
-    }
+	public enum Type{SINGLE_DOWN, SINGLE_UP,
+			 PAGE_DOWN, PAGE_UP,
+			 HOME, END};
 
-    public State(int itemIndex)
-    {
-	this.type = Type.ITEM_INDEX;
-	this.itemIndex = itemIndex;
-    }
-}
+	static public class State
+	{
+	    public enum Type{EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM, ITEM_INDEX, NO_TRANSITION};
 
-    State transition(State fromState);
-}
+	    public final Type type;
+	    public final int itemIndex;
+
+	    public State(Type type)
+	    {
+		NullCheck.notNull(type, "type");
+		this.type = type;
+		this.itemIndex = -1;
+	    }
+
+	    public State(int itemIndex)
+	    {
+		this.type = Type.ITEM_INDEX;
+		this.itemIndex = itemIndex;
+	    }
+	}
+
+	State transition(Type type, State fromState, int itemCount,
+			 boolean hasEmptyLineTop, boolean hasEmptyLineBottom);
+    }
 
     static public class Params
     {
 	public ControlEnvironment environment;
 	public Model model;
-    public Appearance appearance;
-	public Transition transition;
+	public Appearance appearance;
+	public Transition transition = new ListUtils.DefaultTransition();
 	public ListClickHandler clickHandler;
 	public String name;
 	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
     }
-
-    static protected final Set<Appearance.Flags> NONE_APPEARANCE_FLAGS = EnumSet.noneOf(Appearance.Flags.class);
-    static protected final Set<Appearance.Flags> BRIEF_ANNOUNCEMENT_ONLY = EnumSet.of(Appearance.Flags.BRIEF);
 
     protected final RegionTranslator region = new RegionTranslator(this);
     protected final ControlEnvironment environment;
@@ -590,35 +593,35 @@ final int rightBound = appearance.getObservableRightBound(item);
 
     protected boolean onArrowDown(KeyboardEvent event, boolean briefAnnouncement)
     {
-	return false;
+	return onTransition(Transition.Type.SINGLE_DOWN, Hints.NO_ITEMS_BELOW, briefAnnouncement);
     }
 
     protected boolean onArrowUp(KeyboardEvent event, boolean briefAnnouncement)
     {
-	return false;
+	return onTransition(Transition.Type.SINGLE_UP, Hints.NO_ITEMS_ABOVE, briefAnnouncement);
     }
 
     protected boolean onPageDown(KeyboardEvent event, boolean briefAnnouncement)
     {
-	return false;
+	return onTransition(Transition.Type.PAGE_DOWN, Hints.NO_ITEMS_BELOW, briefAnnouncement);
     }
 
     protected boolean onPageUp(KeyboardEvent event, boolean briefAnnouncement)
     {
-	return false;
+	return onTransition(Transition.Type.PAGE_UP, Hints.NO_ITEMS_ABOVE, briefAnnouncement);
     }
 
     protected boolean onEnd(KeyboardEvent event)
     {
-	return false;
+	return onTransition(Transition.Type.END, Hints.NO_ITEMS_BELOW, false);
     }
 
     protected boolean onHome(KeyboardEvent event)
     {
-	return false;
+	return onTransition(Transition.Type.HOME, Hints.NO_ITEMS_ABOVE, false);
     }
 
-    protected boolean onLineTransition(Transition.Type type, int hint, boolean briefAnnouncement)
+    protected boolean onTransition(Transition.Type type, int hint, boolean briefAnnouncement)
     {
 	NullCheck.notNull(type, "type");
 	//	NullCheck.notNull(hint, "hint");
@@ -635,14 +638,15 @@ current = new Transition.State(index); else
 	if (flags.contains(Flags.EMPTY_LINE_BOTTOM) && hotPointY == count + emptyCountTop)
 current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
 	    return false;
-	final Transition.State newState = transition.transition(current);
-	if (newState == null)
-	{
-	    environment.hint(hint);
-	    return true;
-	}
+	final Transition.State newState = transition.transition(type, current, count,
+								flags.contains(Flags.EMPTY_LINE_TOP), flags.contains(Flags.EMPTY_LINE_BOTTOM));
+	NullCheck.notNull(newState, "newState");
+	Log.debug("list", "newState=" + newState.type);
 	switch(newState.type)
 	{
+	case NO_TRANSITION:
+	    environment.hint(hint);
+	    return true;
 	case EMPTY_LINE_TOP:
 	    if (!flags.contains(Flags.EMPTY_LINE_TOP))
 		return false;
@@ -657,6 +661,7 @@ current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
 	    if (newState.itemIndex < 0 || newState.itemIndex >= count)
 		return false;
 	    hotPointY = newState.itemIndex + emptyCountTop;
+	    break;
 	default:
 	    return false;
 	}
