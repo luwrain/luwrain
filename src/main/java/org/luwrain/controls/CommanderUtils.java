@@ -52,7 +52,7 @@ public class CommanderUtils
 	boolean onCommanderClick(Path cursorAt, Path[] selected);
     }
 
-    static public class DefaultAppearance implements CommanderArea.CommanderAppearance
+    static public class DefaultAppearance implements CommanderArea.Appearance
     {
 	protected ControlEnvironment environment;
 

@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.controls;
 
@@ -39,78 +24,43 @@ public class CommanderArea extends ListArea
     static public final String PARENT_DIR = "..";
     public enum Flags {MARKING};
 
-    static public class Entry
+    public interface Filter
     {
-	public enum Type {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
-
-	final Path path;
-	final Type type;
-	protected boolean marked;
-
-	Entry(Path path) throws IOException
-	{
-	    NullCheck.notNull(path, "path");
-	    this.path = path;
-	    this.type = readType(path);
-	    this.marked = false;
-	}
-
-	Entry(Path path, Type type)
-	{
-	    NullCheck.notNull(path, "path");
-	    NullCheck.notNull(type, "type");
-	    this.path = path;
-	    this.type = type;
-	    this.marked = false;
-	}
-
-	public void mark()
-	{
-	    marked = true;
-	}
-
-	public void unmark()
-	{
-	    marked = false;
-	}
-
-	public void toggleMark()
-	{
-	    marked = !marked;
-	}
-
-	public Path getPath() { return path; }
-public Type getType() { return type; }
-	public boolean marked() { return marked; }
-	public String baseName() { return path.getFileName().toString(); }
-
-	@Override public boolean equals(Object o)
-	{
-	    if (o == null || !(o instanceof Entry))
-		return false;
-	    final Entry e = (Entry)o;
-	    return path.equals(e.path) && type == e.type;
-	}
+	boolean commanderEntrySuits(Entry entry);
     }
 
-static public class Params
-{
-    public ControlEnvironment environment;
-    public CommanderAppearance appearance;
-    public CommanderArea.ClickHandler clickHandler;
-    public boolean selecting = false;
-    public Filter filter = null;//FIXME:
-    public Comparator comparator = new CommanderUtils.ByNameComparator();
-}
+    public interface Appearance 
+    {
+	String getCommanderName(Path path);
+	String getScreenLine(Entry entry);
+	void announceLocation(Path path);
+	void announceEntry(Entry entry, boolean brief);
+    }
 
-    protected final CommanderAppearance commanderAppearance;
+    public interface ClickHandler
+    {
+	public enum Result {OPEN_DIR, OK, REJECTED};
+	Result onCommanderClick(CommanderArea area, Path path, boolean dir);
+    }
+
+    static public class Params
+    {
+	public ControlEnvironment environment;
+	public CommanderArea.Appearance appearance;
+	public CommanderArea.ClickHandler clickHandler;
+	public boolean selecting = false;
+	public Filter filter = null;//FIXME:
+	public Comparator comparator = new CommanderUtils.ByNameComparator();
+    }
+
+    protected final CommanderArea.Appearance appearance;
     protected final boolean selecting;
     protected CommanderArea.ClickHandler clickHandler = null;
 
     public CommanderArea(Params params, Path current)
     {
 	super(constructListParams(params));
-	this.commanderAppearance = params.appearance;
+	this.appearance = params.appearance;
 	this.clickHandler = params.clickHandler;
 	this.selecting = params.selecting;
 	super.setClickHandler((area, index, obj)->clickImpl(index, (Entry)obj));
@@ -132,7 +82,7 @@ static public class Params
 	    return false;
 	select(index, false);
 	if (announce)
-	    commanderAppearance.announceEntry(entries[index], false);
+	    appearance.announceEntry(entries[index], false);
 	return true;
     }
 
@@ -149,7 +99,7 @@ static public class Params
 	    return false;
 	select(index, false);
 	if (announce)
-	    commanderAppearance.announceEntry(entries[index], false);
+	    appearance.announceEntry(entries[index], false);
 	return true;
     }
 
@@ -272,7 +222,7 @@ static public class Params
     {
 	if (getListModel().current == null)
 	    return "-";
-	return commanderAppearance.getCommanderName(getListModel().current);
+	return appearance.getCommanderName(getListModel().current);
     }
 
     protected boolean onBackspace(KeyboardEvent event)
@@ -284,7 +234,7 @@ static public class Params
 	if (parent == null)
 	    return false;
 	open(parent, getListModel().current.getFileName().toString());
-	commanderAppearance.announceLocation(getListModel().current);
+	appearance.announceLocation(getListModel().current);
 	return true;
     }
 
@@ -295,7 +245,7 @@ static public class Params
 	if (entry.type == Entry.Type.PARENT && parent != null)
 	{
 	    open(parent, getListModel().current.getFileName().toString());
-	    commanderAppearance.announceLocation(getListModel().current);
+	    appearance.announceLocation(getListModel().current);
 									return true;
 	}
 	if (entry.type == Entry.Type.DIR || entry.type == Entry.Type.SYMLINK_DIR)
@@ -307,7 +257,7 @@ static public class Params
 	    {
 	    case OPEN_DIR:
 		open(entry.path, null);
-		commanderAppearance.announceLocation(getListModel().current);
+		appearance.announceLocation(getListModel().current);
 		return true;
 	    case OK:
 		return true;
@@ -394,40 +344,76 @@ static public class Params
 	return listParams;
     }
 
-    public interface Filter
-{
-    boolean commanderEntrySuits(Entry entry);
-}
-
-    public interface CommanderAppearance 
+    static public class Entry
     {
-	String getCommanderName(Path path);
-	String getScreenLine(Entry entry);
-	void announceLocation(Path path);
-	void announceEntry(Entry entry, boolean brief);
+	public enum Type {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
+
+	final Path path;
+	final Type type;
+	protected boolean marked;
+
+	Entry(Path path) throws IOException
+	{
+	    NullCheck.notNull(path, "path");
+	    this.path = path;
+	    this.type = readType(path);
+	    this.marked = false;
+	}
+
+	Entry(Path path, Type type)
+	{
+	    NullCheck.notNull(path, "path");
+	    NullCheck.notNull(type, "type");
+	    this.path = path;
+	    this.type = type;
+	    this.marked = false;
+	}
+
+	public void mark()
+	{
+	    marked = true;
+	}
+
+	public void unmark()
+	{
+	    marked = false;
+	}
+
+	public void toggleMark()
+	{
+	    marked = !marked;
+	}
+
+	public Path getPath() { return path; }
+public Type getType() { return type; }
+	public boolean marked() { return marked; }
+	public String baseName() { return path.getFileName().toString(); }
+
+	@Override public boolean equals(Object o)
+	{
+	    if (o == null || !(o instanceof Entry))
+		return false;
+	    final Entry e = (Entry)o;
+	    return path.equals(e.path) && type == e.type;
+	}
     }
 
-    public interface ClickHandler
-    {
-	public enum Result {OPEN_DIR, OK, REJECTED};
-	Result onCommanderClick(CommanderArea area, Path path, boolean dir);
-    }
 
     public static class AppearanceImpl implements ListArea.Appearance
     {
-	protected final CommanderAppearance commanderAppearance;
+	protected final CommanderArea.Appearance appearance;
 
-	public AppearanceImpl(CommanderAppearance commanderAppearance)
+	public AppearanceImpl(CommanderArea.Appearance appearance)
 	{
-	    NullCheck.notNull(commanderAppearance, "commanderAppearance");
-	    this.commanderAppearance = commanderAppearance;
+	    NullCheck.notNull(appearance, "appearance");
+	    this.appearance = appearance;
 	}
 
 	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
-	    commanderAppearance.announceEntry((Entry)item, flags.contains(Flags.BRIEF));
+	    appearance.announceEntry((Entry)item, flags.contains(Flags.BRIEF));
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
@@ -437,7 +423,7 @@ static public class Params
 	    final Entry entry = (Entry)item;
 	    final boolean marked = entry.marked();
 	    final CommanderArea.Entry.Type type = entry.type;
-	    final String name = commanderAppearance.getScreenLine(entry);
+	    final String name = appearance.getScreenLine(entry);
 	    final StringBuilder b = new StringBuilder();
 	    b.append(marked?"*":" ");
 	    switch(type)
@@ -477,7 +463,7 @@ static public class Params
 	@Override public int getObservableRightBound(Object item)
 	{
 	    NullCheck.notNull(item, "item");
-	    return commanderAppearance.getScreenLine((Entry)item).length() + 2;
+	    return appearance.getScreenLine((Entry)item).length() + 2;
 	}
     }
 
