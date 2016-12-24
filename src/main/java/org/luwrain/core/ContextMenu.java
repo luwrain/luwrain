@@ -23,9 +23,28 @@ import org.luwrain.popups.*;
 
 class ContextMenu extends ListPopup
 {
+    ContextMenu(Luwrain luwrain, Action[] actions)
+    {
+	super(luwrain, constructParams(luwrain, actions), EnumSet.noneOf(Popup.Flags.class));
+    }
+
+    static private ListArea.Params constructParams(Luwrain luwrain, Action[] actions)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNullItems(actions, "actions");
+	final ListArea.Params params = new ListArea.Params();
+	params.name = luwrain.i18n().getStaticStr("ContextMenuName");
+	params.model = new ListUtils.FixedModel(actions);
+	params.appearance = new Appearance(luwrain);
+	params.environment = new DefaultControlEnvironment(luwrain);
+	params.flags = EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP);
+	params.transition = new Transition();
+	return params;
+    }
+
     static private class Appearance implements ListArea.Appearance
     {
-	private Luwrain luwrain;
+	private final Luwrain luwrain;
 
 	Appearance(Luwrain luwrain)
 	{
@@ -42,8 +61,8 @@ class ContextMenu extends ListPopup
 	    luwrain.playSound(Sounds.LIST_ITEM);
 	    if (act.keyboardEvent() != null)
 		luwrain.say(act.title() + " " + act.keyboardEvent().toString()); else
-	    luwrain.say(act.title());
-    }
+		luwrain.say(act.title());
+	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
@@ -66,22 +85,28 @@ class ContextMenu extends ListPopup
 	}
     }
 
-    ContextMenu(Luwrain luwrain, Action[] actions)
+    static private class Transition extends ListUtils.DefaultTransition
     {
-	super(luwrain, constructParams(luwrain, actions), EnumSet.noneOf(Popup.Flags.class));
-    }
-
-    static private ListArea.Params constructParams(Luwrain luwrain, Action[] actions)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNullItems(actions, "actions");
-	final ListArea.Params params = new ListArea.Params();
-	params.name = luwrain.i18n().getStaticStr("ContextMenuName");
-	params.model = new ListUtils.FixedModel(actions);
-	params.appearance = new Appearance(luwrain);
-	params.environment = new DefaultControlEnvironment(luwrain);
-	//	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());
-	params.flags = EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP);
-	return params;
+	@Override public State transition(Type type, State fromState, int itemCount,
+					  boolean hasEmptyLineTop, boolean hasEmptyLineBottom)
+	{
+	    NullCheck.notNull(type, "type");
+	    NullCheck.notNull(fromState, "fromState");
+	    if (itemCount == 0)
+		throw new IllegalArgumentException("itemCount must be greater than zero");
+	    switch(type)
+	    {
+	    case SINGLE_DOWN:
+		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex + 1 != itemCount)
+		    return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+		return new State(0);
+	    case SINGLE_UP:
+		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex != 0)
+		    return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+		return new State(itemCount - 1);
+	    default:
+		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+	    }
+	}
     }
 }
