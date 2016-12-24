@@ -93,7 +93,7 @@ class MainMenu extends ListArea implements PopupClosingRequest
 	    luwrain.say(getAreaName());
 	    return true;
 	default:
-	return super.onEnvironmentEvent(event);
+	    return super.onEnvironmentEvent(event);
 	}
     }
 
@@ -102,7 +102,6 @@ class MainMenu extends ListArea implements PopupClosingRequest
 	NullCheck.notNull(query, "query");
 	switch(query.getQueryCode())
 	{
-
 	case AreaQuery.OBJECT_UNIREF:
 	    if (selected() == null || !(selected() instanceof UniRefInfo))
 		return false;
@@ -115,14 +114,6 @@ class MainMenu extends ListArea implements PopupClosingRequest
 	    return super.onAreaQuery(query);
 	}
     }
-
-    /*
-    @Override public boolean onListClick(ListArea area, int index,
-					    Object item)
-    {
-	return closing.doOk();
-    }
-    */
 
     @Override public boolean onOk()
     {
@@ -146,7 +137,7 @@ class MainMenu extends ListArea implements PopupClosingRequest
     static MainMenu newMainMenu(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-		final Registry registry = luwrain.getRegistry();
+	final Registry registry = luwrain.getRegistry();
 	final String[] dirs = registry.getDirectories(Settings.MAIN_MENU_SECTIONS_PATH);
 	if (dirs == null || dirs.length < 1)
 	{
@@ -178,8 +169,7 @@ class MainMenu extends ListArea implements PopupClosingRequest
 	params.flags = EnumSet.noneOf(ListArea.Flags.class);
 	params.name = luwrain.i18n().getStaticStr("MainMenuName");
 	final MainMenu mainMenu = new MainMenu(luwrain, params);
-	//mainMenu.setListClickHandler(mainMenu);
-return mainMenu;
+	return mainMenu;
     }
 
     static private Section loadSection(Luwrain luwrain, Settings.MainMenuSection proxy)
@@ -205,7 +195,7 @@ return mainMenu;
 
     static private class Section
     {
-final String title;
+	final String title;
 	final UniRefInfo[] uniRefs;
 
 	Section(String title, UniRefInfo[] uniRefs)
@@ -217,9 +207,9 @@ final String title;
 	}
 
 	@Override public String toString() 
-{
-return title;
-}
+	{
+	    return title;
+	}
     }
 
     static private class Appearance implements ListArea.Appearance
@@ -262,7 +252,7 @@ return title;
 	    if (item == null)
 		return 0;
 	    if (item instanceof Section)
-	    return 0;
+		return 0;
 	    return 2;
 	}
 
@@ -285,14 +275,12 @@ return title;
 	    {
 	    case SINGLE_DOWN:
 		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex + 1 != itemCount)
-		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+		    return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
 		return new State(0);
 	    case SINGLE_UP:
 		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex != 0)
-		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+		    return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
 		return new State(itemCount - 1);
-
-
 	    default:
 		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
 	    }
