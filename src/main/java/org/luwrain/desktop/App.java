@@ -78,8 +78,7 @@ public class App implements Application
 		    {
 		    case CLOSE:
 			luwrain.silence();
-			luwrain.playSound(Sounds.NO_APPLICATIONS);
-			luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"));
+			luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"), Sounds.NO_APPLICATIONS);
 			return true;
 		    default:
 			return super.onEnvironmentEvent(event);

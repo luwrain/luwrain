@@ -40,6 +40,7 @@ public enum Sounds
     MAIN_MENU,
     MAIN_MENU_EMPTY_LINE,
     MAIN_MENU_ITEM,
+    MESSAGE,
     NO_APPLICATIONS,
     NO_CONTENT,
     NO_ITEMS_ABOVE,

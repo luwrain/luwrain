@@ -248,6 +248,13 @@ public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProper
 	environment.message(text, semantic);
     }
 
+    public void message(String text, Sounds sound)
+    {
+	NullCheck.notNull(text, "text");
+	environment.message(text, sound);
+    }
+
+
     /**
      * Notifies the environment that the area gets new position of the hot
      * point. This method causes updating of the visual position of the hot

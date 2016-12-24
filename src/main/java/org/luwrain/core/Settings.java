@@ -182,6 +182,7 @@ public interface FileTypeAppInfo
 	String getMainMenuEmptyLine(String defValue);
 	String getMainMenuItem(String defValue);
 	String getMainMenu(String defValue);
+	String getMessage(String defValue);
 	String getNoApplications(String defValue);
 	String getNoContent(String defValue);
 	String getNoItemsAbove(String defValue);
@@ -219,6 +220,7 @@ public interface FileTypeAppInfo
 	void setMainMenuEmptyLine(String value);
 	void setMainMenuItem(String value);
 	void setMainMenu(String value);
+	void setMessage(String value);
 	void setNoApplications(String value);
 	void setNoContent(String value);
 	void setNoItemsAbove(String value);

@@ -127,6 +127,7 @@ private SourceDataLine audioLine = null;
 
 	setSoundFile(dataDir, scheme.getNoApplications(""), Sounds.NO_APPLICATIONS);
 	setSoundFile(dataDir, scheme.getStartup(""), Sounds.STARTUP);
+	setSoundFile(dataDir, scheme.getMessage(""), Sounds.MESSAGE);
 	setSoundFile(dataDir, scheme.getShutdown(""), Sounds.SHUTDOWN);
 	setSoundFile(dataDir, scheme.getMainMenu(""), Sounds.MAIN_MENU);
 	setSoundFile(dataDir, scheme.getMainMenuItem(""), Sounds.MAIN_MENU_ITEM);
