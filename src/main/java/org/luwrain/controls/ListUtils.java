@@ -45,6 +45,8 @@ public class ListUtils
 
     static public class DefaultTransition implements ListArea.Transition
     {
+	static protected final int PAGE_SIZE = 20;
+
 	@Override public State transition(Type type, State fromState, int itemCount,
 					  boolean hasEmptyLineTop, boolean hasEmptyLineBottom)
 	{
@@ -77,7 +79,33 @@ public class ListUtils
 		    return new State(fromState.itemIndex - 1);
 		return new State(hasEmptyLineTop?State.Type.EMPTY_LINE_TOP:State.Type.NO_TRANSITION);
 	    case PAGE_DOWN:
+		if (fromState.type == State.Type.EMPTY_LINE_TOP)
+		    return new State(Math.min(PAGE_SIZE, itemCount - 1));
+		if (fromState.type == State.Type.EMPTY_LINE_BOTTOM)
+		    return new State(State.Type.NO_TRANSITION);
+		if (fromState.type != State.Type.ITEM_INDEX)
+		    return new State(State.Type.NO_TRANSITION);
+		if (fromState.itemIndex + PAGE_SIZE < itemCount)
+		    return new State(fromState.itemIndex + PAGE_SIZE);
+		if (hasEmptyLineBottom)
+		    return new State(State.Type.EMPTY_LINE_BOTTOM);
+		if (fromState.itemIndex + 1>= itemCount)
+		    return new State(State.Type.NO_TRANSITION);
+		return new State(itemCount - 1);
 	    case PAGE_UP:
+		if (fromState.type == State.Type.EMPTY_LINE_BOTTOM)
+		    return new State(itemCount > PAGE_SIZE?itemCount - PAGE_SIZE:0);
+		if (fromState.type == State.Type.EMPTY_LINE_TOP)
+		    return new State(State.Type.NO_TRANSITION);
+		if (fromState.type != State.Type.ITEM_INDEX)
+		    return new State(State.Type.NO_TRANSITION);
+		if (fromState.itemIndex >= PAGE_SIZE)
+		    return new State(fromState.itemIndex - PAGE_SIZE);
+		if (hasEmptyLineTop)
+		    return new State(State.Type.EMPTY_LINE_TOP);
+		if (fromState.itemIndex == 0)
+		    return new State(State.Type.NO_TRANSITION);
+		return new State(0);
 	    case HOME:
 		return new State(0);
 	    case END:
