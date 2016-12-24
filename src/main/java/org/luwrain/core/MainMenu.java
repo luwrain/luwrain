@@ -22,77 +22,9 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.controls.*;
 
-class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
+class MainMenu extends ListArea implements PopupClosingRequest
 {
-    static private class Section
-    {
-	private String title;
-	private UniRefInfo[] uniRefs;
-
-	Section(String title, UniRefInfo[] uniRefs)
-	{
-	    this.title = title;
-	    this.uniRefs = uniRefs;
-	    NullCheck.notNull(title, "title");
-	    NullCheck.notNullItems(uniRefs, "uniRefs");
-	}
-
-	String title(){return title;}
-	UniRefInfo[] uniRefs(){return uniRefs;}
-	@Override public String toString() {return title;}
-    }
-
-    static private class Appearance implements ListArea.Appearance
-    {
-	private Luwrain luwrain;
-
-	Appearance(Luwrain luwrain)
-	{
-	    this.luwrain = luwrain;
-	    NullCheck.notNull(luwrain, "luwrain");
-	}
-
-	@Override public void announceItem(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    if (item instanceof Section)
-	    {
-		luwrain.silence();
-		luwrain.playSound(Sounds.DOC_SECTION);
-		luwrain.say(item.toString());
-		return;
-	    }
-	    luwrain.silence();
-	    luwrain.playSound(Sounds.MAIN_MENU_ITEM);
-	    luwrain.say(item.toString());
-	}
-
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    if (item instanceof Section)
-		return item.toString();
-	    return "  " + item.toString();
-	}
-
-	@Override public int getObservableLeftBound(Object item)
-	{
-	    if (item == null)
-		return 0;
-	    if (item instanceof Section)
-	    return 0;
-	    return 2;
-	}
-
-	@Override public int getObservableRightBound(Object item)
-	{
-	    return item != null?getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length():0;
-	}
-    }
-
-    private Luwrain luwrain;
+    private final Luwrain luwrain;
     final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     private UniRefInfo result = null;
 
@@ -101,6 +33,7 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 	super(params);
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	setListClickHandler((area,index,obj)->closing.doOk());
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -150,6 +83,8 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 	NullCheck.notNull(event, "event");
 	if (closing.onEnvironmentEvent(event))
 	    return true;
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return super.onEnvironmentEvent(event);
 	switch(event.getCode())
 	{
 	case INTRODUCE:
@@ -167,6 +102,12 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 	NullCheck.notNull(query, "query");
 	switch(query.getQueryCode())
 	{
+
+	case AreaQuery.OBJECT_UNIREF:
+	    if (selected() == null || !(selected() instanceof UniRefInfo))
+		return false;
+	    ((ObjectUniRefQuery)query).answer(((UniRefInfo)selected()).value());
+	    return true;
 	case AreaQuery.BACKGROUND_SOUND:
 	    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.MAIN_MENU));
 	    return true;
@@ -175,11 +116,13 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 	}
     }
 
+    /*
     @Override public boolean onListClick(ListArea area, int index,
 					    Object item)
     {
 	return closing.doOk();
     }
+    */
 
     @Override public boolean onOk()
     {
@@ -224,16 +167,18 @@ class MainMenu extends ListArea implements PopupClosingRequest, ListClickHandler
 	for(Section s: sects)
 	{
 	    objs.add(s);
-	    for(UniRefInfo u: s.uniRefs())
+	    for(UniRefInfo u: s.uniRefs)
 		objs.add(u);
 	}
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
 	params.model = new ListUtils.FixedModel(objs.toArray(new Object[objs.size()]));
 	params.appearance = new Appearance(luwrain);
+	params.transition = new Transition();
+	params.flags = EnumSet.noneOf(ListArea.Flags.class);
 	params.name = luwrain.i18n().getStaticStr("MainMenuName");
 	final MainMenu mainMenu = new MainMenu(luwrain, params);
-mainMenu.setListClickHandler(mainMenu);
+	//mainMenu.setListClickHandler(mainMenu);
 return mainMenu;
     }
 
@@ -256,5 +201,101 @@ return mainMenu;
     static private String sectionName(String name)
     {
 	return name;
+    }
+
+    static private class Section
+    {
+final String title;
+	final UniRefInfo[] uniRefs;
+
+	Section(String title, UniRefInfo[] uniRefs)
+	{
+	    NullCheck.notNull(title, "title");
+	    NullCheck.notNullItems(uniRefs, "uniRefs");
+	    this.title = title;
+	    this.uniRefs = uniRefs;
+	}
+
+	@Override public String toString() 
+{
+return title;
+}
+    }
+
+    static private class Appearance implements ListArea.Appearance
+    {
+	private final Luwrain luwrain;
+
+	Appearance(Luwrain luwrain)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    this.luwrain = luwrain;
+	}
+
+	@Override public void announceItem(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    if (item instanceof Section)
+	    {
+		luwrain.silence();
+		luwrain.playSound(Sounds.DOC_SECTION);
+		luwrain.say(item.toString());
+		return;
+	    }
+	    luwrain.silence();
+	    luwrain.playSound(Sounds.MAIN_MENU_ITEM);
+	    luwrain.say(item.toString());
+	}
+
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    if (item instanceof Section)
+		return item.toString();
+	    return "  " + item.toString();
+	}
+
+	@Override public int getObservableLeftBound(Object item)
+	{
+	    if (item == null)
+		return 0;
+	    if (item instanceof Section)
+	    return 0;
+	    return 2;
+	}
+
+	@Override public int getObservableRightBound(Object item)
+	{
+	    return item != null?getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length():0;
+	}
+    }
+
+    static private class Transition extends ListUtils.DefaultTransition
+    {
+	@Override public State transition(Type type, State fromState, int itemCount,
+					  boolean hasEmptyLineTop, boolean hasEmptyLineBottom)
+	{
+	    NullCheck.notNull(type, "type");
+	    NullCheck.notNull(fromState, "fromState");
+	    if (itemCount == 0)
+		throw new IllegalArgumentException("itemCount must be greater than zero");
+	    switch(type)
+	    {
+	    case SINGLE_DOWN:
+		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex + 1 != itemCount)
+		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+		return new State(0);
+	    case SINGLE_UP:
+		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex != 0)
+		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+		return new State(itemCount - 1);
+
+
+	    default:
+		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+	    }
+	}
     }
 }
