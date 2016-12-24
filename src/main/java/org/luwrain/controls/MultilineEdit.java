@@ -9,11 +9,58 @@ import org.luwrain.util.*;
 
 public class MultilineEdit
 {
+    /**
+     * The model for {@link MultilineEdit}. It is supposed that this
+     * interface is a front-end for {@link MutableLines} in conjunction with
+     * {@link HotPointControl}, but you may use it freely as it is
+     * necessary for a particular purpose. See 
+     * {@link MultilineEditModelTranslator} for a default implementation.
+     * <p>
+     * {@code MultilineEdit} guarantees that each user action results exactly in
+     * a single call of some method of this interface.  This allows substitution
+     * of any method, which makes changes in the model, by any number of
+     * other methods in any order, and this will keep all structures
+     * consistent.
+     * <p>
+     * If some operation is addressed at the position outside of the stored
+     * text, the result may be undefined. The implementation of this
+     * interface should not issue any speech output.
+     *
+     * @see MultilineEditModelTranslator
+     */
+    public interface Model extends Lines
+    {
+	int getHotPointX();
+	int getHotPointY();
+	String getTabSeq();
+	//Processes only chars within line bounds,  neither end of line not end of text not processed
+	char deleteChar(int pos, int lineIndex);
+	//Expects ending point always after starting
+	boolean deleteRegion(int fromX, int fromY, int toX, int toY);
+	boolean insertRegion(int x, int y, String[] lines);
+	//Must add new lines if necessary to ensure lineIndex is in the bounds
+	void insertChars(int pos, int lineIndex, String str);
+	void mergeLines(int firstLineIndex);
+
+	/**
+	 * Splits the specified line at the specified position. This method
+	 * removes on the line all the content after the specified position and puts
+	 * the deleted fragment on new line which is inserted just after
+	 * modified. If the position is given outside of the stored text, the
+	 * behaviour of this method is undefined.
+	 *
+	 * @param pos The 0-based position to split line at
+	 * @param lineIndex The 0-based index of the line to split
+	 * @return The fragment moved onto newly inserted line
+	 */
+	String splitLines(int pos, int lineIndex);
+    }
+
     protected final ControlEnvironment environment;
     protected final RegionTranslator region;
-    protected final MultilineEditModel model;
+    protected final Model model;
 
-    public MultilineEdit(ControlEnvironment environment, MultilineEditModel model)
+    public MultilineEdit(ControlEnvironment environment, Model model)
     {
 	NullCheck.notNull(environment, "environment");
 	NullCheck.notNull(model, "model");

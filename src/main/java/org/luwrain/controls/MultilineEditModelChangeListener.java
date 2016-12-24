@@ -14,11 +14,11 @@ import org.luwrain.core.*;
  *
  * @see MultilineEdit
  */
-abstract public class MultilineEditModelChangeListener implements MultilineEditModel
+abstract public class MultilineEditModelChangeListener implements MultilineEdit.Model
 {
-    private final MultilineEditModel model;
+    private final MultilineEdit.Model model;
 
-    public MultilineEditModelChangeListener(MultilineEditModel model)
+    public MultilineEditModelChangeListener(MultilineEdit.Model model)
     {
 	NullCheck.notNull(model, "model");
 	this.model = model;

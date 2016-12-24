@@ -19,7 +19,7 @@ package org.luwrain.controls;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class EmbeddedSingleLineEdit implements SingleLineEditModel
+public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 {
     protected final ControlEnvironment environment;
     protected final SingleLineEdit edit;

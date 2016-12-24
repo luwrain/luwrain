@@ -38,7 +38,7 @@ public class FormArea  extends NavigationArea
     protected MutableLinesImpl multilineEditLines = null;
     protected final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
     protected String multilineEditCaption = null;
-    protected MultilineEditModel multilineEditModel = null;
+    protected MultilineEdit.Model multilineEditModel = null;
     protected MultilineEdit multilineEdit = null;
     protected boolean multilineEditEnabled = true;//FIXME:
 
@@ -355,7 +355,7 @@ public class FormArea  extends NavigationArea
 	return multilineEditHotPoint;
     }
 
-    public boolean activateMultilineEdit(String caption, MultilineEditModel model, boolean enabled)
+    public boolean activateMultilineEdit(String caption, MultilineEdit.Model model, boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(model, "model");
@@ -641,7 +641,7 @@ public class FormArea  extends NavigationArea
     }
 
     //Adds listener to notify about multiline edit text or hot point changing
-    protected MultilineEditModel wrapMultilineEditModel(MultilineEditModel model)
+    protected MultilineEdit.Model wrapMultilineEditModel(MultilineEdit.Model model)
     {
 	NullCheck.notNull(model, "model");
 	final ControlEnvironment env = environment;

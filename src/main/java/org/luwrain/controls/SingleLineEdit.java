@@ -31,11 +31,20 @@ import org.luwrain.util.*;
  */
 public class SingleLineEdit implements RegionProvider
 {
+    public interface Model
+    {
+	String getLine();
+	void setLine(String text);
+	int getHotPointX();
+	void setHotPointX(int value);
+	String getTabSeq();
+    }
+
     protected final ControlEnvironment environment;
     protected final RegionTranslator region = new RegionTranslator(this);
-    protected final SingleLineEditModel model;
+    protected final Model model;
 
-    public SingleLineEdit(ControlEnvironment environment, SingleLineEditModel model)
+    public SingleLineEdit(ControlEnvironment environment, Model model)
     {
 	NullCheck.notNull(environment, "environment");
 	NullCheck.notNull(model, "model");
