@@ -30,7 +30,6 @@ class OsCommands
 	{
 	    NullCheck.notNull(settings, "settings");
 	    name = settings.getName("");
-	    Log.debug("cmd", name);
 	    if (name.trim().isEmpty())
 		return false;
 	    command = settings.getCommand("");
@@ -71,7 +70,6 @@ class OsCommands
 	{
 	    NullCheck.notNull(settings, "settings");
 	    name = settings.getName("");
-	    Log.debug("cmd", name);
 	    if (name.trim().isEmpty())
 		return false;
 	    command = settings.getCommand("");

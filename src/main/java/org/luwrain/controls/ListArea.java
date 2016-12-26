@@ -525,8 +525,6 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return false;
 	final Object current = model.getItem(index);
 	final String text = appearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS).substring(hotPointX, appearance.getObservableRightBound(current));
-	//	Log.debug("listen", appearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS));
-	//	Log.debug("listen", "" + hotPointX);
 	if (text.isEmpty() && index + 1 >= count)
 	    return false;
 	if (index + 1 < count)
@@ -576,17 +574,13 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    beginning = name.substring(0, pos);
 	} else
 	    beginning = "";
-	Log.debug("list", "beginning:" + beginning);
 	final String mustBegin = beginning + c;
 	for(int i = 0;i < count;++i)
 	{
-	    Log.debug("list", "checking:" + i);
 	    final String name = getObservableSubstr(model.getItem(i));
-	    Log.debug("list", "name:" + name);
 	    if (!name.startsWith(mustBegin))
 		continue;
 	    hotPointY = getLineIndexByItemIndex(i);
-	    Log.debug("list", "hotPointY:" + hotPointY);
 	    ++hotPointX;
 	    appearance.announceItem(model.getItem(hotPointY), NONE_APPEARANCE_FLAGS);
 	    environment.onAreaNewHotPoint(this);
@@ -645,7 +639,6 @@ current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
 	final Transition.State newState = transition.transition(type, current, count,
 								flags.contains(Flags.EMPTY_LINE_TOP), flags.contains(Flags.EMPTY_LINE_BOTTOM));
 	NullCheck.notNull(newState, "newState");
-	Log.debug("list", "newState=" + newState.type);
 	switch(newState.type)
 	{
 	case NO_TRANSITION:
