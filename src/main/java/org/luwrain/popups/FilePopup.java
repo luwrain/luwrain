@@ -26,7 +26,7 @@ public class FilePopup extends EditListPopup
 		     Set<Flags> flags, Set<Popup.Flags> popupFlags)
     {
 	super(luwrain, new Model(defPath, flags .contains(Flags.SKIP_HIDDEN)), 
-name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
+name, prefix, getPathWithTrailingSlash(path), popupFlags);
 	this.defPath = defPath;
 	this.acceptance = acceptance;
     }
@@ -71,6 +71,23 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	if (res != null)
 	    setText(res.toString(), "");
 	return true;
+    }
+
+    static String getPathWithTrailingSlash(Path p)
+    {
+	NullCheck.notNull(p, "p");
+	final String str = p.toString();
+	//Checking if there is nothing to do
+	if (str.endsWith(getSeparator()))
+	    return str;
+	if (Files.exists(p) && Files.isDirectory(p))
+	    return str + getSeparator();
+	return str;
+    }
+
+    static protected String getSeparator()
+    {
+	return FileSystems.getDefault().getSeparator();
     }
 
     static protected class Model extends EditListPopupUtils.DynamicModel
@@ -185,23 +202,6 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 		e.printStackTrace();
 		return new Item[0];
 	    }
-	}
-
-	static String getPathWithTrailingSlash(Path p)
-	{
-	    NullCheck.notNull(p, "p");
-	    final String str = p.toString();
-	    //Checking if there is nothing to do
-	    if (str.endsWith(getSeparator()))
-		return str;
-	    if (Files.exists(p) && Files.isDirectory(p))
-		return str + getSeparator();
-	    return str;
-	}
-
-	static protected String getSeparator()
-	{
-	    return FileSystems.getDefault().getSeparator();
 	}
     }
 }
