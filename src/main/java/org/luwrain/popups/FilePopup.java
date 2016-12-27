@@ -142,24 +142,25 @@ name, prefix, Model.getPathWithTrailingSlash(path), popupFlags);
 	    return new EditListPopup.Item(context);
 	}
 
+	//Just adds ending slash, if necessary
 	@Override public String getCompletion(String beginning)
 	{
 	    final String res = super.getCompletion(beginning);
 	    NullCheck.notNull(res, "res");
-	    /*
-	    final String path = beginning + (res;
+	    final String path = beginning + res;
+					     //We already have the slash, doing nothing
 	    if (!path.isEmpty() && path.endsWith(getSeparator()))
 		return res;
 	    Path pp = Paths.get(path);
 	    if (!pp.isAbsolute())
 		pp = defPath.resolve(pp);
+					     final boolean withSlash;
 	    if (!Files.exists(pp) || !Files.isDirectory(pp))
-		return res;
-
+		withSlash = false; else
+		withSlash = true;
+					     if (withSlash)
 		return res + getSeparator();
 	    return res;
-	    */
-	    return "fixme";
 	}
 
 	protected Item[] readDirectory(Path path, Path base)
