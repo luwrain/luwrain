@@ -175,7 +175,7 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 	    if (!Files.exists(pp) || !Files.isDirectory(pp))
 		withSlash = false; else
 		withSlash = true;
-					     if (withSlash)
+	    if (withSlash && !hasWithSameBeginningNearby(pp))
 		return res + getSeparator();
 	    return res;
 	}
@@ -201,6 +201,34 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 		Log.error("core", "unable to read content of " + path.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
 		e.printStackTrace();
 		return new Item[0];
+	    }
+	}
+
+	protected boolean hasWithSameBeginningNearby(Path path)
+	{
+	    NullCheck.notNull(path, "path");
+	    final Path parent = path.getParent();
+	    if (parent == null)
+		return false;
+	    final String fileName = path.getFileName().toString();
+	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(parent)) {
+		    for (Path pp : directoryStream) 
+			if (!skipHidden || !Files.isHidden(pp))
+			{
+			    final Path f = pp.getFileName();
+			    if (f == null)
+				continue;
+			    final String name = f.toString();
+			    if (name.length() > fileName.length() && name.startsWith(fileName))
+				return true;
+			}
+		    return false;
+	}
+	    catch (IOException e) 
+	    {
+		Log.error("core", "unable to read content of " + path.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
+		e.printStackTrace();
+		return false;
 	    }
 	}
     }
