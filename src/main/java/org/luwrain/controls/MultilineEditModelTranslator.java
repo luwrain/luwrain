@@ -191,12 +191,12 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 
     @Override public void insertChars(int pos, int lineIndex, String str)
     {
+	NullCheck.notNull(str, "str");
 	beginEditTrans();
 	while(lineIndex >= lines.getLineCount())
 	    lines.addLine("");
 	String line = lines.getLine(lineIndex);
-	if (line == null)
-	    line = "";
+	NullCheck.notNull(line, "line");
 	while(line.length() < pos)
 	    line += " ";
 	lines.setLine(lineIndex, line.substring(0, pos) + (str != null?str:"") + line.substring(pos));

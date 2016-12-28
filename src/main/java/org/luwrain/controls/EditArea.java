@@ -32,7 +32,7 @@ public class EditArea extends SimpleArea
 	NullCheck.notNull(environment, "environment");
 	this.environment = environment;
 	this.listener = listener;
-	edit = new MultilineEdit(environment, new MultilineEditModelChangeListener(new MultilineEditModelTranslator(this, this)){
+	edit = new MultilineEdit(environment, new MultilineEditModelChangeListener(new MultilineEditModelTranslator(super.content, this)){
 		@Override public void onMultilineEditChange()
 		{
 		    if (listener != null)
