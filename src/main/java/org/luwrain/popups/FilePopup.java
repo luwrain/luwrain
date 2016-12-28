@@ -39,16 +39,18 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 	return defPath.resolve(res);
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.isSpecial() && event.withAltOnly())
-	    switch(event.getSpecial())
-	    {
-	    case 	    ENTER:
-		return openCommanderPopup();
-	    }
-	return super.onKeyboardEvent(event);
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return super.onEnvironmentEvent(event);
+	switch(event.getCode())
+	{
+	case PROPERTIES:
+	    return openCommanderPopup();
+	default:
+	    return super.onEnvironmentEvent(event);
+	}
     }
 
     @Override public boolean onOk()
@@ -58,7 +60,7 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 	return acceptance != null?acceptance.pathAcceptable(result()):true;
     }
 
-    private boolean openCommanderPopup()
+    protected boolean openCommanderPopup()
     {
 	Path path = result();
 	if (path == null)

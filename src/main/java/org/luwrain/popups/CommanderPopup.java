@@ -82,21 +82,19 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 		refresh();
 		return true;
 	    }
-	if (event.isSpecial() && event.withAltOnly())
-	    switch(event.getSpecial())
-	    {
-	    case ENTER:
-		openMountedPartitions();
-		return true;
-	    }
 	return super.onKeyboardEvent(event);
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return super.onEnvironmentEvent(event);
 	switch(event.getCode())
 	{
+	case PROPERTIES:
+	    openMountedPartitions();
+	    return true;
 	case OK:
 	    result = opened();
 	    closing.doOk();
