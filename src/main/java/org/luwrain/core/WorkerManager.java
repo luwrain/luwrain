@@ -17,42 +17,70 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 class WorkerManager
 {
-    class Entry 
-    {
-	public String name = "";
-	public Worker worker;
-	public WorkerThread workerThread;
-
-	public Entry(String name,
-		     Worker worker)
-	{
-	    this.name = name;
-	    this.worker = worker;
-	    if (name == null)
-		throw new NullPointerException("name may not be null");
-	    if (name.trim().isEmpty())
-		throw new IllegalArgumentException("name may not be empty");
-	    if (worker == null)
-		throw new NullPointerException("worker may not be null");
-	    this.workerThread = new WorkerThread(worker);
-	}
-    }
-
     private TreeMap<String, Entry> workers = new TreeMap<String, Entry>();
 
-    public boolean add(Worker worker)
+    boolean add(String name, Worker worker)
     {
-	if (worker == null)
-	    throw new NullPointerException("worker may not be null");
-	final String name = worker.getWorkerName();
-	if (name == null || name.trim().isEmpty())
-	    return false;
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(worker, "worker");
 	if (workers.containsKey(name))
 	    return false;
 	workers.put(name, new Entry(name, worker));
 	return true;
     }
+
+    void doWork()
+    {
+	new Thread(()->{
+		int counter = 0;
+		while(true)
+		{
+		    for(Map.Entry<String, Entry> entry: workers.entrySet())
+		    {
+			final Entry e = entry.getValue();
+			if (e.task != null && !e.task.isDone())
+			    continue;
+			final int delay = e.worker.getFirstLaunchDelay();
+			final int period =     e.worker.getLaunchPeriod();
+			if (delay < 0 || period <= 0)
+			    continue;
+			if (counter >= delay && (counter - delay) % period == 0)
+			{
+			    //Launching
+			}
+	    }
+		    try {
+			Thread.sleep(1000);
+		    } catch (InterruptedException ie)
+		    {
+			Thread.currentThread().interrupt();
+			return;
+		    }
+		}
+	}).start();
+    }
+
+        static class Entry 
+    {
+	final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+final String name;
+final Worker worker;
+	FutureTask task = null;
+
+
+Entry(String name, Worker worker)
+	{
+	    NullCheck.notEmpty(name, "name");
+	    NullCheck.notNull(worker, "worker");
+	    this.name = name;
+	    this.worker = worker;
+	}
+    }
+
+
 }

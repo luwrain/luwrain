@@ -16,12 +16,8 @@
 
 package org.luwrain.core;
 
-public interface Worker
+public interface Worker extends Runnable
 {
-    String getWorkerName();
-    void work();
-    void cancel();
     int getFirstLaunchDelay();
     int getLaunchPeriod();
-    int getRunsCount();
 }
