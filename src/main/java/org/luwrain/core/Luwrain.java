@@ -52,7 +52,7 @@ import org.luwrain.speech.Channel;
  * of access.  It is necessary to make extensions using more accurate and
  * transparent.
  */
-public final class Luwrain implements EventConsumer, org.luwrain.base.CoreProperties
+public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrain.base.CoreProperties
 {
     public enum ReloadComponents {
 	ENVIRONMENT_SOUNDS,

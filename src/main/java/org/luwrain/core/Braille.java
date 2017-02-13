@@ -19,12 +19,12 @@ package org.luwrain.core;
 class Braille
 {
     private Registry registry;
-    private org.luwrain.os.Braille braille;
+    private org.luwrain.base.Braille braille;
     private boolean active = false;
     private String errorMessage = "";
 
-    void init(Registry registry, org.luwrain.os.Braille braille,
-	      EventConsumer eventConsumer)
+    void init(Registry registry, org.luwrain.base.Braille braille,
+	      org.luwrain.base.EventConsumer eventConsumer)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(eventConsumer, "eventConsumer");

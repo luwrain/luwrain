@@ -19,14 +19,14 @@ package org.luwrain.core;
 import java.util.*;
 
 import org.luwrain.popups.*;
-import org.luwrain.hardware.*;
+import org.luwrain.base.*;
 
 class PartitionsPopupControl implements PartitionsPopup.Control
 {
     static private class PartWrapper implements PartitionsPopup.Partition
     {
 	private Luwrain luwrain;
-	private org.luwrain.hardware.Partition part;
+	private org.luwrain.base.Partition part;
 
 	PartWrapper(Luwrain luwrain, Partition part)
 	{

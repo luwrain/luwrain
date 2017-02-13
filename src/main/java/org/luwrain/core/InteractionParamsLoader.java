@@ -16,7 +16,9 @@
 
 package org.luwrain.core;
 
-class InteractionParamsLoader extends InteractionParams
+import org.luwrain.base.*;
+
+class InteractionParamsLoader extends org.luwrain.base.InteractionParams
 {
     static private final int DEFAULT_MARGIN = 16;
     static private final int MAX_MARGIN = 64;

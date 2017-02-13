@@ -19,7 +19,7 @@ package org.luwrain.core;
 import java.util.*;
 import java.nio.file.*;
 
-abstract class EnvironmentBase implements EventConsumer
+abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
 {
     protected final CmdLine cmdLine;
     protected final  Registry registry;

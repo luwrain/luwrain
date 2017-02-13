@@ -23,8 +23,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
-import org.luwrain.os.OperatingSystem;
-import org.luwrain.hardware.*;
+import org.luwrain.base.*;
 
 class Environment extends EnvironmentAreas
 {

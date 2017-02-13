@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 
 
-import org.luwrain.os.OperatingSystem;
+import org.luwrain.base.OperatingSystem;
 
 /**
  * The main class to launch LUWRAIN. All basic initialization is
@@ -53,7 +53,7 @@ public class Init
     private final String lang;
 
     private Registry registry;
-    private Interaction interaction;
+    private org.luwrain.base.Interaction interaction;
     private OperatingSystem os;
 
     private Init(String[] cmdLine, String lang,
@@ -129,12 +129,12 @@ public class Init
 	    return false;
 	}
 	Log.debug("init", "using interaction of class " + o.getClass().getName());
-	if (!(o instanceof Interaction))
+	if (!(o instanceof org.luwrain.base.Interaction))
 	{
 	    Log.fatal("init", "The instance of " + o.getClass().getName() + " isn\'t an instance of org.luwrain.core.Interaction");
 	    return false;
 	}
-	interaction = (Interaction)o;
+	interaction = (org.luwrain.base.Interaction)o;
 	if (!interaction.init(interactionParams,os))
 	{
 	    Log.fatal("init", "interaction initialization failed");
@@ -184,7 +184,7 @@ public class Init
 	    Log.fatal("init", "created instance of class " + osClass + " is not an instance of org.luwrain.os.OperatingSystem");
 	    return false;
 	}
-	os = (org.luwrain.os.OperatingSystem)o;
+	os = (org.luwrain.base.OperatingSystem)o;
 	if (!os.init(dataDir.toString()))
 	{
 	    Log.fatal("init", "unable to initialize operating system through " + os.getClass().getName());

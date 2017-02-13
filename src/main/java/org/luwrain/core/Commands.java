@@ -22,7 +22,7 @@ import java.util.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
-import org.luwrain.os.OperatingSystem;
+import org.luwrain.base.OperatingSystem;
 
 /**
  * The set of standard commands. The commands provided by this class are

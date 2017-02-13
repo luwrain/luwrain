@@ -22,7 +22,7 @@ import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.hardware.Partition;
+import org.luwrain.base.Partition;
 
 public class Popups
 {

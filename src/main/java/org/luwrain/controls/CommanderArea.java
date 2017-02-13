@@ -10,8 +10,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
-import org.luwrain.hardware.*;
-import org.luwrain.os.*;
+import org.luwrain.base.*;
 
 /**
  * The area for browsing the directories.  This class behaves as a panel in

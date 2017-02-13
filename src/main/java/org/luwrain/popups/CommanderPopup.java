@@ -140,7 +140,7 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 
     private void openMountedPartitions()
     {
-	final org.luwrain.hardware.Partition part = Popups.mountedPartitions(luwrain, popupFlags);
+	final org.luwrain.base.Partition part = Popups.mountedPartitions(luwrain, popupFlags);
 	if (part == null)
 	    return;
 	open(part.file().toPath(), null);
