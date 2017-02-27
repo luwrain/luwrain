@@ -35,14 +35,14 @@ public class NgCommanderArea<E> extends ListArea
     {
 	E[] getEntryChildren(E entry);
 	E getEntryParent(E entry);
-	EntryType getEntryType(E entry);
+	EntryType getEntryType(E currentLocation, E entry);
     }
 
     public interface Appearance<E>
     {
 	void announceLocation(E entry);
 	void announceEntry(E entry, EntryType type, boolean marked);
-	String getEntryTextAppearance(E entry);
+	String getEntryTextAppearance(E entry, EntryType type, boolean marked);
 	String getCommanderName(E entry);
     }
 
@@ -51,10 +51,10 @@ public class NgCommanderArea<E> extends ListArea
 	boolean commanderEntrySuits(E entry);
     }
 
-    public interface ClickHandler
+    public interface ClickHandler<E>
     {
 	public enum Result {OPEN_DIR, OK, REJECTED};
-	Result onCommanderClick(CommanderArea area, Object obj, boolean dir);
+	Result onCommanderClick(NgCommanderArea area, E entry, boolean dir);
     }
 
     public interface LoadingResultHandler<E>
@@ -67,7 +67,7 @@ public class NgCommanderArea<E> extends ListArea
 	public ControlEnvironment environment;
 	public NgCommanderArea.Model<E> model;
 	public NgCommanderArea.Appearance<E> appearance;
-	public NgCommanderArea.ClickHandler clickHandler;
+	public NgCommanderArea.ClickHandler<E> clickHandler;
 	public LoadingResultHandler<E> loadingResultHandler;
 	public Filter<E> filter = null;//FIXME:
 	public Comparator comparator = new CommanderUtils.ByNameComparator();
@@ -76,7 +76,7 @@ public class NgCommanderArea<E> extends ListArea
 
     protected final NgCommanderArea.Model<E> model;
     protected final NgCommanderArea.Appearance<E> appearance;
-    protected NgCommanderArea.ClickHandler clickHandler = null;
+    protected NgCommanderArea.ClickHandler<E> clickHandler = null;
     protected Filter<E> filter = null;
     protected Comparator comparator = null;
     protected LoadingResultHandler<E> loadingResultHandler = null;
@@ -84,6 +84,8 @@ public class NgCommanderArea<E> extends ListArea
 
     protected final ExecutorService executor = Executors.newSingleThreadExecutor();
     protected FutureTask task = null;
+
+    protected boolean closed = false;
 
     public NgCommanderArea(Params<E> params)
     {
@@ -127,7 +129,7 @@ public class NgCommanderArea<E> extends ListArea
 	    return false;
 	final Wrapper<E>[] wrappers = getListModel().wrappers;
 	int index = 0;
-	while(index < wrappers.length && !appearance.getEntryTextAppearance(wrappers[index].obj).equals(fileName))
+	while(index < wrappers.length && !appearance.getEntryTextAppearance(wrappers[index].obj, wrappers[index].type, wrappers[index].isMarked()).equals(fileName))
 	    ++index;
 	if (index >= wrappers.length)
 	    return false;
@@ -160,6 +162,7 @@ public class NgCommanderArea<E> extends ListArea
 	if (isBusy())
 	    return false;
 	currentLocation = entry;
+	final E current = currentLocation;
 	task = new FutureTask(()->{
 		final Wrapper<E>[] wrappers;
 		final E[] res = model.getEntryChildren(currentLocation);
@@ -171,7 +174,9 @@ public class NgCommanderArea<E> extends ListArea
 			    filtered.add(e);
 		    wrappers = new Wrapper[filtered.size()];
 		    for(int i = 0;i < filtered.size();++i)
-			wrappers[i] = new Wrapper(filtered.get(i), model.getEntryType(filtered.get(i)));
+			wrappers[i] = new Wrapper(filtered.get(i), model.getEntryType(current, filtered.get(i)));
+		    //		    for(Wrapper<E> w: wrappers)
+		    //			Log.debug("proba", w.obj.toString() + ":" + w.type.toString());
 		    if (comparator != null)
 		    Arrays.sort(wrappers, comparator);
 		} else
@@ -179,7 +184,7 @@ public class NgCommanderArea<E> extends ListArea
 		int index = -1;
 		if (desiredSelected != null && !desiredSelected.isEmpty())
 		    for(int i = 0;i < wrappers.length;++i)
-			if (desiredSelected.equals(appearance.getEntryTextAppearance(wrappers[i].obj)))
+			if (desiredSelected.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].isMarked())))
 			    index = i;
 		loadingResultHandler.onLoadingResult(wrappers, index);
 	    }, null);
@@ -193,7 +198,10 @@ public class NgCommanderArea<E> extends ListArea
 	NullCheck.notNullItems(wrappers, "wrappers");
 	getListModel().wrappers = wrappers;
 	super.refresh();
-	select(selectedIndex, false);
+	if (selectedIndex >= 0)
+	select(selectedIndex, false); else
+	    reset(false);
+	appearance.announceLocation(currentLocation);
     }
 
     @Override public ListModelAdapter<E> getListModel()
@@ -247,39 +255,39 @@ public class NgCommanderArea<E> extends ListArea
 	//noContent() isn't applicable here, we should be able to leave the directory, even if it doesn't have any content
 	if (currentLocation == null)
 	    return false;
-	/*
-	  final Path parent = getListModel().current.getParent();
+	final E parent = model.getEntryParent(currentLocation);
 	  if (parent == null)
 	  return false;
-	  open(parent, getListModel().current.getFileName().toString());
-	  appearance.announceLocation(getListModel().current);
-	*/
+	  open(parent, appearance.getEntryTextAppearance(currentLocation, null, false));
+	  //	  appearance.announceLocation(getListModel().current);
 	return true;
     }
 
-    protected boolean clickImpl(int index, Wrapper wrapper)
+    protected boolean clickImpl(int index, Wrapper<E> wrapper)
     {
 	NullCheck.notNull(wrapper, "wrapper");
-	/*
-	if (currentLocation == null)
+	if (closed || isBusy())
 	    return false;
-	final E parent = model.getParentEntry(currentLocation);
-	  if (entry.type == Entry.Type.PARENT && parent != null)
-	  {
-	    open(parent, getListModel().current.getFileName().toString());
-	    appearance.announceLocation(getListModel().current);
+	if (clickHandler == null || currentLocation == null)
+	    return false;
+	if (wrapper.type == EntryType.PARENT)
+	{
+	    final E parent = model.getEntryParent(currentLocation);
+	    if (parent == null)
+		return false;
+	    open(parent, appearance.getEntryTextAppearance(currentLocation, null, false));
+	    //	    appearance.announceLocation(getListModel().current);
 	    return true;
 	}
-	if (entry.type == Entry.Type.DIR || entry.type == Entry.Type.SYMLINK_DIR)
+	if (wrapper.type == EntryType.DIR || wrapper.type == EntryType.SYMLINK_DIR)
 	{
-	    ClickHandler.Result res = ClickHandler.Result.OPEN_DIR;
-	    if (this.clickHandler != null)
-		res = this.clickHandler.onCommanderClick(this, entry.path, true);
+	    final ClickHandler.Result res = this.clickHandler.onCommanderClick(this, wrapper.obj, true);
+	    NullCheck.notNull(res, "res");
 	    switch(res)
 	    {
 	    case OPEN_DIR:
-		open(entry.path, null);
-		appearance.announceLocation(getListModel().current);
+		open(wrapper.obj, null);
+		//		appearance.announceLocation(getListModel().current);
 		return true;
 	    case OK:
 		return true;
@@ -288,13 +296,9 @@ public class NgCommanderArea<E> extends ListArea
 	    }
 	    return false;
 	} //directory
-	ClickHandler.Result res = ClickHandler.Result.REJECTED;
-	if (this.clickHandler != null)
-	    res = this.clickHandler.onCommanderClick(this, entry.path, false);
-FIXME:
+	final ClickHandler.Result res = this.clickHandler.onCommanderClick(this, wrapper.obj, false);
+	NullCheck.notNull(res, "res");
 	return res == ClickHandler.Result.OK?true:false;
-	*/
-	return false;
     }
 
     @Override protected String noContentStr()
@@ -398,7 +402,7 @@ FIXME:
 	    final Wrapper<E> wrapper = (Wrapper<E>)item;
 	    final boolean marked = wrapper.isMarked();
 	    final EntryType type = wrapper.type;
-	    final String name = appearance.getEntryTextAppearance(wrapper.obj);
+	    final String name = appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.isMarked());
 	    final StringBuilder b = new StringBuilder();
 	    b.append(marked?"*":" ");
 	    switch(type)
@@ -438,7 +442,8 @@ FIXME:
 	@Override public int getObservableRightBound(Object item)
 	{
 	    NullCheck.notNull(item, "item");
-	    return appearance.getEntryTextAppearance(((Wrapper)item).obj).length() + 2;
+	    final Wrapper<E> wrapper = (Wrapper)item;
+	    return appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.isMarked()).length() + 2;
 	}
     }
 

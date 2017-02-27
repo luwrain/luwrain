@@ -1,6 +1,7 @@
 
 package org.luwrain.io;
 
+import java.util.*;
 import java.nio.file.*;
 
 import org.apache.commons.vfs2.*;
@@ -29,9 +30,17 @@ public class CommanderUtilsVfs
 	    return manager;
 	}
 
-	@Override public EntryType getEntryType(FileObject entry)
+	@Override public EntryType getEntryType(FileObject currentLocation, FileObject entry)
 	{
 	    NullCheck.notNull(entry, "entry");
+	    try {
+		if (currentLocation.getParent() != null && currentLocation.getParent().equals(entry))
+		return EntryType.PARENT;
+	    }
+	    catch(org.apache.commons.vfs2.FileSystemException e)
+	    {
+		return EntryType.REGULAR;
+	    }
 	    if (entry instanceof org.apache.commons.vfs2.provider.local.LocalFile)
 	    {
 		final Path path = Paths.get(entry.getName().getPath());
@@ -51,7 +60,15 @@ public class CommanderUtilsVfs
 	{
 	    NullCheck.notNull(entry, "entry");
 	    try {
-	    return entry.getChildren();
+final FileObject[] children = entry.getChildren();
+final FileObject parent = entry.getParent();
+if (parent == null)
+    return children;
+final LinkedList<FileObject> res = new LinkedList<FileObject>();
+res.add(parent);
+for(FileObject f: children)
+    res.add(f);
+return res.toArray(new FileObject[res.size()]);
 	    }
 	    catch(org.apache.commons.vfs2.FileSystemException e)
 	    {
@@ -94,11 +111,18 @@ public class CommanderUtilsVfs
 
 	@Override public void announceLocation(FileObject entry)
 	{
+	    NullCheck.notNull(entry, "entry");
+	    environment.silence();
+	    environment.playSound(Sounds.COMMANDER_LOCATION);
+	    environment.say(entry.getName().getBaseName());
 	}
 
-	@Override public String getEntryTextAppearance(FileObject entry)
+	@Override public String getEntryTextAppearance(FileObject entry, EntryType type, boolean marked)
 	{
 	    NullCheck.notNull(entry, "entry");
+	    //type may be null
+	    if (type != null  && type == EntryType.PARENT)
+		return "..";
 	    return entry.getName().getBaseName();
 	}
 
@@ -109,7 +133,7 @@ public class CommanderUtilsVfs
 
 	    final String name = entry.getName().getBaseName();
 
-		if (name.trim().isEmpty())
+		if (name.trim().isEmpty() && type != EntryType.PARENT)
 		{
 		    environment.hint(Hints.EMPTY_LINE);
 		    return;
