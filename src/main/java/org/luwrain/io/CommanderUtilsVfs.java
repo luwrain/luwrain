@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.io;
 
@@ -35,7 +50,7 @@ public class CommanderUtilsVfs
 	    NullCheck.notNull(entry, "entry");
 	    try {
 		if (currentLocation.getParent() != null && currentLocation.getParent().equals(entry))
-		return EntryType.PARENT;
+		    return EntryType.PARENT;
 	    }
 	    catch(org.apache.commons.vfs2.FileSystemException e)
 	    {
@@ -52,7 +67,6 @@ public class CommanderUtilsVfs
 		    return EntryType.REGULAR;
 		return EntryType.SPECIAL;
 	    }
-	    //	    entry.isDirectory();
 	    return EntryType.REGULAR;
 	}
 
@@ -60,15 +74,15 @@ public class CommanderUtilsVfs
 	{
 	    NullCheck.notNull(entry, "entry");
 	    try {
-final FileObject[] children = entry.getChildren();
-final FileObject parent = entry.getParent();
-if (parent == null)
-    return children;
-final LinkedList<FileObject> res = new LinkedList<FileObject>();
-res.add(parent);
-for(FileObject f: children)
-    res.add(f);
-return res.toArray(new FileObject[res.size()]);
+		final FileObject[] children = entry.getChildren();
+		final FileObject parent = entry.getParent();
+		if (parent == null)
+		    return children;
+		final LinkedList<FileObject> res = new LinkedList<FileObject>();
+		res.add(parent);
+		for(FileObject f: children)
+		    res.add(f);
+		return res.toArray(new FileObject[res.size()]);
 	    }
 	    catch(org.apache.commons.vfs2.FileSystemException e)
 	    {
@@ -81,7 +95,7 @@ return res.toArray(new FileObject[res.size()]);
 	{
 	    NullCheck.notNull(entry, "entry");
 	    try {
-	    return entry.getParent();
+		return entry.getParent();
 	    }
 	    catch(org.apache.commons.vfs2.FileSystemException e)
 	    {
@@ -130,18 +144,13 @@ return res.toArray(new FileObject[res.size()]);
 	{
 	    NullCheck.notNull(entry, "entry");
 	    NullCheck.notNull(type, "type");
-
 	    final String name = entry.getName().getBaseName();
-
-		if (name.trim().isEmpty() && type != EntryType.PARENT)
-		{
-		    environment.hint(Hints.EMPTY_LINE);
-		    return;
-							    }
-
-
+	    if (name.trim().isEmpty() && type != EntryType.PARENT)
+	    {
+		environment.hint(Hints.EMPTY_LINE);
+		return;
+	    }
 	    final StringBuilder b = new StringBuilder();
-
 	    if (marked)
 		b.append(environment.getStaticStr("CommanderSelected") + " ");
 	    b.append(name);
@@ -153,13 +162,13 @@ return res.toArray(new FileObject[res.size()]);
 	    case DIR:
 		b.append(environment.getStaticStr("CommanderDirectory"));
 		break;
-	case SYMLINK:
+	    case SYMLINK:
 	    case SYMLINK_DIR:
-	    b.append(environment.getStaticStr("CommanderSymlink"));
-	    break;
-	case SPECIAL:
-	    b.append(environment.getStaticStr("CommanderSpecial"));
-	break;
+		b.append(environment.getStaticStr("CommanderSymlink"));
+		break;
+	    case SPECIAL:
+		b.append(environment.getStaticStr("CommanderSpecial"));
+		break;
 	    }
 	    environment.playSound(Sounds.LIST_ITEM);
 	    environment.say(new String(b));
@@ -192,10 +201,10 @@ return res.toArray(new FileObject[res.size()]);
 
     static public class AllEntriesFilter implements NgCommanderArea.Filter<FileObject>
     {
-@Override public boolean commanderEntrySuits(FileObject entry)
-{
-    return true;
-}
+	@Override public boolean commanderEntrySuits(FileObject entry)
+	{
+	    return true;
+	}
     }
 
     static public NgCommanderArea.Params<FileObject> createParams(ControlEnvironment environment) throws org.apache.commons.vfs2.FileSystemException
@@ -218,13 +227,9 @@ return res.toArray(new FileObject[res.size()]);
 	if (params.model == null || !(params.model instanceof Model))
 	    return null;
 	final Model model = (Model)params.model;
-
-                               FileSystemOptions opts = new FileSystemOptions();                                                                              
-                              FtpFileSystemConfigBuilder.getInstance().setPassiveMode(opts, true); 
-            FtpFileSystemConfigBuilder.getInstance( ).setUserDirIsRoot(opts,true);                                                                            
-
-
-
-	    return model.getFileSystemManager().resolveFile(path, opts);
+	FileSystemOptions opts = new FileSystemOptions();                                                                              
+	FtpFileSystemConfigBuilder.getInstance().setPassiveMode(opts, true); 
+	FtpFileSystemConfigBuilder.getInstance( ).setUserDirIsRoot(opts,true);                                                                            
+	return model.getFileSystemManager().resolveFile(path, opts);
     }
 }

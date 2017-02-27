@@ -178,7 +178,7 @@ public class NgCommanderArea<E> extends ListArea
 		    //		    for(Wrapper<E> w: wrappers)
 		    //			Log.debug("proba", w.obj.toString() + ":" + w.type.toString());
 		    if (comparator != null)
-		    Arrays.sort(wrappers, comparator);
+			Arrays.sort(wrappers, comparator);
 		} else
 		    wrappers = null;
 		int index = -1;
@@ -190,7 +190,6 @@ public class NgCommanderArea<E> extends ListArea
 	    }, null);
 	executor.execute(task);
 	return true;
-	//	notifyNewContent();
     }
 
     public void acceptNewContent(Wrapper<E>[] wrappers, int selectedIndex)
@@ -199,7 +198,7 @@ public class NgCommanderArea<E> extends ListArea
 	getListModel().wrappers = wrappers;
 	super.refresh();
 	if (selectedIndex >= 0)
-	select(selectedIndex, false); else
+	    select(selectedIndex, false); else
 	    reset(false);
 	appearance.announceLocation(currentLocation);
     }
@@ -256,10 +255,9 @@ public class NgCommanderArea<E> extends ListArea
 	if (currentLocation == null)
 	    return false;
 	final E parent = model.getEntryParent(currentLocation);
-	  if (parent == null)
-	  return false;
-	  open(parent, appearance.getEntryTextAppearance(currentLocation, null, false));
-	  //	  appearance.announceLocation(getListModel().current);
+	if (parent == null)
+	    return false;
+	open(parent, appearance.getEntryTextAppearance(currentLocation, null, false));
 	return true;
     }
 
@@ -276,7 +274,6 @@ public class NgCommanderArea<E> extends ListArea
 	    if (parent == null)
 		return false;
 	    open(parent, appearance.getEntryTextAppearance(currentLocation, null, false));
-	    //	    appearance.announceLocation(getListModel().current);
 	    return true;
 	}
 	if (wrapper.type == EntryType.DIR || wrapper.type == EntryType.SYMLINK_DIR)
@@ -287,7 +284,6 @@ public class NgCommanderArea<E> extends ListArea
 	    {
 	    case OPEN_DIR:
 		open(wrapper.obj, null);
-		//		appearance.announceLocation(getListModel().current);
 		return true;
 	    case OK:
 		return true;
@@ -306,12 +302,14 @@ public class NgCommanderArea<E> extends ListArea
 	return environment.getStaticStr("CommanderNoContent");
     }
 
+    /*
     protected void notifyNewContent()
     {
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
 	environment.onAreaNewName(this);
     }
+    */
 
     static protected ListArea.Params prepareListParams(NgCommanderArea.Params params)
     {
