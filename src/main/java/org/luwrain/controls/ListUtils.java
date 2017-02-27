@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.controls;
 
@@ -40,6 +55,58 @@ public class ListUtils
 	@Override public int getObservableRightBound(Object item)
 	{
 	    return item != null?item.toString().length():0;
+	}
+    }
+
+    static abstract public class DoubleLevelAppearance implements ListArea.Appearance
+    {
+	protected final ControlEnvironment environment;
+
+	public DoubleLevelAppearance(ControlEnvironment environment)
+	{
+	    NullCheck.notNull(environment, "environment");
+	    this.environment = environment;
+	}
+
+	abstract public boolean isSectionItem(Object item);
+
+	@Override public void announceItem(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    environment.silence();
+	    if (isSectionItem(item))
+	    {
+		environment.playSound(Sounds.DOC_SECTION);
+		environment.say(item.toString());
+	    } else
+	    {
+environment.playSound(Sounds.LIST_ITEM);
+environment.say(item.toString());
+	    }
+	}
+
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    if (isSectionItem(item))
+		return item.toString();
+	    return "  " + item.toString();
+	}
+
+	@Override public int getObservableLeftBound(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    if (isSectionItem(item))
+		return 0;
+	    return 2;
+	}
+
+	@Override public int getObservableRightBound(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
 	}
     }
 

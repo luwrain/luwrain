@@ -1,7 +1,7 @@
 /*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
+   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -139,5 +139,10 @@ public class DefaultControlEnvironment implements ControlEnvironment
     @Override public UniRefInfo getUniRefInfo(String uniRef)
     {
 	return luwrain.getUniRefInfo(uniRef);
+    }
+
+    @Override public void silence()
+    {
+	luwrain.silence();
     }
 }
