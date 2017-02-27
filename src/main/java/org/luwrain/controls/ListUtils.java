@@ -81,8 +81,8 @@ public class ListUtils
 		environment.say(item.toString());
 	    } else
 	    {
-environment.playSound(Sounds.LIST_ITEM);
-environment.say(item.toString());
+		environment.playSound(Sounds.LIST_ITEM);
+		environment.say(item.toString());
 	    }
 	}
 
@@ -109,7 +109,7 @@ environment.say(item.toString());
 	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
 	}
     }
-
+    
     static public class DefaultTransition implements ListArea.Transition
     {
 	static protected final int PAGE_SIZE = 20;
