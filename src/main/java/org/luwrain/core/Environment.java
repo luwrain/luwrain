@@ -1073,4 +1073,9 @@ onNewAreasLayout();
     {
 	return shortcuts.getShortcutNames();
     }
+
+    FilesOperations getFilesOperations()
+    {
+	return os.getFilesOperations();
+    }
 }

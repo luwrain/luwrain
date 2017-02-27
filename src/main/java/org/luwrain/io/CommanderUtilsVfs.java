@@ -1,12 +1,16 @@
 
-package org.luwrain.controls;
+package org.luwrain.io;
+
+import java.nio.file.*;
 
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 
 import org.luwrain.core.*;
+import org.luwrain.controls.*;
+import org.luwrain.controls.NgCommanderArea.EntryType;
 
-public class CommanderUtilsCommonsVfs
+public class CommanderUtilsVfs
 {
     static private final String LOG_COMPONENT = "commander-vfs";
 
@@ -25,13 +29,31 @@ public class CommanderUtilsCommonsVfs
 	    return manager;
 	}
 
+	@Override public EntryType getEntryType(FileObject entry)
+	{
+	    NullCheck.notNull(entry, "entry");
+	    if (entry instanceof org.apache.commons.vfs2.provider.local.LocalFile)
+	    {
+		final Path path = Paths.get(entry.getName().getPath());
+		if (Files.isSymbolicLink(path))
+		    return Files.isDirectory(path)?EntryType.SYMLINK_DIR:EntryType.SYMLINK;
+		if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
+		    return EntryType.DIR;
+		if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+		    return EntryType.REGULAR;
+		return EntryType.SPECIAL;
+	    }
+	    //	    entry.isDirectory();
+	    return EntryType.REGULAR;
+	}
+
 	@Override public FileObject[] getEntryChildren(FileObject entry)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    try {
 	    return entry.getChildren();
 	    }
-	    catch(FileSystemException e)
+	    catch(org.apache.commons.vfs2.FileSystemException e)
 	    {
 		Log.error(LOG_COMPONENT, "unable to get children of " + entry + ":" + e.getClass().getName() + ":" + e.getMessage());
 		return null;
@@ -44,7 +66,7 @@ public class CommanderUtilsCommonsVfs
 	    try {
 	    return entry.getParent();
 	    }
-	    catch(FileSystemException e)
+	    catch(org.apache.commons.vfs2.FileSystemException e)
 	    {
 		Log.error(LOG_COMPONENT, "unable to get parent of " + entry + ":" + e.getClass().getName() + ":" + e.getMessage());
 		return null;
@@ -84,8 +106,39 @@ public class CommanderUtilsCommonsVfs
 	{
 	    NullCheck.notNull(entry, "entry");
 	    NullCheck.notNull(type, "type");
+
+	    final String name = entry.getName().getBaseName();
+
+		if (name.trim().isEmpty())
+		{
+		    environment.hint(Hints.EMPTY_LINE);
+		    return;
+							    }
+
+
+	    final StringBuilder b = new StringBuilder();
+
+	    if (marked)
+		b.append(environment.getStaticStr("CommanderSelected") + " ");
+	    b.append(name);
+	    switch(type)
+	    {
+	    case PARENT:
+		environment.hint(environment.getStaticStr("CommanderParentDirectory"));
+		return;
+	    case DIR:
+		b.append(environment.getStaticStr("CommanderDirectory"));
+		break;
+	case SYMLINK:
+	    case SYMLINK_DIR:
+	    b.append(environment.getStaticStr("CommanderSymlink"));
+	    break;
+	case SPECIAL:
+	    b.append(environment.getStaticStr("CommanderSpecial"));
+	break;
+	    }
 	    environment.playSound(Sounds.LIST_ITEM);
-	    environment.say(entry.getName().getBaseName());
+	    environment.say(new String(b));
 	}
     }
 
@@ -93,27 +146,25 @@ public class CommanderUtilsCommonsVfs
     {
 	@Override public int compare(Object o1, Object o2)
 	{
-	    /*
-	    if (!(o1 instanceof CommanderArea.Entry) || !(o2 instanceof CommanderArea.Entry))
+	    if (!(o1 instanceof NgCommanderArea.Wrapper) || !(o2 instanceof NgCommanderArea.Wrapper))
 		return 0;
-	    final CommanderArea.Entry i1 = (CommanderArea.Entry)o1;
-	    final CommanderArea.Entry i2 = (CommanderArea.Entry)o2;
-	    if (i1.type == Type.PARENT)
-		return i2.type == Type.PARENT?0:-1;
-	    if (i2.type == Type.PARENT)
-		return i2.type == Type.PARENT?0:1;
-	    if (Files.isDirectory(i1.path) && Files.isDirectory(i2.path))//We don't use Entry.type() because it  returns symlink even on a directory
-		return i1.getBaseName().compareTo(i2.getBaseName());
-	    if (Files.isDirectory(i1.path))
+	    final NgCommanderArea.Wrapper w1 = (NgCommanderArea.Wrapper)o1;
+	    final NgCommanderArea.Wrapper w2 = (NgCommanderArea.Wrapper)o2;
+	    if (w1.type == EntryType.PARENT)
+		return w2.type == EntryType.PARENT?0:-1;
+	    if (w2.type == EntryType.PARENT)
+		return w1.type == EntryType.PARENT?0:1;
+	    final String name1 = ((FileObject)w1.obj).getName().getBaseName().toLowerCase();
+	    final String name2 = ((FileObject)w2.obj).getName().getBaseName().toLowerCase();
+	    if (w1.isDirectory() && w2.isDirectory())
+		return name1.compareTo(name2);
+	    if (w1.isDirectory())
 		return -1;
-	    if (Files.isDirectory(i2.path))
+	    if (w2.isDirectory())
 		return 1;
-	    return i1.getBaseName().compareTo(i2.getBaseName());
-	    */
-	    return 0;
+	    return name1.compareTo(name2);
 	}
     }
-
 
     static public class AllEntriesFilter implements NgCommanderArea.Filter<FileObject>
     {
@@ -123,7 +174,7 @@ public class CommanderUtilsCommonsVfs
 }
     }
 
-    static public NgCommanderArea.Params<FileObject> createParams(ControlEnvironment environment) throws FileSystemException
+    static public NgCommanderArea.Params<FileObject> createParams(ControlEnvironment environment) throws org.apache.commons.vfs2.FileSystemException
     {
 	NullCheck.notNull(environment, "environment");
 	final NgCommanderArea.Params<FileObject> params = new NgCommanderArea.Params<FileObject>();
@@ -136,7 +187,7 @@ public class CommanderUtilsCommonsVfs
 	return params;
     }
 
-    static public FileObject prepareInitialLocation(NgCommanderArea.Params<FileObject> params, String path) throws FileSystemException
+    static public FileObject prepareLocation(NgCommanderArea.Params<FileObject> params, String path) throws org.apache.commons.vfs2.FileSystemException
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notEmpty(path, "path");

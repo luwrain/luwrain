@@ -14,21 +14,22 @@ public class NgCommanderArea<E> extends ListArea
 {
     static public final String PARENT_DIR = "..";
     public enum Flags {MARKING};
-	public enum EntryType {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
+    public enum EntryType {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
 
-	public interface Model<E>
-	{
-	    E[] getEntryChildren(E entry);
-	    E getEntryParent(E entry);
-	}
+    public interface Model<E>
+    {
+	E[] getEntryChildren(E entry);
+	E getEntryParent(E entry);
+	EntryType getEntryType(E entry);
+    }
 
-	public interface Appearance<E>
-	{
-	    String getCommanderName(E entry);
-	    void announceLocation(E entry);
-	    String getEntryTextAppearance(E entry);
-	    void announceEntry(E entry, EntryType type, boolean marked);
-	}
+    public interface Appearance<E>
+    {
+	void announceLocation(E entry);
+	void announceEntry(E entry, EntryType type, boolean marked);
+	String getEntryTextAppearance(E entry);
+	String getCommanderName(E entry);
+    }
 
     public interface Filter<E>
     {
@@ -41,10 +42,10 @@ public class NgCommanderArea<E> extends ListArea
 	Result onCommanderClick(CommanderArea area, Object obj, boolean dir);
     }
 
-public interface LoadingResult<E>
-{
-    void onLoadingResult(Wrapper<E>[] wrappers, int selectedIndex);
-}
+    public interface LoadingResultHandler<E>
+    {
+	void onLoadingResult(Wrapper<E>[] wrappers, int selectedIndex);
+    }
 
     static public class Params<E>
     {
@@ -52,6 +53,7 @@ public interface LoadingResult<E>
 	public NgCommanderArea.Model<E> model;
 	public NgCommanderArea.Appearance<E> appearance;
 	public NgCommanderArea.ClickHandler clickHandler;
+	public LoadingResultHandler<E> loadingResultHandler;
 	public Filter<E> filter = null;//FIXME:
 	public Comparator comparator = new CommanderUtils.ByNameComparator();
 	public Set<Flags> flags = EnumSet.noneOf(Flags.class);
@@ -60,15 +62,15 @@ public interface LoadingResult<E>
     protected final NgCommanderArea.Model<E> model;
     protected final NgCommanderArea.Appearance<E> appearance;
     protected NgCommanderArea.ClickHandler clickHandler = null;
-	protected Filter<E> filter = null;
-	protected Comparator comparator = null;
-	protected LoadingResult<E> loadingResult = null;
-	protected E currentLocation = null;
+    protected Filter<E> filter = null;
+    protected Comparator comparator = null;
+    protected LoadingResultHandler<E> loadingResultHandler = null;
+    protected E currentLocation = null;
 
     protected final ExecutorService executor = Executors.newSingleThreadExecutor();
     protected FutureTask task = null;
 
-    public NgCommanderArea(Params<E> params, E initialLocation)
+    public NgCommanderArea(Params<E> params)
     {
 	super(prepareListParams(params));
 	NullCheck.notNull(params.flags, "params.flags");
@@ -77,11 +79,30 @@ public interface LoadingResult<E>
 	this.filter = params.filter;
 	this.comparator = params.comparator;
 	this.clickHandler = params.clickHandler;
+	this.loadingResultHandler = params.loadingResultHandler;
 	super.setListClickHandler((area, index, obj)->clickImpl(index, (Wrapper<E>)obj));
 	getListModel().marking = params.flags.contains(Flags.MARKING);
-	//	if (!Files.isDirectory(current))
-	//	    throw new IllegalArgumentException("current must address a directory");
-	getListModel().load(initialLocation);
+    }
+
+    public NgCommanderArea.Model<E> getCommanderModel()
+    {
+	return model;
+    }
+
+    public void setCommanderFilter(Filter filter)
+    {
+	this.filter = filter;
+    }
+
+    public void setCommanderComparator(Comparator comparator)
+    {
+	NullCheck.notNull(comparator, "comparator");
+	this.comparator = comparator;
+    }
+
+    public void setLoadingResultHandler(LoadingResultHandler<E> loadingResultHandler)
+    {
+	this.loadingResultHandler = loadingResultHandler;
     }
 
     public boolean findFileName(String fileName, boolean announce)
@@ -91,7 +112,7 @@ public interface LoadingResult<E>
 	    return false;
 	final Wrapper<E>[] wrappers = getListModel().wrappers;
 	int index = 0;
-	while(index < wrappers.length && !wrappers[index].getBaseName().equals(fileName))
+	while(index < wrappers.length && !appearance.getEntryTextAppearance(wrappers[index].obj).equals(fileName))
 	    ++index;
 	if (index >= wrappers.length)
 	    return false;
@@ -101,33 +122,14 @@ public interface LoadingResult<E>
 	return true;
     }
 
-    /*
-    public Wrapper getSelectedWrapper()
+    public boolean isBusy()
     {
-	return !isEmpty() && hotPointY >= 0 && hotPointY < getListModel().wrappers.length?getListModel().wrappers[hotPointY]:null;
-    }
-    */
-
-    public NgCommanderArea.Model<E> getCommanderModel()
-    {
-	return model;
-    }
-
-
-    public void setCommanderFilter(Filter filter)
-    {
-	getListModel().filter = filter;
-    }
-
-    public void setCommanderComparator(Comparator comparator)
-    {
-	NullCheck.notNull(comparator, "comparator");
-	getListModel().comparator = comparator;
+	return task != null && !task.isDone();
     }
 
     public boolean isEmpty()
     {
-	return getListModel().wrappers == null || getListModel().wrappers.length < 1;
+	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.length < 1;
     }
 
     public void open(E entry)
@@ -136,36 +138,39 @@ public interface LoadingResult<E>
 	open(entry, null);
     }
 
-    public void open(E entry, String desiredSelected)
+    public boolean open(E entry, String desiredSelected)
     {
 	NullCheck.notNull(entry, "entry");
-	getListModel().current = entry;
+	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
+	if (isBusy())
+	    return false;
+	currentLocation = entry;
 	task = new FutureTask(()->{
 		final Wrapper<E>[] wrappers;
-		final E[] res = model.getEntryChildren(getListModel().current);
+		final E[] res = model.getEntryChildren(currentLocation);
 		if (res != null)
 		{
-	    final LinkedList<E> filtered = new LinkedList<E>();
-	    for(E e: res)
-if (filter == null || filter.commanderEntrySuits(e))
-		    filtered.add(e);
-	    final Object[] sorted = filtered.toArray(new Object[filtered.size()]);
-		Arrays.sort(sorted, comparator);
-wrappers = new Wrapper[sorted.length];
-	    for(int i = 0;i < sorted.length;++i)
-	    {
-		wrappers[i] = new Wrapper((Wrapper<E>)sorted[i], EntryType.REGULAR);
-	    }
+		    final Vector<E> filtered = new Vector<E>();
+		    for(E e: res)
+			if (filter == null || filter.commanderEntrySuits(e))
+			    filtered.add(e);
+		    wrappers = new Wrapper[filtered.size()];
+		    for(int i = 0;i < filtered.size();++i)
+			wrappers[i] = new Wrapper(filtered.get(i), model.getEntryType(filtered.get(i)));
+		    if (comparator != null)
+		    Arrays.sort(wrappers, comparator);
 		} else
-		wrappers = null;
+		    wrappers = null;
 		int index = -1;
 		if (desiredSelected != null && !desiredSelected.isEmpty())
 		    for(int i = 0;i < wrappers.length;++i)
 			if (desiredSelected.equals(appearance.getEntryTextAppearance(wrappers[i].obj)))
 			    index = i;
-		loadingResult.onLoadingResult(wrappers);
+		loadingResultHandler.onLoadingResult(wrappers, index);
 	    }, null);
-	    	notifyNewContent();
+	executor.execute(task);
+	return true;
+	//	notifyNewContent();
     }
 
     public void acceptNewContent(Wrapper<E>[] wrappers, int selectedIndex)
@@ -175,7 +180,6 @@ wrappers = new Wrapper[sorted.length];
 	super.refresh();
 	select(selectedIndex, false);
     }
-
 
     @Override public ListModelAdapter<E> getListModel()
     {
@@ -210,7 +214,7 @@ wrappers = new Wrapper[sorted.length];
 	if (query.getQueryCode() == AreaQuery.CURRENT_DIR)
 	{
 	    final CurrentDirQuery currentDirQuery = (CurrentDirQuery)query;
-	    currentDirQuery.answer(getListModel().current.toString());
+	    currentDirQuery.answer(currentLocation.toString());
 	    return true;
 	}
 	return super.onAreaQuery(query);
@@ -218,22 +222,22 @@ wrappers = new Wrapper[sorted.length];
 
     @Override public String getAreaName()
     {
-	if (getListModel().current == null)
+	if (currentLocation == null)
 	    return "-";
-	return appearance.getCommanderName(getListModel().current);
+	return appearance.getCommanderName(currentLocation);
     }
 
     protected boolean onBackspace(KeyboardEvent event)
     {
 	//noContent() isn't applicable here, we should be able to leave the directory, even if it doesn't have any content
-	if (getListModel().current == null)
+	if (currentLocation == null)
 	    return false;
 	/*
-	final Path parent = getListModel().current.getParent();
-	if (parent == null)
-	    return false;
-	open(parent, getListModel().current.getFileName().toString());
-	appearance.announceLocation(getListModel().current);
+	  final Path parent = getListModel().current.getParent();
+	  if (parent == null)
+	  return false;
+	  open(parent, getListModel().current.getFileName().toString());
+	  appearance.announceLocation(getListModel().current);
 	*/
 	return true;
     }
@@ -242,9 +246,9 @@ wrappers = new Wrapper[sorted.length];
     {
 	NullCheck.notNull(wrapper, "wrapper");
 	/*
-	final Path parent = getListModel().current.getParent();
-	if (entry.type == Entry.Type.PARENT && parent != null)
-	{
+	  final Path parent = getListModel().current.getParent();
+	  if (entry.type == Entry.Type.PARENT && parent != null)
+	  {
 	    open(parent, getListModel().current.getFileName().toString());
 	    appearance.announceLocation(getListModel().current);
 	    return true;
@@ -288,23 +292,6 @@ FIXME:
 	environment.onAreaNewName(this);
     }
 
-    /*
-    static protected Entry.Type readType(Path path) throws IOException
-    {
-	NullCheck.notNull(path, "path");
-	final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-	if (attr.isDirectory())
-	    return Entry.Type.DIR;
-	if (attr.isSymbolicLink())
-	    if (Files.isDirectory(path))
-		return Entry.Type.SYMLINK_DIR; else
-		return Entry.Type.SYMLINK;
-	if (attr.isRegularFile())
-	    return Entry.Type.REGULAR;
-	return Entry.Type.SPECIAL;
-    }
-    */
-
     static protected ListArea.Params prepareListParams(NgCommanderArea.Params params)
     {
 	NullCheck.notNull(params, "params");
@@ -322,8 +309,8 @@ FIXME:
 
     static public class Wrapper<E>
     {
-	final E obj;
-	final EntryType type;
+	public final E obj;
+	public final EntryType type;
 	protected boolean marked;
 
 	public Wrapper(E obj, EntryType type)
@@ -333,6 +320,11 @@ FIXME:
 	    this.obj = obj;
 	    this.type = type;
 	    this.marked = false;
+	}
+
+	public boolean isDirectory()
+	{
+	    return type == EntryType.DIR || type == EntryType.SYMLINK_DIR;
 	}
 
 	public void mark()
@@ -351,9 +343,9 @@ FIXME:
 	}
 
 	public boolean isMarked() 
-{
- return marked; 
-}
+	{
+	    return marked; 
+	}
 
 	@Override public boolean equals(Object o)
 	{

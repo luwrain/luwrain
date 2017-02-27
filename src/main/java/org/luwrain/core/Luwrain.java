@@ -20,6 +20,7 @@ import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 
+import org.luwrain.base.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.speech.Channel;
@@ -697,5 +698,10 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	    }
 	    return environment.getCoreProperties().getProperty(propName);
 	}
+    }
+
+public FilesOperations getFilesOperations()
+    {
+	return environment.getFilesOperations();
     }
 }
