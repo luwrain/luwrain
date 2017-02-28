@@ -260,7 +260,7 @@ synchronized     public void stopPlaying()
                 return false;                                                   
             }                                                                   
         }                                                                       
-	debugOutput("Finished reading the header.");                            
+	//	debugOutput("Finished reading the header.");                            
 	return true;                                                            
     }                                                                           
 

@@ -80,6 +80,11 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	    setHotPointY(getEnteringLineIndex());
     }
 
+    public void moveHotPointToEnteringBeginning()
+    {
+	setHotPoint(enteringPrefix.length(), getEnteringLineIndex());
+    }
+
     void setEnteringPrefix(String prefix)
     {
 	NullCheck.notNull(prefix, "prefix");

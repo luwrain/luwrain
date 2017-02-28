@@ -121,8 +121,6 @@ public class ListUtils
 	    NullCheck.notNull(fromState, "fromState");
 	    if (itemCount == 0)
 		throw new IllegalArgumentException("itemCount must be positive and non-zero (itemCount=" + itemCount + ")");
-	    Log.debug("list", "type=" + type + ",state=" + fromState.type);
-	    Log.debug("list", "index=" + fromState.itemIndex + ",count=" + itemCount);
 	    switch(type)
 	    {
 	    case SINGLE_DOWN:

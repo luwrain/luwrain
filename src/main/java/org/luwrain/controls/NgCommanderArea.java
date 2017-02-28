@@ -59,7 +59,7 @@ public class NgCommanderArea<E> extends ListArea
 
     public interface LoadingResultHandler<E>
     {
-	void onLoadingResult(Wrapper<E>[] wrappers, int selectedIndex);
+	void onLoadingResult(E location, Wrapper<E>[] wrappers, int selectedIndex, boolean announce);
     }
 
     static public class Params<E>
@@ -149,58 +149,108 @@ public class NgCommanderArea<E> extends ListArea
 	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.length < 1;
     }
 
+    //never returns parent
+    public E getSelectedEntry()
+    {
+	final Object res = selected();
+	if (res == null)
+	    return null;
+	final Wrapper<E> w = (Wrapper<E>)res;
+	return w.type != EntryType.PARENT?w.obj:null;
+    }
+
+    public E opened()
+    {
+	return currentLocation;
+    }
+
+    public Object[] getMarked()
+    {
+	if (getListModel().wrappers == null)
+	    return new Object[0];
+	final LinkedList res = new LinkedList();
+	for(Wrapper w: getListModel().wrappers)
+	    if (w.isMarked())
+		res.add(w.obj);
+	return res.toArray(new Object[res.size()]);
+    }
+
     public void open(E entry)
     {
 	NullCheck.notNull(entry, "entry");
-	open(entry, null);
+	open(entry, null, true);
     }
 
     public boolean open(E entry, String desiredSelected)
     {
+	NullCheck.notNull(entry, "entry ");
+	return open(entry, desiredSelected, true);
+    }
+
+    public boolean open(E entry, boolean announce)
+    {
+	NullCheck.notNull(entry, "entry ");
+	return open(entry, null, announce);
+    }
+
+    public boolean open(E entry, String desiredSelected, boolean announce)
+    {
 	NullCheck.notNull(entry, "entry");
 	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
-	if (isBusy())
+	if (closed || isBusy())
 	    return false;
-	currentLocation = entry;
-	final E current = currentLocation;
+	final E newCurrent = entry;
 	task = new FutureTask(()->{
-		final Wrapper<E>[] wrappers;
-		final E[] res = model.getEntryChildren(currentLocation);
-		if (res != null)
+		try {
+		    final Wrapper<E>[] wrappers;
+		    final E[] res = model.getEntryChildren(newCurrent);
+		    if (res != null)
+		    {
+			final Vector<E> filtered = new Vector<E>();
+			for(E e: res)
+			    if (filter == null || filter.commanderEntrySuits(e))
+				filtered.add(e);
+			wrappers = new Wrapper[filtered.size()];
+			for(int i = 0;i < filtered.size();++i)
+			    wrappers[i] = new Wrapper(filtered.get(i), model.getEntryType(newCurrent, filtered.get(i)));
+			if (comparator != null)
+			    Arrays.sort(wrappers, comparator);
+		    } else
+			wrappers = null;
+		    int index = -1;
+		    if (desiredSelected != null && !desiredSelected.isEmpty())
+			for(int i = 0;i < wrappers.length;++i)
+			    if (desiredSelected.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].isMarked())))
+				index = i;
+		    loadingResultHandler.onLoadingResult(newCurrent, wrappers, index, announce);
+		}
+		catch (Exception e)
 		{
-		    final Vector<E> filtered = new Vector<E>();
-		    for(E e: res)
-			if (filter == null || filter.commanderEntrySuits(e))
-			    filtered.add(e);
-		    wrappers = new Wrapper[filtered.size()];
-		    for(int i = 0;i < filtered.size();++i)
-			wrappers[i] = new Wrapper(filtered.get(i), model.getEntryType(current, filtered.get(i)));
-		    //		    for(Wrapper<E> w: wrappers)
-		    //			Log.debug("proba", w.obj.toString() + ":" + w.type.toString());
-		    if (comparator != null)
-			Arrays.sort(wrappers, comparator);
-		} else
-		    wrappers = null;
-		int index = -1;
-		if (desiredSelected != null && !desiredSelected.isEmpty())
-		    for(int i = 0;i < wrappers.length;++i)
-			if (desiredSelected.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].isMarked())))
-			    index = i;
-		loadingResultHandler.onLoadingResult(wrappers, index);
+		    Log.error("core", "unexpected error on commander content reading:" + e.getClass().getName() + ":" + e.getMessage());
+		}
 	    }, null);
 	executor.execute(task);
 	return true;
     }
 
-    public void acceptNewContent(Wrapper<E>[] wrappers, int selectedIndex)
+    public boolean reread(String desiredSelected, boolean announce)
     {
-	NullCheck.notNullItems(wrappers, "wrappers");
+	if (currentLocation == null)
+	    return false;
+	return open(currentLocation, desiredSelected, announce);
+    }
+
+    public void acceptNewLocation(E location, Wrapper<E>[] wrappers, int selectedIndex, boolean announce)
+    {
+	NullCheck.notNull(location, "location");
+	currentLocation = location;
 	getListModel().wrappers = wrappers;
 	super.refresh();
-	if (selectedIndex >= 0)
+	if (wrappers != null && selectedIndex >= 0)
 	    select(selectedIndex, false); else
 	    reset(false);
-	appearance.announceLocation(currentLocation);
+	if (announce)
+	    appearance.announceLocation(currentLocation);
     }
 
     @Override public ListModelAdapter<E> getListModel()
@@ -230,22 +280,10 @@ public class NgCommanderArea<E> extends ListArea
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onAreaQuery(AreaQuery query)
-    {
-	NullCheck.notNull(query, "query");
-	if (query.getQueryCode() == AreaQuery.CURRENT_DIR)
-	{
-	    final CurrentDirQuery currentDirQuery = (CurrentDirQuery)query;
-	    currentDirQuery.answer(currentLocation.toString());
-	    return true;
-	}
-	return super.onAreaQuery(query);
-    }
-
     @Override public String getAreaName()
     {
 	if (currentLocation == null)
-	    return "-";
+	    return "";
 	return appearance.getCommanderName(currentLocation);
     }
 
@@ -301,15 +339,6 @@ public class NgCommanderArea<E> extends ListArea
     {
 	return environment.getStaticStr("CommanderNoContent");
     }
-
-    /*
-    protected void notifyNewContent()
-    {
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
-	environment.onAreaNewName(this);
-    }
-    */
 
     static protected ListArea.Params prepareListParams(NgCommanderArea.Params params)
     {
