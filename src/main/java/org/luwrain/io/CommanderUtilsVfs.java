@@ -20,6 +20,8 @@ import java.util.*;
 import java.nio.file.*;
 
 import org.apache.commons.vfs2.*;
+import org.apache.commons.vfs2.auth.*;
+import org.apache.commons.vfs2.impl.*;
 import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 
 import org.luwrain.core.*;
@@ -51,30 +53,32 @@ public class CommanderUtilsVfs
 	    try {
 		if (currentLocation.getParent() != null && currentLocation.getParent().equals(entry))
 		    return EntryType.PARENT;
+		if (entry instanceof org.apache.commons.vfs2.provider.local.LocalFile)
+		{
+		    final Path path = Paths.get(entry.getName().getPath());
+		    if (Files.isSymbolicLink(path))
+			return Files.isDirectory(path)?EntryType.SYMLINK_DIR:EntryType.SYMLINK;
+		    if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
+			return EntryType.DIR;
+		    if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+			return EntryType.REGULAR;
+		    return EntryType.SPECIAL;
+		}
+		return entry.getType().hasChildren()?EntryType.DIR:EntryType.REGULAR;
 	    }
 	    catch(org.apache.commons.vfs2.FileSystemException e)
 	    {
+		Log.error("vfs", "unable to get type of " + entry.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
 		return EntryType.REGULAR;
 	    }
-	    if (entry instanceof org.apache.commons.vfs2.provider.local.LocalFile)
-	    {
-		final Path path = Paths.get(entry.getName().getPath());
-		if (Files.isSymbolicLink(path))
-		    return Files.isDirectory(path)?EntryType.SYMLINK_DIR:EntryType.SYMLINK;
-		if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
-		    return EntryType.DIR;
-		if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
-		    return EntryType.REGULAR;
-		return EntryType.SPECIAL;
-	    }
-	    return EntryType.REGULAR;
 	}
 
 	@Override public FileObject[] getEntryChildren(FileObject entry)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    try {
-		final FileObject[] children = entry.getChildren();
+		entry.refresh();
+		final FileObject[]children = entry.getChildren();
 		final FileObject parent = entry.getParent();
 		if (parent == null)
 		    return children;
@@ -84,7 +88,7 @@ public class CommanderUtilsVfs
 		    res.add(f);
 		return res.toArray(new FileObject[res.size()]);
 	    }
-	    catch(org.apache.commons.vfs2.FileSystemException e)
+	    catch(Throwable e)
 	    {
 		Log.error(LOG_COMPONENT, "unable to get children of " + entry + ":" + e.getClass().getName() + ":" + e.getMessage());
 		return null;
@@ -220,13 +224,10 @@ public class CommanderUtilsVfs
 	return params;
     }
 
-    static public FileObject prepareLocation(NgCommanderArea.Params<FileObject> params, String path) throws org.apache.commons.vfs2.FileSystemException
+    static public FileObject prepareLocation(Model model, String path) throws org.apache.commons.vfs2.FileSystemException
     {
-	NullCheck.notNull(params, "params");
+	NullCheck.notNull(model, "model");
 	NullCheck.notEmpty(path, "path");
-	if (params.model == null || !(params.model instanceof Model))
-	    return null;
-	final Model model = (Model)params.model;
 	FileSystemOptions opts = new FileSystemOptions();                                                                              
 	FtpFileSystemConfigBuilder.getInstance().setPassiveMode(opts, true); 
 	FtpFileSystemConfigBuilder.getInstance( ).setUserDirIsRoot(opts,true);                                                                            
