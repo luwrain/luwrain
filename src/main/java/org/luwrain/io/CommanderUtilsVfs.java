@@ -124,7 +124,8 @@ public class CommanderUtilsVfs
 
 	@Override public String getCommanderName(FileObject entry)
 	{
-	    return "";
+	    NullCheck.notNull(entry, "entry");
+	    return entry.getName().getPath();
 	}
 
 	@Override public void announceLocation(FileObject entry)
@@ -132,7 +133,9 @@ public class CommanderUtilsVfs
 	    NullCheck.notNull(entry, "entry");
 	    environment.silence();
 	    environment.playSound(Sounds.COMMANDER_LOCATION);
-	    environment.say(entry.getName().getBaseName());
+	    if (entry.getName().getPath().equals("/"))
+		environment.say(environment.getStaticStr("PartitionsPopupItemRoot")); else
+		environment.say(entry.getName().getBaseName());
 	}
 
 	@Override public String getEntryTextAppearance(FileObject entry, EntryType type, boolean marked)
