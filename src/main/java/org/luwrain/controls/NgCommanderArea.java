@@ -233,6 +233,11 @@ public class NgCommanderArea<E> extends ListArea
 	return true;
     }
 
+    public boolean reread(boolean announce)
+    {
+	return reread(null, announce);
+    }
+
     public boolean reread(String desiredSelected, boolean announce)
     {
 	if (currentLocation == null)
