@@ -16,6 +16,7 @@
 
 package org.luwrain.core;
 
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
@@ -41,9 +42,10 @@ class Commands
      * @param env The environment object to process commands on
      * @return The vector of created commands
      */
-    static Command[] createStandardCommands(Environment env)
+    static Command[] createStandardCommands(Environment env, Conversations conversations)
     {
 	NullCheck.notNull(env, "env");
+	NullCheck.notNull(conversations, "conversations");
 	return new Command[]{
 
 	    //Main menu
@@ -138,24 +140,16 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrainArg)
 		{
-		    final Luwrain luwrain = env.getObjForEnvironment();
-		    final Path current = Paths.get(luwrain.currentAreaDir());
-		    final FilePopup popup = new FilePopup(luwrain, 
-							  luwrain.i18n().getStaticStr("OpenPopupName"), luwrain.i18n().getStaticStr("OpenPopupPrefix"), 
-							  null, current, current, 
-							  env.uiSettings.getFilePopupSkipHidden(false)?EnumSet.of(FilePopup.Flags.SKIP_HIDDEN):EnumSet.noneOf(FilePopup.Flags.class),
-							  EnumSet.noneOf(Popup.Flags.class));
-		    env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
-		    if (popup.closing.cancelled())
+		    final File res = conversations.openPopup();
+		    if (res == null)
 			return;
-		    final Path res = popup.result();
 		    final Area area = env.getValidActiveArea(false);
-		    if (area == null || !area.onEnvironmentEvent(new OpenEvent(res.toString())))
-			env.openFiles(new String[]{res.toString()});
+		    if (area == null || !area.onEnvironmentEvent(new OpenEvent(res.getAbsolutePath())))
+			env.openFiles(new String[]{res.getAbsolutePath()});
 		}
 	    },
 
-	    //announcee
+	    //announce
 	    new Command() {
 		@Override public String getName()
 		{

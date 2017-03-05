@@ -39,6 +39,7 @@ class Environment extends EnvironmentAreas
     private final org.luwrain.desktop.App desktop = new org.luwrain.desktop.App();
     private GlobalKeys globalKeys;
     private final FileTypes fileTypes = new FileTypes();
+    private final Conversations conversations;
 
     private final I18nImpl i18n = new I18nImpl();
     private final CommandManager commands = new CommandManager();
@@ -58,6 +59,7 @@ class Environment extends EnvironmentAreas
 	this.os = os;
 	this.interaction = interaction;
 	interfaces.createObjForEnvironment(this);
+	conversations = new Conversations(getObjForEnvironment(), this);
     }
 
     void run()
@@ -113,7 +115,7 @@ class Environment extends EnvironmentAreas
 
     private void initObjects()
     {
-	final Command[] standardCommands = Commands.createStandardCommands(this);
+	final Command[] standardCommands = Commands.createStandardCommands(this, conversations);
 	for(Command sc: standardCommands)
 	    commands.add(new Luwrain(this), sc);//FIXME:
 	commands.addOsCommands(getObjForEnvironment(), registry);
@@ -187,10 +189,7 @@ class Environment extends EnvironmentAreas
 
     void quit()
     {
-	final YesNoPopup popup = new YesNoPopup(new Luwrain(this), i18n.getStaticStr("QuitPopupName"), i18n.getStaticStr("QuitPopupText"), true, Popups.DEFAULT_POPUP_FLAGS);
-	popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
-	if (popup.closing.cancelled() || !popup.result())
-	    return;
+	if (conversations.quitConfirmation())
 	InitialEventLoopStopCondition.shouldContinue = false;
     }
 
