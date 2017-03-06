@@ -22,13 +22,13 @@ import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.controls.NgCommanderArea.EntryType;
+import org.luwrain.controls.CommanderArea.EntryType;
 
 public class CommanderUtilsFile
 {
     static private final String LOG_COMPONENT = "commander-file";
 
-    static public class Model implements NgCommanderArea.Model<java.io.File>
+    static public class Model implements CommanderArea.Model<java.io.File>
     {
 	@Override public EntryType getEntryType(File currentLocation, File entry)
 	{
@@ -73,7 +73,7 @@ public class CommanderUtilsFile
 	}
     }
 
-    static public class Appearance implements NgCommanderArea.Appearance<File>
+    static public class Appearance implements CommanderArea.Appearance<File>
     {
 	protected final ControlEnvironment environment;
 
@@ -108,7 +108,7 @@ public class CommanderUtilsFile
 	    return entry.getName();
 	}
 
-	@Override public void announceEntry(File entry, NgCommanderArea.EntryType type, boolean marked)
+	@Override public void announceEntry(File entry, CommanderArea.EntryType type, boolean marked)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    NullCheck.notNull(type, "type");
@@ -147,10 +147,10 @@ public class CommanderUtilsFile
     {
 	@Override public int compare(Object o1, Object o2)
 	{
-	    if (!(o1 instanceof NgCommanderArea.Wrapper) || !(o2 instanceof NgCommanderArea.Wrapper))
+	    if (!(o1 instanceof CommanderArea.Wrapper) || !(o2 instanceof CommanderArea.Wrapper))
 		return 0;
-	    final NgCommanderArea.Wrapper w1 = (NgCommanderArea.Wrapper)o1;
-	    final NgCommanderArea.Wrapper w2 = (NgCommanderArea.Wrapper)o2;
+	    final CommanderArea.Wrapper w1 = (CommanderArea.Wrapper)o1;
+	    final CommanderArea.Wrapper w2 = (CommanderArea.Wrapper)o2;
 	    if (w1.type == EntryType.PARENT)
 		return w2.type == EntryType.PARENT?0:-1;
 	    if (w2.type == EntryType.PARENT)
@@ -167,7 +167,7 @@ public class CommanderUtilsFile
 	}
     }
 
-    static public class AllEntriesFilter implements NgCommanderArea.Filter<File>
+    static public class AllEntriesFilter implements CommanderArea.Filter<File>
     {
 	@Override public boolean commanderEntrySuits(File entry)
 	{
@@ -175,10 +175,10 @@ public class CommanderUtilsFile
 	}
     }
 
-    static public NgCommanderArea.Params<File> createParams(ControlEnvironment environment)
+    static public CommanderArea.Params<File> createParams(ControlEnvironment environment)
     {
 	NullCheck.notNull(environment, "environment");
-	final NgCommanderArea.Params<File> params = new NgCommanderArea.Params<File>();
+	final CommanderArea.Params<File> params = new CommanderArea.Params<File>();
 	params.environment = environment;
 	params.model = new Model();
 	params.appearance = new Appearance(environment);

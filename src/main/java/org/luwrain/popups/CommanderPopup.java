@@ -10,7 +10,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.io.*;
 
-public class CommanderPopup extends NgCommanderArea<File> implements NgCommanderArea.ClickHandler<File>, Popup, PopupClosingRequest
+public class CommanderPopup extends CommanderArea<File> implements CommanderArea.ClickHandler<File>, Popup, PopupClosingRequest
 {
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final Luwrain luwrain;
@@ -21,7 +21,7 @@ public class CommanderPopup extends NgCommanderArea<File> implements NgCommander
 
     public CommanderPopup(Luwrain luwrain, String name,
 			  Path path, FilePopup.Acceptance acceptance,
-			  NgCommanderArea.ClickHandler<File> clickHandler, Set<Popup.Flags> popupFlags)
+			  CommanderArea.ClickHandler<File> clickHandler, Set<Popup.Flags> popupFlags)
     {
 	super(constructParams(luwrain));
 	NullCheck.notNull(luwrain, "luwrain");
@@ -35,7 +35,7 @@ public class CommanderPopup extends NgCommanderArea<File> implements NgCommander
 	open(path.toFile());
     }
 
-    @Override public NgCommanderArea.ClickHandler.Result onCommanderClick(NgCommanderArea area, File file, boolean dir)
+    @Override public CommanderArea.ClickHandler.Result onCommanderClick(CommanderArea area, File file, boolean dir)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(file, "file");
@@ -133,10 +133,10 @@ public class CommanderPopup extends NgCommanderArea<File> implements NgCommander
 	open(part.file(), null);
     }
 
-    static private NgCommanderArea.Params<File> constructParams(Luwrain luwrain)
+    static private CommanderArea.Params<File> constructParams(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	final NgCommanderArea.Params<File> params = CommanderUtilsFile.createParams(new DefaultControlEnvironment(luwrain));
+	final CommanderArea.Params<File> params = CommanderUtilsFile.createParams(new DefaultControlEnvironment(luwrain));
 	params.filter = new CommanderUtilsFile.AllEntriesFilter();
 	params.comparator = new CommanderUtilsFile.ByNameComparator();
 	return params;

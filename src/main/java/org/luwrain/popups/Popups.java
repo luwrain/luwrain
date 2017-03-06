@@ -210,7 +210,7 @@ name, prefix, text, popupFlags);
 
     static public Path commanderSingle(Luwrain luwrain, String name,
 				       Path path, FilePopup.Acceptance acceptance,
-				       NgCommanderArea.ClickHandler clickHandler, Set<Popup.Flags> popupFlags)
+				       CommanderArea.ClickHandler clickHandler, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");

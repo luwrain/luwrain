@@ -26,13 +26,13 @@ import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.controls.NgCommanderArea.EntryType;
+import org.luwrain.controls.CommanderArea.EntryType;
 
 public class CommanderUtilsVfs
 {
     static private final String LOG_COMPONENT = "commander-vfs";
 
-    static public class Model implements NgCommanderArea.Model<FileObject>
+    static public class Model implements CommanderArea.Model<FileObject>
     {
 	protected final FileSystemManager manager;
 
@@ -109,7 +109,7 @@ public class CommanderUtilsVfs
 	}
     }
 
-    static public class Appearance implements NgCommanderArea.Appearance<FileObject>
+    static public class Appearance implements CommanderArea.Appearance<FileObject>
     {
 	protected final ControlEnvironment environment;
 	protected final FileSystemManager manager;
@@ -147,7 +147,7 @@ public class CommanderUtilsVfs
 	    return entry.getName().getBaseName();
 	}
 
-	@Override public void announceEntry(FileObject entry, NgCommanderArea.EntryType type, boolean marked)
+	@Override public void announceEntry(FileObject entry, CommanderArea.EntryType type, boolean marked)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    NullCheck.notNull(type, "type");
@@ -186,10 +186,10 @@ public class CommanderUtilsVfs
     {
 	@Override public int compare(Object o1, Object o2)
 	{
-	    if (!(o1 instanceof NgCommanderArea.Wrapper) || !(o2 instanceof NgCommanderArea.Wrapper))
+	    if (!(o1 instanceof CommanderArea.Wrapper) || !(o2 instanceof CommanderArea.Wrapper))
 		return 0;
-	    final NgCommanderArea.Wrapper w1 = (NgCommanderArea.Wrapper)o1;
-	    final NgCommanderArea.Wrapper w2 = (NgCommanderArea.Wrapper)o2;
+	    final CommanderArea.Wrapper w1 = (CommanderArea.Wrapper)o1;
+	    final CommanderArea.Wrapper w2 = (CommanderArea.Wrapper)o2;
 	    if (w1.type == EntryType.PARENT)
 		return w2.type == EntryType.PARENT?0:-1;
 	    if (w2.type == EntryType.PARENT)
@@ -206,7 +206,7 @@ public class CommanderUtilsVfs
 	}
     }
 
-    static public class AllEntriesFilter implements NgCommanderArea.Filter<FileObject>
+    static public class AllEntriesFilter implements CommanderArea.Filter<FileObject>
     {
 	@Override public boolean commanderEntrySuits(FileObject entry)
 	{
@@ -214,10 +214,10 @@ public class CommanderUtilsVfs
 	}
     }
 
-    static public NgCommanderArea.Params<FileObject> createParams(ControlEnvironment environment) throws org.apache.commons.vfs2.FileSystemException
+    static public CommanderArea.Params<FileObject> createParams(ControlEnvironment environment) throws org.apache.commons.vfs2.FileSystemException
     {
 	NullCheck.notNull(environment, "environment");
-	final NgCommanderArea.Params<FileObject> params = new NgCommanderArea.Params<FileObject>();
+	final CommanderArea.Params<FileObject> params = new CommanderArea.Params<FileObject>();
 	final FileSystemManager manager = VFS.getManager();
 	params.environment = environment;
 	params.model = new Model(manager);
