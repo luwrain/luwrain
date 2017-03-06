@@ -16,7 +16,15 @@ public class Desktop implements Application
     private UniRefList uniRefList = null;
     private ListArea area;
     private Model model = null;
+
+    private final Environment core;
     private Conversations conversations = null;
+
+    Desktop(Environment core)
+    {
+	NullCheck.notNull(core, "core");
+	this.core = core;
+    }
 
     private String clickHereLine = "#click here#";
 
@@ -59,6 +67,9 @@ void ready()
 		    if (event.isSpecial() && !event.isModified())
 			switch(event.getSpecial())
 			{ 
+			case ESCAPE:
+core.quit();
+			    return true;
 			case DELETE:
 			    return onDeleteImpl(getHotPointX(), getHotPointY());
 			}

@@ -36,7 +36,7 @@ class Environment extends EnvironmentAreas
     private final Interaction interaction;
 
     private org.luwrain.core.extensions.Manager extensions;
-    private final Desktop desktop = new Desktop();
+    private final Desktop desktop = new Desktop(this);
     private GlobalKeys globalKeys;
     private final FileTypes fileTypes = new FileTypes();
     private final Conversations conversations;
