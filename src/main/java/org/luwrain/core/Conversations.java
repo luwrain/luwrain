@@ -43,4 +43,15 @@ class Conversations
 	    return null;
 	return popup.result().toFile();
     }
+
+    boolean deleteDesktopItemConfirmation()
+    {
+	final YesNoPopup popup = new YesNoPopup(luwrain, 
+						"Удаление элемента",
+"Вы действительно хотите удалить элемент с рабочего стола?",
+						false,
+						Popups.DEFAULT_POPUP_FLAGS);
+	env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
+	return !popup.closing.cancelled() && popup.result();
+    }
 }

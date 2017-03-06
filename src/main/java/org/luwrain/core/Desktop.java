@@ -16,6 +16,7 @@ public class Desktop implements Application
     private UniRefList uniRefList = null;
     private ListArea area;
     private Model model = null;
+    private Conversations conversations = null;
 
     private String clickHereLine = "#click here#";
 
@@ -28,10 +29,15 @@ public class Desktop implements Application
     }
 
     //Runs by the core when language extensions loaded 
-    public void ready()
+void ready()
     {
 	load();
 	luwrain.onAreaNewName(area);
+    }
+
+    void setConversations(Conversations conversations)
+    {
+	this.conversations = conversations;
     }
 
     private void createArea()
@@ -54,13 +60,7 @@ public class Desktop implements Application
 			switch(event.getSpecial())
 			{ 
 			case DELETE:
-			    /*
-			      if (!Popups.confirmDefaultNo(luwrain, luwrain.i18n().getStaticStr("DesktopDeleteConfirmPopupName"), luwrain.i18n().getStaticStr("DesktopDeleteConfirmPopupText")))
-			      return true;
-			    */
-			    if (onDeleteImpl(getHotPointX(), getHotPointY()))
-				refresh();
-			    return true;
+			    return onDeleteImpl(getHotPointX(), getHotPointY());
 			}
 		    return super.onKeyboardEvent(event);
 		}
@@ -77,6 +77,11 @@ public class Desktop implements Application
 		    default:
 			return super.onEnvironmentEvent(event);
 		    }
+		}
+
+		@Override protected String noContentStr()
+		{
+		    return "Рабочий стол пуст";
 		}
 
 		@Override public boolean insertRegion(int x, int y, RegionContent data)
@@ -135,11 +140,15 @@ public class Desktop implements Application
 
     boolean onDeleteImpl(int x, int y)
     {
-	if (y < model.getFirstUniRefPos())
+	final int index = y - model.getFirstUniRefPos();
+	if (index < 0)
 	    return false;
-	if (!uniRefList.delete(y - model.getFirstUniRefPos()))
+	if (conversations != null && !conversations.deleteDesktopItemConfirmation())
+	    return true;
+	if (!uniRefList.delete(index))
 	    return false;
 	uniRefList.save();
+	area.refresh();
 	return true;
     }
 

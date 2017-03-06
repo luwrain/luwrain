@@ -95,6 +95,7 @@ class Environment extends EnvironmentAreas
     {
 	speech = new Speech(cmdLine, registry);
 	desktop.onLaunch(interfaces.requestNew(desktop, this));
+	desktop.setConversations(conversations);
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
 	windowManager = new WindowManager(interaction, screenContentManager);
