@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.popups;
 
@@ -23,12 +8,12 @@ import java.nio.file.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-//import org.luwrain.util.*;
+import org.luwrain.io.*;
 
-public class CommanderPopup extends CommanderArea implements CommanderArea.ClickHandler, Popup, PopupClosingRequest
+public class CommanderPopup extends NgCommanderArea<File> implements NgCommanderArea.ClickHandler<File>, Popup, PopupClosingRequest
 {
-    protected final Luwrain luwrain;
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
+    protected final Luwrain luwrain;
     protected final String name;
     protected final FilePopup.Acceptance acceptance;
     protected final Set<Popup.Flags> popupFlags;
@@ -36,9 +21,9 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 
     public CommanderPopup(Luwrain luwrain, String name,
 			  Path path, FilePopup.Acceptance acceptance,
-			  CommanderArea.ClickHandler clickHandler, Set<Popup.Flags> popupFlags)
+			  NgCommanderArea.ClickHandler<File> clickHandler, Set<Popup.Flags> popupFlags)
     {
-	super(constructParams(luwrain), path);
+	super(constructParams(luwrain));
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(popupFlags, "popupFlags");
@@ -47,15 +32,16 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	this.popupFlags = popupFlags;
 	this.acceptance = acceptance;
 	setClickHandler(clickHandler != null?clickHandler:this);
+	open(path.toFile());
     }
 
-    @Override public ClickHandler.Result onCommanderClick(CommanderArea area, Path path, boolean dir)
+    @Override public NgCommanderArea.ClickHandler.Result onCommanderClick(NgCommanderArea area, File file, boolean dir)
     {
 	NullCheck.notNull(area, "area");
-	NullCheck.notNull(path, "path");
+	NullCheck.notNull(file, "file");
 	if (dir)
 	    return ClickHandler.Result.OPEN_DIR;
-	result = path;
+	result = file.toPath();
 	closing.doOk();
 	return ClickHandler.Result.OK;
     }
@@ -74,11 +60,11 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	    switch(event.getChar())
 	    {
 	    case '=':
-		setCommanderFilter(new CommanderUtils.AllFilesFilter());
+		//		setCommanderFilter(new CommanderUtils.AllFilesFilter());
 		refresh();
 		return true;
 	    case '-':
-		setCommanderFilter(new CommanderUtils.NoHiddenFilter());
+		//		setCommanderFilter(new CommanderUtils.NoHiddenFilter());
 		refresh();
 		return true;
 	    }
@@ -96,7 +82,8 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	    openMountedPartitions();
 	    return true;
 	case OK:
-	    result = opened();
+	    if (opened() == null)
+		result = opened().toPath();
 	    closing.doOk();
 	    return true;
 	default:
@@ -138,24 +125,20 @@ public class CommanderPopup extends CommanderArea implements CommanderArea.Click
 	return popupFlags;
     }
 
-    private void openMountedPartitions()
+    protected void openMountedPartitions()
     {
 	final org.luwrain.base.Partition part = Popups.mountedPartitions(luwrain, popupFlags);
 	if (part == null)
 	    return;
-	open(part.file().toPath(), null);
+	open(part.file(), null);
     }
 
-    static private CommanderArea.Params constructParams(Luwrain luwrain)
+    static private NgCommanderArea.Params<File> constructParams(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	final CommanderArea.Params params = new CommanderArea.Params();
-	params.environment = new DefaultControlEnvironment(luwrain);
-	params.appearance = new CommanderUtils.DefaultAppearance(params.environment);
-	//    public CommanderArea.ClickHandler clickHandler;
-	//	params.selecting = false;
-	params.filter = new CommanderUtils.NoHiddenFilter();
-	params.comparator = new CommanderUtils.ByNameComparator();
+	final NgCommanderArea.Params<File> params = CommanderUtilsFile.createParams(new DefaultControlEnvironment(luwrain));
+	params.filter = new CommanderUtilsFile.AllEntriesFilter();
+	params.comparator = new CommanderUtilsFile.ByNameComparator();
 	return params;
     }
 }
