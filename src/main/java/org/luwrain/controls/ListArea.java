@@ -300,22 +300,24 @@ public class ListArea  implements Area, RegionProvider
      */
     public void refresh()
     {
+	final Object previouslySelected = selected();
 	model.refresh();
+	environment.onAreaNewContent(this);
 	final int count = model.getItemCount();
 	if (count == 0)
 	{
 	    hotPointX = 0;
 	    hotPointY = 0;
-	    environment.onAreaNewContent(this);
 	    environment.onAreaNewHotPoint(this);
 	    return;
 	}
+	if (previouslySelected != null && select(previouslySelected, false))
+	    return;
 	hotPointY = hotPointY < count?hotPointY :count - 1;
 	final Object item = model.getItem(hotPointY);
 	if (item != null)
 	    hotPointX = appearance.getObservableLeftBound(item); else
 	    hotPointX = 0;
-	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
     }
 
@@ -686,7 +688,11 @@ protected boolean onArrowRight(KeyboardEvent event)
 	if (noContent())
 	    return true;
 	final Object item = selected();
-	NullCheck.notNull(item, "item");
+	if (item == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
@@ -711,7 +717,11 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (noContent())
 	    return true;
 	final Object item = selected();
-	NullCheck.notNull(item, "item");
+	if (item == null)
+	{
+	    environment.hint(Hints.EMPTY_LINE);
+	    return true;
+	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
@@ -732,7 +742,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	return true;
     }
 
-    private boolean onAltRight(KeyboardEvent event)
+    protected boolean onAltRight(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;
@@ -771,7 +781,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	return true;
     }
 
-    private boolean onAltLeft(KeyboardEvent event)
+    protected boolean onAltLeft(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;
@@ -808,7 +818,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	return true;
     }
 
-    private boolean onAltEnd(KeyboardEvent event)
+protected boolean onAltEnd(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;
@@ -826,7 +836,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	return true;
     }
 
-    private boolean onAltHome(KeyboardEvent event)
+protected boolean onAltHome(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;
@@ -865,7 +875,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	return clickHandler.onListClick(this, selectedIndex(), selected());
     }
 
-    private boolean onOk(EnvironmentEvent event)
+    protected boolean onOk(EnvironmentEvent event)
     {
 	if (clickHandler == null)
 	    return false;
