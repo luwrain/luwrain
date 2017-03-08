@@ -700,6 +700,12 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	}
     }
 
+    public void setEventResponse(EventResponse eventResponse)
+    {
+	NullCheck.notNull(eventResponse, "eventResponse");
+	environment.setEventResponse(eventResponse);
+    }
+
 public FilesOperations getFilesOperations()
     {
 	return environment.getFilesOperations();

@@ -30,7 +30,6 @@ class Environment extends EnvironmentAreas
     static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
-
     private AreaListening listening = null;
     private final OperatingSystem os;
     private final Interaction interaction;
@@ -1077,5 +1076,22 @@ onNewAreasLayout();
     FilesOperations getFilesOperations()
     {
 	return os.getFilesOperations();
+    }
+
+    @Override protected void processEventResponse(EventResponse eventResponse)
+    {
+	NullCheck.notNull(eventResponse, "eventResponse");
+	final EventResponse.Type type = eventResponse.getResponseType();
+	if (type == null)
+	    return;
+switch(type)
+	{
+	case LIST_ITEM:
+	    playSound(Sounds.LIST_ITEM);
+	    speech.speak(EventResponse.getText(eventResponse, i18n), 0, 0);
+	    break;
+	default:
+	    Log.debug("core", "unsupported event response type:" + type.toString());
+	}
     }
 }

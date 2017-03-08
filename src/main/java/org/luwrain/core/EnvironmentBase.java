@@ -24,6 +24,7 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
     protected final CmdLine cmdLine;
     protected final  Registry registry;
     protected final EventQueue eventQueue = new EventQueue();
+    private EventResponse eventResponse = null;
     protected Speech speech = null;
     protected final Braille braille = new Braille();
     private RegionContent clipboard = null;
@@ -52,6 +53,7 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
     abstract protected boolean onEvent(Event event);
     abstract protected void introduce(EventLoopStopCondition stopCondition);
     abstract Luwrain getObjForEnvironment();
+    abstract protected void processEventResponse(EventResponse eventResponse);
 
     protected void eventLoop(EventLoopStopCondition stopCondition)
     {
@@ -60,6 +62,7 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
 	{
 	    needForIntroduction = false;
 	    introduceApp = false;
+	    eventResponse = null;
 	    final Event event = eventQueue.takeEvent();
 	    if (event == null)
 		continue;
@@ -70,7 +73,14 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
 	    }
 	    event.markAsProcessed();
 	    if (!eventQueue.hasAgain())
+	    {
+		if (eventResponse != null)
+		{
+		    processEventResponse(eventResponse);
+		eventResponse = null;
+		} else
 		introduce(stopCondition);
+	    }
 	}
     }
 
@@ -166,4 +176,13 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
 	NullCheck.notNull(newClipboard, "newClipboard");
 	this.clipboard = newClipboard;
     }
+
+
+    void setEventResponse(EventResponse eventResponse)
+    {
+	NullCheck.notNull(eventResponse, "eventResponse");
+	this.eventResponse = eventResponse;
+    }
+
+
 }

@@ -234,10 +234,9 @@ core.quit();
 	    if (item instanceof UniRefInfo)
 	    {
 		final UniRefInfo i = (UniRefInfo)item;
-		luwrain.playSound(Sounds.LIST_ITEM);
-		if (flags.contains(Flags.BRIEF))
-		    luwrain.say(i.title()); else
-		    luwrain.say(i.toString());
+if (!flags.contains(Flags.BRIEF))
+		luwrain.setEventResponse(DefaultEventResponse.listItem(i.title(), Suggestions.CLICKABLE_LIST_ITEM)); else
+    luwrain.setEventResponse(DefaultEventResponse.listItem(i.title(), null));
 		return;
 	    }
 	}
