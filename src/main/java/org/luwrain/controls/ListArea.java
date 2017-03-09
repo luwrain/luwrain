@@ -179,19 +179,20 @@ public class ListArea  implements Area, RegionProvider
      * @param introduce Must be true if it is necessary to introduce the object, once it's found
      * @return True if the request object is found, false otherwise
      */
-    public boolean select(Object obj, boolean introduce)
+    public boolean select(Object obj, boolean announce)
     {
 	NullCheck.notNull(obj, "obj");
 	for(int i = 0;i < model.getItemCount();++i)
 	{
 	    final Object o = model.getItem(i);
-	    if (o == null ||
-		(obj != o && !obj.equals(o)))
+	    if (o == null)
+		continue;
+		if (obj != o && !obj.equals(o))
 	continue;
-	hotPointY = i;
+	    hotPointY = getLineIndexByItemIndex(i);
 	hotPointX = appearance.getObservableLeftBound(o);
 	environment.onAreaNewHotPoint(this);
-	if (introduce)
+	if (announce)
 	    appearance.announceItem(o, NONE_APPEARANCE_FLAGS);
 	return true;
 	}
