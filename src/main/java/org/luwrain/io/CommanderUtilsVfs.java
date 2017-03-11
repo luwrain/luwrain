@@ -214,6 +214,23 @@ public class CommanderUtilsVfs
 	}
     }
 
+    static public class NoHiddenFilter implements CommanderArea.Filter<FileObject>
+    {
+	@Override public boolean commanderEntrySuits(FileObject entry)
+	{
+	    NullCheck.notNull(entry, "entry");
+	    try {
+	    return !entry.isHidden();
+	    }
+	    catch(java.io.IOException e)
+	    {
+		Log.error(LOG_COMPONENT, "Unable to get attributes of " + entry.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
+		return true;
+	    }
+	}
+    }
+
+
     static public CommanderArea.Params<FileObject> createParams(ControlEnvironment environment) throws org.apache.commons.vfs2.FileSystemException
     {
 	NullCheck.notNull(environment, "environment");

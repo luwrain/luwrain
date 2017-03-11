@@ -89,7 +89,7 @@ public class CommanderArea<E> extends ListArea
 
     public CommanderArea(Params<E> params)
     {
-	super(prepareListParams(params));
+	super(createListParams(params));
 	NullCheck.notNull(params.flags, "params.flags");
 	this.model = params.model;
 	this.appearance = params.appearance;
@@ -372,7 +372,7 @@ public class CommanderArea<E> extends ListArea
 	return environment.getStaticStr("CommanderNoContent");
     }
 
-    static protected ListArea.Params prepareListParams(CommanderArea.Params params)
+    static protected ListArea.Params createListParams(CommanderArea.Params params)
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.environment, "params.environment");
