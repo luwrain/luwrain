@@ -161,6 +161,8 @@ public class CommanderArea<E> extends ListArea
     public E getSelectedEntry()
     {
 	final Wrapper<E> w = getSelectedWrapper();
+	if (w == null)
+	    return null;
 	return w.type != EntryType.PARENT?w.obj:null;
     }
 
