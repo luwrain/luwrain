@@ -149,14 +149,28 @@ public class CommanderArea<E> extends ListArea
 	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.length < 1;
     }
 
+    protected Wrapper<E> getSelectedWrapper()
+    {
+	final Object res = selected();
+	if (res == null || !(res instanceof Wrapper))
+	    return null;
+	    return (Wrapper)res;
+    }
+
     //never returns parent
     public E getSelectedEntry()
     {
-	final Object res = selected();
-	if (res == null)
-	    return null;
-	final Wrapper<E> w = (Wrapper<E>)res;
+	final Wrapper<E> w = getSelectedWrapper();
 	return w.type != EntryType.PARENT?w.obj:null;
+    }
+
+    //Never returns parent 
+    public String getSelectedEntryText()
+    {
+	final Wrapper<E> wrapper = getSelectedWrapper();
+	if (wrapper == null || wrapper.type == EntryType.PARENT)
+	    return null;
+	return appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.isMarked());
     }
 
     public E opened()
@@ -181,6 +195,7 @@ public class CommanderArea<E> extends ListArea
 	open(entry, null, true);
     }
 
+    //If no desiredSelected found, area tries to leave selection unchanged
     public boolean open(E entry, String desiredSelected)
     {
 	NullCheck.notNull(entry, "entry ");
@@ -193,6 +208,7 @@ public class CommanderArea<E> extends ListArea
 	return open(entry, null, announce);
     }
 
+    //If no desiredSelected found, area tries to leave selection unchanged
     public boolean open(E entry, String desiredSelected, boolean announce)
     {
 	NullCheck.notNull(entry, "entry");
@@ -200,6 +216,7 @@ public class CommanderArea<E> extends ListArea
 	if (closed || isBusy())
 	    return false;
 	final E newCurrent = entry;
+	final String previouslySelectedText = getSelectedEntryText();
 	task = new FutureTask(()->{
 		try {
 		    final Wrapper<E>[] wrappers;
@@ -217,11 +234,21 @@ public class CommanderArea<E> extends ListArea
 			    Arrays.sort(wrappers, comparator);
 		    } else
 			wrappers = null;
+		    //Trying to find what to select after opening
 		    int index = -1;
 		    if (desiredSelected != null && !desiredSelected.isEmpty())
+		    {
 			for(int i = 0;i < wrappers.length;++i)
 			    if (desiredSelected.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].isMarked())))
 				index = i;
+			//If there is still no found selection, we must try to save selection without changes
+			if (index < 0 && previouslySelectedText != null && !previouslySelectedText.isEmpty())
+			for(int i = 0;i < wrappers.length;++i)
+			    if (previouslySelectedText.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].isMarked())))
+				index = i;
+
+
+		    }
 		    loadingResultHandler.onLoadingResult(newCurrent, wrappers, index, announce);
 		}
 		catch (Exception e)
@@ -235,7 +262,7 @@ public class CommanderArea<E> extends ListArea
 
     public boolean reread(boolean announce)
     {
-	return reread(null, announce);
+	return reread(getSelectedEntryText(), announce);
     }
 
     public boolean reread(String desiredSelected, boolean announce)
