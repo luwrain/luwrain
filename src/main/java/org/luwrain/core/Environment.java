@@ -1088,7 +1088,7 @@ switch(type)
 	{
 	case LIST_ITEM:
 	    playSound(Sounds.LIST_ITEM);
-	    speech.speak(EventResponse.getText(eventResponse, i18n), 0, 0);
+	    speech.speakEventResponse(eventResponse, 0, 0, i18n);
 	    break;
 	default:
 	    Log.debug("core", "unsupported event response type:" + type.toString());

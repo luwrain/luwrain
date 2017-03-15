@@ -25,12 +25,14 @@ class Speech
     static private final String SPEECH_PREFIX = "--speech=";
     static private final String ADD_SPEECH_PREFIX = "--add-speech=";
 
+    private final CmdLine cmdLine;
+    private final Registry registry;
+    private final Settings.SpeechParams settings;
+
     private final HashMap<String, Factory> factories = new HashMap<String, Factory>();
     private final HashMap<String, Channel> channels = new HashMap<String, Channel>();
     private Channel defaultChannel = null;
-    private CmdLine cmdLine;
-    private Registry registry;
-    private Settings.SpeechParams settings;
+
     private int pitch = 50;
     private int rate = 50;
 
@@ -43,63 +45,6 @@ class Speech
 	settings = Settings.createSpeechParams(registry);
     }
 
-    boolean init()
-    {
-	final String speechArg = cmdLine.getFirstArg(SPEECH_PREFIX);
-	if (speechArg != null && !speechArg.isEmpty())
-	{
-	    Log.debug("core", "trying to initialize speech channel for main speech output with arguments line \'" + speechArg + "\', skipping all channels in the registry");
-	    final Channel main = loadChannelByStr(speechArg);
-	    if (main == null)
-	    {
-		Log.error("core", "unable to initialize default speech channel with arguments line \'" + speechArg + "\'");
-		return false;
-	    }
-	    channels.put(main.getChannelName(), main);
-	    final String[] additional = cmdLine.getArgs(ADD_SPEECH_PREFIX);
-	    final LinkedList<Channel> res = new LinkedList<Channel>();
-	    for(String s: additional)
-	    {
-		Log.debug("core", "initializing addition speech channel with arguments line \'" + s + "\'");
-		final Channel c = loadChannelByStr(s);
-		if (c != null)
-		{
-		    final String name = c.getChannelName();
-		    if (channels.containsKey(name))
-		    {
-			Log.error("core", "speech channel name \'" + name + "\' used more than ones");
-			return false;
-		    }
-		    channels.put(name, c);
-		}
-	    }
-	    defaultChannel = main;
-	} else
-	{
-	    //from registry
-	    loadRegistryChannels();
-	    if (!chooseDefaultChannel())
-	    {
-		Log.error("core", "unable to choose the default speech channel");
-		return false;
-	    }
-	}
-	Log.info("core", "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
-	pitch = settings.getPitch(50);
-	rate = settings.getRate(50);
-	if (pitch < 0)
-	    pitch = 0;
-	if (pitch > 100)
-	    pitch = 100;
-	if (rate < 0)
-	    rate = 0;
-	if (rate > 100)
-	    rate = 100;
-	defaultChannel.setDefaultRate(rate);
-	defaultChannel.setDefaultPitch(50);
-	return true;
-    }
-
     //Always cancels any previous text to speak
     void speak(String text, int relPitch, int relRate)
     {
@@ -108,6 +53,23 @@ class Speech
 	    return;
 	defaultChannel.speak(text, null, relPitch, relRate, true);
     }
+
+    //Always cancels any previous text to speak
+    boolean speakEventResponse(EventResponse eventResponse, int relPitch, int relRate, I18n i18n)
+    {
+	NullCheck.notNull(eventResponse, "eventResponse");
+	NullCheck.notNull(i18n, "i18n");
+	if (defaultChannel == null)
+	    return false;
+	final String text = getEventResponseText(eventResponse, i18n, ", ");
+			  if (text != null && !text.trim().isEmpty ())
+			  {
+	defaultChannel.speak(text, null, relPitch, relRate, true);
+	return true;
+			  }
+			  return false;
+    }
+
 
     //Always cancels any previous text to speak
     void speakLetter(char letter, int relPitch, int relRate)
@@ -197,6 +159,65 @@ class Speech
     {
 	NullCheck.notNull(channel, "channel");
 	return channel == defaultChannel;
+    }
+
+
+    boolean init()
+    {
+	final String speechArg = cmdLine.getFirstArg(SPEECH_PREFIX);
+	if (speechArg != null && !speechArg.isEmpty())
+	{
+	    Log.debug("core", "trying to initialize speech channel for main speech output with arguments line \'" + speechArg + "\', skipping all channels in the registry");
+	    final Channel main = loadChannelByStr(speechArg);
+	    if (main == null)
+	    {
+		Log.error("core", "unable to initialize default speech channel with arguments line \'" + speechArg + "\'");
+		return false;
+	    }
+	    channels.put(main.getChannelName(), main);
+	    final String[] additional = cmdLine.getArgs(ADD_SPEECH_PREFIX);
+	    final LinkedList<Channel> res = new LinkedList<Channel>();
+	    for(String s: additional)
+	    {
+		Log.debug("core", "initializing addition speech channel with arguments line \'" + s + "\'");
+		final Channel c = loadChannelByStr(s);
+		if (c != null)
+		{
+		    final String name = c.getChannelName();
+		    if (channels.containsKey(name))
+		    {
+			Log.error("core", "speech channel name \'" + name + "\' used more than ones");
+			return false;
+		    }
+		    channels.put(name, c);
+		}
+	    }
+	    defaultChannel = main;
+	} else
+	{
+	    //from registry
+	    loadRegistryChannels();
+	    if (!chooseDefaultChannel())
+	    {
+		Log.error("core", "unable to choose the default speech channel");
+		return false;
+	    }
+	}
+	Log.info("core", "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
+	pitch = settings.getPitch(50);
+	rate = settings.getRate(50);
+	if (pitch < 0)
+	    pitch = 0;
+	if (pitch > 100)
+	    pitch = 100;
+	if (rate < 0)
+	    rate = 0;
+	if (rate > 100)
+	    rate = 100;
+	defaultChannel.setDefaultRate(rate);
+	defaultChannel.setDefaultPitch(50);
+	defaultChannel.setCurrentPuncMode(Channel.PuncMode.NONE);
+	return true;
     }
 
     boolean addFactory(Factory factory)
@@ -347,4 +368,52 @@ class Speech
 	defaultChannel = any;
 	return true;
     }
+
+    static private String getEventResponseText(EventResponse eventResponse, I18n i18n, String delimiter)
+    {
+	NullCheck.notNull(eventResponse, "eventResponse");
+	NullCheck.notNull(i18n, "i18n");
+	NullCheck.notNull(delimiter, "delimiter");
+	final StringBuilder b = new StringBuilder();
+	final EventResponse.Unit prefix = eventResponse.getPrefix();
+	final EventResponse.Unit content = eventResponse.getResponseContent();
+	final EventResponse.Unit postfix = eventResponse.getPostfix();
+	final EventResponse.Suggestion suggestion = eventResponse.getSuggestion();
+	if (prefix != null && prefix.getType() == EventResponse.Unit.Type.TEXT && 
+	    prefix.getText() != null && !prefix.getText().isEmpty())
+	    b.append(prefix.getText());
+	if (content != null && content.getType() == EventResponse.Unit.Type.TEXT &&
+	    content.getText() != null && !content.getText().isEmpty())
+	    b.append((b.length() > 0?delimiter:"") + content.getText());
+	if (postfix != null && postfix.getType() == EventResponse.Unit.Type.TEXT &&
+	    postfix.getText() != null && !postfix.getText().isEmpty())
+	    b.append((b.length() > 0?delimiter:"") + postfix.getText());
+	if (suggestion != null)
+	{
+	    final String text = getSuggestionText(suggestion, i18n);
+	    if (text != null && !text.isEmpty())
+	    b.append((b.length() > 0?delimiter:"") + text);
+	}
+	return new String(b);
+    }
+
+    //May return null
+    static private String getSuggestionText(EventResponse.Suggestion suggestion, I18n i18n)
+    {
+	NullCheck.notNull(suggestion, "suggestion");
+	if (suggestion.getType() == null)
+	return null;
+	if (suggestion.getType() == EventResponse.Suggestion.Type.TEXT)
+return suggestion.getText();
+if (suggestion.getType() != EventResponse.Suggestion.Type.PREDEFINED || suggestion.getPredefined() == null)
+    return null;
+switch(suggestion.getPredefined())
+{
+case CLICKABLE_LIST_ITEM:
+    return "Элемент списка, нажмите Enter для активации";
+default:
+    return null;
+}
+    }
+
 }
