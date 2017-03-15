@@ -19,4 +19,6 @@ package org.luwrain.core;
 public enum Suggestions
 {
     CLICKABLE_LIST_ITEM,
+    LIST_ITEM,
+    POPUP_LIST_ITEM,
 };

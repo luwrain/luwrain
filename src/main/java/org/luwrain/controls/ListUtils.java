@@ -25,19 +25,30 @@ public class ListUtils
     static public class DefaultAppearance implements ListArea.Appearance
     {
 	protected final ControlEnvironment environment;
+	protected final Suggestions suggestion;
+
+	public DefaultAppearance(ControlEnvironment environment, Suggestions suggestion)
+	{
+	    NullCheck.notNull(environment, "environment");
+	    this.environment = environment;
+	    this.suggestion = suggestion;
+	}
 
 	public DefaultAppearance(ControlEnvironment environment)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    this.environment = environment;
+	    this.suggestion = Suggestions.LIST_ITEM;
 	}
+
 
 	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
-	    environment.playSound(Sounds.LIST_ITEM);
-	    environment.say(item.toString());
+	    //	    environment.playSound(Sounds.LIST_ITEM);
+	    //	    environment.say(item.toString());
+	    environment.setEventResponse(DefaultEventResponse.listItem(item.toString(), flags.contains(Flags.BRIEF)?null:suggestion));
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)

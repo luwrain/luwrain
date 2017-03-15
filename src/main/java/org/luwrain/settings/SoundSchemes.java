@@ -155,7 +155,7 @@ return items.toArray(new Item[items.size()]);
 	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final ListArea.Params params = new ListArea.Params();
 	params.environment = new DefaultControlEnvironment(luwrain);
-	params.appearance = new ListUtils.DefaultAppearance(params.environment);
+	params.appearance = new ListUtils.DefaultAppearance(params.environment, Suggestions.LIST_ITEM);
 	params.name = "Звуковые схемы";
 	params.model = new ListUtils.FixedModel(loadItems(luwrain));
 	return new SoundSchemes(controlPanel, params);

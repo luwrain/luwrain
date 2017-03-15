@@ -411,6 +411,15 @@ switch(suggestion.getPredefined())
 {
 case CLICKABLE_LIST_ITEM:
     return "Элемент списка, нажмите Enter для активации";
+
+case LIST_ITEM:
+    return "Элемент списка";
+
+case POPUP_LIST_ITEM:
+    return "Элемент списка, нажмите Enter для выбора";
+
+
+
 default:
     return null;
 }

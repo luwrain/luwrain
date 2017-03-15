@@ -145,4 +145,10 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	luwrain.silence();
     }
+
+    @Override public void setEventResponse(EventResponse eventResponse)
+    {
+	NullCheck.notNull(eventResponse, "eventResponse");
+	luwrain.setEventResponse(eventResponse);
+    }
 }

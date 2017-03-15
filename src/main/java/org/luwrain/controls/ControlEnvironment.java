@@ -40,4 +40,5 @@ int getAreaVisibleHeight(Area area);
     void playSound(Sounds sound);
     UniRefInfo getUniRefInfo(String uniRef);
     void silence();
+    void setEventResponse(EventResponse eventResponse);
 }
