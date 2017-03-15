@@ -20,6 +20,11 @@ import java.util.*;
 
 public interface Settings
 {
+    static final String UI_PATH = "/org/luwrain/ui";
+    static final String NETWORK_PATH = "/org/luwrain/network";
+
+
+
     static final String FILE_TYPES_APP_INFO_PATH = "/org/luwrain/file-types/app-info";
     static final String FILE_TYPES_PATH = "/org/luwrain/file-types";
     static final String SPEECH_CHANNELS_PATH = "/org/luwrain/speech/channels";
@@ -28,7 +33,6 @@ public interface Settings
     static final String SPEECH_PATH = "/org/luwrain/speech";
     static final String BRAILLE_PATH = "/org/luwrain/braille";
     static final String CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/current-scheme";
-    static final String UI_PATH = "/org/luwrain/ui";
     static final String INTERACTION_PARAMS_PATH = "/org/luwrain/interaction";
     static final String OS_COMMANDS_PATH = "/org/luwrain/os/commands";
     static final String OS_SHORTCUTS_PATH = "/org/luwrain/os/shortcuts";
@@ -38,32 +42,63 @@ public interface Settings
     static final String DESKTOP_PATH = "/org/luwrain/desktop";
     static public final String DESKTOP_UNIREFS_PATH = "/org/luwrain/desktop/unirefs";
 
+    public interface UserInterface
+    {
+	String getLaunchGreeting(String defValue);
+	boolean getFilePopupSkipHidden(boolean defValue);
+	boolean getEmptyLineUnderRegularLists(boolean defValue);
+	boolean getCyclingRegularLists(boolean defValue);
+	boolean getEmptyLineAbovePopupLists(boolean defValue);
+	boolean getCyclingPopupLists(boolean defValue);
+	void setLaunchGreeting(String value);
+	void setFilePopupSkipHidden(boolean value);
+	void setEmptyLineUnderRegularLists(boolean value);
+	void setCyclingRegularLists(boolean value);
+	void setEmptyLineAbovePopupLists(boolean value);
+	void setCyclingPopupLists(boolean value);
+    }
+
     public interface Desktop
     {
 	String getIntroductionFile(String defValue);
 	void setIntroductionFile(String value);
     }
 
-public interface I18n
-{
-    String getCharsets(String defValue);
-    void setCharsets(String value);
-}
+    public interface Network
+    {
+	String getHttpProxyHost(String defValue);
+	String getHttpProxyPort(String defValue);
+	String getHttpProxyUser(String defValue);
+	String getHttpProxyPassword(String defValue);
+	String getSocksProxyHost(String defValue);
+	String getSocksProxyPort(String defValue);
+	void setHttpProxyHost(String value);
+	void setHttpProxyPort(String value);
+	void setHttpProxyLogin(String value);
+	void setHttpProxyPassword(String value);
+	void setSocksHost(String value);
+	void setSocksPort(String value);
+    }
 
+    public interface I18n
+    {
+	String getCharsets(String defValue);
+	void setCharsets(String value);
+    }
 
-public interface OsCommand
-{
-    String getName(String defValue);
-    String getCommand(String defValue);
-    boolean getShowResultingMessage(boolean defValue);
-}
+    public interface OsCommand
+    {
+	String getName(String defValue);
+	String getCommand(String defValue);
+	boolean getShowResultingMessage(boolean defValue);
+    }
 
-public interface OsShortcut
-{
-    String getName(String defValue);
-    String getCommand(String defValue);
-    boolean getShowResultingMessage(boolean defValue);
-}
+    public interface OsShortcut
+    {
+	String getName(String defValue);
+	String getCommand(String defValue);
+	boolean getShowResultingMessage(boolean defValue);
+    }
 
     public interface PersonalInfo
     {
@@ -75,13 +110,13 @@ public interface OsShortcut
 	void setSignature(String value);
     }
 
-public interface FileTypeAppInfo
-{
-    boolean getTakesUrls(boolean defValue);
-    boolean getTakesMultiple(boolean defValue);
-    void setTakesUrls(boolean value);
-    void setTakesMultiple(boolean value);
-}
+    public interface FileTypeAppInfo
+    {
+	boolean getTakesUrls(boolean defValue);
+	boolean getTakesMultiple(boolean defValue);
+	void setTakesUrls(boolean value);
+	void setTakesMultiple(boolean value);
+    }
 
     public interface InteractionParams
     {
@@ -238,27 +273,11 @@ public interface FileTypeAppInfo
 	void setTableCell(String value);
     }
 
-    public interface UserInterface
+    public interface Braille
     {
-	String getLaunchGreeting(String defValue);
-	boolean getFilePopupSkipHidden(boolean defValue);
-	boolean getEmptyLineUnderRegularLists(boolean defValue);
-	boolean getCyclingRegularLists(boolean defValue);
-	boolean getEmptyLineAbovePopupLists(boolean defValue);
-	boolean getCyclingPopupLists(boolean defValue);
-	void setLaunchGreeting(String value);
-	void setFilePopupSkipHidden(boolean value);
-	void setEmptyLineUnderRegularLists(boolean value);
-	void setCyclingRegularLists(boolean value);
-	void setEmptyLineAbovePopupLists(boolean value);
-	void setCyclingPopupLists(boolean value);
+	boolean getEnabled(boolean defValue);
+	void setEnabled(boolean value);
     }
-
-public interface Braille
-{
-    boolean getEnabled(boolean defValue);
-    void setEnabled(boolean value);
-}
 
     public interface SpeechParams
     {
@@ -373,5 +392,11 @@ public interface Braille
     {
 	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, DESKTOP_PATH, Desktop.class);
+    }
+
+    static public Network createNetwork(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, NETWORK_PATH, Network.class);
     }
 }

@@ -105,6 +105,7 @@ public class Init
 	    return coreProps.getPathProperty(propName);
 	}
     }
+
     private boolean init()
     {
 	coreProps.load(dataDir.resolve("properties"), userDataDir.resolve("properties"));
@@ -140,6 +141,18 @@ public class Init
 	    Log.fatal("init", "interaction initialization failed");
 	    return false;
 	}
+
+	//network
+
+	final Settings.Network network = Settings.createNetwork(registry);
+	System.getProperties().put("socksProxyHost", network.getSocksProxyHost(""));
+	System.getProperties().put("socksProxyPort", network.getSocksProxyPort(""));
+	System.getProperties().put("http.proxyHost", network.getHttpProxyHost(""));
+	System.getProperties().put("http.proxyPort", network.getHttpProxyPort(""));
+	System.getProperties().put("http.proxyUser", network.getHttpProxyUser(""));
+	System.getProperties().put("http.proxyPassword",network.getHttpProxyPassword("") );
+
+	//OK!
 	return true;
     }
 
