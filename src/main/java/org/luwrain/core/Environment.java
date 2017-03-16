@@ -196,10 +196,8 @@ class Environment extends EnvironmentAreas
     //It is admissible situation if shortcut returns null
     void launchAppIface(String shortcutName, String[] args)
     {
-	NullCheck.notNull(shortcutName, "shortcutName");
+	NullCheck.notEmpty(shortcutName, "shortcutName");
 	NullCheck.notNullItems(args, "args");
-	if (shortcutName.trim().isEmpty())
-	    throw new IllegalArgumentException("shortcutName may not be empty");
 	Log.info("core", "launching application \'" + shortcutName + "\' with " + args.length + " argument(s)");
 	for(int i = 0;i < args.length;++i)
 	    Log.info("core", "args[" + i + "]: " + args[i]);
@@ -211,7 +209,7 @@ class Environment extends EnvironmentAreas
 	    if (a != null)
 		launchApp(a);
     }
-
+    
     void launchApp(Application app)
     {
 	NullCheck.notNull(app, "app");
