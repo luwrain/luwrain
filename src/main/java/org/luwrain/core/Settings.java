@@ -22,8 +22,7 @@ public interface Settings
 {
     static final String UI_PATH = "/org/luwrain/ui";
     static final String NETWORK_PATH = "/org/luwrain/network";
-
-
+    static final String DATETIME_PATH = "/org/luwrain/date-time";
 
     static final String FILE_TYPES_APP_INFO_PATH = "/org/luwrain/file-types/app-info";
     static final String FILE_TYPES_PATH = "/org/luwrain/file-types";
@@ -79,6 +78,12 @@ public interface Settings
 	void setSocksHost(String value);
 	void setSocksPort(String value);
     }
+
+public interface DateTime
+{
+    String getTimeZone(String defValeu);
+    void setTimeZone(String value);
+}
 
     public interface I18n
     {
@@ -398,5 +403,11 @@ public interface Settings
     {
 	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, NETWORK_PATH, Network.class);
+    }
+
+    static public DateTime createDateTime(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, DATETIME_PATH, DateTime.class);
     }
 }

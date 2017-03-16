@@ -34,6 +34,8 @@ import org.luwrain.base.OperatingSystem;
  */
 public class Init
 {
+    static private final String LOG_COMPONENT = "init";
+
     static private final String  PREFIX_PKG_LAUNCH = "--pkg-launch";
     static private final String  PREFIX_DATA_DIR = "--data-dir=";
     static private final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
@@ -110,6 +112,23 @@ public class Init
     {
 	coreProps.load(dataDir.resolve("properties"), userDataDir.resolve("properties"));
 	registry = new org.luwrain.registry.fsdir.RegistryImpl(userDataDir.resolve("registry"));
+
+	    //time zone
+	{
+	    final Settings.DateTime sett = Settings.createDateTime(registry);
+	    final String value = sett.getTimeZone("");
+	    if (!value.trim().isEmpty())
+	    {
+		final TimeZone timeZone = TimeZone.getTimeZone(value.trim());
+		if (timeZone != null)
+		{
+		Log.debug(LOG_COMPONENT, "Setting time zone to " + value.trim());
+		TimeZone.setDefault(timeZone);
+		} else
+		    Log.warning(LOG_COMPONENT, "time zone " + value.trim() + " is unknown");
+	    }
+	}
+
 	if (!initOs())
 	    return false;
 	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();
@@ -248,6 +267,10 @@ public class Init
 	    System.setOut(log);
 	    System.setErr(log);
 	}
+
+
+	System.out.println("kaka " + System.getProperty("user.timezone"));
+
 	setUtf8();
 	addJarsToClassPath("jar");
 	addJarsToClassPath("lib");
