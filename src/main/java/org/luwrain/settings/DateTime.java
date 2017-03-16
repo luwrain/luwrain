@@ -16,6 +16,8 @@
 
 package org.luwrain.settings;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
@@ -46,7 +48,20 @@ fillForm();
 
     @Override public boolean saveSectionData()
     {
-	sett.setTimeZone(getEnteredText("time-zone"));
+	final String value = getEnteredText("time-zone").trim();
+	if (value.isEmpty())
+	{
+	    sett.setTimeZone("");
+	    return true;
+	}
+	final TimeZone timeZone = TimeZone.getTimeZone(value); 
+	if (timeZone == null)//Looks like never happens
+	{
+	    luwrain.message("Неизвестный часовой пояс: " + value.trim());
+	    return false;
+	}
+	TimeZone.setDefault(timeZone);
+	sett.setTimeZone(value.trim());
 	return true;
     }
 
