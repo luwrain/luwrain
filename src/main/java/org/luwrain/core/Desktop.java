@@ -151,6 +151,8 @@ core.quit();
 
     boolean onDeleteImpl(int x, int y)
     {
+	if (area.selected() == null)
+	    return false;
 	final int index = y - model.getFirstUniRefPos();
 	if (index < 0)
 	    return false;
