@@ -579,13 +579,13 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (noContent())
 	    return true;
 	final int count = model.getItemCount();
-	final char c = event.getChar();
+	final char c = Character.toLowerCase(event.getChar());
 	final String beginning;
 	if (selected() != null)
 	{
 	    if (hotPointX >= appearance.getObservableRightBound(selected()))
 		return false;
-	    final String name = getObservableSubstr(selected());
+	    final String name = getObservableSubstr(selected()).toLowerCase();
 	    final int pos = Math.min(hotPointX - appearance.getObservableLeftBound(selected()), name.length());
 	    if (pos < 0)
 		return false;
@@ -595,7 +595,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	final String mustBegin = beginning + c;
 	for(int i = 0;i < count;++i)
 	{
-	    final String name = getObservableSubstr(model.getItem(i));
+	    final String name = getObservableSubstr(model.getItem(i)).toLowerCase();
 	    if (!name.startsWith(mustBegin))
 		continue;
 	    hotPointY = getLineIndexByItemIndex(i);
