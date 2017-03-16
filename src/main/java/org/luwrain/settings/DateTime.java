@@ -14,51 +14,41 @@
    General Public License for more details.
 */
 
-//Reads  and saves
-
 package org.luwrain.settings;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
-import org.luwrain.util.*;
 
-class PersonalInfo extends FormArea implements SectionArea
+class DateTime extends FormArea implements SectionArea
 {
     private final ControlPanel controlPanel;
     private final Luwrain luwrain;
     private final Registry registry;
-    private final Settings.PersonalInfo sett;
+    private final Settings.DateTime sett;
 
-    PersonalInfo(ControlPanel controlPanel)
+    DateTime(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), controlPanel.getCoreInterface().i18n().getStaticStr("CpPersonalInfoSection"));
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), "Дата и время");
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();
 	this.registry = luwrain.getRegistry();
-this.sett = Settings.createPersonalInfo(luwrain.getRegistry());
+this.sett = Settings.createDateTime(luwrain.getRegistry());
 fillForm();
     }
 
     private void fillForm()
     {
-	addEdit("name", luwrain.i18n().getStaticStr("CpPersonalInfoFullName"), sett.getFullName(""), null, true);
-	addEdit("address", luwrain.i18n().getStaticStr("CpPersonalInfoMailAddress"), sett.getDefaultMailAddress(""), null, true);
-	activateMultilineEdit(luwrain.i18n().getStaticStr("CpPersonalInfoSignature"), sett.getSignature(""), true);
+	addEdit("time-zone", "Часовой пояс:", sett.getTimeZone(""));
     }
 
     @Override public boolean saveSectionData()
     {
-	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final Registry registry = luwrain.getRegistry();
-	sett.setFullName(getEnteredText("name"));
-	sett.setDefaultMailAddress(getEnteredText("address"));
-	sett.setSignature(getMultilineEditText());
+	sett.setTimeZone(getEnteredText("time-zone"));
 	return true;
     }
-
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {

@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.settings;
 
@@ -14,7 +29,7 @@ public class StandardFactory implements Factory
     static private final Element fileTypes = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "FileTypes");
     static private final Element mainMenu = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "MainMenu");
     static private final Element sysInfo = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "SysInfo");
-    static private final Element speechParams = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechParams");
+    static private final Element dateTime = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "DateTime");
     //    static private final Element speechChannels = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechChannels");
     static private final Element speechCurrent = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechCurrent");
 
@@ -34,6 +49,7 @@ public class StandardFactory implements Factory
 	return new Element[]{
 	    StandardElements.ROOT,
 	    personalInfo,
+	    StandardElements.APPLICATIONS,
 	    StandardElements.UI,
 	    uiGeneral, 
 	    hotKeys,
@@ -41,7 +57,9 @@ public class StandardFactory implements Factory
 	    soundSchemes,
 	    soundsList,
 	    fileTypes,
-	    StandardElements.APPLICATIONS,
+
+
+	    dateTime,
 	    StandardElements.INPUT_OUTPUT,
 	    StandardElements.SPEECH,
 	    StandardElements.BRAILLE,
@@ -52,7 +70,6 @@ public class StandardFactory implements Factory
 	    StandardElements.HARDWARE,
 	    StandardElements.EXTENSIONS,
 	    StandardElements.WORKERS,
-	    speechParams,
 	    speechCurrent,
 	    //	    speechChannels,
 	};
@@ -70,6 +87,11 @@ public class StandardFactory implements Factory
 	    return new SimpleSection(StandardElements.ROOT, "Панель управления");
 	if (el.equals(StandardElements.APPLICATIONS))
 	    return new SimpleSection(StandardElements.APPLICATIONS, "Приложения");
+
+	if (el.equals(dateTime))
+	    return new SimpleSection(dateTime, "Дата и время", (controlPanel)->{return new DateTime(controlPanel);});
+
+
 		if (el.equals(StandardElements.INPUT_OUTPUT))
 		    return new SimpleSection(StandardElements.INPUT_OUTPUT, "Ввод/вывод");
 		if (el.equals(StandardElements.KEYBOARD))
@@ -102,8 +124,6 @@ public class StandardFactory implements Factory
 		    return new SimpleSection(mainMenu, "Главное меню");
 		if (el.equals(sysInfo))
 		    return new SimpleSection(sysInfo, "Информация о системе", (controlPanel)->SysInfo.create(controlPanel));
-		if (el.equals(speechParams))
-		    return new SimpleSection(speechParams, "Основные параметры", (controlPanel)->SpeechParams.create(controlPanel));
 		if (el.equals(speechCurrent))
 		    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel));
 		/*
