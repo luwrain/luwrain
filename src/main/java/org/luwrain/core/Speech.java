@@ -70,7 +70,6 @@ class Speech
 			  return false;
     }
 
-
     //Always cancels any previous text to speak
     void speakLetter(char letter, int relPitch, int relRate)
     {
@@ -161,7 +160,6 @@ class Speech
 	return channel == defaultChannel;
     }
 
-
     boolean init()
     {
 	final String speechArg = cmdLine.getFirstArg(SPEECH_PREFIX);
@@ -215,7 +213,7 @@ class Speech
 	if (rate > 100)
 	    rate = 100;
 	defaultChannel.setDefaultRate(rate);
-	defaultChannel.setDefaultPitch(50);
+	defaultChannel.setDefaultPitch(pitch);
 	defaultChannel.setCurrentPuncMode(Channel.PuncMode.NONE);
 	return true;
     }
