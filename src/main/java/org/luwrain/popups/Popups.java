@@ -138,13 +138,13 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
-	NullCheck.notNull(startWith, "startWith");
-	NullCheck.notNull(defaultPath, "defaultPath");
 	NullCheck.notNull(acceptance, "acceptance");
 	NullCheck.notNull(filePopupFlags, "filePopupFlags");
 	NullCheck.notNull(popupFlags, "popupFlags");
 	final FilePopup popup = new FilePopup(luwrain, name, prefix, acceptance,
-					      startWith, defaultPath, filePopupFlags, popupFlags);
+					      startWith != null?startWith:luwrain.getPathProperty("luwrain.dir.userhome"),
+					      defaultPath != null?defaultPath:luwrain.getPathProperty("luwrain.dir.userhome"),
+					      filePopupFlags, popupFlags);
 	luwrain.popup(popup);
 	return popup.closing.cancelled()?null:popup.result();
     }
@@ -156,14 +156,11 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
-	NullCheck.notNull(startWith, "startWith");
-	NullCheck.notNull(defaultPath, "defaultPath");
 	NullCheck.notNull(acceptance, "acceptance");
 	return path(luwrain, name, prefix,
 		    startWith, defaultPath, 
 		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
-
 
     static public Path path(Luwrain luwrain,
 			    String name, String prefix,
@@ -172,7 +169,6 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
-	NullCheck.notNull(startWith, "startWith");
 	NullCheck.notNull(acceptance, "acceptance");
 	return path(luwrain, name, prefix,
 		    startWith, startWith, 
@@ -186,27 +182,29 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
-	NullCheck.notNull(startWith, "startWith");
 	return path(luwrain, name, prefix,
 		    startWith, startWith, 
 		    (path)->{return true;}, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
 
-
-    /*
-    static public Path[] commanderMultiple(Luwrain luwrain, String name,
-					   Path path, int flags,
-					   Set<Popup.Flags> popupFlags)
+    static public File directory(Luwrain luwrain, String name, String prefix, File startWith)
     {
-	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, popupFlags);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(prefix, "prefix");
+	final Path res = path(luwrain, name, prefix, startWith != null?startWith.toPath():null, (path)->{
+		if (!Files.isDirectory(path))
+		{
+		    luwrain.message("Указанный путь не является каталогом", Luwrain.MESSAGE_ERROR);
+		    return false;
+		}
+		return true;
+	    });
+	if (res == null)
 	    return null;
-	if (popup.marked().length > 0)
-	    return popup.marked();
-	return new Path[]{popup.selectedPath()};
+	return res.toFile();
     }
-    */
+
 
     static public Path commanderSingle(Luwrain luwrain, String name,
 				       Path path, FilePopup.Acceptance acceptance,
