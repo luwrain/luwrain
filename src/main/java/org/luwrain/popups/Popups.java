@@ -214,6 +214,7 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(path, "path");
 	NullCheck.notNull(popupFlags, "popupFlags");
+	luwrain.message(name);
 	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, acceptance, clickHandler, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
