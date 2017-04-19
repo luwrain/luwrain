@@ -744,6 +744,9 @@ onNewAreasLayout();
 	case Luwrain.MESSAGE_NOT_READY:
 	    message(text, Sounds.BLOCKED);
 	    break;
+	case Luwrain.MESSAGE_NOSOUND:
+	    message(text, null);
+	    break;
 	default:
 	    message(text,Sounds.MESSAGE);
 	}

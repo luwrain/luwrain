@@ -80,6 +80,8 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     /** The message must be issued with a sound announcement indicating the critical error*/
     static public final int MESSAGE_ERROR = 4;
 
+    static public final int MESSAGE_NOSOUND = 5;
+
     private final Environment environment;
     private String charsToSkip = "";
 
