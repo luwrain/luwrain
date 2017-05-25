@@ -24,7 +24,6 @@ class CoreProperties implements org.luwrain.base.CoreProperties
 {
     private final Properties props = new Properties();
 
-
     void load(Path systemProperties, Path userProperties)
     {
 	NullCheck.notNull(systemProperties, "systemProperties");
@@ -76,7 +75,7 @@ class CoreProperties implements org.luwrain.base.CoreProperties
 	try {
 	    final InputStream s = Files.newInputStream(path);
 	    try {
-		props.load(s);
+		props.load(new InputStreamReader(new BufferedInputStream(s), "UTF-8"));
 	    }
 	    finally {
 		s.close();
