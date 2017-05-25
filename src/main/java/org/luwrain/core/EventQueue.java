@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.util.concurrent.*;
 
-public class EventQueue
+class EventQueue
 {
     private final LinkedBlockingQueue<Event> events = new LinkedBlockingQueue<Event>(1024);
     private Event again = null;
