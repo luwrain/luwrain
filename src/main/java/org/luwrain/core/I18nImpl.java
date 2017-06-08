@@ -20,27 +20,8 @@ import java.util.*;
 
 class I18nImpl implements I18n, I18nExtension
 {
+    static private final String LOG_COMPONENT = "core";
     static private final String EN_LANG = "en";
-
-    static private class CommandTitle
-    {
-	String lang = "";
-	String command = "";
-	String title = "";
-    }
-
-    static private class StringsObj
-    {
-	String lang = "";
-	String component = "";
-	Object obj;
-    };
-
-    static private class LangObj
-    {
-	String name = "";
-	Lang lang;
-    }
 
     private final Vector<CommandTitle> commandTitles = new Vector<CommandTitle>();
     private final Vector<StringsObj> stringsObjs = new Vector<StringsObj>();
@@ -89,7 +70,6 @@ class I18nImpl implements I18n, I18nExtension
 	    return "#NO CHOSEN LANGUAGE#";
 	final String value = chosenLang.getNumberStr(count, entities);
 	return value != null?value:"";
-
     }
 
     @Override public String staticStr(LangStatic id)
@@ -217,11 +197,14 @@ class I18nImpl implements I18n, I18nExtension
 
     boolean chooseLang(String name)
     {
-	NullCheck.notNull(name, "name");
-	if (name.trim().isEmpty())
-	    throw new IllegalArgumentException("name may not be empty");
+	NullCheck.notEmpty(name, "name");
 	if (langObjs.isEmpty())
+	{
+	    Log.warning(LOG_COMPONENT, "no langs registered, unable to choose the default");
 	    return false;
+	}
+	for(LangObj l: langObjs)
+	    Log.debug(LOG_COMPONENT, "lang \'" + l.name + "\' loaded");
 	LangObj desiredLang = null;
 	LangObj enLang = null;
 	for(LangObj l: langObjs)
@@ -232,23 +215,25 @@ class I18nImpl implements I18n, I18nExtension
 		enLang = l;
 	}
 	if (desiredLang != null)
+	    Log.debug(LOG_COMPONENT, "desired lang found"); else
+	    Log.debug(LOG_COMPONENT, "desired lang \'" + name + "\' not found");
+	if (enLang != null)
+	    Log.debug(LOG_COMPONENT, "English lang found"); else
+	    Log.debug(LOG_COMPONENT, "English lang not found");
+	if (desiredLang != null)
 	{
 	    chosenLang = desiredLang.lang;
 	    chosenLangName = desiredLang.name;
-	    Log.info("core", "chosen lang is \'" + chosenLang + "\"");
-	    return true;
-	}
-	if (enLang != null)
-	{
-	    chosenLang = enLang.lang;
-	    chosenLangName = enLang.name;
-	    	    Log.info("core", "chosen lang is \'" + chosenLang + "\"");
-	    return true;
-	}
-	LangObj l = langObjs.get(0);
+	} else
+	    if (enLang != null)
+	    {
+		chosenLang = enLang.lang;
+		chosenLangName = enLang.name;
+	    }
+	final LangObj l = langObjs.get(0);
 	chosenLang = l.lang;
 	chosenLangName = l.name;
-		    Log.info("core", "chosen lang is \'" + chosenLang + "\"");
+	Log.info("core", "chosen lang is \'" + chosenLangName + "\'");
 	return true;
     }
 
@@ -276,4 +261,25 @@ class I18nImpl implements I18n, I18nExtension
 	}
 	return b.toString();
     }
+
+    static private class CommandTitle
+    {
+	String lang = "";
+	String command = "";
+	String title = "";
+    }
+
+    static private class StringsObj
+    {
+	String lang = "";
+	String component = "";
+	Object obj;
+    };
+
+    static private class LangObj
+    {
+	String name = "";
+	Lang lang;
+    }
+
 }

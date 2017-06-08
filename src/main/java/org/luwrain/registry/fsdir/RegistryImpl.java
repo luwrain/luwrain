@@ -36,7 +36,6 @@ public class RegistryImpl implements Registry
     {
 	NullCheck.notNull(base, "base");
 	this.base = base.toString();
-	System.out.println("!!! " + base);
 	this.root = new Directory("root", base.toFile());
     }
 

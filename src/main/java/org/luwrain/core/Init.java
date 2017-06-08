@@ -269,7 +269,6 @@ public class Init
 	}
 
 
-	System.out.println("kaka " + System.getProperty("user.timezone"));
 
 	setUtf8();
 	addJarsToClassPath("jar");
@@ -277,7 +276,7 @@ public class Init
 	final Path userDataDir = prepareUserDataDir(); 
 	if (userDataDir == null)
 	    System.exit(1);
-	new Init(args, "ru", Paths.get("data"), userDataDir).start();
+	new Init(args, "en", Paths.get("data"), userDataDir).start();
     }
 
     static private Path prepareUserDataDir()

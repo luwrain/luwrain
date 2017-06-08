@@ -29,22 +29,16 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
     static public final String STRINGS_PREFIX = "strings.";
     static public final String CHARS_PREFIX = "chars.";
 
-    protected final String lang;
-protected final Map<String, String> staticStrings = new HashMap<String, String>();
-protected final Map<String, String> chars = new HashMap<String, String>();
+    protected final Map<String, String> staticStrings = new HashMap<String, String>();
+    protected final Map<String, String> chars = new HashMap<String, String>();
 
-    protected I18nExtensionBase(String lang)
+    protected void loadProperties(String resourcePath, String langName, I18nExtension ext) throws IOException
     {
-	NullCheck.notEmpty(lang, "lang");
-	this.lang = lang;
-    }
-
-    protected void loadProperties(String name, I18nExtension ext) throws IOException
-    {
-	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(resourcePath, "resourcePath");
+	NullCheck.notNull(langName, "langName");
 	NullCheck.notNull(ext, "ext");
 	final Properties props = new Properties();
-	final URL url = ClassLoader.getSystemResource(name);
+	final URL url = ClassLoader.getSystemResource(resourcePath);
 	props.load(new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8")));
 	final Enumeration e = props.propertyNames();
 	while(e.hasMoreElements())
@@ -53,7 +47,7 @@ protected final Map<String, String> chars = new HashMap<String, String>();
 	    final String v = props.getProperty(k);
 	    if (v == null)
 	    {
-		Log.warning(lang, "key \'" + k + "\' in resource file " + name + " doesn\'t have value");
+		Log.warning(langName, "key \'" + k + "\' in resource file " + resourcePath+ " doesn\'t have value");
 		continue;
 	    }
 
@@ -63,10 +57,10 @@ protected final Map<String, String> chars = new HashMap<String, String>();
 		final String c = k.trim().substring(COMMAND_PREFIX.length());
 	    if (c.trim().isEmpty())
 	    {
-		Log.warning(lang, "illegal key \'" + k + "\' in resource file " + name);
+		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
 		continue;
 	    }
-	    ext.addCommandTitle(lang, c.trim(), v.trim());
+	    ext.addCommandTitle(langName, c.trim(), v.trim());
 	continue;
 	    }
 
@@ -76,7 +70,7 @@ protected final Map<String, String> chars = new HashMap<String, String>();
 		final String c = k.trim().substring(STATIC_PREFIX.length());
 	    if (c.trim().isEmpty())
 	    {
-		Log.warning(lang, "illegal key \'" + k + "\' in resource file " + name);
+		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
 		continue;
 	    }
 	    staticStrings.put(c.trim(), v.trim());
@@ -89,7 +83,7 @@ protected final Map<String, String> chars = new HashMap<String, String>();
 		final String c = k.trim().substring(CHARS_PREFIX.length());
 	    if (c.trim().isEmpty())
 	    {
-		Log.warning(lang, "illegal key \'" + k + "\' in resource file " + name);
+		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
 		continue;
 	    }
 chars.put(c.trim(), v.trim());
@@ -102,16 +96,15 @@ chars.put(c.trim(), v.trim());
 		final String c = k.trim().substring(STRINGS_PREFIX.length());
 	    if (c.trim().isEmpty())
 	    {
-		Log.warning(lang, "illegal key \'" + k + "\' in resource file " + name);
+		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
 		continue;
 	    }
-	    if (!addProxyByClassName(c.trim(), v.trim(), name, ext))
-	Log.warning(lang, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
+	    if (!addProxyByClassName(c.trim(), v.trim(), resourcePath, ext))
+	Log.warning(langName, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
 	continue;
 	    }
 	}
     }
-
 
     protected boolean addProxyByClass(String name, Class stringsClass, 
 				      String propertiesResourceName, I18nExtension ext)
