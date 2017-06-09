@@ -289,7 +289,7 @@ public class Init
 	    if (!Files.exists(registryDir))
 	    {
 		copyDir(Paths.get("registry"), registryDir);
-		copyDir(Paths.get("i18n", "ru"), registryDir);
+		copyDir(Paths.get("i18n", "en"), registryDir);
 		createRegistryFiles(registryDir.resolve("org"));
 	    }
 	    if (!Files.exists(sqliteDir))

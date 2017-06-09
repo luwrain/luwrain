@@ -198,6 +198,7 @@ class I18nImpl implements I18n, I18nExtension
     boolean chooseLang(String name)
     {
 	NullCheck.notEmpty(name, "name");
+	Log.debug(LOG_COMPONENT, "trying to choose the language, \'" + name + "\' requested");
 	if (langObjs.isEmpty())
 	{
 	    Log.warning(LOG_COMPONENT, "no langs registered, unable to choose the default");
