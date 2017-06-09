@@ -230,10 +230,12 @@ class I18nImpl implements I18n, I18nExtension
 	    {
 		chosenLang = enLang.lang;
 		chosenLangName = enLang.name;
-	    }
+	    } else
+	    {
 	final LangObj l = langObjs.get(0);
 	chosenLang = l.lang;
 	chosenLangName = l.name;
+	    }
 	Log.info("core", "chosen lang is \'" + chosenLangName + "\'");
 	return true;
     }
