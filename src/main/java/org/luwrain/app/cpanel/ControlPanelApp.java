@@ -1,7 +1,7 @@
 /*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
+   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -25,8 +25,6 @@ import org.luwrain.cpanel.*;
 
 public class ControlPanelApp implements Application, MonoApp, Actions
 {
-    static private final String STRINGS_NAME = "luwrain.control-panel";
-
     private Luwrain luwrain;
     private final Base base = new Base();
     private Strings strings;
@@ -45,7 +43,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
     @Override public boolean onLaunch(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	final Object o = luwrain.i18n().getStrings(STRINGS_NAME);
+	final Object o = luwrain.i18n().getStrings(Strings.NAME);
 	if (o == null || !(o instanceof Strings))
 	    return false;
 	strings = (Strings)o;
