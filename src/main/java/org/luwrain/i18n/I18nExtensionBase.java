@@ -99,16 +99,17 @@ chars.put(c.trim(), v.trim());
 		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
 		continue;
 	    }
-	    if (!addProxyByClassName(c.trim(), v.trim(), resourcePath, ext))
+	    if (!addProxyByClassName(langName, c.trim(), v.trim(), resourcePath, ext))
 	Log.warning(langName, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
 	continue;
 	    }
 	}
     }
 
-    protected boolean addProxyByClass(String name, Class stringsClass, 
+    protected boolean addProxyByClass(String langName, String name, Class stringsClass, 
 				      String propertiesResourceName, I18nExtension ext)
     {
+	NullCheck.notNull(langName, "langName");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(stringsClass, "stringsClass");
 	NullCheck.notEmpty(propertiesResourceName, "propertiesResourceName");
@@ -122,13 +123,14 @@ chars.put(c.trim(), v.trim());
 	    e.printStackTrace();
 	    return false;
 	}
-	ext.addStrings("ru", "luwrain." + name, strings);
+	ext.addStrings(langName, "luwrain." + name, strings);
 	return true;
 	}
 
-    protected boolean addProxyByClassName(String name, String className, 
+    protected boolean addProxyByClassName(String langName, String name, String className, 
 					  String propertiesResourceName, I18nExtension ext)
     {
+	NullCheck.notNull(langName, "langName");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(className, "className");
 	NullCheck.notEmpty(propertiesResourceName, "propertiesResourceName");
@@ -141,6 +143,6 @@ chars.put(c.trim(), v.trim());
 	{
 	    return false;
 	}
-	return addProxyByClass(name, cl, propertiesResourceName, ext);
+	return addProxyByClass(langName, name, cl, propertiesResourceName, ext);
     }
 }
