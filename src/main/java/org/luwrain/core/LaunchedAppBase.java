@@ -5,7 +5,7 @@ import java.util.*;
 
 class LaunchedAppBase
 {
-    static class AreaWrapping implements AreaWrappingBase
+    static class AreaWrapping implements AreaWrapperFactory.Disabling
     {
 	final Area origArea;
 	Area securityWrapper = null;
@@ -36,7 +36,7 @@ class LaunchedAppBase
 	    return origArea;
 	}
 
-	@Override public void resetReviewWrapper()
+	@Override public void disableAreaWrapper()
 	{
 	    reviewWrapper = null;
 	}

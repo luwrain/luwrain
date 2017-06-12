@@ -383,14 +383,14 @@ class AppManager
 	return null;
     }
 
-    boolean setReviewAreaWrapper(Area area, ReviewAreaWrapperFactory factory)
+    boolean setAreaWrapper(Area area, AreaWrapperFactory factory)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(factory, "factory");
 	final LaunchedAppBase.AreaWrapping wrapping = getAreaWrapping(area);
 	if (wrapping == null)
 	    return false;
-	final Area wrapper = factory.createReviewAreaWrapper(area, wrapping);
+	final Area wrapper = factory.createAreaWrapper(area, wrapping);
 	if (wrapper == null)
 	    return false;
 	wrapping.reviewWrapper = wrapper;

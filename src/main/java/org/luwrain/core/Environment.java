@@ -963,11 +963,11 @@ onNewAreasLayout();
 	if (activeArea == null)
 	    return;
 	final Environment e = this;
-	apps.setReviewAreaWrapper(activeArea,
-				  new ReviewAreaWrapperFactory() {
-				      @Override public Area createReviewAreaWrapper(Area areaToWrap, AreaWrappingBase wrappingBase)
+	apps.setAreaWrapper(activeArea,
+				  new AreaWrapperFactory() {
+				      @Override public Area createAreaWrapper(Area areaToWrap, Disabling disabling)
 				      {
-					  return new SearchAreaWrapper(areaToWrap, e, wrappingBase);
+					  return new SearchAreaWrapper(areaToWrap, e, disabling);
 				      }
 				  });
 	onNewAreasLayout();

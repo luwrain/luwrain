@@ -22,22 +22,21 @@ import org.luwrain.util.*;
 
 class SearchAreaWrapper implements Area
 {
-    private Area area;
-    private Environment environment;
-    private AreaWrappingBase wrappingBase;
+    private final Area area;
+    private final Environment environment;
+    private final AreaWrapperFactory.Disabling disabling;
     private int hotPointX = 0;
     private int hotPointY = 0;
     private String expression = "";//What we already have found
 
-    SearchAreaWrapper(Area area, Environment environment,
-			     AreaWrappingBase wrappingBase)
+    SearchAreaWrapper(Area area, Environment environment, AreaWrapperFactory.Disabling disabling)
     {
-	this.area = area;
-	this.environment = environment;
-	this.wrappingBase = wrappingBase;
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(environment, "environment");
-	NullCheck.notNull(wrappingBase, "wrappingBase");
+	NullCheck.notNull(disabling, "disabling");
+	this.area = area;
+	this.environment = environment;
+	this.disabling = disabling;
 	hotPointX = area.getHotPointX();
 	hotPointY = area.getHotPointY();
 	if (hotPointX < 0)
@@ -178,7 +177,7 @@ class SearchAreaWrapper implements Area
 	} else
 	    environment.message("Поиск отменён", Luwrain.MESSAGE_REGULAR);
 	environment.playSound(Sounds.CANCEL);
-	wrappingBase.resetReviewWrapper();
+disabling.disableAreaWrapper();
 	environment.onNewAreasLayout();
 	return true;
     }
