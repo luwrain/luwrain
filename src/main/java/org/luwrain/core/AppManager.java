@@ -17,7 +17,6 @@
 package org.luwrain.core;
 
 import java.util.*;
-import org.luwrain.util.*;
 
 class AppManager
 {

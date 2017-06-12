@@ -20,7 +20,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
-class SearchAreaWrapper implements Area, AreaWrapper
+class SearchAreaWrapper implements Area
 {
     private Area area;
     private Environment environment;

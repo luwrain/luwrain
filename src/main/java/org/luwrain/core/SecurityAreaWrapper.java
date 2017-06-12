@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import org.luwrain.core.events.*;
 
-class SecurityAreaWrapper implements Area, AreaWrapper
+class SecurityAreaWrapper implements Area
 {
     private Area area;
 

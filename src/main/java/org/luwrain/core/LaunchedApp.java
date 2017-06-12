@@ -16,8 +16,6 @@
 
 package org.luwrain.core;
 
-import org.luwrain.util.*;
-
 class LaunchedApp extends LaunchedAppBase
 {
 final Application app;

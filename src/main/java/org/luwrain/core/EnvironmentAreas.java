@@ -89,10 +89,7 @@ abstract class EnvironmentAreas extends EnvironmentBase
     //This method may not return an unwrapped area, there should be at least ta security wrapper
     protected Area getActiveArea()
     {
-	//FIXME:Ensure that there is a security wrapper
 	final Area area = screenContentManager.getActiveArea();
-	if (!(area instanceof AreaWrapper))
-	    Log.warning("core", "area " + area.getClass().getName() + " goes through Environment.getActiveArea() not being wrapped by any instance of core.AreaWrapper");
 	return area;
     }
 
