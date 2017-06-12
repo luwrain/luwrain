@@ -276,7 +276,7 @@ public class Init
 	final Path userDataDir = prepareUserDataDir(); 
 	if (userDataDir == null)
 	    System.exit(1);
-	new Init(args, "en", Paths.get("data"), userDataDir).start();
+	new Init(args, "ru", Paths.get("data"), userDataDir).start();
     }
 
     static private Path prepareUserDataDir()

@@ -17,15 +17,10 @@
 package org.luwrain.core;
 
 /**
- * Context-independent action in the system. Command represents some
- * operations associated with some name (command name). Such operations
- * can be performed anywhere in the system and usually serve as handlers
- * for hotkeys.
- *
- * @see Shortcut
+ * Common interface for all objects exported by an extension. The way how
+ * to treat a particular exported objects depends on the subinterface
+ * (see {@link Command}, {@link Shortcut}, etc).
  */
-public interface Command extends ExportedObject
+public interface ExportedObject
 {
-    String getName();
-    void onCommand(Luwrain luwrain);
 }

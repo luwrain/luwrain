@@ -31,8 +31,8 @@ class AppManager
     {
 	if (defaultApp != null)
 	{
-	    this.defaultApp = new LaunchedApp();
-	    if (!this.defaultApp.init(defaultApp))
+	    this.defaultApp = new LaunchedApp(defaultApp);
+	    if (!this.defaultApp.init())
 		throw new IllegalArgumentException("Provided defaultApp does not suit for LaunchedApp.init() ");
 	} else
 	    this.defaultApp = null;
@@ -86,8 +86,8 @@ class AppManager
 	    activeAppIndex = index;
 	    return true;
 	}
-	final LaunchedApp launchedApp = new LaunchedApp();
-	if (!launchedApp.init(app))
+	final LaunchedApp launchedApp = new LaunchedApp(app);
+	if (!launchedApp.init())
 	    return false;
 	launchedApp.activeAppBeforeLaunch = activeNow;
 	apps.add(launchedApp);

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -20,17 +20,21 @@ import org.luwrain.util.*;
 
 class LaunchedApp extends LaunchedAppBase
 {
-    Application app;
+final Application app;
     int layoutType;
     Area[] areas;
     AreaWrapping[] areaWrappings;
     int activeAreaIndex = 0;
     Application activeAppBeforeLaunch;
 
-    boolean init(Application newApp)
+    LaunchedApp(Application app)
     {
-	NullCheck.notNull(newApp, "newApp");
-	app = newApp;
+	NullCheck.notNull(app, "app");
+	this.app = app;
+    }
+
+    boolean init()
+    {
 	final AreaLayout layout = getValidAreaLayout();
 	layoutType = layout.getLayoutType();
 	areas = layout.getAreas();
