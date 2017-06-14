@@ -865,7 +865,7 @@ onNewAreasLayout();
 
     void mainMenu()
     {
-	final MainMenu mainMenu = MainMenu.newMainMenu(getObjForEnvironment());
+	final org.luwrain.core.ui.MainMenu mainMenu = org.luwrain.core.ui.MainMenu.newMainMenu(getObjForEnvironment());
 	if (mainMenu == null)
 	    return;
 	popup(null, mainMenu, Popup.Position.LEFT, mainMenu.closing, true, true);
