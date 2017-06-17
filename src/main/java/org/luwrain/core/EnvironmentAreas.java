@@ -32,7 +32,7 @@ abstract class EnvironmentAreas extends EnvironmentBase
 	super(cmdLine, registry, coreProps, lang);
     }
 
-    protected void onNewAreasLayout()
+    public void onNewAreasLayout()
     {
 	screenContentManager.updatePopupState();
 	windowManager.redraw();

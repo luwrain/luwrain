@@ -16,9 +16,9 @@
 
 package org.luwrain.core;
 
-interface AreaWrapperFactory
+public interface AreaWrapperFactory
 {
-    interface Disabling
+    public interface Disabling
     {
 	void disableAreaWrapper();
     }

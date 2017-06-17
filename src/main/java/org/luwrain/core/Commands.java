@@ -42,7 +42,7 @@ class Commands
      * @param env The environment object to process commands on
      * @return The vector of created commands
      */
-    static Command[] createStandardCommands(Environment env, Conversations conversations)
+    static Command[] createStandardCommands(Environment env, org.luwrain.core.ui.Conversations conversations)
     {
 	NullCheck.notNull(env, "env");
 	NullCheck.notNull(conversations, "conversations");

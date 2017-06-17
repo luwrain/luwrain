@@ -25,7 +25,7 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
 
-class Environment extends EnvironmentAreas
+public class Environment extends EnvironmentAreas
 {
     static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
@@ -35,10 +35,10 @@ class Environment extends EnvironmentAreas
     private final Interaction interaction;
 
     private org.luwrain.core.extensions.Manager extensions;
-    private final Desktop desktop = new Desktop(this);
+    private final org.luwrain.core.ui.Desktop desktop = new org.luwrain.core.ui.Desktop(this);
     private GlobalKeys globalKeys;
     private final FileTypes fileTypes = new FileTypes();
-    private final Conversations conversations;
+    private final org.luwrain.core.ui.Conversations conversations;
 
     private final I18nImpl i18n = new I18nImpl();
     private final CommandManager commands = new CommandManager();
@@ -46,7 +46,7 @@ class Environment extends EnvironmentAreas
     private final SharedObjectManager sharedObjects = new SharedObjectManager();
     private final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
-    Settings.UserInterface uiSettings;
+    public Settings.UserInterface uiSettings;
 
     Environment(CmdLine cmdLine, Registry registry,
 		OperatingSystem os, Interaction interaction, 
@@ -58,7 +58,7 @@ class Environment extends EnvironmentAreas
 	this.os = os;
 	this.interaction = interaction;
 	interfaces.createObjForEnvironment(this);
-	conversations = new Conversations(getObjForEnvironment(), this);
+	conversations = new org.luwrain.core.ui.Conversations(getObjForEnvironment(), this);
     }
 
     void run()
@@ -187,7 +187,7 @@ class Environment extends EnvironmentAreas
 	}
     }
 
-    void quit()
+    public void quit()
     {
 	if (conversations.quitConfirmation())
 	InitialEventLoopStopCondition.shouldContinue = false;
@@ -601,7 +601,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	return true;
     }
 
-    void popup(Application app, Area area,
+    public void popup(Application app, Area area,
 			   Popup.Position pos, EventLoopStopCondition stopCondition,
 			   boolean noMultipleCopies, boolean isWeakPopup)
     {
@@ -634,7 +634,7 @@ onNewAreasLayout();
 	onNewAreasLayout();
     }
 
-    void onAreaNewHotPointIface(Luwrain instance, Area area)
+    public void onAreaNewHotPointIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
 	if (screenContentManager == null)//FIXME:
@@ -728,7 +728,7 @@ onNewAreasLayout();
 	return windowManager.getAreaVisibleWidth(effectiveArea);
     }
 
-    void message(String text, int semantic)
+    public void message(String text, int semantic)
     {
 	switch(semantic)
 	{
@@ -752,7 +752,7 @@ onNewAreasLayout();
 	}
     }
 
-    void message(String text, Sounds sound)
+    public void message(String text, Sounds sound)
     {
 	if (text == null || text.trim().isEmpty())
 	    return;
@@ -858,7 +858,7 @@ onNewAreasLayout();
 	return true;
     }
 
-    I18n i18nIface()
+    public I18n i18nIface()
     {
 	return i18n;
     }
@@ -967,7 +967,7 @@ onNewAreasLayout();
 				  new AreaWrapperFactory() {
 				      @Override public Area createAreaWrapper(Area areaToWrap, Disabling disabling)
 				      {
-					  return new SearchAreaWrapper(areaToWrap, e, disabling);
+					  return new org.luwrain.core.ui.SearchAreaWrapper(areaToWrap, e, disabling);
 				      }
 				  });
 	onNewAreasLayout();

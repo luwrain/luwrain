@@ -85,7 +85,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     private final Environment environment;
     private String charsToSkip = "";
 
-    Luwrain(Environment environment)
+    public Luwrain(Environment environment)
     {
 	NullCheck.notNull(environment, "environment");
 	this.environment = environment;

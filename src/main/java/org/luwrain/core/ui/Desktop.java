@@ -1,11 +1,27 @@
+/*
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-package org.luwrain.core;
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
+
+package org.luwrain.core.ui;
 
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 
+import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.Popups;
@@ -20,7 +36,7 @@ public class Desktop implements Application
     private final Environment core;
     private Conversations conversations = null;
 
-    Desktop(Environment core)
+    public Desktop(Environment core)
     {
 	NullCheck.notNull(core, "core");
 	this.core = core;
@@ -37,13 +53,13 @@ public class Desktop implements Application
     }
 
     //Runs by the core when language extensions loaded 
-void ready()
+public void ready()
     {
 	load();
 	luwrain.onAreaNewName(area);
     }
 
-    void setConversations(Conversations conversations)
+    public void setConversations(Conversations conversations)
     {
 	this.conversations = conversations;
     }

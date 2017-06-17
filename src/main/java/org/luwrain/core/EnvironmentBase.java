@@ -89,7 +89,7 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
 	eventQueue.putEvent(e);
     }
 
-    void playSound(Sounds sound)
+    public void playSound(Sounds sound)
     {
 	NullCheck.notNull(sound, "sound");
 	sounds.play(sound);
@@ -133,7 +133,7 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
 	Log.debug("core", "max memory: " + format.format(maxMemory / 1048576) + "M");
     }
 
-    protected void setAreaIntroduction()
+    public void setAreaIntroduction()
     {
 	needForIntroduction = true;
     }
