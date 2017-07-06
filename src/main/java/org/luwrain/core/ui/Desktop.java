@@ -231,7 +231,7 @@ core.quit();
     {
 	private final Luwrain luwrain;
 
-	public Appearance(Luwrain luwrain)
+	Appearance(Luwrain luwrain)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
 	    this.luwrain = luwrain;

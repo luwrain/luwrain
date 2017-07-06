@@ -176,7 +176,7 @@ public class ListArea  implements Area, RegionProvider
      * it.  
      *
      * @param obj The object to search for
-     * @param introduce Must be true if it is necessary to introduce the object, once it's found
+     * @param announce Must be true if it is necessary to introduce the object, once it's found
      * @return True if the request object is found, false otherwise
      */
     public boolean select(Object obj, boolean announce)
