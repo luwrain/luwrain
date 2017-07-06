@@ -57,12 +57,12 @@ class CoreProperties implements org.luwrain.base.CoreProperties
 	return res != null?res:"";
     }
 
-    @Override public Path getPathProperty(String propName)
+    @Override public File getFileProperty(String propName)
     {
-	NullCheck.notNull(propName, "propName");
+	NullCheck.notEmpty(propName, "propName");
 	final String res = props.getProperty(propName);
 	if (res != null)
-	    return Paths.get(res);
+	    return new File(res);
 	return null;
     }
 

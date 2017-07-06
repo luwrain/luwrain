@@ -109,7 +109,7 @@ public class Environment extends EnvironmentAreas
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
 	desktop.ready(/*i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME)*/);
-	sounds.init(registry, coreProps.getPathProperty("luwrain.dir.data"));
+	sounds.init(registry, coreProps.getFileProperty("luwrain.dir.data").toPath());
 	uiSettings = Settings.createUserInterface(registry);
     }
 
@@ -1000,7 +1000,7 @@ onNewAreasLayout();
 	switch(component)
 	{
 	case ENVIRONMENT_SOUNDS:
-	    sounds.init(registry, coreProps.getPathProperty("luwrain.dir.data"));
+	    sounds.init(registry, coreProps.getFileProperty("luwrain.dir.data").toPath());
 	    break;
 	}
     }

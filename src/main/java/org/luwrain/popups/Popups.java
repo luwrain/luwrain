@@ -18,7 +18,7 @@ package org.luwrain.popups;
 
 import java.util.*;
 import java.io.*;
-import java.nio.file.*;
+//import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
@@ -131,7 +131,7 @@ name, prefix, text, popupFlags);
 
     static public File path(Luwrain luwrain,
 			    String name, String prefix,
-			    Path startWith, Path defaultPath,
+			    File startWith, File defaultPath,
 			    FilePopup.Acceptance acceptance, 
 			    Set<FilePopup.Flags> filePopupFlags, Set<Popup.Flags> popupFlags)
     {
@@ -142,8 +142,8 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(filePopupFlags, "filePopupFlags");
 	NullCheck.notNull(popupFlags, "popupFlags");
 	final FilePopup popup = new FilePopup(luwrain, name, prefix, acceptance,
-					      startWith != null?startWith:luwrain.getPathProperty("luwrain.dir.userhome"),
-					      defaultPath != null?defaultPath:luwrain.getPathProperty("luwrain.dir.userhome"),
+					      startWith != null?startWith.toPath():luwrain.getFileProperty("luwrain.dir.userhome").toPath(),
+					      defaultPath != null?defaultPath.toPath():luwrain.getFileProperty("luwrain.dir.userhome").toPath(),
 					      filePopupFlags, popupFlags);
 	luwrain.popup(popup);
 	return popup.closing.cancelled()?null:popup.result();
@@ -151,7 +151,7 @@ name, prefix, text, popupFlags);
 
     static public File path(Luwrain luwrain,
 			    String name, String prefix,
-			    Path startWith, Path defaultPath, FilePopup.Acceptance acceptance)
+			    File startWith, File defaultPath, FilePopup.Acceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -164,7 +164,7 @@ name, prefix, text, popupFlags);
 
     static public File path(Luwrain luwrain,
 			    String name, String prefix,
-			    Path startWith, FilePopup.Acceptance acceptance)
+			    File startWith, FilePopup.Acceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -177,7 +177,7 @@ name, prefix, text, popupFlags);
 
     static public File path(Luwrain luwrain,
 			    String name, String prefix,
-			    Path startWith)
+			    File startWith)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -192,7 +192,7 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
-	final File res = path(luwrain, name, prefix, startWith != null?startWith.toPath():null, (fileToCheck, announce)->{
+	final File res = path(luwrain, name, prefix, startWith != null?startWith:null, (fileToCheck, announce)->{
 		if (!fileToCheck.isDirectory())
 		{
 		    if (announce)
@@ -207,8 +207,8 @@ name, prefix, text, popupFlags);
     }
 
 
-    static public Path commanderSingle(Luwrain luwrain, String name,
-				       Path path, FilePopup.Acceptance acceptance,
+    static public File commanderSingle(Luwrain luwrain, String name,
+				       File path, FilePopup.Acceptance acceptance,
 				       CommanderArea.ClickHandler clickHandler, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -216,15 +216,15 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(path, "path");
 	NullCheck.notNull(popupFlags, "popupFlags");
 	luwrain.message(name);
-	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, acceptance, clickHandler, popupFlags);
+	final CommanderPopup popup = new CommanderPopup(luwrain, name, path.toPath(), acceptance, clickHandler, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	return popup.result();
+	return popup.result().toFile();
     }
 
-    static public Path commanderSingle(Luwrain luwrain, String name,
-				       Path path, Set<Popup.Flags> popupFlags)
+    static public File commanderSingle(Luwrain luwrain, String name,
+				       File path, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");

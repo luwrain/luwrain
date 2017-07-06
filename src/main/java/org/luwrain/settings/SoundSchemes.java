@@ -62,8 +62,8 @@ class SoundSchemes extends ListArea implements SectionArea
 	    final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(luwrain.getRegistry());
 	    final Item item = (Item)obj;
 	    Path path = item.path;
-	    if (path.startsWith(luwrain.getPathProperty("luwrain.dir.data")))
-		path = luwrain.getPathProperty("luwrain.dir.data").relativize(path);
+	    if (path.startsWith(luwrain.getFileProperty("luwrain.dir.data").toPath()))
+		path = luwrain.getFileProperty("luwrain.dir.data").toPath().relativize(path);
 	    try {
 		scheme.setEventNotProcessed(path.resolve("event-not-processed.wav").toString());
 		scheme.setError(path.resolve("error.wav").toString());
@@ -134,7 +134,7 @@ class SoundSchemes extends ListArea implements SectionArea
 	NullCheck.notNull(luwrain, "luwrain");
 	final LinkedList<Item> items = new LinkedList<Item>();
 	final LinkedList<Path> dirs = new LinkedList<Path>();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(luwrain.getPathProperty("luwrain.dir.data").resolve(SCHEMES_DIR))) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(luwrain.getFileProperty("luwrain.dir.data").toPath().resolve(SCHEMES_DIR))) {
 		for (Path p : directoryStream) 
 		    if (Files.isDirectory(p))
 			dirs.add(p);

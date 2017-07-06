@@ -84,27 +84,27 @@ public class Init
 			   }
     }
 
-    private Path getSystemPath(String propName)
+    private File getSystemPath(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
 	switch(propName)
 	{
 	case "luwrain.dir.userhome":
-	    return userHomeDir;
+	    return userHomeDir.toFile();
 	case "luwrain.dir.data":
-	    return dataDir;
+	    return dataDir.toFile();
 	case "luwrain.dir.scripts":
-	    return dataDir.resolve("scripts");
+	    return dataDir.resolve("scripts").toFile();
 	case "luwrain.dir.properties":
-	    return dataDir.resolve("properties");
+	    return dataDir.resolve("properties").toFile();
 	case "luwrain.dir.sounds":
-	    return dataDir.resolve("sounds");
+	    return dataDir.resolve("sounds").toFile();
 	case "luwrain.dir.userdata":
-	    return userDataDir;
+	    return userDataDir.toFile();
 	case "luwrain.dir.appdata":
-	    return userDataDir.resolve("app");
+	    return userDataDir.resolve("app").toFile();
 	default:
-	    return coreProps.getPathProperty(propName);
+	    return coreProps.getFileProperty(propName);
 	}
     }
 
@@ -238,7 +238,7 @@ public class Init
 				    NullCheck.notNull(propName, "propName");
 				    return getSystemProperty(propName);
 				}
-				@Override public Path getPathProperty(String propName)
+				@Override public File getFileProperty(String propName)
 				{
 				    NullCheck.notEmpty(propName, "propName");
 				    return getSystemPath(propName);

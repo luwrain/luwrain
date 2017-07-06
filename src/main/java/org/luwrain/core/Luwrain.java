@@ -116,10 +116,10 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     {
 	final Area area = environment.getValidActiveArea(false);
 	if (area == null)
-	    return getPathProperty("luwrain.dir.userhome").toString();
+	    return getFileProperty("luwrain.dir.userhome").toString();
 	final CurrentDirQuery query = new CurrentDirQuery();
 	if (!area.onAreaQuery(query) || !query.hasAnswer())
-	    return getPathProperty("luwrain.dir.userhome").toString();
+	    return getFileProperty("luwrain.dir.userhome").toString();
 	return query.getAnswer();
     }
 
@@ -152,7 +152,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	NullCheck.notEmpty(appName, "appName");
 	if (appName.indexOf("/") >= 0)
 	    throw new IllegalArgumentException("appName contains illegal characters");
-	final Path res = getPathProperty("luwrain.dir.appdata").resolve(appName);
+	final Path res = getFileProperty("luwrain.dir.appdata").toPath().resolve(appName);
 	try {
 	    Files.createDirectories(res);
 	    return res;
@@ -606,10 +606,10 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	return b.toString();
     }
 
-    @Override public java.nio.file.Path getPathProperty(String propName)
+    @Override public java.io.File getFileProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
-	return environment.getCoreProperties().getPathProperty(propName);
+	return environment.getCoreProperties().getFileProperty(propName);
     }
 
     OsCommand runOsCommand(String cmd)
@@ -637,7 +637,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     {
 	NullCheck.notEmpty(cmd, "cmd");
 	NullCheck.notNull(dir, "dir");
-	return environment.os().runOsCommand(cmd, (!dir.isEmpty())?dir:getPathProperty("luwrain.dir.userhome").toString(), output, listener);
+	return environment.os().runOsCommand(cmd, (!dir.isEmpty())?dir:getFileProperty("luwrain.dir.userhome").getAbsolutePath(), output, listener);
     }
 
     @Override public String getProperty(String propName)

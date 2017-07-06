@@ -34,7 +34,7 @@ class SoundManager
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(coreProps, "coreProps");
 	this.sett = Settings.createBackgroundSounds(registry);
-	this.soundsDir = coreProps.getPathProperty("luwrain.dir.sounds");
+	this.soundsDir = coreProps.getFileProperty("luwrain.dir.sounds").toPath();
     }
 
 

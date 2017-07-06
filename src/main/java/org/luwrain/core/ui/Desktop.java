@@ -191,7 +191,7 @@ core.quit();
 	{
 	    final String[] introduction = new File(introductionFile).isAbsolute()?
 	    readIntroduction(Paths.get(introductionFile)):
-	    readIntroduction(luwrain.getPathProperty("luwrain.dir.data").resolve(introductionFile));
+	    readIntroduction(luwrain.getFileProperty("luwrain.dir.data").toPath().resolve(introductionFile));
 	    model.setIntroduction(introduction);
 	    model.setClickHereLine(clickHereLine);
 	}

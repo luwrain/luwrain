@@ -69,9 +69,9 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 	    path = path.getParent();
 	if (path == null || !Files.isDirectory(path))
 	    return false;
-	final Path res = Popups.commanderSingle(luwrain, getAreaName(), path, popupFlags);
+	final File res = Popups.commanderSingle(luwrain, getAreaName(), path.toFile(), popupFlags);
 	if (res != null)
-	    setText(res.toString(), "");
+	    setText(res.getAbsolutePath(), "");
 	return true;
     }
 
