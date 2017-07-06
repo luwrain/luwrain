@@ -45,16 +45,8 @@ public interface Settings
     {
 	String getLaunchGreeting(String defValue);
 	boolean getFilePopupSkipHidden(boolean defValue);
-	boolean getEmptyLineUnderRegularLists(boolean defValue);
-	boolean getCyclingRegularLists(boolean defValue);
-	boolean getEmptyLineAbovePopupLists(boolean defValue);
-	boolean getCyclingPopupLists(boolean defValue);
 	void setLaunchGreeting(String value);
 	void setFilePopupSkipHidden(boolean value);
-	void setEmptyLineUnderRegularLists(boolean value);
-	void setCyclingRegularLists(boolean value);
-	void setEmptyLineAbovePopupLists(boolean value);
-	void setCyclingPopupLists(boolean value);
     }
 
     public interface Desktop
@@ -317,6 +309,7 @@ public interface DateTime
 
     static public UserInterface createUserInterface(Registry registry)
     {
+	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, UI_PATH, UserInterface.class);
     }
 

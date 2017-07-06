@@ -129,7 +129,7 @@ name, prefix, text, popupFlags);
 	return fixedList(luwrain, name, items, DEFAULT_POPUP_FLAGS);
     }
 
-    static public Path path(Luwrain luwrain,
+    static public File path(Luwrain luwrain,
 			    String name, String prefix,
 			    Path startWith, Path defaultPath,
 			    FilePopup.Acceptance acceptance, 
@@ -149,7 +149,7 @@ name, prefix, text, popupFlags);
 	return popup.closing.cancelled()?null:popup.result();
     }
 
-    static public Path path(Luwrain luwrain,
+    static public File path(Luwrain luwrain,
 			    String name, String prefix,
 			    Path startWith, Path defaultPath, FilePopup.Acceptance acceptance)
     {
@@ -162,7 +162,7 @@ name, prefix, text, popupFlags);
 		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
 
-    static public Path path(Luwrain luwrain,
+    static public File path(Luwrain luwrain,
 			    String name, String prefix,
 			    Path startWith, FilePopup.Acceptance acceptance)
     {
@@ -175,7 +175,7 @@ name, prefix, text, popupFlags);
 		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
 
-    static public Path path(Luwrain luwrain,
+    static public File path(Luwrain luwrain,
 			    String name, String prefix,
 			    Path startWith)
     {
@@ -184,7 +184,7 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(prefix, "prefix");
 	return path(luwrain, name, prefix,
 		    startWith, startWith, 
-		    (path)->{return true;}, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
+		    (fileToCheck, announce)->{return true;}, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
 
     static public File directory(Luwrain luwrain, String name, String prefix, File startWith)
@@ -192,17 +192,18 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
-	final Path res = path(luwrain, name, prefix, startWith != null?startWith.toPath():null, (fileToCheck)->{
+	final File res = path(luwrain, name, prefix, startWith != null?startWith.toPath():null, (fileToCheck, announce)->{
 		if (!fileToCheck.isDirectory())
 		{
-		    luwrain.message("Указанный путь не является каталогом", Luwrain.MESSAGE_ERROR);
+		    if (announce)
+			luwrain.message("Указанный путь не является каталогом", Luwrain.MESSAGE_ERROR);
 		    return false;
 		}
 		return true;
 	    });
 	if (res == null)
 	    return null;
-	return res.toFile();
+	return res;
     }
 
 
@@ -296,6 +297,9 @@ name, prefix, text, popupFlags);
     static public Set<FilePopup.Flags> loadFilePopupFlags(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+	if (sett.getFilePopupSkipHidden(false))
+	    return EnumSet.of(FilePopup.Flags.SKIP_HIDDEN);
 	return EnumSet.noneOf(FilePopup.Flags.class);
     }
 }

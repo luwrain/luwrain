@@ -57,7 +57,7 @@ public class Conversations
 	env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return null;
-	return popup.result().toFile();
+	return popup.result();
     }
 
     public boolean deleteDesktopItemConfirmation()

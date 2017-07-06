@@ -14,7 +14,7 @@ public class FilePopup extends EditListPopup
 
     public interface Acceptance 
     {
-	boolean pathAcceptable(File file);
+	boolean isPathAcceptable(File file, boolean announce);
     }
 
     private final Path defPath;
@@ -31,12 +31,12 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 	this.acceptance = acceptance;
     }
 
-    public Path result()
+    public File result()
     {
 	final Path res = Paths.get(text());
 	if (res.isAbsolute())
-	    return res;
-	return defPath.resolve(res);
+	    return res.toFile();
+	return defPath.resolve(res).toFile();
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
@@ -57,12 +57,12 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
     {
 	if (result() == null)
 	    return false;
-	return acceptance != null?acceptance.pathAcceptable(result().toFile()):true;
+	return acceptance != null?acceptance.isPathAcceptable(result(), true):true;
     }
 
     protected boolean openCommanderPopup()
     {
-	Path path = result();
+	Path path = result().toPath();
 	if (path == null)
 	    return false;
 	if (!Files.isDirectory(path))
