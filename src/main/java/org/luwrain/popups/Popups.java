@@ -192,8 +192,8 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
-	final Path res = path(luwrain, name, prefix, startWith != null?startWith.toPath():null, (path)->{
-		if (!Files.isDirectory(path))
+	final Path res = path(luwrain, name, prefix, startWith != null?startWith.toPath():null, (fileToCheck)->{
+		if (!fileToCheck.isDirectory())
 		{
 		    luwrain.message("Указанный путь не является каталогом", Luwrain.MESSAGE_ERROR);
 		    return false;

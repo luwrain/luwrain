@@ -105,7 +105,7 @@ setLoadingResultHandler((location, wrappers, selectedIndex, announce)->{
     {
 	if (result() == null)
 	    return false;
-	return acceptance != null?acceptance.pathAcceptable(result()):true;
+	return acceptance != null?acceptance.pathAcceptable(result().toFile()):true;
     }
 
     @Override public boolean onCancel()
