@@ -18,7 +18,6 @@ package org.luwrain.popups;
 
 import java.util.*;
 import java.io.*;
-//import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
@@ -142,8 +141,8 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(filePopupFlags, "filePopupFlags");
 	NullCheck.notNull(popupFlags, "popupFlags");
 	final FilePopup popup = new FilePopup(luwrain, name, prefix, acceptance,
-					      startWith != null?startWith.toPath():luwrain.getFileProperty("luwrain.dir.userhome").toPath(),
-					      defaultPath != null?defaultPath.toPath():luwrain.getFileProperty("luwrain.dir.userhome").toPath(),
+					      startWith != null?startWith:luwrain.getFileProperty("luwrain.dir.userhome"),
+					      defaultPath != null?defaultPath:luwrain.getFileProperty("luwrain.dir.userhome"),
 					      filePopupFlags, popupFlags);
 	luwrain.popup(popup);
 	return popup.closing.cancelled()?null:popup.result();

@@ -18,7 +18,7 @@ package org.luwrain.core.ui;
 
 import java.util.*;
 import java.io.*;
-import java.nio.file.*;
+//import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.popups.*;
@@ -45,15 +45,12 @@ public class Conversations
 
     public File openPopup()
     {
-	final Path current = Paths.get(luwrain.currentAreaDir());
+	final File current = new File(luwrain.currentAreaDir());
 	final FilePopup popup = new FilePopup(luwrain, 
 					      luwrain.i18n().getStaticStr("OpenPopupName"),
 					      luwrain.i18n().getStaticStr("OpenPopupPrefix"), 
-					      null,
-					      current,
-					      current, 
-					      env.uiSettings.getFilePopupSkipHidden(false)?EnumSet.of(FilePopup.Flags.SKIP_HIDDEN):EnumSet.noneOf(FilePopup.Flags.class),
-					      EnumSet.noneOf(Popup.Flags.class));
+					      null, current, current,
+					      Popups.loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS);
 	env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
 	if (popup.closing.cancelled())
 	    return null;

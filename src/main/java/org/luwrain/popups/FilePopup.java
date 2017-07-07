@@ -11,32 +11,35 @@ import org.luwrain.core.events.*;
 public class FilePopup extends EditListPopup
 {
     public enum Flags { SKIP_HIDDEN };
+    static final String SEPARATOR = System.getProperty("file.separator");
 
     public interface Acceptance 
     {
 	boolean isPathAcceptable(File file, boolean announce);
     }
 
-    private final Path defPath;
-    private final Acceptance acceptance;
+    protected final File defaultDir;
+    protected final Acceptance acceptance;
 
-    public FilePopup(Luwrain luwrain, String name,
-		     String prefix, Acceptance acceptance,
-		     Path path, Path defPath,
+    public FilePopup(Luwrain luwrain, String name, String prefix,
+		     Acceptance acceptance, File startFrom, File defaultDir,
 		     Set<Flags> flags, Set<Popup.Flags> popupFlags)
     {
-	super(luwrain, new Model(defPath, flags .contains(Flags.SKIP_HIDDEN)), 
-name, prefix, getPathWithTrailingSlash(path), popupFlags);
-	this.defPath = defPath;
+	super(luwrain,
+	      new Model(defaultDir.toPath(), flags .contains(Flags.SKIP_HIDDEN)), 
+	      name, prefix, getPathWithEndingSeparator(startFrom), popupFlags);
+	this.defaultDir = defaultDir;
 	this.acceptance = acceptance;
+	if (!defaultDir.isDirectory())
+	    throw new IllegalArgumentException("" + defaultDir.toString() + " must address a directory");
     }
 
     public File result()
     {
-	final Path res = Paths.get(text());
+	final File res = new File(text());
 	if (res.isAbsolute())
-	    return res.toFile();
-	return defPath.resolve(res).toFile();
+	    return res;
+	return new File(defaultDir, text());
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
@@ -75,21 +78,16 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 	return true;
     }
 
-    static String getPathWithTrailingSlash(Path p)
+    static String getPathWithEndingSeparator(File file)
     {
-	NullCheck.notNull(p, "p");
-	final String str = p.toString();
+	NullCheck.notNull(file, "file");
+	final String str = file.toString();
 	//Checking if there is nothing to do
-	if (str.endsWith(getSeparator()))
+	if (str.endsWith(SEPARATOR))
 	    return str;
-	if (Files.exists(p) && Files.isDirectory(p))
-	    return str + getSeparator();
+	if (file.exists() && file.isDirectory())
+	    return str + SEPARATOR;
 	return str;
-    }
-
-    static protected String getSeparator()
-    {
-	return FileSystems.getDefault().getSeparator();
     }
 
     static protected class Model extends EditListPopupUtils.DynamicModel
@@ -124,7 +122,7 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 		base = defPath;
 		path = defPath.resolve(contextPath);
 	    }
-	    if (!context.endsWith(getSeparator()) && path.getParent() != null)
+	    if (!context.endsWith(SEPARATOR) && path.getParent() != null)
 		path = path.getParent();
 	    if (!Files.exists(path) || !Files.isDirectory(path))
 		return new Item[0];
@@ -143,7 +141,7 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 		base = defPath;
 		path = defPath.resolve(path);
 	    }
-	    if (context.endsWith(getSeparator()) && Files.exists(path) && Files.isDirectory(path))
+	    if (context.endsWith(SEPARATOR) && Files.exists(path) && Files.isDirectory(path))
 		return new EditListPopup.Item(context);
 	    path = path.getParent();
 	    if (path != null)
@@ -153,7 +151,7 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 		if (Files.exists(path) && Files.isDirectory(path) && 
 		    !path.equals(path.getRoot()) &&
 		    (base == null || !base.equals(path)))
-		    suffix = getSeparator();
+		    suffix = SEPARATOR;
 		if (base != null)
 		    return new EditListPopup.Item(base.relativize(path).toString() + suffix);
 		return new EditListPopup.Item(path.toString() + suffix);
@@ -168,7 +166,7 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 	    NullCheck.notNull(res, "res");
 	    final String path = beginning + res;
 					     //We already have the slash, doing nothing
-	    if (!path.isEmpty() && path.endsWith(getSeparator()))
+	    if (!path.isEmpty() && path.endsWith(SEPARATOR))
 		return res;
 	    Path pp = Paths.get(path);
 	    if (!pp.isAbsolute())
@@ -178,7 +176,7 @@ name, prefix, getPathWithTrailingSlash(path), popupFlags);
 		withSlash = false; else
 		withSlash = true;
 	    if (withSlash && !hasWithSameBeginningNearby(pp))
-		return res + getSeparator();
+		return res + SEPARATOR;
 	    return res;
 	}
 
