@@ -18,7 +18,6 @@ package org.luwrain.core.ui;
 
 import java.util.*;
 import java.io.*;
-//import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.popups.*;
