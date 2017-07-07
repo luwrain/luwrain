@@ -18,7 +18,7 @@ package org.luwrain.popups;
 
 import java.util.*;
 import java.io.*;
-import java.nio.file.*;
+//import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -41,7 +41,7 @@ public class FilePopup extends EditListPopup
 		     Set<Flags> flags, Set<Popup.Flags> popupFlags)
     {
 	super(luwrain,
-	      new Model(defaultDir.toPath(), flags .contains(Flags.SKIP_HIDDEN)), 
+	      new Model(defaultDir, flags .contains(Flags.SKIP_HIDDEN)), 
 	      name, prefix, getPathWithEndingSeparator(startFrom), popupFlags);
 	this.defaultDir = defaultDir;
 	this.acceptance = acceptance;
@@ -80,14 +80,14 @@ public class FilePopup extends EditListPopup
 
     protected boolean openCommanderPopup()
     {
-	Path path = result().toPath();
-	if (path == null)
+File file = result();
+	if (file == null)
 	    return false;
-	if (!Files.isDirectory(path))
-	    path = path.getParent();
-	if (path == null || !Files.isDirectory(path))
+	if (!file.isDirectory())
+	    file = file.getParentFile();
+	if (file == null || !file.isDirectory())
 	    return false;
-	final File res = Popups.commanderSingle(luwrain, getAreaName(), path.toFile(), popupFlags);
+	final File res = Popups.commanderSingle(luwrain, getAreaName(), file, popupFlags);
 	if (res != null)
 	    setText(res.getAbsolutePath(), "");
 	return true;
@@ -107,10 +107,10 @@ public class FilePopup extends EditListPopup
 
     static protected class Model extends EditListPopupUtils.DynamicModel
     {
-	protected final Path defPath;
+	protected final File defPath;
 	protected final boolean skipHidden;
 
-	Model(Path defPath, boolean skipHidden)
+	Model(File defPath, boolean skipHidden)
 	{
 	    NullCheck.notNull(defPath, "defPath");
 	    this.defPath = defPath;
@@ -124,10 +124,10 @@ public class FilePopup extends EditListPopup
 	    NullCheck.notNull(context, "context");
 	    if (context.isEmpty())
 		return readDirectory(defPath, defPath);
-	    final Path contextPath = Paths.get(context);
+	    final File contextPath = new File(context);
 	    NullCheck.notNull(contextPath, "contextPath");
-	    final Path base;
-	    Path path;
+	    final File base;
+	    File path;
 	    if (contextPath.isAbsolute())
 	    {
 		base = null;
@@ -135,11 +135,11 @@ public class FilePopup extends EditListPopup
 	    } else
 	    {
 		base = defPath;
-		path = defPath.resolve(contextPath);
+		path = new File(defPath, contextPath.toString());
 	    }
 	    if (!context.endsWith(SEPARATOR) && path.getParent() != null)
-		path = path.getParent();
-	    if (!Files.exists(path) || !Files.isDirectory(path))
+		path = path.getParentFile();
+	    if (!path.exists() || !path.isDirectory())
 		return new Item[0];
 	    return readDirectory(path, base);
 	}
@@ -149,31 +149,32 @@ public class FilePopup extends EditListPopup
 	    NullCheck.notNull(context, "context");
 	    if (context.isEmpty())
 		return new EditListPopup.Item();
-	    Path base = null;
-	    Path path = Paths.get(context);
+	    File base = null;
+	    File path = new File(context);
 	    if (!path.isAbsolute())
 	    {
 		base = defPath;
-		path = defPath.resolve(path);
+		path = new File(defPath, path.toString());
 	    }
-	    if (context.endsWith(SEPARATOR) && Files.exists(path) && Files.isDirectory(path))
+	    if (context.endsWith(SEPARATOR) &&
+path.exists() && path.isDirectory())
 		return new EditListPopup.Item(context);
-	    path = path.getParent();
+	    path = path.getParentFile();
 	    if (path != null)
 	    {
 		String suffix = "";
 		//We don't want double slash in root designation and at the top of relative enumeration
-		if (Files.exists(path) && Files.isDirectory(path) && 
-		    !path.equals(path.getRoot()) &&
+		if (path.exists() && path.isDirectory() && 
+		    !isRoot(path) &&
 		    (base == null || !base.equals(path)))
 		    suffix = SEPARATOR;
 		if (base != null)
-		    return new EditListPopup.Item(base.relativize(path).toString() + suffix);
+		    return new EditListPopup.Item(relativize(path, base) + suffix);
 		return new EditListPopup.Item(path.toString() + suffix);
 	    }
 	    return new EditListPopup.Item(context);
 	}
-
+    
 	//Just adds ending slash, if necessary
 	@Override public String getCompletion(String beginning)
 	{
@@ -183,11 +184,11 @@ public class FilePopup extends EditListPopup
 					     //We already have the slash, doing nothing
 	    if (!path.isEmpty() && path.endsWith(SEPARATOR))
 		return res;
-	    Path pp = Paths.get(path);
+	    File pp = new File(path);
 	    if (!pp.isAbsolute())
-		pp = defPath.resolve(pp);
+		pp = new File(defPath, pp.toString());
 					     final boolean withSlash;
-	    if (!Files.exists(pp) || !Files.isDirectory(pp))
+	    if (!pp.exists() || !pp.isDirectory())
 		withSlash = false; else
 		withSlash = true;
 	    if (withSlash && !hasWithSameBeginningNearby(pp))
@@ -195,56 +196,58 @@ public class FilePopup extends EditListPopup
 	    return res;
 	}
 
-	protected Item[] readDirectory(Path path, Path base)
+protected Item[] readDirectory(File dir, File base)
 	{
-	    NullCheck.notNull(path, "path");
+	    NullCheck.notNull(dir, "dir");
 	    final LinkedList<Item> items = new LinkedList<Item>();
-	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
-		    for (Path pp : directoryStream) 
-			if (!skipHidden || !Files.isHidden(pp))
+	    for (File pp: dir.listFiles())
+			if (!skipHidden || !pp.isHidden())
 			{
 			    if (base != null)
-				items.add(new Item(base.relativize(pp).toString(), pp.getFileName().toString())); else
-				items.add(new Item(pp.toString(), pp.getFileName().toString()));
+				items.add(new Item(relativize(pp, base), pp.getName())); else
+				items.add(new Item(pp.toString(), pp.getName()));
 			}
 		    final Item[] res = items.toArray(new Item[items.size()]);
 		    Arrays.sort(res);
 		    return res;
 		}
-	    catch (IOException e) 
-	    {
-		Log.error("core", "unable to read content of " + path.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
-		e.printStackTrace();
-		return new Item[0];
-	    }
-	}
 
-	protected boolean hasWithSameBeginningNearby(Path path)
+	protected boolean hasWithSameBeginningNearby(File path)
 	{
 	    NullCheck.notNull(path, "path");
-	    final Path parent = path.getParent();
+	    final File parent = path.getParentFile();
 	    if (parent == null)
 		return false;
-	    final String fileName = path.getFileName().toString();
-	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(parent)) {
-		    for (Path pp : directoryStream) 
-			if (!skipHidden || !Files.isHidden(pp))
+	    final String fileName = path.getName();
+	    for (File pp: parent.listFiles())
+			if (!skipHidden || !pp.isHidden())
 			{
-			    final Path f = pp.getFileName();
-			    if (f == null)
+			    final String name = pp.getName();
+			    if (name.isEmpty())
 				continue;
-			    final String name = f.toString();
 			    if (name.length() > fileName.length() && name.startsWith(fileName))
 				return true;
 			}
 		    return false;
 	}
-	    catch (IOException e) 
-	    {
-		Log.error("core", "unable to read content of " + path.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
-		e.printStackTrace();
-		return false;
-	    }
+
+	static protected String relativize(File file, File base)
+	{
+	    NullCheck.notNull(file, "file");
+	    final String itemStr = file.toString();
+	    final String baseStr = base.toString();
+	    if (itemStr.startsWith(baseStr + SEPARATOR))
+		return itemStr.substring(baseStr.length() + 1);
+	    return itemStr;
 	}
+
+    static protected boolean isRoot(File file)
+    {
+	NullCheck.notNull(file, "file");
+	for(File root: File.listRoots())
+	    if (file.equals(root))
+		return true;
+	return false;
     }
+}
 }
