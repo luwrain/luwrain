@@ -199,6 +199,9 @@ path.exists() && path.isDirectory())
 protected Item[] readDirectory(File dir, File base)
 	{
 	    NullCheck.notNull(dir, "dir");
+	    final File[] files = dir.listFiles();
+	    if (files == null)
+		return new Item[0];
 	    final LinkedList<Item> items = new LinkedList<Item>();
 	    for (File pp: dir.listFiles())
 			if (!skipHidden || !pp.isHidden())
@@ -219,7 +222,10 @@ protected Item[] readDirectory(File dir, File base)
 	    if (parent == null)
 		return false;
 	    final String fileName = path.getName();
-	    for (File pp: parent.listFiles())
+	    final File[] files = parent.listFiles();
+	    if (files == null)
+		return false;
+	    for (File pp: files)
 			if (!skipHidden || !pp.isHidden())
 			{
 			    final String name = pp.getName();

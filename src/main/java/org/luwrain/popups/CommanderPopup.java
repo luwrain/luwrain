@@ -18,7 +18,7 @@ package org.luwrain.popups;
 
 import java.util.*;
 import java.io.*;
-import java.nio.file.*;
+//import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -32,15 +32,15 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
     protected final String name;
     protected final FilePopup.Acceptance acceptance;
     protected final Set<Popup.Flags> popupFlags;
-    protected Path result;
+    protected File result;
 
-    public CommanderPopup(Luwrain luwrain, String name,
-			  Path path, FilePopup.Acceptance acceptance,
-			  CommanderArea.ClickHandler<File> clickHandler, Set<Popup.Flags> popupFlags)
+    public CommanderPopup(Luwrain luwrain, String name, File file,
+			  FilePopup.Acceptance acceptance, CommanderArea.ClickHandler<File> clickHandler, Set<Popup.Flags> popupFlags)
     {
 	super(constructParams(luwrain));
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
+	NullCheck.notNull(file, "file");
 	NullCheck.notNull(popupFlags, "popupFlags");
 	this.luwrain = luwrain;
 	this.name = name;
@@ -50,7 +50,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 setLoadingResultHandler((location, wrappers, selectedIndex, announce)->{
 		luwrain.runInMainThread(()->acceptNewLocation(location, wrappers, selectedIndex, announce));
 	    });
-	open(path.toFile());
+	open(file);
     }
 
     @Override public CommanderArea.ClickHandler.Result onCommanderClick(CommanderArea area, File file, boolean dir)
@@ -59,12 +59,12 @@ setLoadingResultHandler((location, wrappers, selectedIndex, announce)->{
 	NullCheck.notNull(file, "file");
 	if (dir)
 	    return ClickHandler.Result.OPEN_DIR;
-	result = file.toPath();
+	result = file;
 	closing.doOk();
 	return ClickHandler.Result.OK;
     }
 
-    public Path result()
+    public File result()
     {
 	return result;
     }
@@ -101,7 +101,7 @@ setLoadingResultHandler((location, wrappers, selectedIndex, announce)->{
 	    return true;
 	case OK:
 	    if (opened() == null)
-		result = opened().toPath();
+		result = opened();
 	    closing.doOk();
 	    return true;
 	default:
@@ -120,7 +120,7 @@ setLoadingResultHandler((location, wrappers, selectedIndex, announce)->{
     {
 	if (result() == null)
 	    return false;
-	return acceptance != null?acceptance.isPathAcceptable(result().toFile(), true):true;
+	return acceptance != null?acceptance.isPathAcceptable(result(), true):true;
     }
 
     @Override public boolean onCancel()

@@ -215,11 +215,11 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(path, "path");
 	NullCheck.notNull(popupFlags, "popupFlags");
 	luwrain.message(name);
-	final CommanderPopup popup = new CommanderPopup(luwrain, name, path.toPath(), acceptance, clickHandler, popupFlags);
+	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, acceptance, clickHandler, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
-	return popup.result().toFile();
+	return popup.result();
     }
 
     static public File commanderSingle(Luwrain luwrain, String name,
