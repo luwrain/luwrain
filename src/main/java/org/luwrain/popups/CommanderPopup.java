@@ -148,7 +148,7 @@ setLoadingResultHandler((location, wrappers, selectedIndex, announce)->{
 	final org.luwrain.base.Partition part = Popups.mountedPartitions(luwrain, popupFlags);
 	if (part == null)
 	    return;
-	open(part.file(), null);
+	open(part.getPartFile(), null);
     }
 
     static private CommanderArea.Params<File> constructParams(Luwrain luwrain)

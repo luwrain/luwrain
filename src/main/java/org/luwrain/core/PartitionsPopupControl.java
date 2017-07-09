@@ -39,26 +39,26 @@ class PartitionsPopupControl implements PartitionsPopup.Control
 	@Override public String getFullTitle()
 	{
 
-	switch(part.type())
+	switch(part.getPartType())
 	{
-	case Partition.ROOT:
+	case ROOT:
 	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRoot");
-	case Partition.USER_HOME:
+	case USER_HOME:
 	    return luwrain.i18n().getStaticStr("PartitionsPopupItemUserHome");
-	case Partition.REGULAR:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRegular") + " " + part.name();
-	case Partition.REMOTE:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemote") + " " + part.name();
-	case Partition.REMOVABLE:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemovable") + " " + part.name();
+	case REGULAR:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRegular") + " " + part.getPartName();
+	case REMOTE:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemote") + " " + part.getPartName();
+	case REMOVABLE:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemovable") + " " + part.getPartName();
 	default:
-	    return part.name();
+	    return part.getPartName();
 	}
     }
 
 	@Override public String getBriefTitle()
 	{
-	    return part.name();
+	    return part.getPartName();
 	}
 
 	@Override public Object getObject()
