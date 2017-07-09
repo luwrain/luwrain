@@ -138,7 +138,7 @@ public class Init
 	    final String interactionClass = coreProps.getProperty("luwrain.class.interaction");
 	    if (interactionClass.isEmpty())
 	    {
-		Log.fatal("init", "unable to load interaction:no luwrain.class.interaction property among loaded properties");
+		Log.fatal(LOG_COMPONENT, "unable to load interaction:no luwrain.class.interaction property among loaded properties");
 		return false;
 	    }
 		o = Class.forName(interactionClass).newInstance();
@@ -162,7 +162,6 @@ public class Init
 	}
 
 	//network
-
 	final Settings.Network network = Settings.createNetwork(registry);
 	System.getProperties().put("socksProxyHost", network.getSocksProxyHost(""));
 	System.getProperties().put("socksProxyPort", network.getSocksProxyPort(""));
@@ -175,11 +174,12 @@ public class Init
 	return true;
     }
 
+    /*
     private boolean initRegistry()
     {
-
 	return true;
     }
+    */
 
     private boolean initOs()
     {
@@ -217,22 +217,50 @@ public class Init
 	    return false;
 	}
 	os = (org.luwrain.base.OperatingSystem)o;
-	if (!os.init(dataDir.toString()))
+	final InitResult initRes = os.init(createCoreProperties());
+	if (initRes == null || !initRes.isOk())
 	{
-	    Log.fatal("init", "unable to initialize operating system through " + os.getClass().getName());
+	    if (initRes != null)
+	    Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName() + ":" + initRes.toString()); else
+	    Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName());
 	    return false;
 	}
-	Log.debug("init", "operating system functions (" + osClass + " class) are initialized successfully");
+	Log.debug(LOG_COMPONENT, "OS (" + osClass + ") initialized successfully");
 	return true;
     }
 
     private void start()
     {
-	Log.info("init", "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
-	final boolean initRes = init();
-	if (initRes)
-	    new Environment(cmdLine, registry, os, interaction, 
-			    new org.luwrain.base.CoreProperties(){
+	try {
+	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
+	    final boolean initRes = init();
+	    if (initRes)
+		new Environment(
+				cmdLine,
+				registry,
+				os,
+				interaction,
+				createCoreProperties(),
+				lang).run();
+	    if (interaction != null)
+	    {
+		Log.debug(LOG_COMPONENT, "closing interaction");
+		interaction.close();
+	    }
+	    if (initRes)
+		Log.info(LOG_COMPONENT, "exiting LUWRAIN normally");
+	    System.exit(initRes?0:1);
+	}
+	catch(Throwable e)
+	{
+	    Log.fatal(LOG_COMPONENT, "terminating LUWRAIN very abnormally due to unexpected exception:" + e.getClass().getName() + ":" + e.getMessage());
+	    e.printStackTrace();
+	}
+    }
+
+    private org.luwrain.base.CoreProperties createCoreProperties()
+    {
+return new org.luwrain.base.CoreProperties(){
 				@Override public String getProperty(String propName)
 				{
 				    NullCheck.notNull(propName, "propName");
@@ -242,16 +270,7 @@ public class Init
 				{
 				    NullCheck.notEmpty(propName, "propName");
 				    return getSystemPath(propName);
-				}
-			    }, lang).run();
-	if (interaction != null)
-	{
-	    Log.debug("init", "closing interaction");
-	    interaction.close();
-	}
-	if (initRes)
-	Log.info("init", "exiting LUWRAIN normally");
-	System.exit(initRes?0:1);
+				}};
     }
 
     /**

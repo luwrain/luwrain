@@ -39,14 +39,14 @@ class Braille
 	if (!settings.getEnabled(false))
 	    return;
 	final InitResult res = braille.init(eventConsumer);
-	if (res.success())
+	if (res.isOk())
 	{
 	    active = true;
 	    errorMessage = "";
 	} else
 	{
 	    active = false;
-	    errorMessage = res.message();
+	    errorMessage = res.toString();
 	}
     }
 
