@@ -16,6 +16,9 @@
 
 package org.luwrain.settings;
 
+import java.util.*;
+
+import org.luwrain.base.Hardware;
 import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
 
@@ -28,17 +31,22 @@ public class StandardFactory implements Factory
     static private final Element fileTypes = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "FileTypes");
     static private final Element mainMenu = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "MainMenu");
     static private final Element hardwareCpuMem = new SimpleElement(StandardElements.HARDWARE, ELEMENT_PREFIX + "HardwareCpuMem");
+    static private final Element hardwareSysDevices = new SimpleElement(StandardElements.HARDWARE, ELEMENT_PREFIX + "HardwareSysDevices");
     static private final Element version = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "Version");
     static private final Element dateTime = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "DateTime");
     static private final Element speechCurrent = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechCurrent");
     static private final Element soundsList = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundsList");
     static private final Element soundSchemes = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundSchemes");
-    private final Luwrain luwrain;
 
-    public StandardFactory(Luwrain luwrain)
+    private final Luwrain luwrain;
+    private final Hardware hardware;
+
+    public StandardFactory(Luwrain luwrain, Hardware hardware)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(hardware, "hardware");
 	this.luwrain = luwrain;
+	this.hardware = hardware;
     }
 
     @Override public Element[] getElements()
@@ -56,6 +64,7 @@ public class StandardFactory implements Factory
 	    fileTypes,
 	    StandardElements.HARDWARE,
 	    hardwareCpuMem,
+	    hardwareSysDevices,
 	    StandardElements.INPUT_OUTPUT,
 	    StandardElements.SPEECH,
 	    StandardElements.BRAILLE,
@@ -72,12 +81,24 @@ public class StandardFactory implements Factory
 
     @Override public Element[] getOnDemandElements(Element parent)
     {
+	NullCheck.notNull(parent, "parent");
+	if (parent.equals(hardwareSysDevices))
+	{
+	    final List<Element> res = new LinkedList<Element>();
+	    for(org.luwrain.base.SysDevice device: hardware.getSysDevices())
+		res.add(new HardwareSysDevice.Element(parent, device ));
+	    return res.toArray(new Element[res.size()]);
+	}
 	return new Element[0];
     }
 
     @Override public org.luwrain.cpanel.Section createSection(Element el)
     {
 	NullCheck.notNull(el, "el");
+	if (el.equals(hardwareSysDevices))
+	    return new SimpleSection(hardwareSysDevices, "Системные устройства");
+	if (el instanceof HardwareSysDevice.Element)
+	    return new SimpleSection(el, el.toString(), (controlPanel)->HardwareSysDevice.create(controlPanel, el));
 	if (el.equals(StandardElements.ROOT))
 	    return new SimpleSection(StandardElements.ROOT, "Панель управления");
 	if (el.equals(StandardElements.APPLICATIONS))

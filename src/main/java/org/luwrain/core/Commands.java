@@ -393,7 +393,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(env.getControlPanelFactories());
+		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(env.getControlPanelFactories(), env.os().getHardware());
 		    env.launchApp(app);
 		}
 	    },
