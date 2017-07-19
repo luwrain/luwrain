@@ -102,10 +102,10 @@ public class AddRemoveListPopup extends ListPopupBase
 	NullCheck.notNullItems(items, "items");
 	NullCheck.notNull(name, "name");
 	final ListArea.Params params = new ListArea.Params();
-	params.environment = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlEnvironment(luwrain);
 	params.name = name;
 	params.model = new ListUtils.FixedModel(items);
-	params.appearance = new ListUtils.DefaultAppearance(params.environment, Suggestions.LIST_ITEM);
+	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.LIST_ITEM);
 	return params;
     }
 }

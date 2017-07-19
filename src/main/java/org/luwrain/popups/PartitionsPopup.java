@@ -110,7 +110,7 @@ public class PartitionsPopup extends ListPopupBase
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(listFlags, "listFlags");
 	final ListArea.Params params = new ListArea.Params();
-	params.environment = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlEnvironment(luwrain);
 	params.name = name;
 	params.model = new Model(control);
 	params.appearance = new Appearance(luwrain);

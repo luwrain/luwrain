@@ -106,10 +106,10 @@ name, prefix, text, popupFlags);
 		@Override public void refresh() {}
 	    };
 	final ListArea.Params params = new ListArea.Params();
-	params.environment = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlEnvironment(luwrain);
 	params.name = name;
 	params.model = model;
-	params.appearance = new ListUtils.DefaultAppearance(params.environment, Suggestions.POPUP_LIST_ITEM);
+	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.POPUP_LIST_ITEM);
 	//	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());
 	params.flags = EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP);
 	final ListPopup popup = new ListPopup(luwrain, params, popupFlags);

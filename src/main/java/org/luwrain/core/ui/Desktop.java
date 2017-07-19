@@ -70,7 +70,7 @@ public void ready()
 	this.model = new Model(luwrain, uniRefList);
 
 	final ListArea.Params params = new ListArea.Params();
-	params.environment = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlEnvironment(luwrain);
 	params.model = this.model;
 	params.appearance = new Appearance(luwrain);
 	params.name = luwrain.i18n().getStaticStr("Desktop");

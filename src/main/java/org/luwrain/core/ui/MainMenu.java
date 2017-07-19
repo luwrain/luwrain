@@ -49,7 +49,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest
 	    case ALTERNATIVE_PAGE_DOWN:
 		if (selectedIndex() + 1 >= model.getItemCount())
 		{
-		    environment.hint(Hints.NO_ITEMS_BELOW);
+		    context.hint(Hints.NO_ITEMS_BELOW);
 		    return true;
 		}
 		for(int i = selectedIndex() + 1;i < model.getItemCount();++i)
@@ -58,13 +58,13 @@ public class MainMenu extends ListArea implements PopupClosingRequest
 			select(i, true);
 			return true;
 		    }
-		environment.hint(Hints.NO_ITEMS_BELOW);
+		context.hint(Hints.NO_ITEMS_BELOW);
 		return true;
 	    case PAGE_UP:
 	    case ALTERNATIVE_PAGE_UP:
 		if (selectedIndex() < 1)
 		{
-		    environment.hint(Hints.NO_ITEMS_ABOVE);
+context.hint(Hints.NO_ITEMS_ABOVE);
 		    return true;
 		}
 		for(int i = selectedIndex() - 1;i >= 0;--i)
@@ -73,7 +73,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest
 			select(i, true);
 			return true;
 		    }
-		environment.hint(Hints.NO_ITEMS_ABOVE);
+context.hint(Hints.NO_ITEMS_ABOVE);
 		return true;
 	    }
 	return super.onKeyboardEvent(event);
@@ -163,7 +163,7 @@ public class MainMenu extends ListArea implements PopupClosingRequest
 		objs.add(u);
 	}
 	final ListArea.Params params = new ListArea.Params();
-	params.environment = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlEnvironment(luwrain);
 	params.model = new ListUtils.FixedModel(objs.toArray(new Object[objs.size()]));
 	params.appearance = new Appearance(luwrain);
 	params.transition = new Transition();

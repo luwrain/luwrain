@@ -371,7 +371,7 @@ public class CommanderArea<E> extends ListArea
 
     @Override protected String noContentStr()
     {
-	return environment.getStaticStr("CommanderNoContent");
+	return context.getStaticStr("CommanderNoContent");
     }
 
     static protected ListArea.Params createListParams(CommanderArea.Params params)
@@ -382,7 +382,7 @@ public class CommanderArea<E> extends ListArea
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.comparator, "params.comparator");
 	final ListArea.Params listParams = new ListArea.Params();
-	listParams.environment = params.environment;
+	listParams.context = params.environment;
 	listParams.model = new ListModelAdapter(params.model, params.filter, params.comparator);
 	listParams.appearance = new ListAppearanceImpl(params.appearance);
 	listParams.name = "";//Never used, getAreaName() overrides

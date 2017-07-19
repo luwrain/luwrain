@@ -83,7 +83,7 @@ public class ListArea  implements Area, RegionProvider
 
     static public class Params
     {
-	public ControlEnvironment environment;
+	public ControlEnvironment context;
 	public Model model;
 	public Appearance appearance;
 	public Transition transition = new ListUtils.DefaultTransition();
@@ -93,7 +93,7 @@ public class ListArea  implements Area, RegionProvider
     }
 
     protected final RegionTranslator region = new RegionTranslator(this);
-    protected final ControlEnvironment environment;
+    protected final ControlEnvironment context;
     protected String areaName = "";
     protected final Model model;
     protected final Appearance appearance;
@@ -107,13 +107,13 @@ public class ListArea  implements Area, RegionProvider
     public ListArea(Params params)
     {
 	NullCheck.notNull(params, "params");
-	NullCheck.notNull(params.environment, "params.environment");
+	NullCheck.notNull(params.context, "params.context");
 	NullCheck.notNull(params.model, "params.model");
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.transition, "params.transition");
 	NullCheck.notNull(params.name, "params.name");
 	NullCheck.notNull(params.flags, "params.flags");
-	this.environment = params.environment;
+	this.context = params.context;
 	this.model = params.model;
 	this.appearance = params.appearance;
 	this.transition = params.transition;
@@ -191,7 +191,7 @@ public class ListArea  implements Area, RegionProvider
 	continue;
 	    hotPointY = getLineIndexByItemIndex(i);
 	hotPointX = appearance.getObservableLeftBound(o);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	if (announce)
 	    appearance.announceItem(o, NONE_APPEARANCE_FLAGS);
 	return true;
@@ -225,9 +225,9 @@ public class ListArea  implements Area, RegionProvider
 	{
 	    hotPointX = 0;
 	    if (announce)
-		environment.hint(Hints.EMPTY_LINE);
+		context.hint(Hints.EMPTY_LINE);
 	}
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -268,7 +268,7 @@ public class ListArea  implements Area, RegionProvider
 	if (count < 1)
 	{
 	    hotPointX = 0;
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	    return;
 	}
 	final Object item = model.getItem(0);
@@ -280,9 +280,9 @@ public class ListArea  implements Area, RegionProvider
 	} else
 	{
 	    hotPointX = 0;
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	}
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
     }
 
     public void announceSelected()
@@ -303,13 +303,13 @@ public class ListArea  implements Area, RegionProvider
     {
 	final Object previouslySelected = selected();
 	model.refresh();
-	environment.onAreaNewContent(this);
+	context.onAreaNewContent(this);
 	final int count = model.getItemCount();
 	if (count == 0)
 	{
 	    hotPointX = 0;
 	    hotPointY = 0;
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	    return;
 	}
 	if (previouslySelected != null && select(previouslySelected, false))
@@ -319,7 +319,7 @@ public class ListArea  implements Area, RegionProvider
 	if (item != null)
 	    hotPointX = appearance.getObservableLeftBound(item); else
 	    hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
     }
 
     public boolean isEmpty()
@@ -465,18 +465,18 @@ public class ListArea  implements Area, RegionProvider
     {
 	NullCheck.notNull(areaName, "areaName");
 	this.areaName = areaName;
-	environment.onAreaNewName(this);
+	context.onAreaNewName(this);
     }
 
     protected boolean onAnnounce()
     {
-	environment.playSound(Sounds.INTRO_REGULAR);
+	context.playSound(Sounds.INTRO_REGULAR);
 	String item = "";
 	if (selected() != null)
 	    item = appearance.getScreenAppearance(selected(), EnumSet.noneOf(Appearance.Flags.class)).trim();
 	if (!item.isEmpty())
 	    item = " " + item;
-	environment.say(getAreaName() + item);
+	context.say(getAreaName() + item);
 	return true;
     }
 
@@ -487,7 +487,7 @@ public class ListArea  implements Area, RegionProvider
 	final Object item = selected();
 	if (item == null)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	appearance.announceItem(item, NONE_APPEARANCE_FLAGS);
@@ -522,13 +522,13 @@ final int rightBound = appearance.getObservableRightBound(item);
 		    hotPointX = leftBound;
 		if (hotPointX > rightBound)
 		    hotPointX = rightBound;
-		environment.onAreaNewHotPoint(this);
+		context.onAreaNewHotPoint(this);
 		return true;
 	    }
 	    //On empty line
 	    hotPointY = newY;
 	    hotPointX = 0;
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	    return true;
     }
 
@@ -570,7 +570,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    return false;
 	hotPointY = getLineIndexByItemIndex(info.itemIndex);
 	hotPointX = info.pos;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -601,7 +601,7 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    hotPointY = getLineIndexByItemIndex(i);
 	    ++hotPointX;
 	    appearance.announceItem(model.getItem(hotPointY), NONE_APPEARANCE_FLAGS);
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	    return true;
 	}
 	return false;
@@ -660,7 +660,7 @@ current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
 	switch(newState.type)
 	{
 	case NO_TRANSITION:
-	    environment.hint(hint);
+	    context.hint(hint);
 	    return true;
 	case EMPTY_LINE_TOP:
 	    if (!flags.contains(Flags.EMPTY_LINE_TOP))
@@ -691,25 +691,25 @@ protected boolean onArrowRight(KeyboardEvent event)
 	final Object item = selected();
 	if (item == null)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 final int rightBound = appearance.getObservableRightBound(item);
 	if (hotPointX >= rightBound)
 	{
-	    environment.hint(Hints.END_OF_LINE);
+	    context.hint(Hints.END_OF_LINE);
 	    return true;
 	}
 	++hotPointX;
 	announceChar(line, hotPointX, rightBound);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -720,26 +720,26 @@ final int rightBound = appearance.getObservableRightBound(item);
 	final Object item = selected();
 	if (item == null)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final int leftBound = appearance.getObservableLeftBound(item);
 	final int rightBound = appearance.getObservableRightBound(item);
 	if (hotPointX <= leftBound)
 	{
-	    environment.hint(Hints.BEGIN_OF_LINE);
+	    context.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
 	--hotPointX;
 	announceChar(line, hotPointX, rightBound);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -750,35 +750,35 @@ final int rightBound = appearance.getObservableRightBound(item);
 	final Object item = selected();
 	if (item == null)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 		final int leftBound = appearance.getObservableLeftBound(item);
 final int rightBound = appearance.getObservableRightBound(item);
 	if (hotPointX >= rightBound)
 	{
-	    environment.hint(Hints.END_OF_LINE);
+	    context.hint(Hints.END_OF_LINE);
 	    return true;
 	}
 	final String subline = line.substring(leftBound, rightBound);
 	final WordIterator it = new WordIterator(subline, hotPointX - leftBound);
 	if (!it.stepForward())
 	{
-	    environment.hint(Hints.END_OF_LINE);
+	    context.hint(Hints.END_OF_LINE);
 	    return true;
 	}
 	hotPointX = it.pos() + leftBound;
 	if (it.announce().length() > 0)
-	    environment.say(it.announce()); else
-	    environment.hint(Hints.END_OF_LINE);
-	environment.onAreaNewHotPoint(this);
+	    context.say(it.announce()); else
+	    context.hint(Hints.END_OF_LINE);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -789,33 +789,33 @@ final int rightBound = appearance.getObservableRightBound(item);
 	final Object item = selected();
 	if (item == null)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final int leftBound = appearance.getObservableLeftBound(item);
 	final int rightBound = appearance.getObservableRightBound(item);
 	if (hotPointX <= leftBound)
 	{
-	    environment.hint(Hints.BEGIN_OF_LINE);
+	    context.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
 	final String subline = line.substring(leftBound, rightBound);
 	final WordIterator it = new WordIterator(subline, hotPointX - leftBound);
 	if (!it.stepBackward())
 	{
-	    environment.hint(Hints.BEGIN_OF_LINE);
+	    context.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
 	hotPointX = it.pos() + leftBound;
-	    environment.say(it.announce());
-	environment.onAreaNewHotPoint(this);
+	context.say(it.announce());
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -826,14 +826,14 @@ protected boolean onAltEnd(KeyboardEvent event)
 	final Object item = selected();
 	if (item == null)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	hotPointX = appearance.getObservableRightBound(item);
-	environment.hint(Hints.END_OF_LINE);
-	environment.onAreaNewHotPoint(this);
+	context.hint(Hints.END_OF_LINE);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -847,7 +847,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	NullCheck.notNull(line, "line");
 	hotPointX = appearance.getObservableLeftBound(item);
 	announceChar(line, hotPointX, appearance.getObservableRightBound(item));
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -858,7 +858,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	    return false;
 	if (!model.toggleMark(index))
 	    return false;
-	environment.onAreaNewContent(this);
+	context.onAreaNewContent(this);
 	if (hotPointY + 1 < getLineCount())
 	{
 	    ++hotPointY;
@@ -899,7 +899,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	    res.add(line != null?line:"");
 	}
 	res.add("");
-	environment.getClipboard().set(res.toArray(new String[res.size()]));
+	context.getClipboard().set(res.toArray(new String[res.size()]));
 	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
@@ -921,7 +921,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	    final int toPos = Math.min(toX, line.length());
 	    if (fromPos >= toPos)
 		return null;
-	    environment.getClipboard().set(line.substring(fromPos, toPos));
+	    context.getClipboard().set(line.substring(fromPos, toPos));
 	    return new RegionContent(new String[]{line.substring(fromPos, toPos)});
 	}
 	final List<String> res = new LinkedList<String>();
@@ -954,22 +954,22 @@ protected boolean onAltHome(KeyboardEvent event)
 	final int index = selectedIndex();
 	if (index < 0)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    hotPointX = 0;
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	    return;
 	}
 	final Object item = model.getItem(index);
 	if (item == null)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    hotPointX = 0;
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	    return;
 	}
 	appearance.announceItem(item, briefAnnouncement?BRIEF_ANNOUNCEMENT_ONLY:NONE_APPEARANCE_FLAGS);
 	hotPointX = appearance.getObservableLeftBound(item);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
     }
 
     protected String getObservableSubstr(Object item)
@@ -988,22 +988,22 @@ return line.substring(leftBound, rightBound);
 
     protected String noContentStr()
     {
-	return environment.getStaticStr("ListNoContent");
+	return context.getStaticStr("ListNoContent");
     }
 
     protected void announceChar(String  line, int pos, int rightBound)
     {
 	NullCheck.notNull(line, "line");
 	if (pos < rightBound)
-	    environment.sayLetter(line.charAt(pos)); else
-	    environment.hint(Hints.END_OF_LINE);
+	    context.sayLetter(line.charAt(pos)); else
+	    context.hint(Hints.END_OF_LINE);
     }
 
 	protected boolean noContent()
     {
 	if (model == null || model.getItemCount() < 1)
 	{
-	    environment.hint(noContentStr(), Hints.NO_CONTENT);
+	    context.hint(noContentStr(), Hints.NO_CONTENT);
 	    return true;
 	}
 	return false;

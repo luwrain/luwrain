@@ -36,7 +36,7 @@ class ContextMenu extends ListPopup
 	params.name = luwrain.i18n().getStaticStr("ContextMenuName");
 	params.model = new ListUtils.FixedModel(actions);
 	params.appearance = new Appearance(luwrain);
-	params.environment = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlEnvironment(luwrain);
 	params.flags = EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP);
 	params.transition = new Transition();
 	return params;
