@@ -42,7 +42,7 @@ public class ListArea  implements Area, RegionProvider
 
     public interface Appearance
     {
-	public enum Flags { BRIEF };
+	public enum Flags {BRIEF, CLIPBOARD};
 
 	void announceItem(Object item, Set<Flags> flags);
 	String getScreenAppearance(Object item, Set<Flags> flags);
@@ -891,14 +891,15 @@ protected boolean onAltHome(KeyboardEvent event)
     {
 	if (model == null || model.getItemCount() < 0)
 	    return null;
-	final LinkedList<String> res = new LinkedList<String>();
+	final List<String> res = new LinkedList<String>();
 	final int count = model.getItemCount();
 	for(int i = 0;i < count;++i)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(i), NONE_APPEARANCE_FLAGS);
+	    final String line = appearance.getScreenAppearance(model.getItem(i), EnumSet.of(Appearance.Flags.CLIPBOARD));
 	    res.add(line != null?line:"");
 	}
 	res.add("");
+	environment.getClipboard().set(res.toArray(new String[res.size()]));
 	return new RegionContent(res.toArray(new String[res.size()]));
     }
 
@@ -906,21 +907,25 @@ protected boolean onAltHome(KeyboardEvent event)
     {
 	if (model == null || model.getItemCount() < 0)
 	    return null;
-	if (fromY >= model.getItemCount() || toY > model.getItemCount())
+	final int modelFromY = getItemIndexOnLine(fromY);
+	final int modelToY = getItemIndexOnLine(toY);
+
+	if (modelFromY >= model.getItemCount() || modelToY > model.getItemCount())
 	    return null;
-	if (fromY == toY)
+	if (modelFromY == modelToY)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(fromY), NONE_APPEARANCE_FLAGS);
+	    final String line = appearance.getScreenAppearance(model.getItem(modelFromY), EnumSet.of(Appearance.Flags.CLIPBOARD));
 	    if (line == null || line.isEmpty())
 		return null;
-	    final int fromPos = fromX < line.length()?fromX:line.length();
-	    final int toPos = toX < line.length()?toX:line.length();
+	    final int fromPos = Math.min(fromX, line.length());
+	    final int toPos = Math.min(toX, line.length());
 	    if (fromPos >= toPos)
 		return null;
+	    environment.getClipboard().set(line.substring(fromPos, toPos));
 	    return new RegionContent(new String[]{line.substring(fromPos, toPos)});
 	}
-	final LinkedList<String> res = new LinkedList<String>();
-	for(int i = fromY;i < toY;++i)
+	final List<String> res = new LinkedList<String>();
+	for(int i = modelFromY;i < modelToY;++i)
 	{
 	    final String line = appearance.getScreenAppearance(model.getItem(i), NONE_APPEARANCE_FLAGS);
 	    res.add(line != null?line:"");

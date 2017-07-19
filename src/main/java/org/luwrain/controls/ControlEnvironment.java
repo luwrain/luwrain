@@ -41,4 +41,5 @@ int getAreaVisibleHeight(Area area);
     UniRefInfo getUniRefInfo(String uniRef);
     void silence();
     void setEventResponse(EventResponse eventResponse);
+    Clipboard getClipboard();
 }

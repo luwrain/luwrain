@@ -151,4 +151,9 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	NullCheck.notNull(eventResponse, "eventResponse");
 	luwrain.setEventResponse(eventResponse);
     }
+
+    @Override public Clipboard getClipboard()
+    {
+	return luwrain.getClipboardObj();
+    }
 }

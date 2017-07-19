@@ -350,6 +350,11 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	return environment.getClipboard();
     }
 
+    public Clipboard getClipboardObj()
+    {
+	return new Clipboard();
+    }
+
 
 
     //Doesn't produce any announcement
