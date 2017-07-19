@@ -48,7 +48,8 @@ class Speech
     //Always cancels any previous text to speak
     void speak(String text, int relPitch, int relRate)
     {
-	NullCheck.notNull(text, "text");
+	if (text == null || text.isEmpty())
+	    return;
 	if (defaultChannel == null)
 	    return;
 	defaultChannel.speak(text, null, relPitch, relRate, true);

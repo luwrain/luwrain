@@ -5,7 +5,12 @@ public class AreaLayoutHelper
 {
     public enum Position {LEFT, RIGHT, TOP, BOTTOM};
 
-    protected final Luwrain luwrain;
+public interface UpdateNotification
+{
+    void onLayoutUpdate();
+}
+
+    protected final UpdateNotification notification;
     protected Area basicArea = null;
     protected AreaLayout basicLayout = null;
 
@@ -13,25 +18,25 @@ public class AreaLayoutHelper
     protected Position additionalAreaPos = null;
     protected Area tempArea = null;
 
-    public AreaLayoutHelper(Luwrain luwrain)
+    public AreaLayoutHelper(UpdateNotification notification)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	this.luwrain = luwrain;
+	NullCheck.notNull(notification, "notification");
+	this.notification = notification;
     }
 
-    public AreaLayoutHelper(Luwrain luwrain, Area basicArea)
+    public AreaLayoutHelper(UpdateNotification notification, Area basicArea)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(notification, "notification");
 	NullCheck.notNull(basicArea, "basicArea");
-	this.luwrain = luwrain;
+	this.notification = notification;
 	this.basicArea = basicArea;
     }
 
-    public AreaLayoutHelper(Luwrain luwrain, AreaLayout basicLayout)
+    public AreaLayoutHelper(UpdateNotification notification, AreaLayout basicLayout)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(notification, "notification");
 	NullCheck.notNull(basicLayout, "basicLayout");
-	this.luwrain = luwrain;
+	this.notification = notification;
 	this.basicLayout = basicLayout;
     }
 
@@ -40,6 +45,7 @@ public class AreaLayoutHelper
 	NullCheck.notNull(area, "area");
 	this.basicArea = basicArea;
 	this.basicLayout = null;
+	notification.onLayoutUpdate();
     }
 
     public void setBasicLayout(AreaLayout layout)
@@ -47,12 +53,14 @@ public class AreaLayoutHelper
 	NullCheck.notNull(layout, "layout");
 	this.basicLayout = layout;
 	this.basicArea = null;
+	notification.onLayoutUpdate();
     }
 
     public void clear()
     {
 	this.basicArea = null;
 	this.basicLayout = null;
+	notification.onLayoutUpdate();
     }
 
     public boolean openAdditionalArea(Area area, Position pos)
@@ -63,7 +71,7 @@ public class AreaLayoutHelper
 	    return false;
 	additionalArea = area;
 	additionalAreaPos = pos;
-	luwrain.onNewAreaLayout();
+	notification.onLayoutUpdate();
 	return true;
     }
 
@@ -73,7 +81,7 @@ public class AreaLayoutHelper
 	    return;
 	additionalArea = null;
 	additionalAreaPos = null;
-	luwrain.onNewAreaLayout();
+	notification.onLayoutUpdate();
     }
 
     public Area getAdditionalArea()
@@ -81,11 +89,16 @@ public class AreaLayoutHelper
 	return additionalArea;
     }
 
+    public boolean hasAdditionalArea()
+    {
+	return additionalArea != null && additionalAreaPos != null;
+    }
+
     public void openTempArea(Area area)
     {
 	NullCheck.notNull(area, "area");
 	tempArea = area;
-	luwrain.onNewAreaLayout();
+	notification.onLayoutUpdate();
     }
 
     public void closeTempArea()
@@ -93,7 +106,7 @@ public class AreaLayoutHelper
 	if (tempArea == null)
 	    return;
 	tempArea = null;
-	luwrain.onNewAreaLayout();
+	notification.onLayoutUpdate();
     }
 
     public Area getTempArea()
@@ -108,9 +121,21 @@ public class AreaLayoutHelper
 	if (basicLayout != null)
 	    return basicLayout;
 	if (basicArea == null)
-	return null;
-	return null;//FIXME:
+	    return null;
+	if (additionalArea != null && additionalAreaPos != null)
+	    switch(additionalAreaPos)
+	    {
+	    case RIGHT:
+		return new AreaLayout(AreaLayout.LEFT_RIGHT, basicArea, additionalArea);
+	    case LEFT:
+		return new AreaLayout(AreaLayout.LEFT_RIGHT, additionalArea, basicArea);
+	    case TOP:
+		return new AreaLayout(AreaLayout.TOP_BOTTOM, additionalArea, basicArea);
+	    case BOTTOM:
+		return new AreaLayout(AreaLayout.TOP_BOTTOM, basicArea, additionalArea);
+	    default:
+		return null;
+	    }
+	return new AreaLayout(basicArea);
     }
-
-
 }
