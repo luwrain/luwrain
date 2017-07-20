@@ -75,7 +75,7 @@ import org.luwrain.core.events.*;
  * </li>
  * </ul>
  */
-public interface Area extends Lines
+public interface Area extends Lines, HotPoint
 {
     String getAreaName();
     int getHotPointX();

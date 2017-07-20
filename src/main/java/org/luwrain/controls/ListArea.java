@@ -25,7 +25,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
-public class ListArea  implements Area, RegionProvider
+public class ListArea  implements Area, RegionProvider, ClipboardTranslator.Provider
 {
     public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM};
 
@@ -49,6 +49,11 @@ public class ListArea  implements Area, RegionProvider
 	int getObservableLeftBound(Object item);
 	int getObservableRightBound(Object item);
     }
+
+public interface ClipboardObjects
+{
+    Object getClipboardObject(ListArea listArea, Model model, Appearance appearance, int index);
+}
 
     public interface Transition
     {
@@ -86,8 +91,8 @@ public class ListArea  implements Area, RegionProvider
 	public ControlEnvironment context;
 	public Model model;
 	public Appearance appearance;
-	public Transition transition = new ListUtils.DefaultTransition();
 	public ListClickHandler clickHandler;
+	public Transition transition = new ListUtils.DefaultTransition();
 	public String name;
 	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
     }
@@ -886,6 +891,22 @@ protected boolean onAltHome(KeyboardEvent event)
 	    return false;
 	    return clickHandler.onListClick(this, index, item);
     }
+
+    @Override public boolean onClipboardCopyAll()
+    {
+	return false;
+    }
+
+@Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
+    {
+	return false;
+    }
+
+    @Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
+    {
+	return false;
+    }
+
 
     @Override public RegionContent getWholeRegion()
     {
