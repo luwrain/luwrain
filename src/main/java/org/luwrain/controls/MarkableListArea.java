@@ -20,62 +20,68 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 
 public class MarkableListArea extends ListArea
 {
-    public MarkableListArea(Params params)
+    public interface MarksInfo
+    {
+	boolean marked(Object o);
+	void mark(Object o);
+	void unmark(Object o);
+	boolean toggleMark(Object o);
+	void markOnly(Object[] o);
+	Object[] getAllMarked();
+    }
+
+    public class Params extends ListArea.Params
+    {
+	public MarksInfo marksInfo = null;
+    }
+
+    protected final MarksInfo marksInfo;
+
+    public MarkableListArea(MarkableListArea.Params params)
     {
 	super(params);
+	NullCheck.notNull(params.marksInfo, "params.marksInfo");
+	this.marksInfo = params.marksInfo;
     }
 
-    static public class MarksInfo
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
-	protected final HashSet items = new HashSet();
-
-	public boolean marked(Object o)
-	{
-	    NullCheck.notNull(o, "o");
-	    return items.contains(o);
-	}
-
-	void mark(Object o)
-    {
-	NullCheck.notNull(o, "o");
-	items.add(o);
-    }
-
-	public void unmark(Object o)
-	{
-	    NullCheck.notNull(o, "o");
-	    items.remove(o);
-	}
-
-	public boolean toggleMark(Object o)
-	{
-	    NullCheck.notNull(o, "o");
-	    if (marked(o))
+	NullCheck.notNull(event, "event");
+	if (!event.isSpecial())
+	    switch(event.getChar())
 	    {
-		unmark(o);
-		return false;
+	    case '!':
+		return onToggleMark();
 	    }
-	    mark(o);
-	    return true;
-	}
+	return super.onKeyboardEvent(event);
+    }
 
-	public void markTheseOnly(Object[] o)
-	{
-	    NullCheck.notNullItems(o, "o");
-	    items.clear();
-	    for(Object oo: o)
-		items.add(oo);
-	}
+    protected boolean onToggleMark()
+    {
+	final Object selected = selected();
+	if (selected == null)
+	    return false;
+	final boolean newState = marksInfo.toggleMark(selected);
+	context.hint(newState?"Отмечено":"Не отмечено");//fixme:
+	context.onAreaNewContent(this);
+	return true;
+    }
 
-	Object[] getAllMarked()
+    @Override public void refresh()
+    {
+	super.refresh();
+	final List newItems = new LinkedList();
+	final int count = model.getItemCount();
+	for(int i = 0;i < count;++i)
 	{
-	    final LinkedList res = new LinkedList();
-	    for(Object o: items)
-		res.add(o);
-	    return res.toArray(new Object[res.size()]);
+	    final Object o = model.getItem(i);
+	    if (marksInfo.marked(o))
+		newItems.add(o);
 	}
+	marksInfo.markOnly(newItems.toArray(new Object[newItems.size()]));
     }
 }

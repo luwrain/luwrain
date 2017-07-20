@@ -237,41 +237,41 @@ public class ListUtils
 
     }
 
-    static public class SelectingInfo
+    static public class DefaultMarksInfo implements MarkableListArea.MarksInfo
     {
 	protected final Set items = new HashSet();
 
-	boolean selected(Object o)
+	@Override public boolean marked(Object o)
 	{
 	    NullCheck.notNull(o, "o");
 	    return items.contains(o);
 	}
 
-	void select(Object o)
+	@Override public void mark(Object o)
 	{
 	    NullCheck.notNull(o, "o");
 	    items.add(o);
 	}
 
-	void unselect(Object o)
+	@Override public void unmark(Object o)
 	{
 	    NullCheck.notNull(o, "o");
 	    items.remove(o);
 	}
 
-	boolean toggleSelection(Object o)
+	@Override public boolean toggleMark(Object o)
 	{
 	    NullCheck.notNull(o, "o");
-	    if (selected(o))
+	    if (marked(o))
 	    {
-		unselect(o);
+unmark(o);
 		return false;
 	    }
-	    select(o);
+mark(o);
 	    return true;
 	}
 
-	void selectOnly(Object[] o)
+	@Override public void markOnly(Object[] o)
 	{
 	    NullCheck.notNullItems(o, "o");
 	    items.clear();
@@ -279,12 +279,65 @@ public class ListUtils
 		items.add(oo);
 	}
 
-	Object[] allSelected()
+	@Override public Object[] getAllMarked()
 	{
 	    final List res = new LinkedList();
 	    for(Object o: items)
 		res.add(o);
 	    return res.toArray(new Object[res.size()]);
+	}
+    }
+
+    public class MarkableListAppearance implements ListArea.Appearance
+    {
+	protected final ControlEnvironment context;
+	protected final MarkableListArea.MarksInfo marksInfo;
+
+	MarkableListAppearance(ControlEnvironment context, MarkableListArea.MarksInfo marksInfo)
+	{
+	    NullCheck.notNull(context, "context");
+	    NullCheck.notNull(marksInfo, "marksInfo");
+	    this.context = context;
+	    this.marksInfo = marksInfo;
+	}
+
+	@Override public void announceItem(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    context.playSound(Sounds.LIST_ITEM);
+	    context.silence();
+	    if (flags.contains(Flags.BRIEF))
+	    {
+		context.say(item.toString());
+		return;
+	    }
+	    if (marksInfo.marked(item))
+		context.say("Отмечено " + item.toString()); else// //FIXME:
+		context.say(item.toString());
+	}
+
+	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    if (marksInfo.marked(item))
+		return "* " + item.toString();
+	    return "  " + item.toString();
+	}
+
+	@Override public int getObservableLeftBound(Object item)
+	{
+	    if (item == null)
+		return 0;
+	    return 2;
+	}
+
+	@Override public int getObservableRightBound(Object item)
+	{
+	    if (item == null)
+		return 0;
+	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
 	}
     }
 }
