@@ -36,7 +36,7 @@ public class ListArea  implements Area, RegionProvider, ClipboardTranslator.Prov
     {
 	int getItemCount();
 	Object getItem(int index);
-	boolean toggleMark(int index);
+	//	boolean toggleMark(int index);
 	void refresh();
     }
 
@@ -373,8 +373,6 @@ public interface ClipboardObjects
 	    return onPageDown(event, true);
 	case ALTERNATIVE_PAGE_UP:
 	    return onPageUp(event, true);
-	case INSERT:
-	    return onInsert(event);
 	case ENTER:
 	    return onEnter(event);
 	default:
@@ -853,22 +851,6 @@ protected boolean onAltHome(KeyboardEvent event)
 	hotPointX = appearance.getObservableLeftBound(item);
 	announceChar(line, hotPointX, appearance.getObservableRightBound(item));
 	context.onAreaNewHotPoint(this);
-	return true;
-    }
-
-    protected boolean onInsert(KeyboardEvent event)
-    {
-	final int index = selectedIndex();
-	if (index < 0)
-	    return false;
-	if (!model.toggleMark(index))
-	    return false;
-	context.onAreaNewContent(this);
-	if (hotPointY + 1 < getLineCount())
-	{
-	    ++hotPointY;
-	    onNewHotPointY(false); 
-	}
 	return true;
     }
 

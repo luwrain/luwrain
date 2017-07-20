@@ -336,11 +336,6 @@ if (!flags.contains(Flags.BRIEF))
 	    items = res.toArray(new Object[res.size()]);
 	}
 
-	@Override public boolean toggleMark(int index)
-	{
-	    return false;
-	}
-
 	int getFirstUniRefPos()
 	{
 	    return firstUniRefPos;

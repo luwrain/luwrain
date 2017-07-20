@@ -530,7 +530,7 @@ public class CommanderArea<E> extends ListArea
 	    return (wrappers != null && index < wrappers.length)?wrappers[index]:null;
 	}
 
-	@Override public boolean toggleMark(int index)
+	public boolean toggleMark(int index)//FIXME:
 	{
 	    if (!marking)
 		return false;

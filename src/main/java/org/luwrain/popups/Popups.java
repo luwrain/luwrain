@@ -102,7 +102,6 @@ name, prefix, text, popupFlags);
 	final ListArea.Model model = new ListArea.Model(){
 		@Override public int getItemCount() { return items.length; }
 		@Override public Object getItem(int index) { return index < items.length?items[index]:null; }
-		@Override public boolean toggleMark(int index) { return false; }
 		@Override public void refresh() {}
 	    };
 	final ListArea.Params params = new ListArea.Params();

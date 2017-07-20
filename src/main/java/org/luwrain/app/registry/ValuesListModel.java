@@ -54,11 +54,6 @@ class ValuesListModel implements ListArea.Model
 	return index < values.length?values[index]:null;
     }
 
-    @Override public boolean toggleMark(int index)
-    {
-	return false;
-    }
-
     @Override public void refresh()
     {
 	if (dirPath == null || dirPath.isEmpty())

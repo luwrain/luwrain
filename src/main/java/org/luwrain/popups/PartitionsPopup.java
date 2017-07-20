@@ -210,11 +210,6 @@ public class PartitionsPopup extends ListPopupBase
 	    return items[index];
 	}
 
-	@Override public boolean toggleMark(int index)
-	{
-	    return false;
-	}
-
 	@Override public void refresh()
 	{
 	    final LinkedList res = new LinkedList();

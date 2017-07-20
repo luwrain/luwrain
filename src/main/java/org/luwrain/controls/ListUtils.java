@@ -235,9 +235,5 @@ public class ListUtils
 	{
 	}
 
-	@Override public boolean toggleMark(int index)
-	{
-	    return false;
-	}
 }
 }
