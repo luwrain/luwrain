@@ -235,5 +235,56 @@ public class ListUtils
 	{
 	}
 
-}
+    }
+
+    static public class SelectingInfo
+    {
+	protected final Set items = new HashSet();
+
+	boolean selected(Object o)
+	{
+	    NullCheck.notNull(o, "o");
+	    return items.contains(o);
+	}
+
+	void select(Object o)
+	{
+	    NullCheck.notNull(o, "o");
+	    items.add(o);
+	}
+
+	void unselect(Object o)
+	{
+	    NullCheck.notNull(o, "o");
+	    items.remove(o);
+	}
+
+	boolean toggleSelection(Object o)
+	{
+	    NullCheck.notNull(o, "o");
+	    if (selected(o))
+	    {
+		unselect(o);
+		return false;
+	    }
+	    select(o);
+	    return true;
+	}
+
+	void selectOnly(Object[] o)
+	{
+	    NullCheck.notNullItems(o, "o");
+	    items.clear();
+	    for(Object oo: o)
+		items.add(oo);
+	}
+
+	Object[] allSelected()
+	{
+	    final List res = new LinkedList();
+	    for(Object o: items)
+		res.add(o);
+	    return res.toArray(new Object[res.size()]);
+	}
+    }
 }
