@@ -16,10 +16,9 @@
 
 package org.luwrain.controls;
 
-//FIXME:DESCRIBE;
-//FIXME:ControlEnvironment interface support;
-
 import java.util.*;
+import java.io.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
@@ -52,7 +51,7 @@ public class ListArea  implements Area, RegionProvider, ClipboardTranslator.Prov
 
 public interface ClipboardObjects
 {
-    Object getClipboardObject(ListArea listArea, Model model, Appearance appearance, int index);
+    Serializable getClipboardObject(ListArea listArea, Model model, Appearance appearance, int index);
 }
 
     public interface Transition

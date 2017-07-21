@@ -23,6 +23,8 @@ import org.luwrain.core.events.*;
 
 public class ClipboardTranslator
 {
+    public enum Flags {ALLOWED_EMPTY, ALLOWED_WITHOUT_REGION_POINT};
+
     public interface Provider
     {
 	boolean onClipboardCopyAll();
@@ -31,13 +33,43 @@ public class ClipboardTranslator
     }
 
     protected final Provider provider;
-    protected int fromX = -1;
-protected int fromY  = -1;
+    protected final RegionPoint regionPoint;
+    protected final Set<Flags> flags;
 
     public ClipboardTranslator(Provider provider)
     {
 	NullCheck.notNull(provider, "provider");
 	this.provider = provider;
+	this.regionPoint = new RegionPoint();
+	this.flags = EnumSet.noneOf(Flags.class);
+    }
+
+    public ClipboardTranslator(Provider provider, Set<Flags> flags)
+    {
+	NullCheck.notNull(provider, "provider");
+	NullCheck.notNull(flags, "flags");
+	this.provider = provider;
+	this.regionPoint = new RegionPoint();
+	this.flags = flags;
+    }
+
+    public ClipboardTranslator(Provider provider, RegionPoint regionPoint)
+    {
+	NullCheck.notNull(provider, "provider");
+	NullCheck.notNull(regionPoint, "regionPoint");
+	this.provider = provider;
+	this.regionPoint = regionPoint;
+	this.flags = EnumSet.noneOf(Flags.class);
+    }
+
+    public ClipboardTranslator(Provider provider, RegionPoint regionPoint, Set<Flags> flags)
+    {
+	NullCheck.notNull(provider, "provider");
+	NullCheck.notNull(regionPoint, "regionPoint");
+	NullCheck.notNull(flags, "flags");
+	this.provider = provider;
+	this.regionPoint = regionPoint;
+	this.flags = flags;
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
@@ -50,109 +82,111 @@ protected int fromY  = -1;
 	switch(event.getCode())
 	{
 	case REGION_POINT:
-	    return firstPoint(hotPointX, hotPointY);
+	    return regionPoint.onEnvironmentEvent(event, hotPointX, hotPointY);
 	case CLIPBOARD_COPY:
-	case CLIPBOARD_COPY_ALL:
+	    return onCopy(hotPointX, hotPointY, false);
 	case CLIPBOARD_CUT:
+	    return onCopy(hotPointX, hotPointY, true);
+	case CLIPBOARD_COPY_ALL:
+	    return provider.onClipboardCopyAll();
 	case DELETE:
+	    return onDelete(hotPointX, hotPointY);
 	default:
 	    return false;
 	}
     }
 
-    protected boolean firstPoint(int hotPointX, int hotPointY)
+    protected boolean onCopy(int hotPointX, int hotPointY, boolean withDeleting)
     {
-	fromX = hotPointX;
-	fromY = hotPointY;
-	return true;
-    }
-
-    /*
-    private boolean onRegionQuery(RegionQuery query,
-				 int hotPointX, int hotPointY)
-    {
-	if (fromX < 0 || fromY < 0)
+	if (!regionPoint.isInitialized())
 	{
-	    final RegionContent res = provider.getWholeRegion();
-	    if (res == null)
+	    if (!flags.contains(Flags.ALLOWED_WITHOUT_REGION_POINT))
 		return false;
-	    query.answer(res);
-	    return true;
+	    return provider.onClipboardCopy(-1, -1, hotPointX, hotPointY, false);
 	}
-	int x1, y1, x2, y2;
-	if (fromY < hotPointY)
+	final int x1;
+	final int y1;
+	final int x2;
+	final int y2;
+	if (regionPoint.getHotPointY() < hotPointY)
 	{
-	    x1 = fromX;
-	    y1 = fromY;
+	    x1 = regionPoint.getHotPointX();
+	    y1 = regionPoint.getHotPointY();
 	    x2 = hotPointX;
 	    y2 = hotPointY;
 	} else
-	    if (fromY > hotPointY)
+	    if (regionPoint.getHotPointY() > hotPointY)
 	    {
 		x1 = hotPointX;
 		y1 = hotPointY;
-		x2 = fromX;
-		y2 = fromY;
+		x2 = regionPoint.getHotPointX();
+		y2 = regionPoint.getHotPointY();
 	    } else
 	    {
-		if (fromX < hotPointX)
+		if (regionPoint.getHotPointX() <= hotPointX)
 		{
-		    x1 = fromX;
-		    y1 = fromY;
+		    x1 = regionPoint.getHotPointX();
+		    y1 = regionPoint.getHotPointY();
 		    x2 = hotPointX;
 		    y2 = hotPointY;
 		} else
-		    if (fromX > hotPointX)
-		    {
-			x1 = hotPointX;
-			y1 = hotPointY;
-			x2 = fromX;
-			y2 = fromY;
-		    } else
-		    {
-			final RegionContent res = provider.getWholeRegion();
-			if (res == null)
-			    return false;
-			query.answer(res);
-			return true;
-		    }
+		{
+		    x1 = hotPointX;
+		    y1 = hotPointY;
+		    x2 = regionPoint.getHotPointX();
+		    y2 = regionPoint.getHotPointY();
+		}
 	    }
-	final RegionContent res = provider.getRegion(x1, y1, x2, y2);
-	if (res == null)
+	//Checking if allowed empty
+	if ((x1 == x2) && (y1 == y2) && !flags.contains(Flags.ALLOWED_EMPTY))
 	    return false;
-	query.answer(res);
-	return true;
+	return provider.onClipboardCopy(x1, y1, x2, y2, withDeleting);
     }
 
-    private boolean onCutQuery(CutQuery query, 
-			       int hotPointX, int hotPointY)
+    protected boolean onDelete(int hotPointX, int hotPointY)
     {
-	if (!onRegionQuery(query, hotPointX, hotPointY))
+	if (!regionPoint.isInitialized())
+	{
+	    if (!flags.contains(Flags.ALLOWED_WITHOUT_REGION_POINT))
+		return false;
+	    return provider.onDeleteRegion(-1, -1, hotPointX, hotPointY);
+	}
+	final int x1;
+	final int y1;
+	final int x2;
+	final int y2;
+	if (regionPoint.getHotPointY() < hotPointY)
+	{
+	    x1 = regionPoint.getHotPointX();
+	    y1 = regionPoint.getHotPointY();
+	    x2 = hotPointX;
+	    y2 = hotPointY;
+	} else
+	    if (regionPoint.getHotPointY() > hotPointY)
+	    {
+		x1 = hotPointX;
+		y1 = hotPointY;
+		x2 = regionPoint.getHotPointX();
+		y2 = regionPoint.getHotPointY();
+	    } else
+	    {
+		if (regionPoint.getHotPointX() <= hotPointX)
+		{
+		    x1 = regionPoint.getHotPointX();
+		    y1 = regionPoint.getHotPointY();
+		    x2 = hotPointX;
+		    y2 = hotPointY;
+		} else
+		{
+		    x1 = hotPointX;
+		    y1 = hotPointY;
+		    x2 = regionPoint.getHotPointX();
+		    y2 = regionPoint.getHotPointY();
+		}
+	    }
+	//Checking if allowed empty
+	if ((x1 == x2) && (y1 == y2) && !flags.contains(Flags.ALLOWED_EMPTY))
 	    return false;
-	return delete(hotPointX, hotPointY);
+	return provider.onDeleteRegion(x1, y1, x2, y2);
     }
-
-    private boolean delete(int hotPointX, int hotPointY)
-    {
-	if (fromX < 0 || fromY < 0)
-	    return provider.deleteWholeRegion();
-	if (fromY < hotPointY)
-	    return provider.deleteRegion(fromX, fromY, hotPointX, hotPointY);
-	if (fromY > hotPointY)
-	    return provider.deleteRegion(hotPointX, hotPointY, fromX, fromY);
-	if (fromX < hotPointX)
-	    return provider.deleteRegion(fromX, fromY, hotPointX, hotPointY);
-	if (fromX > hotPointX)
-	    return provider.deleteRegion(hotPointX, hotPointY, fromX, fromY);
-	return false;
-    }
-
-    private boolean insert(InsertEvent event,
-			  int hotPointX, int hotPointY)
-    {
-	if (hotPointX < 0 || hotPointY < 0)
-	    return false;
-	return provider.insertRegion(hotPointX, hotPointY, event.getData());
-    }
-    */
 }

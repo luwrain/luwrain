@@ -62,4 +62,10 @@ public class RegionPoint implements HotPoint
     {
 	return hotPointY;
     }
+
+    public void reset()
+    {
+	hotPointX = -1;
+	hotPointY = -1;
+    }
 }
