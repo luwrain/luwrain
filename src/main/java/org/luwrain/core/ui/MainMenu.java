@@ -22,6 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.controls.*;
+import org.luwrain.popups.*;
 
 public class MainMenu extends ListArea implements PopupClosingRequest
 {
