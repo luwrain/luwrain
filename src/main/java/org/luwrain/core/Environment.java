@@ -35,10 +35,10 @@ public class Environment extends EnvironmentAreas
     private final Interaction interaction;
 
     private org.luwrain.core.extensions.Manager extensions;
-    private final org.luwrain.core.ui.Desktop desktop = new org.luwrain.core.ui.Desktop(this);
+    private final org.luwrain.shell.Desktop desktop = new org.luwrain.shell.Desktop(this);
     private GlobalKeys globalKeys;
     private final FileTypes fileTypes = new FileTypes();
-    private final org.luwrain.core.ui.Conversations conversations;
+    private final org.luwrain.shell.Conversations conversations;
 
     private final I18nImpl i18n = new I18nImpl();
     private final CommandManager commands = new CommandManager();
@@ -58,7 +58,7 @@ public class Environment extends EnvironmentAreas
 	this.os = os;
 	this.interaction = interaction;
 	interfaces.createObjForEnvironment(this);
-	conversations = new org.luwrain.core.ui.Conversations(getObjForEnvironment(), this);
+	conversations = new org.luwrain.shell.Conversations(getObjForEnvironment(), this);
     }
 
     void run()
@@ -865,7 +865,7 @@ onNewAreasLayout();
 
     void mainMenu()
     {
-	final org.luwrain.core.ui.MainMenu mainMenu = org.luwrain.core.ui.MainMenu.newMainMenu(getObjForEnvironment());
+	final org.luwrain.shell.MainMenu mainMenu = org.luwrain.shell.MainMenu.newMainMenu(getObjForEnvironment());
 	if (mainMenu == null)
 	    return;
 	popup(null, mainMenu, Popup.Position.LEFT, mainMenu.closing, true, true);
@@ -967,7 +967,7 @@ onNewAreasLayout();
 				  new AreaWrapperFactory() {
 				      @Override public Area createAreaWrapper(Area areaToWrap, Disabling disabling)
 				      {
-					  return new org.luwrain.core.ui.SearchAreaWrapper(areaToWrap, e, disabling);
+					  return new org.luwrain.shell.SearchAreaWrapper(areaToWrap, e, disabling);
 				      }
 				  });
 	onNewAreasLayout();

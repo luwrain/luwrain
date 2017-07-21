@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.ui;
+package org.luwrain.shell;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
