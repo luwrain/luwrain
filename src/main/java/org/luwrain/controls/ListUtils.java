@@ -288,12 +288,12 @@ mark(o);
 	}
     }
 
-    public class MarkableListAppearance implements ListArea.Appearance
+    public static class MarkableListAppearance implements ListArea.Appearance
     {
 	protected final ControlEnvironment context;
 	protected final MarkableListArea.MarksInfo marksInfo;
 
-	MarkableListAppearance(ControlEnvironment context, MarkableListArea.MarksInfo marksInfo)
+	public MarkableListAppearance(ControlEnvironment context, MarkableListArea.MarksInfo marksInfo)
 	{
 	    NullCheck.notNull(context, "context");
 	    NullCheck.notNull(marksInfo, "marksInfo");

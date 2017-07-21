@@ -34,7 +34,7 @@ public class MarkableListArea extends ListArea
 	Object[] getAllMarked();
     }
 
-    public class Params extends ListArea.Params
+    static public class Params extends ListArea.Params
     {
 	public MarksInfo marksInfo = null;
     }
@@ -46,6 +46,11 @@ public class MarkableListArea extends ListArea
 	super(params);
 	NullCheck.notNull(params.marksInfo, "params.marksInfo");
 	this.marksInfo = params.marksInfo;
+    }
+
+    MarksInfo getMarksInfo()
+    {
+	return marksInfo;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
