@@ -40,7 +40,7 @@ public class Conversations
     {
 	final YesNoPopup popup = new YesNoPopup(luwrain, luwrain.i18n().getStaticStr("QuitPopupName"), luwrain.i18n().getStaticStr("QuitPopupText"), true, Popups.DEFAULT_POPUP_FLAGS);
 	env.popupIface(popup);
-	return !popup.closing.cancelled() && popup.result();
+	return !popup.wasCancelled() && popup.result();
     }
 
     public String commandPopup(String[] allCommands)
@@ -94,6 +94,6 @@ if (popup.wasCancelled())
 						false,
 						Popups.DEFAULT_POPUP_FLAGS);
 	env.popupIface(popup);
-	return !popup.closing.cancelled() && popup.result();
+	return !popup.wasCancelled() && popup.result();
     }
 }

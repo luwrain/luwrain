@@ -24,7 +24,7 @@ import org.luwrain.core.queries.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 
-public class MainMenu extends ListArea implements PopupClosingRequest
+public class MainMenu extends ListArea implements PopupClosingTranslator.Provider
 {
     private final Luwrain luwrain;
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);

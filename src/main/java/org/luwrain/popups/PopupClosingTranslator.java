@@ -21,19 +21,25 @@ import org.luwrain.core.events.*;
 
 public class PopupClosingTranslator //implements EventLoopStopCondition
 {
-    private PopupClosingRequest request;
-    private boolean shouldContinue = true; 
-    private boolean cancelled = true;
-
-    public PopupClosingTranslator(PopupClosingRequest request)
+    public interface Provider
     {
-	NullCheck.notNull(request, "request");
-	this.request = request;
+	boolean onOk();
+	boolean onCancel();
+    }
+
+    protected final Provider provider;
+    protected boolean shouldContinue = true; 
+    protected boolean cancelled = true;
+
+    public PopupClosingTranslator(Provider provider)
+    {
+	NullCheck.notNull(provider, "provider");
+	this.provider = provider;
     }
 
     public boolean doOk()
     {
-	if (!request.onOk())
+	if (!provider.onOk())
 	    return false;
 	cancelled = false;
 	shouldContinue = false;
@@ -42,7 +48,7 @@ public class PopupClosingTranslator //implements EventLoopStopCondition
 
     public void doCancel()
     {
-	if (!request.onCancel())
+	if (!provider.onCancel())
 	    return;
 	cancelled = true;
 	shouldContinue = false;

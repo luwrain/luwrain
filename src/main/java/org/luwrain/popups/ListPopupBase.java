@@ -23,9 +23,9 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class ListPopupBase extends ListArea implements Popup, PopupClosingRequest
+public class ListPopupBase extends ListArea implements Popup, PopupClosingTranslator.Provider
 {
-    public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
+    protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final Luwrain luwrain;
     protected final Set<Popup.Flags> popupFlags;
 
@@ -83,6 +83,11 @@ public class ListPopupBase extends ListArea implements Popup, PopupClosingReques
     @Override public boolean isPopupActive()
     {
 	return closing.continueEventLoop();
+    }
+
+    public boolean wasCancelled()
+    {
+	return closing.cancelled();
     }
 
     @Override public Set<Popup.Flags> getPopupFlags()

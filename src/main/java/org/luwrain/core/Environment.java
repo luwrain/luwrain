@@ -961,8 +961,8 @@ onNewAreasLayout();
 	    return;
 	}
 	final ContextMenu menu = new ContextMenu(getObjForEnvironment(), actions);
-	popup(null, menu, Popup.Position.RIGHT, ()->menu.closing.continueEventLoop(), true, true);
-	if (menu.closing.cancelled())
+	popup(null, menu, Popup.Position.RIGHT, ()->menu.isPopupActive(), true, true);
+	if (menu.wasCancelled())
 	    return;
 	final Object selected = menu.selected();
 	if (selected == null || !(selected instanceof Action))//Should never happen

@@ -34,7 +34,7 @@ import org.luwrain.util.*;
  *
  * @see ListPopup EditListPopup FilePopup 
  */
-public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointControl, EmbeddedEditLines, RegionProvider
+public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, HotPointControl, EmbeddedEditLines, RegionProvider
 {
     protected final Luwrain luwrain;
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);

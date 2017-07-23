@@ -22,10 +22,10 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 
-public class YesNoPopup implements Popup, PopupClosingRequest
+public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 {
     protected final Luwrain luwrain;
-    public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
+    protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final String name;
     protected String text = "";
     protected boolean res;
@@ -168,6 +168,11 @@ public class YesNoPopup implements Popup, PopupClosingRequest
     @Override public boolean isPopupActive()
     {
 	return closing.continueEventLoop();
+    }
+
+    public boolean wasCancelled()
+    {
+	return closing.cancelled();
     }
 
     @Override public Set<Popup.Flags> getPopupFlags()

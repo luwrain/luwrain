@@ -25,9 +25,9 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.io.*;
 
-public class CommanderPopup extends CommanderArea<File> implements CommanderArea.ClickHandler<File>, Popup, PopupClosingRequest
+public class CommanderPopup extends CommanderArea<File> implements CommanderArea.ClickHandler<File>, Popup, PopupClosingTranslator.Provider
 {
-    public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
+    protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final Luwrain luwrain;
     protected final String name;
     protected final FilePopup.Acceptance acceptance;
@@ -141,6 +141,11 @@ setLoadingResultHandler((location, wrappers, selectedIndex, announce)->{
     @Override public Set<Popup.Flags> getPopupFlags()
     {
 	return popupFlags;
+    }
+
+    public boolean wasCancelled()
+    {
+	return closing.cancelled();
     }
 
     protected void openMountedPartitions()
