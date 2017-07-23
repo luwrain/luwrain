@@ -42,7 +42,8 @@ public interface Popup extends Area
     static public final int NO_MULTIPLE_COPIES = 1;
     static public final int WEAK = 2;
 
+    boolean isPopupActive();
     Luwrain getLuwrainObject();
-    EventLoopStopCondition getStopCondition();
+    //    EventLoopStopCondition getStopCondition();
     Set<Flags> getPopupFlags();
 }

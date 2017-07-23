@@ -395,9 +395,9 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
 	return luwrain;
     }
 
-    @Override public EventLoopStopCondition getStopCondition()
+    @Override public boolean isPopupActive()
     {
-	return closing;
+	return closing.continueEventLoop();
     }
 
     @Override public Set<Popup.Flags> getPopupFlags()

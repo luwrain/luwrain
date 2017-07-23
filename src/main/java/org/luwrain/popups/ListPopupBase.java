@@ -80,9 +80,9 @@ public class ListPopupBase extends ListArea implements Popup, PopupClosingReques
 	return luwrain;
     }
 
-    @Override public EventLoopStopCondition getStopCondition()
+    @Override public boolean isPopupActive()
     {
-	return closing;
+	return closing.continueEventLoop();
     }
 
     @Override public Set<Popup.Flags> getPopupFlags()

@@ -831,7 +831,7 @@ onNewAreasLayout();
     {
 	NullCheck.notNull(popup, "popup");
 	final Luwrain luwrainObject = popup.getLuwrainObject();
-	final EventLoopStopCondition stopCondition = popup.getStopCondition();
+	final EventLoopStopCondition stopCondition = ()->popup.isPopupActive();
 	NullCheck.notNull(luwrainObject, "luwrainObject");
 	NullCheck.notNull(stopCondition, "stopCondition");
 	if (interfaces.isSuitsForEnvironmentPopup(luwrainObject))
