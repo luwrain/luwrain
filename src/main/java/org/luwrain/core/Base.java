@@ -19,7 +19,7 @@ package org.luwrain.core;
 import java.util.*;
 import java.nio.file.*;
 
-abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
+abstract class Base implements org.luwrain.base.EventConsumer
 {
     interface StopCondition
     {
@@ -40,7 +40,7 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
     protected boolean needForIntroduction = false;
     protected boolean introduceApp = false;
 
-    protected EnvironmentBase(CmdLine cmdLine, Registry registry,
+    protected Base(CmdLine cmdLine, Registry registry,
 			      org.luwrain.base.CoreProperties coreProps, String lang)
     {
 	NullCheck.notNull(cmdLine, "cmdLine");

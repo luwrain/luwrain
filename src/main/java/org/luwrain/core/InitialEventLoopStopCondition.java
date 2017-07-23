@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-class InitialEventLoopStopCondition implements EnvironmentBase.StopCondition
+class InitialEventLoopStopCondition implements Base.StopCondition
 {
     static boolean shouldContinue = true;//FIXME:No static members
 

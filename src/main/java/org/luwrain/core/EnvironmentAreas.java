@@ -19,7 +19,7 @@ package org.luwrain.core;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 
-abstract class EnvironmentAreas extends EnvironmentBase
+abstract class EnvironmentAreas extends Base
 {
     protected ScreenContentManager screenContentManager;
     protected WindowManager windowManager;
