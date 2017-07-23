@@ -36,15 +36,15 @@ import org.luwrain .util.*;
  */
 public abstract class NavigationArea implements Area, HotPointControl, RegionProvider
 {
-    protected final ControlEnvironment environment;
+    protected final ControlEnvironment context;
     protected final RegionTranslator region = new RegionTranslator(this);
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
-    public NavigationArea(ControlEnvironment environment)
+    public NavigationArea(ControlEnvironment context)
     {
-	NullCheck.notNull(environment, "environment");
-	this.environment = environment;
+	NullCheck.notNull(context, "context");
+	this.context = context;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -117,15 +117,15 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	final String line = getLineNotNull(hotPointY);
 	if (line.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	if (hotPointX > 0)
 	{
 	    hotPointX = 0;
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	} 
-	environment.sayLetter(line.charAt(0));
+	context.sayLetter(line.charAt(0));
 	return true;
     }
 
@@ -136,15 +136,15 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	final String line = getLineNotNull(hotPointY);
 	if (line.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	if (hotPointX < line.length())
 	{
 	    hotPointX = line.length();
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	} 
-	environment.hint(Hints.END_OF_LINE);
+	context.hint(Hints.END_OF_LINE);
 	return true;
     }
 
@@ -154,9 +154,9 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	{
 	    hotPointX = 0;
 	    hotPointY = 0;
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	}
-	environment.hint(Hints.BEGIN_OF_TEXT);
+	context.hint(Hints.BEGIN_OF_TEXT);
 	return true;
     }
 
@@ -171,9 +171,9 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	    final String lastLine = getLineNotNull(count - 1);
 	    hotPointX = lastLine.length();
 	    hotPointY = count - 1;
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	}
-	environment.hint(Hints.END_OF_TEXT);
+	context.hint(Hints.END_OF_TEXT);
 	return true;
     }
 
@@ -184,15 +184,15 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	if (hotPointY + 1 >= count)
 	{
 	    if (count == 1)
-		environment.hint(environment.staticStr(LangStatic.NO_LINES_BELOW) + " " + getLineNotNull(0), Hints.NO_LINES_BELOW); else
-	    environment.hint(Hints.NO_LINES_BELOW);
+		context.hint(context.staticStr(LangStatic.NO_LINES_BELOW) + " " + getLineNotNull(0), Hints.NO_LINES_BELOW); else
+	    context.hint(Hints.NO_LINES_BELOW);
 	    return true;
 	}
 	++hotPointY;
 	final String nextLine = getLineNotNull(hotPointY);
 	//FIXME:do proper next line transition according to possible tab shifts;hotPointX = proper new position respecting tab sequences;
 	hotPointX = hotPointX <= nextLine.length()?hotPointX:nextLine.length();
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, nextLine);
 	return true;
     }
@@ -204,15 +204,15 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	if (hotPointY == 0)
 	{
 	    if (count == 1)
-		environment.hint(environment.staticStr(LangStatic.NO_LINES_ABOVE) + " " + getLineNotNull(0), Hints.NO_LINES_ABOVE); else
-		environment.hint(Hints.NO_LINES_ABOVE);
+		context.hint(context.staticStr(LangStatic.NO_LINES_ABOVE) + " " + getLineNotNull(0), Hints.NO_LINES_ABOVE); else
+		context.hint(Hints.NO_LINES_ABOVE);
 	    return true;
 	}
 	--hotPointY;
 	final String prevLine = getLineNotNull(hotPointY);
 	//FIXME:do proper next line transition according to possible tab shifts;hotPointX = proper new position respecting tab sequences;
 	hotPointX = hotPointX <= prevLine.length()?hotPointX:prevLine.length();
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, prevLine);
 	return true;
     }
@@ -227,18 +227,18 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	{
 	    if (hotPointY + 1 >= count)
 	    {
-		environment.hint(Hints.END_OF_TEXT);
+		context.hint(Hints.END_OF_TEXT);
 		return true;
 	    }
 	    ++hotPointY;
 	    hotPointX = 0;
 	} else
 	    ++hotPointX;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	final 	    String newLine = getLineNotNull(hotPointY);
 	if (hotPointX == newLine.length())
-	    environment.hint(hotPointY + 1 >= count?Hints.END_OF_TEXT:Hints.END_OF_LINE); else
-	    environment.sayLetter(newLine.charAt(hotPointX));
+	    context.hint(hotPointY + 1 >= count?Hints.END_OF_TEXT:Hints.END_OF_LINE); else
+	    context.sayLetter(newLine.charAt(hotPointX));
 	return true;
     }
 
@@ -252,7 +252,7 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	{
 	    if (hotPointY == 0)
 	    {
-		environment.hint(Hints.BEGIN_OF_TEXT);
+		context.hint(Hints.BEGIN_OF_TEXT);
 		return true;
 	    }
 	    --hotPointY;
@@ -260,11 +260,11 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	    hotPointX = newLine.length();
 	} else
 	    --hotPointX;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	final String newLine = getLineNotNull(hotPointY);
 	if (hotPointX == newLine.length())
-	    environment.hint(Hints.END_OF_LINE); else
-	    environment.sayLetter(newLine.charAt(hotPointX));
+	    context.hint(Hints.END_OF_LINE); else
+	    context.sayLetter(newLine.charAt(hotPointX));
 	return true;
     }
 
@@ -274,15 +274,15 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	hotPointY = hotPointY < count?hotPointY:count - 1;
 	if (hotPointY + 1 >= count)
 	{
-	    environment.hint(Hints.NO_LINES_BELOW);
+	    context.hint(Hints.NO_LINES_BELOW);
 	    return true;
 	}
-	final int height = environment.getAreaVisibleHeight(this);
+	final int height = context.getAreaVisibleHeight(this);
 	if (hotPointY + height >= count)
 	    hotPointY = count - 1; else
 	    hotPointY  += height;
 	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, getLineNotNull(hotPointY));
 	return true;
     }
@@ -293,15 +293,15 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	hotPointY = hotPointY < count?hotPointY:count - 1;
 	if (hotPointY == 0)
 	{
-	    environment.hint(Hints.NO_LINES_ABOVE);
+	    context.hint(Hints.NO_LINES_ABOVE);
 	    return true;
 	}
-	final int height = environment.getAreaVisibleHeight(this);
+	final int height = context.getAreaVisibleHeight(this);
 	if (hotPointY > height)
 	    hotPointY -= height; else
 	    hotPointY = 0;
 	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, getLineNotNull(hotPointY));
 	return true;
     }
@@ -313,26 +313,26 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	final String line = getLineNotNull(hotPointY);
 	if (line.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	hotPointX = hotPointX <= line.length()?hotPointX:line.length();
 	if (hotPointX >= line.length())
 	{
-	    environment.hint(Hints.END_OF_LINE);
+	    context.hint(Hints.END_OF_LINE);
 	    return true;
 	}
 	WordIterator it = new WordIterator(line, hotPointX);
 	if (!it.stepForward())
 	{
-	    environment.hint(Hints.END_OF_LINE);
+	    context.hint(Hints.END_OF_LINE);
 	    return true;
 	}
 	hotPointX = it.pos();
 	if (it.announce().length() > 0)
-	    environment.say(it.announce()); else
-	    environment.hint(Hints.END_OF_LINE);
-	environment.onAreaNewHotPoint(this);
+	    context.say(it.announce()); else
+	    context.hint(Hints.END_OF_LINE);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -343,32 +343,32 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	final String line = getLineNotNull(hotPointY);
 	if (line.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
 	hotPointX = hotPointX <= line.length()?hotPointX:line.length();
 	if (hotPointX <= 0)
 	{
-	    environment.hint(Hints.BEGIN_OF_LINE);
+	    context.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
 	WordIterator it = new WordIterator(line, hotPointX);
 	if (!it.stepBackward())
 	{
-	    environment.hint(Hints.BEGIN_OF_LINE);
+	    context.hint(Hints.BEGIN_OF_LINE);
 	    return true;
 	}
 	hotPointX = it.pos();
-	environment.say(it.announce());
-	environment.onAreaNewHotPoint(this);
+	context.say(it.announce());
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
     public void announceLine(int index, String line)
     {
 	if (line == null || line.isEmpty())
-	    environment.hint(Hints.EMPTY_LINE); else
-	    environment.say(line);
+	    context.hint(Hints.EMPTY_LINE); else
+	    context.say(line);
     }
 
     public void reset(boolean announce)
@@ -376,13 +376,13 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	EnvironmentEvent.resetRegionPoint(this);
 	hotPointX = 0;
 	hotPointY = 0;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	if (announce)
 	{
 	    final String line = getLineNotNull(0);
 	    if (!line.isEmpty())
 		announceLine(0, line); else
-		environment.hint(Hints.EMPTY_LINE);
+		context.hint(Hints.EMPTY_LINE);
 	}
     }
 
@@ -418,7 +418,7 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	    if (x >= line.length())
 		hotPointX = line.length(); else
 		hotPointX = x;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
     }
 
     @Override public void setHotPointX(int value)
@@ -429,7 +429,7 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	    if (value >= line.length())
 		hotPointX = line.length(); else
 		hotPointX = value;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
     }
 
     @Override public void setHotPointY(int value)
@@ -440,7 +440,7 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	    if (value >= count)
 		hotPointY = count - 1; else
 		hotPointY = value;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
     }
 
     @Override public int getHotPointX()
