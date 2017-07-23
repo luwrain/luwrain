@@ -37,7 +37,7 @@ import org.luwrain.util.*;
 public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointControl, EmbeddedEditLines, RegionProvider
 {
     protected final Luwrain luwrain;
-    public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
+    protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final RegionTranslator region = new RegionTranslator(this);
     protected final EmbeddedSingleLineEdit edit;
     protected final String name;
@@ -403,6 +403,11 @@ public class SimpleEditPopup implements Popup, PopupClosingRequest, HotPointCont
     @Override public Set<Popup.Flags> getPopupFlags()
     {
 	return popupFlags;
+    }
+
+    public boolean wasCancelled()
+    {
+	return closing.cancelled();
     }
 
     public interface Acceptance 

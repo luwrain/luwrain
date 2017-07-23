@@ -20,6 +20,7 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
 
 public class Conversations
@@ -42,6 +43,35 @@ public class Conversations
 	return !popup.closing.cancelled() && popup.result();
     }
 
+    public String commandPopup(String[] allCommands)
+    {
+	NullCheck.notNullItems(allCommands, "allCommands");
+	final EditListPopup popup = new EditListPopup(luwrain, new EditListPopupUtils.FixedModel(allCommands),
+						      luwrain.i18n().getStaticStr("CommandPopupName"), luwrain.i18n().getStaticStr("CommandPopupPrefix"), "", EnumSet.noneOf(Popup.Flags.class)){
+		@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    NullCheck.notNull(query, "query");
+		    switch(query.getQueryCode())
+		    {
+		    case AreaQuery.OBJECT_UNIREF:
+			if (text.trim().isEmpty())
+			    return false;
+			((ObjectUniRefQuery)query).answer("command:" + text().trim());
+			return true;
+		    default:
+			return super.onAreaQuery(query);
+		    }
+		}
+	    };
+env.popupIface(popup);
+if (popup.wasCancelled())
+	    return null;
+	return !popup.text().isEmpty()?popup.text():null;
+    }
+
+
+
+
     public File openPopup()
     {
 	final File current = new File(luwrain.currentAreaDir());
@@ -51,7 +81,7 @@ public class Conversations
 					      null, current, current,
 					      Popups.loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS);
 	env.popupIface(popup);
-	if (popup.closing.cancelled())
+	if (popup.wasCancelled())
 	    return null;
 	return popup.result();
     }

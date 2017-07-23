@@ -500,8 +500,7 @@ public class Environment extends EnvironmentAreas
 
     private boolean keyboardEventForEnvironment(KeyboardEvent event)
     {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
+	NullCheck.notNull(event, "event");
 	final String commandName = globalKeys.getCommandName(event);
 	if (commandName != null)
 	{
@@ -527,7 +526,9 @@ public class Environment extends EnvironmentAreas
 	    EqualKeys.equalKeys(event.getChar(), 'x') &&
 	    event.withAltOnly())
 	{
-	    showCommandPopup();
+	    final String cmdName = conversations.commandPopup(commands.getCommandNames());
+	    if (cmdName != null && !cmdName.trim().isEmpty()&& !commands.run(cmdName.trim()))
+		message(i18n.getStaticStr("NoCommand"), Luwrain.MESSAGE_ERROR);
 	    return true;
 	}
 	return false;
@@ -884,31 +885,6 @@ onNewAreasLayout();
 	return commands.run(command.trim());
     }
 
-    private void showCommandPopup()
-    {
-	final EditListPopup popup = new EditListPopup(new Luwrain(this), new EditListPopupUtils.FixedModel(commands.getCommandNames()),
-						      i18n.getStaticStr("CommandPopupName"), i18n.getStaticStr("CommandPopupPrefix"), "", EnumSet.noneOf(Popup.Flags.class)){
-		@Override public boolean onAreaQuery(AreaQuery query)
-		{
-		    NullCheck.notNull(query, "query");
-		    switch(query.getQueryCode())
-		    {
-		    case AreaQuery.OBJECT_UNIREF:
-			if (text.trim().isEmpty())
-			    return false;
-			((ObjectUniRefQuery)query).answer("command:" + text().trim());
-			return true;
-		    default:
-			return super.onAreaQuery(query);
-		    }
-		}
-	    };
-	popup(null, popup, Popup.Position.BOTTOM,()-> popup.closing.continueEventLoop(), true, true);
-	if (popup.closing.cancelled())
-	    return;
-	    if (!commands.run(popup.text().trim()))
-		message(i18n.getStaticStr("NoCommand"), Luwrain.MESSAGE_ERROR);
-    }
 
     OperatingSystem os()
     {
