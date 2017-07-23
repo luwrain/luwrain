@@ -24,20 +24,21 @@ import org.luwrain.core.events.*;
 import org.luwrain .util.*;
 
 /**
- * The area with basic navigation operations. This abstract class
- * implements the proper behaviour for navigation over the static content
- * of the area. There is no data container and it is implied that the
- * user should implement method {@code getLine()} and {@code
- * getLineCount()}. Supported operations include arrow keys, Page up/Page
- * down and Home/End. The copy to clipboard operation is supported as
- * well.
+ * An area with basic navigation operations. This abstract class
+ * implements the usual behaviour for navigation over the static text
+ * in the area. There is no data container, so it's implied that
+ * user should implement method {@code getLine()} and {@code getLineCount()}.
+ * <p>
+ * The supported operations include arrow keys, Page up/down
+ * and Home/End. The copying to clipboard is supported as well.
  *
  * @see SimpleArea
  */
-public abstract class NavigationArea implements Area, HotPointControl, RegionProvider
+public abstract class NavigationArea implements Area, HotPointControl, ClipboardTranslator.Provider
 {
     protected final ControlEnvironment context;
-    protected final RegionTranslator region = new RegionTranslator(this);
+    protected final RegionPoint regionPoint = new RegionPoint();
+    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
@@ -85,24 +86,26 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return false;
 	switch(event.getCode())
 	{
 	case MOVE_HOT_POINT:
 	    if (event instanceof MoveHotPointEvent)
 	    {
 		final MoveHotPointEvent moveHotPoint = (MoveHotPointEvent)event;
-	    setHotPoint(moveHotPoint.getNewHotPointX(), moveHotPoint.getNewHotPointY());
-	    return true;
+		setHotPoint(moveHotPoint.getNewHotPointX(), moveHotPoint.getNewHotPointY());
+		return true;
 	    }
 	    return false;
 	default:
-	    return region.onEnvironmentEvent(event, hotPointX, hotPointY);
+	    return clipboardTranslator.onEnvironmentEvent(event, hotPointX, hotPointY);
 	}
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return region.onAreaQuery(query, hotPointX, hotPointY);
+	return false;
     }
 
     @Override public Action[] getAreaActions()
@@ -185,7 +188,7 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	{
 	    if (count == 1)
 		context.hint(context.staticStr(LangStatic.NO_LINES_BELOW) + " " + getLineNotNull(0), Hints.NO_LINES_BELOW); else
-	    context.hint(Hints.NO_LINES_BELOW);
+		context.hint(Hints.NO_LINES_BELOW);
 	    return true;
 	}
 	++hotPointY;
@@ -453,32 +456,19 @@ public abstract class NavigationArea implements Area, HotPointControl, RegionPro
 	return hotPointY;
     }
 
-    @Override public RegionContent getWholeRegion()
+    @Override public boolean onClipboardCopyAll()
     {
-	return new LinesRegionProvider(this).getWholeRegion();
+	return new LinesClipboardProvider(this, ()->context.getClipboard()).onClipboardCopyAll();
     }
 
-    @Override public RegionContent getRegion(int fromX, int fromY,
-					     int toX, int toY)
+    @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
     {
-	return new LinesRegionProvider(this).getRegion(fromX, fromY, toX, toY);
+	return new LinesClipboardProvider(this, ()->context.getClipboard()).onClipboardCopy(fromX, fromY, toX, toY, withDeleting);
     }
 
-    @Override public boolean deleteWholeRegion()
+    @Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
     {
-	return false;
-    }
-
-    @Override public boolean deleteRegion(int fromX, int fromY,
-					  int toX, int toY)
-    {
-	return false;
-    }
-
-    @Override public     boolean insertRegion(int x, int y,
-					      RegionContent content)
-    {
-	return false;
+	return new LinesClipboardProvider(this, ()->context.getClipboard()).onDeleteRegion(fromX, fromY, toX, toY);
     }
 
     protected int getValidLineCount()
