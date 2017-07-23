@@ -26,20 +26,38 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	boolean continueEventLoop();
     }
 
+    static protected class MainStopCondition implements StopCondition
+    {
+	private boolean shouldContinue = true;//FIXME:No static members
+
+	@Override public boolean continueEventLoop()
+	{
+	    return shouldContinue;
+	}
+
+	void stop()
+	{
+	    shouldContinue = false;
+	}
+    }
+
     static class PopupStopCondition implements Base.StopCondition
     {
+	private final StopCondition parentCondition;
 	private final Base.StopCondition popupCondition;
 	private boolean cancelled = false;
 
-	PopupStopCondition(Base.StopCondition popupCondition)
+	PopupStopCondition(StopCondition parentCondition, StopCondition popupCondition)
 	{
+	    NullCheck.notNull(parentCondition, "parentCondition");
 	    NullCheck.notNull(popupCondition, "popupCondition");
+	    this.parentCondition = parentCondition;
 	    this.popupCondition = popupCondition;
 	}
 
 	@Override public boolean continueEventLoop()
 	{
-	    return !cancelled && InitialEventLoopStopCondition.shouldContinue && popupCondition.continueEventLoop();
+	    return !cancelled && parentCondition.continueEventLoop() && popupCondition.continueEventLoop();
 	}
 
 	void cancel()
@@ -51,6 +69,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final CmdLine cmdLine;
     protected final  Registry registry;
     protected final EventQueue eventQueue = new EventQueue();
+    protected final MainStopCondition mainStopCondition = new MainStopCondition();
     private EventResponse eventResponse = null;
     protected Speech speech = null;
     protected final Braille braille = new Braille();

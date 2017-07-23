@@ -77,7 +77,7 @@ public class Environment extends EnvironmentAreas
 		Thread.currentThread().interrupt();
 	    }
 	soundManager.startingMode();
-	eventLoop(new InitialEventLoopStopCondition());
+	eventLoop(mainStopCondition);
 	playSound(Sounds.SHUTDOWN);
 	    try {
 		Thread.sleep(2500);//FIXME:
@@ -190,7 +190,7 @@ public class Environment extends EnvironmentAreas
     public void quit()
     {
 	if (conversations.quitConfirmation())
-	InitialEventLoopStopCondition.shouldContinue = false;
+	    mainStopCondition.stop();
     }
 
     //It is admissible situation if shortcut returns null
@@ -610,7 +610,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	NullCheck.notNull(stopCondition, "stopCondition");
 	if (noMultipleCopies)
 	    apps.onNewPopupOpening(app, area.getClass());
-	final PopupStopCondition popupStopCondition = new PopupStopCondition(stopCondition);
+	final PopupStopCondition popupStopCondition = new PopupStopCondition(mainStopCondition, stopCondition);
 	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies, isWeakPopup);
 	screenContentManager.setPopupActive();
 	onNewAreasLayout();
