@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -19,7 +19,17 @@ package org.luwrain.popups;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class PopupClosingTranslator //implements EventLoopStopCondition
+/**
+ * Unifies all actions which could result in closing of a popup. There
+ * are several actions which mean that the popup must be closed (escape
+ * button, closing environment event, accepting a result etc) at that
+ * some of the actions mean closing normally and another mean cancelling
+ * the popup. This class encapsulates the usual popup behaviour of popup
+ * closing, processing various types of events. The popup itself is
+ * accessed through {@code Provider} interface and is allowed to accept
+ * or reject the recognized actions.
+ */
+public class PopupClosingTranslator
 {
     public interface Provider
     {
