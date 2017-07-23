@@ -19,7 +19,7 @@ package org.luwrain.popups;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class PopupClosingTranslator implements EventLoopStopCondition
+public class PopupClosingTranslator //implements EventLoopStopCondition
 {
     private PopupClosingRequest request;
     private boolean shouldContinue = true; 

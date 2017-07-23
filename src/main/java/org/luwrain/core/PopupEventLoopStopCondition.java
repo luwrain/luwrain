@@ -16,12 +16,12 @@
 
 package org.luwrain.core;
 
-public class PopupEventLoopStopCondition implements EventLoopStopCondition
+public class PopupEventLoopStopCondition implements EnvironmentBase.StopCondition
 {
-    private EventLoopStopCondition popup;
+    private EnvironmentBase.StopCondition popup;
     private boolean cancelled;
 
-public PopupEventLoopStopCondition(EventLoopStopCondition popup)
+public PopupEventLoopStopCondition(EnvironmentBase.StopCondition popup)
     {
 	this.popup = popup;
 	this.cancelled = false;

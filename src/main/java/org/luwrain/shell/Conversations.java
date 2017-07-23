@@ -38,7 +38,7 @@ public class Conversations
     public boolean quitConfirmation()
     {
 	final YesNoPopup popup = new YesNoPopup(luwrain, luwrain.i18n().getStaticStr("QuitPopupName"), luwrain.i18n().getStaticStr("QuitPopupText"), true, Popups.DEFAULT_POPUP_FLAGS);
-	env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
+	env.popupIface(popup);
 	return !popup.closing.cancelled() && popup.result();
     }
 
@@ -50,7 +50,7 @@ public class Conversations
 					      luwrain.i18n().getStaticStr("OpenPopupPrefix"), 
 					      null, current, current,
 					      Popups.loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS);
-	env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
+	env.popupIface(popup);
 	if (popup.closing.cancelled())
 	    return null;
 	return popup.result();
@@ -63,7 +63,7 @@ public class Conversations
 "Вы действительно хотите удалить элемент с рабочего стола?",
 						false,
 						Popups.DEFAULT_POPUP_FLAGS);
-	env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
+	env.popupIface(popup);
 	return !popup.closing.cancelled() && popup.result();
     }
 }

@@ -21,6 +21,11 @@ import java.nio.file.*;
 
 abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
 {
+    interface StopCondition
+    {
+	boolean continueEventLoop();
+    }
+
     protected final CmdLine cmdLine;
     protected final  Registry registry;
     protected final EventQueue eventQueue = new EventQueue();
@@ -51,11 +56,11 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
 
     //True means the event is processed and there is no need to process it again;
     abstract protected boolean onEvent(Event event);
-    abstract protected void introduce(EventLoopStopCondition stopCondition);
-    abstract Luwrain getObjForEnvironment();
+    abstract protected void introduce(StopCondition stopCondition);
+    public abstract Luwrain getObjForEnvironment();
     abstract protected void processEventResponse(EventResponse eventResponse);
 
-    protected void eventLoop(EventLoopStopCondition stopCondition)
+    protected void eventLoop(StopCondition stopCondition)
     {
 	NullCheck.notNull(stopCondition, "stopCondition");
 	while(stopCondition.continueEventLoop())
@@ -77,9 +82,9 @@ abstract class EnvironmentBase implements org.luwrain.base.EventConsumer
 		if (eventResponse != null)
 		{
 		    processEventResponse(eventResponse);
-		eventResponse = null;
+		    eventResponse = null;
 		} else
-		introduce(stopCondition);
+		    introduce(stopCondition);
 	    }
 	}
     }

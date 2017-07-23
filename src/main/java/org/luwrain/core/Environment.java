@@ -433,7 +433,7 @@ public class Environment extends EnvironmentAreas
 	return POPUP_BLOCKING_MAY_PROCESS;
     }
 
-    @Override public void introduce(EventLoopStopCondition stopCondition)
+    @Override public void introduce(StopCondition stopCondition)
     {
 	NullCheck.notNull(stopCondition, "stopCondition");
 	if (needForIntroduction && stopCondition.continueEventLoop() && listening == null)
@@ -602,7 +602,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
     }
 
     public void popup(Application app, Area area,
-			   Popup.Position pos, EventLoopStopCondition stopCondition,
+			   Popup.Position pos, StopCondition stopCondition,
 			   boolean noMultipleCopies, boolean isWeakPopup)
     {
 	NullCheck.notNull(area, "area");
@@ -827,11 +827,11 @@ onNewAreasLayout();
 	return registry;
     }
 
-    void popupIface(Popup popup)
+    public void popupIface(Popup popup)
     {
 	NullCheck.notNull(popup, "popup");
 	final Luwrain luwrainObject = popup.getLuwrainObject();
-	final EventLoopStopCondition stopCondition = ()->popup.isPopupActive();
+	final StopCondition stopCondition = ()->popup.isPopupActive();
 	NullCheck.notNull(luwrainObject, "luwrainObject");
 	NullCheck.notNull(stopCondition, "stopCondition");
 	if (interfaces.isSuitsForEnvironmentPopup(luwrainObject))
@@ -868,7 +868,7 @@ onNewAreasLayout();
 	final org.luwrain.shell.MainMenu mainMenu = org.luwrain.shell.MainMenu.newMainMenu(getObjForEnvironment());
 	if (mainMenu == null)
 	    return;
-	popup(null, mainMenu, Popup.Position.LEFT, mainMenu.closing, true, true);
+	popup(null, mainMenu, Popup.Position.LEFT, ()->mainMenu.closing.continueEventLoop(), true, true);
 	if (mainMenu.closing.cancelled())
 	    return;
 	final UniRefInfo result = mainMenu.result();
@@ -903,7 +903,7 @@ onNewAreasLayout();
 		    }
 		}
 	    };
-	popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
+	popup(null, popup, Popup.Position.BOTTOM,()-> popup.closing.continueEventLoop(), true, true);
 	if (popup.closing.cancelled())
 	    return;
 	    if (!commands.run(popup.text().trim()))
@@ -985,7 +985,7 @@ onNewAreasLayout();
 	    return;
 	}
 	final ContextMenu menu = new ContextMenu(getObjForEnvironment(), actions);
-	popup(null, menu, Popup.Position.RIGHT, menu.closing, true, true);
+	popup(null, menu, Popup.Position.RIGHT, ()->menu.closing.continueEventLoop(), true, true);
 	if (menu.closing.cancelled())
 	    return;
 	final Object selected = menu.selected();
