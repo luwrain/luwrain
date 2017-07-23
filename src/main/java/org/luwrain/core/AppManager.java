@@ -206,7 +206,7 @@ class AppManager
 
     //null app means environment popup;
     void addNewPopup(Application app, Area area,
-			    Popup.Position position, PopupEventLoopStopCondition stopCondition,
+			    Popup.Position position, Base.PopupStopCondition stopCondition,
 			    boolean noMultipleCopies, boolean isWeak)
     {
 	NullCheck.notNull(area, "area");

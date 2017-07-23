@@ -610,7 +610,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	NullCheck.notNull(stopCondition, "stopCondition");
 	if (noMultipleCopies)
 	    apps.onNewPopupOpening(app, area.getClass());
-	final PopupEventLoopStopCondition popupStopCondition = new PopupEventLoopStopCondition(stopCondition);
+	final PopupStopCondition popupStopCondition = new PopupStopCondition(stopCondition);
 	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies, isWeakPopup);
 	screenContentManager.setPopupActive();
 	onNewAreasLayout();

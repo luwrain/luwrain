@@ -26,6 +26,28 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	boolean continueEventLoop();
     }
 
+    static class PopupStopCondition implements Base.StopCondition
+    {
+	private final Base.StopCondition popupCondition;
+	private boolean cancelled = false;
+
+	PopupStopCondition(Base.StopCondition popupCondition)
+	{
+	    NullCheck.notNull(popupCondition, "popupCondition");
+	    this.popupCondition = popupCondition;
+	}
+
+	@Override public boolean continueEventLoop()
+	{
+	    return !cancelled && InitialEventLoopStopCondition.shouldContinue && popupCondition.continueEventLoop();
+	}
+
+	void cancel()
+	{
+	    cancelled = true;
+	}
+    }
+
     protected final CmdLine cmdLine;
     protected final  Registry registry;
     protected final EventQueue eventQueue = new EventQueue();
