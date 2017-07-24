@@ -236,20 +236,9 @@ class Commands
 		    final Area area = env.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    final RegionQuery query = new RegionQuery();
-		    if (!area.onAreaQuery(query) || !query.hasAnswer())
-		    {
+		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)))
+		    env.message(luwrain.i18n().getStaticStr("LinesCopied"), Sounds.COPIED); else
 			env.eventNotProcessedMessage();
-			return;
-		    }
-		    final RegionContent res = query.getAnswer();
-		    if (res == null)
-		    {
-			env.eventNotProcessedMessage();
-			return;
-		    }
-		    env.setClipboard(res);
-		    env.message(luwrain.i18n().getStaticStr("LinesCopied") + " " + res.getLineCount(), Sounds.COPIED);
 		}
 	    },
 
@@ -264,20 +253,9 @@ class Commands
 		    final Area area = env.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    final CutQuery query = new CutQuery();
-		    if (!area.onAreaQuery(query) || !query.hasAnswer())
-		    {
+		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)))
+		    env.message(luwrain.i18n().getStaticStr("LinesCut"), Sounds.CUT); else
 			env.eventNotProcessedMessage();
-			return;
-		    }
-		    final RegionContent res = query.getAnswer();
-		    if (res == null)
-		    {
-			env.eventNotProcessedMessage();
-			return;
-		    }
-		    env.setClipboard(res);
-		    env.message(luwrain.i18n().getStaticStr("LinesCut") + " " + res.getLineCount(), Sounds.CUT);
 		}
 	    },
 
@@ -285,17 +263,15 @@ class Commands
 	    new Command() {
 		@Override public String getName()
 		{
-		    return "delete";
+		    return "delete-region";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
 		    final Area area = env.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE)))
-		    {
-			env.message(luwrain.i18n().getStaticStr("LinesDeleted"), Sounds.DELETED);
-		    } else
+		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE_REGION)))
+			env.message(luwrain.i18n().getStaticStr("LinesDeleted"), Sounds.DELETED); else
 			env.eventNotProcessedMessage();
 		}
 	    },
@@ -308,19 +284,11 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    if (env.getClipboard().isEmpty())
-		    {
-			env.message(luwrain.i18n().getStaticStr("NoClipboardContent"), Luwrain.MESSAGE_ERROR);
-			return;
-		    }
 		    final Area area = env.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    final InsertEvent event = new InsertEvent(env.getClipboard ());
-		    if (area.onEnvironmentEvent(event))
-		    {
-			env.message(luwrain.i18n().getStaticStr("LinesInserted") + " " + env.getClipboard().getLineCount(), Sounds.PASTE);
-		} else
+		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_PASTE)))
+			env.message(luwrain.i18n().getStaticStr("LinesInserted") + " " + env.getClipboard().getLineCount(), Sounds.PASTE); else
 			env.eventNotProcessedMessage();
 		}
 	    },

@@ -517,6 +517,8 @@ public class FormArea  extends NavigationArea
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
 	    return super.onEnvironmentEvent(event);
 	//Insert command for a uniref
+
+	/*
 	if (event.getCode() == EnvironmentEvent.Code.INSERT && (event instanceof InsertEvent))
 	{
 	    final int index = getHotPointY();
@@ -535,6 +537,8 @@ public class FormArea  extends NavigationArea
 		return true;
 	    }
 	}
+	*/
+
 	for(Item i: items)
 	    if (i.isEnabledEdit() && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		i.onEnvironmentEvent(event))

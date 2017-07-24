@@ -89,7 +89,7 @@ public class ClipboardTranslator
 	    return onCopy(hotPointX, hotPointY, true);
 	case CLIPBOARD_COPY_ALL:
 	    return provider.onClipboardCopyAll();
-	case DELETE:
+	case DELETE_REGION:
 	    return onDelete(hotPointX, hotPointY);
 	default:
 	    return false;

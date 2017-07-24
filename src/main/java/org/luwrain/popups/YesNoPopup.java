@@ -126,12 +126,6 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
     @Override public boolean onAreaQuery(AreaQuery query)
     {
 	NullCheck.notNull(query, "query");
-	if (query.getQueryCode() == AreaQuery.REGION && (query instanceof RegionQuery))
-	{
-	    final RegionQuery regionQuery = (RegionQuery)query;
-	    regionQuery.answer(new RegionContent(new String[]{text}));
-	    return true;
-	}
 	return false;
     }
 

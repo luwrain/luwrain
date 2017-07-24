@@ -97,13 +97,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 
     public RegionContent currentAreaRegion(boolean issueErrorMessages)
     {
-	final Area area = environment.getValidActiveArea(issueErrorMessages);
-	if (area == null)
-	    return null;
-	final RegionQuery query = new RegionQuery();
-	if (!area.onAreaQuery(query) || !query.hasAnswer())
-	    return null;
-	return query.getAnswer();
+	return null;//FIXME:
     }
 
     public String currentAreaWord(boolean issueErrorMessages)
