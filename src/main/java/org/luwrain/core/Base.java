@@ -73,7 +73,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     private EventResponse eventResponse = null;
     protected Speech speech = null;
     protected final Braille braille = new Braille();
-    private RegionContent clipboard = null;
+    private final Clipboard clipboard = new Clipboard();
     protected final SoundsPlayer sounds = new SoundsPlayer();
     protected final SoundManager soundManager;
     protected final org.luwrain.base.CoreProperties coreProps;
@@ -210,19 +210,10 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	return lang;
     }
 
-    RegionContent getClipboard()
+    Clipboard getClipboard()
     {
-	if (clipboard == null)
-	    return new RegionContent();
 	return clipboard;
     }
-
-    void setClipboard(RegionContent newClipboard)
-    {
-	NullCheck.notNull(newClipboard, "newClipboard");
-	this.clipboard = newClipboard;
-    }
-
 
     void setEventResponse(EventResponse eventResponse)
     {

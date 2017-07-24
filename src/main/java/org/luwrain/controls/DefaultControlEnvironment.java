@@ -154,6 +154,6 @@ public class DefaultControlEnvironment implements ControlEnvironment
 
     @Override public Clipboard getClipboard()
     {
-	return luwrain.getClipboardObj();
+	return luwrain.getClipboard();
     }
 }

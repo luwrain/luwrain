@@ -355,7 +355,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 
     @Override public boolean onClipboardCopyAll()
     {
-	luwrain.getClipboardObj().set(prefix + text);
+	luwrain.getClipboard().set(prefix + text);
 	return true;
     }
 
@@ -370,7 +370,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	final int toPos = Math.min(toX, line.length());
 	if (fromPos >= toPos)
 	    return false;
-	luwrain.getClipboardObj().set(line.substring(fromPos, toPos));
+	luwrain.getClipboard().set(line.substring(fromPos, toPos));
 	return true;
     }
 

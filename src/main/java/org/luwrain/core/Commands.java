@@ -288,7 +288,7 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_PASTE)))
-			env.message(luwrain.i18n().getStaticStr("LinesInserted") + " " + env.getClipboard().getLineCount(), Sounds.PASTE); else
+			env.message(luwrain.i18n().getStaticStr("LinesInserted"), Sounds.PASTE); else
 			env.eventNotProcessedMessage();
 		}
 	    },
@@ -435,7 +435,7 @@ class Commands
 			return;
 		    }
 		    env.message(uniRefInfo.toString(), Luwrain.MESSAGE_OK);
-		    env.setClipboard(new RegionContent(new String[]{uniRef}));
+		    env.getClipboard().set(uniRef);
 		}
 	    },
 

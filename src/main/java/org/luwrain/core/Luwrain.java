@@ -95,7 +95,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	    charsToSkip = registry.getString(path);
     }
 
-    public RegionContent currentAreaRegion(boolean issueErrorMessages)
+    public Object currentAreaRegion(boolean issueErrorMessages)
     {
 	return null;//FIXME:
     }
@@ -333,23 +333,10 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	environment.announceActiveAreaIface();
     }
 
-    public void setClipboard(RegionContent content)
-    {
-	NullCheck.notNull(content, "content");
-	environment.setClipboard(content);
-    }
-
-    public RegionContent getClipboard()
+    public Clipboard getClipboard()
     {
 	return environment.getClipboard();
     }
-
-    public Clipboard getClipboardObj()
-    {
-	return new Clipboard();
-    }
-
-
 
     //Doesn't produce any announcement
     public void onNewAreaLayout()

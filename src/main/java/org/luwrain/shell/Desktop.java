@@ -111,6 +111,7 @@ core.quit();
 		    return "Рабочий стол пуст";
 		}
 
+		/*
 		public boolean insertRegion(int x, int y, RegionContent data)//FIXME:
 		{
 		    if (!onInsertImpl(x, y, data))
@@ -118,6 +119,7 @@ core.quit();
 		    refresh();
 		    return true;
 		}
+		*/
 
 		@Override public String getAreaName()
 		{
@@ -154,13 +156,10 @@ core.quit();
 	return false;
     }
 
-    boolean onInsertImpl(int x, int y,
-			 RegionContent data)
+    boolean onInsertImpl(int x, int y, String[] data)
     {
-	NullCheck.notNull(data, "data");
-	if (data.isEmpty())
-	    return false;
-	uniRefList.add(y - model.getFirstUniRefPos(), data.strings());
+	NullCheck.notNullItems(data, "data");
+	uniRefList.add(y - model.getFirstUniRefPos(), data);
 	uniRefList.save();
 	return true;
     }

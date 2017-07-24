@@ -225,6 +225,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	return true;
     }
 
+    /*
     public boolean insertRegion(int x, int y,
 					  RegionContent data)
     {
@@ -246,6 +247,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	model.setHotPointX(pos + text.length());
 	return true;
     }
+    */
 
     protected Clipboard getClipboard()
     {
