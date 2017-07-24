@@ -237,7 +237,24 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)))
-		    env.message(luwrain.i18n().getStaticStr("LinesCopied"), Sounds.COPIED); else
+			env.message(luwrain.i18n().getStaticStr("LinesCopied"), Sounds.COPIED); else
+			env.eventNotProcessedMessage();
+		}
+	    },
+
+	    //copy-all
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "copy-all";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final Area area = env.getValidActiveArea(true);
+		    if (area == null)
+			return;
+		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)))
+			env.message(luwrain.i18n().getStaticStr("LinesCopied"), Sounds.COPIED); else
 			env.eventNotProcessedMessage();
 		}
 	    },
@@ -254,12 +271,12 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)))
-		    env.message(luwrain.i18n().getStaticStr("LinesCut"), Sounds.CUT); else
+			env.message(luwrain.i18n().getStaticStr("LinesCut"), Sounds.CUT); else
 			env.eventNotProcessedMessage();
 		}
 	    },
 
-	    //delete
+	    //delete-region
 	    new Command() {
 		@Override public String getName()
 		{
@@ -289,6 +306,23 @@ class Commands
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_PASTE)))
 			env.message(luwrain.i18n().getStaticStr("LinesInserted"), Sounds.PASTE); else
+			env.eventNotProcessedMessage();
+		}
+	    },
+
+	    //clear
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "clear";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    final Area area = env.getValidActiveArea(true);
+		    if (area == null)
+			return;
+		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)))
+			env.message("Очищено", Sounds.DELETED); else//FIXME
 			env.eventNotProcessedMessage();
 		}
 	    },
