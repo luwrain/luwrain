@@ -40,15 +40,15 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	String getTabSeq();
     }
 
-    protected final ControlEnvironment environment;
+    protected final ControlEnvironment context;
     protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
     protected final Model model;
 
-    public SingleLineEdit(ControlEnvironment environment, Model model)
+    public SingleLineEdit(ControlEnvironment context, Model model)
     {
-	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(context, "context");
 	NullCheck.notNull(model, "model");
-	this.environment = environment;
+	this.context = context;
 	this.model = model;
     }
 
@@ -77,7 +77,13 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	NullCheck.notNull(event, "event");
 	if (event.getType() !=EnvironmentEvent.Type.REGULAR)
 	    return false;
+	switch(event.getCode())
+	{
+	case CLIPBOARD_PASTE:
+	    return onClipboardPaste();
+	default:
 	return clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), 0);
+	}
     }
 
     public boolean onAreaQuery(AreaQuery query)
@@ -95,13 +101,13 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	    return false;
 	if (pos < 1)
 	{
-	    environment.hint(Hints.BEGIN_OF_TEXT);
+	    context.hint(Hints.BEGIN_OF_TEXT);
 	    return true;
 	}
 	final String newLine = new String(line.substring(0, pos - 1) + line.substring(pos));
 	model.setLine(newLine);
 	model.setHotPointX(pos - 1);
-	environment.sayLetter(line.charAt(pos - 1));
+	context.sayLetter(line.charAt(pos - 1));
 	return true;
     }
 
@@ -115,18 +121,18 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	    return false;
 	if (pos >= line.length())
 	{
-	    environment.hint(Hints.END_OF_TEXT);
+	    context.hint(Hints.END_OF_TEXT);
 	    return true;
 	}
 	if (pos == line.length() - 1)
 	{
 	    model.setLine(line.substring(0, pos));
-	    environment.sayLetter(line.charAt(pos));
+	    context.sayLetter(line.charAt(pos));
 	    return true;
 	}
 	final String newLine = new String(line.substring(0, pos) + line.substring(pos + 1));
 	model.setLine(newLine);
-	environment.sayLetter(line.charAt(pos));
+	context.sayLetter(line.charAt(pos));
 	return true;
     }
 
@@ -147,7 +153,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	    model.setLine(newLine);
 	} else
 	    model.setLine(line + tabSeq);
-	environment.hint(Hints.TAB);
+	context.hint(Hints.TAB);
 	model.setHotPointX(pos + tabSeq.length());
 	return true;
     }
@@ -168,10 +174,10 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	    {
 		final String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
 		if (lastWord != null && !lastWord.isEmpty())
-		    environment.say(lastWord); else
-		    environment.hint(Hints.SPACE);
+		    context.say(lastWord); else
+		    context.hint(Hints.SPACE);
 	    } else
-		environment.sayLetter(event.getChar());
+		context.sayLetter(event.getChar());
 	    return true;
 	}
 	final String newLine = new String(line.substring(0, pos) + event.getChar() + line.substring(pos));
@@ -181,10 +187,10 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	{
 	    final String lastWord = TextUtils.getLastWord(newLine, pos + 1);
 	    if (lastWord != null && !lastWord.isEmpty())
-		environment.say(lastWord); else
-		environment.hint(Hints.SPACE);
+		context.say(lastWord); else
+		context.hint(Hints.SPACE);
 	} else
-	    environment.sayLetter(event.getChar());
+	    context.sayLetter(event.getChar());
 	return true;
     }
 
@@ -193,7 +199,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	final String line = model.getLine();
 	if (line == null)
 	    return false;
-	getClipboard().set(line);
+	context.getClipboard().set(line);
 	return true;
     }
 
@@ -207,7 +213,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	if (fromPos >= toPos)
 	    return false;
 	final String res = line.substring(fromPos, toPos);
-	getClipboard().set(line);
+	context.getClipboard().set(line);
 	return true;
     }
 
@@ -225,32 +231,15 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	return true;
     }
 
-    /*
-    public boolean insertRegion(int x, int y,
-					  RegionContent data)
+protected boolean onClipboardPaste()
     {
-	if (data.isEmpty())
-	    return false;
-	final StringBuilder b = new StringBuilder();
-	for(int i = 0;i < data.strings().length;++i)
-	{
-	    if (b.length() > 0)
-		b.append(" ");
-	    b.append(data.strings()[i]);
-	}
-	final String text = new String(b);
+	final String text = context.getClipboard().getString(" ");
 	if (text.isEmpty())
-	    return true;
+	    return false;
 	final String line = model.getLine();
-	final int pos = model.getHotPointX() < line.length()?model.getHotPointX():line.length();
+	final int pos = Math.min(model.getHotPointX(), line.length());
 	model.setLine(line.substring(0, pos) + text + line.substring(pos));
 	model.setHotPointX(pos + text.length());
 	return true;
-    }
-    */
-
-    protected Clipboard getClipboard()
-    {
-	return null;//FIXME!!!
     }
 }

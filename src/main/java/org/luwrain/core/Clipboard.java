@@ -62,6 +62,30 @@ public final class Clipboard
 	return res;
     }
 
+    public String[] getStrings()
+    {
+	if (strings == null)
+	    return new String[0];
+	return strings;
+    }
+
+    public String getString(String lineSep)
+    {
+	NullCheck.notEmpty(lineSep, "lineSep");
+	if (strings == null || strings.length == 0)
+	    return "";
+	if (strings.length == 1)
+	    return strings[0];
+	final StringBuilder b = new StringBuilder();
+	b.append(strings[0]);
+	for(int i = 1;i < strings.length;++i)
+	{
+	    b.append(lineSep);
+	    b.append(strings[i]);
+	}
+	return new String(b);
+    }
+
     private byte[] serialize(Serializable obj)
     {
 	NullCheck.notNull(obj, "obj");
