@@ -56,7 +56,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 
 
     protected final ControlEnvironment environment;
-    protected final RegionTranslator region = new RegionTranslator(new LinesRegionProvider(this));
+    protected final ClipboardTranslator clipboardTranslator;
     protected String name = "";
     protected final Model model;
     protected final TableArea.Appearance appearance;
@@ -70,14 +70,13 @@ int getColWidth(TableArea.Model model, int  colIndex);
 
     public TableArea(ControlEnvironment environment, TableArea.Model model)
     {
+	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(model, "model");
 	this.environment = environment;
 	this.model = model;
-	if (environment == null)
-	    throw new NullPointerException("environment may not be null");
-	if (model == null)
-	    throw new NullPointerException("model may not be null");
 	this.appearance = new DefaultTableAppearance(environment);
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
+	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(this, ()->environment.getClipboard()));
 	//	refresh();
     }
 
@@ -96,6 +95,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	    throw new NullPointerException("name may not be null");
 	this.appearance = new DefaultTableAppearance(environment);
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
+	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(this, ()->environment.getClipboard()));
 	//	refresh();
     }
 
@@ -111,7 +111,6 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	this.name = name != null?name:"";
 	this.clickHandler = clickHandler;
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
-
 	if (environment == null)
 	    throw new NullPointerException("environment may not be null");
 	if (model == null)
@@ -120,6 +119,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	    throw new NullPointerException("appearance may not be null");
 	if (name == null)
 	    throw new NullPointerException("name may not be null");
+	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(this, ()->environment.getClipboard()));
 	//	refresh();
     }
 
@@ -268,13 +268,13 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	    refresh();
 	    return true;
 	default:
-	    return region.onEnvironmentEvent(event, hotPointX, hotPointY);
+	    return clipboardTranslator.onEnvironmentEvent(event, hotPointX, hotPointY);
 	}
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return region.onAreaQuery(query, hotPointX, hotPointY);
+	return false;
     }
 
     @Override public Action[] getAreaActions()

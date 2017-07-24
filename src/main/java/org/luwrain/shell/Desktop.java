@@ -111,7 +111,7 @@ core.quit();
 		    return "Рабочий стол пуст";
 		}
 
-		@Override public boolean insertRegion(int x, int y, RegionContent data)
+		public boolean insertRegion(int x, int y, RegionContent data)//FIXME:
 		{
 		    if (!onInsertImpl(x, y, data))
 			return false;

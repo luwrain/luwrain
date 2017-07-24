@@ -29,7 +29,7 @@ import org.luwrain.util.*;
  *
  * @see MultilineEdit
  */
-public class SingleLineEdit implements RegionProvider
+public class SingleLineEdit implements ClipboardTranslator.Provider
 {
     public interface Model
     {
@@ -41,7 +41,7 @@ public class SingleLineEdit implements RegionProvider
     }
 
     protected final ControlEnvironment environment;
-    protected final RegionTranslator region = new RegionTranslator(this);
+    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
     protected final Model model;
 
     public SingleLineEdit(ControlEnvironment environment, Model model)
@@ -77,12 +77,12 @@ public class SingleLineEdit implements RegionProvider
 	NullCheck.notNull(event, "event");
 	if (event.getType() !=EnvironmentEvent.Type.REGULAR)
 	    return false;
-	return region.onEnvironmentEvent(event, model.getHotPointX(), 0);
+	return clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), 0);
     }
 
     public boolean onAreaQuery(AreaQuery query)
     {
-	return region.onAreaQuery(query, model.getHotPointX(), 0);
+	return false;
     }
 
     protected boolean onBackspace(KeyboardEvent event)
@@ -188,44 +188,36 @@ public class SingleLineEdit implements RegionProvider
 	return true;
     }
 
-    @Override public RegionContent getWholeRegion()
+    @Override public boolean onClipboardCopyAll()
     {
 	final String line = model.getLine();
-	if (line != null)
-	    return new RegionContent(new String[]{line});
-	return new RegionContent(new String[]{""});
-    }
-
-    @Override public RegionContent getRegion(int fromX, int fromY,
-					int toX, int toY)
-    {
-	final String line = model.getLine();
-	if (line == null || line.isEmpty())
-	    return null;
-	final int fromPos = fromX < line.length()?fromX:line.length();
-	final int toPos = toX < line.length()?toX:line.length();
-	if (fromPos >= toPos)
-	    return null;
-	final String res = line.substring(fromPos, toPos);
-	return new RegionContent(new String[]{res});
-    }
-
-    @Override public boolean deleteWholeRegion()
-    {
-	model.setHotPointX(0);
-	model.setLine("");
-	environment.hint(Hints.EMPTY_LINE);
+	if (line == null)
+	    return false;
+	getClipboard().set(line);
 	return true;
     }
 
-    @Override public boolean deleteRegion(int fromX, int fromY,
-					  int toX, int toY)
+    @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
     {
 	final String line = model.getLine();
 	if (line == null || line.isEmpty())
 	    return false;
-	final int fromPos = fromX < line.length()?fromX:line.length();
-	final int toPos = toX < line.length()?toX:line.length();
+	final int fromPos = Math.min(fromX, line.length());
+	final int toPos = Math.min(toX, line.length());
+	if (fromPos >= toPos)
+	    return false;
+	final String res = line.substring(fromPos, toPos);
+	getClipboard().set(line);
+	return true;
+    }
+
+    @Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
+    {
+	final String line = model.getLine();
+	if (line == null || line.isEmpty())
+	    return false;
+	final int fromPos = Math.min(fromX, line.length());
+	final int toPos = Math.min(toX, line.length());
 	if (fromPos >= toPos)
 	    return false;
 	model.setLine(line.substring(0, fromPos) + line.substring(toPos));
@@ -233,7 +225,7 @@ public class SingleLineEdit implements RegionProvider
 	return true;
     }
 
-    @Override public boolean insertRegion(int x, int y,
+    public boolean insertRegion(int x, int y,
 					  RegionContent data)
     {
 	if (data.isEmpty())
@@ -253,5 +245,10 @@ public class SingleLineEdit implements RegionProvider
 	model.setLine(line.substring(0, pos) + text + line.substring(pos));
 	model.setHotPointX(pos + text.length());
 	return true;
+    }
+
+    protected Clipboard getClipboard()
+    {
+	return null;//FIXME!!!
     }
 }

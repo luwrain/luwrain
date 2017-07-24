@@ -24,7 +24,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
-public class ListArea  implements Area, RegionProvider, ClipboardTranslator.Provider
+public class ListArea  implements Area, ClipboardTranslator.Provider
 {
     public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM};
 
@@ -96,8 +96,8 @@ public interface ClipboardObjects
 	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
     }
 
-    protected final RegionTranslator region = new RegionTranslator(this);
     protected final ControlEnvironment context;
+    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
     protected String areaName = "";
     protected final Model model;
     protected final Appearance appearance;
@@ -404,7 +404,7 @@ public interface ClipboardObjects
 		return onMoveHotPoint((MoveHotPointEvent)event);
 	    return false;
 	default:
-	    return region.onEnvironmentEvent(event, hotPointX, hotPointY);
+	    return clipboardTranslator.onEnvironmentEvent(event, hotPointX, hotPointY);
 	}
     }
 
@@ -418,7 +418,7 @@ public interface ClipboardObjects
 		return onBeginListeningQuery((BeginListeningQuery)query);
 		return false;
 	default:
-	    return region.onAreaQuery(query, hotPointX, hotPointY);
+	    return false;
 	}
     }
 
@@ -875,56 +875,43 @@ protected boolean onAltHome(KeyboardEvent event)
 
     @Override public boolean onClipboardCopyAll()
     {
-	return false;
-    }
-
-@Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
-    {
-	return false;
-    }
-
-    @Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
-    {
-	return false;
-    }
-
-
-    @Override public RegionContent getWholeRegion()
-    {
-	if (model == null || model.getItemCount() < 0)
-	    return null;
+	if (model.getItemCount() < 0)
+	    return false;
 	final List<String> res = new LinkedList<String>();
 	final int count = model.getItemCount();
 	for(int i = 0;i < count;++i)
 	{
 	    final String line = appearance.getScreenAppearance(model.getItem(i), EnumSet.of(Appearance.Flags.CLIPBOARD));
-	    res.add(line != null?line:"");
+	    if (line == null)
+		return false;
+	    res.add(line );
 	}
 	res.add("");
 	context.getClipboard().set(res.toArray(new String[res.size()]));
-	return new RegionContent(res.toArray(new String[res.size()]));
+	return true;
     }
 
-    @Override public RegionContent getRegion(int fromX, int fromY, int toX, int toY)
+@Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
     {
-	if (model == null || model.getItemCount() < 0)
-	    return null;
+	if (withDeleting)
+	    return false;
+	if (model.getItemCount() < 0)
+	    return false;
 	final int modelFromY = getItemIndexOnLine(fromY);
 	final int modelToY = getItemIndexOnLine(toY);
-
 	if (modelFromY >= model.getItemCount() || modelToY > model.getItemCount())
-	    return null;
+	    return false;
 	if (modelFromY == modelToY)
 	{
 	    final String line = appearance.getScreenAppearance(model.getItem(modelFromY), EnumSet.of(Appearance.Flags.CLIPBOARD));
 	    if (line == null || line.isEmpty())
-		return null;
+		return false;
 	    final int fromPos = Math.min(fromX, line.length());
 	    final int toPos = Math.min(toX, line.length());
 	    if (fromPos >= toPos)
-		return null;
+		return false;
 	    context.getClipboard().set(line.substring(fromPos, toPos));
-	    return new RegionContent(new String[]{line.substring(fromPos, toPos)});
+	    return true;
 	}
 	final List<String> res = new LinkedList<String>();
 	for(int i = modelFromY;i < modelToY;++i)
@@ -933,20 +920,10 @@ protected boolean onAltHome(KeyboardEvent event)
 	    res.add(line != null?line:"");
 	}
 	res.add("");
-	return new RegionContent(res.toArray(new String[res.size()]));
+	return true;
     }
 
-    @Override public boolean deleteWholeRegion()
-    {
-	return false;
-    }
-
-    @Override public boolean deleteRegion(int fromX, int fromY, int toX, int toY)
-    {
-	return false;
-    }
-
-    @Override public boolean insertRegion(int x, int y, RegionContent data)
+    @Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
     {
 	return false;
     }

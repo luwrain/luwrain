@@ -34,11 +34,11 @@ import org.luwrain.util.*;
  *
  * @see ListPopup EditListPopup FilePopup 
  */
-public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, HotPointControl, EmbeddedEditLines, RegionProvider
+public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, HotPointControl, EmbeddedEditLines, ClipboardTranslator.Provider
 {
     protected final Luwrain luwrain;
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
-    protected final RegionTranslator region = new RegionTranslator(this);
+    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
     protected final EmbeddedSingleLineEdit edit;
     protected final String name;
     protected final String prefix;
@@ -149,7 +149,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	}
 	if (edit.isPosCovered(pos, 0) && edit.onEnvironmentEvent(event))
 	    return true;
-	if (region.onEnvironmentEvent(event, pos, 0))
+	if (clipboardTranslator.onEnvironmentEvent(event, pos, 0))
 	    return true;
 	return closing.onEnvironmentEvent(event);
     }
@@ -159,7 +159,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	NullCheck.notNull(query, "query");
 	if (edit.isPosCovered(pos, 0) && edit.onAreaQuery(query))
 	    return true;
-	    return region.onAreaQuery(query, pos, 0);
+	    return false;
 	    }
 
     @Override public Action[] getAreaActions()
@@ -353,39 +353,28 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	luwrain.onAreaNewHotPoint(this);
     }
 
-    @Override public RegionContent getWholeRegion()
+    @Override public boolean onClipboardCopyAll()
     {
-	final String line = prefix + text;
-	return new RegionContent(new String[]{line});
+	luwrain.getClipboardObj().set(prefix + text);
+	return true;
     }
 
-    @Override public RegionContent getRegion(int fromX, int fromY,
-					int toX, int toY)
+    @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
     {
+	if (withDeleting)
+	    return false;
 	final String line = prefix + text;
 	if (line.isEmpty())
-	    return null;
-	final int fromPos = fromX < line.length()?fromX:line.length();
-	final int toPos = toX < line.length()?toX:line.length();
+	    return false;
+	final int fromPos = Math.min(fromX, line.length());
+	final int toPos = Math.min(toX, line.length());
 	if (fromPos >= toPos)
-	    return null;
-	final String res = line.substring(fromPos, toPos);
-	return new RegionContent(new String[]{res});
+	    return false;
+	luwrain.getClipboardObj().set(line.substring(fromPos, toPos));
+	return true;
     }
 
-    @Override public boolean deleteWholeRegion()
-    {
-	return false;
-    }
-
-    @Override public boolean deleteRegion(int fromX, int fromY,
-					  int toX, int toY)
-    {
-	return false;
-    }
-
-    @Override public boolean insertRegion(int x, int y,
-					  RegionContent data)
+    @Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
     {
 	return false;
     }

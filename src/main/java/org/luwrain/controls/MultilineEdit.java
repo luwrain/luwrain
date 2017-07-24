@@ -72,7 +72,7 @@ public class MultilineEdit
     }
 
     protected final ControlEnvironment environment;
-    protected final RegionTranslator region;
+    protected final ClipboardTranslator clipboardTranslator;
     protected final Model model;
 
     public MultilineEdit(ControlEnvironment environment, Model model)
@@ -81,21 +81,11 @@ public class MultilineEdit
 	NullCheck.notNull(model, "model");
 	this.environment = environment;
 	this.model = model;
-	final MultilineEdit edit = this;
-	region = new RegionTranslator(new LinesRegionProvider(model){
-		@Override public boolean insertRegion(int x, int y,
-						      RegionContent data)
+	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(model, ()->environment.getClipboard()){
+		//FIXME:copy with deleting
+		@Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
 		{
-		    return edit.insertRegion(x, y, data);
-		}
-		@Override public boolean deleteWholeRegion()
-		{
-		    return false;
-		}
-		@Override public boolean deleteRegion(int fromX, int fromY,
-						      int toX, int toY)
-		{
-		    return edit.deleteRegion(fromX, fromY, toX, toY);
+		    return MultilineEdit.this.onDeleteRegion(fromX, fromY, toX, toY);
 		}
 	    });
     }
@@ -128,13 +118,13 @@ return onEnter(event);
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
 	    return false;
-	return region.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY());
+	return clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY());
     }
 
     public boolean onAreaQuery(AreaQuery query)
     {
 	NullCheck.notNull(query, "query");
-	return region.onAreaQuery(query, model.getHotPointX(), model.getHotPointY());
+	return false;
     }
 
     protected boolean onBackspace(KeyboardEvent event)
@@ -217,15 +207,16 @@ return onEnter(event);
 	    return true;
     }
 
-    protected boolean deleteRegion(int fromX, int fromY,
-				   int toX, int toY)
+    protected boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
     {
 	return model.deleteRegion(fromX, fromY, toX, toY);
 }
 
+    /*
     protected boolean insertRegion(int x, int y,
 					 RegionContent data)
     {
 	return model.insertRegion(x, y, data.strings());
     }
+    */
 }
