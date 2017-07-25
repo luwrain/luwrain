@@ -221,30 +221,27 @@ public class Environment extends EnvironmentAreas
 	    final Application[] launchedApps = apps.getLaunchedApps();
 	    for(Application a: launchedApps)
 		if (a instanceof MonoApp && a.getClass().equals(app.getClass()))
-	    {
-		final MonoApp ma = (MonoApp)a;
-		final MonoApp.Result res = ma.onMonoAppSecondInstance(app);
-		Log.debug("core", "already launched instance found, result is " + res);
-		NullCheck.notNull(res, "res");
-		if (res == MonoApp.Result.SECOND_INSTANCE_PERMITTED)
-		    break;
-		if (res == MonoApp.Result.BRING_FOREGROUND)
 		{
-		    apps.setActiveApp(a);
-		    onNewAreasLayout();
-	needForIntroduction = true;
-	introduceApp = true;
-		    return;
+		    final MonoApp ma = (MonoApp)a;
+		    final MonoApp.Result res = ma.onMonoAppSecondInstance(app);
+		    Log.debug("core", "already launched instance found, result is " + res);
+		    NullCheck.notNull(res, "res");
+		    if (res == MonoApp.Result.SECOND_INSTANCE_PERMITTED)
+			break;
+		    if (res == MonoApp.Result.BRING_FOREGROUND)
+		    {
+			apps.setActiveApp(a);
+			onNewAreasLayout();
+			needForIntroduction = true;
+			introduceApp = true;
+			return;
+		    }
 		}
-	    }
 	}
 	final Luwrain o = interfaces.requestNew(app, this);
+	final InitResult initResult;
 	try {
-	    if (!app.onLaunch(o))
-	    {
-		interfaces.release(o);
-		return;
-	    }
+	    initResult = app.onLaunch(o);
 	}
 	catch (OutOfMemoryError e)
 	{
@@ -256,11 +253,18 @@ public class Environment extends EnvironmentAreas
 	catch (Exception e)
 	{
 	    interfaces.release(o);
-		Log.error("core", "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
+	    Log.error("core", "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
 	    e.printStackTrace();
 	    launchAppCrash(app, e);
 	    return;
 	}
+	if (initResult == null || !initResult.isOk())
+	{
+	    //FIXME:message
+	    interfaces.release(o);
+	    return;
+	}
+
 	if (!apps.newApp(app))
 	{
 	    interfaces.release(o);
@@ -288,12 +292,9 @@ public class Environment extends EnvironmentAreas
 	System.gc();
 	final org.luwrain.app.crash.CrashApp crashApp = new org.luwrain.app.crash.CrashApp(app, e);
 	final Luwrain o = interfaces.requestNew(crashApp, this);
+	final InitResult initResult;
 	try {
-	    if (!crashApp.onLaunch(o))
-	    {
-		interfaces.release(o);
-		return;
-	    }
+	    initResult = crashApp.onLaunch(o);
 	}
 	catch (OutOfMemoryError ee)
 	{
@@ -301,6 +302,11 @@ public class Environment extends EnvironmentAreas
 	    interfaces.release(o);
 	    return;
 	}
+	if (initResult == null || !initResult.isOk())
+	    {
+		interfaces.release(o);
+		return;
+	    }
 	if (!apps.newApp(crashApp))
 	{
 	    interfaces.release(o);

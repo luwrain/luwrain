@@ -29,12 +29,12 @@ public class ConsoleApp implements Application, MonoApp
     private SimpleArea area;
     private Log.Listener listener;
 
-    @Override public boolean onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunch(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
 	createArea();
 	addListener();
-	return true;
+	return new InitResult();
     }
 
     private void createArea()

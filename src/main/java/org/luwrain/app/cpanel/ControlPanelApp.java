@@ -46,18 +46,18 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	this.hardware = hardware;
     }
 
-    @Override public boolean onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunch(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	final Object o = luwrain.i18n().getStrings(Strings.NAME);
 	if (o == null || !(o instanceof Strings))
-	    return false;
+	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
 	strings = (Strings)o;
 	this.luwrain = luwrain;
 	base = new Base(luwrain, factories, hardware);
 	iface = new ControlPanelImpl(luwrain, this);
 	createArea();
-	return true;
+	return new InitResult();
     }
 
     private void createArea()

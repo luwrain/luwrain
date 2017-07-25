@@ -44,12 +44,12 @@ public class Desktop implements Application
 
     private String clickHereLine = "#click here#";
 
-    @Override public boolean onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunch(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	createArea();
-	return true;
+	return new InitResult();
     }
 
     //Runs by the core when language extensions loaded 

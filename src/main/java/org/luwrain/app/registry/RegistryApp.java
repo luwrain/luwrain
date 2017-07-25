@@ -36,17 +36,18 @@ public class RegistryApp implements Application, Actions
     private TreeArea dirsArea;
     private ListArea valuesArea;
 
-    @Override public boolean onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunch(Luwrain luwrain)
     {
+	NullCheck.notNull(luwrain, "luwrain");
 	final Object o = luwrain.i18n().getStrings(STRINGS_NAME);
 	if (o == null || !(o instanceof Strings))
-	    return false;
+	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, STRINGS_NAME);
 	strings = (Strings)o;
 	this.luwrain = luwrain;
 	if (!base.init(luwrain, strings))
-	    return false;
+	    return new InitResult(InitResult.Type.FAILURE);
 	createAreas();
-	return true;
+	return new InitResult();
     }
 
     @Override public String getAppName()
