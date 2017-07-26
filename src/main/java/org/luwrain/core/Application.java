@@ -21,5 +21,5 @@ public interface Application
     InitResult onLaunchApp(Luwrain luwrain);
     void closeApp();
     String getAppName();
-    AreaLayout getAreasToShow();
+    AreaLayout getAreaLayout();
 }

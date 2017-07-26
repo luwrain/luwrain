@@ -202,7 +202,7 @@ core.quit();
 	return luwrain.i18n().getStaticStr("Desktop");
     }
 
-    @Override public AreaLayout getAreasToShow()
+    @Override public AreaLayout getAreaLayout()
     {
 	return new AreaLayout(area);
     }

@@ -95,7 +95,7 @@ public class CrashApp implements Application, Actions
 	area.endLinesTrans();
     }
 
-    @Override public AreaLayout getAreasToShow()
+    @Override public AreaLayout getAreaLayout()
     {
 	return new AreaLayout(area);
     }

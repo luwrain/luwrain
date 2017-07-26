@@ -91,11 +91,11 @@ final Application app;
     {
 	AreaLayout layout;
 	try {
-	    layout = app.getAreasToShow();
+	    layout = app.getAreaLayout();
 	}
 	catch (Throwable e)
 	{
-	    Log.info("core", "application " + app.getClass().getName() + " has thrown an exception on getAreasToShow():" + e.getMessage());
+	    Log.info("core", "application " + app.getClass().getName() + " has thrown an exception on getAreaLayout():" + e.getMessage());
 	    e.printStackTrace();
 	    return null;
 	}

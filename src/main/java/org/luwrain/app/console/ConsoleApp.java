@@ -64,7 +64,7 @@ public class ConsoleApp implements Application, MonoApp
 	Log.addListener(listener);
     }
 
-    @Override public AreaLayout getAreasToShow()
+    @Override public AreaLayout getAreaLayout()
     {
 	return new AreaLayout(area);
     }

@@ -198,7 +198,7 @@ return actions.insertDir();
 
     }
 
-    @Override public AreaLayout getAreasToShow()
+    @Override public AreaLayout getAreaLayout()
     {
 	//	return new AreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupArea, summaryArea, messageArea);
 	return new AreaLayout(AreaLayout.LEFT_RIGHT, dirsArea, valuesArea);

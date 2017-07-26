@@ -161,7 +161,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	return true;
     }
 
-    @Override public AreaLayout getAreasToShow()
+    @Override public AreaLayout getAreaLayout()
     {
 	if (currentSection != null && currentOptionsArea != null)
 	    return new AreaLayout(AreaLayout.LEFT_RIGHT, sectionsArea, currentOptionsArea);
