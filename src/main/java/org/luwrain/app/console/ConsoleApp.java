@@ -29,7 +29,7 @@ public class ConsoleApp implements Application, MonoApp
     private SimpleArea area;
     private Log.Listener listener;
 
-    @Override public InitResult onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
 	createArea();
@@ -80,7 +80,7 @@ public class ConsoleApp implements Application, MonoApp
 	return MonoApp.Result.BRING_FOREGROUND;
     }
 
-    private void closeApp()
+    @Override public void closeApp()
     {
 	Log.removeListener(listener);
 	luwrain.closeApp();

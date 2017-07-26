@@ -36,7 +36,7 @@ public class RegistryApp implements Application, Actions
     private TreeArea dirsArea;
     private ListArea valuesArea;
 
-    @Override public InitResult onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	final Object o = luwrain.i18n().getStrings(STRINGS_NAME);

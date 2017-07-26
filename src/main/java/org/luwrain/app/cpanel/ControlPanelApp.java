@@ -46,7 +46,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	this.hardware = hardware;
     }
 
-    @Override public InitResult onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	final Object o = luwrain.i18n().getStrings(Strings.NAME);

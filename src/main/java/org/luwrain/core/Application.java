@@ -18,7 +18,8 @@ package org.luwrain.core;
 
 public interface Application
 {
-    InitResult onLaunch(Luwrain luwrain);
+    InitResult onLaunchApp(Luwrain luwrain);
+    void closeApp();
     String getAppName();
     AreaLayout getAreasToShow();
 }

@@ -70,8 +70,8 @@ public class Environment extends EnvironmentAreas
 	final String greeting = uiSettings.getLaunchGreeting("");
 	if (!greeting.trim().isEmpty())
 	    try {
-		Thread.sleep(1000);
-		speech.speak(greeting, 0, 0);
+		Thread.sleep(3800);
+		//		speech.speak(greeting, 0, 0);
 	    } catch (InterruptedException ie)
 	    {
 		Thread.currentThread().interrupt();
@@ -93,7 +93,7 @@ public class Environment extends EnvironmentAreas
     private void init()
     {
 	speech = new Speech(cmdLine, registry);
-	desktop.onLaunch(interfaces.requestNew(desktop, this));
+	desktop.onLaunchApp(interfaces.requestNew(desktop, this));
 	desktop.setConversations(conversations);
 	apps = new AppManager(desktop);
 	screenContentManager = new ScreenContentManager(apps);
@@ -241,7 +241,7 @@ public class Environment extends EnvironmentAreas
 	final Luwrain o = interfaces.requestNew(app, this);
 	final InitResult initResult;
 	try {
-	    initResult = app.onLaunch(o);
+	    initResult = app.onLaunchApp(o);
 	}
 	catch (OutOfMemoryError e)
 	{
@@ -294,7 +294,7 @@ public class Environment extends EnvironmentAreas
 	final Luwrain o = interfaces.requestNew(crashApp, this);
 	final InitResult initResult;
 	try {
-	    initResult = crashApp.onLaunch(o);
+	    initResult = crashApp.onLaunchApp(o);
 	}
 	catch (OutOfMemoryError ee)
 	{

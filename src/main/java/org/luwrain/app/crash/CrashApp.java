@@ -42,7 +42,7 @@ public class CrashApp implements Application, Actions
 	this.exception = exception;
     }
 
-    @Override public InitResult onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
 	final Object o = luwrain.i18n().getStrings(STRINGS_NAME);
 	if (o == null || !(o instanceof Strings))

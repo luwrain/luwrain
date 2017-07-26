@@ -44,7 +44,7 @@ public class Desktop implements Application
 
     private String clickHereLine = "#click here#";
 
-    @Override public InitResult onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
@@ -440,5 +440,9 @@ if (!flags.contains(Flags.BRIEF))
 	    uniRefs = n;
 	    return true;
 	}
+    }
+
+    @Override public void closeApp()
+    {
     }
 }
