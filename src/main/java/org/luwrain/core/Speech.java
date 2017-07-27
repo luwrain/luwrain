@@ -22,6 +22,12 @@ import org.luwrain.speech.*;
 
 class Speech
 {
+    static final int PITCH_HIGH = 25;
+    static final int PITCH_NORMAL = 0;
+    static final int PITCH_LOW = -25;
+    static final int PITCH_HINT = -25;
+    static final int PITCH_MESSAGE = -25;
+
     static private final String SPEECH_PREFIX = "--speech=";
     static private final String ADD_SPEECH_PREFIX = "--add-speech=";
 

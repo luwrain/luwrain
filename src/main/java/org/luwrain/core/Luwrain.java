@@ -59,12 +59,6 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	ENVIRONMENT_SOUNDS,
     };
 
-    public static final int PITCH_HIGH = 25;
-    public static final int PITCH_NORMAL = 0;
-    public static final int PITCH_LOW = -25;
-    public static final int PITCH_HINT = -25;
-    public static final int PITCH_MESSAGE = -25;
-
     /** The message has no any typical semantics*/
     static public final int MESSAGE_REGULAR = 0;
 
@@ -177,7 +171,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void hint(String text)
     {
 	NullCheck.notNull(text, "text");
-	say(text, PITCH_HINT);
+	say(text, Speech.PITCH_HINT);
     }
 
     public void hint(String text, int code)
