@@ -25,56 +25,26 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.speech.Channel;
 
-/**
- * The main bridge for applications and extensions purposed for communication with
- * LUWRAIN core. This class is a central object to be used by
- * applications and extensions to call system routines. Applications and
- * extensions never have the access with the level deeper than this
- * class. The packages like {@code org.luwrain.controls} or 
- * {@code org.luwrain.popups} always wrap the instance of {@code Luwrain} class
- * (meaning, are unable to give more access to system core than provided
- * with given instance of {@code Luwrain} class).
- * <p>
- * The core creates new instance of this class for each newly launched
- * application or loaded extension. Therefore, the environment is always
- * aware which application oor extension has issued the particular
- * request. Applications get the object associated with them through
- * {@code onLaunch()} method. Extensions get the corresponding instance
- * through the argument for the methods they override (it is always the
- * same instance provided this way just for convenience). Everybody is
- * encouraged to keep provided instance in secret. 
- * <p>
- * It could be slightly confusing that the extension and the applications
- * launched by this extension get different instances of {@code Luwrain}
- * class, but it's necessary to distinguish multiple instances of the
- * particular application (while an extension can be loaded only once).
- * <p>
- * Various instance of {@code Luwrain} class may provide different level
- * of access.  It is necessary to make extensions using more accurate and
- * transparent.
- */
 public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrain.base.CoreProperties
 {
     public enum ReloadComponents {
 	ENVIRONMENT_SOUNDS,
     };
 
-    /** The message has no any typical semantics*/
     static public final int MESSAGE_REGULAR = 0;
-
-    /** The message implies a confirmation of a successful action*/
     static public final int MESSAGE_OK = 1;
-
-    /** The message implies a successful finishing of an operation continuous in time*/
     static public final int MESSAGE_DONE = 2;
-
-    /** The message notifies the user that the object is unable to perform the requested operation*/
     static public final int MESSAGE_NOT_READY = 3;
-
-    /** The message must be issued with a sound announcement indicating the critical error*/
     static public final int MESSAGE_ERROR = 4;
-
     static public final int MESSAGE_NOSOUND = 5;
+
+    public enum AreaTextType {
+	REGION,
+	WORD,
+	LINE,
+	SENTENCE,
+	URL,
+    };
 
     private final Environment environment;
     private String charsToSkip = "";
@@ -89,15 +59,15 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	    charsToSkip = registry.getString(path);
     }
 
-    public Object currentAreaRegion(boolean issueErrorMessages)
+    public String getActiveAreaText(AreaTextType type, boolean issueErrorMessages)
     {
-	return null;//FIXME:
+	NullCheck.notNull(type, "type");
+	final Area activeArea = environment.getValidActiveArea(issueErrorMessages);
+	if (activeArea == null)
+	    return null;
+	return new AreaText(activeArea).get(type);
     }
 
-    public String currentAreaWord(boolean issueErrorMessages)
-    {
-	return environment.currentAreaWordIface(issueErrorMessages);
-    }
 
     //Never returns null, returns user home dir if area doesn't speak about that
     public String currentAreaDir()

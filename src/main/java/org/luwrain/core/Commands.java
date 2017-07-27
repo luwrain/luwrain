@@ -614,7 +614,10 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onSayCurrentWordCommand();
+		    NullCheck.notNull(luwrain, "luwrain");
+		    final String word = luwrain.getActiveAreaText(Luwrain.AreaTextType.WORD, true);
+		    if (word != null && !word.trim().isEmpty())
+			env.message(word, Luwrain.MESSAGE_REGULAR);
 		}
 	    },
 

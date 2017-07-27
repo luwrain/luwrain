@@ -1035,22 +1035,6 @@ onNewAreasLayout();
 	listening = null;
     }
 
-    String currentAreaWordIface(boolean issueErrorMessages)
-    {
-	final Area activeArea = getValidActiveArea(issueErrorMessages);
-	if (activeArea == null)
-	    return null;
-	return new AreaText(activeArea).currentWord();
-    }
-
-    void onSayCurrentWordCommand()
-    {
-	final String word = currentAreaWordIface(false);
-	if (word != null && !word.trim().isEmpty())
-	    message(word, Luwrain.MESSAGE_REGULAR); else
-	    areaInaccessibleMessage();
-    }
-
     String[] getAllShortcutNames()
     {
 	return shortcuts.getShortcutNames();

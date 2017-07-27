@@ -16,13 +16,10 @@
 
 package org.luwrain.core;
 
-import java.util.*;
-import java.io.*;
-import java.nio.file.*;
+import java.util.Set;
+import java.io.File;
 
-import org.luwrain.base.*;
-import org.luwrain.core.events.*;
-import org.luwrain.core.queries.*;
+import org.luwrain.base.FilesOperations;
 import org.luwrain.speech.Channel;
 
 /**
@@ -69,6 +66,16 @@ public interface LuwrainProto extends org.luwrain.base.EventConsumer, org.luwrai
 	UNAVAILABLE,
     };
 
+    public enum AreaTextType {
+	REGION,
+	WORD,
+	LINE,
+	SENTENCE,
+	URL,
+    };
+
+    String getActiveAreaText(AreaTextType type, boolean issueErrorMessage);
+
     //Never returns null, returns user home dir if area doesn't speak about that
     String currentAreaDir();
 
@@ -87,7 +94,7 @@ public interface LuwrainProto extends org.luwrain.base.EventConsumer, org.luwrai
      * @param appName A short string for application identification, the same application name will result in the same directory
      * @return The application data directory or {@code null} if the directory cannot be created
      */
-Path getAppDataDir(String appName);
+    File getAppDataDir(String appName);
 
     void closeApp();
     Registry getRegistry();

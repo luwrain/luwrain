@@ -16,10 +16,9 @@
 
 package org.luwrain.core;
 
-
 class AreaText
 {
-    private Area area;
+    private final Area area;
 
     AreaText(Area area)
     {
@@ -27,7 +26,23 @@ class AreaText
 	this.area = area;
     }
 
-    String currentWord()
+    String get(Luwrain.AreaTextType type)
+    {
+	NullCheck.notNull(type, "type");
+	switch(type)
+	{
+	case WORD:
+	    return getWord();
+	case REGION:
+	case LINE:
+	case SENTENCE:
+	case URL:
+	default:
+	    return null;
+	}
+    }
+
+    String getWord()
     {
 	final int x = area.getHotPointX();
 	final int y = area.getHotPointY();
@@ -54,7 +69,7 @@ class AreaText
 	return res;
     }
 
-    private boolean wordChar(char c)
+    static private boolean wordChar(char c)
     {
 	return Character.isLetter(c) || Character.isDigit(c) || c == '_' || c == '-';
     }
