@@ -98,10 +98,10 @@ public class MarkableListArea extends ListArea
     {
 	super.refresh();
 	final List newItems = new LinkedList();
-	final int count = model.getItemCount();
+	final int count = listModel.getItemCount();
 	for(int i = 0;i < count;++i)
 	{
-	    final Object o = model.getItem(i);
+	    final Object o = listModel.getItem(i);
 	    if (marksInfo.marked(o))
 		newItems.add(o);
 	}

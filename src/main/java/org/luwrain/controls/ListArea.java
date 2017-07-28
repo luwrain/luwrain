@@ -100,11 +100,11 @@ public interface ClipboardObjects
     protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint);
     protected String areaName = "";
-    protected final Model model;
-    protected final Appearance appearance;
-    protected final Transition transition;
-    protected final Set<Flags> flags;
-    protected ListClickHandler clickHandler;
+    protected final Model listModel;
+    protected final Appearance listAppearance;
+    protected final Transition listTransition;
+    protected final Set<Flags> listFlags;
+    protected ListClickHandler listClickHandler;
 
     protected int hotPointX = 0;
     protected int hotPointY = 0;
@@ -119,29 +119,28 @@ public interface ClipboardObjects
 	NullCheck.notNull(params.name, "params.name");
 	NullCheck.notNull(params.flags, "params.flags");
 	this.context = params.context;
-	this.model = params.model;
-	this.appearance = params.appearance;
-	this.transition = params.transition;
-	this.clickHandler = params.clickHandler;
+	this.listModel = params.model;
+	this.listAppearance = params.appearance;
+	this.listTransition = params.transition;
+	this.listClickHandler = params.clickHandler;
 	this.areaName = params.name;
-	this.flags = params.flags;
-	//	itemsLayout.setFlags(params.flags);
+	this.listFlags = params.flags;
 	resetHotPoint();
     }
 
     public void setListClickHandler(ListClickHandler clickHandler)
     {
-	this.clickHandler = clickHandler;
+	this.listClickHandler = clickHandler;
     }
 
     public Model getListModel()
     {
-	return model;
+	return listModel;
     }
 
     public Appearance getListAppearance()
     {
-	return appearance;
+	return listAppearance;
     }
 
     /**
@@ -154,7 +153,7 @@ public interface ClipboardObjects
     public final Object selected()
     {
 	final int index = selectedIndex();
-	return (index >= 0 && index < model.getItemCount())?model.getItem(index):null;
+	return (index >= 0 && index < listModel.getItemCount())?listModel.getItem(index):null;
     }
 
     /**
@@ -187,18 +186,18 @@ public interface ClipboardObjects
     public boolean select(Object obj, boolean announce)
     {
 	NullCheck.notNull(obj, "obj");
-	for(int i = 0;i < model.getItemCount();++i)
+	for(int i = 0;i < listModel.getItemCount();++i)
 	{
-	    final Object o = model.getItem(i);
+	    final Object o = listModel.getItem(i);
 	    if (o == null)
 		continue;
 		if (obj != o && !obj.equals(o))
 	continue;
 	    hotPointY = getLineIndexByItemIndex(i);
-	hotPointX = appearance.getObservableLeftBound(o);
+	hotPointX = listAppearance.getObservableLeftBound(o);
 	context.onAreaNewHotPoint(this);
 	if (announce)
-	    appearance.announceItem(o, NONE_APPEARANCE_FLAGS);
+	    listAppearance.announceItem(o, NONE_APPEARANCE_FLAGS);
 	return true;
 	}
 	return false;
@@ -216,16 +215,16 @@ public interface ClipboardObjects
      */
     public boolean select(int index, boolean announce)
     {
-	if (index < 0 || index >= model.getItemCount())
+	if (index < 0 || index >= listModel.getItemCount())
 	    return false;
-	final int emptyCountAbove = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
+	final int emptyCountAbove = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	hotPointY = index + emptyCountAbove;
-	final Object item = model.getItem(index);
+	final Object item = listModel.getItem(index);
 	if (item != null)
 	{
-	    hotPointX = appearance.getObservableLeftBound(item);
+	    hotPointX = listAppearance.getObservableLeftBound(item);
 	    if (announce)
-		appearance.announceItem(item, NONE_APPEARANCE_FLAGS);
+		listAppearance.announceItem(item, NONE_APPEARANCE_FLAGS);
 	} else
 	{
 	    hotPointX = 0;
@@ -238,20 +237,20 @@ public interface ClipboardObjects
 
     public int getItemIndexOnLine(int index)
     {
-	final int linesTop = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
+	final int linesTop = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	if (index < linesTop)
 	    return -1;
-	if (index - linesTop < model.getItemCount())
+	if (index - linesTop < listModel.getItemCount())
 	    return index - linesTop;
 	return -1;
     }
 
     public int getLineIndexByItemIndex(int index)
     {
-	final int count = model.getItemCount();
+	final int count = listModel.getItemCount();
 	if (index < 0 || index >= count)
 	    return -1;
-	final int linesTop = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
+	final int linesTop = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	return index + linesTop;
     }
 
@@ -269,19 +268,19 @@ public interface ClipboardObjects
     public void resetHotPoint(boolean introduce)
     {
 	hotPointY = 0;
-	final int count = model.getItemCount();
+	final int count = listModel.getItemCount();
 	if (count < 1)
 	{
 	    hotPointX = 0;
 	    context.onAreaNewHotPoint(this);
 	    return;
 	}
-	final Object item = model.getItem(0);
+	final Object item = listModel.getItem(0);
 	if (item != null)
 	{
-	    hotPointX = item != null?appearance.getObservableLeftBound(item):0;
+	    hotPointX = item != null?listAppearance.getObservableLeftBound(item):0;
 	    if (introduce)
-		appearance.announceItem(item, NONE_APPEARANCE_FLAGS);
+		listAppearance.announceItem(item, NONE_APPEARANCE_FLAGS);
 	} else
 	{
 	    hotPointX = 0;
@@ -294,7 +293,7 @@ public interface ClipboardObjects
     {
 	final Object item = selected();
 	if (item != null)
-	    appearance.announceItem(item, NONE_APPEARANCE_FLAGS);
+	    listAppearance.announceItem(item, NONE_APPEARANCE_FLAGS);
     }
 
     /**
@@ -307,9 +306,9 @@ public interface ClipboardObjects
     public void refresh()
     {
 	final Object previouslySelected = selected();
-	model.refresh();
+	listModel.refresh();
 	context.onAreaNewContent(this);
-	final int count = model.getItemCount();
+	final int count = listModel.getItemCount();
 	if (count == 0)
 	{
 	    hotPointX = 0;
@@ -320,16 +319,16 @@ public interface ClipboardObjects
 	if (previouslySelected != null && select(previouslySelected, false))
 	    return;
 	hotPointY = hotPointY < count?hotPointY :count - 1;
-	final Object item = model.getItem(hotPointY);
+	final Object item = listModel.getItem(hotPointY);
 	if (item != null)
-	    hotPointX = appearance.getObservableLeftBound(item); else
+	    hotPointX = listAppearance.getObservableLeftBound(item); else
 	    hotPointX = 0;
 	context.onAreaNewHotPoint(this);
     }
 
     public boolean isEmpty()
     {
-	return model.getItemCount() <= 0;
+	return listModel.getItemCount() <= 0;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -430,10 +429,10 @@ public interface ClipboardObjects
 
     @Override public int getLineCount()
     {
-	final int emptyCountTop = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
-	final int emptyCountBottom = flags.contains(Flags.EMPTY_LINE_BOTTOM)?1:0;
+	final int emptyCountTop = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
+	final int emptyCountBottom = listFlags.contains(Flags.EMPTY_LINE_BOTTOM)?1:0;
 
-	final int res = model.getItemCount() + emptyCountTop + emptyCountBottom;
+	final int res = listModel.getItemCount() + emptyCountTop + emptyCountBottom;
 	return res>= 1?res:1;
     }
 
@@ -442,10 +441,10 @@ public interface ClipboardObjects
 	if (isEmpty())
 	    return index == 0?noContentStr():"";
 	final int itemIndex = getItemIndexOnLine(index);
-	if (itemIndex < 0 || itemIndex >= model.getItemCount())
+	if (itemIndex < 0 || itemIndex >= listModel.getItemCount())
 	    return "";
-	final Object res = model.getItem(itemIndex);
-	return res != null?appearance.getScreenAppearance(res, NONE_APPEARANCE_FLAGS):"";
+	final Object res = listModel.getItem(itemIndex);
+	return res != null?listAppearance.getScreenAppearance(res, NONE_APPEARANCE_FLAGS):"";
     }
 
     @Override public int getHotPointX()
@@ -476,7 +475,7 @@ public interface ClipboardObjects
 	context.playSound(Sounds.INTRO_REGULAR);
 	String item = "";
 	if (selected() != null)
-	    item = appearance.getScreenAppearance(selected(), EnumSet.noneOf(Appearance.Flags.class)).trim();
+	    item = listAppearance.getScreenAppearance(selected(), EnumSet.noneOf(Appearance.Flags.class)).trim();
 	if (!item.isEmpty())
 	    item = " " + item;
 	context.say(getAreaName() + item);
@@ -493,7 +492,7 @@ public interface ClipboardObjects
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	appearance.announceItem(item, NONE_APPEARANCE_FLAGS);
+	listAppearance.announceItem(item, NONE_APPEARANCE_FLAGS);
 	return true;
     }
 
@@ -513,9 +512,9 @@ newY = y;
 	    if (getItemIndexOnLine(newY) >= 0)
 	    {
 		//Line with item, not empty
-		final Object item = model.getItem(getItemIndexOnLine(newY));
-		final int leftBound = appearance.getObservableLeftBound(item);
-final int rightBound = appearance.getObservableRightBound(item);
+		final Object item = listModel.getItem(getItemIndexOnLine(newY));
+		final int leftBound = listAppearance.getObservableLeftBound(item);
+final int rightBound = listAppearance.getObservableRightBound(item);
 		if (event.precisely() &&
 		    (x < leftBound || x > rightBound))
 		    return false;
@@ -541,19 +540,19 @@ final int rightBound = appearance.getObservableRightBound(item);
 	final int index = selectedIndex();
 	if (index < 0)
 	    return false;
-	final int count = model.getItemCount();
+	final int count = listModel.getItemCount();
 	if (index >= count)
 	    return false;
-	final Object current = model.getItem(index);
-	final String text = appearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS).substring(hotPointX, appearance.getObservableRightBound(current));
+	final Object current = listModel.getItem(index);
+	final String text = listAppearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS).substring(hotPointX, listAppearance.getObservableRightBound(current));
 	if (text.isEmpty() && index + 1 >= count)
 	    return false;
 	if (index + 1 < count)
 	{
-	    final Object next = model.getItem(index + 1);
-	    query.answer(new BeginListeningQuery.Answer(text, new ListeningInfo(index + 1, appearance.getObservableLeftBound(next))));
+	    final Object next = listModel.getItem(index + 1);
+	    query.answer(new BeginListeningQuery.Answer(text, new ListeningInfo(index + 1, listAppearance.getObservableLeftBound(next))));
 	} else
-	    query.answer(new BeginListeningQuery.Answer(text, new ListeningInfo(index, appearance.getObservableRightBound(current))));
+	    query.answer(new BeginListeningQuery.Answer(text, new ListeningInfo(index, listAppearance.getObservableRightBound(current))));
 	return true;
     }
 
@@ -563,12 +562,12 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (!(event.getExtraInfo() instanceof ListeningInfo))
 	    return false;
 	final ListeningInfo info = (ListeningInfo)event.getExtraInfo();
-	final int count = model.getItemCount();
+	final int count = listModel.getItemCount();
 	if (info.itemIndex >= count)
 	    return false;
-	final Object item = model.getItem(info.itemIndex);
-	final int leftBound = appearance.getObservableLeftBound(item);
-	final int rightBound = appearance.getObservableRightBound(item);
+	final Object item = listModel.getItem(info.itemIndex);
+	final int leftBound = listAppearance.getObservableLeftBound(item);
+	final int rightBound = listAppearance.getObservableRightBound(item);
 	if (info.pos < leftBound || info.pos > rightBound)
 	    return false;
 	hotPointY = getLineIndexByItemIndex(info.itemIndex);
@@ -581,15 +580,15 @@ final int rightBound = appearance.getObservableRightBound(item);
     {
 	if (noContent())
 	    return true;
-	final int count = model.getItemCount();
+	final int count = listModel.getItemCount();
 	final char c = Character.toLowerCase(event.getChar());
 	final String beginning;
 	if (selected() != null)
 	{
-	    if (hotPointX >= appearance.getObservableRightBound(selected()))
+	    if (hotPointX >= listAppearance.getObservableRightBound(selected()))
 		return false;
 	    final String name = getObservableSubstr(selected()).toLowerCase();
-	    final int pos = Math.min(hotPointX - appearance.getObservableLeftBound(selected()), name.length());
+	    final int pos = Math.min(hotPointX - listAppearance.getObservableLeftBound(selected()), name.length());
 	    if (pos < 0)
 		return false;
 	    beginning = name.substring(0, pos);
@@ -598,12 +597,12 @@ final int rightBound = appearance.getObservableRightBound(item);
 	final String mustBegin = beginning + c;
 	for(int i = 0;i < count;++i)
 	{
-	    final String name = getObservableSubstr(model.getItem(i)).toLowerCase();
+	    final String name = getObservableSubstr(listModel.getItem(i)).toLowerCase();
 	    if (!name.startsWith(mustBegin))
 		continue;
 	    hotPointY = getLineIndexByItemIndex(i);
 	    ++hotPointX;
-	    appearance.announceItem(model.getItem(hotPointY), NONE_APPEARANCE_FLAGS);
+	    listAppearance.announceItem(listModel.getItem(hotPointY), NONE_APPEARANCE_FLAGS);
 	    context.onAreaNewHotPoint(this);
 	    return true;
 	}
@@ -647,18 +646,18 @@ final int rightBound = appearance.getObservableRightBound(item);
 	if (noContent())
 	    return true;
 	final int index = selectedIndex();
-	final int count = model.getItemCount();
-	final int emptyCountTop = flags.contains(Flags.EMPTY_LINE_TOP)?1:0;
+	final int count = listModel.getItemCount();
+	final int emptyCountTop = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	final Transition.State current;
 	if (index >= 0)
 current = new Transition.State(index); else
-	if (flags.contains(Flags.EMPTY_LINE_TOP) && hotPointY == 0)
+	if (listFlags.contains(Flags.EMPTY_LINE_TOP) && hotPointY == 0)
 	    current = new Transition.State(Transition.State.Type.EMPTY_LINE_TOP); else
-	if (flags.contains(Flags.EMPTY_LINE_BOTTOM) && hotPointY == count + emptyCountTop)
+	if (listFlags.contains(Flags.EMPTY_LINE_BOTTOM) && hotPointY == count + emptyCountTop)
 current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
 	    return false;
-	final Transition.State newState = transition.transition(type, current, count,
-								flags.contains(Flags.EMPTY_LINE_TOP), flags.contains(Flags.EMPTY_LINE_BOTTOM));
+	final Transition.State newState = listTransition.transition(type, current, count,
+								listFlags.contains(Flags.EMPTY_LINE_TOP), listFlags.contains(Flags.EMPTY_LINE_BOTTOM));
 	NullCheck.notNull(newState, "newState");
 	switch(newState.type)
 	{
@@ -666,12 +665,12 @@ current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
 	    context.hint(hint);
 	    return true;
 	case EMPTY_LINE_TOP:
-	    if (!flags.contains(Flags.EMPTY_LINE_TOP))
+	    if (!listFlags.contains(Flags.EMPTY_LINE_TOP))
 		return false;
 	    hotPointY = 0;
 	    break;
 	case EMPTY_LINE_BOTTOM:
-	    if (!flags.contains(Flags.EMPTY_LINE_BOTTOM))
+	    if (!listFlags.contains(Flags.EMPTY_LINE_BOTTOM))
 		return false;
 	    hotPointY = count + emptyCountTop;
 	    break;
@@ -697,14 +696,14 @@ protected boolean onArrowRight(KeyboardEvent event)
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
+	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-final int rightBound = appearance.getObservableRightBound(item);
+final int rightBound = listAppearance.getObservableRightBound(item);
 	if (hotPointX >= rightBound)
 	{
 	    context.hint(Hints.END_OF_LINE);
@@ -726,15 +725,15 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
+	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final int leftBound = appearance.getObservableLeftBound(item);
-	final int rightBound = appearance.getObservableRightBound(item);
+	final int leftBound = listAppearance.getObservableLeftBound(item);
+	final int rightBound = listAppearance.getObservableRightBound(item);
 	if (hotPointX <= leftBound)
 	{
 	    context.hint(Hints.BEGIN_OF_LINE);
@@ -756,15 +755,15 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
+	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-		final int leftBound = appearance.getObservableLeftBound(item);
-final int rightBound = appearance.getObservableRightBound(item);
+		final int leftBound = listAppearance.getObservableLeftBound(item);
+final int rightBound = listAppearance.getObservableRightBound(item);
 	if (hotPointX >= rightBound)
 	{
 	    context.hint(Hints.END_OF_LINE);
@@ -795,15 +794,15 @@ final int rightBound = appearance.getObservableRightBound(item);
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
+	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final int leftBound = appearance.getObservableLeftBound(item);
-	final int rightBound = appearance.getObservableRightBound(item);
+	final int leftBound = listAppearance.getObservableLeftBound(item);
+	final int rightBound = listAppearance.getObservableRightBound(item);
 	if (hotPointX <= leftBound)
 	{
 	    context.hint(Hints.BEGIN_OF_LINE);
@@ -832,9 +831,9 @@ protected boolean onAltEnd(KeyboardEvent event)
 	    context.hint(Hints.EMPTY_LINE);
 	    return true;
 	}
-	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
+	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
-	hotPointX = appearance.getObservableRightBound(item);
+	hotPointX = listAppearance.getObservableRightBound(item);
 	context.hint(Hints.END_OF_LINE);
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -846,43 +845,43 @@ protected boolean onAltHome(KeyboardEvent event)
 	    return true;
 	final Object item = selected();
 	NullCheck.notNull(item, "item");
-	final String line = appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
+	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
-	hotPointX = appearance.getObservableLeftBound(item);
-	announceChar(line, hotPointX, appearance.getObservableRightBound(item));
+	hotPointX = listAppearance.getObservableLeftBound(item);
+	announceChar(line, hotPointX, listAppearance.getObservableRightBound(item));
 	context.onAreaNewHotPoint(this);
 	return true;
     }
 
     protected boolean onEnter(KeyboardEvent event)
     {
-	if (isEmpty() || clickHandler == null)
+	if (isEmpty() || listClickHandler == null)
 	    return false;
 	if (selected() == null || selectedIndex() < 0)
 	    return false;
-	return clickHandler.onListClick(this, selectedIndex(), selected());
+	return listClickHandler.onListClick(this, selectedIndex(), selected());
     }
 
     protected boolean onOk(EnvironmentEvent event)
     {
-	if (clickHandler == null)
+	if (listClickHandler == null)
 	    return false;
 	final int index = selectedIndex();
 	final Object item = selected();
 	if (index < 0 || item == null)
 	    return false;
-	    return clickHandler.onListClick(this, index, item);
+	    return listClickHandler.onListClick(this, index, item);
     }
 
     @Override public boolean onClipboardCopyAll()
     {
-	if (model.getItemCount() < 0)
+	if (listModel.getItemCount() < 0)
 	    return false;
 	final List<String> res = new LinkedList<String>();
-	final int count = model.getItemCount();
+	final int count = listModel.getItemCount();
 	for(int i = 0;i < count;++i)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(i), EnumSet.of(Appearance.Flags.CLIPBOARD));
+	    final String line = listAppearance.getScreenAppearance(listModel.getItem(i), EnumSet.of(Appearance.Flags.CLIPBOARD));
 	    if (line == null)
 		return false;
 	    res.add(line );
@@ -896,15 +895,15 @@ protected boolean onAltHome(KeyboardEvent event)
     {
 	if (withDeleting)
 	    return false;
-	if (model.getItemCount() < 0)
+	if (listModel.getItemCount() < 0)
 	    return false;
 	final int modelFromY = getItemIndexOnLine(fromY);
 	final int modelToY = getItemIndexOnLine(toY);
-	if (modelFromY >= model.getItemCount() || modelToY > model.getItemCount())
+	if (modelFromY >= listModel.getItemCount() || modelToY > listModel.getItemCount())
 	    return false;
 	if (modelFromY == modelToY)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(modelFromY), EnumSet.of(Appearance.Flags.CLIPBOARD));
+	    final String line = listAppearance.getScreenAppearance(listModel.getItem(modelFromY), EnumSet.of(Appearance.Flags.CLIPBOARD));
 	    if (line == null || line.isEmpty())
 		return false;
 	    final int fromPos = Math.min(fromX, line.length());
@@ -917,7 +916,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	final List<String> res = new LinkedList<String>();
 	for(int i = modelFromY;i < modelToY;++i)
 	{
-	    final String line = appearance.getScreenAppearance(model.getItem(i), NONE_APPEARANCE_FLAGS);
+	    final String line = listAppearance.getScreenAppearance(listModel.getItem(i), NONE_APPEARANCE_FLAGS);
 	    res.add(line != null?line:"");
 	}
 	res.add("");
@@ -939,7 +938,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	    context.onAreaNewHotPoint(this);
 	    return;
 	}
-	final Object item = model.getItem(index);
+	final Object item = listModel.getItem(index);
 	if (item == null)
 	{
 	    context.hint(Hints.EMPTY_LINE);
@@ -947,20 +946,20 @@ protected boolean onAltHome(KeyboardEvent event)
 	    context.onAreaNewHotPoint(this);
 	    return;
 	}
-	appearance.announceItem(item, briefAnnouncement?BRIEF_ANNOUNCEMENT_ONLY:NONE_APPEARANCE_FLAGS);
-	hotPointX = appearance.getObservableLeftBound(item);
+	listAppearance.announceItem(item, briefAnnouncement?BRIEF_ANNOUNCEMENT_ONLY:NONE_APPEARANCE_FLAGS);
+	hotPointX = listAppearance.getObservableLeftBound(item);
 	context.onAreaNewHotPoint(this);
     }
 
     protected String getObservableSubstr(Object item)
     {
 	NullCheck.notNull(item, "item");
-final String line = 	    appearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
+final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 NullCheck.notNull(line, "line");
 if (line.isEmpty())
 return "";
-final int leftBound = Math.min(appearance.getObservableLeftBound(item), line.length());
-final int rightBound = Math.min(appearance.getObservableRightBound(item), line.length());
+final int leftBound = Math.min(listAppearance.getObservableLeftBound(item), line.length());
+final int rightBound = Math.min(listAppearance.getObservableRightBound(item), line.length());
 if (leftBound >= rightBound)
     return "";
 return line.substring(leftBound, rightBound);
@@ -981,7 +980,7 @@ return line.substring(leftBound, rightBound);
 
 	protected boolean noContent()
     {
-	if (model == null || model.getItemCount() < 1)
+	if (listModel == null || listModel.getItemCount() < 1)
 	{
 	    context.hint(noContentStr(), Hints.NO_CONTENT);
 	    return true;

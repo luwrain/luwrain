@@ -69,7 +69,7 @@ public class AddRemoveListPopup extends ListPopupBase
 	final Object newObj = itemsSource.getNewItemToAdd();
 	if (newObj == null)
 	    return false;
-	final ListUtils.FixedModel m = (ListUtils.FixedModel)model;
+	final ListUtils.FixedModel m = (ListUtils.FixedModel)listModel;
 	m.add(newObj);
 	refresh();
 	return true;
@@ -83,7 +83,7 @@ public class AddRemoveListPopup extends ListPopupBase
 	    return false;
 	if (!removeConfirmation.mayRemove(item))
 	    return true;
-	final ListUtils.FixedModel m = (ListUtils.FixedModel)model;
+	final ListUtils.FixedModel m = (ListUtils.FixedModel)listModel;
 	m.remove(item);
 	refresh();
 	return true;
@@ -91,7 +91,7 @@ public class AddRemoveListPopup extends ListPopupBase
 
     public Object[] result()
     {
-	final ListUtils.FixedModel m = (ListUtils.FixedModel)model;
+	final ListUtils.FixedModel m = (ListUtils.FixedModel)listModel;
 	return m.getItems();
     }
 

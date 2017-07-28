@@ -48,13 +48,13 @@ public class MainMenu extends ListArea implements PopupClosingTranslator.Provide
 	    {
 	    case PAGE_DOWN:
 	    case ALTERNATIVE_PAGE_DOWN:
-		if (selectedIndex() + 1 >= model.getItemCount())
+		if (selectedIndex() + 1 >= listModel.getItemCount())
 		{
 		    context.hint(Hints.NO_ITEMS_BELOW);
 		    return true;
 		}
-		for(int i = selectedIndex() + 1;i < model.getItemCount();++i)
-		    if (model.getItem(i) instanceof Section)
+		for(int i = selectedIndex() + 1;i < listModel.getItemCount();++i)
+		    if (listModel.getItem(i) instanceof Section)
 		    {
 			select(i, true);
 			return true;
@@ -69,7 +69,7 @@ context.hint(Hints.NO_ITEMS_ABOVE);
 		    return true;
 		}
 		for(int i = selectedIndex() - 1;i >= 0;--i)
-		    if (model.getItem(i) instanceof Section)
+		    if (listModel.getItem(i) instanceof Section)
 		    {
 			select(i, true);
 			return true;
