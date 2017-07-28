@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-public interface MonoApp
+public interface MonoApp extends Application
 {
     public enum Result {DO_NOTHING, SECOND_INSTANCE_PERMITTED, BRING_FOREGROUND};
 

@@ -76,6 +76,7 @@ public class CommanderArea<E> extends ListArea
 
     protected final CommanderArea.Model<E> model;
     protected final CommanderArea.Appearance<E> appearance;
+    protected final Set<Flags> flags;
     protected CommanderArea.ClickHandler<E> clickHandler = null;
     protected Filter<E> filter = null;
     protected Comparator comparator = null;
@@ -93,6 +94,7 @@ public class CommanderArea<E> extends ListArea
 	NullCheck.notNull(params.flags, "params.flags");
 	this.model = params.model;
 	this.appearance = params.appearance;
+	this.flags = params.flags;
 	this.filter = params.filter;
 	this.comparator = params.comparator;
 	this.clickHandler = params.clickHandler;
@@ -310,6 +312,8 @@ public class CommanderArea<E> extends ListArea
 	    {
 	    case BACKSPACE:
 		return onBackspace(event);
+	    case INSERT:
+		return onKeyInsert(event);
 	    }
 	return super.onKeyboardEvent(event);
     }
@@ -330,6 +334,19 @@ public class CommanderArea<E> extends ListArea
 	if (parent == null)
 	    return false;
 	open(parent, appearance.getEntryTextAppearance(currentLocation, null, false));
+	return true;
+    }
+
+    protected boolean onKeyInsert(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (!flags.contains(Flags.MARKING))
+	    return false;
+	final Wrapper wrapper = getSelectedWrapper();
+	if (wrapper == null || wrapper.type == EntryType.PARENT)
+	    return false;
+	wrapper.toggleMark(); 
+
 	return true;
     }
 
@@ -528,19 +545,6 @@ public class CommanderArea<E> extends ListArea
 	@Override public Object getItem(int index)
 	{
 	    return (wrappers != null && index < wrappers.length)?wrappers[index]:null;
-	}
-
-	public boolean toggleMark(int index)//FIXME:
-	{
-	    if (!marking)
-		return false;
-	    if (wrappers == null ||
-		index < 0 || index >= wrappers.length)
-		return false;
-	    if (wrappers[index].type == EntryType.PARENT)
-		return false;
-	    wrappers[index].toggleMark();
-	    return true;
 	}
 
 	@Override public void refresh()

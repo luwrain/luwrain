@@ -97,7 +97,8 @@ public interface ClipboardObjects
     }
 
     protected final ControlEnvironment context;
-    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
+    protected final RegionPoint regionPoint = new RegionPoint();
+    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint);
     protected String areaName = "";
     protected final Model model;
     protected final Appearance appearance;

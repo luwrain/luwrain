@@ -279,6 +279,11 @@ mark(o);
 		items.add(oo);
 	}
 
+	@Override public void clearMarks()
+	{
+	    items.clear();
+	}
+
 	@Override public Object[] getAllMarked()
 	{
 	    final List res = new LinkedList();
