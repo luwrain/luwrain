@@ -84,11 +84,6 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     @Override public void enqueueEvent(Event e)
     {
 	NullCheck.notNull(e, "e");
-	if (e instanceof ThreadSyncEvent)
-	{
-	    final ThreadSyncEvent threadSync = (ThreadSyncEvent)e;
-	    threadSync.setInstanceObj(this);
-	}
 	environment.enqueueEvent(e);
     }
 

@@ -36,6 +36,8 @@ import org.luwrain .util.*;
  */
 public abstract class NavigationArea implements Area, HotPointControl, ClipboardTranslator.Provider
 {
+    static private final String LOG_COMPONENT = "core";
+
     protected final ControlEnvironment context;
     protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
@@ -474,7 +476,11 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     protected int getValidLineCount()
     {
 	final int count = getLineCount();
-	return count >= 1?count:1;
+	if (count < 0)
+	    throw new RuntimeException("Negative number of lines (" + count + ")");
+	if (count == 0)
+	    Log.warning(LOG_COMPONENT, "number of lines equal to zero in NavigationArea");
+	return count;
     }
 
     protected String getLineNotNull(int index)

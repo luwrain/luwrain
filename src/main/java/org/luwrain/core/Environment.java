@@ -378,8 +378,6 @@ public class Environment extends EnvironmentAreas
 		return onRunnableEvent((RunnableEvent)event);
 	    if (event instanceof KeyboardEvent)
 		return onKeyboardEvent(Keyboard.translate((KeyboardEvent)event));
-	    if (event instanceof AddressedEnvironmentEvent)
-		return onAddressedEnvironmentEvent((AddressedEnvironmentEvent)event);
 	    if (event instanceof EnvironmentEvent)
 	    {
 		final EnvironmentEvent environmentEvent = (EnvironmentEvent)event;
@@ -542,15 +540,7 @@ public class Environment extends EnvironmentAreas
 
     private boolean onEnvironmentEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.Code.MESSAGE)
-	{
-	    if (!(event instanceof MessageEvent))
-		return true;
-	    final MessageEvent messageEvent = (MessageEvent)event;
-	    message(messageEvent.text(), messageEvent.semantic());
-	    return true;
-	}
-
+	NullCheck.notNull(event, "event");
 	switch(popupBlocking())
 	{
 	case POPUP_BLOCKING_TRY_AGAIN:
@@ -579,24 +569,6 @@ public class Environment extends EnvironmentAreas
 	case ScreenContentManager.NO_APPLICATIONS:
 	    noAppsMessage();
 	    break;
-	}
-	return true;
-    }
-
-    private boolean onAddressedEnvironmentEvent(AddressedEnvironmentEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	final Area destArea = event.getDestArea();
-	if (destArea == null)
-	    return true;
-	//FIXME:if the area is blocked we should reject the event; 	    Log.warning("core", "thread sync event to the blocked area " + destArea.getClass().getName());
-	try {
-		destArea.onEnvironmentEvent(event);
-		}
-	catch (Throwable e)
-	{
-	    Log.error("core", "exception while processing addressed environment event to area of class " + destArea.getClass().getName() + ":" + e.getClass().getName() + ":" + e.getMessage());
-	    e.printStackTrace();
 	}
 	return true;
     }

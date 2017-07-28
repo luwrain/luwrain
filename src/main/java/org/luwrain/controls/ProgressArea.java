@@ -37,21 +37,15 @@ public class ProgressArea extends SimpleArea
 	super(environment, name, lines);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    public void onLine(String line)
     {
-	NullCheck.notNull(event, "event");
-	if (event instanceof ProgressLineEvent)
+	NullCheck.notNull(line, "line");
+	if (content.getLineCount() > 0)
 	{
-	    final String line = ((ProgressLineEvent)event).progressLine();
-	    if (content.getLineCount() > 0)
-	    {
-		content.setLine(content.getLineCount() - 1, line);
-		content.addLine("");
-	    } else
-		addLine(line);
-	    environment.onAreaNewContent(this);
-	    return true;
-	}
-	return super.onEnvironmentEvent(event);
+	    content.setLine(content.getLineCount() - 1, line);
+	    content.addLine("");
+	} else
+	    addLine(line);
+	environment.onAreaNewContent(this);
     }
 }
