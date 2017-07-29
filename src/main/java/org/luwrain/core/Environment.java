@@ -58,7 +58,7 @@ public class Environment extends EnvironmentAreas
 	this.os = os;
 	this.interaction = interaction;
 	interfaces.createObjForEnvironment(this);
-	conversations = new org.luwrain.shell.Conversations(getObjForEnvironment(), this);
+	this.conversations = new org.luwrain.shell.Conversations(getObjForEnvironment(), this);
     }
 
     void run()
@@ -199,6 +199,7 @@ public class Environment extends EnvironmentAreas
 	NullCheck.notEmpty(shortcutName, "shortcutName");
 	NullCheck.notNullItems(args, "args");
 	Log.info("core", "launching application \'" + shortcutName + "\' with " + args.length + " argument(s)");
+	mainCoreThreadOnly();
 	for(int i = 0;i < args.length;++i)
 	    Log.info("core", "args[" + i + "]: " + args[i]);
 	final Application[] app = shortcuts.prepareApp(shortcutName, args != null?args:new String[0]);
@@ -213,6 +214,7 @@ public class Environment extends EnvironmentAreas
     void launchApp(Application app)
     {
 	NullCheck.notNull(app, "app");
+	mainCoreThreadOnly();
 	System.gc();
 	//Checking is it a mono application
 	if (app instanceof MonoApp)
@@ -264,7 +266,6 @@ public class Environment extends EnvironmentAreas
 	    interfaces.release(o);
 	    return;
 	}
-
 	if (!apps.newApp(app))
 	{
 	    interfaces.release(o);
@@ -320,6 +321,7 @@ public class Environment extends EnvironmentAreas
     void closeAppIface(Luwrain instance)
     {
 	NullCheck.notNull(instance, "instance");
+	mainCoreThreadOnly();
 	if (instance == interfaces.getObjForEnvironment())
 	    throw new IllegalArgumentException("Trying to close an application through the special interface object designed for environment operations");
 	final Application app = interfaces.findApp(instance);
@@ -340,6 +342,7 @@ public class Environment extends EnvironmentAreas
 
     void onSwitchNextAppCommand()
     {
+	mainCoreThreadOnly();
 	apps.switchNextApp();
 	onNewAreasLayout();
 	needForIntroduction = true;
@@ -353,6 +356,7 @@ public class Environment extends EnvironmentAreas
 
     void onNewAreaLayoutIface(Luwrain instance)
     {
+	mainCoreThreadOnly();
 	NullCheck.notNull(instance, "instance");
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
@@ -366,6 +370,7 @@ public class Environment extends EnvironmentAreas
 
     void onSwitchNextAreaCommand()
     {
+	mainCoreThreadOnly();
 	screenContentManager.activateNextArea();
 	onNewAreasLayout();
 	introduceActiveArea();
@@ -549,7 +554,6 @@ public class Environment extends EnvironmentAreas
 	    areaBlockedMessage();
 	    return true;
 	}
-
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
 		res = screenContentManager.onEnvironmentEvent(event);
@@ -587,6 +591,7 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(pos, "pos");
 	NullCheck.notNull(stopCondition, "stopCondition");
+	mainCoreThreadOnly();
 	if (noMultipleCopies)
 	    apps.onNewPopupOpening(app, area.getClass());
 	final PopupStopCondition popupStopCondition = new PopupStopCondition(mainStopCondition, stopCondition);
@@ -604,6 +609,7 @@ onNewAreasLayout();
     {
 	NullCheck.notNull(instance, "instance");
 	NullCheck.notNull(area, "area");
+	mainCoreThreadOnly();
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
 	    throw new IllegalArgumentException("Provided an unknown application instance");
@@ -616,6 +622,7 @@ onNewAreasLayout();
     public void onAreaNewHotPointIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
+	mainCoreThreadOnly();
 	if (screenContentManager == null)//FIXME:
 	    return;
 	final Area effectiveArea = getEffectiveAreaFor(instance, area);
@@ -628,6 +635,7 @@ onNewAreasLayout();
     void onAreaNewContentIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
+	mainCoreThreadOnly();
 	final Area effectiveArea = getEffectiveAreaFor(instance, area);
 	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
 	    return;
@@ -637,6 +645,7 @@ onNewAreasLayout();
     void onAreaNewNameIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
+	mainCoreThreadOnly();
 	final Area effectiveArea = getEffectiveAreaFor(instance, area);
 	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
 	    return;
@@ -646,17 +655,18 @@ onNewAreasLayout();
     void onAreaNewBackgroundSound(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
+	mainCoreThreadOnly();
 	final Area effectiveArea = getEffectiveAreaFor(instance, area);
 	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
 	    return;
 	updateBackgroundSound(effectiveArea);
     }
 
-
     //May return -1
     int getAreaVisibleHeightIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
+	mainCoreThreadOnly();
 	Area effectiveArea = null;
 	if (instance != null)
 	{
@@ -677,11 +687,13 @@ onNewAreasLayout();
 
     int getScreenWidthIface()
     {
+	mainCoreThreadOnly();
 	return interaction.getWidthInCharacters();
     }
 
     int getScreenHeightIface()
     {
+	mainCoreThreadOnly();
 	return interaction.getHeightInCharacters();
     }
 
@@ -689,6 +701,7 @@ onNewAreasLayout();
     int getAreaVisibleWidthIface(Luwrain instance, Area area)
     {
 	NullCheck.notNull(area, "area");
+	mainCoreThreadOnly();
 	Area effectiveArea = null;
 	if (instance != null)
 	{
@@ -709,6 +722,7 @@ onNewAreasLayout();
 
     public void message(String text, int semantic)
     {
+	mainCoreThreadOnly();
 	switch(semantic)
 	{
 	case Luwrain.MESSAGE_ERROR:
@@ -733,6 +747,7 @@ onNewAreasLayout();
 
     public void message(String text, Sounds sound)
     {
+	mainCoreThreadOnly();
 	if (text == null || text.trim().isEmpty())
 	    return;
 	needForIntroduction = false;
@@ -779,6 +794,7 @@ onNewAreasLayout();
 
     void onIncreaseFontSizeCommand()
     {
+	mainCoreThreadOnly();
 	interaction.setDesirableFontSize(interaction.getFontSize() + 5); 
 	windowManager.redraw();
 	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MESSAGE_REGULAR);
@@ -786,6 +802,7 @@ onNewAreasLayout();
 
     void onDecreaseFontSizeCommand()
     {
+	mainCoreThreadOnly();
 	if (interaction.getFontSize() < 15)
 	    return;
 	interaction.setDesirableFontSize(interaction.getFontSize() - 5); 
@@ -796,6 +813,7 @@ onNewAreasLayout();
     void openFiles(String[] fileNames)
     {
 	NullCheck.notEmptyItems(fileNames, "fileNames");
+	mainCoreThreadOnly();
 	if (fileNames.length < 1)
 	    return;
 	fileTypes.launch(this, registry, fileNames);
@@ -809,6 +827,7 @@ onNewAreasLayout();
     public void popupIface(Popup popup)
     {
 	NullCheck.notNull(popup, "popup");
+	mainCoreThreadOnly();
 	final Luwrain luwrainObject = popup.getLuwrainObject();
 	final StopCondition stopCondition = ()->popup.isPopupActive();
 	NullCheck.notNull(luwrainObject, "luwrainObject");
@@ -844,6 +863,7 @@ onNewAreasLayout();
 
     void mainMenu()
     {
+	mainCoreThreadOnly();
 	final org.luwrain.shell.MainMenu mainMenu = org.luwrain.shell.MainMenu.newMainMenu(getObjForEnvironment());
 	if (mainMenu == null)
 	    return;
@@ -856,13 +876,13 @@ onNewAreasLayout();
 
     boolean runCommand(String command)
     {
+	mainCoreThreadOnly();
 	if (command == null)
 	    throw new NullPointerException("command may not be null");
 	if (command.trim().isEmpty())
 	    return false;
 	return commands.run(command.trim());
     }
-
 
     OperatingSystem os()
     {

@@ -36,6 +36,7 @@ package org.luwrain.core;
  * application, it must implement {@link MonoApp} interface instead.
  *
  * @see Area Luwrain MonoApp
+ * @since 1.0
  */
 public interface Application
 {

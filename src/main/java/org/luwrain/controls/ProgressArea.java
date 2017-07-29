@@ -37,7 +37,7 @@ public class ProgressArea extends SimpleArea
 	super(environment, name, lines);
     }
 
-    public void onLine(String line)
+    public void addProgressLine(String line)
     {
 	NullCheck.notNull(line, "line");
 	if (content.getLineCount() > 0)

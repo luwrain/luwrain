@@ -21,6 +21,8 @@ import java.nio.file.*;
 
 abstract class Base implements org.luwrain.base.EventConsumer
 {
+    static final String LOG_COMPONENT = "core";
+
     interface StopCondition
     {
 	boolean continueEventLoop();
@@ -80,6 +82,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final String lang;
     protected boolean needForIntroduction = false;
     protected boolean introduceApp = false;
+    private final Thread mainCoreThread;
 
     protected Base(CmdLine cmdLine, Registry registry,
 			      org.luwrain.base.CoreProperties coreProps, String lang)
@@ -93,6 +96,8 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	this.coreProps = coreProps;
 	this.lang = lang;
 	this.soundManager = new SoundManager(registry, coreProps);
+	this.mainCoreThread = Thread.currentThread();
+	Log.debug(LOG_COMPONENT, "main core thread is \'" + mainCoreThread.getName() + "\'");
     }
 
     //True means the event is processed and there is no need to process it again;
@@ -221,5 +226,14 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	this.eventResponse = eventResponse;
     }
 
+    boolean isMainCoreThread()
+    {
+	return Thread.currentThread() == mainCoreThread;
+    }
 
+    void mainCoreThreadOnly()
+    {
+	if (!isMainCoreThread())
+	    throw new RuntimeException("Not in the main thread of LUWRAIN core (current thread is \'" + Thread.currentThread().getName() + "\'");
+    }
 }
