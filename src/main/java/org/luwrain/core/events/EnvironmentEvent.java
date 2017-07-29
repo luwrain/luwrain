@@ -59,9 +59,7 @@ import org.luwrain.core.*;
  */
 public class EnvironmentEvent extends Event
 {
-    public enum Type {
-	REGULAR,
-	BROADCAST};
+    public enum Type {REGULAR, BROADCAST};
 
     public enum Code {
 	ACTION,
@@ -77,7 +75,6 @@ public class EnvironmentEvent extends Event
 	HELP,
 	INTRODUCE,
 	LISTENING_FINISHED,
-	MESSAGE,
 	MOVE_HOT_POINT,
 	OK,
 	OPEN,
@@ -85,20 +82,21 @@ public class EnvironmentEvent extends Event
 	REFRESH,
 	REGION_POINT,
 	SAVE,
-	THREAD_SYNC,
 	USER,
     };
 
-    private Code code;
-    private Type type;
-    private String broadcastFilterAreaClassName = null;
-    private String broadcastFilterUniRef = null;
+    protected final Code code;
+    protected final Type type;
+    protected final String broadcastFilterAreaClassName;
+    protected final String broadcastFilterUniRef;
 
     public EnvironmentEvent(Code code)
     {
 	NullCheck.notNull(code, "code");
 	this.type = Type.REGULAR;
 	this.code = code;
+	this.broadcastFilterAreaClassName = null;
+	this.broadcastFilterUniRef = null;
     }
 
     public EnvironmentEvent(Type type, Code code)
@@ -107,6 +105,8 @@ public class EnvironmentEvent extends Event
 	NullCheck.notNull(code, "code");
 	this.type = type;
 	this.code = code;
+	this.broadcastFilterAreaClassName = null;
+	this.broadcastFilterUniRef = null;
     }
 
     public EnvironmentEvent(Type type, Code code,

@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.io.*;
 import java.nio.file.*;
 
@@ -501,7 +502,40 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void runInMainThread(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
-	environment.enqueueEvent(new RunnableEvent(runnable));
+	environment.enqueueEvent(new Environment.RunnableEvent(runnable));
+    }
+
+    public Object runLaterSync(Callable callable)
+    {
+	NullCheck.notNull(callable, "callable");
+	final Environment.CallableEvent event = new Environment.CallableEvent(callable);
+	environment.enqueueEvent(event);
+	try {
+	    event.waitForBeProcessed();
+	}
+	catch(InterruptedException e)
+	{
+	    Thread.currentThread().interrupt();
+	    return null;
+	}
+	return event.getResult();
+    }
+
+    public Object runUiSafelySync(Callable callable)
+    {
+	NullCheck.notNull(callable, "callable");
+	if (environment.isMainCoreThread())
+	{
+	    try {
+		return callable.call(); 
+	    }
+	    catch(Throwable e)
+	    {
+		Log.error(Environment.LOG_COMPONENT, "exception on processing of CallableEvent:" + e.getClass().getName() + ":" + e.getMessage());
+		return null;
+	    }
+	} else
+	    return runLaterSync(callable);
     }
 
     public void reloadComponent(ReloadComponents component)

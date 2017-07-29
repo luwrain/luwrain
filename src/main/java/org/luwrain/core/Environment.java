@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.nio.file.*;
 
 import org.luwrain.core.events.*;
@@ -381,6 +382,8 @@ public class Environment extends EnvironmentAreas
 	try {
 	    if (event instanceof RunnableEvent)
 		return onRunnableEvent((RunnableEvent)event);
+	    if (event instanceof CallableEvent)
+		return onCallableEvent((CallableEvent)event);
 	    if (event instanceof KeyboardEvent)
 		return onKeyboardEvent(Keyboard.translate((KeyboardEvent)event));
 	    if (event instanceof EnvironmentEvent)
@@ -457,7 +460,27 @@ public class Environment extends EnvironmentAreas
 
     private boolean onRunnableEvent(RunnableEvent event)
     {
-	event.runnable().run();
+	NullCheck.notNull(event, "event");
+	try {
+	    event.runnable.run();
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "exception on processing of RunnableEvent:" + e.getClass().getName() + ":" + e.getMessage());
+	}
+	return true;
+    }
+
+    private boolean onCallableEvent(CallableEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	try {
+	    event.setResult(event.callable.call());
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "exception on processing of CallableEvent:" + e.getClass().getName() + ":" + e.getMessage());
+	}
 	return true;
     }
 
@@ -1051,6 +1074,39 @@ switch(type)
 	    break;
 	default:
 	    Log.debug("core", "unsupported event response type:" + type.toString());
+	}
+    }
+
+    static class RunnableEvent extends Event
+    {
+	final Runnable runnable;
+
+	public RunnableEvent(Runnable runnable)
+	{
+	    NullCheck.notNull(runnable, "runnable");
+	    this.runnable = runnable;
+	}
+    }
+
+    static class CallableEvent extends Event
+    {
+	final Callable callable;
+	private Object result = null;
+
+	CallableEvent(Callable callable)
+	{
+	    NullCheck.notNull(callable, "callable");
+	    this.callable = callable;
+	}
+
+	void setResult(Object result)
+	{
+	    this.result = result;
+	}
+
+	Object getResult()
+	{
+	    return result;
 	}
     }
 }
