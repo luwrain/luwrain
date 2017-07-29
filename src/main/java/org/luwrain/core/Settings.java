@@ -192,6 +192,7 @@ public interface DateTime
 
     public interface SoundScheme 
     {
+	String getAnnouncement(String defValue);
 	String getBlocked(String defValue);
 	String getCancel(String defValue);
 	String getChatMessage(String defValue);
@@ -226,10 +227,13 @@ public interface DateTime
 	String getPaste(String defValue);
 	String getRegionPoint(String defValue);
 	String getSearch(String defValue);
+	String getSelected(String defValue);
 	String getShutdown(String defValue);
 	String getStartup(String defValue);
 	String getTermBell(String defValue);
+	String getUnselected(String defValue);
 	String getTableCell(String defValue);
+	void setAnnouncement(String defValue);
 	void setBlocked(String value);
 	void setCancel(String value);
 	void setChatMessage(String value);
@@ -264,10 +268,12 @@ public interface DateTime
 	void setPaste(String value);
 	void setRegionPoint(String value);
 	void setSearch(String value);
+	void setSelected(String defValue);
 	void setShutdown(String value);
 	void setStartup(String value);
 	void setTermBell(String value);
 	void setTableCell(String value);
+	void setUnselected(String defValue);
     }
 
     public interface Braille

@@ -71,6 +71,7 @@ final OperatingSystem os;
 	soundManager.startingMode();
 	workers.doWork();
 	eventLoop(mainStopCondition);
+	workers.finish();
 	playSound(Sounds.SHUTDOWN);
 	    try {
 		Thread.sleep(2500);//FIXME:

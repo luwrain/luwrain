@@ -22,6 +22,7 @@ import java.util.concurrent.*;
 class WorkerManager
 {
     private final Map<String, Entry> workers = new HashMap<String, Entry>();
+    private volatile boolean continueWork = true;
 
     boolean add(String name, Worker worker)
     {
@@ -37,7 +38,7 @@ class WorkerManager
     {
 	new Thread(()->{
 		int counter = 0;
-		while(true)
+		while(continueWork)
 		{
 		    for(Map.Entry<String, Entry> entry: workers.entrySet())
 		    {
@@ -61,8 +62,14 @@ class WorkerManager
 			Thread.currentThread().interrupt();
 			return;
 		    }
+		    ++counter;
 		}
 	}).start();
+    }
+
+    void finish()
+    {
+	continueWork = false;
     }
 
         static private class Entry 

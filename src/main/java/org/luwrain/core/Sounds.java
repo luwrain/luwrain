@@ -18,6 +18,7 @@ package org.luwrain.core;
 
 public enum Sounds
 {
+    ANNOUNCEMENT,
     BLOCKED,
     CANCEL,
     CHAT_MESSAGE,
@@ -52,8 +53,10 @@ public enum Sounds
     PASTE,
     REGION_POINT,
     SEARCH,
+    SELECTED,
     SHUTDOWN,
     STARTUP,
-    TERM_BELL,
     TABLE_CELL,
+    TERM_BELL,
+    UNSELECTED,
 }

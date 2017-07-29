@@ -120,11 +120,9 @@ private SourceDataLine audioLine = null;
 	final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(registry);
 	setSoundFile(dataDir, scheme.getEventNotProcessed(""), Sounds.EVENT_NOT_PROCESSED);
 	setSoundFile(dataDir, scheme.getEndOfLine(""), Sounds.END_OF_LINE);
-
 	setSoundFile(dataDir, scheme.getEmptyLine(""), Sounds.EMPTY_LINE);
-
+	setSoundFile(dataDir, scheme.getAnnouncement(""), Sounds.ANNOUNCEMENT);
 	setSoundFile(dataDir, scheme.getChatMessage(""), Sounds.CHAT_MESSAGE);
-
 	setSoundFile(dataDir, scheme.getNoApplications(""), Sounds.NO_APPLICATIONS);
 	setSoundFile(dataDir, scheme.getStartup(""), Sounds.STARTUP);
 	setSoundFile(dataDir, scheme.getMessage(""), Sounds.MESSAGE);
@@ -153,11 +151,13 @@ private SourceDataLine audioLine = null;
 	setSoundFile(dataDir, scheme.getDocSection(""), Sounds.DOC_SECTION);
 	setSoundFile(dataDir, scheme.getNoContent(""), Sounds.NO_CONTENT);
 	setSoundFile(dataDir, scheme.getSearch(""), Sounds.SEARCH);
+	setSoundFile(dataDir, scheme.getSelected(""), Sounds.SELECTED);
 	setSoundFile(dataDir, scheme.getDeleted(""), Sounds.DELETED);
 	setSoundFile(dataDir, scheme.getCancel(""), Sounds.CANCEL);
 	setSoundFile(dataDir, scheme.getRegionPoint(""), Sounds.REGION_POINT);
 	setSoundFile(dataDir, scheme.getPaste(""), Sounds.PASTE);
 	setSoundFile(dataDir, scheme.getCopied(""), Sounds.COPIED);
+	setSoundFile(dataDir, scheme.getUnselected(""), Sounds.UNSELECTED);
 	setSoundFile(dataDir, scheme.getCut(""), Sounds.CUT);
     }
 
