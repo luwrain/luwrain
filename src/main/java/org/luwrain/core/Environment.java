@@ -750,16 +750,51 @@ onNewAreasLayout();
 	case Luwrain.MESSAGE_DONE:
 	    message(text, Sounds.DONE);
 	    break;
-	case Luwrain.MESSAGE_NOT_READY:
+	case Luwrain.MESSAGE_ANNOUNCEMENT:
+	    message(text, Sounds.ANNOUNCEMENT);
+	    break;
+	case Luwrain.MESSAGE_UNAVAILABLE:
 	    message(text, Sounds.BLOCKED);
 	    break;
 	case Luwrain.MESSAGE_NOSOUND:
-	    message(text, null);
+	    message(text, Sounds.MESSAGE);//FIXME:
 	    break;
 	default:
 	    message(text,Sounds.MESSAGE);
 	}
     }
+
+    public void message(String text, Luwrain.MessageType messageType)
+    {
+	mainCoreThreadOnly();
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(messageType, "messageType");
+	switch(messageType)
+	{
+	case ERROR:
+	    message(text, Sounds.ERROR);
+	    break;
+	case OK:
+	    message(text, Sounds.OK);
+	    break;
+	case DONE:
+	    message(text, Sounds.DONE);
+	    break;
+	case ANNOUNCEMENT:
+	    message(text, Sounds.ANNOUNCEMENT);
+	    break;
+	case UNAVAILABLE:
+	    message(text, Sounds.BLOCKED);
+	    break;
+	case NONE:
+	    message(text, Sounds.MESSAGE);//FIXME:
+	    break;
+	    case REGULAR:
+	default:
+	    message(text,Sounds.MESSAGE);
+	}
+    }
+
 
     public void message(String text, Sounds sound)
     {

@@ -35,9 +35,20 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     static public final int MESSAGE_REGULAR = 0;
     static public final int MESSAGE_OK = 1;
     static public final int MESSAGE_DONE = 2;
-    static public final int MESSAGE_NOT_READY = 3;
+    static public final int MESSAGE_UNAVAILABLE = 3;
     static public final int MESSAGE_ERROR = 4;
     static public final int MESSAGE_NOSOUND = 5;
+    static public final int MESSAGE_ANNOUNCEMENT = 6;
+
+    public enum MessageType {
+	ANNOUNCEMENT,
+	DONE,
+	ERROR,
+	NONE,
+	OK,
+	REGULAR,
+	UNAVAILABLE,
+    };
 
     public enum AreaTextType {
 	REGION,
@@ -207,9 +218,22 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     {
 	NullCheck.notNull(text, "text");
 	if (text.trim().isEmpty())
+	    return;
 	    runUiSafely(()->{
 		    environment.getBraille().textToSpeak(text);
 	environment.message(text, semantic);
+		});
+    }
+
+    public void message(String text, MessageType messageType)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(messageType, "messageType");
+	if (text.trim().isEmpty())
+	    return;
+	    runUiSafely(()->{
+		    environment.getBraille().textToSpeak(text);
+	environment.message(text, messageType);
 		});
     }
 
@@ -217,6 +241,8 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(sound, "sound");
+	if (text.trim().isEmpty())
+	    return;
 	runUiSafely(()->{
 		environment.getBraille().textToSpeak(text);
 		environment.message(text, sound);

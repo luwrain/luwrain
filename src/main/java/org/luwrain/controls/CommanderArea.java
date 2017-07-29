@@ -346,7 +346,9 @@ public class CommanderArea<E> extends ListArea
 	if (wrapper == null || wrapper.type == EntryType.PARENT)
 	    return false;
 	wrapper.toggleMark(); 
-
+	if (wrapper.isMarked())
+	    context.say("выделено", Sounds.SELECTED); else //FIXME:
+	    context.say("не выделено", Sounds.UNSELECTED); //FIXME:
 	return true;
     }
 
