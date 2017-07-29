@@ -83,7 +83,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected boolean needForIntroduction = false;
     protected boolean introduceApp = false;
     private final Thread mainCoreThread;
-
+    protected final WorkerManager workers = new WorkerManager();
     protected Base(CmdLine cmdLine, Registry registry,
 			      org.luwrain.base.CoreProperties coreProps, String lang)
     {

@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 
 class WorkerManager
 {
-    private TreeMap<String, Entry> workers = new TreeMap<String, Entry>();
+    private final Map<String, Entry> workers = new HashMap<String, Entry>();
 
     boolean add(String name, Worker worker)
     {
@@ -50,9 +50,10 @@ class WorkerManager
 			    continue;
 			if (counter >= delay && (counter - delay) % period == 0)
 			{
-			    //Launching
+			    e.task = new FutureTask(e.worker, null);
+			    e.executor.execute(e.task);
 			}
-	    }
+		    } //for(entries);
 		    try {
 			Thread.sleep(1000);
 		    } catch (InterruptedException ie)
@@ -64,14 +65,12 @@ class WorkerManager
 	}).start();
     }
 
-        static class Entry 
+        static private class Entry 
     {
 	final ExecutorService executor = Executors.newSingleThreadExecutor();
-
 final String name;
 final Worker worker;
 	FutureTask task = null;
-
 
 Entry(String name, Worker worker)
 	{
@@ -81,6 +80,4 @@ Entry(String name, Worker worker)
 	    this.worker = worker;
 	}
     }
-
-
 }

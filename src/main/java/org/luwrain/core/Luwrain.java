@@ -635,7 +635,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     {
 	NullCheck.notEmpty(cmd, "cmd");
 	NullCheck.notNull(dir, "dir");
-	return environment.os().runOsCommand(cmd, (!dir.isEmpty())?dir:getFileProperty("luwrain.dir.userhome").getAbsolutePath(), output, listener);
+	return environment.os.runOsCommand(cmd, (!dir.isEmpty())?dir:getFileProperty("luwrain.dir.userhome").getAbsolutePath(), output, listener);
     }
 
     @Override public String getProperty(String propName)
@@ -693,7 +693,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	default:
 	    if (propName.startsWith("luwrain.os.") || propName.startsWith("luwrain.hardware."))
 	    {
-		final String res = environment.os().getProperty(propName);
+		final String res = environment.os.getProperty(propName);
 		return res != null?res:"";
 	    }
 	    return environment.getCoreProperties().getProperty(propName);

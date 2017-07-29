@@ -32,7 +32,7 @@ public class Environment extends EnvironmentAreas
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
 
     private AreaListening listening = null;
-    private final OperatingSystem os;
+final OperatingSystem os;
     private final Interaction interaction;
 
     private org.luwrain.core.extensions.Manager extensions;
@@ -58,7 +58,7 @@ public class Environment extends EnvironmentAreas
 	NullCheck.notNull(interaction, "interaction");
 	this.os = os;
 	this.interaction = interaction;
-	interfaces.createObjForEnvironment(this);
+	this.interfaces.createObjForEnvironment(this);
 	this.conversations = new org.luwrain.shell.Conversations(getObjForEnvironment(), this);
     }
 
@@ -68,16 +68,8 @@ public class Environment extends EnvironmentAreas
 	interaction.startInputEventsAccepting(this);
 	windowManager.redraw();
 	playSound(Sounds.STARTUP);//FIXME:
-	final String greeting = uiSettings.getLaunchGreeting("");
-	if (!greeting.trim().isEmpty())
-	    try {
-		Thread.sleep(3800);
-		//		speech.speak(greeting, 0, 0);
-	    } catch (InterruptedException ie)
-	    {
-		Thread.currentThread().interrupt();
-	    }
 	soundManager.startingMode();
+	workers.doWork();
 	eventLoop(mainStopCondition);
 	playSound(Sounds.SHUTDOWN);
 	    try {
@@ -905,11 +897,6 @@ onNewAreasLayout();
 	if (command.trim().isEmpty())
 	    return false;
 	return commands.run(command.trim());
-    }
-
-    OperatingSystem os()
-    {
-	return os;
     }
 
     Object getSharedObjectIface(String id)

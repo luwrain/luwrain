@@ -395,7 +395,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(env.getControlPanelFactories(), env.os().getHardware());
+		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(env.getControlPanelFactories(), env.os.getHardware());
 		    env.launchApp(app);
 		}
 	    },
@@ -537,7 +537,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final OperatingSystem os = env.os();
+		    final OperatingSystem os = env.os;
 		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() + VOLUME_STEP);
 		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
 		}
@@ -551,7 +551,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final OperatingSystem os = env.os();
+		    final OperatingSystem os = env.os;
 		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() - VOLUME_STEP);
 		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
 		}
@@ -578,7 +578,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.os().shutdown();
+		    env.os.shutdown();
 		}
 	    },
 
@@ -590,7 +590,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.os().reboot();
+		    env.os.reboot();
 		}
 	    },
 
@@ -602,7 +602,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.os().suspend(false);
+		    env.os.suspend(false);
 		}
 	    },
 
