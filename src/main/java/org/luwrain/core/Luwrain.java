@@ -195,22 +195,33 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void message(String text)
     {
 	NullCheck.notNull(text, "text");
-	environment.getBraille().textToSpeak(text);
-	environment.message(text, MESSAGE_REGULAR);
+	if (text.trim().isEmpty())
+	    return;
+	runUiSafely(()->{
+		environment.getBraille().textToSpeak(text);
+		environment.message(text, MESSAGE_REGULAR);
+	    });
     }
 
     public void message(String text, int semantic)
     {
 	NullCheck.notNull(text, "text");
+	if (text.trim().isEmpty())
+	    runUiSafely(()->{
+		    environment.getBraille().textToSpeak(text);
 	environment.message(text, semantic);
+		});
     }
 
     public void message(String text, Sounds sound)
     {
 	NullCheck.notNull(text, "text");
-	environment.message(text, sound);
+	NullCheck.notNull(sound, "sound");
+	runUiSafely(()->{
+		environment.getBraille().textToSpeak(text);
+		environment.message(text, sound);
+	    });
     }
-
 
     /**
      * Notifies the environment that the area gets new position of the hot
@@ -505,6 +516,14 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	environment.enqueueEvent(new Environment.RunnableEvent(runnable));
     }
 
+    public void runUiSafely(Runnable runnable)
+    {
+	NullCheck.notNull(runnable, "runnable");
+	if (!environment.isMainCoreThread())
+	    runInMainThread(runnable); else
+	    runnable.run();
+    }
+
     public Object runLaterSync(Callable callable)
     {
 	NullCheck.notNull(callable, "callable");
@@ -521,7 +540,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	return event.getResult();
     }
 
-    public Object runUiSafelySync(Callable callable)
+    public Object callUiSafely(Callable callable)
     {
 	NullCheck.notNull(callable, "callable");
 	if (environment.isMainCoreThread())
