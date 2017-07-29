@@ -47,7 +47,8 @@ final OperatingSystem os;
     private final SharedObjectManager sharedObjects = new SharedObjectManager();
     private final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
-    public Settings.UserInterface uiSettings;
+    public Settings.UserInterface uiSettings;//FIXME:final 
+    private volatile boolean wasInputEvents = false;
 
     Environment(CmdLine cmdLine, Registry registry,
 		OperatingSystem os, Interaction interaction, 
@@ -69,6 +70,7 @@ final OperatingSystem os;
 	windowManager.redraw();
 	playSound(Sounds.STARTUP);//FIXME:
 	soundManager.startingMode();
+	greetingWorker(uiSettings.getLaunchGreeting(""));
 	workers.doWork();
 	eventLoop(mainStopCondition);
 	workers.finish();
@@ -82,6 +84,28 @@ final OperatingSystem os;
 	interaction.stopInputEventsAccepting();
 	extensions.close();
 	Log.debug("core", "environment closed");
+    }
+
+    private void greetingWorker(String text)
+    {
+	NullCheck.notNull(text, "text");
+	if (text.trim().isEmpty())
+	    return;
+	workers.add("launch-greeting", new Worker(){
+		public int getLaunchPeriod()
+		{
+		    return 60;
+		}
+		public int getFirstLaunchDelay()
+		{
+		    return 15;
+		}
+		public void run()
+		{
+		    if (!wasInputEvents)
+			getObjForEnvironment().message(text, Luwrain.MessageType.ANNOUNCEMENT);
+		}
+	    });
     }
 
     private void init()
@@ -480,6 +504,7 @@ final OperatingSystem os;
     private boolean onKeyboardEvent(KeyboardEvent event)
     {
 	stopAreaListening();
+	wasInputEvents = true;
 	if (keyboardEventForEnvironment(event))
 	    return true;
 	switch(popupBlocking())
