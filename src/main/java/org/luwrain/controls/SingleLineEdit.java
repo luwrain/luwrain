@@ -81,6 +81,8 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	{
 	case CLIPBOARD_PASTE:
 	    return onClipboardPaste();
+	case CLEAR:
+	    return onClear();
 	default:
 	return clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), 0);
 	}
@@ -230,6 +232,14 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	model.setHotPointX(fromPos);
 	return true;
     }
+
+    protected boolean onClear()
+    {
+	model.setLine("");
+	model.setHotPointX(0);
+	return true;
+    }
+
 
 protected boolean onClipboardPaste()
     {

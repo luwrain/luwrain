@@ -42,7 +42,6 @@ public class ListPopupBase extends ListArea implements Popup, PopupClosingTransl
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	System.out.println(event.toString());
 	if (closing.onKeyboardEvent(event))
 	    return true;
 	return super.onKeyboardEvent(event);

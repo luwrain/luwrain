@@ -47,7 +47,7 @@ public class FilePopup extends EditListPopup
 	this.acceptance = acceptance;
 	if (!defaultDir.isDirectory())
 	    throw new IllegalArgumentException("" + defaultDir.toString() + " must address a directory");
-	if (defaultDir.isAbsolute())
+	if (!defaultDir.isAbsolute())
 	    throw new IllegalArgumentException("" + defaultDir + " must be absolute");
     }
 

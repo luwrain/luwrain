@@ -254,7 +254,7 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)))
-			env.message(luwrain.i18n().getStaticStr("LinesCopied"), Sounds.COPIED); else
+			env.playSound(Sounds.COPIED); else
 			env.eventNotProcessedMessage();
 		}
 	    },
@@ -305,7 +305,7 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_PASTE)))
-			env.message(luwrain.i18n().getStaticStr("LinesInserted"), Sounds.PASTE); else
+			env.playSound(Sounds.PASTE); else
 			env.eventNotProcessedMessage();
 		}
 	    },
@@ -322,7 +322,7 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)))
-			env.message("Очищено", Sounds.DELETED); else//FIXME
+			env.playSound(Sounds.DELETED); else
 			env.eventNotProcessedMessage();
 		}
 	    },
