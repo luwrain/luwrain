@@ -31,7 +31,7 @@ public interface UpdateNotification
 
     protected Area additionalArea = null;
     protected Position additionalAreaPos = null;
-    protected Area tempArea = null;
+    protected AreaLayout tempLayout = null;
 
     public AreaLayoutHelper(UpdateNotification notification)
     {
@@ -112,27 +112,34 @@ public interface UpdateNotification
     public void openTempArea(Area area)
     {
 	NullCheck.notNull(area, "area");
-	tempArea = area;
+	tempLayout = new AreaLayout(area);
 	notification.onLayoutUpdate();
     }
 
-    public void closeTempArea()
+    public void openTempLayout(AreaLayout layout)
     {
-	if (tempArea == null)
+	NullCheck.notNull(layout, "layout");
+	tempLayout = layout;
+	notification.onLayoutUpdate();
+    }
+
+    public void closeTempLayout()
+    {
+	if (tempLayout == null)
 	    return;
-	tempArea = null;
+	tempLayout = null;
 	notification.onLayoutUpdate();
     }
 
-    public Area getTempArea()
+    public AreaLayout getTempLayout()
     {
-	return tempArea;
+	return tempLayout;
     }
 
     public AreaLayout getLayout()
     {
-	if (tempArea != null)
-	    return new AreaLayout(tempArea);
+	if (tempLayout != null)
+	    return tempLayout;
 	if (basicLayout != null)
 	    return basicLayout;
 	if (basicArea == null)

@@ -17,9 +17,9 @@
 package org.luwrain.core;
 
 /**
- * A general interface for each object suitable for running in LUWRAIN as
- * an application. Applications in LUWRAIN are objects providing some
- * interactive features to the user.  They offer a set of interactive
+ * A general interface for objects suitable for running in LUWRAIN as
+ * an application. Applications in LUWRAIN are objects which provide some
+ * interactive features to users.  They offer a set of interactive
  * areas forming a working space.
  * <p>
  * The application instance is created by some client code with only very
