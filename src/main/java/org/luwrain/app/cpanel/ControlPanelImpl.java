@@ -53,6 +53,9 @@ app.refreshSectionsTree();
 	if (event.isSpecial() && !event.isModified())
 	    switch(event.getSpecial())
 	    {
+	    case ESCAPE:
+		close();
+		return true;
 	    case TAB:
 		gotoSectionsTree();
 		return true;
@@ -63,6 +66,8 @@ app.refreshSectionsTree();
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return false;
 	switch(event.getCode())
 	{
 	case CLOSE:

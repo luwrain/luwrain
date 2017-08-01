@@ -69,19 +69,27 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	treeParams.clickHandler = (area, obj)->openSection(obj);
 
 	sectionsArea = new TreeArea(treeParams){
+
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())
 			switch (event.getSpecial())
 			{
+			case ESCAPE:
+			    closeApp();
+			    return true;
 			case TAB:
 			    return gotoOptions();
 			}
 		    return super.onKeyboardEvent(event);
 		}
+
 		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
+		    NullCheck.notNull(event, "event");
+		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+			return super.onEnvironmentEvent(event);
 		    switch (event.getCode())
 		    {
 		    case ACTION:
