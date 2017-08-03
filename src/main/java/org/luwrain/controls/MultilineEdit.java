@@ -82,7 +82,14 @@ public class MultilineEdit
 	this.environment = environment;
 	this.model = model;
 	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(model, ()->environment.getClipboard()){
-		//FIXME:copy with deleting
+		@Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
+		{
+		    if (!super.onClipboardCopy(fromX, fromY, toX, toY, false))
+			return false;
+		    if (!withDeleting)
+			return true;
+		    return model.deleteRegion(fromX, fromY, toX, toY);
+		}
 		@Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
 		{
 		    return model.deleteRegion(fromX, fromY, toX, toY);
