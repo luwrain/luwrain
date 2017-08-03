@@ -92,6 +92,7 @@ public interface ClipboardObjects
 	public Appearance appearance;
 	public ListClickHandler clickHandler;
 	public Transition transition = new ListUtils.DefaultTransition();
+	public ClipboardObjects clipboardObjects = new ListUtils.DefaultClipboardObjects();
 	public String name;
 	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
     }
@@ -103,6 +104,7 @@ public interface ClipboardObjects
     protected final Model listModel;
     protected final Appearance listAppearance;
     protected final Transition listTransition;
+    protected final ClipboardObjects listClipboardObjects;
     protected final Set<Flags> listFlags;
     protected ListClickHandler listClickHandler;
 
@@ -116,12 +118,14 @@ public interface ClipboardObjects
 	NullCheck.notNull(params.model, "params.model");
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.transition, "params.transition");
+	NullCheck.notNull(params.clipboardObjects, "params.clipboardObjects");
 	NullCheck.notNull(params.name, "params.name");
 	NullCheck.notNull(params.flags, "params.flags");
 	this.context = params.context;
 	this.listModel = params.model;
 	this.listAppearance = params.appearance;
 	this.listTransition = params.transition;
+	this.listClipboardObjects = params.clipboardObjects;
 	this.listClickHandler = params.clickHandler;
 	this.areaName = params.name;
 	this.listFlags = params.flags;
@@ -877,17 +881,16 @@ protected boolean onAltHome(KeyboardEvent event)
     {
 	if (listModel.getItemCount() < 0)
 	    return false;
-	final List<String> res = new LinkedList<String>();
+	final List<Serializable> res = new LinkedList<Serializable>();
 	final int count = listModel.getItemCount();
 	for(int i = 0;i < count;++i)
 	{
-	    final String line = listAppearance.getScreenAppearance(listModel.getItem(i), EnumSet.of(Appearance.Flags.CLIPBOARD));
-	    if (line == null)
+	    final Serializable obj = listClipboardObjects.getClipboardObject(this, listModel, listAppearance, i);
+	    if (obj == null)
 		return false;
-	    res.add(line );
+	    res.add(obj);
 	}
-	res.add("");
-	context.getClipboard().set(res.toArray(new String[res.size()]));
+	context.getClipboard().set(res.toArray(new Serializable[res.size()]));
 	return true;
     }
 

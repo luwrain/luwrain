@@ -85,7 +85,7 @@ public class MultilineEdit
 		//FIXME:copy with deleting
 		@Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
 		{
-		    return MultilineEdit.this.onDeleteRegion(fromX, fromY, toX, toY);
+		    return model.deleteRegion(fromX, fromY, toX, toY);
 		}
 	    });
     }
@@ -118,7 +118,13 @@ return onEnter(event);
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
 	    return false;
+	switch(event.getCode())
+	{
+	case CLIPBOARD_PASTE:
+	    return onClipboardPaste();
+	default:
 	return clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY());
+	}
     }
 
     public boolean onAreaQuery(AreaQuery query)
@@ -207,16 +213,8 @@ return onEnter(event);
 	    return true;
     }
 
-    protected boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
+    protected boolean onClipboardPaste()
     {
-	return model.deleteRegion(fromX, fromY, toX, toY);
-}
-
-    /*
-    protected boolean insertRegion(int x, int y,
-					 RegionContent data)
-    {
-	return model.insertRegion(x, y, data.strings());
+	return model.insertRegion(model.getHotPointX(), model.getHotPointY(), environment.getClipboard().getStrings());
     }
-    */
 }

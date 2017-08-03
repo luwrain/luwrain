@@ -347,17 +347,16 @@ mark(o);
 	}
     }
 
-static public class DefaultClipboardObjects implements ListArea.ClipboardObjects
-{
-    @Override public Serializable getClipboardObject(ListArea listArea, ListArea.Model model, ListArea.Appearance appearance, int index)
+    static public class DefaultClipboardObjects implements ListArea.ClipboardObjects
     {
-	NullCheck.notNull(model, "model");
-NullCheck.notNull(appearance, "appearance");
-	final Object obj = model.getItem(index);
-	if (obj == null)
-	    return null;
-	return appearance.getScreenAppearance(obj, EnumSet.of(ListArea.Appearance.Flags.CLIPBOARD));
+	@Override public Serializable getClipboardObject(ListArea listArea, ListArea.Model model, ListArea.Appearance appearance, int index)
+	{
+	    NullCheck.notNull(model, "model");
+	    NullCheck.notNull(appearance, "appearance");
+	    final Object obj = model.getItem(index);
+	    if (obj == null)
+		return null;
+	    return appearance.getScreenAppearance(obj, EnumSet.of(ListArea.Appearance.Flags.CLIPBOARD));
+	}
     }
-}
-
 }
