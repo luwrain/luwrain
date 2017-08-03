@@ -14,16 +14,17 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.shell;
 
 import java.util.*;
 
+import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 
-class ContextMenu extends ListPopup
+public class ContextMenu extends ListPopup
 {
-    ContextMenu(Luwrain luwrain, Action[] actions)
+    public ContextMenu(Luwrain luwrain, Action[] actions)
     {
 	super(luwrain, constructParams(luwrain, actions), EnumSet.noneOf(Popup.Flags.class));
     }

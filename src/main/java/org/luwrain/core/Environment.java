@@ -1029,7 +1029,7 @@ onNewAreasLayout();
 	    areaInaccessibleMessage();
 	    return;
 	}
-	final ContextMenu menu = new ContextMenu(getObjForEnvironment(), actions);
+	final org.luwrain.shell.ContextMenu menu = new org.luwrain.shell.ContextMenu(getObjForEnvironment(), actions);
 	popup(null, menu, Popup.Position.RIGHT, ()->menu.isPopupActive(), true, true);
 	if (menu.wasCancelled())
 	    return;
