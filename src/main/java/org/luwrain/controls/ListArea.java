@@ -908,8 +908,20 @@ protected boolean onAltHome(KeyboardEvent event)
     {
 	if (withDeleting)
 	    return false;
-	if (listModel.getItemCount() < 0)
+	if (listModel.getItemCount() <= 0)
 	    return false;
+
+	if (fromX < 0 || fromY < 0 ||
+	    (fromX == toX && fromY == toY))
+	{
+	    if (toY >= listModel.getItemCount())
+		return false;
+	    final Serializable obj = listClipboardObjects.getClipboardObject(this, listModel, listAppearance, toY);
+	    if (obj == null)
+		return false;
+	    context.getClipboard().set(obj);
+	    return true;
+	}
 	final int modelFromY = getItemIndexOnLine(fromY);
 	final int modelToY = getItemIndexOnLine(toY);
 	if (modelFromY >= listModel.getItemCount() || modelToY > listModel.getItemCount())
@@ -926,13 +938,15 @@ protected boolean onAltHome(KeyboardEvent event)
 	    context.getClipboard().set(line.substring(fromPos, toPos));
 	    return true;
 	}
-	final List<String> res = new LinkedList<String>();
+	final List<Serializable> res = new LinkedList<Serializable>();
 	for(int i = modelFromY;i < modelToY;++i)
 	{
-	    final String line = listAppearance.getScreenAppearance(listModel.getItem(i), NONE_APPEARANCE_FLAGS);
-	    res.add(line != null?line:"");
+	    final Serializable obj = listClipboardObjects.getClipboardObject(this, listModel, listAppearance, i);
+	    if (obj == null)
+		return false;
+	    res.add(obj);
 	}
-	res.add("");
+	context.getClipboard().set(res.toArray(new Serializable[res.size()]));
 	return true;
     }
 
