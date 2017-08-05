@@ -103,6 +103,7 @@ core.quit();
 		    NullCheck.notNull(event, "event");
 		    switch(event.getCode())
 		    {
+			//FIXME:CLEAR
 		    case CLOSE:
 			luwrain.silence();
 			luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"), Sounds.NO_APPLICATIONS);
@@ -113,9 +114,18 @@ core.quit();
 			return super.onEnvironmentEvent(event);
 		    }
 		}
+		@Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
+		{
+		    if (fromX < 0 || fromY < 0 ||
+			(fromX == toX && fromY == toY))
+			return onDeleteSingle(toY);
+		    if (fromY == toY)
+		    return false;
+		    return onDeleteMultiple(fromY, toY);
+		}
 		@Override protected String noContentStr()
 		{
-		    return "Рабочий стол пуст";
+		    return "Рабочий стол пуст";//FIXME:
 		}
 		@Override public String getAreaName()
 		{
@@ -166,20 +176,38 @@ core.quit();
 	return true;
     }
 
-    private boolean onDeleteSingle(int y)
+    private boolean onDeleteSingle(int lineIndex)
     {
-	if (area.selected() == null)
-	    return false;
-	final int index = y - model.getFirstUniRefPos();
+	final int index = lineIndex - model.getFirstUniRefPos();
 	if (index < 0 || index >= uniRefList.size())
 	    return false;
-	if (conversations != null && !conversations.deleteDesktopItemConfirmation())
+	if (conversations != null && !conversations.deleteDesktopItemConfirmation(uniRefList.get(index).toString()))
 	    return true;
 	uniRefList.remove(index);
 	uniRefList.save();
 	area.refresh();
 	return true;
     }
+
+    private boolean onDeleteMultiple(int fromLineIndex, int toLineIndex)
+    {
+	if (fromLineIndex + 1 == toLineIndex)
+	    return onDeleteSingle(fromLineIndex);
+	final int fromIndex = fromLineIndex - model.getFirstUniRefPos();
+	final int toIndex = toLineIndex - model.getFirstUniRefPos();
+	if (fromIndex < 0 || fromIndex >= uniRefList.size() ||
+	    toIndex < 0 || toIndex > uniRefList.size() ||
+fromIndex >= toIndex)
+	    return false;
+	if (conversations != null && !conversations.deleteDesktopItemsConfirmation(toIndex - fromIndex))
+	    return true;
+	for(int i = fromIndex;i < toIndex;++i)
+	uniRefList.remove(fromIndex);
+	uniRefList.save();
+	area.refresh();
+	return true;
+    }
+
 
     void load()
     {

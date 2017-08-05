@@ -63,14 +63,11 @@ public class Conversations
 		    }
 		}
 	    };
-env.popupIface(popup);
-if (popup.wasCancelled())
+	env.popupIface(popup);
+	if (popup.wasCancelled())
 	    return null;
 	return !popup.text().isEmpty()?popup.text():null;
     }
-
-
-
 
     public File openPopup()
     {
@@ -86,11 +83,23 @@ if (popup.wasCancelled())
 	return popup.result();
     }
 
-    public boolean deleteDesktopItemConfirmation()
+    boolean deleteDesktopItemConfirmation(String name)
+    {
+	NullCheck.notNull(name, "name");
+	final YesNoPopup popup = new YesNoPopup(luwrain, 
+						"Удаление элемента",//FIXME:
+						"Вы действительно хотите удалить элемент \"" + name + "\" с рабочего стола?",//FIXME:
+						false,
+						Popups.DEFAULT_POPUP_FLAGS);
+	env.popupIface(popup);
+	return !popup.wasCancelled() && popup.result();
+    }
+
+    boolean deleteDesktopItemsConfirmation(int count)
     {
 	final YesNoPopup popup = new YesNoPopup(luwrain, 
-						"Удаление элемента",
-"Вы действительно хотите удалить элемент с рабочего стола?",
+						"Удаление элемента",//FIXME:
+						"Вы действительно хотите удалить " + luwrain.i18n().getNumberStr(count, "items") + " с рабочего стола?",//FIXME:
 						false,
 						Popups.DEFAULT_POPUP_FLAGS);
 	env.popupIface(popup);

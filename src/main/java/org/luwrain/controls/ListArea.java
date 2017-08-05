@@ -904,13 +904,12 @@ protected boolean onAltHome(KeyboardEvent event)
 	return true;
     }
 
-@Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
+    @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
     {
 	if (withDeleting)
 	    return false;
 	if (listModel.getItemCount() <= 0)
 	    return false;
-
 	if (fromX < 0 || fromY < 0 ||
 	    (fromX == toX && fromY == toY))
 	{

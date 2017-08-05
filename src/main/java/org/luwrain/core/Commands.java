@@ -237,7 +237,7 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)))
-			env.message(luwrain.i18n().getStaticStr("LinesCopied"), Sounds.COPIED); else
+			env.playSound(Sounds.COPIED); else
 			env.eventNotProcessedMessage();
 		}
 	    },
@@ -288,7 +288,7 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE_REGION)))
-			env.message(luwrain.i18n().getStaticStr("LinesDeleted"), Sounds.DELETED); else
+			env.playSound(Sounds.DELETED); else
 			env.eventNotProcessedMessage();
 		}
 	    },
