@@ -83,7 +83,6 @@ public void ready()
 	};
 
 	area = new ListArea(params) {
-
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -91,7 +90,7 @@ public void ready()
 			switch(event.getSpecial())
 			{ 
 			case ESCAPE:
-core.quit();
+			    core.quit();
 			    return true;
 			case DELETE:
 			    return onDeleteSingle(getHotPointY(), true);
@@ -133,7 +132,7 @@ core.quit();
 			(fromX == toX && fromY == toY))
 			return onDeleteSingle(toY, true);
 		    if (fromY == toY)
-		    return false;
+			return false;
 		    return onDeleteMultiple(fromY, toY, true);
 		}
 		@Override protected String noContentStr()
@@ -145,7 +144,6 @@ core.quit();
 		    return luwrain.i18n().getStaticStr("Desktop");
 		}
 	    };
-
 	area.setListClickHandler((area, index, obj)->{
 		if (!onClick(index, obj))
 		    return false;
@@ -154,7 +152,7 @@ core.quit();
 	    });
     }
 
-    boolean onClick(int index, Object obj)
+    private boolean onClick(int index, Object obj)
     {
 	if (obj == null)
 	    return false;
@@ -210,17 +208,16 @@ core.quit();
 	final int toIndex = toLineIndex - model.getFirstUniRefPos();
 	if (fromIndex < 0 || fromIndex >= uniRefList.size() ||
 	    toIndex < 0 || toIndex > uniRefList.size() ||
-fromIndex >= toIndex)
+	    fromIndex >= toIndex)
 	    return false;
 	if (withConfirmation && conversations != null && !conversations.deleteDesktopItemsConfirmation(toIndex - fromIndex))
 	    return true;
 	for(int i = fromIndex;i < toIndex;++i)
-	uniRefList.remove(fromIndex);
+	    uniRefList.remove(fromIndex);
 	uniRefList.save();
 	area.refresh();
 	return true;
     }
-
 
     void load()
     {
@@ -247,6 +244,11 @@ fromIndex >= toIndex)
     @Override public AreaLayout getAreaLayout()
     {
 	return new AreaLayout(area);
+    }
+
+    @Override public void closeApp()
+    {
+	//Never called
     }
 
     static String[] readIntroduction(Path path)
@@ -456,9 +458,5 @@ if (!flags.contains(Flags.BRIEF))
 		registry.setString(Registry.join(Settings.DESKTOP_UNIREFS_PATH, name), uniRefs[i].getValue());
 	    }
 	}
-    }
-
-    @Override public void closeApp()
-    {
     }
 }
