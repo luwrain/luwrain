@@ -102,7 +102,7 @@ public class ClipboardTranslator
 	{
 	    if (!flags.contains(Flags.ALLOWED_WITHOUT_REGION_POINT))
 		return false;
-	    return provider.onClipboardCopy(-1, -1, hotPointX, hotPointY, false);
+	    return provider.onClipboardCopy(-1, -1, hotPointX, hotPointY, withDeleting);
 	}
 	final int x1;
 	final int y1;

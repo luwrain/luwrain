@@ -94,7 +94,7 @@ public void ready()
 core.quit();
 			    return true;
 			case DELETE:
-			    return onDeleteSingle(getHotPointY());
+			    return onDeleteSingle(getHotPointY(), true);
 			}
 		    return super.onKeyboardEvent(event);
 		}
@@ -114,14 +114,27 @@ core.quit();
 			return super.onEnvironmentEvent(event);
 		    }
 		}
+		@Override public 		boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
+		{
+		    if (fromY >= 0 && fromY == toY && fromX != toX)//trying to cut a part of the item, it is impossible
+			return false;
+		    if (!super.onClipboardCopy(fromX, fromY, toX, toY, false))
+			return false;
+		    if (!withDeleting)
+			return true;
+		    if (fromX < 0 || fromY < 0 ||
+			(fromX == toX && fromY == toY))
+			return onDeleteSingle(toY, false);
+		    return onDeleteMultiple(fromY, toY, false);
+		}
 		@Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
 		{
 		    if (fromX < 0 || fromY < 0 ||
 			(fromX == toX && fromY == toY))
-			return onDeleteSingle(toY);
+			return onDeleteSingle(toY, true);
 		    if (fromY == toY)
 		    return false;
-		    return onDeleteMultiple(fromY, toY);
+		    return onDeleteMultiple(fromY, toY, true);
 		}
 		@Override protected String noContentStr()
 		{
@@ -176,12 +189,12 @@ core.quit();
 	return true;
     }
 
-    private boolean onDeleteSingle(int lineIndex)
+    private boolean onDeleteSingle(int lineIndex, boolean withConfirmation)
     {
 	final int index = lineIndex - model.getFirstUniRefPos();
 	if (index < 0 || index >= uniRefList.size())
 	    return false;
-	if (conversations != null && !conversations.deleteDesktopItemConfirmation(uniRefList.get(index).toString()))
+	if (withConfirmation && conversations != null && !conversations.deleteDesktopItemConfirmation(uniRefList.get(index).toString()))
 	    return true;
 	uniRefList.remove(index);
 	uniRefList.save();
@@ -189,17 +202,17 @@ core.quit();
 	return true;
     }
 
-    private boolean onDeleteMultiple(int fromLineIndex, int toLineIndex)
+    private boolean onDeleteMultiple(int fromLineIndex, int toLineIndex, boolean withConfirmation)
     {
 	if (fromLineIndex + 1 == toLineIndex)
-	    return onDeleteSingle(fromLineIndex);
+	    return onDeleteSingle(fromLineIndex, withConfirmation);
 	final int fromIndex = fromLineIndex - model.getFirstUniRefPos();
 	final int toIndex = toLineIndex - model.getFirstUniRefPos();
 	if (fromIndex < 0 || fromIndex >= uniRefList.size() ||
 	    toIndex < 0 || toIndex > uniRefList.size() ||
 fromIndex >= toIndex)
 	    return false;
-	if (conversations != null && !conversations.deleteDesktopItemsConfirmation(toIndex - fromIndex))
+	if (withConfirmation && conversations != null && !conversations.deleteDesktopItemsConfirmation(toIndex - fromIndex))
 	    return true;
 	for(int i = fromIndex;i < toIndex;++i)
 	uniRefList.remove(fromIndex);

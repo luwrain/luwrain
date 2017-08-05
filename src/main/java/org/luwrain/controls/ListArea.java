@@ -239,12 +239,13 @@ public interface ClipboardObjects
 	return true;
     }
 
+    //returns the index for the one additional item to be
     public int getItemIndexOnLine(int index)
     {
 	final int linesTop = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	if (index < linesTop)
 	    return -1;
-	if (index - linesTop < listModel.getItemCount())
+	if (index - linesTop <= listModel.getItemCount())
 	    return index - linesTop;
 	return -1;
     }
@@ -913,9 +914,10 @@ protected boolean onAltHome(KeyboardEvent event)
 	if (fromX < 0 || fromY < 0 ||
 	    (fromX == toX && fromY == toY))
 	{
-	    if (toY >= listModel.getItemCount())
+	    final int index = getItemIndexOnLine(toY);
+	    if (index >= listModel.getItemCount())
 		return false;
-	    final Serializable obj = listClipboardObjects.getClipboardObject(this, listModel, listAppearance, toY);
+	    final Serializable obj = listClipboardObjects.getClipboardObject(this, listModel, listAppearance, index);
 	    if (obj == null)
 		return false;
 	    context.getClipboard().set(obj);
