@@ -74,6 +74,13 @@ public void ready()
 	params.model = this.model;
 	params.appearance = new Appearance(luwrain);
 	params.name = luwrain.i18n().getStaticStr("Desktop");
+	params.clipboardObjects = (area, model, appearance, index)->{
+	    final Object obj = model.getItem(index);
+	    NullCheck.notNull(obj, "obj");
+	    if (obj instanceof UniRefInfo)
+		return ((UniRefInfo)obj).getValue();
+	    return obj.toString();
+	};
 
 	area = new ListArea(params) {
 
@@ -87,11 +94,10 @@ public void ready()
 core.quit();
 			    return true;
 			case DELETE:
-			    return onDeleteImpl(getHotPointX(), getHotPointY());
+			    return onDeleteSingle(getHotPointY());
 			}
 		    return super.onKeyboardEvent(event);
 		}
-
 		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -101,26 +107,16 @@ core.quit();
 			luwrain.silence();
 			luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"), Sounds.NO_APPLICATIONS);
 			return true;
+		    case CLIPBOARD_PASTE:
+			return onClipboardPaste();
 		    default:
 			return super.onEnvironmentEvent(event);
 		    }
 		}
-
 		@Override protected String noContentStr()
 		{
 		    return "Рабочий стол пуст";
 		}
-
-		/*
-		public boolean insertRegion(int x, int y, RegionContent data)//FIXME:
-		{
-		    if (!onInsertImpl(x, y, data))
-			return false;
-		    refresh();
-		    return true;
-		}
-		*/
-
 		@Override public String getAreaName()
 		{
 		    return luwrain.i18n().getStaticStr("Desktop");
@@ -150,31 +146,36 @@ core.quit();
 	if (obj instanceof UniRefInfo)
 	{
 	    final UniRefInfo uniRefInfo = (UniRefInfo)obj;
-	    luwrain.openUniRef(uniRefInfo.value());
+	    luwrain.openUniRef(uniRefInfo.getValue());
 	    return true;
 	}
 	return false;
     }
 
-    boolean onInsertImpl(int x, int y, String[] data)
+    private boolean onClipboardPaste()
     {
-	NullCheck.notNullItems(data, "data");
-	uniRefList.add(y - model.getFirstUniRefPos(), data);
+	if (luwrain.getClipboard().isEmpty())
+	    return false;
+	final int pos = area.getHotPointY() - model.getFirstUniRefPos();
+	if (pos < 0)
+	    return false;
+	if (!uniRefList.addAll(pos, luwrain.getClipboard().getStrings()))
+	    return false;
 	uniRefList.save();
+	area.refresh();
 	return true;
     }
 
-    boolean onDeleteImpl(int x, int y)
+    private boolean onDeleteSingle(int y)
     {
 	if (area.selected() == null)
 	    return false;
 	final int index = y - model.getFirstUniRefPos();
-	if (index < 0)
+	if (index < 0 || index >= uniRefList.size())
 	    return false;
 	if (conversations != null && !conversations.deleteDesktopItemConfirmation())
 	    return true;
-	if (!uniRefList.delete(index))
-	    return false;
+	uniRefList.remove(index);
 	uniRefList.save();
 	area.refresh();
 	return true;
@@ -252,8 +253,8 @@ core.quit();
 	    {
 		final UniRefInfo i = (UniRefInfo)item;
 if (!flags.contains(Flags.BRIEF))
-		luwrain.setEventResponse(DefaultEventResponse.listItem(i.title(), Suggestions.CLICKABLE_LIST_ITEM)); else
-    luwrain.setEventResponse(DefaultEventResponse.listItem(i.title(), null));
+		luwrain.setEventResponse(DefaultEventResponse.listItem(i.getTitle(), Suggestions.CLICKABLE_LIST_ITEM)); else
+    luwrain.setEventResponse(DefaultEventResponse.listItem(i.getTitle(), null));
 		return;
 	    }
 	}
@@ -329,7 +330,7 @@ if (!flags.contains(Flags.BRIEF))
 		}
 	    }
 	    firstUniRefPos = res.size();
-	    final UniRefInfo[] uniRefs = uniRefList.get();
+	    final UniRefInfo[] uniRefs = uniRefList.getAll();
 	    for(UniRefInfo u: uniRefs)
 		res.add(u);
 	    items = res.toArray(new Object[res.size()]);
@@ -351,11 +352,10 @@ if (!flags.contains(Flags.BRIEF))
 	}
     }
 
-    class UniRefList
+    class UniRefList extends Vector<UniRefInfo>
     {
 	private final Luwrain luwrain;
 	private final Registry registry;
-	private UniRefInfo[] uniRefs = new UniRefInfo[0];
 
 	UniRefList(Luwrain luwrain)
 	{
@@ -364,15 +364,30 @@ if (!flags.contains(Flags.BRIEF))
 	    this.registry = luwrain.getRegistry();
 	}
 
-	UniRefInfo[] get()
+	boolean addAll(int pos, String[] values)
 	{
-	    return uniRefs;
+	    NullCheck.notNullItems(values, "values");
+	    if (pos < 0 || pos > size())
+		throw new IllegalArgumentException("Invalid pos (" + pos + ")");
+	final List<UniRefInfo> items = new LinkedList<UniRefInfo>();
+	for(String v: values)
+	{
+	    final UniRefInfo info = luwrain.getUniRefInfo(v);
+	    NullCheck.notNull(info, "info");
+	    items.add(info);
+	}
+	addAll(pos, items);
+	return true;
+	}
+
+	UniRefInfo[] getAll()
+	{
+	    return toArray(new UniRefInfo[size()]);
 	}
 
 	void load()
 	{
 	    final String[] values = registry.getValues(Settings.DESKTOP_UNIREFS_PATH);
-	    final LinkedList<UniRefInfo> res = new LinkedList<UniRefInfo>();
 	    for(String v: values)
 	    {
 		final String path = Registry.join(Settings.DESKTOP_UNIREFS_PATH, v);
@@ -382,63 +397,23 @@ if (!flags.contains(Flags.BRIEF))
 		if (s.isEmpty())
 		    continue;
 		final UniRefInfo uniRef = luwrain.getUniRefInfo(s);
-		if (uniRef != null && !res.contains(uniRef))
-		    res	   .add(uniRef);
+		if (uniRef != null && !contains(uniRef))
+		    add(uniRef);
 	    }
-	    uniRefs = res.toArray(new UniRefInfo[res.size()]);
 	}
 
 	void save()
 	{
-	    final String[] values = registry.getValues(Settings.DESKTOP_UNIREFS_PATH);
-	    if (values != null)
-		for(String v: values)
+		for(String v: registry.getValues(Settings.DESKTOP_UNIREFS_PATH))
 		    registry.deleteValue(Registry.join(Settings.DESKTOP_UNIREFS_PATH, v));
+		final UniRefInfo[] uniRefs = getAll();
 	    for(int i = 0;i < uniRefs.length;++i)
 	    {
 		String name = "" + (i + 1);
 		while (name.length() < 6)
 		    name = "0" + name;
-		registry.setString(Registry.join(Settings.DESKTOP_UNIREFS_PATH, name), uniRefs[i].value());
+		registry.setString(Registry.join(Settings.DESKTOP_UNIREFS_PATH, name), uniRefs[i].getValue());
 	    }
-	}
-
-	void add(int pos, String[] values)
-	{
-	    NullCheck.notNullItems(values, "values");
-	    final LinkedList<UniRefInfo> toAdd = new LinkedList<UniRefInfo>();
-	    for(String v: values)
-	    {
-		final UniRefInfo uniRef = luwrain.getUniRefInfo(v);
-		if (uniRef != null)
-		    toAdd.add(uniRef);
-	    }
-	    if (toAdd.isEmpty())
-		return;
-	    final UniRefInfo[] newItems = toAdd.toArray(new UniRefInfo[toAdd.size()]);
-	    final int newPos = (pos >= 0 && pos <= uniRefs.length)?pos:0;
-	    final LinkedList<UniRefInfo> res = new LinkedList<UniRefInfo>();
-	    for(int i = 0;i < newPos;++i)
-		res.add(uniRefs[i]);
-	    for(UniRefInfo u: newItems)
-		res.add(u);
-	    for(int i = newPos;i < uniRefs.length;++i)
-		res.add(uniRefs[i]);
-	    uniRefs = res.toArray(new UniRefInfo[res.size()]);
-	}
-
-	boolean delete(int pos)
-	{
-	    if (uniRefs == null || uniRefs.length < 1 ||
-		pos < 0 || pos >= uniRefs.length)
-		return false;
-	    final UniRefInfo[] n = new UniRefInfo[uniRefs.length - 1];
-	    for(int i = 0;i < pos;++i)
-		n[i] = uniRefs[i];
-	    for(int i = pos + 1;i < uniRefs.length;++i)
-		n[i - 1] = uniRefs[i];
-	    uniRefs = n;
-	    return true;
 	}
     }
 

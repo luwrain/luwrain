@@ -35,7 +35,7 @@ public final class Clipboard
 	    newObjs[i] = serialize(objs[i]);
 	    if (newObjs[i] == null)
 		return false;
-	    newStrings[i] = objs[i].toString();
+	    newStrings[i] = new String(objs[i].toString());
 	}
 	this.objs = newObjs;
 	this.strings = newStrings;
@@ -84,6 +84,17 @@ public final class Clipboard
 	    b.append(strings[i]);
 	}
 	return new String(b);
+    }
+
+    public boolean isEmpty()
+    {
+	return objs == null || objs.length == 0;
+    }
+
+    public void clear()
+    {
+	this.objs = null;
+	this.strings = null;
     }
 
     private byte[] serialize(Serializable obj)

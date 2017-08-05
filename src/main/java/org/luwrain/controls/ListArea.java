@@ -99,7 +99,7 @@ public interface ClipboardObjects
 
     protected final ControlEnvironment context;
     protected final RegionPoint regionPoint = new RegionPoint();
-    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint);
+    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint, EnumSet.of(ClipboardTranslator.Flags.ALLOWED_EMPTY, ClipboardTranslator.Flags.ALLOWED_WITHOUT_REGION_POINT));
     protected String areaName = "";
     protected final Model listModel;
     protected final Appearance listAppearance;
@@ -256,6 +256,16 @@ public interface ClipboardObjects
 	    return -1;
 	final int linesTop = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	return index + linesTop;
+    }
+
+    public Object getItemOnLine(int lineIndex)
+    {
+	if (lineIndex < 0)
+	    throw new IllegalArgumentException("lineIndex may not be negative (" + lineIndex + ")");
+	final int index = getItemIndexOnLine(lineIndex);
+	if (index < 0 || index >= listModel.getItemCount())
+	    return null;
+	return listModel.getItem(index);
     }
 
     public void reset(boolean announce)

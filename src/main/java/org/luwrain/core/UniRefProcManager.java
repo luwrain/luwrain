@@ -23,7 +23,7 @@ import org.luwrain.core.extensions.*;
 
 class UniRefProcManager
 {
-    private final TreeMap<String, Entry> uniRefProcs = new TreeMap<String, Entry>();
+    private final Map<String, Entry> uniRefProcs = new HashMap<String, Entry>();
 
     boolean add(Luwrain luwrain, UniRefProc uniRefProc)
     {
@@ -46,7 +46,10 @@ class UniRefProcManager
 	    !uniRefProcs.containsKey(uniRefType))
 	    return new UniRefInfo(uniRef);
 	final Entry entry = uniRefProcs.get(uniRefType);
-	return entry.uniRefProc.getUniRefInfo(uniRef);
+final UniRefInfo res = entry.uniRefProc.getUniRefInfo(uniRef);
+if (res == null)
+    return new UniRefInfo(uniRef);
+return res;
     }
 
     boolean open(String uniRef)

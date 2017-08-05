@@ -509,7 +509,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     {
 	NullCheck.notNull(uniRefInfo, "uniRefInfo");
 	NullCheck.notNull(uniRefInfo, "uniRefInfo");
-	return openUniRef(uniRefInfo.value());
+	return openUniRef(uniRefInfo.getValue());
     }
 
     /*

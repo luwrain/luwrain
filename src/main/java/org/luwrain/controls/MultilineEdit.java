@@ -222,6 +222,8 @@ return onEnter(event);
 
     protected boolean onClipboardPaste()
     {
+	if (environment.getClipboard().isEmpty())
+	    return false;
 	return model.insertRegion(model.getHotPointX(), model.getHotPointY(), environment.getClipboard().getStrings());
     }
 }

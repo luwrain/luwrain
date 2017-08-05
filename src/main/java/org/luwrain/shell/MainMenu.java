@@ -107,7 +107,7 @@ context.hint(Hints.NO_ITEMS_ABOVE);
 	case AreaQuery.OBJECT_UNIREF:
 	    if (selected() == null || !(selected() instanceof UniRefInfo))
 		return false;
-	    ((ObjectUniRefQuery)query).answer(((UniRefInfo)selected()).value());
+	    ((ObjectUniRefQuery)query).answer(((UniRefInfo)selected()).getValue());
 	    return true;
 	case AreaQuery.BACKGROUND_SOUND:
 	    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.MAIN_MENU));

@@ -195,6 +195,8 @@ void openFile(String fileName);
      */
     void setActiveArea(Area area);
     String getStaticStr(LangStatic id);
+
+    //Never returns null, doesn't take empty strings
 UniRefInfo getUniRefInfo(String uniRef);
     boolean openUniRef(String uniRef);
     boolean openUniRef(UniRefInfo uniRefInfo);

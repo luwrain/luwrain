@@ -947,7 +947,7 @@ onNewAreasLayout();
 	if (mainMenu.closing.cancelled())
 	    return;
 	final UniRefInfo result = mainMenu.result();
-	openUniRefIface(result.value());
+	openUniRefIface(result.getValue());
     }
 
     boolean runCommand(String command)

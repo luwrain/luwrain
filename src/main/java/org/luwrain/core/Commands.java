@@ -271,7 +271,7 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)))
-			env.message(luwrain.i18n().getStaticStr("LinesCut"), Sounds.CUT); else
+			env.playSound(Sounds.CUT);else
 			env.eventNotProcessedMessage();
 		}
 	    },
@@ -301,6 +301,11 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
+		    if (luwrain.getClipboard().isEmpty())
+		    {
+			env.eventNotProcessedMessage();
+			return;
+		    }
 		    final Area area = env.getValidActiveArea(true);
 		    if (area == null)
 			return;

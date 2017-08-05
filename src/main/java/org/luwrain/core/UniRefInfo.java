@@ -16,50 +16,49 @@
 
 package org.luwrain.core;
 
-public class UniRefInfo implements Comparable
+public final class UniRefInfo implements Comparable
 {
-    private boolean available = false;
-    private String prefix;
-    private String title;
-    private String value;
+    private final boolean available;
+    private final String prefix;
+    private final String title;
+    private final String value;
 
     public UniRefInfo(String value)
     {
-	available = false;
-	this.value = value;
 	NullCheck.notNull(value, "value");
-	prefix = "";
-	title = "";
+	this.available = false;
+	this.value = value;
+	this.prefix = "";
+	this.title = "";
     }
 
-    public UniRefInfo(String value,
-		      String prefix, String title)
+    public UniRefInfo(String value, String prefix, String title)
     {
-	available = true;
-	this.value = value;
-	this.prefix = prefix;
-	this.title = title;
 	NullCheck.notNull(value, "value");
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(title, "title");
+	this.available = true;
+	this.value = value;
+	this.prefix = prefix;
+	this.title = title;
     }
 
-    public boolean available()
+    public boolean isAvailable()
     {
 	return available;
     }
 
-    public String value()
+    public String getValue()
     {
 	return value;
     }
 
-    public String prefix()
+    public String getPrefix()
     {
 	return prefix;
     }
 
-    public String title()
+    public String getTitle()
     {
 	return title;
     }
@@ -68,7 +67,7 @@ public class UniRefInfo implements Comparable
     {
 	if (!available)
 	    return value;
-	if (prefix == null || prefix.trim().isEmpty())
+	if (prefix.isEmpty())
 	    return title;
 	return prefix + " " + title;
     }
@@ -78,7 +77,7 @@ public class UniRefInfo implements Comparable
 	if (o == null || !(o instanceof UniRefInfo))
 	    return false;
 	final UniRefInfo uniRef = (UniRefInfo)o;
-	return value.equals(uniRef.value());
+	return value.equals(uniRef.getValue());
     }
 
     @Override public int compareTo(Object o)
@@ -86,6 +85,6 @@ public class UniRefInfo implements Comparable
 	if (o == null || !(o instanceof UniRefInfo))
 	    return 0;
 	final UniRefInfo uniRef = (UniRefInfo)o;
-	return value.compareTo(uniRef.value());
+	return value.compareTo(uniRef.getValue());
     }
 }
