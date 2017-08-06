@@ -172,8 +172,7 @@ public interface ClipboardObjects
      */
     public final int selectedIndex()
     {
-	final int res = getItemIndexOnLine(hotPointY);
-	return res < listModel.getItemCount()?res:-1;
+	return getExistingItemIndexOnLine(hotPointY);
     }
 
     /**
@@ -272,8 +271,8 @@ public interface ClipboardObjects
     {
 	if (lineIndex < 0)
 	    throw new IllegalArgumentException("lineIndex may not be negative (" + lineIndex + ")");
-	final int index = getItemIndexOnLine(lineIndex);
-	if (index < 0 || index >= listModel.getItemCount())
+	final int index = getExistingItemIndexOnLine(lineIndex);
+	if (index < 0)
 	    return null;
 	return listModel.getItem(index);
     }
@@ -466,8 +465,8 @@ public interface ClipboardObjects
 	    return "";
 	if (isEmpty())
 	    return index == 0?noContentStr():"";
-	final int itemIndex = getItemIndexOnLine(index);
-	if (itemIndex < 0 || itemIndex >= listModel.getItemCount())
+	final int itemIndex = getExistingItemIndexOnLine(index);
+	if (itemIndex < 0)
 	    return "";
 	final Object res = listModel.getItem(itemIndex);
 	return res != null?listAppearance.getScreenAppearance(res, NONE_APPEARANCE_FLAGS):"";
@@ -535,10 +534,10 @@ public interface ClipboardObjects
 newY = getLineCount() - 1;
 	} else
 newY = y;
-	if (getItemIndexOnLine(newY) >= 0  && getItemIndexOnLine(newY) < listModel.getItemCount())
+	if (getExistingItemIndexOnLine(newY) >= 0)
 	    {
 		//Line with item, not empty
-		final Object item = listModel.getItem(getItemIndexOnLine(newY));
+		final Object item = listModel.getItem(getExistingItemIndexOnLine(newY));
 		final int leftBound = listAppearance.getObservableLeftBound(item);
 final int rightBound = listAppearance.getObservableRightBound(item);
 		if (event.precisely() &&
@@ -907,6 +906,8 @@ protected boolean onAltHome(KeyboardEvent event)
 
     @Override public boolean onClipboardCopyAll()
     {
+	if (isEmpty())
+	    return false;
 	if (listModel.getItemCount() < 0)
 	    return false;
 	final List<Serializable> res = new LinkedList<Serializable>();
@@ -924,6 +925,8 @@ protected boolean onAltHome(KeyboardEvent event)
 
     @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
     {
+	if (isEmpty())
+	    return false;
 	if (withDeleting)
 	    return false;
 	if (listModel.getItemCount() <= 0)
@@ -931,8 +934,8 @@ protected boolean onAltHome(KeyboardEvent event)
 	if (fromX < 0 || fromY < 0 ||
 	    (fromX == toX && fromY == toY))
 	{
-	    final int index = getItemIndexOnLine(toY);
-	    if (index >= listModel.getItemCount())
+	    final int index = getExistingItemIndexOnLine(toY);
+	    if (index < 0)
 		return false;
 	    final Serializable obj = listClipboardObjects.getClipboardObject(this, listModel, listAppearance, index);
 	    if (obj == null)
@@ -940,9 +943,9 @@ protected boolean onAltHome(KeyboardEvent event)
 	    context.getClipboard().set(obj);
 	    return true;
 	}
-	final int modelFromY = getItemIndexOnLine(fromY);
-	final int modelToY = getItemIndexOnLine(toY);
-	if (modelFromY >= listModel.getItemCount() || modelToY > listModel.getItemCount())
+	final int modelFromY = getExistingItemIndexOnLine(fromY);
+	final int modelToY = getItemIndexOnLine(toY);//not necessarily existing
+	if (modelFromY < 0 || modelToY < 0)
 	    return false;
 	if (modelFromY == modelToY)
 	{

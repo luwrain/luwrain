@@ -25,6 +25,7 @@ public class EditableListArea extends ListArea
 {
     public interface EditableModel extends Model
     {
+	boolean clearList();
 	boolean addToList(int pos, Clipboard clipboard);
 	boolean removeFromList(int index);
     }
@@ -77,6 +78,15 @@ public class EditableListArea extends ListArea
 	    return super.onEnvironmentEvent(event);
 	switch(event.getCode())
 	{
+	case CLEAR:
+	    if (isEmpty())
+		return false;
+	    if (confirmation != null && !confirmation.confirmDeleting(this, editableListModel, 0, editableListModel.getItemCount()))
+		return true;
+	    if (!editableListModel.clearList())
+		return false;
+	    refresh();
+	    return true;
 	case CLIPBOARD_PASTE:
 	    return onClipboardPaste();
 	default:
@@ -86,6 +96,8 @@ public class EditableListArea extends ListArea
 
     @Override public 		boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
     {
+	if (isEmpty())
+	    return false;
 	if (fromY >= 0 && fromY == toY && fromX != toX)//trying to cut a part of the item, it is impossible
 	    return false;
 	if (!super.onClipboardCopy(fromX, fromY, toX, toY, false))
@@ -100,6 +112,8 @@ public class EditableListArea extends ListArea
 
     @Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
     {
+	if (isEmpty())
+	    return false;
 	if (fromX < 0 || fromY < 0 ||
 	    (fromX == toX && fromY == toY))
 	    return onDeleteSingle(toY, true);
