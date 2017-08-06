@@ -341,13 +341,36 @@ public interface ClipboardObjects
 	}
 	if (previouslySelected != null && select(previouslySelected, false))
 	    return;
-	hotPointY = hotPointY < count?hotPointY :count - 1;
+	hotPointY = Math.min(hotPointY, count - 1);
 	final Object item = listModel.getItem(hotPointY);
 	if (item != null)
 	    hotPointX = listAppearance.getObservableLeftBound(item); else
 	    hotPointX = 0;
 	context.onAreaNewHotPoint(this);
     }
+
+    public void redraw()
+    {
+	final Object previouslySelected = selected();
+	context.onAreaNewContent(this);
+	final int count = listModel.getItemCount();
+	if (count == 0)
+	{
+	    hotPointX = 0;
+	    hotPointY = 0;
+	    context.onAreaNewHotPoint(this);
+	    return;
+	}
+	if (previouslySelected != null && select(previouslySelected, false))
+	    return;
+	hotPointY = Math.min(hotPointY, count - 1);
+	final Object item = listModel.getItem(hotPointY);
+	if (item != null)
+	    hotPointX = listAppearance.getObservableLeftBound(item); else
+	    hotPointX = 0;
+	context.onAreaNewHotPoint(this);
+    }
+
 
     public boolean isEmpty()
     {
@@ -886,7 +909,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	    return false;
 	if (!listClickHandler.onListClick(this, selectedIndex(), selected()))
 	    return false;
-	refresh();
+	redraw();
 	return true;
     }
 
@@ -900,7 +923,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	    return false;
 	if (!listClickHandler.onListClick(this, index, item))
 	    return false;
-	refresh();
+	redraw();
 	return true;
     }
 

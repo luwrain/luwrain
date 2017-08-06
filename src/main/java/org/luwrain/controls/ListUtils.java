@@ -262,6 +262,12 @@ public class ListUtils
 	    return toArray(new Object[size()]);
 	}
 
+	@Override public boolean clearList()
+	{
+	    clear();
+	    return true;
+	}
+
 	@Override public boolean addToList(int pos, Clipboard clipboard)
 	{
 	    NullCheck.notNull(clipboard, "clipboard");
