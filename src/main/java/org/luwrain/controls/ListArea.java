@@ -172,7 +172,8 @@ public interface ClipboardObjects
      */
     public final int selectedIndex()
     {
-	return getItemIndexOnLine(hotPointY);
+	final int res = getItemIndexOnLine(hotPointY);
+	return res < listModel.getItemCount()?res:-1;
     }
 
     /**
@@ -237,6 +238,14 @@ public interface ClipboardObjects
 	}
 	context.onAreaNewHotPoint(this);
 	return true;
+    }
+
+    public int getExistingItemIndexOnLine(int lineIndex)
+    {
+	if (lineIndex < 0)
+	    throw new IllegalArgumentException("lineIndex is negative (" + lineIndex + ")");
+	final int res = getItemIndexOnLine(lineIndex);
+	return res < listModel.getItemCount()?res:-1;
     }
 
     //returns the index for the one additional item to be
@@ -453,6 +462,8 @@ public interface ClipboardObjects
 
     @Override public String getLine(int index)
     {
+	if (index < 0)
+	    return "";
 	if (isEmpty())
 	    return index == 0?noContentStr():"";
 	final int itemIndex = getItemIndexOnLine(index);
@@ -524,7 +535,7 @@ public interface ClipboardObjects
 newY = getLineCount() - 1;
 	} else
 newY = y;
-	    if (getItemIndexOnLine(newY) >= 0)
+	if (getItemIndexOnLine(newY) >= 0  && getItemIndexOnLine(newY) < listModel.getItemCount())
 	    {
 		//Line with item, not empty
 		final Object item = listModel.getItem(getItemIndexOnLine(newY));
@@ -874,7 +885,10 @@ protected boolean onAltHome(KeyboardEvent event)
 	    return false;
 	if (selected() == null || selectedIndex() < 0)
 	    return false;
-	return listClickHandler.onListClick(this, selectedIndex(), selected());
+	if (!listClickHandler.onListClick(this, selectedIndex(), selected()))
+	    return false;
+	refresh();
+	return true;
     }
 
     protected boolean onOk(EnvironmentEvent event)
@@ -885,7 +899,10 @@ protected boolean onAltHome(KeyboardEvent event)
 	final Object item = selected();
 	if (index < 0 || item == null)
 	    return false;
-	    return listClickHandler.onListClick(this, index, item);
+	if (!listClickHandler.onListClick(this, index, item))
+	    return false;
+	refresh();
+	return true;
     }
 
     @Override public boolean onClipboardCopyAll()

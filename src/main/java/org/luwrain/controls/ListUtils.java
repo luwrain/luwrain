@@ -235,8 +235,72 @@ public class ListUtils
 	@Override public void refresh()
 	{
 	}
-
     }
+
+    static public class DefaultEditableModel extends Vector implements EditableListArea.EditableModel
+    {
+	public DefaultEditableModel()
+	{
+	}
+
+	public DefaultEditableModel(Object[] items)
+	{
+	    NullCheck.notNullItems(items, "items");
+	    setItems(items);
+	}
+
+	public void setItems(Object[] items)
+	{
+	    NullCheck.notNullItems(items, "items");
+	    setSize(items.length);
+	    for(int i = 0;i < items.length;++i)
+		set(i, items[i]);
+	}
+
+	public Object[] getItems()
+	{
+	    return toArray(new Object[size()]);
+	}
+
+	@Override public boolean addToList(int pos, Clipboard clipboard)
+	{
+	    NullCheck.notNull(clipboard, "clipboard");
+	    if (pos < 0)
+		throw new IllegalArgumentException("pos may not be negative (" + pos + ")");
+	    if (clipboard.isEmpty())
+		return false;
+	    final List toAdd = new LinkedList();
+	    for(Object o: clipboard.get())
+		toAdd.add(o);
+	    addAll(pos, toAdd);
+	    return true;
+	}
+
+	@Override public boolean removeFromList(int index)
+	{
+	    if (index < 0)
+		throw new IllegalArgumentException("index may not be negative (" + index + ")");
+	    if (index >= size())
+		return false;
+	    remove(index);
+	    return true;
+	}
+
+	@Override public int getItemCount()
+	{
+	    return size();
+	}
+
+	@Override public Object getItem(int index)
+	{
+	    return get(index);
+	}
+
+	@Override public void refresh()
+	{
+	}
+    }
+
 
     static public class DefaultMarksInfo implements MarkableListArea.MarksInfo
     {
