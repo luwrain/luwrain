@@ -100,8 +100,8 @@ setLoadingResultHandler((location, wrappers, selectedIndex, announce)->{
 	    openMountedPartitions();
 	    return true;
 	case OK:
-	    if (opened() == null)
-		result = opened();
+	    if (getSelectedEntry() != null)
+		result = getSelectedEntry();
 	    closing.doOk();
 	    return true;
 	default:
