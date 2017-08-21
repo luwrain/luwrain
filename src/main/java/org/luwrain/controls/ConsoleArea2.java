@@ -38,12 +38,14 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 
     public interface ClickHandler
     {
-	boolean onConsoleClick(ConsoleArea area, int index, Object obj);
+	boolean onConsoleClick(ConsoleArea2 area, int index, Object obj);
     }
 
     public interface InputHandler
     {
-	boolean onConsoleInput(String text);
+	public enum Result {REJECTED, OK, CLEAR_INPUT};
+
+	Result onConsoleInput(String text);
     }
 
     static public class Params
@@ -86,9 +88,14 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	refresh();
     }
 
-    public void setClickHandler(ClickHandler clickHandler)
+    public void setConsoleClickHandler(ClickHandler clickHandler)
     {
 	this.consoleClickHandler = clickHandler;
+    }
+
+    public void setConsoleInputHandler(InputHandler inputHandler)
+    {
+	this.consoleInputHandler = inputHandler;
     }
 
     public void moveHotPointToInput()
@@ -96,10 +103,17 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	setHotPoint(enteringPrefix.length(), getEnteringLineIndex());
     }
 
-    void setEnteringPrefix(String prefix)
+    public void setInputPrefix(String prefix)
     {
 	NullCheck.notNull(prefix, "prefix");
 	this.enteringPrefix = prefix;
+	refresh();
+    }
+
+    public void setInput(String value)
+    {
+	NullCheck.notNull(value, "value");
+	this.enteringText = value;
 	refresh();
     }
 
@@ -112,6 +126,27 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	final String line = getLine(getHotPointY());
 	if (getHotPointX() > line.length())
 	    setHotPointX(line.length());
+    }
+
+    public int getExistingItemIndexOnLine(int lineIndex)
+    {
+	if (lineIndex < 0)
+	    throw new IllegalArgumentException("lineIndex may not be negative (" + lineIndex + ")");
+	switch(inputPos)
+	{
+	case TOP:
+	    if (lineIndex == 0)
+		return -1;
+	    if (lineIndex - 1 < consoleModel.getConsoleItemCount())
+		return lineIndex - 1;
+	    return -1;
+	case BOTTOM:
+	    if (lineIndex < consoleModel.getConsoleItemCount())
+		return lineIndex;
+	    return -1;
+	default:
+	    return -1;
+	}
     }
 
     @Override public int getLineCount()
@@ -163,6 +198,23 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	    if (edit.onKeyboardEvent(event))
 		return true;
 	}
+
+    if (event.isSpecial() && !event.isModified())
+	switch(event.getSpecial())
+	{
+	case ENTER:
+	    {
+		final int index = getExistingItemIndexOnLine(getHotPointY());
+		if (index >= 0)
+		{
+		    if (consoleClickHandler == null)
+			return false;
+		    return consoleClickHandler.onConsoleClick(this, index, consoleModel.getConsoleItem(index));
+		}
+	    }
+	    break;
+	}
+
 	return super.onKeyboardEvent(event);
     }
 
@@ -249,9 +301,17 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
     {
 	if (consoleInputHandler == null || enteringText.isEmpty())
 	    return false;
-	if (!consoleInputHandler.onConsoleInput(enteringText))
+	final InputHandler.Result res = consoleInputHandler.onConsoleInput(enteringText);
+	if (res == null)
 	    return false;
+	switch(res)
+	{
+	case REJECTED:
+	    return false;
+	case CLEAR_INPUT:
 	enteringText = "";
+	break;
+	}
 	refresh();
 	return true;
     }
