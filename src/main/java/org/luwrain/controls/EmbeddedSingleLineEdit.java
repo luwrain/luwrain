@@ -39,14 +39,14 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 				  HotPointControl hotPointInfo, 
 				  int posX, int posY)
     {
+	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(lines, "lines");
+	NullCheck.notNull(hotPointInfo, "hotPointInfo");
 	this.environment = environment;
 	this.lines = lines;
 	this.hotPointInfo = hotPointInfo;
 	this.posX = posX;
 	this.posY = posY;
-	NullCheck.notNull(environment, "environment");
-	NullCheck.notNull(lines, "lines");
-	NullCheck.notNull(hotPointInfo, "hotPointInfo");
 	edit = new SingleLineEdit(environment, this);
     }
 
