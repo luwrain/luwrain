@@ -99,8 +99,19 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
     void setEnteringPrefix(String prefix)
     {
 	NullCheck.notNull(prefix, "prefix");
-this.enteringPrefix = prefix;
+	this.enteringPrefix = prefix;
 	refresh();
+    }
+
+    public void refresh()
+    {
+	edit.setNewPos(enteringPrefix.length(), getEnteringLineIndex());
+	context.onAreaNewContent(this);
+	if (getHotPointY() >= getLineCount())
+	    setHotPointY(getLineCount() - 1);
+	final String line = getLine(getHotPointY());
+	if (getHotPointX() > line.length())
+	    setHotPointX(line.length());
     }
 
     @Override public int getLineCount()
@@ -117,14 +128,14 @@ this.enteringPrefix = prefix;
 	case TOP:
 	    if (index == 0)
 		return enteringPrefix + enteringText;
-	    	    if (index - 1< consoleModel.getConsoleItemCount())
+	    if (index - 1< consoleModel.getConsoleItemCount())
 		return consoleAppearance.getTextAppearance(consoleModel.getConsoleItem(index - 1));
 	    return "";
 	case BOTTOM:
 	    if (index < consoleModel.getConsoleItemCount())
 		return consoleAppearance.getTextAppearance(consoleModel.getConsoleItem(index));
 	    if (index == consoleModel.getConsoleItemCount())
-	    return enteringPrefix + enteringText;
+		return enteringPrefix + enteringText;
 	    return "";
 	default:
 	    return "";
@@ -200,23 +211,23 @@ this.enteringPrefix = prefix;
 	{
 	case BOTTOM:
 	    if (index < consoleModel.getConsoleItemCount())
-	{
-	    consoleAppearance.announceItem(consoleModel.getConsoleItem(index));
-	    return;
-	}
-	if (!line.isEmpty())
-context.say(line ); else
-context.hint(Hints.EMPTY_LINE);
+	    {
+		consoleAppearance.announceItem(consoleModel.getConsoleItem(index));
+		return;
+	    }
+	    if (!line.isEmpty())
+		context.say(line ); else
+		context.hint(Hints.EMPTY_LINE);
 	    return;
 	case TOP:
 	    if (index > 0 && index - 1 < consoleModel.getConsoleItemCount())
-	{
-	    consoleAppearance.announceItem(consoleModel.getConsoleItem(index - 1));
-	    return;
-	}
-	if (!line.isEmpty())
-context.say(line ); else
-context.hint(Hints.EMPTY_LINE);
+	    {
+		consoleAppearance.announceItem(consoleModel.getConsoleItem(index - 1));
+		return;
+	    }
+	    if (!line.isEmpty())
+		context.say(line ); else
+		context.hint(Hints.EMPTY_LINE);
 	    return;
 	}
     }
@@ -243,16 +254,5 @@ context.hint(Hints.EMPTY_LINE);
 	enteringText = "";
 	refresh();
 	return true;
-    }
-
-public void refresh()
-    {
-	edit.setNewPos(enteringPrefix.length(), getEnteringLineIndex());
-context.onAreaNewContent(this);
-	if (getHotPointY() >= getLineCount())
-	    setHotPointY(getLineCount() - 1);
-	final String line = getLine(getHotPointY());
-	if (getHotPointX() > line.length())
-	    setHotPointX(line.length());
     }
 }
