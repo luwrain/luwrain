@@ -51,6 +51,7 @@ public class ListArea  implements Area, ClipboardTranslator.Provider
 
 public interface ClipboardSaver
 {
+    //Use this model only, MarkableListArea may provide another instances
     boolean saveToClipboard(ListArea listArea, Model model, Appearance appearance, int fromIndex, int toIndex, Clipboard clipboard);
 }
 
@@ -936,11 +937,7 @@ protected boolean onAltHome(KeyboardEvent event)
 
     @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
     {
-	if (isEmpty())
-	    return false;
-	if (withDeleting)
-	    return false;
-	if (listModel.getItemCount() <= 0)
+	if (isEmpty() || withDeleting)
 	    return false;
 	if (fromX < 0 || fromY < 0 ||
 	    (fromX == toX && fromY == toY))

@@ -60,8 +60,9 @@ public class MarkableListArea extends ListArea
 	if (!event.isSpecial())
 	    switch(event.getChar())
 	    {
-	    case '!':
+	    case ' ':
 		regionPoint.reset();
+		context.onAreaNewContent(this);
 		return onToggleMark();
 	    }
 	return super.onKeyboardEvent(event);
