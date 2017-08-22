@@ -417,16 +417,32 @@ mark(o);
 	}
     }
 
-    static public class DefaultClipboardObjects implements ListArea.ClipboardObjects
+    static public class DefaultClipboardSaver implements ListArea.ClipboardSaver
     {
-	@Override public Serializable getClipboardObject(ListArea listArea, ListArea.Model model, ListArea.Appearance appearance, int index)
+	@Override public boolean saveToClipboard(ListArea listArea, ListArea.Model model, ListArea.Appearance appearance,
+						    int fromIndex, int toIndex, Clipboard clipboard)
 	{
+	    NullCheck.notNull(listArea, "listArea");
 	    NullCheck.notNull(model, "model");
 	    NullCheck.notNull(appearance, "appearance");
-	    final Object obj = model.getItem(index);
+	    NullCheck.notNull(clipboard, "clipboard");
+	    if (fromIndex < 0)
+		throw new IllegalArgumentException("fromIndex may not be negative (" + fromIndex + ")");
+
+	    if (toIndex < 0)
+		throw new IllegalArgumentException("toIndex may not be negative (" + toIndex + ")");
+	    if (fromIndex >= toIndex)
+		return false;
+final List<String> res = new LinkedList<String>();
+	    for(int i = fromIndex;i < toIndex;++i)
+	    {
+	    final Object obj = model.getItem(i);
 	    if (obj == null)
-		return null;
-	    return appearance.getScreenAppearance(obj, EnumSet.of(ListArea.Appearance.Flags.CLIPBOARD));
+		return false;
+	    res.add(appearance.getScreenAppearance(obj, EnumSet.of(ListArea.Appearance.Flags.CLIPBOARD)));
+	}
+	    clipboard.set(res.toArray(new String[res.size()]));
+	    return true;
 	}
     }
 }

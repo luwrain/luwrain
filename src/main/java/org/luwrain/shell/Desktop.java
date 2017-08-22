@@ -74,12 +74,18 @@ public void ready()
 	params.model = this.model;
 	params.appearance = new Appearance(luwrain);
 	params.name = luwrain.i18n().getStaticStr("Desktop");
-	params.clipboardObjects = (area, model, appearance, index)->{
-	    final Object obj = model.getItem(index);
+	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
+	    final List<String> res = new LinkedList<String>();
+	    for(int i = fromIndex;i < toIndex;++i)
+	    {
+	    final Object obj = model.getItem(i);
 	    NullCheck.notNull(obj, "obj");
 	    if (obj instanceof UniRefInfo)
-		return ((UniRefInfo)obj).getValue();
-	    return obj.toString();
+		res.add(((UniRefInfo)obj).getValue()); else
+		res.add(obj.toString());
+	    }
+	    clipboard.set(res.toArray(new String[res.size()]));
+	    return true;
 	};
 
 	area = new ListArea(params) {

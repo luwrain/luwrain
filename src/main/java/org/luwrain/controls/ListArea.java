@@ -49,9 +49,9 @@ public class ListArea  implements Area, ClipboardTranslator.Provider
 	int getObservableRightBound(Object item);
     }
 
-public interface ClipboardObjects
+public interface ClipboardSaver
 {
-    Serializable getClipboardObject(ListArea listArea, Model model, Appearance appearance, int index);
+    boolean saveToClipboard(ListArea listArea, Model model, Appearance appearance, int fromIndex, int toIndex, Clipboard clipboard);
 }
 
     public interface Transition
@@ -92,7 +92,7 @@ public interface ClipboardObjects
 	public Appearance appearance;
 	public ListClickHandler clickHandler;
 	public Transition transition = new ListUtils.DefaultTransition();
-	public ClipboardObjects clipboardObjects = new ListUtils.DefaultClipboardObjects();
+	public ClipboardSaver clipboardSaver = new ListUtils.DefaultClipboardSaver();
 	public String name;
 	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
     }
@@ -104,7 +104,7 @@ public interface ClipboardObjects
     protected final Model listModel;
     protected final Appearance listAppearance;
     protected final Transition listTransition;
-    protected final ClipboardObjects listClipboardObjects;
+    protected final ClipboardSaver listClipboardSaver;
     protected final Set<Flags> listFlags;
     protected ListClickHandler listClickHandler;
 
@@ -118,14 +118,14 @@ public interface ClipboardObjects
 	NullCheck.notNull(params.model, "params.model");
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.transition, "params.transition");
-	NullCheck.notNull(params.clipboardObjects, "params.clipboardObjects");
+	NullCheck.notNull(params.clipboardSaver, "params.clipboardSaver");
 	NullCheck.notNull(params.name, "params.name");
 	NullCheck.notNull(params.flags, "params.flags");
 	this.context = params.context;
 	this.listModel = params.model;
 	this.listAppearance = params.appearance;
 	this.listTransition = params.transition;
-	this.listClipboardObjects = params.clipboardObjects;
+	this.listClipboardSaver = params.clipboardSaver;
 	this.listClickHandler = params.clickHandler;
 	this.areaName = params.name;
 	this.listFlags = params.flags;
@@ -931,19 +931,7 @@ protected boolean onAltHome(KeyboardEvent event)
     {
 	if (isEmpty())
 	    return false;
-	if (listModel.getItemCount() < 0)
-	    return false;
-	final List<Serializable> res = new LinkedList<Serializable>();
-	final int count = listModel.getItemCount();
-	for(int i = 0;i < count;++i)
-	{
-	    final Serializable obj = listClipboardObjects.getClipboardObject(this, listModel, listAppearance, i);
-	    if (obj == null)
-		return false;
-	    res.add(obj);
-	}
-	context.getClipboard().set(res.toArray(new Serializable[res.size()]));
-	return true;
+	return listClipboardSaver.saveToClipboard(this, listModel, listAppearance, 0, listModel.getItemCount(), context.getClipboard());
     }
 
     @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
@@ -960,11 +948,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	    final int index = getExistingItemIndexOnLine(toY);
 	    if (index < 0)
 		return false;
-	    final Serializable obj = listClipboardObjects.getClipboardObject(this, listModel, listAppearance, index);
-	    if (obj == null)
-		return false;
-	    context.getClipboard().set(obj);
-	    return true;
+	    return listClipboardSaver.saveToClipboard(this, listModel, listAppearance, index, index + 1, context.getClipboard());
 	}
 	final int modelFromY = getExistingItemIndexOnLine(fromY);
 	final int modelToY = getItemIndexOnLine(toY);//not necessarily existing
@@ -982,16 +966,7 @@ protected boolean onAltHome(KeyboardEvent event)
 	    context.getClipboard().set(line.substring(fromPos, toPos));
 	    return true;
 	}
-	final List<Serializable> res = new LinkedList<Serializable>();
-	for(int i = modelFromY;i < modelToY;++i)
-	{
-	    final Serializable obj = listClipboardObjects.getClipboardObject(this, listModel, listAppearance, i);
-	    if (obj == null)
-		return false;
-	    res.add(obj);
-	}
-	context.getClipboard().set(res.toArray(new Serializable[res.size()]));
-	return true;
+return listClipboardSaver.saveToClipboard(this, listModel, listAppearance, modelFromY, modelToY, context.getClipboard());
     }
 
     @Override public boolean onDeleteRegion(int fromX, int fromY, int toX, int toY)
