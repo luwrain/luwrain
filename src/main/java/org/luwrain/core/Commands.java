@@ -217,10 +217,7 @@ class Commands
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
-		    {
-			env.message(luwrain.i18n().getStaticStr("RegionPointSet"), Luwrain.MESSAGE_REGULAR); 
-			env.playSound(Sounds.REGION_POINT);
-		    }else
+			env.playSound(Sounds.REGION_POINT); else
 			env.eventNotProcessedMessage();
 		}
 	    },
