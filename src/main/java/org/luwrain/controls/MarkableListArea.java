@@ -108,4 +108,33 @@ public class MarkableListArea extends ListArea
 	}
 	marksInfo.markOnly(newItems.toArray(new Object[newItems.size()]));
     }
+
+    @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
+    {
+	if (isEmpty() || withDeleting)
+	    return false;
+	if (fromX < 0 || toX < 0 ||
+	    (fromX == toX && fromY == toY))
+	{
+	    final Object[] objs = marksInfo.getAllMarked();
+	    if (objs == null || objs.length == 0)
+		return super.onClipboardCopy(fromX, fromY, toX, toY, withDeleting);
+	    return listClipboardSaver.saveToClipboard(this, new Model(){
+		    @Override public int getItemCount()
+		    {
+			return objs.length;
+		    }
+		    @Override public Object getItem(int index)
+		    {
+			if (index < 0 || index >= objs.length)
+			    throw new IllegalArgumentException("Illegal index value (" + index + ")");
+			return objs[index];
+		    }
+		    @Override public void refresh()
+		    {
+		    }
+		}, listAppearance, 0, objs.length, context.getClipboard());
+	}
+	return super.onClipboardCopy(fromX, fromY, toX, toY, withDeleting);
+    }
 }
