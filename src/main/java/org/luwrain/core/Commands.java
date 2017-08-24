@@ -120,6 +120,18 @@ class Commands
 		}
 	    },
 
+	    //gc
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "gc";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    System.gc();
+		}
+	    },
+
 	    //Save
 	    new Command() {
 		@Override public String getName()
