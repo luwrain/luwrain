@@ -35,8 +35,6 @@ class UniRefProcs
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    if (!uniRef.startsWith(PREFIX))
 			return null;
-		    if (uniRef.indexOf("ncc.html") >= 0)
-			return new UniRefInfo(uniRef, "Учебник", "\"Обществознание\"");
 		    return new UniRefInfo(uniRef, luwrain.i18n().getStaticStr("UniRefPrefixFile"), uniRef.substring(5));
 		}
 		@Override public void openUniRef(String uniRef, Luwrain luwrain)
@@ -61,9 +59,6 @@ class UniRefProcs
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    if (!uniRef.startsWith(PREFIX))
 			return null;
-
-		    if (uniRef.indexOf("ncc.html") >= 0)
-		    return new UniRefInfo(uniRef, "", "Учебник \"Обществознание\"");
 		    return new UniRefInfo(uniRef, "", uniRef.substring(PREFIX.length()));
 		}
 		@Override public void openUniRef(String uniRef, Luwrain luwrain)
@@ -75,8 +70,6 @@ class UniRefProcs
 		    luwrain.launchApp("reader", new String[]{uniRef.substring(PREFIX.length())});
 		}
 	    },
-
-
 
 	    //command
 	    new UniRefProc() {
@@ -101,6 +94,55 @@ class UniRefProcs
 		    luwrain.runCommand(uniRef.substring(8));
 		}
 	    },
+
+	    //link
+	    new UniRefProc() {
+		static private final String PREFIX = "link:";
+		@Override public String getUniRefType()
+		{
+		    return "link";
+		}
+		@Override public UniRefInfo getUniRefInfo(String uniRef)
+		{
+		    NullCheck.notNull(uniRef, "uniRef");
+		    if (!uniRef.startsWith(PREFIX))
+			return null;
+		    final String body = uniRef.substring(PREFIX.length());
+		    if (body.isEmpty())
+			return null;
+		    final int delim = findDelim(body);
+		    if (delim < 0)
+			return null;
+		    return new UniRefInfo(uniRef, "", body.substring(0, delim).replaceAll("\\\\:", ":"));
+		}
+		@Override public void openUniRef(String uniRef, Luwrain luwrain)
+		{
+		    NullCheck.notNull(uniRef, "uniRef");
+		    NullCheck.notNull(luwrain, "luwrain");
+		    if (!uniRef.startsWith(PREFIX))
+			return;
+		    final String body = uniRef.substring(PREFIX.length());
+		    if (body.isEmpty())
+			return;
+		    final int delim = findDelim(body);
+		    if (delim < 0 || delim + 1 >= body.length() )
+			return;
+		    final String newUniRef = body.substring(delim + 1);
+		    if (!newUniRef.isEmpty())
+			luwrain.openUniRef(newUniRef);
+		}
+		private int findDelim(String str)
+		{
+		    NullCheck.notNull(str, "str");
+		    int delim = 0;
+		    while(delim < str.length() &&
+			  (str.charAt(delim) != ':' || (delim > 0 && str.charAt(delim - 1) == '\\')))
+			++delim;
+		    return delim < str.length()?delim:-1;
+		}
+	    },
+
+
 
 	};
     }
