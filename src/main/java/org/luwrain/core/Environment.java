@@ -66,6 +66,8 @@ final OperatingSystem os;
     void run()
     {
 	init();
+	Log.debug(LOG_COMPONENT, "Total memory:" + (Runtime.getRuntime().totalMemory() / 1024) + "k");
+	Log.debug(LOG_COMPONENT, "Max memory:" + (Runtime.getRuntime().maxMemory() / 1024) + "k");
 	interaction.startInputEventsAccepting(this);
 	windowManager.redraw();
 	playSound(Sounds.STARTUP);//FIXME:
