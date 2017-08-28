@@ -141,9 +141,6 @@ class UniRefProcs
 		    return delim < str.length()?delim:-1;
 		}
 	    },
-
-
-
 	};
     }
 }
