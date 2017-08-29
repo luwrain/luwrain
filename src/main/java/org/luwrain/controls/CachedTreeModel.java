@@ -35,7 +35,7 @@ public class CachedTreeModel implements TreeArea.Model
     }
 
     private final CachedTreeModelSource source;
-    private  final LinkedList<CacheItem> cache = new LinkedList<CacheItem>();
+    private  final List<CacheItem> cache = new LinkedList<CacheItem>();
 
     public CachedTreeModel(CachedTreeModelSource source)
     {
@@ -50,8 +50,7 @@ public class CachedTreeModel implements TreeArea.Model
 
     @Override public void beginChildEnumeration(Object node)
     {
-	if (node == null)
-	    return;
+	NullCheck.notNull(node, "node");
 	CacheItem newItem = null;
 	for(CacheItem c: cache)
 	    if (c.parent.equals(node))
@@ -63,7 +62,10 @@ public class CachedTreeModel implements TreeArea.Model
 	}
 	final Object[] objs = source.getChildObjs(node);
 	if (objs == null || objs.length < 1)
+	{
+	    newItem.objs = new Object[0];
 	    return;
+	}
 	newItem.objs = objs;
     }
 
