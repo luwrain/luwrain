@@ -18,7 +18,7 @@ package org.luwrain.speech;
 
 import org.luwrain.core.*;
 
-abstract class ChannelBase implements Channel
+public abstract class ChannelBase implements Channel
 {
     protected int defaultPitch = 50;
     protected int defaultRate = 50;
