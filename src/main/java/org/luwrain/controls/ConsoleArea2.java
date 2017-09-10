@@ -128,6 +128,17 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	    setHotPointX(line.length());
     }
 
+    public int getSelectedIndex()
+    {
+	return getExistingItemIndexOnLine(getHotPointY());
+    }
+
+    public Object selected()
+    {
+	final int index = getSelectedIndex();
+	return index >= 0?consoleModel.getConsoleItem(index):null;
+    }
+
     public int getExistingItemIndexOnLine(int lineIndex)
     {
 	if (lineIndex < 0)

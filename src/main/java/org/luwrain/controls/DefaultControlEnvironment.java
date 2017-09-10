@@ -156,4 +156,9 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	return luwrain.getClipboard();
     }
+
+    @Override public I18n getI18n()
+    {
+	return luwrain.i18n();
+    }
 }

@@ -42,4 +42,5 @@ int getAreaVisibleHeight(Area area);
     void silence();
     void setEventResponse(EventResponse eventResponse);
     Clipboard getClipboard();
+    I18n getI18n();
 }
