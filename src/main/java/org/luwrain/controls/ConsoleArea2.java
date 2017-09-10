@@ -45,7 +45,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
     {
 	public enum Result {REJECTED, OK, CLEAR_INPUT};
 
-	Result onConsoleInput(String text);
+	Result onConsoleInput(ConsoleArea2 area, String text);
     }
 
     static public class Params
@@ -301,7 +301,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
     {
 	if (consoleInputHandler == null || enteringText.isEmpty())
 	    return false;
-	final InputHandler.Result res = consoleInputHandler.onConsoleInput(enteringText);
+	final InputHandler.Result res = consoleInputHandler.onConsoleInput(this, enteringText);
 	if (res == null)
 	    return false;
 	switch(res)
