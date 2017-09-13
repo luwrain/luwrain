@@ -23,16 +23,18 @@ import org.luwrain.controls.*;
 class TestingControlEnvironment implements ControlEnvironment
 {
     //    private Luwrain luwrain;
-    public String spoken = "";
-    public String[] clipboard = new String[0];
-    public int lastHint;
 
+    public String spoken = "";
     @Override public void say(String text)
     {
 	spoken = text;
     }
 
-    @Override public void sayStaticStr(int code)
+    @Override public void say(String text, Sounds sound)
+    {
+    }
+
+    @Override public void sayStaticStr(LangStatic code)
     {
 	say(staticStr(code));
     }
@@ -43,6 +45,10 @@ class TestingControlEnvironment implements ControlEnvironment
 	spoken += letter;
     }
 
+    @Override public void silence()
+    {
+    }
+
     @Override public void hint(String text)
     {
 	spoken = text;
@@ -51,18 +57,19 @@ class TestingControlEnvironment implements ControlEnvironment
     @Override public void hint(String text, int code)
     {
 	spoken = text;
-	lastHint = code;
+	//	lastHint = code;
     }
 
     @Override public void hint(int code)
     {
-	lastHint = code;
+	//	lastHint = code;
     }
 
-    public void hintStaticString(int id)
+    @Override public void hintStaticString(LangStatic id)
     {
 	hint(staticStr(id));
     }
+
 
     public void onAreaNewName(Area area)
     {
@@ -81,41 +88,40 @@ class TestingControlEnvironment implements ControlEnvironment
 	return 25;
     }
 
-    public void setClipboard(String[] value)
-    {
-	clipboard = value;
-    }
-
-    public String[] getClipboard()
-    {
-	return clipboard;
-    }
-
-    public void popup(Popup popupObj)
-    {
-    }
-
-    @Override public LaunchContext launchContext()
-    {
-	return new LaunchContext("", "", "");
-    }
-
-    @Override public String staticStr(int code)
-    {
-	return "#static " + code + "#";
-    }
-
-    @Override public org.luwrain.core.Strings environmentStrings()
-    {
-	return null;
-    }
-
-    @Override public void playSound(int id)
+    @Override public void popup(Popup popupObj)
     {
     }
 
 @Override public UniRefInfo getUniRefInfo(String uniRef)
     {
 	return null;
+    }
+
+    @Override public I18n getI18n()
+    {
+	return null;
+    }
+
+    @Override public Clipboard getClipboard()
+    {
+	return null;
+    }
+
+    @Override public void setEventResponse(EventResponse eventResponse)
+    {
+    }
+
+    @Override public void playSound(Sounds sounds)
+    {
+    }
+
+    @Override public String getStaticStr(String id)
+    {
+	return "";
+    }
+
+    @Override public String staticStr(LangStatic st)
+    {
+	return "";
     }
 }

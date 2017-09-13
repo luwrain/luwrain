@@ -6,10 +6,10 @@ public class DummyApp implements Application
     public Area area = new DummyArea();
     public Luwrain luwrain;
 
-    @Override public boolean onLaunch(Luwrain luwrain)
+    @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
-	return true;
+	return new InitResult();
     }
 
     @Override public String getAppName()
@@ -17,8 +17,12 @@ public class DummyApp implements Application
 	return "#DummyApp#";
     }
 
-    @Override public AreaLayout getAreasToShow()
+    @Override public AreaLayout getAreaLayout()
     {
 	return new AreaLayout(area);
+    }
+
+    @Override public void closeApp()
+    {
     }
 }

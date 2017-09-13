@@ -100,7 +100,7 @@ public class FormArea  extends NavigationArea
     public Type getItemTypeOnLine(int index)
     {
 	if (index < 0)
-	    return null;
+	    throw new IllegalArgumentException("index may not be negative");
 	if (index < items.size())
 	    return items.get(index).type;
 	return isMultilineEditActivated()?Type.MULTILINE:null;
@@ -113,7 +113,9 @@ public class FormArea  extends NavigationArea
 
     public String getItemNameOnLine(int index)
     {
-	if (index < 0 || index >= items.size())
+	if (index < 0)
+	    throw new IllegalArgumentException("index may not be negative");
+	if (index >= items.size())
 	    return null;
 	return items.get(index).name;
     }
