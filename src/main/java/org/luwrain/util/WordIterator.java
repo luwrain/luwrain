@@ -16,22 +16,23 @@
 
 package org.luwrain.util;
 
+import org.luwrain.core.*;
+
 public class WordIterator
 {
-    private String line = "";
-    private int pos = 0;
-    private String announce = "";
+protected final String line;
+protected int pos = 0;
+    protected String announce = "";
 
     public WordIterator(String line, int pos)
     {
-	if (line == null)
-	    throw new NullPointerException("line may not be null");
+	NullCheck.notNull(line, "line");
+	if (pos < 0)
+	    throw new IllegalArgumentException("pos may not be negative (" + pos + ")");
+		if (this.pos > line.length())
+		    throw new IllegalArgumentException("pos may not be greater than the length of provided line (" + pos + ")");
 	this.line = line;
 	this.pos = pos;
-	if (this.pos < 0)
-	    this.pos = 0;
-	if (this.pos > line.length())
-	    this.pos = line.length();
 	this.announce = "";
     }
 
