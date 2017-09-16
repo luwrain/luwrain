@@ -69,6 +69,7 @@ public class CommanderArea<E> extends ListArea
 	public CommanderArea.Appearance<E> appearance;
 	public CommanderArea.ClickHandler<E> clickHandler;
 	public LoadingResultHandler<E> loadingResultHandler;
+	public ClipboardSaver clipboardSaver = new ListUtils.DefaultClipboardSaver();
 	public Filter<E> filter = null;
 	public Comparator comparator = null;
 	public Set<Flags> flags = EnumSet.noneOf(Flags.class);
@@ -131,13 +132,13 @@ public class CommanderArea<E> extends ListArea
 	    return false;
 	final Wrapper<E>[] wrappers = getListModel().wrappers;
 	int index = 0;
-	while(index < wrappers.length && !appearance.getEntryTextAppearance(wrappers[index].obj, wrappers[index].type, wrappers[index].isMarked()).equals(fileName))
+	while(index < wrappers.length && !appearance.getEntryTextAppearance(wrappers[index].obj, wrappers[index].type, wrappers[index].marked).equals(fileName))
 	    ++index;
 	if (index >= wrappers.length)
 	    return false;
 	select(index, false);
 	if (announce)
-	    appearance.announceEntry(wrappers[index].obj, wrappers[index].type, wrappers[index].isMarked());
+	    appearance.announceEntry(wrappers[index].obj, wrappers[index].type, wrappers[index].marked);
 	return true;
     }
 
@@ -174,7 +175,7 @@ public class CommanderArea<E> extends ListArea
 	final Wrapper<E> wrapper = getSelectedWrapper();
 	if (wrapper == null || wrapper.type == EntryType.PARENT)
 	    return null;
-	return appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.isMarked());
+	return appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked);
     }
 
     public E opened()
@@ -186,11 +187,22 @@ public class CommanderArea<E> extends ListArea
     {
 	if (getListModel().wrappers == null)
 	    return new Object[0];
-	final LinkedList res = new LinkedList();
+	final List res = new LinkedList();
 	for(Wrapper w: getListModel().wrappers)
-	    if (w.isMarked())
+	    if (w.marked)
 		res.add(w.obj);
 	return res.toArray(new Object[res.size()]);
+    }
+
+    public Wrapper<E>[] getMarkedWrappers()
+    {
+	if (getListModel().wrappers == null)
+	    return new Wrapper[0];
+	final List<Wrapper<E>> res = new LinkedList<Wrapper<E>>();
+	for(Wrapper w: getListModel().wrappers)
+	    if (w.marked)
+		res.add(w);
+	return res.toArray(new Wrapper[res.size()]);
     }
 
     public void open(E entry)
@@ -243,12 +255,12 @@ public class CommanderArea<E> extends ListArea
 		    if (desiredSelected != null && !desiredSelected.isEmpty())
 		    {
 			for(int i = 0;i < wrappers.length;++i)
-			    if (desiredSelected.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].isMarked())))
+			    if (desiredSelected.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
 				index = i;
 			//If there is still no found selection, we must try to save selection without changes
 			if (index < 0 && previouslySelectedText != null && !previouslySelectedText.isEmpty())
 			for(int i = 0;i < wrappers.length;++i)
-			    if (previouslySelectedText.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].isMarked())))
+			    if (previouslySelectedText.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
 				index = i;
 
 
@@ -325,6 +337,42 @@ public class CommanderArea<E> extends ListArea
 	return appearance.getCommanderName(currentLocation);
     }
 
+    @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
+    {
+	if (isEmpty() || withDeleting)
+	    return false;
+	if (fromX < 0 || toX < 0 ||
+	    (fromX == toX && fromY == toY))
+	{
+	    final Wrapper[] objs;
+	    if (flags.contains(Flags.MARKING))
+ objs = getMarkedWrappers(); else
+	    {
+		objs = new Wrapper[]{getSelectedWrapper()};
+		if (objs[0].type == EntryType.PARENT)
+		    return false;
+	    }
+	    if (objs.length == 0)
+		return super.onClipboardCopy(fromX, fromY, toX, toY, withDeleting);
+	    return listClipboardSaver.saveToClipboard(this, new ListArea.Model(){
+		    @Override public int getItemCount()
+		    {
+			return objs.length;
+		    }
+		    @Override public Object getItem(int index)
+		    {
+			if (index < 0 || index >= objs.length)
+			    throw new IllegalArgumentException("Illegal index value (" + index + ")");
+			return objs[index];
+		    }
+		    @Override public void refresh()
+		    {
+		    }
+		}, listAppearance, 0, objs.length, context.getClipboard());
+	}
+	return super.onClipboardCopy(fromX, fromY, toX, toY, withDeleting);
+    }
+
     protected boolean onBackspace(KeyboardEvent event)
     {
 	//noContent() isn't applicable here, we should be able to leave the directory, even if it doesn't have any content
@@ -346,7 +394,7 @@ public class CommanderArea<E> extends ListArea
 	if (wrapper == null || wrapper.type == EntryType.PARENT)
 	    return false;
 	wrapper.toggleMark(); 
-	if (wrapper.isMarked())
+	if (wrapper.marked)
 	    context.say("выделено", Sounds.SELECTED); else //FIXME:
 	    context.say("не выделено", Sounds.UNSELECTED); //FIXME:
 	return true;
@@ -400,11 +448,13 @@ public class CommanderArea<E> extends ListArea
 	NullCheck.notNull(params.model, "params.model");
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.comparator, "params.comparator");
+	NullCheck.notNull(params.clipboardSaver, "params.clipboardSaver");
 	final ListArea.Params listParams = new ListArea.Params();
 	listParams.context = params.environment;
 	listParams.model = new ListModelAdapter(params.model, params.filter, params.comparator);
 	listParams.appearance = new ListAppearanceImpl(params.appearance);
 	listParams.name = "";//Never used, getAreaName() overrides
+	listParams.clipboardSaver = params.clipboardSaver;
 	return listParams;
     }
 
@@ -412,7 +462,7 @@ public class CommanderArea<E> extends ListArea
     {
 	public final E obj;
 	public final EntryType type;
-	protected boolean marked;
+	public boolean marked = false;
 
 	public Wrapper(E obj, EntryType type)
 	{
@@ -420,7 +470,6 @@ public class CommanderArea<E> extends ListArea
 	    NullCheck.notNull(type, "type");
 	    this.obj = obj;
 	    this.type = type;
-	    this.marked = false;
 	}
 
 	public boolean isDirectory()
@@ -428,24 +477,9 @@ public class CommanderArea<E> extends ListArea
 	    return type == EntryType.DIR || type == EntryType.SYMLINK_DIR;
 	}
 
-	public void mark()
-	{
-	    marked = true;
-	}
-
-	public void unmark()
-	{
-	    marked = false;
-	}
-
 	public void toggleMark()
 	{
 	    marked = !marked;
-	}
-
-	public boolean isMarked() 
-	{
-	    return marked; 
 	}
 
 	@Override public boolean equals(Object o)
@@ -472,7 +506,7 @@ public class CommanderArea<E> extends ListArea
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
 	    final Wrapper<E> wrapper = (Wrapper<E>)item;
-	    appearance.announceEntry(wrapper.obj, wrapper.type, wrapper.isMarked());
+	    appearance.announceEntry(wrapper.obj, wrapper.type, wrapper.marked);
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
@@ -480,9 +514,9 @@ public class CommanderArea<E> extends ListArea
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
 	    final Wrapper<E> wrapper = (Wrapper<E>)item;
-	    final boolean marked = wrapper.isMarked();
+	    final boolean marked = wrapper.marked;
 	    final EntryType type = wrapper.type;
-	    final String name = appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.isMarked());
+	    final String name = appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked);
 	    final StringBuilder b = new StringBuilder();
 	    b.append(marked?"*":" ");
 	    switch(type)
@@ -523,7 +557,7 @@ public class CommanderArea<E> extends ListArea
 	{
 	    NullCheck.notNull(item, "item");
 	    final Wrapper<E> wrapper = (Wrapper)item;
-	    return appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.isMarked()).length() + 2;
+	    return appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked).length() + 2;
 	}
     }
 

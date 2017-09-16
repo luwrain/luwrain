@@ -42,6 +42,26 @@ public final class Clipboard
 	return true;
     }
 
+    public boolean set(Serializable[] objs, String[] strings)
+    {
+	NullCheck.notNullItems(objs, "objs");
+	NullCheck.notNullItems(strings, "strings");
+	if (objs.length != strings.length)
+	    throw new IllegalArgumentException("objs and strings arguments must have the same lenght");
+	final byte[][] newObjs = new byte[objs.length][];
+	final String[] newStrings = new String[objs.length];
+	for(int i = 0;i < objs.length;++i)
+	{
+	    newObjs[i] = serialize(objs[i]);
+	    if (newObjs[i] == null)
+		return false;
+	    newStrings[i] = strings[i];
+	}
+	this.objs = newObjs;
+	this.strings = newStrings;
+	return true;
+    }
+
     public boolean set(Serializable obj)
     {
 	NullCheck.notNull(obj, "obj");
