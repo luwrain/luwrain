@@ -23,6 +23,7 @@ abstract public class AreaQuery extends Event
     static public final int BEGIN_LISTENING = 5;
 
     static public final int BACKGROUND_SOUND = 6;;
+    static public final int REGION_TEXT = 7;;
 
     private int code;
     private boolean hasAnswer = false;

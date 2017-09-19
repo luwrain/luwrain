@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import org.luwrain.core.queries.*;
+
 class AreaText
 {
     private final Area area;
@@ -34,6 +36,7 @@ class AreaText
 	case WORD:
 	    return getWord();
 	case REGION:
+	    return getRegion();
 	case LINE:
 	case SENTENCE:
 	case URL:
@@ -67,6 +70,14 @@ class AreaText
 	    ++i;
 	}
 	return res;
+    }
+
+    private String getRegion()
+    {
+	final RegionTextQuery query = new RegionTextQuery();
+	if (!AreaQuery.ask(area, query))
+	    return null;
+	return query.getAnswer();
     }
 
     static private boolean wordChar(char c)
