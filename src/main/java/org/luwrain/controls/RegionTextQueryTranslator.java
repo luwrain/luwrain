@@ -28,6 +28,7 @@ public class RegionTextQueryTranslator
 
     public interface Provider
     {
+	String onRegionTextQueryAll();
 	String onRegionTextQuery(int fromX, int fromY, int toX, int toY);
     }
 
@@ -104,7 +105,7 @@ public class RegionTextQueryTranslator
 	{
 	    if (!flags.contains(Flags.ALLOWED_WITHOUT_REGION_POINT))
 		return false;
-final String text = provider.onRegionTextQuery(-1, -1, hotPointX, hotPointY);
+final String text = provider.onRegionTextQueryAll();
 if (text == null)
     return false;
 query.answer(text);

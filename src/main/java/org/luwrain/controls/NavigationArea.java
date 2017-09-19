@@ -34,13 +34,14 @@ import org.luwrain .util.*;
  *
  * @see SimpleArea
  */
-public abstract class NavigationArea implements Area, HotPointControl, ClipboardTranslator.Provider
+public abstract class NavigationArea implements Area, HotPointControl, ClipboardTranslator.Provider, RegionTextQueryTranslator.Provider
 {
     static private final String LOG_COMPONENT = "core";
 
     protected final ControlEnvironment context;
     protected final RegionPoint regionPoint = new RegionPoint();
-    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
+    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint);
+    protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint);
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
@@ -101,13 +102,16 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    }
 	    return false;
 	default:
-	    return clipboardTranslator.onEnvironmentEvent(event, hotPointX, hotPointY);
+	    if (clipboardTranslator.onEnvironmentEvent(event, hotPointX, hotPointY))
+		return true;
+	    return regionTextQueryTranslator.onEnvironmentEvent(event, hotPointX, hotPointY);
 	}
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
-	return false;
+	NullCheck.notNull(query, "query");
+	return regionTextQueryTranslator.onAreaQuery(query, hotPointX, hotPointY);
     }
 
     @Override public Action[] getAreaActions()
@@ -456,6 +460,16 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     @Override public int getHotPointY()
     {
 	return hotPointY;
+    }
+
+    @Override public String onRegionTextQueryAll()
+    {
+	return new LinesRegionTextQueryProvider(this).onRegionTextQueryAll();
+    }
+
+    @Override public String onRegionTextQuery(int fromX, int fromY, int toX, int toY)
+    {
+	return new LinesRegionTextQueryProvider(this).onRegionTextQuery(fromX, fromY, toX, toY);
     }
 
     @Override public boolean onClipboardCopyAll()
