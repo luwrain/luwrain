@@ -147,7 +147,7 @@ return true;
 	//Checking if allowed empty
 	if ((x1 == x2) && (y1 == y2) && !flags.contains(Flags.ALLOWED_EMPTY))
 	    return false;
-final String text = provider.onRegionTextQuery(-1, -1, hotPointX, hotPointY);
+	final String text = provider.onRegionTextQuery(x1, y1, x2, y2);
 if (text == null)
     return false;
 query.answer(text);

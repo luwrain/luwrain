@@ -72,7 +72,9 @@ public class MultilineEdit
     }
 
     protected final ControlEnvironment environment;
+    protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator;
+    protected final RegionTextQueryTranslator regionTextQueryTranslator;
     protected final Model model;
 
     public MultilineEdit(ControlEnvironment environment, Model model)
@@ -94,7 +96,8 @@ public class MultilineEdit
 		{
 		    return model.deleteRegion(fromX, fromY, toX, toY);
 		}
-	    });
+	    }, regionPoint);
+	this.regionTextQueryTranslator = new RegionTextQueryTranslator(new LinesRegionTextQueryProvider(model), regionPoint);
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -130,14 +133,16 @@ return onEnter(event);
 	case CLIPBOARD_PASTE:
 	    return onClipboardPaste();
 	default:
-	return clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY());
+	    if (clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY()))
+		return true;
+	return regionTextQueryTranslator.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY());
 	}
     }
 
     public boolean onAreaQuery(AreaQuery query)
     {
 	NullCheck.notNull(query, "query");
-	return false;
+	return regionTextQueryTranslator.onAreaQuery(query, model.getHotPointX(), model.getHotPointY());
     }
 
     protected boolean onBackspace(KeyboardEvent event)
