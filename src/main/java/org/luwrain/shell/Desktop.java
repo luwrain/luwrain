@@ -130,13 +130,6 @@ public class Desktop implements Application
     {
 	if (obj == null)
 	    return false;
-	if (obj.equals(clickHereLine))
-	{
-	    area.refresh();
-	    final Settings.Desktop sett = Settings.createDesktop(luwrain.getRegistry());
-	    sett.setIntroductionFile("");
-	    return true;
-	}
 	if (obj instanceof UniRefInfo)
 	{
 	    final UniRefInfo uniRefInfo = (UniRefInfo)obj;
@@ -185,7 +178,7 @@ public class Desktop implements Application
 	    {
 		final UniRefInfo i = (UniRefInfo)item;
 		if (!flags.contains(Flags.BRIEF))
-		    luwrain.setEventResponse(DefaultEventResponse.listItem(i.getTitle(), Suggestions.CLICKABLE_LIST_ITEM)); else
+		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, i.getTitle(), Suggestions.CLICKABLE_LIST_ITEM)); else
 		    luwrain.setEventResponse(DefaultEventResponse.listItem(i.getTitle(), null));
 		return;
 	    }

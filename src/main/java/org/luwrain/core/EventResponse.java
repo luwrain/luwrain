@@ -29,11 +29,7 @@ public interface EventResponse
 
     public static final class Unit
     {
-	public enum Type 
-	{
-	    CHAR,
-	    TEXT,
-	};
+	public enum Type { CHAR, TEXT };
 
 	private final Type type;
 	private final char ch;
@@ -72,10 +68,7 @@ public interface EventResponse
 
     public static final class Suggestion
     {
-	public enum Type {
-	    PREDEFINED,
-	    TEXT,
-	};
+	public enum Type { PREDEFINED, TEXT };
 
 	private final Type type;
 	private final Suggestions predefined;

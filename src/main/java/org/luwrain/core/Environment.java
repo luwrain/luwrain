@@ -1119,7 +1119,7 @@ onNewAreasLayout();
 switch(type)
 	{
 	case LIST_ITEM:
-	    playSound(Sounds.LIST_ITEM);
+	    playSound(eventResponse.getSound() != null?eventResponse.getSound():Sounds.LIST_ITEM);
 	    speech.speakEventResponse(eventResponse, 0, 0, i18n);
 	    break;
 	default:

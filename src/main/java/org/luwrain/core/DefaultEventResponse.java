@@ -81,9 +81,23 @@ Suggestion suggestion)
 	return new DefaultEventResponse(Type.REGULAR, null, null, null, new Unit(text), null, null);
     }
 
+    static public DefaultEventResponse listItem(String text) 
+    {
+	NullCheck.notNull(text, "text");
+	return new DefaultEventResponse(Type.LIST_ITEM, null, null, null, new Unit(text), null, null);
+    }
+
     static public DefaultEventResponse listItem(String text, Suggestions suggestion) 
     {
 	NullCheck.notNull(text, "text");
 	return new DefaultEventResponse(Type.LIST_ITEM, null, null, null, new Unit(text), null, suggestion != null?new Suggestion(suggestion):null);
     }
+
+    static public DefaultEventResponse listItem(Sounds sound, String text, Suggestions suggestion) 
+    {
+	NullCheck.notNull(text, "text");
+	return new DefaultEventResponse(Type.LIST_ITEM, sound, null, null, new Unit(text), null, suggestion != null?new Suggestion(suggestion):null);
+    }
+
+
 }
