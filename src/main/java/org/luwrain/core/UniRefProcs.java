@@ -37,13 +37,14 @@ class UniRefProcs
 			return null;
 		    return new UniRefInfo(uniRef, luwrain.i18n().getStaticStr("UniRefPrefixFile"), uniRef.substring(5));
 		}
-		@Override public void openUniRef(String uniRef, Luwrain luwrain)
+		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    NullCheck.notNull(luwrain, "luwrain");
 		    if (!uniRef.startsWith(PREFIX))
-			return;
+			return false;
 		    luwrain.openFile(uniRef.substring(PREFIX.length()));
+		    return true;
 		}
 	    },
 
@@ -61,13 +62,35 @@ class UniRefProcs
 			return null;
 		    return new UniRefInfo(uniRef, "", uniRef.substring(PREFIX.length()));
 		}
-		@Override public void openUniRef(String uniRef, Luwrain luwrain)
+		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    NullCheck.notNull(luwrain, "luwrain");
 		    if (!uniRef.startsWith(PREFIX))
-			return;
+			return false;
 		    luwrain.launchApp("reader", new String[]{uniRef.substring(PREFIX.length())});
+		    return true;
+		}
+	    },
+
+	    //url
+	    new UniRefProc() {
+		static private final String PREFIX = "static:";
+		@Override public String getUniRefType()
+		{
+		    return "static";
+		}
+		@Override public UniRefInfo getUniRefInfo(String uniRef)
+		{
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    if (!uniRef.startsWith(PREFIX))
+			return null;
+		    return new UniRefInfo(uniRef, "", uniRef.substring(PREFIX.length()));
+		}
+		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
+		{
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    return false;
 		}
 	    },
 
@@ -85,13 +108,14 @@ class UniRefProcs
 			return null;
 		    return new UniRefInfo(uniRef, "", luwrain.i18n().getCommandTitle(uniRef.substring(8)));
 		}
-		@Override public void openUniRef(String uniRef, Luwrain luwrain)
+		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
 		    if (uniRef == null || uniRef.isEmpty())
-			return;
+			return false;
 		    if (!uniRef.startsWith("command:"))
-			return;
+			return false;
 		    luwrain.runCommand(uniRef.substring(8));
+		    return true;
 		}
 	    },
 
@@ -115,21 +139,22 @@ class UniRefProcs
 			return null;
 		    return new UniRefInfo(uniRef, "", body.substring(0, delim).replaceAll("\\\\:", ":"));
 		}
-		@Override public void openUniRef(String uniRef, Luwrain luwrain)
+		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
 		    NullCheck.notNull(uniRef, "uniRef");
 		    NullCheck.notNull(luwrain, "luwrain");
 		    if (!uniRef.startsWith(PREFIX))
-			return;
+			return false;
 		    final String body = uniRef.substring(PREFIX.length());
 		    if (body.isEmpty())
-			return;
+			return false;
 		    final int delim = findDelim(body);
 		    if (delim < 0 || delim + 1 >= body.length() )
-			return;
+			return false;
 		    final String newUniRef = body.substring(delim + 1);
 		    if (!newUniRef.isEmpty())
-			luwrain.openUniRef(newUniRef);
+			return luwrain.openUniRef(newUniRef);
+		    return false;
 		}
 		private int findDelim(String str)
 		{

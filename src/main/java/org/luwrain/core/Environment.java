@@ -45,7 +45,7 @@ final OperatingSystem os;
     private final CommandManager commands = new CommandManager();
     private final ShortcutManager shortcuts = new ShortcutManager();
     private final SharedObjectManager sharedObjects = new SharedObjectManager();
-    private final UniRefProcManager uniRefProcs = new UniRefProcManager();
+final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
     public Settings.UserInterface uiSettings;//FIXME:final 
     private volatile boolean wasInputEvents = false;
@@ -971,11 +971,6 @@ onNewAreasLayout();
 	return sharedObjects.getSharedObject(id);
     }
 
-    UniRefInfo getUniRefInfoIface(String uniRef)
-    {
-	return uniRefProcs.getInfo(uniRef);
-    }
-
     boolean openUniRefIface(String uniRef)
     {
 	return uniRefProcs.open(uniRef);
@@ -1123,7 +1118,7 @@ switch(type)
 	    speech.speakEventResponse(eventResponse, 0, 0, i18n);
 	    break;
 	default:
-	    Log.debug("core", "unsupported event response type:" + type.toString());
+	    Log.debug(LOG_COMPONENT, "unsupported event response type:" + type.toString());
 	}
     }
 

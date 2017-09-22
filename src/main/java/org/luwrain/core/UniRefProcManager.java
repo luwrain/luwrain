@@ -61,8 +61,7 @@ return res;
 	if (!uniRefProcs.containsKey(uniRefType))
 	    return false;
 	final Entry entry = uniRefProcs.get(uniRefType);
-	entry.uniRefProc.openUniRef(uniRef, entry.luwrain);
-	return true;
+	return entry.uniRefProc.openUniRef(uniRef, entry.luwrain);
     }
 
     private String getUniRefType(String uniRef)

@@ -20,5 +20,5 @@ public interface UniRefProc
 {
     String getUniRefType();
     UniRefInfo getUniRefInfo(String uniRef);
-    void openUniRef(String uniRef, Luwrain luwrain);
+    boolean openUniRef(String uniRef, Luwrain luwrain);
 }

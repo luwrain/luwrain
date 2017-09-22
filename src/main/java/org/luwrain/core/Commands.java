@@ -476,7 +476,7 @@ class Commands
 			env.eventNotProcessedMessage();
 			return;
 		    }
-		    final UniRefInfo uniRefInfo = env.getUniRefInfoIface(uniRef);
+		    final UniRefInfo uniRefInfo = env.uniRefProcs.getInfo(uniRef);
 		    if (uniRefInfo == null)
 		    {
 			env.eventNotProcessedMessage();

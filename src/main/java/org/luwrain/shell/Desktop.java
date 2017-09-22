@@ -133,8 +133,7 @@ public class Desktop implements Application
 	if (obj instanceof UniRefInfo)
 	{
 	    final UniRefInfo uniRefInfo = (UniRefInfo)obj;
-	    luwrain.openUniRef(uniRefInfo.getValue());
-	    return true;
+	    return luwrain.openUniRef(uniRefInfo.getValue());
 	}
 	return false;
     }
@@ -177,9 +176,13 @@ public class Desktop implements Application
 	    if (item instanceof UniRefInfo)
 	    {
 		final UniRefInfo i = (UniRefInfo)item;
+		if (i.isAvailable())
+		{
 		if (!flags.contains(Flags.BRIEF))
 		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, i.getTitle(), Suggestions.CLICKABLE_LIST_ITEM)); else
 		    luwrain.setEventResponse(DefaultEventResponse.listItem(i.getTitle(), null));
+	    } else
+		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, i.toString(), Suggestions.CLICKABLE_LIST_ITEM));
 		return;
 	    }
 	}
@@ -206,7 +209,7 @@ public class Desktop implements Application
 	}
     }
 
-    static private class Model implements EditableListArea.EditableModel
+private class Model implements EditableListArea.EditableModel
     {
 	private final Storing storing;
 	Model(Storing storing)
@@ -245,6 +248,15 @@ public class Desktop implements Application
 		{
 		    final java.io.File file = (java.io.File)o;
 		    items.add("file:" + file.getAbsolutePath());
+		    continue;
+		}
+		if (o instanceof String)
+		{
+		    final  String str = (String)o;
+		    final UniRefInfo info = luwrain.getUniRefInfo(str);
+		    if (info != null && info.isAvailable())
+			items.add(str); else
+			items.add("static:" + str);
 		    continue;
 		}
 		//FIXME:url

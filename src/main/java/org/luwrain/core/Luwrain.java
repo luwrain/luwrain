@@ -496,7 +496,9 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public UniRefInfo getUniRefInfo(String uniRef)
     {
 	NullCheck.notNull(uniRef, "uniRef");
-	return environment.getUniRefInfoIface(uniRef);
+	if (uniRef.isEmpty())
+	    return null;
+	return environment.uniRefProcs.getInfo(uniRef);
     }
 
     public boolean openUniRef(String uniRef)
@@ -508,16 +510,8 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public boolean openUniRef(UniRefInfo uniRefInfo)
     {
 	NullCheck.notNull(uniRefInfo, "uniRefInfo");
-	NullCheck.notNull(uniRefInfo, "uniRefInfo");
-	return openUniRef(uniRefInfo.getValue());
+	return environment.uniRefProcs.open(uniRefInfo.getValue());
     }
-
-    /*
-    public Hardware getHardware()
-    {
-	return environment.getHardware();
-    }
-    */
 
     public org.luwrain.browser.Browser createBrowser()
     {
