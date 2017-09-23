@@ -60,6 +60,8 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	if (event.isSpecial())
 	    switch (event.getSpecial())
 	    {
+	    case HOME:
+		return onHome(event);
 	    case BACKSPACE:
 		return onBackspace(event);
 	    case DELETE:
@@ -93,11 +95,21 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	return false;
     }
 
+    protected boolean onHome(KeyboardEvent event)
+    {
+	final String line = model.getLine();
+	NullCheck.notNull(line, "line");
+	model.setHotPointX(0);
+	if (!line.isEmpty())
+	    context.sayLetter(line.charAt(0)); else
+	    context.hint(Hints.BEGIN_OF_LINE);
+	return true;
+    }
+
     protected boolean onBackspace(KeyboardEvent event)
     {
 	final String line = model.getLine();
-	if (line == null)
-	    return false;
+	NullCheck.notNull(line, "line");
 	final int pos = model.getHotPointX();
 	if (pos < 0 || pos > line.length())
 	    return false;

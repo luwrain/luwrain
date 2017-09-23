@@ -165,24 +165,16 @@ public class Desktop implements Application
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
-	    if (item instanceof String)
-	    {
-		final String s = (String)item;
-		if (s.trim().isEmpty())
-		    luwrain.hint(Hints.EMPTY_LINE); else
-		    luwrain.say(s);
-		return;
-	    }
 	    if (item instanceof UniRefInfo)
 	    {
 		final UniRefInfo i = (UniRefInfo)item;
 		if (i.isAvailable())
 		{
 		if (!flags.contains(Flags.BRIEF))
-		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, i.getTitle(), Suggestions.CLICKABLE_LIST_ITEM)); else
+		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, i.getTitle(), i.getValue().toLowerCase().startsWith("static:")?null:Suggestions.CLICKABLE_LIST_ITEM)); else
 		    luwrain.setEventResponse(DefaultEventResponse.listItem(i.getTitle(), null));
 	    } else
-		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, i.toString(), Suggestions.CLICKABLE_LIST_ITEM));
+		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, i.toString(), null));
 		return;
 	    }
 	}
@@ -241,27 +233,27 @@ private class Model implements EditableListArea.EditableModel
 	    final Object[] objs = clipboard.get();
 	    if (objs == null || objs.length == 0)
 		return false;
-	    final List<String> items = new LinkedList<String>();
+	    final List<UniRefInfo> items = new LinkedList<UniRefInfo>();
 	    for(Object o: objs)
 	    {
 		if (o instanceof java.io.File)
 		{
 		    final java.io.File file = (java.io.File)o;
-		    items.add("file:" + file.getAbsolutePath());
+		    items.add(luwrain.getUniRefInfo("file:" + file.getAbsolutePath()));
 		    continue;
 		}
 		if (o instanceof String)
 		{
 		    final  String str = (String)o;
 		    final UniRefInfo info = luwrain.getUniRefInfo(str);
-		    if (info != null && info.isAvailable())
-			items.add(str); else
-			items.add("static:" + str);
+		    if (info.isAvailable())
+			items.add(info); else
+			items.add(luwrain.getUniRefInfo("static:" + str));
 		    continue;
 		}
 		//FIXME:url
 	    }
-	    storing.addAll(index, items.toArray(new String[items.size()]));
+	    storing.addAll(index, items);
 	    storing.save();
 	    return true;
 	}
@@ -287,21 +279,6 @@ private class Model implements EditableListArea.EditableModel
 	    NullCheck.notNull(luwrain, "luwrain");
 	    this.luwrain = luwrain;
 	    this.registry = luwrain.getRegistry();
-	}
-	boolean addAll(int pos, String[] values)
-	{
-	    NullCheck.notNullItems(values, "values");
-	    if (pos < 0 || pos > size())
-		throw new IllegalArgumentException("Invalid pos (" + pos + ")");
-	    final List<UniRefInfo> items = new LinkedList<UniRefInfo>();
-	    for(String v: values)
-	    {
-		final UniRefInfo info = luwrain.getUniRefInfo(v);
-		NullCheck.notNull(info, "info");
-		items.add(info);
-	    }
-	    addAll(pos, items);
-	    return true;
 	}
 	UniRefInfo[] getAll()
 	{

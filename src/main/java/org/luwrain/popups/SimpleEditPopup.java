@@ -117,9 +117,9 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	switch (event.getSpecial())
 	{
 	case ARROW_LEFT:
-	    return onArrowLeft(event);
+	    return onMoveLeft(event);
 	case ARROW_RIGHT:
-	    return onArrowRight(event);
+	    return onMoveRight(event);
 	case ALTERNATIVE_ARROW_LEFT:
 	    return onAltLeft(event);
 	case ALTERNATIVE_ARROW_RIGHT:
@@ -139,6 +139,8 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return false;
 	switch(event.getCode())
 	{
 	case INTRODUCE:
@@ -177,7 +179,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return text;
     }
 
-    private boolean onArrowLeft(KeyboardEvent event)
+protected boolean onMoveLeft(KeyboardEvent event)
     {
 	if (pos == 0)
 	{
@@ -193,7 +195,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return true;
     }
 
-    private boolean onArrowRight(KeyboardEvent event)
+protected boolean onMoveRight(KeyboardEvent event)
     {
 	final String line = prefix + text;
 	if (pos >= line.length())
@@ -209,18 +211,18 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return true;
     }
 
-    private boolean onHome(KeyboardEvent event)
+protected boolean onHome(KeyboardEvent event)
     {
-	pos = edit.isPosCovered(pos, 0)?prefix.length():0;
+	pos = 0;
 	final String line = prefix + text;
-	if (pos >= line.length())
+	if (line.isEmpty())
 	    luwrain.hint(Hints.EMPTY_LINE); else
 	    luwrain.sayLetter(line.charAt(pos));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
 
-    private boolean onEnd(KeyboardEvent event)
+protected boolean onEnd(KeyboardEvent event)
     {
 	final String line = prefix + text;
 	pos = line.length();
@@ -229,7 +231,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return true;
     }
 
-    private boolean onAltRight(KeyboardEvent event)
+protected boolean onAltRight(KeyboardEvent event)
     {
 	final String line = prefix + text;
 	if (line.isEmpty())
@@ -256,7 +258,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return true;
     }
 
-    private boolean onAltLeft(KeyboardEvent event)
+protected boolean onAltLeft(KeyboardEvent event)
     {
 	final String line = prefix + text;
 	if (line.isEmpty())
@@ -342,7 +344,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return text.substring(offset);
     }
 
-    //Speaks nothing;
+    //Speaks nothing
     protected void setText(String beforeHotPoint, String afterHotPoint)
     {
 	if (beforeHotPoint == null || afterHotPoint == null)
