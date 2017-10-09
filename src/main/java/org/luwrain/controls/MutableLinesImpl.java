@@ -97,19 +97,17 @@ public class MutableLinesImpl implements MutableLines
     @Override public void insertLine(int index, String line)
     {
 	NullCheck.notNull(line, "line");
+	if (index < 0 || index > lines.size())
+	    throw new IllegalArgumentException("Illegal index value (" + index + ")");
 	if (index < lines.size())
-	{
 	    lines.insertElementAt(line, index);
-	    return;
-	}
-	if (lines.size() == index)
 	lines.add(line);
     }
 
     @Override public void removeLine(int index)
     {
 	if (index < 0 || index >= lines.size())
-	    return;
+	    throw new IllegalArgumentException("Invalid index (" + index + ")");
 	lines.remove(index);
     }
 

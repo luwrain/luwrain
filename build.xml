@@ -80,4 +80,13 @@
     </junit>
   </target>
 
+  <target name="junit-report">
+    <mkdir dir="/tmp/lwr-reports"/>
+    <junitreport todir="/tmp/lwr-reports">
+      <fileset dir="..">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="noframes" todir="/tmp/lwr-report/"/>
+    </junitreport>
+  </target>
 </project>
