@@ -40,4 +40,74 @@ public class SingleLineEditTest extends Assert
 	assertTrue(model.text.equals("012346789"));
 	assertTrue(model.hotPoint == 9);
     }
+
+    @Test public void loopTyping()
+    {
+	final StringBuilder b = new StringBuilder();
+	for(int i = 0;i < 100;++i)
+	    b.append("" + i);
+	final String initialText = new String(b);
+	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
+	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model);
+	for(int i = 0;i < initialText.length();++i)
+	{
+	    model.text = initialText;
+	    model.hotPoint = i;
+	    assertTrue(edit.onKeyboardEvent(new KeyboardEvent('a')));
+	    assertTrue(model.hotPoint == i + 1);
+	    final String newText = initialText.substring(0, i) + "a" + initialText.substring(i);
+	    assertTrue(model.text.equals(newText));
+	}
+    }
+
+    @Test public void loopDeleting()
+    {
+	final StringBuilder b = new StringBuilder();
+	for(int i = 0;i < 100;++i)
+	    b.append("" + i);
+	final String initialText = new String(b);
+	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
+	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model);
+	for(int i = 0;i < initialText.length();++i)
+	{
+	    model.text = initialText;
+	    model.hotPoint = i;
+	    assertTrue(edit.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.DELETE)));
+	    assertTrue(model.hotPoint == i);
+	    final String newText;
+	    if (i < initialText.length())
+		newText = initialText.substring(0, i) + initialText.substring(i + 1); else
+		newText = initialText;
+	    assertTrue(model.text.equals(newText));
+	}
+    }
+
+        @Test public void loopBackspace()
+    {
+	final StringBuilder b = new StringBuilder();
+	for(int i = 0;i < 100;++i)
+	    b.append("" + i);
+	final String initialText = new String(b);
+	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
+	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model);
+	for(int i = 0;i < initialText.length();++i)
+	{
+	    model.text = initialText;
+	    model.hotPoint = i;
+	    assertTrue(edit.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.BACKSPACE)));
+	    if (i == 0)
+			    assertTrue(model.hotPoint == 0); else
+			    assertTrue(model.hotPoint == i - 1);
+	    final String newText;
+	    if (i > 0)
+		newText = initialText.substring(0, i - 1) + initialText.substring(i); else
+		newText = initialText;
+	    assertTrue(model.text.equals(newText));
+	}
+    }
+
+
+
+
+    //FIXME:clipboard tests 
 }
