@@ -24,6 +24,7 @@ import org.luwrain.core.queries.*;
 
 public class RegionTextQueryTranslator
 {
+    //FIXME:what to do on default action
     public enum Flags {ALLOWED_EMPTY, ALLOWED_WITHOUT_REGION_POINT};
 
     public interface Provider
@@ -105,6 +106,7 @@ public class RegionTextQueryTranslator
 	{
 	    if (!flags.contains(Flags.ALLOWED_WITHOUT_REGION_POINT))
 		return false;
+	    //FIXME:what action
 final String text = provider.onRegionTextQueryAll();
 if (text == null)
     return false;
@@ -144,10 +146,17 @@ return true;
 		    y2 = regionPoint.getHotPointY();
 		}
 	    }
+
+	final String text;
+	if ((x1 == x2) && (y1 == y2))
+	{
 	//Checking if allowed empty
-	if ((x1 == x2) && (y1 == y2) && !flags.contains(Flags.ALLOWED_EMPTY))
+	if (!flags.contains(Flags.ALLOWED_EMPTY))
 	    return false;
-	final String text = provider.onRegionTextQuery(x1, y1, x2, y2);
+	//FIXME:what action
+	text = provider.onRegionTextQueryAll();
+	} else
+	text = provider.onRegionTextQuery(x1, y1, x2, y2);
 if (text == null)
     return false;
 query.answer(text);

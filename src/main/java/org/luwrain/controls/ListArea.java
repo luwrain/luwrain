@@ -24,7 +24,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
-public class ListArea  implements Area, ClipboardTranslator.Provider
+public class ListArea  implements Area, ClipboardTranslator.Provider, RegionTextQueryTranslator.Provider
 {
     public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM};
 
@@ -101,6 +101,7 @@ public interface ClipboardSaver
     protected final ControlEnvironment context;
     protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint, EnumSet.of(ClipboardTranslator.Flags.ALLOWED_EMPTY, ClipboardTranslator.Flags.ALLOWED_WITHOUT_REGION_POINT));
+    protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint);
     protected String areaName = "";
     protected final Model listModel;
     protected final Appearance listAppearance;
@@ -464,6 +465,8 @@ public interface ClipboardSaver
 	    if (query instanceof BeginListeningQuery)
 		return onBeginListeningQuery((BeginListeningQuery)query);
 		return false;
+	case AreaQuery.REGION_TEXT:
+	    return regionTextQueryTranslator.onAreaQuery(query, getHotPointX(), getHotPointY());
 	default:
 	    return false;
 	}
@@ -926,6 +929,55 @@ protected boolean onAltHome(KeyboardEvent event)
 	    return false;
 	redraw();
 	return true;
+    }
+
+    @Override public String onRegionTextQueryAll()
+    {
+	if (isEmpty())
+	    return null;
+	final int count = listModel.getItemCount();
+	if (count == 0)
+	    return listAppearance.getScreenAppearance(listModel.getItem(0), NONE_APPEARANCE_FLAGS);
+	final StringBuilder b = new StringBuilder();
+	b.append(listAppearance.getScreenAppearance(listModel.getItem(0), NONE_APPEARANCE_FLAGS));
+	for(int i = 1;i < count;++i)
+	    b.append("\n" + listAppearance.getScreenAppearance(listModel.getItem(i), NONE_APPEARANCE_FLAGS));
+	return new String(b);
+    }
+
+    @Override public String onRegionTextQuery(int fromX, int fromY, int toX, int toY)
+    {
+	if (isEmpty())
+	    return null;
+	if (fromX < 0 || fromY < 0 ||
+	    (fromX == toX && fromY == toY))
+	{
+	    //Taking text of the current line
+	    final int index = getExistingItemIndexOnLine(toY);
+	    if (index < 0)
+		return null;
+	    return listAppearance.getScreenAppearance(listModel.getItem(index), NONE_APPEARANCE_FLAGS);
+	}
+	final int modelFromY = getExistingItemIndexOnLine(fromY);
+	final int modelToY = getItemIndexOnLine(toY);//not necessarily existing
+	if (modelFromY < 0 || modelToY < 0)
+	    return null;
+	if (modelFromY == modelToY)
+	{
+	    final String line = listAppearance.getScreenAppearance(listModel.getItem(modelFromY), NONE_APPEARANCE_FLAGS);
+	    if (line == null || line.isEmpty())
+		return null;
+	    final int fromPos = Math.min(fromX, line.length());
+	    final int toPos = Math.min(toX, line.length());
+	    if (fromPos >= toPos)
+		return null;
+	    return line.substring(fromPos, toPos);
+	}
+	final StringBuilder b = new StringBuilder();
+	b.append(listAppearance.getScreenAppearance(listModel.getItem(fromY), NONE_APPEARANCE_FLAGS));
+	for(int i = fromY + 1;i < toY;++i)
+	    b.append("\n" + listAppearance.getScreenAppearance(listModel.getItem(i), NONE_APPEARANCE_FLAGS));
+	return new String(b);
     }
 
     @Override public boolean onClipboardCopyAll()
