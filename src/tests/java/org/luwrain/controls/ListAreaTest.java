@@ -72,6 +72,50 @@ for(int i = 1;i <= 3;++i)
 
     //FIXME:region query multiple lines
 
+    @Test public void beginListeningStarting()
+    {
+	final ListUtils.FixedModel model = new ListUtils.FixedModel(new String[]{"0123456789", "9876543210"});
+	final ListArea.Params params = new ListArea.Params();
+	params.context = new TestingControlEnvironment();
+	params.name = "test";
+	params.model = model;
+	params.appearance = new ListUtils.DefaultAppearance(params.context);
+	final ListArea area = new ListArea(params);
+	for(int i = 0;i < 11;++i)
+	{
+	    final BeginListeningQuery query = new BeginListeningQuery();
+	    assertTrue(area.onAreaQuery(query));
+	    assertTrue(query.hasAnswer());
+	    assertTrue(query.getAnswer().getText().equals("0123456789".substring(i)));
+	    assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT)));
+	}
+	assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
+	//This time query must fail on last position, because it's the last non-empty line
+	for(int i = 0;i < 10;++i)
+	{
+	    final BeginListeningQuery query = new BeginListeningQuery();
+	    assertTrue(area.onAreaQuery(query));
+	    assertTrue(query.hasAnswer());
+	    assertTrue(query.getAnswer().getText().equals("9876543210".substring(i)));
+	    assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT)));
+	}
+	//Testing last position of the last non-empty line
+	{
+	    assertTrue(area.getHotPointX() == 10);
+	    assertTrue(area.getHotPointY() == 1);
+	    final BeginListeningQuery query = new BeginListeningQuery();
+	    assertFalse(area.onAreaQuery(query));
+	}
+	//Testing the empty line, appears with default list settings
+	assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
+	{
+	    assertTrue(area.getHotPointX() == 0);
+	    assertTrue(area.getHotPointY() == 2);
+	    final BeginListeningQuery query = new BeginListeningQuery();
+	    assertFalse(area.onAreaQuery(query));
+	}
+    }
+
     //FIXME:clipboard operations
     //FIXME:navigation
 }

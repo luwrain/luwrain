@@ -42,8 +42,8 @@ public class BeginListeningQuery extends AreaQuery
 
     static public class Answer
     {
-	protected String text = "";
-	protected Object extraInfo = null;
+	protected final String text;
+	protected final Object extraInfo;
 
 	public Answer(String text, Object extraInfo)
 	{
@@ -52,32 +52,46 @@ public class BeginListeningQuery extends AreaQuery
 	    this.extraInfo = extraInfo;
 	}
 
-	public String text() {return text;}
-	public Object extraInfo() {return extraInfo;}
+	public String getText()
+	{
+	    return text;
+	}
+
+	public Object getExtraInfo()
+	{
+	    return extraInfo;
+	}
 
 	@Override public String toString()
 	{
 	    return text;
 	}
-}
+    }
 
     static public class PositionedAnswer extends Answer
     {
-	protected int x = -1;
-	protected int y = -1;
+	protected final int x;
+	protected final int y;
 
 	public PositionedAnswer(String text, int x, int y)
 	{
 	    super(text, new int[]{x, y});
 	    if (x < 0)
-		throw new IllegalArgumentException("x may not be negative (" + x + ")");
+		throw new IllegalArgumentException("x (" + x + ") may not be negative ");
 	    if (y < 0)
-		throw new IllegalArgumentException("y may not be negative (" + y + ")");
+		throw new IllegalArgumentException("y (" + y + ") may not be negative");
 	    this.x = x;
 	    this.y = y;
 	}
 
-	public int x() {return x;}
-	public int y() {return y;}
+	public int getX()
+	{
+	    return x;
+	}
+
+	public int getY()
+	{
+	    return y;
+	}
     }
 }

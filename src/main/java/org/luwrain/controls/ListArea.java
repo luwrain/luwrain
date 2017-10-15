@@ -596,7 +596,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	if (index >= count)
 	    return false;
 	final Object current = listModel.getItem(index);
-	final String text = listAppearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS).substring(hotPointX, listAppearance.getObservableRightBound(current));
+	final String text = listAppearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS).substring(Math.max(hotPointX, listAppearance.getObservableLeftBound(current)), listAppearance.getObservableRightBound(current));
 	if (text.isEmpty() && index + 1 >= count)
 	    return false;
 	if (index + 1 < count)

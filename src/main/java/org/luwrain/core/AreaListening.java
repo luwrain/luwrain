@@ -65,7 +65,7 @@ onFinish(null, null);
 	}
 	final BeginListeningQuery query = new BeginListeningQuery();
 	if (AreaQuery.ask(area, query))
-	    startNormal(query.getAnswer().text(), query.getAnswer().extraInfo()); else
+	    startNormal(query.getAnswer().getText(), query.getAnswer().getExtraInfo()); else
 	    startGeneral();
     }
 
