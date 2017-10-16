@@ -100,7 +100,7 @@ public class MutableLinesImpl implements MutableLines
 	if (index < 0 || index > lines.size())
 	    throw new IllegalArgumentException("Illegal index value (" + index + ")");
 	if (index < lines.size())
-	    lines.insertElementAt(line, index);
+	    lines.insertElementAt(line, index); else
 	lines.add(line);
     }
 

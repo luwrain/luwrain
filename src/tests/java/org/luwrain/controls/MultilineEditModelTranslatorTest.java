@@ -120,4 +120,44 @@ public class MultilineEditModelTranslatorTest extends Assert
 			}
 		    }
     }
+
+    @Test public void linesSplitting3x3()
+    {
+	final String[] initial = new String[]{"123", "456", "789"};
+	for(int x = 0;x <= 3;++x)
+	    for(int y = 0;y <= 3;++y)
+		for(int lineIndex = 0;lineIndex < 3;++lineIndex)
+		    for(int pos = 0;pos <= 3;++pos)
+		    {
+			final MutableLinesImpl lines = new MutableLinesImpl(initial);
+			final TestingHotPointControl hotPoint = new TestingHotPointControl();
+			hotPoint.x = x;
+			hotPoint.y = y;
+			final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
+			final String res = translator.splitLines(pos, lineIndex);
+			assertNotNull(res);
+			assertTrue(lines.getLineCount() == 4);
+			assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex].substring(0, pos)));
+			assertTrue(lines.getLine(lineIndex + 1).equals(initial[lineIndex].substring(pos)));
+			assertTrue(lines.getLine(lineIndex + 1).equals(res));
+			if (y == lineIndex)
+			{
+			    if (x < pos)
+			    {
+				assertTrue(hotPoint.x == x);
+				assertTrue(hotPoint.y == y);
+			    }else
+			    {
+				assertTrue(hotPoint.x == x - pos);
+				assertTrue(hotPoint.y == y + 1);
+			    }
+			} else
+			{
+			    assertTrue(hotPoint.x == x);
+			    if (y > lineIndex)
+				assertTrue(hotPoint.y == y + 1); else
+				assertTrue(hotPoint.y == y);
+			}
+		    }
+    }
 }
