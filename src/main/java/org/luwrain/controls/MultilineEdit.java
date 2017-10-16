@@ -24,6 +24,7 @@ import org.luwrain.util.*;
 
 public class MultilineEdit
 {
+    //FIXME:getLineCount() never returns zero
     /**
      * The model for {@link MultilineEdit}. It is supposed that this
      * interface is a front-end for {@link MutableLines} in conjunction with
@@ -53,7 +54,7 @@ public class MultilineEdit
 	//Expects ending point always after starting
 	boolean deleteRegion(int fromX, int fromY, int toX, int toY);
 	boolean insertRegion(int x, int y, String[] lines);
-	//Must add new lines if necessary to ensure lineIndex is in the bounds
+    //Adds empty line with pos=0 and line=0 if previously there were no lines at all
 	void insertChars(int pos, int lineIndex, String str);
 	void mergeLines(int firstLineIndex);
 

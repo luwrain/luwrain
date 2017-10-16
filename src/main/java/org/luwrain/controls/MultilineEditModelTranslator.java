@@ -21,6 +21,7 @@ import org.luwrain.core.*;
 // Expects that hot point is not related to the content 
 // Hot point position may be adjusted to the content changes only on endEditTrans 
 
+//Keeps lines empty if it is possible providing a fake  first line to be consistent, as it is required by MultilineEdit.Model
 public class MultilineEditModelTranslator implements MultilineEdit.Model
 {
     protected final MutableLines lines;
@@ -58,11 +59,16 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 
     @Override public int getLineCount()
     {
-	return lines.getLineCount();
+	final int count = lines.getLineCount();
+	return count > 0?count:1;
     }
 
     @Override public String getLine(int index)
     {
+	if (index < 0)
+	    throw new IllegalArgumentException("index (" + index + ") may not be negative");
+	if (index == 0 && lines.getLineCount() == 0)
+	    return "";
 	return lines.getLine(index);
     }
 
@@ -209,17 +215,23 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 	return true;
     }
 
+    //Adds empty line with pos=0 and line=0 if previously there were no lines at all
     @Override public void insertChars(int pos, int lineIndex, String str)
     {
 	NullCheck.notNull(str, "str");
+	if (pos < 0 || lineIndex < 0)
+	    throw new IllegalArgumentException("pos (" + pos + ") and lineIndex (" + lineIndex + ") may not be negative");
 	beginEditTrans();
-	while(lineIndex >= lines.getLineCount())
+	if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
 	    lines.addLine("");
-	String line = lines.getLine(lineIndex);
+	final int count = lines.getLineCount();
+	if (lineIndex >= count)
+	    throw new IllegalArgumentException("lineIndex (" + lineIndex + ") must be less then the number of lines (" + count + ")");
+	final String line = lines.getLine(lineIndex);
+	if (pos > line.length())
+	    throw new IllegalArgumentException("pos (" + pos + ") may not be greater than the length of the line (" + line.length() + ")");
 	NullCheck.notNull(line, "line");
-	while(line.length() < pos)
-	    line += " ";
-	lines.setLine(lineIndex, line.substring(0, pos) + (str != null?str:"") + line.substring(pos));
+	lines.setLine(lineIndex, line.substring(0, pos) + str + line.substring(pos));
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
 	    hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
 	endEditTrans(false);

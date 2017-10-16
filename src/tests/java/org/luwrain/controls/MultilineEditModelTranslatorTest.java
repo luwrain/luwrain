@@ -45,6 +45,38 @@ public class MultilineEditModelTranslatorTest extends Assert
 			    if (x <= pos)
 				assertTrue(hotPoint.x == x); else
 				assertTrue(hotPoint.x == x - 1);
+			} else
+			{
+			    assertTrue(hotPoint.x == x);
+			    assertTrue(hotPoint.y == y);
+			}
+		    }
+    }
+
+    @Test public void insertChar3x3()
+    {
+	final String[] initial = new String[]{"123", "456", "789"};
+	for(int x = 0;x <= 3;++x)
+	    for(int y = 0;y <= 3;++y)
+		for(int lineIndex = 0;lineIndex < 3;++lineIndex)
+		    for(int pos = 0;pos <= 3;++pos)
+		    {
+			final MutableLinesImpl lines = new MutableLinesImpl(initial);
+			final TestingHotPointControl hotPoint = new TestingHotPointControl();
+			hotPoint.x = x;
+			hotPoint.y = y;
+			final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
+			translator.insertChars(pos, lineIndex, " ");
+			assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex].substring(0, pos) + " " + initial[lineIndex].substring(pos)));
+			if (y == lineIndex)
+			{
+			    if (x < pos)
+				assertTrue(hotPoint.x == x); else
+				assertTrue(hotPoint.x == x + 1);
+			} else
+			{
+			    assertTrue(hotPoint.x == x);
+			    assertTrue(hotPoint.y == y);
 			}
 		    }
     }
