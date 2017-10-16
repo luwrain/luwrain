@@ -239,11 +239,16 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 
     @Override public void mergeLines(int firstLineIndex)
     {
-	if (firstLineIndex < 0 || firstLineIndex + 1 >= lines.getLineCount())
-	    return;
+	if (firstLineIndex < 0)
+	    throw new IllegalArgumentException("firstLineIndex (" + firstLineIndex + ") may not be negative");
+	final int lineCount = lines.getLineCount();
+	if (firstLineIndex + 1 >= lineCount)
+	    throw new IllegalArgumentException("firstLineIndex (" + firstLineIndex + ") + 1 must be less than the number of lines (" + lineCount + ")");
 	beginEditTrans();
-	final int origLineLen = lines.getLine(firstLineIndex).length();
-	lines.setLine(firstLineIndex, lines.getLine(firstLineIndex) + lines.getLine(firstLineIndex + 1));
+	final String firstLine = lines.getLine(firstLineIndex);
+	NullCheck.notNull(firstLine, "firstLine");
+	final int origLineLen = firstLine.length();
+	lines.setLine(firstLineIndex, firstLine + lines.getLine(firstLineIndex + 1));
 	lines.removeLine(firstLineIndex + 1);
 	if (hotPoint.getHotPointY() == firstLineIndex + 1)
 	{
@@ -252,7 +257,7 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 	} else
 	    if (hotPoint.getHotPointY() > firstLineIndex + 1)
 		hotPoint.setHotPointY(hotPoint.getHotPointY() - 1);
-	endEditTrans(false);
+	endEditTrans(true);
     }
 
     @Override public String splitLines(int pos, int lineIndex)
@@ -281,7 +286,7 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 	endEditTrans(false);
 	return lines.getLine(lineIndex + 1);
     }
-    
+
     protected void beginEditTrans()
     {
 	lines.beginLinesTrans();

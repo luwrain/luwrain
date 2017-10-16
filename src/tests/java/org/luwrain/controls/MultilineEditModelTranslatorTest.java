@@ -60,11 +60,14 @@ public class MultilineEditModelTranslatorTest extends Assert
 		assertTrue(translator.getLine(1).equals(""));
 		assertTrue(hotPoint.x == 0);
 		assertTrue(hotPoint.y == 1);
+		translator.mergeLines(0);
+		assertTrue(lines.getLineCount() == 0);
+		assertTrue(translator.getLineCount() == 1);
+		assertTrue(hotPoint.x == 0);
+		assertTrue(hotPoint.y == 0);
     }
 
-    
-
-    @Test public void deleteChar3x3()
+        @Test public void deleteChar3x3()
     {
 	final String[] initial = new String[]{"123", "456", "789"};
 	for(int x = 0;x < 3;++x)
@@ -121,6 +124,39 @@ public class MultilineEditModelTranslatorTest extends Assert
 		    }
     }
 
+        @Test public void linesMerge3x3()
+    {
+	final String[] initial = new String[]{"123", "456", "789"};
+	for(int x = 0;x <= 3;++x)
+	    for(int y = 0;y <= 3;++y)
+		for(int lineIndex = 0;lineIndex < 2;++lineIndex)
+		    {
+			final MutableLinesImpl lines = new MutableLinesImpl(initial);
+			final TestingHotPointControl hotPoint = new TestingHotPointControl();
+			hotPoint.x = x;
+			hotPoint.y = y;
+			final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
+			translator.mergeLines(lineIndex);
+			assertTrue(lines.getLineCount() == 2);
+			assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex] + initial[lineIndex + 1]));
+			if (y == lineIndex + 1)
+			{
+			    assertTrue(hotPoint.x == x + initial[lineIndex].length());
+			assertTrue(hotPoint.y == lineIndex);
+			} else
+			      if (y <= lineIndex)
+			      {
+				  assertTrue(hotPoint.x == x);
+				  assertTrue(hotPoint.y == y);
+			      } else
+				{
+			    assertTrue(hotPoint.x == x);
+			    assertTrue(hotPoint.y == y - 1);
+			}
+		    }
+    }
+
+
     @Test public void linesSplitting3x3()
     {
 	final String[] initial = new String[]{"123", "456", "789"};
@@ -160,4 +196,7 @@ public class MultilineEditModelTranslatorTest extends Assert
 			}
 		    }
     }
+
+    //FIXME:insertRegion
+    //FIXME:deleteRegion
 }
