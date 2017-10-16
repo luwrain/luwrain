@@ -257,15 +257,18 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 
     @Override public String splitLines(int pos, int lineIndex)
     {
-	if (lineIndex < 0)
-	    return "";
+	if (pos < 0 || lineIndex < 0)
+	    throw new IllegalArgumentException("pos (" + pos + ") and lineIndex (" + lineIndex + ") may not be negative");
 	beginEditTrans();
-	while(lineIndex >= lines.getLineCount())
+	if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
 	    lines.addLine("");
-	String line = lines.getLine(lineIndex);
+	final int lineCount = lines.getLineCount();
+	if (lineIndex >= lineCount)
+	    throw new IllegalArgumentException("lineIndex (" + lineIndex + ") must be less than the number of lines (" + lineCount + ")");
+	final String line = lines.getLine(lineIndex);
 	NullCheck.notNull(line, "line");
-	while (line.length() < pos)
-	    line += ' ';
+	if (pos > line.length())
+	    throw new IllegalArgumentException("pos (" + pos + ") may not be negative than the length of the line (" + line.length() + ")");
 	lines.setLine(lineIndex, line.substring(0, pos));
 	lines.insertLine(lineIndex + 1, line.substring(pos));
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
@@ -278,7 +281,7 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 	endEditTrans(false);
 	return lines.getLine(lineIndex + 1);
     }
-
+    
     protected void beginEditTrans()
     {
 	lines.beginLinesTrans();

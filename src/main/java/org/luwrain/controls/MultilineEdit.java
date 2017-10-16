@@ -22,6 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
+//Completely skips EnvironmentEvent.CLEAR
 public class MultilineEdit
 {
     //FIXME:getLineCount() never returns zero
@@ -131,6 +132,8 @@ return onEnter(event);
 	    return false;
 	switch(event.getCode())
 	{
+	case CLEAR:
+	    return false;
 	case CLIPBOARD_PASTE:
 	    return onClipboardPaste();
 	default:

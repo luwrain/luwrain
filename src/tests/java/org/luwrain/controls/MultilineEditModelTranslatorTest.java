@@ -24,6 +24,46 @@ import org.luwrain.core.queries.*;
 
 public class MultilineEditModelTranslatorTest extends Assert
 {
+    @Test public void emptyLines()
+    {
+	final MutableLinesImpl lines = new MutableLinesImpl(new String[0]);
+	final TestingHotPointControl hotPoint = new TestingHotPointControl();
+	final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
+	assertTrue(lines.getLineCount() == 0);
+	assertTrue(translator.getLineCount() == 1);
+	assertTrue(lines.getLine(0).equals(""));
+	translator.insertChars(0, 0, "a");
+	assertTrue(lines.getLineCount() == 1);
+	assertTrue(lines.getLine(0).equals("a"));
+	assertTrue(translator.getLineCount() == 1);
+	assertTrue(translator.getLine(0).equals("a"));
+	assertTrue(hotPoint.x == 1);
+	assertTrue(hotPoint.y == 0);
+	final char deleted = translator.deleteChar(0, 0);
+	assertTrue(deleted == 'a');
+	assertTrue(lines.getLineCount() == 0);
+	assertTrue(translator.getLineCount() == 1);
+	assertTrue(translator.getLine(0).equals(""));
+	assertTrue(hotPoint.x == 0);
+	assertTrue(hotPoint.y == 0);
+    }
+
+        @Test public void emptyLinesSplitMerge()
+    {
+	final MutableLinesImpl lines = new MutableLinesImpl(new String[0]);
+	final TestingHotPointControl hotPoint = new TestingHotPointControl();
+	final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
+	assertTrue(translator.splitLines(0, 0).equals(""));
+	assertTrue(lines.getLineCount() == 2);
+	assertTrue(translator.getLineCount() == 2);
+	assertTrue(translator.getLine(0).equals(""));
+		assertTrue(translator.getLine(1).equals(""));
+		assertTrue(hotPoint.x == 0);
+		assertTrue(hotPoint.y == 1);
+    }
+
+    
+
     @Test public void deleteChar3x3()
     {
 	final String[] initial = new String[]{"123", "456", "789"};
