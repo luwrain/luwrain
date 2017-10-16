@@ -73,10 +73,15 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 
     @Override public char deleteChar(int pos, int lineIndex)
     {
+	if (pos < 0 || lineIndex < 0)
+	    throw new IllegalArgumentException("pos (" + pos + ") and lineIndex (" + lineIndex + ") may not be negative");
+	final int lineCount = lines.getLineCount();
+	if (lineIndex >= lineCount)
+	    throw new IllegalArgumentException("lineIndex (" + lineIndex + ") must be less than the number of lines (" + lineCount + ")");
 	final String line = lines.getLine(lineIndex);
 	NullCheck.notNull(line, "line");
-	if (pos < 0 || pos >= line.length())
-	    return '\0';
+	if (pos >= line.length())
+	    throw new IllegalArgumentException("pos (" + pos + ") must be less than the length of the line (" + line.length() + ")");
 	beginEditTrans();
 	lines.setLine(lineIndex, line.substring(0, pos) + line.substring(pos + 1));
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() > pos)
