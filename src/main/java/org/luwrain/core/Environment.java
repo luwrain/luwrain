@@ -1101,24 +1101,25 @@ onNewAreasLayout();
     @Override protected void processEventResponse(EventResponse eventResponse)
     {
 	NullCheck.notNull(eventResponse, "eventResponse");
-	final EventResponse.Type type = eventResponse.getResponseType();
-	if (type == null)
-	    return;
-switch(type)
-	{
-	case LIST_ITEM:
-	    playSound(eventResponse.getSound() != null?eventResponse.getSound():Sounds.LIST_ITEM);
-	    speech.speakEventResponse(eventResponse, 0, 0, i18n);
-	    break;
-	case HINT:
-	    //	    if (eventResponse.getHint() != null)
-	    //		getObjForEnvironment().hint(eventResponse.getHint());
-	case REGULAR:
-	    	    speech.speakEventResponse(eventResponse, 0, 0, i18n);
-	    break;
-	default:
-	    Log.debug(LOG_COMPONENT, "unsupported event response type:" + type.toString());
-	}
+	//FIXME:access level
+	eventResponse.announce(getObjForEnvironment(), (parts)->{
+		NullCheck.notNullItems(parts, "parts");
+		if (parts.length == 0)
+		    return;
+		if (parts.length == 1)
+		{
+		    speech.speakEventResponse(parts[0]);
+		    return;
+		}
+		final StringBuilder b = new StringBuilder();
+		b.append(parts[0]);
+		for(int i = 1;i < parts.length;++i)
+		{
+		    b.append(", ");
+		    b.append(parts[i]);
+		}
+		speech.speakEventResponse(new String(b));
+	    });
     }
 
     static class RunnableEvent extends Event

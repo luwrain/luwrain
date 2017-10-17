@@ -16,103 +16,42 @@
 
 package org.luwrain.core;
 
-public class DefaultEventResponse implements EventResponse
+public class DefaultEventResponse
 {
-    protected final Type type;
-    protected final Sounds sound;
-    protected final Hint hint;
-    protected final Unit prefix;
-    protected final Unit content;
-    protected final Unit postfix;
-    protected final Suggestion suggestion;
-
-    public DefaultEventResponse(Type type, Sounds sound, Hint hint,
-				Unit prefix, Unit content, Unit postfix,
-Suggestion suggestion)
-    {
-	NullCheck.notNull(type, "type");
-	this.type = type;
-	this.sound = sound;
-	this.hint = hint;
-	this.prefix = prefix;
-	this.content = content;
-	this.postfix = postfix;
-	this.suggestion = suggestion;
-    }
-
-    @Override public Type getResponseType()
-    {
-	return type;
-    }
-
-    @Override public Sounds getSound()
-    {
-	return sound;
-    }
-
-    @Override public Hint getHint()
-    {
-	return hint;
-    }
-
-    @Override public Unit getPrefix()
-    {
-	return prefix;
-    }
-
-    @Override public Unit getResponseContent()
-    {
-	return content;
-    }
-
-    @Override public Unit getPostfix()
-    {
-	return postfix;
-    }
-
-    @Override public Suggestion getSuggestion()
-    {
-	return suggestion;
-    }
-
-    static public DefaultEventResponse text(String text) 
+static public EventResponse text(String text) 
     {
 	NullCheck.notNull(text, "text");
-	return new DefaultEventResponse(Type.REGULAR, null, null, null, new Unit(text), null, null);
+	return new EventResponses.Text(text);
     }
 
-        static public DefaultEventResponse hint(Hint hint) 
+        static public EventResponse hint(Hint hint) 
     {
 	NullCheck.notNull(hint, "hint");
-	return new DefaultEventResponse(Type.HINT, null, hint, null, null, null, null);
+	return new EventResponses.Hint(hint);
     }
 
-    static public DefaultEventResponse hint(Hint hint, String text) 
+    static public EventResponse hint(Hint hint, String text) 
     {
-	//FIXME:text
 	NullCheck.notNull(hint, "hint");
-	return new DefaultEventResponse(Type.HINT, null, hint, null, null, null, null);
+	NullCheck.notNull(text, "text");
+	return new EventResponses.Hint(hint, text);
     }
 
-
-
-    static public DefaultEventResponse listItem(String text) 
+    static public EventResponse listItem(String text) 
     {
 	NullCheck.notNull(text, "text");
-	return new DefaultEventResponse(Type.LIST_ITEM, null, null, null, new Unit(text), null, null);
+	return new EventResponses.ListItem(null, text, null);
     }
 
-    static public DefaultEventResponse listItem(String text, Suggestions suggestion) 
+    static public EventResponse listItem(String text, Suggestions suggestion) 
     {
 	NullCheck.notNull(text, "text");
-	return new DefaultEventResponse(Type.LIST_ITEM, null, null, null, new Unit(text), null, suggestion != null?new Suggestion(suggestion):null);
+	return new EventResponses.ListItem(null, text, suggestion);
     }
 
-    static public DefaultEventResponse listItem(Sounds sound, String text, Suggestions suggestion) 
+    static public EventResponse listItem(Sounds sound, String text, Suggestions suggestion) 
     {
 	NullCheck.notNull(text, "text");
-	return new DefaultEventResponse(Type.LIST_ITEM, sound, null, null, new Unit(text), null, suggestion != null?new Suggestion(suggestion):null);
+	return new EventResponses.ListItem(sound, text, suggestion);
     }
-
-
 }

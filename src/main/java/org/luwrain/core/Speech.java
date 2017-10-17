@@ -61,20 +61,14 @@ class Speech
 	defaultChannel.speak(text, null, relPitch, relRate, true);
     }
 
-    //Always cancels any previous text to speak
-    boolean speakEventResponse(EventResponse eventResponse, int relPitch, int relRate, I18n i18n)
+        //Always cancels any previous text to speak
+    void speakEventResponse(String text)
     {
-	NullCheck.notNull(eventResponse, "eventResponse");
-	NullCheck.notNull(i18n, "i18n");
+	if (text == null || text.isEmpty())
+	    return;
 	if (defaultChannel == null)
-	    return false;
-	final String text = getEventResponseText(eventResponse, i18n, ", ");
-			  if (text != null && !text.trim().isEmpty ())
-			  {
-	defaultChannel.speak(text, null, relPitch, relRate, true);
-	return true;
-			  }
-			  return false;
+	    return;
+	defaultChannel.speak(text, null, 0, 0, true);
     }
 
     //Always cancels any previous text to speak
@@ -373,61 +367,4 @@ class Speech
 	defaultChannel = any;
 	return true;
     }
-
-    static private String getEventResponseText(EventResponse eventResponse, I18n i18n, String delimiter)
-    {
-	NullCheck.notNull(eventResponse, "eventResponse");
-	NullCheck.notNull(i18n, "i18n");
-	NullCheck.notNull(delimiter, "delimiter");
-	final StringBuilder b = new StringBuilder();
-	final EventResponse.Unit prefix = eventResponse.getPrefix();
-	final EventResponse.Unit content = eventResponse.getResponseContent();
-	final EventResponse.Unit postfix = eventResponse.getPostfix();
-	final EventResponse.Suggestion suggestion = eventResponse.getSuggestion();
-	if (prefix != null && prefix.getType() == EventResponse.Unit.Type.TEXT && 
-	    prefix.getText() != null && !prefix.getText().isEmpty())
-	    b.append(prefix.getText());
-	if (content != null && content.getType() == EventResponse.Unit.Type.TEXT &&
-	    content.getText() != null && !content.getText().isEmpty())
-	    b.append((b.length() > 0?delimiter:"") + content.getText());
-	if (postfix != null && postfix.getType() == EventResponse.Unit.Type.TEXT &&
-	    postfix.getText() != null && !postfix.getText().isEmpty())
-	    b.append((b.length() > 0?delimiter:"") + postfix.getText());
-	if (suggestion != null)
-	{
-	    final String text = getSuggestionText(suggestion, i18n);
-	    if (text != null && !text.isEmpty())
-	    b.append((b.length() > 0?delimiter:"") + text);
-	}
-	return new String(b);
-    }
-
-    //May return null
-    static private String getSuggestionText(EventResponse.Suggestion suggestion, I18n i18n)
-    {
-	NullCheck.notNull(suggestion, "suggestion");
-	if (suggestion.getType() == null)
-	return null;
-	if (suggestion.getType() == EventResponse.Suggestion.Type.TEXT)
-return suggestion.getText();
-if (suggestion.getType() != EventResponse.Suggestion.Type.PREDEFINED || suggestion.getPredefined() == null)
-    return null;
-switch(suggestion.getPredefined())
-{
-case CLICKABLE_LIST_ITEM:
-    return "Элемент списка, нажмите Enter для активации";
-
-case LIST_ITEM:
-    return "Элемент списка";
-
-case POPUP_LIST_ITEM:
-    return "Элемент списка, нажмите Enter для выбора";
-
-
-
-default:
-    return null;
-}
-    }
-
 }
