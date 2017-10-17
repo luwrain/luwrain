@@ -126,7 +126,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	final String line = getLineNotNull(hotPointY);
 	if (line.isEmpty())
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	if (hotPointX > 0)
@@ -145,7 +145,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	final String line = getLineNotNull(hotPointY);
 	if (line.isEmpty())
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	if (hotPointX < line.length())
@@ -153,7 +153,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    hotPointX = line.length();
 	    context.onAreaNewHotPoint(this);
 	} 
-	context.hint(Hints.END_OF_LINE);
+	context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	return true;
     }
 
@@ -165,7 +165,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    hotPointY = 0;
 	    context.onAreaNewHotPoint(this);
 	}
-	context.hint(Hints.BEGIN_OF_TEXT);
+	context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_TEXT));
 	return true;
     }
 
@@ -182,7 +182,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    hotPointY = count - 1;
 	    context.onAreaNewHotPoint(this);
 	}
-	context.hint(Hints.END_OF_TEXT);
+	context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_TEXT));
 	return true;
     }
 
@@ -193,8 +193,8 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	if (hotPointY + 1 >= count)
 	{
 	    if (count == 1)
-		context.hint(context.staticStr(LangStatic.NO_LINES_BELOW) + " " + getLineNotNull(0), Hints.NO_LINES_BELOW); else
-		context.hint(Hints.NO_LINES_BELOW);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_BELOW, context.staticStr(LangStatic.NO_LINES_BELOW) + " " + getLineNotNull(0))); else
+		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_BELOW));
 	    return true;
 	}
 	++hotPointY;
@@ -213,8 +213,8 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	if (hotPointY == 0)
 	{
 	    if (count == 1)
-		context.hint(context.staticStr(LangStatic.NO_LINES_ABOVE) + " " + getLineNotNull(0), Hints.NO_LINES_ABOVE); else
-		context.hint(Hints.NO_LINES_ABOVE);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_ABOVE, context.staticStr(LangStatic.NO_LINES_ABOVE) + " " + getLineNotNull(0))); else
+		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_ABOVE));
 	    return true;
 	}
 	--hotPointY;
@@ -236,7 +236,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	{
 	    if (hotPointY + 1 >= count)
 	    {
-		context.hint(Hints.END_OF_TEXT);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_TEXT));
 		return true;
 	    }
 	    ++hotPointY;
@@ -246,7 +246,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	context.onAreaNewHotPoint(this);
 	final 	    String newLine = getLineNotNull(hotPointY);
 	if (hotPointX == newLine.length())
-	    context.hint(hotPointY + 1 >= count?Hints.END_OF_TEXT:Hints.END_OF_LINE); else
+	    context.setEventResponse(DefaultEventResponse.hint(hotPointY + 1 >= count?Hint.END_OF_TEXT:Hint.END_OF_LINE)); else
 	    context.sayLetter(newLine.charAt(hotPointX));
 	return true;
     }
@@ -261,7 +261,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	{
 	    if (hotPointY == 0)
 	    {
-		context.hint(Hints.BEGIN_OF_TEXT);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_TEXT));
 		return true;
 	    }
 	    --hotPointY;
@@ -272,7 +272,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	context.onAreaNewHotPoint(this);
 	final String newLine = getLineNotNull(hotPointY);
 	if (hotPointX == newLine.length())
-	    context.hint(Hints.END_OF_LINE); else
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); else
 	    context.sayLetter(newLine.charAt(hotPointX));
 	return true;
     }
@@ -283,7 +283,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	hotPointY = hotPointY < count?hotPointY:count - 1;
 	if (hotPointY + 1 >= count)
 	{
-	    context.hint(Hints.NO_LINES_BELOW);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_BELOW));
 	    return true;
 	}
 	final int height = context.getAreaVisibleHeight(this);
@@ -302,7 +302,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	hotPointY = hotPointY < count?hotPointY:count - 1;
 	if (hotPointY == 0)
 	{
-	    context.hint(Hints.NO_LINES_ABOVE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_ABOVE));
 	    return true;
 	}
 	final int height = context.getAreaVisibleHeight(this);
@@ -322,25 +322,25 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	final String line = getLineNotNull(hotPointY);
 	if (line.isEmpty())
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	hotPointX = hotPointX <= line.length()?hotPointX:line.length();
 	if (hotPointX >= line.length())
 	{
-	    context.hint(Hints.END_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
 	WordIterator it = new WordIterator(line, hotPointX);
 	if (!it.stepForward())
 	{
-	    context.hint(Hints.END_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
 	hotPointX = it.pos();
 	if (it.announce().length() > 0)
 	    context.say(it.announce()); else
-	    context.hint(Hints.END_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	context.onAreaNewHotPoint(this);
 	return true;
     }
@@ -352,19 +352,19 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	final String line = getLineNotNull(hotPointY);
 	if (line.isEmpty())
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	hotPointX = hotPointX <= line.length()?hotPointX:line.length();
 	if (hotPointX <= 0)
 	{
-	    context.hint(Hints.BEGIN_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
 	}
 	WordIterator it = new WordIterator(line, hotPointX);
 	if (!it.stepBackward())
 	{
-	    context.hint(Hints.BEGIN_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
 	}
 	hotPointX = it.pos();
@@ -376,7 +376,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     public void announceLine(int index, String line)
     {
 	if (line == null || line.isEmpty())
-	    context.hint(Hints.EMPTY_LINE); else
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
 	    context.say(line);
     }
 
@@ -391,7 +391,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    final String line = getLineNotNull(0);
 	    if (!line.isEmpty())
 		announceLine(0, line); else
-		context.hint(Hints.EMPTY_LINE);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	}
     }
 
