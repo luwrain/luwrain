@@ -22,6 +22,7 @@ public interface EventResponse
 	REGULAR,
 	LIST_ITEM,
 	MESSAGE,
+	HINT,
 	MESSAGE_OK,
 	MESSAGE_DONE,
 	MESSAGE_ERROR,

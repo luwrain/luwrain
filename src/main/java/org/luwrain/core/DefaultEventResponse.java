@@ -81,6 +81,13 @@ Suggestion suggestion)
 	return new DefaultEventResponse(Type.REGULAR, null, null, null, new Unit(text), null, null);
     }
 
+        static public DefaultEventResponse hint(Hints hint) 
+    {
+	NullCheck.notNull(hint, "hint");
+	return new DefaultEventResponse(Type.HINT, null, hint, null, null, null, null);
+    }
+
+
     static public DefaultEventResponse listItem(String text) 
     {
 	NullCheck.notNull(text, "text");

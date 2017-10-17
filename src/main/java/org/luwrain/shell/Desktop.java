@@ -167,16 +167,11 @@ public class Desktop implements Application
 	    NullCheck.notNull(flags, "flags");
 	    if (item instanceof UniRefInfo)
 	    {
-		final UniRefInfo i = (UniRefInfo)item;
-		if (i.isAvailable())
-		{
-		if (!flags.contains(Flags.BRIEF))
-		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, i.getTitle(), i.getValue().toLowerCase().startsWith("static:")?null:Suggestions.CLICKABLE_LIST_ITEM)); else
-		    luwrain.setEventResponse(DefaultEventResponse.listItem(i.getTitle(), null));
-	    } else
-		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, i.toString(), null));
+		final UniRefInfo info = (UniRefInfo)item;
+		announceUniRefInfo(info, flags.contains(Flags.BRIEF));
 		return;
 	    }
+	    luwrain.setEventResponse(DefaultEventResponse.text(item.toString()));
 	}
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
@@ -199,6 +194,36 @@ public class Desktop implements Application
 	{
 	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
 	}
+	private void announceUniRefInfo(UniRefInfo uniRefInfo, boolean brief)
+    {
+	NullCheck.notNull(uniRefInfo, "uniRefInfo");
+			if (!uniRefInfo.isAvailable())
+		{
+		    		    		    luwrain.setEventResponse(DefaultEventResponse.text(uniRefInfo.getValue()));
+				    return;				    
+		}
+					if (brief)
+		{
+		    		    luwrain.setEventResponse(DefaultEventResponse.listItem(uniRefInfo.getTitle(), null));
+				    return;				    
+		}
+		final String type = uniRefInfo.getValue().substring(0, uniRefInfo.getValue().indexOf(":")).toLowerCase();
+		switch(type)
+		{
+		case "static":
+		    		    		    luwrain.setEventResponse(DefaultEventResponse.text(uniRefInfo.getTitle()));
+						    break;
+						    		case "section":
+		    		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.DOC_SECTION, uniRefInfo.getTitle(), Suggestions.CLICKABLE_LIST_ITEM));
+						    break;
+
+						    
+
+	
+		default:
+		    		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, uniRefInfo.getTitle(), Suggestions.CLICKABLE_LIST_ITEM));
+		}
+    }
     }
 
 private class Model implements EditableListArea.EditableModel
@@ -296,7 +321,7 @@ private class Model implements EditableListArea.EditableModel
 		if (s.isEmpty())
 		    continue;
 		final UniRefInfo uniRef = luwrain.getUniRefInfo(s);
-		if (uniRef != null && !contains(uniRef))
+		if (uniRef != null)
 		    add(uniRef);
 	    }
 	}

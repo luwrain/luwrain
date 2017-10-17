@@ -1117,6 +1117,12 @@ switch(type)
 	    playSound(eventResponse.getSound() != null?eventResponse.getSound():Sounds.LIST_ITEM);
 	    speech.speakEventResponse(eventResponse, 0, 0, i18n);
 	    break;
+	case HINT:
+	    //	    if (eventResponse.getHint() != null)
+	    //		getObjForEnvironment().hint(eventResponse.getHint());
+	case REGULAR:
+	    	    speech.speakEventResponse(eventResponse, 0, 0, i18n);
+	    break;
 	default:
 	    Log.debug(LOG_COMPONENT, "unsupported event response type:" + type.toString());
 	}

@@ -73,12 +73,33 @@ class UniRefProcs
 		}
 	    },
 
-	    //url
+	    //static
 	    new UniRefProc() {
 		static private final String PREFIX = "static:";
 		@Override public String getUniRefType()
 		{
 		    return "static";
+		}
+		@Override public UniRefInfo getUniRefInfo(String uniRef)
+		{
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    if (!uniRef.startsWith(PREFIX))
+			return null;
+		    return new UniRefInfo(uniRef, "", uniRef.substring(PREFIX.length()));
+		}
+		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
+		{
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    return false;
+		}
+	    },
+
+	    	    //section
+	    new UniRefProc() {
+		static private final String PREFIX = "section:";
+		@Override public String getUniRefType()
+		{
+		    return "section";
 		}
 		@Override public UniRefInfo getUniRefInfo(String uniRef)
 		{
