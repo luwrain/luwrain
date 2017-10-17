@@ -235,7 +235,7 @@ public interface ClipboardSaver
 	{
 	    hotPointX = 0;
 	    if (announce)
-		context.hint(Hints.EMPTY_LINE);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	}
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -309,7 +309,7 @@ public interface ClipboardSaver
 	} else
 	{
 	    hotPointX = 0;
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	}
 	context.onAreaNewHotPoint(this);
     }
@@ -541,7 +541,7 @@ public interface ClipboardSaver
 	final Object item = selected();
 	if (item == null)
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	listAppearance.announceItem(item, NONE_APPEARANCE_FLAGS);
@@ -663,38 +663,38 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 
     protected boolean onArrowDown(KeyboardEvent event, boolean briefAnnouncement)
     {
-	return onTransition(Transition.Type.SINGLE_DOWN, Hints.NO_ITEMS_BELOW, briefAnnouncement);
+	return onTransition(Transition.Type.SINGLE_DOWN, Hint.NO_ITEMS_BELOW, briefAnnouncement);
     }
 
     protected boolean onArrowUp(KeyboardEvent event, boolean briefAnnouncement)
     {
-	return onTransition(Transition.Type.SINGLE_UP, Hints.NO_ITEMS_ABOVE, briefAnnouncement);
+	return onTransition(Transition.Type.SINGLE_UP, Hint.NO_ITEMS_ABOVE, briefAnnouncement);
     }
 
     protected boolean onPageDown(KeyboardEvent event, boolean briefAnnouncement)
     {
-	return onTransition(Transition.Type.PAGE_DOWN, Hints.NO_ITEMS_BELOW, briefAnnouncement);
+	return onTransition(Transition.Type.PAGE_DOWN, Hint.NO_ITEMS_BELOW, briefAnnouncement);
     }
 
     protected boolean onPageUp(KeyboardEvent event, boolean briefAnnouncement)
     {
-	return onTransition(Transition.Type.PAGE_UP, Hints.NO_ITEMS_ABOVE, briefAnnouncement);
+	return onTransition(Transition.Type.PAGE_UP, Hint.NO_ITEMS_ABOVE, briefAnnouncement);
     }
 
     protected boolean onEnd(KeyboardEvent event)
     {
-	return onTransition(Transition.Type.END, Hints.NO_ITEMS_BELOW, false);
+	return onTransition(Transition.Type.END, Hint.NO_ITEMS_BELOW, false);
     }
 
     protected boolean onHome(KeyboardEvent event)
     {
-	return onTransition(Transition.Type.HOME, Hints.NO_ITEMS_ABOVE, false);
+	return onTransition(Transition.Type.HOME, Hint.NO_ITEMS_ABOVE, false);
     }
 
-    protected boolean onTransition(Transition.Type type, int hint, boolean briefAnnouncement)
+    protected boolean onTransition(Transition.Type type, Hint hint, boolean briefAnnouncement)
     {
 	NullCheck.notNull(type, "type");
-	//	NullCheck.notNull(hint, "hint");
+	NullCheck.notNull(hint, "hint");
 	if (noContent())
 	    return true;
 	final int index = selectedIndex();
@@ -714,7 +714,7 @@ current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
 	switch(newState.type)
 	{
 	case NO_TRANSITION:
-	    context.hint(hint);
+	    context.setEventResponse(DefaultEventResponse.hint(hint));
 	    return true;
 	case EMPTY_LINE_TOP:
 	    if (!listFlags.contains(Flags.EMPTY_LINE_TOP))
@@ -745,20 +745,20 @@ protected boolean onArrowRight(KeyboardEvent event)
 	final Object item = selected();
 	if (item == null)
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 final int rightBound = listAppearance.getObservableRightBound(item);
 	if (hotPointX >= rightBound)
 	{
-	    context.hint(Hints.END_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
 	++hotPointX;
@@ -774,21 +774,21 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	final Object item = selected();
 	if (item == null)
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	final int leftBound = listAppearance.getObservableLeftBound(item);
 	final int rightBound = listAppearance.getObservableRightBound(item);
 	if (hotPointX <= leftBound)
 	{
-	    context.hint(Hints.BEGIN_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
 	}
 	--hotPointX;
@@ -804,34 +804,34 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	final Object item = selected();
 	if (item == null)
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 		final int leftBound = listAppearance.getObservableLeftBound(item);
 final int rightBound = listAppearance.getObservableRightBound(item);
 	if (hotPointX >= rightBound)
 	{
-	    context.hint(Hints.END_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
 	final String subline = line.substring(leftBound, rightBound);
 	final WordIterator it = new WordIterator(subline, hotPointX - leftBound);
 	if (!it.stepForward())
 	{
-	    context.hint(Hints.END_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
 	hotPointX = it.pos() + leftBound;
 	if (it.announce().length() > 0)
 	    context.say(it.announce()); else
-	    context.hint(Hints.END_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	context.onAreaNewHotPoint(this);
 	return true;
     }
@@ -843,28 +843,28 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	final Object item = selected();
 	if (item == null)
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	final int leftBound = listAppearance.getObservableLeftBound(item);
 	final int rightBound = listAppearance.getObservableRightBound(item);
 	if (hotPointX <= leftBound)
 	{
-	    context.hint(Hints.BEGIN_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
 	}
 	final String subline = line.substring(leftBound, rightBound);
 	final WordIterator it = new WordIterator(subline, hotPointX - leftBound);
 	if (!it.stepBackward())
 	{
-	    context.hint(Hints.BEGIN_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
 	}
 	hotPointX = it.pos() + leftBound;
@@ -880,13 +880,13 @@ protected boolean onAltEnd(KeyboardEvent event)
 	final Object item = selected();
 	if (item == null)
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	hotPointX = listAppearance.getObservableRightBound(item);
-	context.hint(Hints.END_OF_LINE);
+	context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	context.onAreaNewHotPoint(this);
 	return true;
     }
@@ -1014,7 +1014,7 @@ return listClipboardSaver.saveToClipboard(this, listModel, listAppearance, model
 	final int index = selectedIndex();
 	if (index < 0)
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    hotPointX = 0;
 	    context.onAreaNewHotPoint(this);
 	    return;
@@ -1022,7 +1022,7 @@ return listClipboardSaver.saveToClipboard(this, listModel, listAppearance, model
 	final Object item = listModel.getItem(index);
 	if (item == null)
 	{
-	    context.hint(Hints.EMPTY_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    hotPointX = 0;
 	    context.onAreaNewHotPoint(this);
 	    return;
@@ -1056,19 +1056,18 @@ return line.substring(leftBound, rightBound);
 	NullCheck.notNull(line, "line");
 	if (pos < rightBound)
 	    context.sayLetter(line.charAt(pos)); else
-	    context.hint(Hints.END_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
     }
 
 	protected boolean noContent()
     {
 	if (listModel == null || listModel.getItemCount() < 1)
 	{
-	    context.hint(noContentStr(), Hints.NO_CONTENT);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_CONTENT, noContentStr()));
 	    return true;
 	}
 	return false;
     }
-
 
 static protected class ListeningInfo
 {
