@@ -145,12 +145,12 @@ public class EditListPopup extends SimpleEditPopup
 	final Item item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
-	    luwrain.hint(Hints.NO_ITEMS_ABOVE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	    return;
 	}
 	final String value = briefIntroduction?item.announcement:item.value;
 	if (value.isEmpty())
-	    luwrain.hint(Hints.EMPTY_LINE); else
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
 	    luwrain.say(value);
 	setText(item.value, "");
     }
@@ -160,12 +160,12 @@ public class EditListPopup extends SimpleEditPopup
 	final Item item = model.getListPopupNextItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
-	    luwrain.hint(Hints.NO_ITEMS_BELOW);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_BELOW));
 	    return;
 	}
 	final String value = briefIntroduction?item.announcement:item.value;
 	if (value.isEmpty())
-	    luwrain.hint(Hints.EMPTY_LINE); else
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
 	    luwrain.say(value);
 	setText(item.value, "");
     }

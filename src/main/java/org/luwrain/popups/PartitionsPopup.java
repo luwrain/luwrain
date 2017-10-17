@@ -159,7 +159,7 @@ public class PartitionsPopup extends ListPopupBase
 		value = item.toString();
 	    if (!value.trim().isEmpty())
 		luwrain.say(value); else
-		luwrain.hint(Hints.EMPTY_LINE);
+		luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)

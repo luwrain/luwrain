@@ -183,14 +183,14 @@ protected boolean onMoveLeft(KeyboardEvent event)
     {
 	if (pos == 0)
 	{
-	    luwrain.hint(Hints.BEGIN_OF_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
 	    }
 	--pos;
 	final String line = prefix + text;
 	if (pos < line.length())
 	    luwrain.sayLetter(line.charAt(pos)); else
-	    luwrain.hint(Hints.END_OF_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
@@ -200,13 +200,13 @@ protected boolean onMoveRight(KeyboardEvent event)
 	final String line = prefix + text;
 	if (pos >= line.length())
 	{
-	    luwrain.hint(Hints.END_OF_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
 	++pos;
 	if (pos < line.length())
 	    luwrain.sayLetter(line.charAt(pos)); else
-	    luwrain.hint(Hints.END_OF_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
@@ -216,7 +216,7 @@ protected boolean onHome(KeyboardEvent event)
 	pos = 0;
 	final String line = prefix + text;
 	if (line.isEmpty())
-	    luwrain.hint(Hints.EMPTY_LINE); else
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
 	    luwrain.sayLetter(line.charAt(pos));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
@@ -226,7 +226,7 @@ protected boolean onEnd(KeyboardEvent event)
     {
 	final String line = prefix + text;
 	pos = line.length();
-	luwrain.hint(Hints.END_OF_LINE);
+	luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
@@ -236,24 +236,24 @@ protected boolean onAltRight(KeyboardEvent event)
 	final String line = prefix + text;
 	if (line.isEmpty())
 	{
-	    luwrain.hint(Hints.EMPTY_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	if (pos >= line.length())
 	{
-	    luwrain.hint(Hints.END_OF_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
-	WordIterator it = new WordIterator(line, pos);
+	final WordIterator it = new WordIterator(line, pos);
 	if (!it.stepForward())
 	{
-	    luwrain.hint(Hints.END_OF_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
 	pos = it.pos();
 	if (it.announce().length() > 0)
 	    luwrain.say(it.announce()); else
-	    luwrain.hint(Hints.END_OF_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
@@ -263,13 +263,13 @@ protected boolean onAltLeft(KeyboardEvent event)
 	final String line = prefix + text;
 	if (line.isEmpty())
 	{
-	    luwrain.hint(Hints.EMPTY_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
-	WordIterator it = new WordIterator(line, pos);
+	final WordIterator it = new WordIterator(line, pos);
 	if (!it.stepBackward())
 	{
-	    luwrain.hint(Hints.BEGIN_OF_LINE);
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
 	}
 	pos = it.pos();
