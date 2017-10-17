@@ -145,30 +145,6 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	return environment.getSharedObjectIface(id);
     }
 
-void hint(String text)
-    {
-	NullCheck.notNull(text, "text");
-	say(text, Speech.PITCH_HINT);
-    }
-
-    public void hint(String text, Hint hint)
-    {
-	NullCheck.notNull(text, "text");
-	final Sounds sound = Hints.hintToSoundMap(hint);
-	if (sound != null)
-	    playSound(sound);
-	hint(text);
-    }
-
-    public boolean hint(Hint hint)
-    {
-	final LangStatic staticStrId = Hints.hintToStaticStrMap(hint);
-	if (staticStrId == null)
-	    return false;
-	hint(i18n().staticStr(staticStrId), hint);
-	return true;
-    }
-
     public I18n i18n()
     {
 	return environment.i18nIface();
@@ -417,16 +393,16 @@ void hint(String text)
 	switch(letter)
 	{
 	case ' ':
-	    hint(Hint.SPACE);
+	    sayHint(Hint.SPACE);
 	    return;
 	case '\t':
-	    hint(Hint.TAB);
+	    sayHint(Hint.TAB);
 	    return;
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
 	    environment.getSpeech().speakLetter(letter, 0, 0); else
-	    hint(value); 
+	    say(value, Speech.PITCH_HINT);//FIXME:
     }
 
     public void sayLetter(char letter, int pitch)
@@ -434,16 +410,16 @@ void hint(String text)
 	switch(letter)
 	{
 	case ' ':
-	    hint(Hint.SPACE);
+	    sayHint(Hint.SPACE);
 	    return;
 	case '\t':
-	    hint(Hint.TAB);
+	    sayHint(Hint.TAB);
 	    return;
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
 	    environment.getSpeech().speakLetter(letter, pitch, 0); else
-	    hint(value); 
+	    say(value, Speech.PITCH_HINT);
     }
 
     public void speakLetter(char letter,
@@ -452,16 +428,16 @@ void hint(String text)
 	switch(letter)
 	{
 	case ' ':
-	    hint(Hint.SPACE);
+	    sayHint(Hint.SPACE);
 	    return;
 	case '\t':
-	    hint(Hint.TAB);
+	    sayHint(Hint.TAB);
 	    return;
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
 	    environment.getSpeech().speakLetter(letter, pitch, rate); else
-	    hint(value); 
+	    say(value, Speech.PITCH_HINT);
     }
 
     public void silence()
@@ -729,4 +705,13 @@ public FilesOperations getFilesOperations()
     {
 	return environment.getFilesOperations();
     }
+
+    private void sayHint(Hint hint)
+    {
+	NullCheck.notNull(hint, "hint");
+		    	final LangStatic staticStrId = EventResponses.hintToStaticStrMap(hint);
+	if (staticStrId == null)
+	    return;
+	say(i18n().staticStr(staticStrId), Speech.PITCH_HINT);
+	    }
 }
