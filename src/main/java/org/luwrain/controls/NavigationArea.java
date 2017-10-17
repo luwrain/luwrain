@@ -462,11 +462,6 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return hotPointY;
     }
 
-    @Override public String onRegionTextQueryAll()
-    {
-	return new LinesRegionTextQueryProvider(this).onRegionTextQueryAll();
-    }
-
     @Override public String onRegionTextQuery(int fromX, int fromY, int toX, int toY)
     {
 	return new LinesRegionTextQueryProvider(this).onRegionTextQuery(fromX, fromY, toX, toY);

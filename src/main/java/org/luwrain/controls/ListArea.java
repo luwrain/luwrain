@@ -931,20 +931,6 @@ protected boolean onAltHome(KeyboardEvent event)
 	return true;
     }
 
-    @Override public String onRegionTextQueryAll()
-    {
-	if (isEmpty())
-	    return null;
-	final int count = listModel.getItemCount();
-	if (count == 0)
-	    return listAppearance.getScreenAppearance(listModel.getItem(0), NONE_APPEARANCE_FLAGS);
-	final StringBuilder b = new StringBuilder();
-	b.append(listAppearance.getScreenAppearance(listModel.getItem(0), NONE_APPEARANCE_FLAGS));
-	for(int i = 1;i < count;++i)
-	    b.append("\n" + listAppearance.getScreenAppearance(listModel.getItem(i), NONE_APPEARANCE_FLAGS));
-	return new String(b);
-    }
-
     @Override public String onRegionTextQuery(int fromX, int fromY, int toX, int toY)
     {
 	if (isEmpty())

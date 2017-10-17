@@ -29,7 +29,6 @@ public class RegionTextQueryTranslator
 
     public interface Provider
     {
-	String onRegionTextQueryAll();
 	String onRegionTextQuery(int fromX, int fromY, int toX, int toY);
     }
 
@@ -106,8 +105,7 @@ public class RegionTextQueryTranslator
 	{
 	    if (!flags.contains(Flags.ALLOWED_WITHOUT_REGION_POINT))
 		return false;
-	    //FIXME:what action
-final String text = provider.onRegionTextQueryAll();
+	    final String text = provider.onRegionTextQuery(-1, -1, hotPointX, hotPointY);
 if (text == null)
     return false;
 query.answer(text);
@@ -147,16 +145,9 @@ return true;
 		}
 	    }
 
-	final String text;
-	if ((x1 == x2) && (y1 == y2))
-	{
-	//Checking if allowed empty
-	if (!flags.contains(Flags.ALLOWED_EMPTY))
+	if ((x1 == x2) && (y1 == y2) && !flags.contains(Flags.ALLOWED_EMPTY))
 	    return false;
-	//FIXME:what action
-	text = provider.onRegionTextQueryAll();
-	} else
-	text = provider.onRegionTextQuery(x1, y1, x2, y2);
+	final String text = provider.onRegionTextQuery(x1, y1, x2, y2);
 if (text == null)
     return false;
 query.answer(text);

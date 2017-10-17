@@ -18,12 +18,12 @@ package org.luwrain.controls;
 
 import java.io.File;
 import org.luwrain.core.*;
-import org.luwrain.controls.*;
 
 public class TestingControlEnvironment implements ControlEnvironment
 {
+    public final Clipboard clipboard = new Clipboard();
     public String spoken = "";
-    
+
     @Override public void say(String text)
     {
 	spoken = text;
@@ -102,7 +102,7 @@ public class TestingControlEnvironment implements ControlEnvironment
 
     @Override public Clipboard getClipboard()
     {
-	return null;
+	return clipboard;
     }
 
     @Override public void setEventResponse(EventResponse eventResponse)

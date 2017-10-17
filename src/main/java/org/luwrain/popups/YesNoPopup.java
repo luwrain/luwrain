@@ -27,13 +27,12 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
     protected final Luwrain luwrain;
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final String name;
-    protected String text = "";
+    protected final String text;
     protected boolean res;
     protected final boolean defaultRes;
     protected final Set<Popup.Flags> popupFlags;
 
-    public YesNoPopup(Luwrain luwrain,
-		      String name, String text,
+    public YesNoPopup(Luwrain luwrain, String name, String text,
 		      boolean defaultRes, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -111,8 +110,14 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return false;
 	switch (event.getCode())
 	{
+	case CLIPBOARD_COPY:
+	case CLIPBOARD_COPY_ALL:
+	    luwrain.getClipboard().set(text);
+	    return true;
 	case INTRODUCE:
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.INTRO_POPUP);
@@ -126,7 +131,19 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
     @Override public boolean onAreaQuery(AreaQuery query)
     {
 	NullCheck.notNull(query, "query");
-	return false;
+	switch(query.getQueryCode())
+	{
+	case AreaQuery.REGION_TEXT:
+	    {
+	    if (!(query instanceof RegionTextQuery))
+		return false;
+	    final RegionTextQuery regionTextQuery = (RegionTextQuery)query;
+	    regionTextQuery.answer(text);
+	    return true;
+	    }
+	default:
+	    return false;
+	}
     }
 
     @Override public Action[] getAreaActions()

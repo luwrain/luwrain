@@ -30,24 +30,6 @@ public class LinesRegionTextQueryProvider implements RegionTextQueryTranslator.P
 	this.lines = lines;
     }
 
-    @Override public String onRegionTextQueryAll()
-    {
-	final int count = lines.getLineCount();
-	if (count < 1)
-	    return null;
-	final StringBuilder b = new StringBuilder();
-	for(int i = 0;i < count;++i)
-	{
-	    final String line = lines.getLine(i);
-	    if (line == null)
-		return null;
-	    if (i > 0)
-		b.append("\n");
-	    b.append(line);
-	}
-	return new String(b);
-    }
-
     @Override public String onRegionTextQuery(int fromX, int fromY, int toX, int toY)
     {
 	final int count = lines.getLineCount();
