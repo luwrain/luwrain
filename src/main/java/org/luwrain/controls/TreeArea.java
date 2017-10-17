@@ -99,7 +99,7 @@ public class TreeArea implements Area
 	NullCheck.notNull(event, "event");
 	if (items == null || items.length < 1)
 	{
-	    environment.hint(Hints.NO_CONTENT);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.NO_CONTENT));
 	    return true;
 	}
 	//Space
@@ -371,7 +371,7 @@ public class TreeArea implements Area
 	{
 	    fillChildrenForNonLeaf(item.node);
 	    items = generateAllVisibleItems();
-		environment.hint(Hints.TREE_BRANCH_EXPANDED);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_EXPANDED));
 		environment.onAreaNewContent(this);
 		return true;
 	}
@@ -379,7 +379,7 @@ public class TreeArea implements Area
 	    {
 		item.node.children = null;
 		items = generateAllVisibleItems();
-		environment.hint(Hints.TREE_BRANCH_COLLAPSED);
+		environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_COLLAPSED));
 		environment.onAreaNewContent(this);
 		return true;
 	    }
@@ -399,7 +399,7 @@ public class TreeArea implements Area
 	case CLOSED:
 	    fillChildrenForNonLeaf(item.node);
 	    items = generateAllVisibleItems();
-	    //		environment.hint(Hints.TREE_BRANCH_EXPANDED);
+	    //		environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_EXPANDED);
 	    environment.say("Раскрыто");
 		environment.onAreaNewContent(this);
 		return true;
@@ -421,7 +421,7 @@ public class TreeArea implements Area
 	case OPENED:
 		item.node.children = null;
 		items = generateAllVisibleItems();
-		//		environment.hint(Hints.TREE_BRANCH_COLLAPSED);
+		//		environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_COLLAPSED);
 		environment.say("Свёрнуто");
 		environment.onAreaNewContent(this);
 		return true;
@@ -436,14 +436,14 @@ public class TreeArea implements Area
 	    return false;
 	if (hotPointY  >= items.length)
 	{
-	    environment.hint(Hints.TREE_END);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_END));
 	    return true;
 	}
 	++hotPointY;
 	if (hotPointY >= items.length)
 	{
 	    hotPointX = 0;
-	    environment.hint(Hints.EMPTY_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	} else
 	{
 	    hotPointX = getInitialHotPointX(hotPointY);
@@ -459,7 +459,7 @@ announce(items[hotPointY], briefAnnouncement);
 	    return false;
 	if (hotPointY  <= 0)
 	{
-	    environment.hint(Hints.TREE_BEGIN);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BEGIN));
 	    return true;
 	}
 	--hotPointY;
@@ -477,19 +477,19 @@ announce(items[hotPointY], briefAnnouncement);
 	final int offset = getInitialHotPointX(hotPointY);
 	if (value.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	if (hotPointX >= value.length() + offset)
 	{
-	    environment.hint(Hints.END_OF_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
 	if (hotPointX < offset)
 	    hotPointX = offset; else
 	    hotPointX++;
 	if (hotPointX >= value.length() + offset)
-	    environment.hint(Hints.END_OF_LINE); else
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); else
 	    environment.sayLetter(value.charAt(hotPointX - offset));
 	environment.onAreaNewHotPoint(this);
 	return true;
@@ -503,12 +503,12 @@ announce(items[hotPointY], briefAnnouncement);
 	final int offset = getInitialHotPointX(hotPointY);
 	if (value.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	if (hotPointX <= offset)
 	{
-	    environment.hint(Hints.BEGIN_OF_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
 	}
 	if (hotPointX >= value.length() + offset)
@@ -573,7 +573,7 @@ announce(items[hotPointY], briefAnnouncement);
 	NullCheck.notNull(item, "item");
 	if (item.title.isEmpty())
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return;
 	}
 	if (briefAnnouncement)

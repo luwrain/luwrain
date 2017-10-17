@@ -41,7 +41,7 @@ public class DefaultTableAppearance implements TableArea.Appearance
 	}
 	if (!value.trim().isEmpty())
 	    environment.say(value); else
-	    environment.hint(Hints.EMPTY_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
     }
 
     @Override public int getInitialHotPointX(TableArea.Model model)

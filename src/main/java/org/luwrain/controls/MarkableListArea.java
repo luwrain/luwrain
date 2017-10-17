@@ -90,7 +90,7 @@ public class MarkableListArea extends ListArea
 	if (selected == null)
 	    return false;
 	final boolean newState = marksInfo.toggleMark(selected);
-	context.hint(newState?"Отмечено":"Не отмечено");//fixme:
+	context.say(newState?"Отмечено":"Не отмечено");//fixme:
 	context.onAreaNewContent(this);
 	return true;
     }

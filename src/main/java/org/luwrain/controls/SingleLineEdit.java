@@ -102,7 +102,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	model.setHotPointX(0);
 	if (!line.isEmpty())
 	    context.sayLetter(line.charAt(0)); else
-	    context.hint(Hints.BEGIN_OF_LINE);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	return true;
     }
 
@@ -115,7 +115,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	    return false;
 	if (pos < 1)
 	{
-	    context.hint(Hints.BEGIN_OF_TEXT);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_TEXT));
 	    return true;
 	}
 	final String newLine = new String(line.substring(0, pos - 1) + line.substring(pos));
@@ -135,7 +135,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	    return false;
 	if (pos >= line.length())
 	{
-	    context.hint(Hints.END_OF_TEXT);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_TEXT));
 	    return true;
 	}
 	if (pos == line.length() - 1)
@@ -167,7 +167,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	    model.setLine(newLine);
 	} else
 	    model.setLine(line + tabSeq);
-	context.hint(Hints.TAB);
+	context.setEventResponse(DefaultEventResponse.hint(Hint.TAB));
 	model.setHotPointX(pos + tabSeq.length());
 	return true;
     }
@@ -189,7 +189,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 		final String lastWord = TextUtils.getLastWord(line, line.length());//Since we have attached exactly space, we can use old line value, nothing changes;
 		if (lastWord != null && !lastWord.isEmpty())
 		    context.say(lastWord); else
-		    context.hint(Hints.SPACE);
+		    context.setEventResponse(DefaultEventResponse.hint(Hint.SPACE));
 	    } else
 		context.sayLetter(event.getChar());
 	    return true;
@@ -202,7 +202,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	    final String lastWord = TextUtils.getLastWord(newLine, pos + 1);
 	    if (lastWord != null && !lastWord.isEmpty())
 		context.say(lastWord); else
-		context.hint(Hints.SPACE);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.SPACE));
 	} else
 	    context.sayLetter(event.getChar());
 	return true;

@@ -346,7 +346,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	final int count = model.getRowCount();
 	if (hotPointY >= count)
 	{
-	    environment.hint(Hints.TABLE_NO_ROWS_BELOW);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TABLE_NO_ROWS_BELOW));
 		return true;
 	}
 	++hotPointY;
@@ -361,7 +361,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	final int count = model.getRowCount();
 	if (hotPointY <= 0)
 	{
-	    environment.hint(Hints.TABLE_NO_ROWS_ABOVE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TABLE_NO_ROWS_ABOVE));
 	    return true;
 	}
 	--hotPointY;
@@ -378,7 +378,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	final int count = model.getRowCount();
 	if (hotPointY >= count)
 	{
-	    environment.hint(Hints.TABLE_NO_ROWS_BELOW);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TABLE_NO_ROWS_BELOW));
 		return true;
 	}
 	hotPointY += environment.getAreaVisibleHeight(this);
@@ -394,7 +394,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	    return true;
 	if (hotPointY <= 0)
 	{
-	    environment.hint(Hints.TABLE_NO_ROWS_ABOVE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TABLE_NO_ROWS_ABOVE));
 	    return true;
 	}
 	hotPointY -= environment.getAreaVisibleHeight(this);
@@ -430,7 +430,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	final int count = model.getRowCount();
 	if (hotPointY < 0 || hotPointY >= count)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	//Checking that hot point not before proper line begin;
@@ -447,7 +447,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	{
 	    if (currentCol + 1 >= colWidth.length)
 	    {
-		environment.hint(Hints.TABLE_END_OF_ROW);
+		environment.setEventResponse(DefaultEventResponse.hint(Hint.TABLE_END_OF_ROW));
 		return true;
 	    }
 	    cellShift = 0;
@@ -455,7 +455,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	    final String nextColText = appearance.getCellText(model, currentCol + 1, hotPointY);
 	    if (!nextColText.isEmpty())
 		environment.sayLetter(nextColText.charAt(0)); else
-		environment.hint(currentCol + 2 < colWidth.length?Hints.TABLE_END_OF_COL:Hints.TABLE_END_OF_ROW);
+		environment.setEventResponse(DefaultEventResponse.hint(currentCol + 2 < colWidth.length?Hint.TABLE_END_OF_COL:Hint.TABLE_END_OF_ROW));
 	    environment.onAreaNewContent(this);
 	    environment.onAreaNewHotPoint(this);
 	    return true;
@@ -463,7 +463,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	cellShift = c.shift;
 	hotPointX = c.pos + colStartPos;
 	if (c.pos + c.shift >= c.line.length())
-	    environment.hint(currentCol + 1 < colWidth.length?Hints.TABLE_END_OF_COL:Hints.TABLE_END_OF_ROW); else
+	    environment.setEventResponse(DefaultEventResponse.hint(currentCol + 1 < colWidth.length?Hint.TABLE_END_OF_COL:Hint.TABLE_END_OF_ROW)); else
 	    environment.sayLetter(c.line.charAt(c.pos + c.shift));
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
@@ -477,7 +477,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	final int count = model.getRowCount();
 	if (hotPointY < 0 || hotPointY >= count)
 	{
-	    environment.hint(Hints.EMPTY_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	if (hotPointX < initialHotPointX)
@@ -492,7 +492,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	{
 	    if (currentCol <= 0)
 	    {
-		environment.hint(Hints.TABLE_BEGIN_OF_ROW);
+		environment.setEventResponse(DefaultEventResponse.hint(Hint.TABLE_BEGIN_OF_ROW));
 		return true;
 	    }
 	    final String prevColText = appearance.getCellText(model, currentCol - 1, hotPointY);
@@ -507,7 +507,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 		cellShift = 0;
 		hotPointX = prevColStartPos + prevColText.length();
 	    }
-	    environment.hint(Hints.TABLE_END_OF_COL);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TABLE_END_OF_COL));
 	    environment.onAreaNewContent(this);
 	    environment.onAreaNewHotPoint(this);
 	    return true;
@@ -515,7 +515,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	cellShift = c.shift;
 	hotPointX = c.pos + colStartPos;
 	if (c.pos == c.width)//Should never happen;
-	    environment.hint(Hints.TABLE_END_OF_COL); else
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TABLE_END_OF_COL)); else
 	    environment.sayLetter(c.line.charAt(c.pos + c.shift));
 	environment.onAreaNewContent(this);
 	environment.onAreaNewHotPoint(this);
@@ -546,7 +546,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	environment.onAreaNewHotPoint(this);
 	if (hotPointY < count)
 	    appearance.announceRow(model, hotPointY, briefIntroduction?INTRODUCTION_BRIEF:0); else
-	    environment.hint(Hints.EMPTY_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
     }
 
     private void copyEntireContent()
@@ -563,7 +563,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
     {
 	if (!noProperContent())
 	    return false;
-	environment.hint(environment.staticStr(LangStatic.TABLE_NO_CONTENT), Hints.NO_CONTENT);
+	environment.setEventResponse(DefaultEventResponse.hint(Hint.NO_CONTENT, environment.staticStr(LangStatic.TABLE_NO_CONTENT)));
 	return true;
 	}
 

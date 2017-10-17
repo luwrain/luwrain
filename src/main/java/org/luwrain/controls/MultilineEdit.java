@@ -155,13 +155,13 @@ return onEnter(event);
 	    return false;
 	if (model.getHotPointX() <= 0 && model.getHotPointY() <= 0)
 	{
-	    environment.hint(Hints.BEGIN_OF_TEXT);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_TEXT));
 	    return true;
 	}
 	if (model.getHotPointX() <= 0)
 	{
 	    model.mergeLines(model.getHotPointY() - 1);
-	    environment.hint(Hints.END_OF_LINE);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	} else
 	    environment.sayLetter(model.deleteChar(model.getHotPointX() - 1, model.getHotPointY()));
 	return true;
@@ -181,11 +181,11 @@ return onEnter(event);
 	}
 	if (model.getHotPointY() + 1 >= model.getLineCount())
 	{
-	    environment.hint(Hints.END_OF_TEXT);
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_TEXT));
 	    return true;
 	}
 	model.mergeLines(model.getHotPointY());
-	environment.hint(Hints.END_OF_LINE); 
+	environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); 
 	return true;
     }
 
@@ -195,7 +195,7 @@ return onEnter(event);
 	if (tabSeq == null)
 	    return false;
 	model.insertChars(model.getHotPointX(), model.getHotPointY(), tabSeq);
-	    environment.hint(Hints.TAB);
+	environment.setEventResponse(DefaultEventResponse.hint(Hint.TAB));
 	    return true;
     }
 
@@ -204,7 +204,7 @@ return onEnter(event);
 	final String line = model.splitLines(model.getHotPointX(), model.getHotPointY());
 	NullCheck.notNull(line, "line");
 	if (line.isEmpty())
-	    environment.hint(Hints.EMPTY_LINE); else
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
 	    environment.say(line);
 	return true;
     }
@@ -223,7 +223,7 @@ return onEnter(event);
 	    NullCheck.notNull(lastWord, "lastWord");
 		if (!lastWord.isEmpty())
 		    environment.say(lastWord); else
-		    environment.hint(Hints.SPACE);
+		    environment.setEventResponse(DefaultEventResponse.hint(Hint.SPACE));
 	} else
 		environment.sayLetter(c);
 	    return true;

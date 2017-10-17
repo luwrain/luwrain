@@ -280,7 +280,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	    }
 	    if (!line.isEmpty())
 		context.say(line ); else
-		context.hint(Hints.EMPTY_LINE);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return;
 	case TOP:
 	    if (index > 0 && index - 1 < consoleModel.getConsoleItemCount())
@@ -290,7 +290,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	    }
 	    if (!line.isEmpty())
 		context.say(line ); else
-		context.hint(Hints.EMPTY_LINE);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return;
 	}
     }
