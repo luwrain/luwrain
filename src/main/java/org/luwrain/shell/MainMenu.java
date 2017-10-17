@@ -50,7 +50,7 @@ public class MainMenu extends ListArea implements PopupClosingTranslator.Provide
 	    case ALTERNATIVE_PAGE_DOWN:
 		if (selectedIndex() + 1 >= listModel.getItemCount())
 		{
-		    context.hint(Hints.NO_ITEMS_BELOW);
+		    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_BELOW));
 		    return true;
 		}
 		for(int i = selectedIndex() + 1;i < listModel.getItemCount();++i)
@@ -59,13 +59,13 @@ public class MainMenu extends ListArea implements PopupClosingTranslator.Provide
 			select(i, true);
 			return true;
 		    }
-		context.hint(Hints.NO_ITEMS_BELOW);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_BELOW));
 		return true;
 	    case PAGE_UP:
 	    case ALTERNATIVE_PAGE_UP:
 		if (selectedIndex() < 1)
 		{
-context.hint(Hints.NO_ITEMS_ABOVE);
+		    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 		    return true;
 		}
 		for(int i = selectedIndex() - 1;i >= 0;--i)
@@ -74,7 +74,7 @@ context.hint(Hints.NO_ITEMS_ABOVE);
 			select(i, true);
 			return true;
 		    }
-context.hint(Hints.NO_ITEMS_ABOVE);
+context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 		return true;
 	    }
 	return super.onKeyboardEvent(event);

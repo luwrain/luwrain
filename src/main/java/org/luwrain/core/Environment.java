@@ -926,14 +926,7 @@ onNewAreasLayout();
 		  popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
     }
 
-    /**
-     * @return true if this hint should be spoken as well
-     */
-    boolean onStandardHint(int code)
-    {
-	return true;
-    }
-
+    //FIXME:
     public I18n i18nIface()
     {
 	return i18n;

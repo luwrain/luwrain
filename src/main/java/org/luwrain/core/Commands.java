@@ -212,7 +212,7 @@ class Commands
 		    }
 		    if (!line.trim().isEmpty())
 			env.getSpeech().speak(line, 0, 0); else
-			env.getObjForEnvironment().hint(Hints.EMPTY_LINE);
+			env.getObjForEnvironment().setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 		    env.needForIntroduction = false;
 		}
 	    },

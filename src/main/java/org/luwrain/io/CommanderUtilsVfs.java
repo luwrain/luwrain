@@ -154,7 +154,7 @@ public class CommanderUtilsVfs
 	    final String name = entry.getName().getBaseName();
 	    if (name.trim().isEmpty() && type != EntryType.PARENT)
 	    {
-		environment.hint(Hints.EMPTY_LINE);
+		environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 		return;
 	    }
 	    final StringBuilder b = new StringBuilder();
@@ -164,7 +164,7 @@ public class CommanderUtilsVfs
 	    switch(type)
 	    {
 	    case PARENT:
-		environment.hint(environment.getStaticStr("CommanderParentDirectory"));
+		environment.say(environment.getStaticStr("CommanderParentDirectory"));//FIXME:
 		return;
 	    case DIR:
 		b.append(environment.getStaticStr("CommanderDirectory"));

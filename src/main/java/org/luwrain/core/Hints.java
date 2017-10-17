@@ -18,33 +18,9 @@ package org.luwrain.core;
 
 public class Hints
 {
-    public static final int SPACE = 1;
-    public static final int TAB = 2;
-    public static final int EMPTY_LINE = 3;
-    public static final int BEGIN_OF_LINE = 4;
-    public static final int END_OF_LINE = 5;
-    public static final int BEGIN_OF_TEXT = 6;
-    public static final int END_OF_TEXT = 7;
-    public static final int NO_LINES_ABOVE = 8;
-    public static final int NO_LINES_BELOW = 9;
-    public static final int NO_ITEMS_ABOVE = 10;
-    public static final int NO_ITEMS_BELOW = 11;
-    public static final int NO_CONTENT = 12;
-
-    public static final int TREE_BEGIN = 13;
-    public static final int TREE_END = 14;
-    public static final int TREE_BRANCH_COLLAPSED = 15;
-    public static final int TREE_BRANCH_EXPANDED = 16;
-
-    public static final int TABLE_NO_ROWS_ABOVE = 18;
-    public static final int TABLE_NO_ROWS_BELOW = 19;
-    public static final int TABLE_END_OF_COL = 20;
-    public static final int TABLE_BEGIN_OF_ROW = 21;
-    public static final int TABLE_END_OF_ROW = 22;
-
-    static public LangStatic hintToStaticStrMap(int hintCode)
+    static public LangStatic hintToStaticStrMap(Hint hint)
     {
-	switch (hintCode)
+	switch (hint)
 	{
 	case SPACE:
 	    return LangStatic.SPACE;
@@ -89,9 +65,9 @@ public class Hints
 	}
     }
 
-    static public Sounds hintToSoundMap(int hintCode)
+    static public Sounds hintToSoundMap(Hint hint)
     {
-	switch (hintCode)
+	switch (hint)
 	{
 	case NO_ITEMS_ABOVE:
 	case TREE_BEGIN:

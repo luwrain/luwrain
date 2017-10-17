@@ -145,28 +145,27 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	return environment.getSharedObjectIface(id);
     }
 
-    public void hint(String text)
+void hint(String text)
     {
 	NullCheck.notNull(text, "text");
 	say(text, Speech.PITCH_HINT);
     }
 
-    public void hint(String text, int code)
+    public void hint(String text, Hint hint)
     {
 	NullCheck.notNull(text, "text");
-	final Sounds sound = Hints.hintToSoundMap(code);
+	final Sounds sound = Hints.hintToSoundMap(hint);
 	if (sound != null)
 	    playSound(sound);
-	if (environment.onStandardHint(code))
-	    hint(text);
+	hint(text);
     }
 
-    public boolean hint(int code)
+    public boolean hint(Hint hint)
     {
-	final LangStatic staticStrId = Hints.hintToStaticStrMap(code);
+	final LangStatic staticStrId = Hints.hintToStaticStrMap(hint);
 	if (staticStrId == null)
 	    return false;
-	hint(i18n().staticStr(staticStrId), code);
+	hint(i18n().staticStr(staticStrId), hint);
 	return true;
     }
 
@@ -418,10 +417,10 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	switch(letter)
 	{
 	case ' ':
-	    hint(Hints.SPACE);
+	    hint(Hint.SPACE);
 	    return;
 	case '\t':
-	    hint(Hints.TAB);
+	    hint(Hint.TAB);
 	    return;
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
@@ -435,10 +434,10 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	switch(letter)
 	{
 	case ' ':
-	    hint(Hints.SPACE);
+	    hint(Hint.SPACE);
 	    return;
 	case '\t':
-	    hint(Hints.TAB);
+	    hint(Hint.TAB);
 	    return;
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
@@ -453,10 +452,10 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	switch(letter)
 	{
 	case ' ':
-	    hint(Hints.SPACE);
+	    hint(Hint.SPACE);
 	    return;
 	case '\t':
-	    hint(Hints.TAB);
+	    hint(Hint.TAB);
 	    return;
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);

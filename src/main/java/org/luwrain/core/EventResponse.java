@@ -109,7 +109,7 @@ public interface EventResponse
 
     Type getResponseType();
     Sounds getSound();
-    Hints getHint();
+    Hint getHint();
     Unit getPrefix();
     Unit getResponseContent();
     Unit getPostfix();

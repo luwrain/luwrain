@@ -26,10 +26,6 @@ public interface ControlEnvironment
     void say(String text, Sounds sound);
     void sayStaticStr(LangStatic id);
     void sayLetter(char letter);
-    void hint(String text); 
-    void hint(String text, int code);
-    void hint(int code);
-    void hintStaticString(LangStatic id);
     void onAreaNewContent(Area area);
     void onAreaNewName(Area area);
     void onAreaNewHotPoint(Area area);

@@ -20,13 +20,13 @@ public class DefaultEventResponse implements EventResponse
 {
     protected final Type type;
     protected final Sounds sound;
-    protected final Hints hint;
+    protected final Hint hint;
     protected final Unit prefix;
     protected final Unit content;
     protected final Unit postfix;
     protected final Suggestion suggestion;
 
-    public DefaultEventResponse(Type type, Sounds sound, Hints hint,
+    public DefaultEventResponse(Type type, Sounds sound, Hint hint,
 				Unit prefix, Unit content, Unit postfix,
 Suggestion suggestion)
     {
@@ -50,7 +50,7 @@ Suggestion suggestion)
 	return sound;
     }
 
-    @Override public Hints getHint()
+    @Override public Hint getHint()
     {
 	return hint;
     }
@@ -81,11 +81,19 @@ Suggestion suggestion)
 	return new DefaultEventResponse(Type.REGULAR, null, null, null, new Unit(text), null, null);
     }
 
-        static public DefaultEventResponse hint(Hints hint) 
+        static public DefaultEventResponse hint(Hint hint) 
     {
 	NullCheck.notNull(hint, "hint");
 	return new DefaultEventResponse(Type.HINT, null, hint, null, null, null, null);
     }
+
+    static public DefaultEventResponse hint(Hint hint, String text) 
+    {
+	//FIXME:text
+	NullCheck.notNull(hint, "hint");
+	return new DefaultEventResponse(Type.HINT, null, hint, null, null, null, null);
+    }
+
 
 
     static public DefaultEventResponse listItem(String text) 
