@@ -74,6 +74,8 @@ class  EventResponses
 	{
 	    NullCheck.notNull(text, "text");
 	    NullCheck.notNull(speech, "speech");
+	    if (!text.trim().isEmpty())
+	    speech.speak(new String[]{text});
 	}
     }
 
