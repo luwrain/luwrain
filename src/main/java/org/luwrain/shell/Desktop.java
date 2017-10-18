@@ -213,6 +213,9 @@ public class Desktop implements Application
 		case "static":
 		    		    		    luwrain.setEventResponse(DefaultEventResponse.text(uniRefInfo.getTitle()));
 						    break;
+		case "empty":
+		    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+		    break;
 						    		case "section":
 		    		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.DOC_SECTION, uniRefInfo.getTitle(), Suggestions.CLICKABLE_LIST_ITEM));
 						    break;

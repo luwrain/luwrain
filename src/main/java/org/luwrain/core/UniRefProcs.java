@@ -115,6 +115,27 @@ class UniRefProcs
 		}
 	    },
 
+	    	    	    //empty
+	    new UniRefProc() {
+		static private final String PREFIX = "empty:";
+		@Override public String getUniRefType()
+		{
+		    return "empty";
+		}
+		@Override public UniRefInfo getUniRefInfo(String uniRef)
+		{
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    if (!uniRef.startsWith(PREFIX))
+			return null;
+		    return new UniRefInfo(uniRef, "", "");
+		}
+		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
+		{
+		    NullCheck.notEmpty(uniRef, "uniRef");
+		    return false;
+		}
+	    },
+
 	    //command
 	    new UniRefProc() {
 		@Override public String getUniRefType()
