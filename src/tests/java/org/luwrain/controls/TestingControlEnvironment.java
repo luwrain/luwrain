@@ -48,27 +48,6 @@ public class TestingControlEnvironment implements ControlEnvironment
     {
     }
 
-    @Override public void hint(String text)
-    {
-	spoken = text;
-    }
-
-    @Override public void hint(String text, int code)
-    {
-	spoken = text;
-	//	lastHint = code;
-    }
-
-    @Override public void hint(int code)
-    {
-	//	lastHint = code;
-    }
-
-    @Override public void hintStaticString(LangStatic id)
-    {
-	hint(staticStr(id));
-    }
-
     @Override public void onAreaNewName(Area area)
     {
     }

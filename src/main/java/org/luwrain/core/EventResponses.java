@@ -178,7 +178,7 @@ default:
 	}
     }
 
-    static Sounds hintToSoundMap(org.luwrain.core.Hint hint)
+    static private Sounds hintToSoundMap(org.luwrain.core.Hint hint)
     {
 	switch (hint)
 	{
@@ -207,5 +207,4 @@ default:
 	    return null;
 	}
     }
-
     }
