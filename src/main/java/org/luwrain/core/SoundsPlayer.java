@@ -128,6 +128,7 @@ private SourceDataLine audioLine = null;
 	setSoundFile(dataDir, scheme.getEndOfLine(""), Sounds.END_OF_LINE);
 	setSoundFile(dataDir, scheme.getEmptyLine(""), Sounds.EMPTY_LINE);
 	setSoundFile(dataDir, scheme.getAnnouncement(""), Sounds.ANNOUNCEMENT);
+	setSoundFile(dataDir, scheme.getAttention(""), Sounds.ATTENTION);
 	setSoundFile(dataDir, scheme.getChatMessage(""), Sounds.CHAT_MESSAGE);
 	setSoundFile(dataDir, scheme.getNoApplications(""), Sounds.NO_APPLICATIONS);
 	setSoundFile(dataDir, scheme.getStartup(""), Sounds.STARTUP);

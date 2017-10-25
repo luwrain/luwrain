@@ -19,6 +19,7 @@ package org.luwrain.core;
 public enum Sounds
 {
     ANNOUNCEMENT,
+    ATTENTION,
     BLOCKED,
     CANCEL,
     CHAT_MESSAGE,

@@ -31,7 +31,7 @@ public interface Settings
     static final String MAIN_MENU_SECTIONS_PATH = "/org/luwrain/main-menu/sections";
     static final String SPEECH_PATH = "/org/luwrain/speech";
     static final String BRAILLE_PATH = "/org/luwrain/braille";
-    static final String CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/current-scheme";
+    static final String CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/scheme";
     static final String INTERACTION_PARAMS_PATH = "/org/luwrain/interaction";
     static final String OS_COMMANDS_PATH = "/org/luwrain/os/commands";
     static final String OS_SHORTCUTS_PATH = "/org/luwrain/os/shortcuts";
@@ -193,6 +193,7 @@ public interface DateTime
     public interface SoundScheme 
     {
 	String getAnnouncement(String defValue);
+	String getAttention(String defValue);
 	String getBlocked(String defValue);
 	String getCancel(String defValue);
 	String getChatMessage(String defValue);
@@ -234,6 +235,7 @@ public interface DateTime
 	String getUnselected(String defValue);
 	String getTableCell(String defValue);
 	void setAnnouncement(String defValue);
+	void setAttention(String value);
 	void setBlocked(String value);
 	void setCancel(String value);
 	void setChatMessage(String value);
