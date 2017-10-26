@@ -325,7 +325,7 @@ public class CommanderArea<E> extends ListArea
 	    case BACKSPACE:
 		return onBackspace(event);
 	    case INSERT:
-		return onKeyInsert(event);
+		return onMarking(event);
 	    }
 	return super.onKeyboardEvent(event);
     }
@@ -385,7 +385,7 @@ public class CommanderArea<E> extends ListArea
 	return true;
     }
 
-    protected boolean onKeyInsert(KeyboardEvent event)
+    protected boolean onMarking(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!flags.contains(Flags.MARKING))
@@ -397,6 +397,9 @@ public class CommanderArea<E> extends ListArea
 	if (wrapper.marked)
 	    context.say("выделено", Sounds.SELECTED); else //FIXME:
 	    context.say("не выделено", Sounds.UNSELECTED); //FIXME:
+	final int index = selectedIndex();
+	if (index >= 0 && index + 1 < getListItemCount())
+	    select(index + 1, false);
 	return true;
     }
 

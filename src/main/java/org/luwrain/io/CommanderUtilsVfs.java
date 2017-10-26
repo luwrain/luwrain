@@ -177,7 +177,7 @@ public class CommanderUtilsVfs
 		b.append(environment.getStaticStr("CommanderSpecial"));
 		break;
 	    }
-	    environment.playSound(Sounds.LIST_ITEM);
+	    environment.playSound(marked?Sounds.ATTENTION:Sounds.LIST_ITEM);
 	    environment.say(new String(b));
 	}
     }

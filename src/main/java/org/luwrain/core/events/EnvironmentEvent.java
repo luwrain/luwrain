@@ -139,10 +139,4 @@ public class EnvironmentEvent extends Event
     {
 	return broadcastFilterUniRef != null?broadcastFilterUniRef:"";
     }
-
-    static public boolean resetRegionPoint(Area area)
-    {
-	NullCheck.notNull(area, "area");
-	return false;
-    }
 }

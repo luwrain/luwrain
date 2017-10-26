@@ -382,7 +382,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 
     public void reset(boolean announce)
     {
-	EnvironmentEvent.resetRegionPoint(this);
+	regionPoint.reset();
 	hotPointX = 0;
 	hotPointY = 0;
 	context.onAreaNewHotPoint(this);

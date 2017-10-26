@@ -35,7 +35,6 @@ public class ListArea  implements Area, ClipboardTranslator.Provider, RegionText
     {
 	int getItemCount();
 	Object getItem(int index);
-	//	boolean toggleMark(int index);
 	void refresh();
     }
 
@@ -279,9 +278,14 @@ public interface ClipboardSaver
 	return listModel.getItem(index);
     }
 
+    public int getListItemCount()
+    {
+	return listModel.getItemCount();
+    }
+
     public void reset(boolean announce)
     {
-	EnvironmentEvent.resetRegionPoint(this);
+	regionPoint.reset();
 	resetHotPoint(announce);
     }
 
