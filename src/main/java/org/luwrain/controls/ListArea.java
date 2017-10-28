@@ -877,7 +877,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-protected boolean onAltEnd(KeyboardEvent event)
+    protected boolean onAltEnd(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;
@@ -895,12 +895,16 @@ protected boolean onAltEnd(KeyboardEvent event)
 	return true;
     }
 
-protected boolean onAltHome(KeyboardEvent event)
+    protected boolean onAltHome(KeyboardEvent event)
     {
 	if (noContent())
-	    return true;
+    	    return true;
 	final Object item = selected();
-	NullCheck.notNull(item, "item");
+	if (item == null)
+	{
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	    return true;
+	}
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	hotPointX = listAppearance.getObservableLeftBound(item);

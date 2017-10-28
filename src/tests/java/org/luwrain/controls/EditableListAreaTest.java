@@ -88,6 +88,6 @@ public class EditableListAreaTest extends Assert
     }
 
     //FIXME:cutWithRegionPoint
-    /FIXME:copy*
+    //FIXME:copy*
 	   //FIXME:paste
 }
