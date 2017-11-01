@@ -390,13 +390,13 @@ public class CommanderArea<E> extends ListArea
 	NullCheck.notNull(event, "event");
 	if (!flags.contains(Flags.MARKING))
 	    return false;
-	final Wrapper wrapper = getSelectedWrapper();
+	final Wrapper<E> wrapper = getSelectedWrapper();
 	if (wrapper == null || wrapper.type == EntryType.PARENT)
 	    return false;
 	wrapper.toggleMark(); 
 	if (wrapper.marked)
-	    context.say("выделено", Sounds.SELECTED); else //FIXME:
-	    context.say("не выделено", Sounds.UNSELECTED); //FIXME:
+	    context.say("выделено " + appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked), Sounds.SELECTED); else //FIXME:
+	    context.say("не выделено" + appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked), Sounds.UNSELECTED); //FIXME:
 	final int index = selectedIndex();
 	if (index >= 0 && index + 1 < getListItemCount())
 	    select(index + 1, false);

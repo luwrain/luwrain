@@ -60,7 +60,7 @@ public interface ClipboardSaver
 			 PAGE_DOWN, PAGE_UP,
 			 HOME, END};
 
-	static public class State
+	static public final class State
 	{
 	    public enum Type{EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM, ITEM_INDEX, NO_TRANSITION};
 
