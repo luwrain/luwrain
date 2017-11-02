@@ -28,10 +28,10 @@ public class CommanderUtils
 	{
 	    NullCheck.notNull(o1, "o1");
 	    NullCheck.notNull(o2, "o2");
-	    if (!(o1 instanceof CommanderArea.SortingItem) || !(o2 instanceof CommanderArea.SortingItem))
+	    if (!(o1 instanceof CommanderArea.NativeItem) || !(o2 instanceof CommanderArea.NativeItem))
 		return 0;
-	    final CommanderArea.SortingItem w1 = (CommanderArea.SortingItem)o1;
-	    final CommanderArea.SortingItem w2 = (CommanderArea.SortingItem)o2;
+	    final CommanderArea.NativeItem w1 = (CommanderArea.NativeItem)o1;
+	    final CommanderArea.NativeItem w2 = (CommanderArea.NativeItem)o2;
 	    if (w1.getEntryType() == EntryType.PARENT)
 		return w2.getEntryType() == EntryType.PARENT?0:-1;
 	    if (w2.getEntryType() == EntryType.PARENT)

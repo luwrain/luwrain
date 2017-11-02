@@ -64,8 +64,9 @@ public class CommanderArea<E> extends ListArea
 
     
 
-    public interface SortingItem
+    public interface NativeItem<E>
     {
+	E getNativeObj();
 	EntryType getEntryType();
 	String getBaseName();
 	boolean isDirectory();
@@ -413,7 +414,7 @@ public class CommanderArea<E> extends ListArea
 	    return false;
 	wrapper.toggleMark(); 
 	if (wrapper.marked)
-	    context.say("выделено " + getBaseName(wrapper), Sounds.SELECTED); else //FIXME:
+	    context.say(context.getStaticStr("CommanderSelected") + getBaseName(wrapper), Sounds.SELECTED); else
 	    context.say("не выделено" + getBaseName(wrapper), Sounds.UNSELECTED); //FIXME:
 	final int index = selectedIndex();
 	if (index >= 0 && index + 1 < getListItemCount())
@@ -485,7 +486,7 @@ public class CommanderArea<E> extends ListArea
 	return listParams;
     }
 
-    static protected class Wrapper<E> implements SortingItem
+    static protected class Wrapper<E> implements NativeItem<E>
     {
 	final E obj;
 final EntryType type;
@@ -500,6 +501,11 @@ final EntryType type;
 	    this.obj = obj;
 	    this.type = type;
 	    this.baseName = baseName;
+	}
+
+	@Override public E getNativeObj()
+	{
+	    return obj;
 	}
 
 	@Override public boolean isDirectory()
