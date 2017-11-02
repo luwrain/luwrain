@@ -62,6 +62,8 @@ public class CommanderArea<E> extends ListArea
 	void onLoadingResult(E location, Object data, int selectedIndex, boolean announce);
     }
 
+    
+
     public interface SortingItem
     {
 	EntryType getEntryType();
@@ -78,7 +80,7 @@ public class CommanderArea<E> extends ListArea
 	public LoadingResultHandler<E> loadingResultHandler;
 	public ClipboardSaver clipboardSaver = new ListUtils.DefaultClipboardSaver();
 	public Filter<E> filter = null;
-	public Comparator comparator = null;
+	public Comparator comparator = new CommanderUtils.ByNameComparator();
 	public Set<Flags> flags = EnumSet.noneOf(Flags.class);
     }
 
@@ -483,11 +485,11 @@ public class CommanderArea<E> extends ListArea
 	return listParams;
     }
 
-    static class Wrapper<E> implements SortingItem
+    static protected class Wrapper<E> implements SortingItem
     {
-	public final E obj;
-	public final EntryType type;
-	String baseName;
+	final E obj;
+final EntryType type;
+	final String baseName;
 	boolean marked = false;
 
 	Wrapper(E obj, EntryType type, String baseName)

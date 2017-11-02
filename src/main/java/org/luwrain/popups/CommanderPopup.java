@@ -160,8 +160,8 @@ setLoadingResultHandler((location, data, selectedIndex, announce)->{
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	final CommanderArea.Params<File> params = CommanderUtilsFile.createParams(new DefaultControlEnvironment(luwrain));
-	params.filter = new CommanderUtilsFile.AllEntriesFilter();
-	params.comparator = new CommanderUtilsFile.ByNameComparator();
+	params.filter = new CommanderUtils.AllEntriesFilter();
+	params.comparator = new CommanderUtils.ByNameComparator();
 	return params;
     }
 }

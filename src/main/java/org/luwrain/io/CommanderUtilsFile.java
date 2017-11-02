@@ -143,37 +143,6 @@ public class CommanderUtilsFile
 	}
     }
 
-    static public class ByNameComparator implements java.util.Comparator
-    {
-	@Override public int compare(Object o1, Object o2)
-	{
-	    if (!(o1 instanceof CommanderArea.SortingItem) || !(o2 instanceof CommanderArea.SortingItem))
-		return 0;
-	    final CommanderArea.SortingItem w1 = (CommanderArea.SortingItem)o1;
-	    final CommanderArea.SortingItem w2 = (CommanderArea.SortingItem)o2;
-	    if (w1.getEntryType() == EntryType.PARENT)
-		return w2.getEntryType() == EntryType.PARENT?0:-1;
-	    if (w2.getEntryType() == EntryType.PARENT)
-		return w1.getEntryType() == EntryType.PARENT?0:1;
-	    final String name1 = w1.getBaseName().toLowerCase();
-	    final String name2 = w2.getBaseName().toLowerCase();
-	    if (w1.isDirectory() && w2.isDirectory())
-		return name1.compareTo(name2);
-	    if (w1.isDirectory())
-		return -1;
-	    if (w2.isDirectory())
-		return 1;
-	    return name1.compareTo(name2);
-	}
-    }
-
-    static public class AllEntriesFilter implements CommanderArea.Filter<File>
-    {
-	@Override public boolean commanderEntrySuits(File entry)
-	{
-	    return true;
-	}
-    }
 
     static public CommanderArea.Params<File> createParams(ControlEnvironment environment)
     {
@@ -182,8 +151,8 @@ public class CommanderUtilsFile
 	params.environment = environment;
 	params.model = new Model();
 	params.appearance = new Appearance(environment);
-	params.filter = new AllEntriesFilter();
-	params.comparator = new ByNameComparator();
+	params.filter = new CommanderUtils.AllEntriesFilter();
+	params.comparator = new CommanderUtils.ByNameComparator();
 	return params;
     }
 
