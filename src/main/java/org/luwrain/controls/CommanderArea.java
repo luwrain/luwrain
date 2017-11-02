@@ -59,7 +59,14 @@ public class CommanderArea<E> extends ListArea
 
     public interface LoadingResultHandler<E>
     {
-	void onLoadingResult(E location, Wrapper<E>[] wrappers, int selectedIndex, boolean announce);
+	void onLoadingResult(E location, Object data, int selectedIndex, boolean announce);
+    }
+
+    public interface SortingItem
+    {
+	EntryType getEntryType();
+	String getBaseName();
+	boolean isDirectory();
     }
 
     static public class Params<E>
@@ -132,7 +139,7 @@ public class CommanderArea<E> extends ListArea
 	    return false;
 	final Wrapper<E>[] wrappers = getListModel().wrappers;
 	int index = 0;
-	while(index < wrappers.length && !appearance.getEntryTextAppearance(wrappers[index].obj, wrappers[index].type, wrappers[index].marked).equals(fileName))
+	while(index < wrappers.length && !getBaseName(wrappers[index]).equals(fileName))
 	    ++index;
 	if (index >= wrappers.length)
 	    return false;
@@ -175,7 +182,7 @@ public class CommanderArea<E> extends ListArea
 	final Wrapper<E> wrapper = getSelectedWrapper();
 	if (wrapper == null || wrapper.type == EntryType.PARENT)
 	    return null;
-	return appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked);
+	return getBaseName(wrapper);
     }
 
     public E opened()
@@ -245,7 +252,10 @@ public class CommanderArea<E> extends ListArea
 				filtered.add(e);
 			wrappers = new Wrapper[filtered.size()];
 			for(int i = 0;i < filtered.size();++i)
-			    wrappers[i] = new Wrapper(filtered.get(i), model.getEntryType(newCurrent, filtered.get(i)));
+			{
+			    final EntryType entryType = model.getEntryType(newCurrent, filtered.get(i));
+			    wrappers[i] = new Wrapper(filtered.get(i), entryType, appearance.getEntryTextAppearance(filtered.get(i), entryType, false));
+			}
 			if (comparator != null)
 			    Arrays.sort(wrappers, comparator);
 		    } else
@@ -262,8 +272,6 @@ public class CommanderArea<E> extends ListArea
 			for(int i = 0;i < wrappers.length;++i)
 			    if (previouslySelectedText.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
 				index = i;
-
-
 		    }
 		    loadingResultHandler.onLoadingResult(newCurrent, wrappers, index, announce);
 		}
@@ -288,9 +296,17 @@ public class CommanderArea<E> extends ListArea
 	return open(currentLocation, desiredSelected, announce);
     }
 
-    public void acceptNewLocation(E location, Wrapper<E>[] wrappers, int selectedIndex, boolean announce)
+    public void acceptNewLocation(E location, Object data, int selectedIndex, boolean announce)
     {
 	NullCheck.notNull(location, "location");
+	final Wrapper<E>[] wrappers;
+	if (data != null)
+	{
+	    if (!(data instanceof Wrapper[]))
+		throw new IllegalArgumentException("data must be an instance of Wrapper<E>[]");
+	    wrappers = (Wrapper<E>[])data;
+	} else
+	    wrappers = null;
 	currentLocation = location;
 	getListModel().wrappers = wrappers;
 	super.refresh();
@@ -381,7 +397,7 @@ public class CommanderArea<E> extends ListArea
 	final E parent = model.getEntryParent(currentLocation);
 	if (parent == null)
 	    return false;
-	open(parent, appearance.getEntryTextAppearance(currentLocation, null, false));
+	open(parent, appearance.getEntryTextAppearance(currentLocation, EntryType.DIR, false));
 	return true;
     }
 
@@ -395,8 +411,8 @@ public class CommanderArea<E> extends ListArea
 	    return false;
 	wrapper.toggleMark(); 
 	if (wrapper.marked)
-	    context.say("выделено " + appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked), Sounds.SELECTED); else //FIXME:
-	    context.say("не выделено" + appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked), Sounds.UNSELECTED); //FIXME:
+	    context.say("выделено " + getBaseName(wrapper), Sounds.SELECTED); else //FIXME:
+	    context.say("не выделено" + getBaseName(wrapper), Sounds.UNSELECTED); //FIXME:
 	final int index = selectedIndex();
 	if (index >= 0 && index + 1 < getListItemCount())
 	    select(index + 1, false);
@@ -415,7 +431,7 @@ public class CommanderArea<E> extends ListArea
 	    final E parent = model.getEntryParent(currentLocation);
 	    if (parent == null)
 		return false;
-	    open(parent, appearance.getEntryTextAppearance(currentLocation, null, false));
+	    open(parent, appearance.getEntryTextAppearance(currentLocation, EntryType.DIR, false));
 	    return true;
 	}
 	if (wrapper.type == EntryType.DIR || wrapper.type == EntryType.SYMLINK_DIR)
@@ -444,6 +460,12 @@ public class CommanderArea<E> extends ListArea
 	return context.getStaticStr("CommanderNoContent");
     }
 
+    protected String getBaseName(Wrapper wrapper)
+    {
+	NullCheck.notNull(wrapper, "wrapper");
+	return wrapper.getBaseName();
+    }
+
     static protected ListArea.Params createListParams(CommanderArea.Params params)
     {
 	NullCheck.notNull(params, "params");
@@ -461,23 +483,36 @@ public class CommanderArea<E> extends ListArea
 	return listParams;
     }
 
-    static public class Wrapper<E>
+    static class Wrapper<E> implements SortingItem
     {
 	public final E obj;
 	public final EntryType type;
-	public boolean marked = false;
+	String baseName;
+	boolean marked = false;
 
-	public Wrapper(E obj, EntryType type)
+	Wrapper(E obj, EntryType type, String baseName)
 	{
 	    NullCheck.notNull(obj, "obj");
 	    NullCheck.notNull(type, "type");
+	    NullCheck.notNull(baseName, "baseName");
 	    this.obj = obj;
 	    this.type = type;
+	    this.baseName = baseName;
 	}
 
-	public boolean isDirectory()
+	@Override public boolean isDirectory()
 	{
 	    return type == EntryType.DIR || type == EntryType.SYMLINK_DIR;
+	}
+
+	@Override public EntryType getEntryType()
+	{
+	    return type;
+	}
+
+	@Override public String getBaseName()
+	{
+	    return baseName;
 	}
 
 	public void toggleMark()

@@ -186,16 +186,16 @@ public class CommanderUtilsVfs
     {
 	@Override public int compare(Object o1, Object o2)
 	{
-	    if (!(o1 instanceof CommanderArea.Wrapper) || !(o2 instanceof CommanderArea.Wrapper))
+	    if (!(o1 instanceof CommanderArea.SortingItem) || !(o2 instanceof CommanderArea.SortingItem))
 		return 0;
-	    final CommanderArea.Wrapper w1 = (CommanderArea.Wrapper)o1;
-	    final CommanderArea.Wrapper w2 = (CommanderArea.Wrapper)o2;
-	    if (w1.type == EntryType.PARENT)
-		return w2.type == EntryType.PARENT?0:-1;
-	    if (w2.type == EntryType.PARENT)
-		return w1.type == EntryType.PARENT?0:1;
-	    final String name1 = ((FileObject)w1.obj).getName().getBaseName().toLowerCase();
-	    final String name2 = ((FileObject)w2.obj).getName().getBaseName().toLowerCase();
+	    final CommanderArea.SortingItem w1 = (CommanderArea.SortingItem)o1;
+	    final CommanderArea.SortingItem w2 = (CommanderArea.SortingItem)o2;
+	    if (w1.getEntryType() == EntryType.PARENT)
+		return w2.getEntryType() == EntryType.PARENT?0:-1;
+	    if (w2.getEntryType() == EntryType.PARENT)
+		return w1.getEntryType() == EntryType.PARENT?0:1;
+	    final String name1 = w1.getBaseName().toLowerCase();
+	    final String name2 = w2.getBaseName().toLowerCase();
 	    if (w1.isDirectory() && w2.isDirectory())
 		return name1.compareTo(name2);
 	    if (w1.isDirectory())
