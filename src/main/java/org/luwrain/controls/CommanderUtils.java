@@ -55,4 +55,38 @@ public class CommanderUtils
 	    return true;
 	}
     }
+
+    static public void defaultEntryAnnouncement(ControlEnvironment context, String name, CommanderArea.EntryType type, boolean marked)
+    {
+	NullCheck.notNull(context, "context");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(type, "type");
+	if (name.trim().isEmpty() && type != EntryType.PARENT)
+	{
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	    return;
+	}
+	final StringBuilder b = new StringBuilder();
+	if (marked)
+	    b.append(context.getStaticStr("CommanderSelected") + " ");
+	b.append(name);
+	switch(type)
+	{
+	case PARENT:
+	    context.say(context.getStaticStr("CommanderParentDirectory"));//FIXME:
+	    return;
+	case DIR:
+	    b.append(context.getStaticStr("CommanderDirectory"));
+	    break;
+	case SYMLINK:
+	case SYMLINK_DIR:
+	    b.append(context.getStaticStr("CommanderSymlink"));
+	    break;
+	case SPECIAL:
+	    b.append(context.getStaticStr("CommanderSpecial"));
+	    break;
+	}
+	context.playSound(marked?Sounds.ATTENTION:Sounds.LIST_ITEM);
+	context.say(new String(b));
+    }
 }

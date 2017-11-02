@@ -42,7 +42,7 @@ public class CommanderArea<E> extends ListArea
     {
 	void announceLocation(E entry);
 	void announceEntry(E entry, EntryType type, boolean marked);
-	String getEntryTextAppearance(E entry, EntryType type, boolean marked);
+	String getEntryText(E entry, EntryType type, boolean marked);
 	String getCommanderName(E entry);
     }
 
@@ -256,7 +256,7 @@ public class CommanderArea<E> extends ListArea
 			for(int i = 0;i < filtered.size();++i)
 			{
 			    final EntryType entryType = model.getEntryType(newCurrent, filtered.get(i));
-			    wrappers[i] = new Wrapper(filtered.get(i), entryType, appearance.getEntryTextAppearance(filtered.get(i), entryType, false));
+			    wrappers[i] = new Wrapper(filtered.get(i), entryType, appearance.getEntryText(filtered.get(i), entryType, false));
 			}
 			if (comparator != null)
 			    Arrays.sort(wrappers, comparator);
@@ -267,12 +267,12 @@ public class CommanderArea<E> extends ListArea
 		    if (desiredSelected != null && !desiredSelected.isEmpty())
 		    {
 			for(int i = 0;i < wrappers.length;++i)
-			    if (desiredSelected.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
+			    if (desiredSelected.equals(appearance.getEntryText(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
 				index = i;
 			//If there is still no found selection, we must try to save selection without changes
 			if (index < 0 && previouslySelectedText != null && !previouslySelectedText.isEmpty())
 			for(int i = 0;i < wrappers.length;++i)
-			    if (previouslySelectedText.equals(appearance.getEntryTextAppearance(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
+			    if (previouslySelectedText.equals(appearance.getEntryText(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
 				index = i;
 		    }
 		    loadingResultHandler.onLoadingResult(newCurrent, wrappers, index, announce);
@@ -399,7 +399,7 @@ public class CommanderArea<E> extends ListArea
 	final E parent = model.getEntryParent(currentLocation);
 	if (parent == null)
 	    return false;
-	open(parent, appearance.getEntryTextAppearance(currentLocation, EntryType.DIR, false));
+	open(parent, appearance.getEntryText(currentLocation, EntryType.DIR, false));
 	return true;
     }
 
@@ -433,7 +433,7 @@ public class CommanderArea<E> extends ListArea
 	    final E parent = model.getEntryParent(currentLocation);
 	    if (parent == null)
 		return false;
-	    open(parent, appearance.getEntryTextAppearance(currentLocation, EntryType.DIR, false));
+	    open(parent, appearance.getEntryText(currentLocation, EntryType.DIR, false));
 	    return true;
 	}
 	if (wrapper.type == EntryType.DIR || wrapper.type == EntryType.SYMLINK_DIR)
@@ -556,7 +556,7 @@ final EntryType type;
 	    final Wrapper<E> wrapper = (Wrapper<E>)item;
 	    final boolean marked = wrapper.marked;
 	    final EntryType type = wrapper.type;
-	    final String name = appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked);
+	    final String name = appearance.getEntryText(wrapper.obj, wrapper.type, wrapper.marked);
 	    final StringBuilder b = new StringBuilder();
 	    b.append(marked?"*":" ");
 	    switch(type)
@@ -597,7 +597,7 @@ final EntryType type;
 	{
 	    NullCheck.notNull(item, "item");
 	    final Wrapper<E> wrapper = (Wrapper)item;
-	    return appearance.getEntryTextAppearance(wrapper.obj, wrapper.type, wrapper.marked).length() + 2;
+	    return wrapper.getBaseName().length() + 2;
 	}
     }
 

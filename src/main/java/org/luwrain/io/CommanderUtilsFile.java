@@ -99,7 +99,7 @@ public class CommanderUtilsFile
 		environment.say(entry.getName());
 	}
 
-	@Override public String getEntryTextAppearance(File entry, EntryType type, boolean marked)
+	@Override public String getEntryText(File entry, EntryType type, boolean marked)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    //type may be null
@@ -113,36 +113,9 @@ public class CommanderUtilsFile
 	    NullCheck.notNull(entry, "entry");
 	    NullCheck.notNull(type, "type");
 	    final String name = entry.getName();
-	    if (name.trim().isEmpty() && type != EntryType.PARENT)
-	    {
-		environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
-		return;
-	    }
-	    final StringBuilder b = new StringBuilder();
-	    if (marked)
-		b.append(environment.getStaticStr("CommanderSelected") + " ");
-	    b.append(name);
-	    switch(type)
-	    {
-	    case PARENT:
-		environment.say(environment.getStaticStr("CommanderParentDirectory"));//FIXME:
-		return;
-	    case DIR:
-		b.append(environment.getStaticStr("CommanderDirectory"));
-		break;
-	    case SYMLINK:
-	    case SYMLINK_DIR:
-		b.append(environment.getStaticStr("CommanderSymlink"));
-		break;
-	    case SPECIAL:
-		b.append(environment.getStaticStr("CommanderSpecial"));
-		break;
-	    }
-	    environment.playSound(Sounds.LIST_ITEM);
-	    environment.say(new String(b));
-	}
+	    CommanderUtils.defaultEntryAnnouncement(environment, name, type, marked);
     }
-
+    }
 
     static public CommanderArea.Params<File> createParams(ControlEnvironment environment)
     {

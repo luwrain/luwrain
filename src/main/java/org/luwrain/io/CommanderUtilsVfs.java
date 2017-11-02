@@ -138,7 +138,7 @@ public class CommanderUtilsVfs
 		environment.say(entry.getName().getBaseName());
 	}
 
-	@Override public String getEntryTextAppearance(FileObject entry, EntryType type, boolean marked)
+	@Override public String getEntryText(FileObject entry, EntryType type, boolean marked)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    //type may be null
@@ -152,65 +152,7 @@ public class CommanderUtilsVfs
 	    NullCheck.notNull(entry, "entry");
 	    NullCheck.notNull(type, "type");
 	    final String name = entry.getName().getBaseName();
-	    if (name.trim().isEmpty() && type != EntryType.PARENT)
-	    {
-		environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
-		return;
-	    }
-	    final StringBuilder b = new StringBuilder();
-	    if (marked)
-		b.append(environment.getStaticStr("CommanderSelected") + " ");
-	    b.append(name);
-	    switch(type)
-	    {
-	    case PARENT:
-		environment.say(environment.getStaticStr("CommanderParentDirectory"));//FIXME:
-		return;
-	    case DIR:
-		b.append(environment.getStaticStr("CommanderDirectory"));
-		break;
-	    case SYMLINK:
-	    case SYMLINK_DIR:
-		b.append(environment.getStaticStr("CommanderSymlink"));
-		break;
-	    case SPECIAL:
-		b.append(environment.getStaticStr("CommanderSpecial"));
-		break;
-	    }
-	    environment.playSound(marked?Sounds.ATTENTION:Sounds.LIST_ITEM);
-	    environment.say(new String(b));
-	}
-    }
-
-    static public class ByNameComparator implements java.util.Comparator
-    {
-	@Override public int compare(Object o1, Object o2)
-	{
-	    if (!(o1 instanceof CommanderArea.SortingItem) || !(o2 instanceof CommanderArea.SortingItem))
-		return 0;
-	    final CommanderArea.SortingItem w1 = (CommanderArea.SortingItem)o1;
-	    final CommanderArea.SortingItem w2 = (CommanderArea.SortingItem)o2;
-	    if (w1.getEntryType() == EntryType.PARENT)
-		return w2.getEntryType() == EntryType.PARENT?0:-1;
-	    if (w2.getEntryType() == EntryType.PARENT)
-		return w1.getEntryType() == EntryType.PARENT?0:1;
-	    final String name1 = w1.getBaseName().toLowerCase();
-	    final String name2 = w2.getBaseName().toLowerCase();
-	    if (w1.isDirectory() && w2.isDirectory())
-		return name1.compareTo(name2);
-	    if (w1.isDirectory())
-		return -1;
-	    if (w2.isDirectory())
-		return 1;
-	    return name1.compareTo(name2);
-	}
-    }
-
-    static public class AllEntriesFilter implements CommanderArea.Filter<FileObject>
-    {
-	@Override public boolean commanderEntrySuits(FileObject entry)
-	{
-	    return true;
+	    CommanderUtils.defaultEntryAnnouncement(environment, name, type, marked);
 	}
     }
 
@@ -239,8 +181,8 @@ public class CommanderUtilsVfs
 	params.environment = environment;
 	params.model = new Model(manager);
 	params.appearance = new Appearance(environment, manager);
-	params.filter = new AllEntriesFilter();
-	params.comparator = new ByNameComparator();
+	params.filter = new CommanderUtils.AllEntriesFilter();
+	params.comparator = new CommanderUtils.ByNameComparator();
 	return params;
     }
 
