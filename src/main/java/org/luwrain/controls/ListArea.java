@@ -345,12 +345,20 @@ public interface ClipboardSaver
 	    context.onAreaNewHotPoint(this);
 	    return;
 	}
-	if (previouslySelected != null && select(previouslySelected, false))
-	    return;
-	hotPointY = Math.min(hotPointY, count - 1);
-	final Object item = listModel.getItem(hotPointY);
+	if (previouslySelected != null)
+	{
+	    if (previouslySelected == selected())
+		return;
+	    if (select(previouslySelected, false))
+		return;
+	}
+	hotPointY = Math.min(hotPointY, getLineCount() - 1);
+	final Object item = getItemOnLine(hotPointY);
 	if (item != null)
-	    hotPointX = listAppearance.getObservableLeftBound(item); else
+	{
+	    hotPointX = Math.min(hotPointX, listAppearance.getObservableRightBound(item));
+	    hotPointX = Math.max(hotPointX, listAppearance.getObservableLeftBound(item));
+	}else
 	    hotPointX = 0;
 	context.onAreaNewHotPoint(this);
     }
@@ -367,16 +375,23 @@ public interface ClipboardSaver
 	    context.onAreaNewHotPoint(this);
 	    return;
 	}
-	if (previouslySelected != null && select(previouslySelected, false))
-	    return;
-	hotPointY = Math.min(hotPointY, count - 1);
-	final Object item = listModel.getItem(hotPointY);
+	if (previouslySelected != null)
+	{
+	    if (previouslySelected == selected())
+		return;
+	    if (select(previouslySelected, false))
+		return;
+	}
+	hotPointY = Math.min(hotPointY, getLineCount() - 1);
+	final Object item = getItemOnLine(hotPointY);
 	if (item != null)
-	    hotPointX = listAppearance.getObservableLeftBound(item); else
+	{
+	    hotPointX = Math.min(hotPointX, listAppearance.getObservableRightBound(item));
+	    hotPointX = Math.max(hotPointX, listAppearance.getObservableLeftBound(item));
+	}else
 	    hotPointX = 0;
 	context.onAreaNewHotPoint(this);
     }
-
 
     public boolean isEmpty()
     {
@@ -485,7 +500,6 @@ public interface ClipboardSaver
     {
 	final int emptyCountTop = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	final int emptyCountBottom = listFlags.contains(Flags.EMPTY_LINE_BOTTOM)?1:0;
-
 	final int res = listModel.getItemCount() + emptyCountTop + emptyCountBottom;
 	return res>= 1?res:1;
     }
