@@ -195,7 +195,7 @@ public class CommanderArea<E> extends ListArea
 
     public Object[] getMarked()
     {
-	if (getListModel().wrappers == null)
+	if (getListModel().wrappers == null && !flags.contains(Flags.MARKING))
 	    return new Object[0];
 	final List res = new LinkedList();
 	for(Wrapper w: getListModel().wrappers)
@@ -204,9 +204,20 @@ public class CommanderArea<E> extends ListArea
 	return res.toArray(new Object[res.size()]);
     }
 
-    public Wrapper<E>[] getMarkedWrappers()
+        public String[] getMarkedNames()
     {
-	if (getListModel().wrappers == null)
+	if (getListModel().wrappers == null || !flags.contains(Flags.MARKING))
+	    return new String[0];
+	final List<String> res = new LinkedList();
+	for(Wrapper w: getListModel().wrappers)
+	    if (w.marked)
+		res.add(w.baseName);
+	return res.toArray(new String[res.size()]);
+    }
+
+    protected Wrapper<E>[] getMarkedWrappers()
+    {
+	if (getListModel().wrappers == null || !flags.contains(Flags.MARKING))
 	    return new Wrapper[0];
 	final List<Wrapper<E>> res = new LinkedList<Wrapper<E>>();
 	for(Wrapper w: getListModel().wrappers)
@@ -234,8 +245,16 @@ public class CommanderArea<E> extends ListArea
 	return open(entry, null, announce);
     }
 
-    //If no desiredSelected found, area tries to leave selection unchanged
+        //If no desiredSelected found, area tries to leave selection unchanged
     public boolean open(E entry, String desiredSelected, boolean announce)
+    {
+	NullCheck.notNull(entry, "entry");
+	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
+	return open(entry, desiredSelected, null, announce);
+    }
+
+    //If no desiredSelected found, area tries to leave selection unchanged
+    public boolean open(E entry, String desiredSelected, String [] desiredMarked, boolean announce)
     {
 	NullCheck.notNull(entry, "entry");
 	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
@@ -276,6 +295,17 @@ public class CommanderArea<E> extends ListArea
 			    if (previouslySelectedText.equals(appearance.getEntryText(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
 				index = i;
 		    }
+		    //Setting marks
+		    if (flags.contains(Flags.MARKING) && desiredMarked != null)
+			for(String toMark: desiredMarked)
+			{
+			    int k = 0;
+			    for(k = 0;k < wrappers.length;++k)
+				if (wrappers[k].getBaseName().equals(toMark))
+				    break;
+			    if (k < wrappers.length)
+				wrappers[k].marked = true;
+			}
 		    loadingResultHandler.onLoadingResult(newCurrent, wrappers, index, announce);
 		}
 		catch (Exception e)
@@ -296,7 +326,7 @@ public class CommanderArea<E> extends ListArea
     {
 	if (currentLocation == null)
 	    return false;
-	return open(currentLocation, desiredSelected, announce);
+	return open(currentLocation, desiredSelected, getMarkedNames(), announce);
     }
 
     public void acceptNewLocation(E location, Object data, int selectedIndex, boolean announce)
@@ -312,7 +342,7 @@ public class CommanderArea<E> extends ListArea
 	    wrappers = null;
 	currentLocation = location;
 	getListModel().wrappers = wrappers;
-	super.refresh();
+	super.redraw();
 	if (wrappers != null && selectedIndex >= 0)
 	    select(selectedIndex, false); else
 	    reset(false);

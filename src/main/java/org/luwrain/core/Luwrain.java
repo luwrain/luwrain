@@ -71,6 +71,11 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	    charsToSkip = registry.getString(path);
     }
 
+    public CmdLine getCmdLine()
+    {
+	return environment.cmdLine;
+    }
+
     public String getActiveAreaText(AreaTextType type, boolean issueErrorMessages)
     {
 	NullCheck.notNull(type, "type");
