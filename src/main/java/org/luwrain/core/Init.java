@@ -49,9 +49,9 @@ public class Init
 
     private final CmdLine cmdLine;
     private final CoreProperties coreProps = new CoreProperties();
-    private final Path dataDir;
-    private final Path userDataDir;
-    private final Path userHomeDir;
+    private final File dataDir;
+    private final File userDataDir;
+    private final File userHomeDir;
     private final String lang;
 
     private Registry registry;
@@ -59,7 +59,7 @@ public class Init
     private OperatingSystem os;
 
     private Init(String[] cmdLine, String lang,
-		 Path dataDir, Path userDataDir)
+		 File dataDir, File userDataDir)
     {
 	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notEmpty(lang, "lang");
@@ -69,7 +69,7 @@ public class Init
 	this.lang = lang;
 	this.dataDir = dataDir;
 	this.userDataDir = userDataDir;
-	this.userHomeDir = Paths.get(System.getProperty("user.home"));
+	this.userHomeDir = new File(System.getProperty("user.home"));
     }
 
     private String getSystemProperty(String propName)
@@ -90,19 +90,19 @@ public class Init
 	switch(propName)
 	{
 	case "luwrain.dir.userhome":
-	    return userHomeDir.toFile();
+	    return userHomeDir;
 	case "luwrain.dir.data":
-	    return dataDir.toFile();
+	    return dataDir;
 	case "luwrain.dir.scripts":
-	    return dataDir.resolve("scripts").toFile();
+	    return new File(dataDir, "scripts");
 	case "luwrain.dir.properties":
-	    return dataDir.resolve("properties").toFile();
+	    return new File(dataDir, "properties");
 	case "luwrain.dir.sounds":
-	    return dataDir.resolve("sounds").toFile();
+	    return new File(dataDir, "sounds");
 	case "luwrain.dir.userdata":
-	    return userDataDir.toFile();
+	    return userDataDir;
 	case "luwrain.dir.appdata":
-	    return userDataDir.resolve("app").toFile();
+	    return new File(userDataDir, "app");
 	default:
 	    return coreProps.getFileProperty(propName);
 	}
@@ -110,8 +110,8 @@ public class Init
 
     private boolean init()
     {
-	coreProps.load(dataDir.resolve("properties"), userDataDir.resolve("properties"));
-	registry = new org.luwrain.registry.fsdir.RegistryImpl(userDataDir.resolve("registry"));
+	coreProps.load(new File(dataDir, "properties"), new File(userDataDir, "properties"));
+	registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(userDataDir, "registry").toPath());
 
 	    //time zone
 	{
@@ -295,7 +295,7 @@ return new org.luwrain.base.CoreProperties(){
 	final Path userDataDir = prepareUserDataDir(); 
 	if (userDataDir == null)
 	    System.exit(1);
-	new Init(args, "ru", Paths.get("data"), userDataDir).start();
+	new Init(args, "ru", new File("data"), userDataDir.toFile()).start();
     }
 
     static private Path prepareUserDataDir()

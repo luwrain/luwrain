@@ -142,10 +142,24 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	eventQueue.putEvent(e);
     }
 
-    public void playSound(Sounds sound)
+public void playSound(Sounds sound)
     {
 	NullCheck.notNull(sound, "sound");
-	sounds.play(sound);
+	final String volumeStr = coreProps.getProperty("luwrain.sounds.iconsvol");
+	int volume = 100;
+	try {
+	    if (!volumeStr.trim().isEmpty())
+	    volume = Integer.parseInt(volumeStr);
+	}
+	catch(NumberFormatException e)
+	{
+	    volume = 100;
+	}
+	if (volume < 0)
+	    volume = 0;
+	if (volume > 100)
+	    volume = 100;
+	sounds.play(sound, volume);
     }
 
     protected void noAppsMessage()

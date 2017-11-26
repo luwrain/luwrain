@@ -28,14 +28,16 @@ class SoundsPlayer
     private static final int BUF_SIZE = 512;
 
 	private final String fileName;
+	private final int volumePercent;
 	private boolean interruptPlayback = false;
 	boolean finished = false;
 private SourceDataLine audioLine = null;
 
-	Player(String fileName)
+	Player(String fileName, int volumePercent)
 	{
 	    NullCheck.notEmpty(fileName, "fileName");
 	    this.fileName = fileName;
+	    this.volumePercent = volumePercent;
 	}
 
 	@Override public void run()
@@ -52,6 +54,8 @@ private SourceDataLine audioLine = null;
 		    audioLine = (SourceDataLine) AudioSystem.getLine(info);
 		    audioLine.open(format);
 		    audioLine.start();
+		    if (volumePercent >= 0 || volumePercent < 100)
+			org.luwrain.util.SoundUtils.setLineMasterGanePercent(audioLine, volumePercent);
 		    int bytesRead = 0;
 		    final byte[] buf = new byte[BUF_SIZE];
 		    while (bytesRead != -1 && !interruptPlayback)
@@ -99,10 +103,9 @@ private SourceDataLine audioLine = null;
     private final HashMap<Sounds, String> soundFiles = new HashMap<Sounds, String>();
     private Player previous;
 
-    void play(Sounds sound)
+    void play(Sounds sound, int volumePercent)
     {
-	if (sound == null)
-	    return;
+	NullCheck.notNull(sound, "sound");
 	if (!soundFiles.containsKey(sound) || soundFiles.get(sound).isEmpty())
 	{
 	    Log.error("core", "no sound for playing:" + sound);
@@ -110,7 +113,7 @@ private SourceDataLine audioLine = null;
 	}
 	if (previous != null)
 	    previous.stopPlaying();
-	previous = new Player(soundFiles.get(sound));
+	previous = new Player(soundFiles.get(sound), volumePercent);
 	new Thread(previous).start();
     }
 

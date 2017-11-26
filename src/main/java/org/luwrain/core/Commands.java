@@ -584,42 +584,6 @@ class Commands
 		}
 	    },
 
-	    //shutdown
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "shutdown";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    env.os.shutdown();
-		}
-	    },
-
-	    //reboot
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "reboot";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    env.os.reboot();
-		}
-	    },
-
-	    //suspend
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "suspend";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    env.os.suspend(false);
-		}
-	    },
-
 	    //say-current-word
 	    new Command() {
 		@Override public String getName()

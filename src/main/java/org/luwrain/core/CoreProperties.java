@@ -22,39 +22,49 @@ import java.nio.file.*;
 
 class CoreProperties implements org.luwrain.base.CoreProperties
 {
+    static private final String LOG_COMPONENT = "init";
+    
     private final Properties props = new Properties();
 
-    void load(Path systemProperties, Path userProperties)
+    void load(File systemProperties, File userProperties)
     {
 	NullCheck.notNull(systemProperties, "systemProperties");
 	NullCheck.notNull(userProperties, "userProperties");
 	try {
-	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(systemProperties)) {
+	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(systemProperties.toPath())) {
 		    for (Path p : directoryStream) 
-			readProps(p);
+			readProps(p.toFile());
 		}
 	}
 	catch(IOException e)
 	{
-	    Log.error("init", "unable to enumerate properties file in " + systemProperties.toString() + ":" + e.getClass().getName()  + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "unable to enumerate properties file in " + systemProperties.toString() + ":" + e.getClass().getName()  + ":" + e.getMessage());
 	}
 	try {
-	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(userProperties)) {
+	    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(userProperties.toPath())) {
 		    for (Path p : directoryStream) 
-			readProps(p);
+			readProps(p.toFile());
 		} 
 	}
 	catch(IOException e)
 	{
-	    Log.error("init", "unable to enumerate properties file in " + systemProperties.toString() + ":" + e.getClass().getName()  + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "unable to enumerate properties file in " + systemProperties.toString() + ":" + e.getClass().getName()  + ":" + e.getMessage());
 	}
     }
 
     @Override public String getProperty(String propName)
     {
 	NullCheck.notNull(propName, "propName");
-	final String res = props.getProperty(propName);
-	return res != null?res:"";
+	switch(propName)
+	{
+	case "luwrain.sounds.iconsvol":
+	    return "100";
+	default:
+	    {
+		final String res = props.getProperty(propName);
+		return res != null?res:"";
+	    }
+	}
     }
 
     @Override public File getFileProperty(String propName)
@@ -66,14 +76,14 @@ class CoreProperties implements org.luwrain.base.CoreProperties
 	return null;
     }
 
-    private void readProps(Path path)
+    private void readProps(File file)
     {
-	NullCheck.notNull(path, "path");
-	if (Files.isDirectory(path) || !path.getFileName().toString().endsWith(".properties"))
+	NullCheck.notNull(file, "file");
+	if (file.isDirectory() || !file.getName().endsWith(".properties"))
 	    return;
-	Log.debug("init", "reading properties from " + path.toString());
+	Log.debug(LOG_COMPONENT, "reading properties from " + file.getAbsolutePath());
 	try {
-	    final InputStream s = Files.newInputStream(path);
+	    final InputStream s = new FileInputStream(file);
 	    try {
 		props.load(new InputStreamReader(new BufferedInputStream(s), "UTF-8"));
 	    }
@@ -83,7 +93,7 @@ class CoreProperties implements org.luwrain.base.CoreProperties
 	}
 	catch(IOException e)
 	{
-	    Log.error("init", "unable to read properties file " + path.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "unable to read properties file " + file.getAbsolutePath() + ":" + e.getClass().getName() + ":" + e.getMessage());
 	}
 	}
 }
