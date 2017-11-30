@@ -19,7 +19,7 @@ package org.luwrain.controls;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class RegionPoint implements HotPoint
+public class RegionPoint implements AbstractRegionPoint
 {
     protected int hotPointX = -1;
     protected int hotPointY = -1;
