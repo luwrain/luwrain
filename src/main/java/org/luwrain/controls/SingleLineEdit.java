@@ -29,7 +29,7 @@ import org.luwrain.util.*;
  *
  * @see MultilineEdit
  */
-public class SingleLineEdit implements ClipboardTranslator.Provider
+public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQueryTranslator.Provider
 {
     public interface Model
     {
@@ -41,8 +41,10 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
     }
 
     protected final ControlEnvironment context;
-    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
-    protected final Model model;
+        protected final Model model;
+    protected final AbstractRegionPoint regionPoint;
+    protected final RegionTextQueryTranslator regionTextQueryTranslator;
+    protected final ClipboardTranslator clipboardTranslator;
 
     public SingleLineEdit(ControlEnvironment context, Model model)
     {
@@ -50,6 +52,9 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	NullCheck.notNull(model, "model");
 	this.context = context;
 	this.model = model;
+	this.regionPoint = new RegionPoint();
+	this.clipboardTranslator = new ClipboardTranslator(this, regionPoint);
+	this.regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint);
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -86,12 +91,19 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	case CLEAR:
 	    return onClear();
 	default:
-	return clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), 0);
-	}
+	    if (clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), 0))
+		return true;
+	    	    if (regionTextQueryTranslator.onEnvironmentEvent(event, model.getHotPointX(), 0))
+		return true;
+		    return false;
+	    	}
     }
 
     public boolean onAreaQuery(AreaQuery query)
     {
+	NullCheck.notNull(query, "query");
+	if (regionTextQueryTranslator.onAreaQuery(query, model.getHotPointX(), 0))
+	    return true;
 	return false;
     }
 
@@ -208,6 +220,18 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	return true;
     }
 
+    @Override public String onRegionTextQuery(int fromX, int fromY, int toX, int toY)
+    {
+	final String line = model.getLine();
+	if (line == null)
+	    return null;
+	final int fromPos = Math.min(fromX, line.length());
+	final int toPos = Math.min(toX, line.length());
+	if (fromPos >= toPos)
+	    return null;
+	return line.substring(fromPos, toPos);
+    }
+
     @Override public boolean onClipboardCopyAll()
     {
 	final String line = model.getLine();
@@ -220,11 +244,13 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
     @Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
     {
 	final String line = model.getLine();
-	if (line == null || line.isEmpty())
+	if (line == null)
 	    return false;
 	final int fromPos = Math.min(fromX, line.length());
 	final int toPos = Math.min(toX, line.length());
 	if (fromPos >= toPos)
+	    return false;
+		if (withDeleting && !onDeleteRegion(fromX, fromY, toX, toY))
 	    return false;
 	final String res = line.substring(fromPos, toPos);
 	context.getClipboard().set(line);
@@ -241,7 +267,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider
 	if (fromPos >= toPos)
 	    return false;
 	model.setLine(line.substring(0, fromPos) + line.substring(toPos));
-	model.setHotPointX(fromPos);
+	model.setHotPointX(fromPos);//Is this really right?
 	return true;
     }
 

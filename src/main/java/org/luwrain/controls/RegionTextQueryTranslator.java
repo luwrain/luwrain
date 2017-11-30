@@ -33,7 +33,7 @@ public class RegionTextQueryTranslator
     }
 
     protected final Provider provider;
-    protected final RegionPoint regionPoint;
+    protected final AbstractRegionPoint regionPoint;
     protected final Set<Flags> flags;
 
     public RegionTextQueryTranslator(Provider provider)
@@ -53,7 +53,7 @@ public class RegionTextQueryTranslator
 	this.flags = flags;
     }
 
-    public RegionTextQueryTranslator(Provider provider, RegionPoint regionPoint)
+    public RegionTextQueryTranslator(Provider provider, AbstractRegionPoint regionPoint)
     {
 	NullCheck.notNull(provider, "provider");
 	NullCheck.notNull(regionPoint, "regionPoint");
@@ -62,7 +62,7 @@ public class RegionTextQueryTranslator
 	this.flags = EnumSet.noneOf(Flags.class);
     }
 
-    public RegionTextQueryTranslator(Provider provider, RegionPoint regionPoint, Set<Flags> flags)
+    public RegionTextQueryTranslator(Provider provider, AbstractRegionPoint regionPoint, Set<Flags> flags)
     {
 	NullCheck.notNull(provider, "provider");
 	NullCheck.notNull(regionPoint, "regionPoint");

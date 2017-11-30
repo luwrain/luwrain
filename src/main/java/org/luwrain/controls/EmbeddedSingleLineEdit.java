@@ -21,33 +21,37 @@ import org.luwrain.core.events.*;
 
 public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 {
-    protected final ControlEnvironment environment;
+    protected final ControlEnvironment context;
     protected final SingleLineEdit edit;
     protected final EmbeddedEditLines lines;
-    protected final HotPointControl hotPointInfo;
+    protected final HotPointControl hotPoint;
+    protected final ShiftedRegionPoint regionPoint;
     protected int posX;
     protected int posY;
 
     /**
-     * @param environment The control environment for this edit
+     * @param context The control context for this edit
      * @param lines The object to provide and to accept edited text
-     * @param hotPointInfo The object to provide and to set real hot point position in area (without any shift)
+     * @param hotPoint The object to provide and to set real hot point position in area (without any shift)
      * @param posX The X position of this edit in the area
      * @param posY The Y position of this edit in the area
      */
-    public EmbeddedSingleLineEdit(ControlEnvironment environment, EmbeddedEditLines lines,
-				  HotPointControl hotPointInfo, 
+    public EmbeddedSingleLineEdit(ControlEnvironment context, EmbeddedEditLines lines,
+				  HotPointControl hotPoint, 
 				  int posX, int posY)
     {
-	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(context, "context");
 	NullCheck.notNull(lines, "lines");
-	NullCheck.notNull(hotPointInfo, "hotPointInfo");
-	this.environment = environment;
+	NullCheck.notNull(hotPoint, "hotPoint");
+		if (posX < 0 || posY < 0)
+	    throw new IllegalArgumentException("posX (" + posX + ") and posY (" + posY + ") may not be negative");
+			this.context = context;
 	this.lines = lines;
-	this.hotPointInfo = hotPointInfo;
+	this.hotPoint = hotPoint;
 	this.posX = posX;
 	this.posY = posY;
-	edit = new SingleLineEdit(environment, this);
+	this.regionPoint = null;
+	edit = new SingleLineEdit(context, this);
     }
 
     public SingleLineEdit getEditObj()
@@ -62,8 +66,12 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 
     public void setNewPos(int x, int y)
     {
+	if (x < 0 || y < 0)
+	    throw new IllegalArgumentException("x (" + x + ") and y (" + y + ") may not be negative");
 	posX = x;
 	posY = y;
+	if (regionPoint != null)
+	    regionPoint.setOffset(x, y);
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -93,13 +101,13 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 
     @Override public int getHotPointX()
     {
-	int value = hotPointInfo.getHotPointX();
+	int value = hotPoint.getHotPointX();
 	return value >= posX?value - posX:0;
     }
 
     @Override public void setHotPointX(int value)
     {
-	hotPointInfo.setHotPointX(value + posX);
+	hotPoint.setHotPointX(value + posX);
     }
 
     @Override public String getTabSeq()
