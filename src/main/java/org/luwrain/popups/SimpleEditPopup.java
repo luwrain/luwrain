@@ -34,11 +34,13 @@ import org.luwrain.util.*;
  *
  * @see ListPopup EditListPopup FilePopup 
  */
-public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, HotPointControl, EmbeddedEditLines, ClipboardTranslator.Provider
+public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, HotPointControl, EmbeddedEditLines, ClipboardTranslator.Provider, RegionTextQueryTranslator.Provider
 {
     protected final Luwrain luwrain;
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
-    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this);
+    protected final RegionPoint regionPoint = new RegionPoint();
+    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint);
+    protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint);
     protected final EmbeddedSingleLineEdit edit;
     protected final String name;
     protected final String prefix;
@@ -153,13 +155,17 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	    return true;
 	if (clipboardTranslator.onEnvironmentEvent(event, pos, 0))
 	    return true;
-	return closing.onEnvironmentEvent(event);
+		if (regionTextQueryTranslator.onEnvironmentEvent(event, pos, 0))
+	    return true;
+			return closing.onEnvironmentEvent(event);
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
     {
 	NullCheck.notNull(query, "query");
 	if (edit.isPosCovered(pos, 0) && edit.onAreaQuery(query))
+	    return true;
+	if (regionTextQueryTranslator.onAreaQuery(query, getHotPointX(), getHotPointY()))
 	    return true;
 	    return false;
 	    }
@@ -353,6 +359,14 @@ protected boolean onAltLeft(KeyboardEvent event)
 	pos = prefix.length() + beforeHotPoint.length();
 	luwrain.onAreaNewContent(this);
 	luwrain.onAreaNewHotPoint(this);
+    }
+
+    @Override public String onRegionTextQuery(int fromX, int fromY, int toX, int toY)
+    {
+	if (fromX < 0 || toX < 0)
+	    throw new IllegalArgumentException("fromX (" + fromX + ") and toX (" + toX + ") may not be less than zero");
+	final String value = prefix + text;
+	return value.substring(Math.min(fromX, value.length()), Math.min(toX, value.length()));
     }
 
     @Override public boolean onClipboardCopyAll()
