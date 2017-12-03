@@ -24,6 +24,7 @@ import org.luwrain.core.*;
 
 public class Manager
 {
+    static private final String LOG_COMPONENT = "core";
     static private final String EXTENSIONS_LIST_PREFIX = "--extensions=";
 
     public interface InterfaceRequest 
@@ -114,7 +115,7 @@ public class Manager
 	    loadedExt.luwrain = iface;
 	    loadedExt.commands = getCommands(ext, iface);
 	    loadedExt.shortcuts = getShortcuts(ext, iface);
-	    loadedExt.sharedObjects = getSharedObjects(ext, iface);
+	    loadedExt.extObjects = getExtObjects(ext, iface);
 	    loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
 	    loadedExt.controlPanelFactories = getControlPanelFactories(ext, iface);
 	    loadedExt.speechFactories = getSpeechFactories(ext, iface);
@@ -159,17 +160,16 @@ public class Manager
 	}
     }
 
-    private SharedObject[] getSharedObjects(Extension ext, Luwrain luwrain)
+    private ExtensionObject[] getExtObjects(Extension ext, Luwrain luwrain)
     {
 	try { 
-	    final SharedObject[] res = ext.getSharedObjects(luwrain);
-	    return res != null?res:new SharedObject[0];
+	    final ExtensionObject[] res = ext.getExtObjects(luwrain);
+	    return res != null?res:new ExtensionObject[0];
 	}
-	catch (Exception ee)
+	catch (Throwable ee)
 	{
-	    Log.error("environment", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shared objects:" + ee.getMessage());
-	    ee.printStackTrace();
-	    return new SharedObject[0];
+	    Log.error(LOG_COMPONENT, "extension " + ext.getClass().getName() + " thrown an exception on providing the list of extension objects:" + ee.getClass().getName() + ":" + ee.getMessage());
+	    return new ExtensionObject[0];
 	}
     }
 

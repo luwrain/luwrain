@@ -77,6 +77,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final Braille braille = new Braille();
     private final Clipboard clipboard = new Clipboard();
     protected final SoundsPlayer sounds = new SoundsPlayer();
+    protected final ObjRegistry objRegistry = new ObjRegistry();
     protected final SoundManager soundManager;
     protected final org.luwrain.base.CoreProperties coreProps;
     protected final String lang;

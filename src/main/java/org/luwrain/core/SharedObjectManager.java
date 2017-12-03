@@ -49,7 +49,7 @@ Entry(Extension extension, String name,
 boolean add(Extension extension, SharedObject sharedObject)
     {
 	NullCheck.notNull(sharedObject, "sharedObject");
-	final String name = sharedObject.getName();
+	final String name = sharedObject.getExtObjName();
 	if (name == null || name.trim().isEmpty())
 	    return false;
 	if (sharedObjects.containsKey(name))
@@ -83,7 +83,7 @@ String[] getSharedObjectsNames()
 	    partitionsPopupControl = new PartitionsPopupControl(env.getObjForEnvironment(), env.getHardware());
 
 	add(null, new SharedObject(){
-		@Override public String getName()
+		@Override public String getExtObjName()
 		{
 		    return "luwrain.partitionspopupcontrol";
 		}

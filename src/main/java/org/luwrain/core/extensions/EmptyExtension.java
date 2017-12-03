@@ -40,7 +40,7 @@ public class EmptyExtension implements Extension
 	return new Worker[0];
     }
 
-    @Override public SharedObject[] getSharedObjects(Luwrain luwrain)
+    @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
 	return new SharedObject[0];
     }

@@ -157,11 +157,15 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 		}
 
 	    //Shared objects
-	    for(SharedObject s: e.sharedObjects)
-		if (s != null)
+	    for(ExtensionObject s: e.extObjects)
+		if (s instanceof SharedObject)
 		{
-		    if (!sharedObjects.add(ext, s))
-			    Log.warning("core", "the shared object \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shared objects manager to be registered");
+		    if (!sharedObjects.add(ext, (SharedObject)s))
+			Log.warning(LOG_COMPONENT, "the shared object \'" + s.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shared objects manager to be registered");
+		} else
+		{
+		    if (!objRegistry.add(ext, s))
+			Log.warning(LOG_COMPONENT, "the shared object \'" + s.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  the object registry to be registered");
 		}
 
 	    //UniRefProcs
