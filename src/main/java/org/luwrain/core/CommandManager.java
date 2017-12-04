@@ -83,19 +83,4 @@ class CommandManager
 	Arrays.sort(str);
 	return str;
     }
-
-    void addOsCommands(Luwrain luwrain, Registry registry)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(registry, "registry");
-	registry.addDirectory(Settings.OS_COMMANDS_PATH);
-	for(String s: registry.getDirectories(Settings.OS_COMMANDS_PATH))
-	{
-	    if (s.trim().isEmpty())
-		continue;
-	    final OsCommands.OsCommand cmd = new OsCommands.OsCommand();
-	    if (cmd.init(Settings.createOsCommand(registry, Registry.join(Settings.OS_COMMANDS_PATH, s))))
-	    add(luwrain, cmd);
-	}
-    }
 }

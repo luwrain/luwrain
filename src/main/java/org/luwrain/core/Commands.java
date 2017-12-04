@@ -663,7 +663,7 @@ class Commands
 		    } else
 			dir = "";
 		    luwrain.runOsCommand(cmd.trim(), dir, (line)->{}, (exitCode, output)->{
-			luwrain.runInMainThread(()->OsCommands.issueResultingMessage(luwrain, exitCode, output));
+			    luwrain.runInMainThread(()->ObjRegistry.issueResultingMessage(luwrain, exitCode, output));
 			});
 		}
 	    },

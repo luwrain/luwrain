@@ -137,7 +137,6 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	final Command[] standardCommands = Commands.createStandardCommands(this, conversations);
 	for(Command sc: standardCommands)
 	    commands.add(new Luwrain(this), sc);//FIXME:
-	commands.addOsCommands(getObjForEnvironment(), registry);
 	sharedObjects.createStandardObjects(this);
 	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(getObjForEnvironment());
 	for(UniRefProc proc: standardUniRefProcs)

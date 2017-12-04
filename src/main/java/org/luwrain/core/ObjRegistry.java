@@ -119,4 +119,76 @@ final class ObjRegistry
 	    return null;
 	return shortcut.prepareApp(args);
     }
+
+    static void issueResultingMessage(Luwrain luwrain, int exitCode, String[] lines)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNullItems(lines, "lines");
+	final StringBuilder b = new StringBuilder();
+	if (lines.length >= 1)
+	{
+	    b.append(lines[0]);
+	    for(int i = 1;i < lines.length;++i)
+		b.append(" " + lines[i]);
+	}
+	final String text = new String(b).trim();
+	if (!text.isEmpty())
+	    luwrain.message(text, exitCode == 0?Luwrain.MESSAGE_DONE:Luwrain.MESSAGE_ERROR); else
+	    if (exitCode == 0)
+		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFinishedSuccessfully"), Luwrain.MESSAGE_DONE); else
+		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFailed"), Luwrain.MESSAGE_ERROR);
+    }
+
+    static private class CommandLineToolCommand implements Command
+    {
+	private final String name;
+	private final CommandLineTool tool;
+	private final boolean showResultMessage;
+
+	CommandLineToolCommand(String name, CommandLineTool tool, boolean showResultMessage)
+	{
+	    NullCheck.notEmpty(name, "name");
+	    NullCheck.notNull(tool, "tool");
+	    this.name = name;
+	    this.tool = tool;
+	    this.showResultMessage = showResultMessage;
+	}
+
+	@Override public String getName()
+	{
+	    return name;
+	}
+
+	@Override public void onCommand(Luwrain luwrain)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	}
+    }
+
+    static private class CommandLineToolShortcut implements Shortcut
+    {
+	private final String name;
+	private final CommandLineTool tool;
+	private final boolean showResultMessage;
+
+	CommandLineToolShortcut(String name, CommandLineTool tool, boolean showResultMessage)
+	{
+	    NullCheck.notEmpty(name, "name");
+	    NullCheck.notNull(tool, "tool");
+	    this.name = name;
+	    this.tool = tool;
+	    this.showResultMessage = showResultMessage;
+	}
+
+	@Override public String getExtObjName()
+	{
+	    return name;
+	}
+
+	@Override public Application[] prepareApp(String[] args)
+	{
+	    NullCheck.notNullItems(args, "args");
+	    return null;
+	}
+    }
 }
