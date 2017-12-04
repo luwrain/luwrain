@@ -16,6 +16,7 @@
 
 package org.luwrain.core.extensions;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public class LoadedExtension

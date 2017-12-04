@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.jar.*;
 import java.io.*;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public class Manager

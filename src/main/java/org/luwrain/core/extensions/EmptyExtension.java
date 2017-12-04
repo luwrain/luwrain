@@ -16,6 +16,7 @@
 
 package org.luwrain.core.extensions;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public class EmptyExtension implements Extension
@@ -42,7 +43,7 @@ public class EmptyExtension implements Extension
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	return new SharedObject[0];
+	return new ExtensionObject[0];
     }
 
     @Override public void i18nExtension(Luwrain luwrain, I18nExtension i18nExt)

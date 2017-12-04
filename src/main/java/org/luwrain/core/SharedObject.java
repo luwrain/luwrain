@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import org.luwrain.base.*;
+
 public interface SharedObject extends ExtensionObject
 {
     String getExtObjName();

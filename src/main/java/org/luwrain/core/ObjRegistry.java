@@ -24,11 +24,11 @@ import org.luwrain.core.extensions.*;
 final class ObjRegistry
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-    
+
     static private final class Entry<E> 
     {
-final Extension ext;
-final String name;
+	final Extension ext;
+	final String name;
 	final E obj;
 
 	Entry(Extension ext, String name, E obj)
@@ -41,27 +41,40 @@ final String name;
 	}
     }
 
+    private Map<String, Entry<Shortcut>> shortcuts = new HashMap();
     private Map<String, Entry<CommandLineTool>> cmdLineTools = new HashMap();
 
-boolean add(Extension ext, ExtensionObject obj)
+    boolean add(Extension ext, ExtensionObject obj)
     {
 	NullCheck.notNull(obj, "obj");
 	final String name = obj.getExtObjName();
 	if (name == null || name.trim().isEmpty())
 	    return false;
+	boolean res = false;
 	if (obj instanceof CommandLineTool)
 	{
 	    final CommandLineTool tool = (CommandLineTool)obj;
-	if (cmdLineTools.containsKey(name))
-	    return false;
-cmdLineTools.put(name, new Entry(ext, name, tool));
-	return true;
-    }
-	Log.warning(LOG_COMPONENT, "trying to add an extension object of unknown type " + obj.getClass().getName() + " with name \'" + name + "\'");
-	return false;
+	    if (!cmdLineTools.containsKey(name))
+	    {
+		cmdLineTools.put(name, new Entry(ext, name, tool));
+		res = true;
+	    }
+	}
+	if (obj instanceof Shortcut)
+	{
+	    final Shortcut shortcut = (Shortcut)obj;
+	    if (!shortcuts.containsKey(name))
+	    {
+		shortcuts.put(name, new Entry(ext, name, shortcut));
+		res = true;
+	    }
+	}
+	if (!res)
+	    Log.warning(LOG_COMPONENT, "failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
+	return res;
     }
 
-CommandLineTool getCommandLineTool(String name)
+    CommandLineTool getCommandLineTool(String name)
     {
 	NullCheck.notEmpty(name, "name");
 	if (!cmdLineTools.containsKey(name))
@@ -69,7 +82,7 @@ CommandLineTool getCommandLineTool(String name)
 	return cmdLineTools.get(name).obj;
     }
 
-String[] getCmdLineToolNames()
+    String[] getCmdLineToolNames()
     {
 	final List<String> res = new LinkedList();
 	for(Map.Entry<String, Entry<CommandLineTool>> e: cmdLineTools.entrySet())
@@ -77,5 +90,33 @@ String[] getCmdLineToolNames()
 	final String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);
 	return str;
+    }
+
+    Shortcut getShortcut(String name)
+    {
+	NullCheck.notEmpty(name, "name");
+	if (!shortcuts.containsKey(name))
+	    return null;
+	return shortcuts.get(name).obj;
+    }
+
+    String[] getShortcutNames()
+    {
+	final List<String> res = new LinkedList();
+	for(Map.Entry<String, Entry<Shortcut>> e: shortcuts.entrySet())
+	    res.add(e.getKey());
+	final String[] str = res.toArray(new String[res.size()]);
+	Arrays.sort(str);
+	return str;
+    }
+
+    Application[] prepareApp(String name, String[] args)
+    {
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNullItems(args, "args");
+	final Shortcut shortcut = getShortcut(name);
+	if (shortcut == null)
+	    return null;
+	return shortcut.prepareApp(args);
     }
 }
