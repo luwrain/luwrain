@@ -44,8 +44,6 @@ Entry(Extension extension, String name,
     private final TreeMap<String, Entry> sharedObjects = new TreeMap<String, Entry>();
 
     //Standard shared objects
-    private PartitionsPopupControl partitionsPopupControl;
-
 boolean add(Extension extension, SharedObject sharedObject)
     {
 	NullCheck.notNull(sharedObject, "sharedObject");
@@ -74,23 +72,5 @@ String[] getSharedObjectsNames()
 	final String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);
 	return str;
-    }
-
-    void createStandardObjects(Environment env)
-    {
-	NullCheck.notNull(env, "env");
-	if (partitionsPopupControl == null)
-	    partitionsPopupControl = new PartitionsPopupControl(env.getObjForEnvironment(), env.getHardware());
-
-	add(null, new SharedObject(){
-		@Override public String getExtObjName()
-		{
-		    return "luwrain.partitionspopupcontrol";
-		}
-		@Override public Object getSharedObject()
-		{
-		    return partitionsPopupControl;
-		}
-	    });
     }
 }

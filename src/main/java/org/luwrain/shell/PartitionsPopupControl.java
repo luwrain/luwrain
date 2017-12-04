@@ -14,81 +14,20 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.shell;
 
 import java.util.*;
 
-import org.luwrain.popups.*;
 import org.luwrain.base.*;
+import org.luwrain.core.*;
+import org.luwrain.popups.*;
 
-class PartitionsPopupControl implements PartitionsPopup.Control
+public class PartitionsPopupControl implements PartitionsPopup.Control
 {
-    static private class PartWrapper implements PartitionsPopup.Partition
-    {
-	private Luwrain luwrain;
-	private org.luwrain.base.Partition part;
+    private final Luwrain luwrain;
+    private final Hardware hardware;
 
-	PartWrapper(Luwrain luwrain, Partition part)
-	{
-	    NullCheck.notNull(luwrain, "luwrain");
-	    NullCheck.notNull(part, "part");
-	    this.luwrain = luwrain;
-	    this.part = part;
-	}
-
-	@Override public String getFullTitle()
-	{
-
-	switch(part.getPartType())
-	{
-	case ROOT:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRoot");
-	case USER_HOME:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemUserHome");
-	case REGULAR:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRegular") + " " + part.getPartName();
-	case REMOTE:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemote") + " " + part.getPartName();
-	case REMOVABLE:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemovable") + " " + part.getPartName();
-	default:
-	    return part.getPartName();
-	}
-    }
-
-	@Override public String getBriefTitle()
-	{
-	    return part.getPartName();
-	}
-
-	@Override public Object getObject()
-	{
-	    return part;
-	}
-    }
-
-    static private class DeviceWrapper
-    {
-	private StorageDevice device;
-
-	DeviceWrapper(StorageDevice device)
-	{
-	    NullCheck.notNull(device, "device");
-	    this.device = device;
-	}
-
-	@Override public String toString()
-	{
-	    return device.model + " (" + device.devName + ")";
-	}
-
-	StorageDevice device() { return device; }
-    }
-
-    private Luwrain luwrain;
-    private Hardware hardware;
-
-    PartitionsPopupControl(Luwrain luwrain, Hardware hardware)
+    public PartitionsPopupControl(Luwrain luwrain, Hardware hardware)
 {
     NullCheck.notNull(luwrain, "luwrain");
     NullCheck.notNull(hardware, "hardware");
@@ -144,5 +83,66 @@ class PartitionsPopupControl implements PartitionsPopup.Control
 	    return -1;
 	final DeviceWrapper wrapper = (DeviceWrapper)device;
 	return hardware.umountAllPartitions(wrapper.device());
+    }
+
+        static private class PartWrapper implements PartitionsPopup.Partition
+    {
+	private final Luwrain luwrain;
+	private final org.luwrain.base.Partition part;
+
+	PartWrapper(Luwrain luwrain, Partition part)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    NullCheck.notNull(part, "part");
+	    this.luwrain = luwrain;
+	    this.part = part;
+	}
+
+	@Override public String getFullTitle()
+	{
+	switch(part.getPartType())
+	{
+	case ROOT:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRoot");
+	case USER_HOME:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemUserHome");
+	case REGULAR:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRegular") + " " + part.getPartName();
+	case REMOTE:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemote") + " " + part.getPartName();
+	case REMOVABLE:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemovable") + " " + part.getPartName();
+	default:
+	    return part.getPartName();
+	}
+    }
+
+	@Override public String getBriefTitle()
+	{
+	    return part.getPartName();
+	}
+
+	@Override public Object getObject()
+	{
+	    return part;
+	}
+    }
+
+    static private class DeviceWrapper
+    {
+	private final StorageDevice device;
+
+	DeviceWrapper(StorageDevice device)
+	{
+	    NullCheck.notNull(device, "device");
+	    this.device = device;
+	}
+
+	@Override public String toString()
+	{
+	    return device.model + " (" + device.devName + ")";
+	}
+
+	StorageDevice device() { return device; }
     }
 }

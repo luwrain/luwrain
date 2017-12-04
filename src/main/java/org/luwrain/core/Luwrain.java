@@ -59,12 +59,14 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     };
 
     private final Environment environment;
+    private final org.luwrain.shell.PartitionsPopupControl partitionsPopupControl;
     private String charsToSkip = "";
 
     public Luwrain(Environment environment)
     {
 	NullCheck.notNull(environment, "environment");
 	this.environment = environment;
+	this.partitionsPopupControl = new org.luwrain.shell.PartitionsPopupControl(this, environment.os.getHardware());
 	Registry registry = environment.registry();
 	final String path = "/org/luwrain/speech/preprocess-cchars-to-skip";
 	if (registry.getTypeOf(path) == Registry.STRING)
@@ -711,6 +713,11 @@ public FilesOperations getFilesOperations()
 	return environment.getFilesOperations();
     }
 
+    public org.luwrain.popups.PartitionsPopup.Control getPartitionsPopupControl()
+    {
+	return partitionsPopupControl;
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");
@@ -718,5 +725,5 @@ public FilesOperations getFilesOperations()
 	if (staticStrId == null)
 	    return;
 	say(i18n().staticStr(staticStrId), Speech.PITCH_HINT);
-	    }
+    }
 }

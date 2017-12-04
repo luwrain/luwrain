@@ -246,7 +246,7 @@ name, prefix, text, popupFlags);
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(popupFlags, "popupFlags");
-	final PartitionsPopup popup = new PartitionsPopup(luwrain, (PartitionsPopup.Control)luwrain.getSharedObject("luwrain.partitionspopupcontrol"),
+	final PartitionsPopup popup = new PartitionsPopup(luwrain, luwrain.getPartitionsPopupControl(),
 							  luwrain.i18n().getStaticStr("PartitionsPopupName"), popupFlags, EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP));
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
