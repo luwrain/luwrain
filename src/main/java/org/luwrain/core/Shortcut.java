@@ -16,8 +16,9 @@
 
 package org.luwrain.core;
 
-public interface Shortcut
+import org.luwrain.base.*;
+
+public interface Shortcut extends ExtensionObject
 {
-    String getName();
     Application[] prepareApp(String[] args);
 }

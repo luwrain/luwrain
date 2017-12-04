@@ -77,7 +77,7 @@ class OsCommands
 	    return true;
 	}
 
-	@Override public String getName()
+	@Override public String getExtObjName()
 	{
 	    return name;
 	}

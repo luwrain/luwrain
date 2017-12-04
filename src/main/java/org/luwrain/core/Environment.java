@@ -43,7 +43,6 @@ final OperatingSystem os;
 
     private final I18nImpl i18n = new I18nImpl();
     private final CommandManager commands = new CommandManager();
-    private final ShortcutManager shortcuts = new ShortcutManager();
     private final SharedObjectManager sharedObjects = new SharedObjectManager();
 final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
@@ -139,7 +138,6 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	for(Command sc: standardCommands)
 	    commands.add(new Luwrain(this), sc);//FIXME:
 	commands.addOsCommands(getObjForEnvironment(), registry);
-	shortcuts.addOsShortcuts(getObjForEnvironment(), registry);
 	sharedObjects.createStandardObjects(this);
 	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(getObjForEnvironment());
 	for(UniRefProc proc: standardUniRefProcs)
@@ -152,8 +150,8 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	    for(Shortcut s: e.shortcuts)
 		if (s != null)
 		{
-		    if (!shortcuts.add(s))
-			Log.warning("core", "shortcut \'" + s.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shortcuts manager to be registered");
+		    if (!objRegistry.add(e.ext, s))
+			Log.warning(LOG_COMPONENT, "shortcut \'" + s.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shortcuts manager to be registered");
 		}
 
 	    //Shared objects
@@ -226,7 +224,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	mainCoreThreadOnly();
 	for(int i = 0;i < args.length;++i)
 	    Log.info("core", "args[" + i + "]: " + args[i]);
-	final Application[] app = shortcuts.prepareApp(shortcutName, args != null?args:new String[0]);
+	final Application[] app = objRegistry.prepareApp(shortcutName, args);
 	if (app == null)
 	    return;
 	soundManager.stopStartingMode();
@@ -1094,7 +1092,7 @@ onNewAreasLayout();
 
     String[] getAllShortcutNames()
     {
-	return shortcuts.getShortcutNames();
+	return objRegistry.getShortcutNames();
     }
 
     FilesOperations getFilesOperations()
