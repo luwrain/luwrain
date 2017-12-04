@@ -146,10 +146,10 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	return environment.registry();
     }
 
-    public Object getSharedObject(String id)
+    public Object getSharedObject(String name)
     {
-	NullCheck.notNull(id, "id");
-	return environment.getSharedObjectIface(id);
+	NullCheck.notEmpty(name, "name");
+	return environment.objRegistry.getSharedObject(name);
     }
 
     public I18n i18n()

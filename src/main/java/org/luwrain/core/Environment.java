@@ -43,7 +43,6 @@ final OperatingSystem os;
 
     private final I18nImpl i18n = new I18nImpl();
     private final CommandManager commands = new CommandManager();
-    private final SharedObjectManager sharedObjects = new SharedObjectManager();
 final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
     public Settings.UserInterface uiSettings;//FIXME:final 
@@ -152,17 +151,9 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 			Log.warning(LOG_COMPONENT, "shortcut \'" + s.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shortcuts manager to be registered");
 		}
 
-	    //Shared objects
 	    for(ExtensionObject s: e.extObjects)
-		if (s instanceof SharedObject)
-		{
-		    if (!sharedObjects.add(ext, (SharedObject)s))
-			Log.warning(LOG_COMPONENT, "the shared object \'" + s.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shared objects manager to be registered");
-		} else
-		{
 		    if (!objRegistry.add(ext, s))
 			Log.warning(LOG_COMPONENT, "the shared object \'" + s.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  the object registry to be registered");
-		}
 
 	    //UniRefProcs
 	    for(UniRefProc p: e.uniRefProcs)
@@ -953,15 +944,6 @@ onNewAreasLayout();
 	if (command.trim().isEmpty())
 	    return false;
 	return commands.run(command.trim());
-    }
-
-    Object getSharedObjectIface(String id)
-    {
-	if (id == null)
-	    throw new NullPointerException("id may not be null");
-	if (id.trim().isEmpty())
-	    throw new IllegalArgumentException("id may not be empty");
-	return sharedObjects.getSharedObject(id);
     }
 
     boolean openUniRefIface(String uniRef)
