@@ -83,20 +83,6 @@ public interface DateTime
 	void setCharsets(String value);
     }
 
-    public interface OsCommand
-    {
-	String getName(String defValue);
-	String getCommand(String defValue);
-	boolean getShowResultingMessage(boolean defValue);
-    }
-
-    public interface OsShortcut
-    {
-	String getName(String defValue);
-	String getCommand(String defValue);
-	boolean getShowResultingMessage(boolean defValue);
-    }
-
     public interface PersonalInfo
     {
 	String getFullName(String defValue);
@@ -366,14 +352,6 @@ public interface DateTime
 	NullCheck.notEmpty(path, "path");
     return RegistryProxy.create(registry, path, OsCommand.class);
     }
-
-    static public OsShortcut createOsShortcut(Registry registry, String path)
-    {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notEmpty(path, "path");
-    return RegistryProxy.create(registry, path, OsShortcut.class);
-    }
-
 
     static public I18n createI18n(Registry registry)
     {
