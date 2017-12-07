@@ -721,6 +721,11 @@ public FilesOperations getFilesOperations()
 	return partitionsPopupControl;
     }
 
+    public org.luwrain.player.Player getPlayer()
+    {
+	return environment.player;
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");

@@ -28,8 +28,11 @@ import org.luwrain.base.*;
 
 public class Environment extends EnvironmentAreas
 {
-    static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
+
+    static private final String PLAYER_CLASS_PROP_NAME = "luwrain.class.player";
+        static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
+    
 
     private AreaListening listening = null;
 final OperatingSystem os;
@@ -44,6 +47,7 @@ final OperatingSystem os;
     private final I18nImpl i18n = new I18nImpl();
     private final CommandManager commands = new CommandManager();
 final UniRefProcManager uniRefProcs = new UniRefProcManager();
+    org.luwrain.player.Player player = null;
 
     public Settings.UserInterface uiSettings;//FIXME:final 
     private volatile boolean wasInputEvents = false;
@@ -126,6 +130,31 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
+
+	//loading player
+	if (!coreProps.getProperty(PLAYER_CLASS_PROP_NAME).isEmpty())
+	{
+	    final String playerClassName = coreProps.getProperty(PLAYER_CLASS_PROP_NAME);
+	    try {
+		final Object o = Class.forName(playerClassName).newInstance();
+		if (o instanceof org.luwrain.player.Player)
+		{
+		    this.player = (org.luwrain.player.Player)o;
+		    Log.debug(LOG_COMPONENT, "loaded player instance of class " + playerClassName);
+		} else
+		{
+		    Log.error(LOG_COMPONENT, "the player class " + playerClassName + " is not an instance of org.luwrain.player.Player");
+		    this.player = player;
+		}
+	    }
+	    catch(Throwable e)
+	    {
+		Log.error(LOG_COMPONENT, "unable to load player class " + playerClassName + ":" + e.getClass().getName() + ":" + e.getMessage());
+		this.player = null;
+	    }
+	} else
+	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_CLASS_PROP_NAME + " is empty");
+
 	desktop.ready(/*i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME)*/);
 	sounds.init(registry, coreProps.getFileProperty("luwrain.dir.data").toPath());
 	uiSettings = Settings.createUserInterface(registry);
