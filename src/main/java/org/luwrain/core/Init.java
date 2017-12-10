@@ -32,7 +32,7 @@ import org.luwrain.base.OperatingSystem;
  * contains {@code main()} static method which should be used to launch
  * Java virtual machine with LUWRAIN.
  */
-public class Init
+public class Init implements org.luwrain.base.CoreProperties
 {
     static private final String LOG_COMPONENT = "init";
 
@@ -72,7 +72,7 @@ public class Init
 	this.userHomeDir = new File(System.getProperty("user.home"));
     }
 
-    private String getSystemProperty(String propName)
+    public String getProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
 			   switch(propName)
@@ -84,7 +84,7 @@ public class Init
 			   }
     }
 
-    private File getSystemPath(String propName)
+    public File getFileProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
 	switch(propName)
@@ -217,7 +217,7 @@ public class Init
 	    return false;
 	}
 	os = (org.luwrain.base.OperatingSystem)o;
-	final InitResult initRes = os.init(createCoreProperties());
+	final InitResult initRes = os.init(this);
 	if (initRes == null || !initRes.isOk())
 	{
 	    if (initRes != null)
@@ -236,11 +236,8 @@ public class Init
 	    final boolean initRes = init();
 	    if (initRes)
 		new Environment(
-				cmdLine,
-				registry,
-				os,
-				interaction,
-				createCoreProperties(),
+				cmdLine, registry, os, interaction, 
+				this, //core properties
 				lang).run();
 	    if (interaction != null)
 	    {
@@ -258,21 +255,6 @@ public class Init
 	}
     }
 
-    private org.luwrain.base.CoreProperties createCoreProperties()
-    {
-return new org.luwrain.base.CoreProperties(){
-				@Override public String getProperty(String propName)
-				{
-				    NullCheck.notNull(propName, "propName");
-				    return getSystemProperty(propName);
-				}
-				@Override public File getFileProperty(String propName)
-				{
-				    NullCheck.notEmpty(propName, "propName");
-				    return getSystemPath(propName);
-				}};
-    }
-
     /**
      * The main entry point to launch LUWRAIN.
      *
@@ -286,9 +268,6 @@ return new org.luwrain.base.CoreProperties(){
 	    System.setOut(log);
 	    System.setErr(log);
 	}
-
-
-
 	setUtf8();
 	addJarsToClassPath("jar");
 	addJarsToClassPath("lib");
