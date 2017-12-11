@@ -14,15 +14,15 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.core.init;
 
 import java.net.*;
 import java.lang.reflect.*;
 
-class ClassPath
+public class ClassPath
 {
-    //Until the better days, when guys from OpenJDK stops the mess with classpath manipulation
-    static boolean addUrl(URL url)
+    //Until the better days, when the guys from OpenJDK stop the mess with classpath manipulation
+    static public boolean addUrl(URL url)
     {
 	try {
 	    final URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();

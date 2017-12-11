@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.core.init;
 
@@ -40,6 +55,7 @@ public final class RegistryExtractor
 		onValue(line);
 	    line = reader.readLine();
 	}
+	saveLines();
     }
 
     private void onDir(String path) throws IOException
@@ -51,11 +67,11 @@ public final class RegistryExtractor
 	currentDir = new File(destDir, path);
 	createDirectories(currentDir);
 	new File(currentDir, "strings.txt").createNewFile();
-		new File(currentDir, "integers.txt").createNewFile();
-			new File(currentDir, "booleans.txt").createNewFile();
-			    }
+	new File(currentDir, "integers.txt").createNewFile();
+	new File(currentDir, "booleans.txt").createNewFile();
+    }
 
-        private void onFile(String fileName) throws IOException
+    private void onFile(String fileName) throws IOException
     {
 	NullCheck.notNull(fileName, "fileName");
 	if (fileName.isEmpty())
@@ -64,6 +80,7 @@ public final class RegistryExtractor
 	    return;
 	saveLines();
 	currentFile = new File(currentDir, fileName);
+	currentFile.createNewFile();
     }
 
     private void onValue(String line) throws IOException
@@ -76,15 +93,25 @@ public final class RegistryExtractor
 	lines.add(line);
     }
 
-    private void saveLines()
+    private void saveLines() throws IOException
     {
+	final BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile, true));
+	try {
+	    for(String s: lines)
+		writer.write(s);
+	    writer.newLine();
+	}
+	finally {
+	    writer.close();
+	}
+	lines.clear();
     }
 
     static private void createDirectories(File file) throws IOException
     {
 	NullCheck.notNull(file, "file");
 	final LinkedList<File> files = new LinkedList();
-File f = file;
+	File f = file;
 	while(f != null)
 	{
 	    files.add(f);
@@ -97,4 +124,4 @@ File f = file;
 		dir.mkdir();
 	}
     }
-       }
+}

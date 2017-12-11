@@ -54,4 +54,6 @@ public class RegistryExtractorTest extends Assert
 	    throw new IOException("Unable to create temporary directory " + tmpFile.getAbsolutePath());
 	return tmpFile;
     }
+
+    //FIXME:testing of values saving
 }

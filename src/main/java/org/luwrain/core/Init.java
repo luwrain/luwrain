@@ -18,12 +18,13 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.io.*;
-import java.nio.file.*;
+//import java.nio.file.*;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 
 
 import org.luwrain.base.OperatingSystem;
+import org.luwrain.core.init.*;
 
 /**
  * The main class to launch LUWRAIN. All basic initialization is
@@ -42,10 +43,10 @@ public class Init implements org.luwrain.base.CoreProperties
     static private final String  PREFIX_USER_DATA_DIR = "--user-data-dir=";
     static private final String  PREFIX_LANG= "--lang=";
 
-    static private final String ENV_APP_DATA = "APPDATA";
-    static private final String ENV_USER_PROFILE = "USERPROFILE";
-    static private final String DEFAULT_USER_DATA_DIR_WINDOWS = "Luwrain";
-    static private final String DEFAULT_USER_DATA_DIR_LINUX = ".luwrain";
+    //    static private final String ENV_APP_DATA = "APPDATA";
+    //    static private final String ENV_USER_PROFILE = "USERPROFILE";
+    //    static private final String DEFAULT_USER_DATA_DIR_WINDOWS = "Luwrain";
+    //    static private final String DEFAULT_USER_DATA_DIR_LINUX = ".luwrain";
 
     private final CmdLine cmdLine;
     private final CoreProperties coreProps = new CoreProperties();
@@ -264,120 +265,35 @@ public class Init implements org.luwrain.base.CoreProperties
     {                    
 	if (args.length == 0)
 	{
-	    final PrintStream log = new PrintStream(new BufferedOutputStream(new FileOutputStream(Paths.get(System.getProperty("user.home")).resolve("luwrain-debug.txt").toFile())), true);
+	    final PrintStream log = new PrintStream(new BufferedOutputStream(new FileOutputStream(new File(new File(System.getProperty("user.home")), "luwrain-debug.txt"))), true);
 	    System.setOut(log);
 	    System.setErr(log);
 	}
 	setUtf8();
 	addJarsToClassPath("jar");
 	addJarsToClassPath("lib");
-	final Path userDataDir = prepareUserDataDir(); 
+
+		final File userDataDir = Checks.detectUserDataDir();
+		
 	if (userDataDir == null)
 	    System.exit(1);
-	new Init(args, "ru", new File("data"), userDataDir.toFile()).start();
-    }
-
-    static private Path prepareUserDataDir()
-    {
-	final Path userDataDir = detectUserDataDir();
-	Log.debug("init", "user data directory detected as " + userDataDir.toString());
-	final Path registryDir = userDataDir.resolve("registry");
-	final Path sqliteDir = userDataDir.resolve("sqlite");
-	try {
-	    if (!Files.exists(registryDir))
-	    {
-		copyDir(Paths.get("registry"), registryDir);
-		copyDir(Paths.get("i18n", "ru"), registryDir);
-		createRegistryFiles(registryDir.resolve("org"));
-	    }
-	    if (!Files.exists(sqliteDir))
-		copyDir(Paths.get("sqlite"), sqliteDir);
-	    Files.createDirectories(userDataDir.resolve("extensions"));
-	    Files.createDirectories(userDataDir.resolve("properties"));
-	}
-	catch(IOException e)
-	{
-	    Log.fatal("init", "unable to prepare user data directory:" + e.getClass().getName() + ":" + e.getMessage());
-	    return null;
-	}
-	Log.debug("init", "user data directory prepared");
-	return userDataDir;
-    }
-
-    static private void createRegistryFiles(Path dest) throws IOException
-    {
-	NullCheck.notNull(dest, "dest");
-	if (!Files.exists(dest.resolve("strings.txt")))
-	    Files.createFile(dest.resolve("strings.txt"));
-	if (!Files.exists(dest.resolve("integers.txt")))
-	    Files.createFile(dest.resolve("integers.txt"));
-	if (!Files.exists(dest.resolve("booleans.txt")))
-	    Files.createFile(dest.resolve("booleans.txt"));
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dest)) {
-		for (Path p : directoryStream) 
-		{
-		    final Path newDest = dest.resolve(p.getFileName());
-		    if (Files.isDirectory(newDest))
-			createRegistryFiles(newDest);
-		}
-	    }
-    }
-
-
-    static private void copyDir(Path fromDir, Path dest) throws IOException
-    {
-	NullCheck.notNull(fromDir, "fromDir");
-	NullCheck.notNull(dest, "dest");
-	Files.createDirectories(dest);
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(fromDir)) {
-		for (Path p : directoryStream) 
-		{
-		    final Path newDest = dest.resolve(p.getFileName());
-		    if (Files.isDirectory(p))
-		    {
-			Files.createDirectories(newDest);
-			copyDir(p, newDest);
-		    } else
-		    {
-			final InputStream is = Files.newInputStream(p);
-			try {
-			    Files.copy(is, newDest, StandardCopyOption.REPLACE_EXISTING);
-			}
-			finally {
-			    is.close();
-			}
-		    }
-		}
-	    } 
-    }
-
-    static private Path detectUserDataDir()
-    {
-	if(System.getenv().containsKey(ENV_APP_DATA) && !System.getenv().get(ENV_APP_DATA).trim().isEmpty())
-	{
-	    final Path appData = Paths.get(System.getenv().get(ENV_APP_DATA));
-	    return appData.resolve(DEFAULT_USER_DATA_DIR_WINDOWS);
-	}
-	if(System.getenv().containsKey(ENV_USER_PROFILE) && !System.getenv().get(ENV_USER_PROFILE).trim().isEmpty())
-	{
-	    final Path userProfile = Paths.get(System.getenv().get(ENV_USER_PROFILE));
-	    return userProfile.resolve("Local Settings").resolve("Application Data").resolve(DEFAULT_USER_DATA_DIR_WINDOWS);
-	}
-	return Paths.get(System.getProperty("user.home")).resolve(DEFAULT_USER_DATA_DIR_LINUX);
+	new Init(args, "ru", new File("data"), userDataDir).start();//FIXME:lang
     }
 
     static private void addJarsToClassPath(String dirName)
     {
 	NullCheck.notEmpty(dirName, "dirName");
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(dirName))) {
-		for (Path p : directoryStream) 
+	try {
+	    for(File f: new File(dirName).listFiles())
+		if (f.getName().toLowerCase().trim().endsWith(".jar"))
 		{
-		    final java.net.URL url = p.toUri().toURL();
+		    final java.net.URL url = f.toURI().toURL();
 		    ClassPath.addUrl(url);
 		}
-	    }
+	}
 	catch(IOException e)
 	{
+	    Log.error(LOG_COMPONENT, "unable to add to the classpath the directory " + dirName + ":" + e.getClass().getName() + ":" + e.getMessage());
 	}
     }
 
