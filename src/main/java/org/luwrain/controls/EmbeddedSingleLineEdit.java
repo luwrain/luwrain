@@ -114,4 +114,79 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
     {
 	return "\t";//FIXME:
     }
+
+    protected class ShiftedRegionPoint implements AbstractRegionPoint
+    {
+	protected final AbstractRegionPoint regionPoint;
+	protected int offsetX = 0;
+	protected int offsetY = 0;
+
+	public ShiftedRegionPoint(AbstractRegionPoint regionPoint)
+	{
+	    NullCheck.notNull(regionPoint, "regionPoint");
+	    this.regionPoint = regionPoint;
+	}
+
+	public ShiftedRegionPoint(AbstractRegionPoint regionPoint, int offsetX, int offsetY)
+	{
+	    NullCheck.notNull(regionPoint, "regionPoint");
+	    if (offsetX < 0 || offsetY < 0)
+		throw new IllegalArgumentException("offsetX (" + offsetX + ") and offsetY (" + offsetY + ") may not be negative");
+	    this.regionPoint = regionPoint;
+	    this.offsetX = offsetX;
+	    this.offsetY = offsetY;
+	}
+
+	@Override public boolean onEnvironmentEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
+	{
+	    NullCheck.notNull(event, "event");
+	    if (hotPointX < 0 || hotPointY < 0)
+		throw new IllegalArgumentException("hotPointX and hotPointY must be greater or equal to zero");
+	    if (event.getType() == EnvironmentEvent.Type.REGULAR)
+		switch(event.getCode())
+		{
+		case REGION_POINT:
+		    set(hotPointX, hotPointY);
+		    return true;
+		}
+	    return false;
+	}
+
+	public boolean isInitialized()
+	{
+	    if (regionPoint.getHotPointY() != offsetY || regionPoint.getHotPointX() < offsetX)
+		return false;
+	    return regionPoint.isInitialized();
+	}
+
+	public void set(int hotPointX, int hotPointY)
+	{
+	    if (hotPointX < 0 || hotPointY < 0)
+		throw new IllegalArgumentException("hotPointX and hotPointY must be greater or equal to zero");
+	    regionPoint.set(hotPointX + offsetX, hotPointY + offsetY);
+	}
+
+	@Override public int getHotPointX()
+	{
+	    return Math.max(regionPoint.getHotPointX() - offsetX, 0);
+	}
+
+	@Override public int getHotPointY()
+	{
+	    return Math.max(regionPoint.getHotPointY() - offsetY, 0);
+	}
+
+	public void reset()
+	{
+	    regionPoint.reset();
+	}
+
+	public void setOffset(int x, int y)
+	{
+	    if (x < 0 || y < 0)
+		throw new IllegalArgumentException("x (" + x + ") and y (" + y + ") may not be negative");
+	    this.offsetX = x;
+	    this.offsetY = y;
+	}
+    }
 }
