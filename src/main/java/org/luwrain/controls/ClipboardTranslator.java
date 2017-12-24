@@ -36,32 +36,6 @@ public class ClipboardTranslator
     protected final AbstractRegionPoint regionPoint;
     protected final Set<Flags> flags;
 
-    public ClipboardTranslator(Provider provider)
-    {
-	NullCheck.notNull(provider, "provider");
-	this.provider = provider;
-	this.regionPoint = new RegionPoint();
-	this.flags = EnumSet.noneOf(Flags.class);
-    }
-
-    public ClipboardTranslator(Provider provider, Set<Flags> flags)
-    {
-	NullCheck.notNull(provider, "provider");
-	NullCheck.notNull(flags, "flags");
-	this.provider = provider;
-	this.regionPoint = new RegionPoint();
-	this.flags = flags;
-    }
-
-    public ClipboardTranslator(Provider provider, AbstractRegionPoint regionPoint)
-    {
-	NullCheck.notNull(provider, "provider");
-	NullCheck.notNull(regionPoint, "regionPoint");
-	this.provider = provider;
-	this.regionPoint = regionPoint;
-	this.flags = EnumSet.noneOf(Flags.class);
-    }
-
     public ClipboardTranslator(Provider provider, AbstractRegionPoint regionPoint, Set<Flags> flags)
     {
 	NullCheck.notNull(provider, "provider");
@@ -70,6 +44,11 @@ public class ClipboardTranslator
 	this.provider = provider;
 	this.regionPoint = regionPoint;
 	this.flags = flags;
+    }
+
+    public ClipboardTranslator(Provider provider, AbstractRegionPoint regionPoint)
+    {
+	this(provider, regionPoint, EnumSet.noneOf(Flags.class));
     }
 
     public boolean onEnvironmentEvent(EnvironmentEvent event, int hotPointX, int hotPointY)

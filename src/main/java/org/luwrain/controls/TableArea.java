@@ -51,11 +51,8 @@ public interface Appearance
 int getColWidth(TableArea.Model model, int  colIndex);
 }
 
-
-
-
-
     protected final ControlEnvironment environment;
+    protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator;
     protected String name = "";
     protected final Model model;
@@ -76,7 +73,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	this.model = model;
 	this.appearance = new DefaultTableAppearance(environment);
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
-	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(this, ()->environment.getClipboard()));
+	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(this, ()->environment.getClipboard()), regionPoint);
 	//	refresh();
     }
 
@@ -95,7 +92,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	    throw new NullPointerException("name may not be null");
 	this.appearance = new DefaultTableAppearance(environment);
 	this.initialHotPointX = appearance.getInitialHotPointX(model);
-	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(this, ()->environment.getClipboard()));
+	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(this, ()->environment.getClipboard()), regionPoint);
 	//	refresh();
     }
 
@@ -119,7 +116,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	    throw new NullPointerException("appearance may not be null");
 	if (name == null)
 	    throw new NullPointerException("name may not be null");
-	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(this, ()->environment.getClipboard()));
+	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(this, ()->environment.getClipboard()), regionPoint);
 	//	refresh();
     }
 
