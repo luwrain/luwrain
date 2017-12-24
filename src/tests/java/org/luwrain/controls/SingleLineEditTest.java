@@ -31,7 +31,7 @@ public class SingleLineEditTest extends Assert
     @Test public void basics()
     {
 	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
-	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model);
+	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model, new RegionPoint());
 	model.text = "0123456789";
 	model.hotPoint = 5;
 	//typing 'a' on '5'
@@ -68,7 +68,7 @@ public class SingleLineEditTest extends Assert
 	    b.append("" + i);
 	final String initialText = new String(b);
 	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
-	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model);
+	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model, new RegionPoint());
 	for(int i = 0;i < initialText.length();++i)
 	{
 	    model.text = initialText;
@@ -87,7 +87,7 @@ public class SingleLineEditTest extends Assert
 	    b.append("" + i);
 	final String initialText = new String(b);
 	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
-	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model);
+	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model, new RegionPoint());
 	for(int i = 0;i < initialText.length();++i)
 	{
 	    model.text = initialText;
@@ -109,7 +109,7 @@ public class SingleLineEditTest extends Assert
 	    b.append("" + i);
 	final String initialText = new String(b);
 	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
-	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model);
+	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model, new RegionPoint());
 	for(int i = 0;i < initialText.length();++i)
 	{
 	    model.text = initialText;

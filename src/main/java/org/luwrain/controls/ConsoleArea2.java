@@ -84,7 +84,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	this.consoleClickHandler = params.clickHandler;
 	this.consoleInputHandler = params.inputHandler;
 	this.areaName = params.areaName;
-	edit = new EmbeddedSingleLineEdit(context, this, this, 0, 0);
+	this.edit = new EmbeddedSingleLineEdit(context, this, this, regionPoint, 0, 0);
 	refresh();
     }
 

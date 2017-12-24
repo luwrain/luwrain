@@ -48,7 +48,6 @@ public class FormArea  extends NavigationArea
 
     protected final ControlEnvironment environment;
     protected final Vector<Item> items = new Vector<Item>();
-    protected final RegionPoint regionPoint = new RegionPoint();
     protected String name = "";
 
     protected MutableLinesImpl multilineEditLines = null;

@@ -33,27 +33,10 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
      * @param context The control context for this edit
      * @param lines The object to provide and to accept edited text
      * @param hotPoint The object to provide and to set real hot point position in area (without any shift)
-     * @param posX The X position of this edit in the area
-     * @param posY The Y position of this edit in the area
+     * @param regionPOint The object to track region point position
+     * @param offsetX The X position of this edit in the area
+     * @param offsetY The Y position of this edit in the area
      */
-    public EmbeddedSingleLineEdit(ControlEnvironment context, EmbeddedEditLines lines,
-				  HotPointControl hotPoint, 
-				  int offsetX, int offsetY)
-    {
-	NullCheck.notNull(context, "context");
-	NullCheck.notNull(lines, "lines");
-	NullCheck.notNull(hotPoint, "hotPoint");
-		if (offsetX < 0 || offsetY < 0)
-	    throw new IllegalArgumentException("offsetX (" + offsetX + ") and offsetY (" + offsetY + ") may not be negative");
-			this.context = context;
-	this.lines = lines;
-	this.hotPoint = hotPoint;
-	this.offsetX = offsetX;
-	this.offsetY = offsetY;
-	this.regionPoint = new ShiftedRegionPoint(new RegionPoint(), offsetX, offsetY);
-	edit = new SingleLineEdit(context, this, regionPoint);
-    }
-
     public EmbeddedSingleLineEdit(ControlEnvironment context, EmbeddedEditLines lines,
 				  HotPointControl hotPoint,  RegionPoint regionPoint,
 				  int offsetX, int offsetY)
