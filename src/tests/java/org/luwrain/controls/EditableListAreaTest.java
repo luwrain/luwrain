@@ -37,7 +37,7 @@ public class EditableListAreaTest extends Assert
 	assertTrue(model.getItemCount() == 0);
     }
 
-        @Test public void deleteRegionNoRegionPoint()
+        @Test public void clearRegionNoRegionPoint()
     {
 	for(int i = 0;i < 5;i++)
 	{
@@ -53,7 +53,7 @@ public class EditableListAreaTest extends Assert
 	    assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
 	assertTrue(area.selected().equals("" + i));
 	assertTrue(area.selectedIndex() == i);
-	assertTrue(area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE_REGION)));
+	assertTrue(area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
 	assertTrue(model.getItemCount() == 4);
 	for(int k = 0;k < model.getItemCount();++k)
 	    assertTrue(!model.getItem(k).equals("" + i));

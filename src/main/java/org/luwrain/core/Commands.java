@@ -296,7 +296,7 @@ class Commands
 		    final Area area = env.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.DELETE_REGION)))
+		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)))
 			env.playSound(Sounds.DELETED); else
 			env.eventNotProcessedMessage();
 		}

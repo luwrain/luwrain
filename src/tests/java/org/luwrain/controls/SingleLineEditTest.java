@@ -121,6 +121,21 @@ public class SingleLineEditTest extends Assert
 	}
     }
 
+    @Test public void copyCutRegionPointUnitialized()
+    {
+	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
+	model.text = "0123456789";
+	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model, new RegionPoint());
+	for(int i = 0;i < model.text.length();++i)
+	{
+	    model.hotPoint = i;
+	    assertFalse(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)));
+	    assertFalse(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)));
+	    	    assertFalse(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
+	}
+    }
+    
+
 
 
 
