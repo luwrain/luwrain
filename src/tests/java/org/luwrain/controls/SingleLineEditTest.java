@@ -21,6 +21,11 @@ import org.junit.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
+//FIXME:copy with region point
+//FIXME:cut with region point
+//FIXME:clearing region with region point
+//FIXME:paste
+
 public class SingleLineEditTest extends Assert
 {
     @Test public void basics()
@@ -121,6 +126,21 @@ public class SingleLineEditTest extends Assert
 	}
     }
 
+        @Test public void cleaning()
+    {
+	final String text = "0123456789";
+	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
+	final SingleLineEdit edit = new SingleLineEdit(new TestingControlEnvironment(), model, new RegionPoint());
+	for(int i = 0;i < text.length();++i)
+	{
+	    model.text = text;
+	    model.hotPoint = i;
+	    assertTrue(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)));
+	    assertTrue(model.text.isEmpty());
+	    assertTrue(model.hotPoint == 0);
+	}
+    }
+
     @Test public void copyCutRegionPointUnitialized()
     {
 	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
@@ -134,10 +154,27 @@ public class SingleLineEditTest extends Assert
 	    	    assertFalse(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
 	}
     }
-    
 
-
-
-
-    //FIXME:clipboard tests 
+    @Test public void copyAllTest()
+    {
+	final TestingControlEnvironment context = new TestingControlEnvironment();
+	final TestingSingleLineEditModel model = new TestingSingleLineEditModel();
+	final SingleLineEdit edit = new SingleLineEdit(context, model, new RegionPoint());
+	final String text = "0123456789";
+	model.text = text;
+	for(int i = 0;i < model.text.length();++i)
+	{
+	    model.hotPoint = i;
+	    assertTrue(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)));
+	    assertTrue(model.hotPoint == i);
+	    assertTrue(context.clipboard.get().length == 1);
+	    assertTrue(context.clipboard.get()[0].equals(text));
+	}
+	model.text = "";
+	model.hotPoint = 0;
+	assertTrue(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)));
+	assertTrue(model.hotPoint == 0);
+	assertTrue(context.clipboard.get().length == 1);
+	assertTrue(context.clipboard.get()[0].equals(""));
+    }
 }

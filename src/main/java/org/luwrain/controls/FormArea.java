@@ -48,6 +48,7 @@ public class FormArea  extends NavigationArea
 
     protected final ControlEnvironment environment;
     protected final Vector<Item> items = new Vector<Item>();
+    protected final RegionPoint regionPoint = new RegionPoint();
     protected String name = "";
 
     protected MutableLinesImpl multilineEditLines = null;
@@ -162,7 +163,9 @@ public class FormArea  extends NavigationArea
 	item.enteredText = initialText;
 	item.obj = obj;
 	item.enabled = enabled;
-	item.edit = new EmbeddedSingleLineEdit(environment, item, this, item.caption.length(), items.size());
+	item.edit = new EmbeddedSingleLineEdit(environment, item, this, regionPoint,
+					       item.caption.length(), //offsetX
+					       items.size()); //offsetY
 	items.add(item);
 	updateControlsPos();
 	environment.onAreaNewContent(this);
