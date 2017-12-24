@@ -119,7 +119,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 
     public void refresh()
     {
-	edit.setNewPos(enteringPrefix.length(), getEnteringLineIndex());
+	edit.setNewOffset(enteringPrefix.length(), getEnteringLineIndex());
 	context.onAreaNewContent(this);
 	if (getHotPointY() >= getLineCount())
 	    setHotPointY(getLineCount() - 1);

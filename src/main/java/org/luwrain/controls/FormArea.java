@@ -651,7 +651,7 @@ public class FormArea  extends NavigationArea
 	    if (items.get(i).type == Type.EDIT)
 	    {
 		final Item item = items.get(i);
-		item.edit.setNewPos(item.caption.length(), i);
+		item.edit.setNewOffset(item.caption.length(), i);
 	    }
 	if (!isMultilineEditActivated())
 	    return;

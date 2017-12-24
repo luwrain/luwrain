@@ -26,8 +26,8 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
     protected final EmbeddedEditLines lines;
     protected final HotPointControl hotPoint;
     protected final ShiftedRegionPoint regionPoint;
-    protected int posX;
-    protected int posY;
+    protected int offsetX;
+    protected int offsetY;
 
     /**
      * @param context The control context for this edit
@@ -38,21 +38,41 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
      */
     public EmbeddedSingleLineEdit(ControlEnvironment context, EmbeddedEditLines lines,
 				  HotPointControl hotPoint, 
-				  int posX, int posY)
+				  int offsetX, int offsetY)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notNull(lines, "lines");
 	NullCheck.notNull(hotPoint, "hotPoint");
-		if (posX < 0 || posY < 0)
-	    throw new IllegalArgumentException("posX (" + posX + ") and posY (" + posY + ") may not be negative");
+		if (offsetX < 0 || offsetY < 0)
+	    throw new IllegalArgumentException("offsetX (" + offsetX + ") and offsetY (" + offsetY + ") may not be negative");
 			this.context = context;
 	this.lines = lines;
 	this.hotPoint = hotPoint;
-	this.posX = posX;
-	this.posY = posY;
-	this.regionPoint = null;
-	edit = new SingleLineEdit(context, this);
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
+	this.regionPoint = new ShiftedRegionPoint(new RegionPoint());
+	edit = new SingleLineEdit(context, this, regionPoint);
     }
+
+    public EmbeddedSingleLineEdit(ControlEnvironment context, EmbeddedEditLines lines,
+				  HotPointControl hotPoint,  RegionPoint regionPoint,
+				  int offsetX, int offsetY)
+    {
+	NullCheck.notNull(context, "context");
+	NullCheck.notNull(lines, "lines");
+	NullCheck.notNull(hotPoint, "hotPoint");
+	NullCheck.notNull(regionPoint, "regionPoint");
+	if (offsetX < 0 || offsetY < 0)
+	    throw new IllegalArgumentException("offsetX (" + offsetX + ") and offsetY (" + offsetY + ") may not be negative");
+	this.context = context;
+	this.lines = lines;
+	this.hotPoint = hotPoint;
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
+	this.regionPoint = new ShiftedRegionPoint(regionPoint);
+	edit = new SingleLineEdit(context, this, regionPoint);
+    }
+
 
     public SingleLineEdit getEditObj()
     {
@@ -61,17 +81,16 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 
     public boolean isPosCovered(int x, int y)
     {
-	return posY == y && x >= posX;
+	return this.offsetY == y && x >= this.offsetX;
     }
 
-    public void setNewPos(int x, int y)
+    public void setNewOffset(int x, int y)
     {
 	if (x < 0 || y < 0)
 	    throw new IllegalArgumentException("x (" + x + ") and y (" + y + ") may not be negative");
-	posX = x;
-	posY = y;
-	if (regionPoint != null)
-	    regionPoint.setOffset(x, y);
+	this.offsetX = x;
+	this.offsetY = y;
+	    this.regionPoint.setOffset(x, y);
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)
@@ -91,23 +110,22 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 
     @Override public String getLine()
     {
-	return lines.getEmbeddedEditLine(posX, posY);
+	return lines.getEmbeddedEditLine(offsetX, offsetY);
     }
 
     @Override public void setLine(String text)
     {
-	lines.setEmbeddedEditLine(posX, posY, text);
+	lines.setEmbeddedEditLine(offsetX, offsetY, text);
     }
 
     @Override public int getHotPointX()
     {
-	int value = hotPoint.getHotPointX();
-	return value >= posX?value - posX:0;
+	return Math.max(hotPoint.getHotPointX() - offsetX, 0);
     }
 
     @Override public void setHotPointX(int value)
     {
-	hotPoint.setHotPointX(value + posX);
+	hotPoint.setHotPointX(value + offsetX);
     }
 
     @Override public String getTabSeq()
@@ -115,7 +133,7 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 	return "\t";//FIXME:
     }
 
-    protected class ShiftedRegionPoint implements AbstractRegionPoint
+    static protected class ShiftedRegionPoint implements AbstractRegionPoint
     {
 	protected final AbstractRegionPoint regionPoint;
 	protected int offsetX = 0;

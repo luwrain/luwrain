@@ -57,6 +57,19 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	this.regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint);
     }
 
+    public SingleLineEdit(ControlEnvironment context, Model model, AbstractRegionPoint regionPoint)
+    {
+	NullCheck.notNull(context, "context");
+	NullCheck.notNull(model, "model");
+	NullCheck.notNull(regionPoint, "regionPoint");
+	this.context = context;
+	this.model = model;
+	this.regionPoint = regionPoint;
+	this.clipboardTranslator = new ClipboardTranslator(this, regionPoint);
+	this.regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint);
+    }
+
+
     public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
