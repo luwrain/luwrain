@@ -50,7 +50,7 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 	this.hotPoint = hotPoint;
 	this.offsetX = offsetX;
 	this.offsetY = offsetY;
-	this.regionPoint = new ShiftedRegionPoint(new RegionPoint());
+	this.regionPoint = new ShiftedRegionPoint(new RegionPoint(), offsetX, offsetY);
 	edit = new SingleLineEdit(context, this, regionPoint);
     }
 
@@ -69,10 +69,9 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 	this.hotPoint = hotPoint;
 	this.offsetX = offsetX;
 	this.offsetY = offsetY;
-	this.regionPoint = new ShiftedRegionPoint(regionPoint);
-	edit = new SingleLineEdit(context, this, regionPoint);
+	this.regionPoint = new ShiftedRegionPoint(regionPoint, offsetX, offsetY);
+	edit = new SingleLineEdit(context, this, this.regionPoint);
     }
-
 
     public SingleLineEdit getEditObj()
     {
@@ -138,12 +137,6 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 	protected final AbstractRegionPoint regionPoint;
 	protected int offsetX = 0;
 	protected int offsetY = 0;
-
-	public ShiftedRegionPoint(AbstractRegionPoint regionPoint)
-	{
-	    NullCheck.notNull(regionPoint, "regionPoint");
-	    this.regionPoint = regionPoint;
-	}
 
 	public ShiftedRegionPoint(AbstractRegionPoint regionPoint, int offsetX, int offsetY)
 	{

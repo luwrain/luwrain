@@ -266,7 +266,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 		if (withDeleting && !onDeleteRegion(fromX, fromY, toX, toY))
 	    return false;
 	final String res = line.substring(fromPos, toPos);
-	context.getClipboard().set(line);
+	context.getClipboard().set(res);
 	return true;
     }
 

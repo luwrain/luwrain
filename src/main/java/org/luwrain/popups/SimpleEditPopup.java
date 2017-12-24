@@ -49,27 +49,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
     protected final Acceptance acceptance;
     protected final Set<Popup.Flags> popupFlags;
 
-    public SimpleEditPopup(Luwrain luwrain, String name,
-			   String prefix, String text,
-			   Set<Popup.Flags> popupFlags)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(prefix, "prefix");
-	NullCheck.notNull(text, "text");
-	NullCheck.notNull(popupFlags, "popupFlags");
-	this.luwrain = luwrain;
-	this.name = name ;
-	this.prefix = prefix;
-	this.text = text;
-	this.popupFlags = popupFlags;
-	this.pos = prefix.length() + text.length();
-	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, regionPoint, prefix.length(), 0);
-	this.acceptance = null;
-    }
-
-    public SimpleEditPopup(Luwrain luwrain, String name,
-			   String prefix, String text,
+        public SimpleEditPopup(Luwrain luwrain, String name, String prefix, String text,
 			   Set<Popup.Flags> popupFlags, Acceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -83,8 +63,13 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	this.text = text;
 	this.popupFlags = popupFlags;
 	this.pos = prefix.length() + text.length();
-	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, prefix.length(), 0);
+	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, regionPoint, prefix.length(), 0);
 	this.acceptance = acceptance;
+    }
+
+    public SimpleEditPopup(Luwrain luwrain, String name, String prefix, String text, Set<Popup.Flags> popupFlags)
+    {
+	this(luwrain, name, prefix, text, popupFlags, null);
     }
 
     @Override public int getLineCount()
@@ -126,8 +111,8 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	    return onAltLeft(event);
 	case ALTERNATIVE_ARROW_RIGHT:
 	    return onAltRight(event);
-	case HOME:
-	    return onHome(event);
+	    	case HOME:
+	    	    return onHome(event);
 	case END:
 	    return onEnd(event);
 	case ENTER:
@@ -146,7 +131,6 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	switch(event.getCode())
 	{
 	case INTRODUCE:
-	    luwrain.silence();
 	    luwrain.playSound(Sounds.INTRO_POPUP);
 	    luwrain.say(prefix + text);
 	    return true;
