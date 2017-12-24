@@ -42,7 +42,6 @@ final class ObjRegistry
     }
 
     private Map<String, Entry<Shortcut>> shortcuts = new HashMap();
-    private Map<String, Entry<SharedObject>> sharedObjs = new HashMap();
     private Map<String, Entry<CommandLineTool>> cmdLineTools = new HashMap();
 
     boolean add(Extension ext, ExtensionObject obj)
@@ -58,15 +57,6 @@ final class ObjRegistry
 	    if (!cmdLineTools.containsKey(name))
 	    {
 		cmdLineTools.put(name, new Entry(ext, name, tool));
-		res = true;
-	    }
-	}
-		if (obj instanceof SharedObject)
-	{
-	    final SharedObject sharedObj = (SharedObject)obj;
-	    if (!sharedObjs.containsKey(name))
-	    {
-		sharedObjs.put(name, new Entry(ext, name, sharedObj));
 		res = true;
 	    }
 	}
@@ -96,24 +86,6 @@ final class ObjRegistry
     {
 	final List<String> res = new LinkedList();
 	for(Map.Entry<String, Entry<CommandLineTool>> e: cmdLineTools.entrySet())
-	    res.add(e.getKey());
-	final String[] str = res.toArray(new String[res.size()]);
-	Arrays.sort(str);
-	return str;
-    }
-
-	    SharedObject getSharedObject(String name)
-    {
-	NullCheck.notEmpty(name, "name");
-	if (!sharedObjs.containsKey(name))
-	    return null;
-	return sharedObjs.get(name).obj;
-    }
-
-    String[] getSharedObjectNames()
-    {
-	final List<String> res = new LinkedList();
-	for(Map.Entry<String, Entry<SharedObject>> e: sharedObjs.entrySet())
 	    res.add(e.getKey());
 	final String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);
