@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -36,6 +36,8 @@ import org.luwrain.core.init.*;
 public class Init implements org.luwrain.base.CoreProperties
 {
     static private final String LOG_COMPONENT = "init";
+
+    static private final File DEBUG_FILE = new File(new File(System.getProperty("user.home")), "luwrain-debug.txt");
 
     static private final String  PREFIX_PKG_LAUNCH = "--pkg-launch";
     static private final String  PREFIX_DATA_DIR = "--data-dir=";
@@ -262,13 +264,17 @@ public class Init implements org.luwrain.base.CoreProperties
      * @param args The command line arguments mentioned by user on virtual machine launch
      */
     static public void main(String[] args) throws IOException
-    {                    
-	if (args.length == 0)
+    {
+	org.luwrain.app.console.App.installListener();
+	if (DEBUG_FILE.exists() && !DEBUG_FILE.isDirectory())
 	{
-	    final PrintStream log = new PrintStream(new BufferedOutputStream(new FileOutputStream(new File(new File(System.getProperty("user.home")), "luwrain-debug.txt"))), true);
+	    final PrintStream log = new PrintStream(new BufferedOutputStream(new FileOutputStream(DEBUG_FILE)), true);
 	    System.setOut(log);
 	    System.setErr(log);
-	}
+	} else
+	    Log.enableBriefMode();
+	System.out.println("LUWRAIN (see http://luwrain.org/doc/legal/ for legal notes)");
+	System.out.println();
 	setUtf8();
 	addJarsToClassPath("jar");
 	addJarsToClassPath("lib");

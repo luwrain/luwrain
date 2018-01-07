@@ -1,7 +1,7 @@
 /*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
+   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -21,25 +21,57 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-import org.luwrain.cpanel.*;
 
-public class ConsoleApp implements Application, MonoApp
+public class App implements Application, MonoApp
 {
-    private Luwrain luwrain;
-    private SimpleArea area;
-    private Log.Listener listener;
+    private Luwrain luwrain = null;
+    private Base base = null;
+    private ConsoleArea2 area = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
+	this.base = new Base(luwrain);
 	createArea();
-	addListener();
 	return new InitResult();
     }
 
     private void createArea()
     {
-	area = new SimpleArea(new DefaultControlEnvironment(luwrain), "LUWRAIN"){
+	final ConsoleArea2.Params params = new ConsoleArea2.Params();
+
+	params.context = new DefaultControlEnvironment(luwrain);
+params.areaName = "LUWRAIN";
+params.model = base.createModel();
+params.appearance = new ConsoleArea2.Appearance()
+    {
+	@Override public void announceItem(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    if (!(item instanceof Log.Message))
+	    {
+		luwrain.setEventResponse(DefaultEventResponse.text(item.toString()));
+		return;
+	    }
+	    final Log.Message message = (Log.Message)item;
+	    luwrain.setEventResponse(DefaultEventResponse.text(message.message));
+	}
+	@Override public String getTextAppearance(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    return item.toString();
+	}
+    };
+params.clickHandler = (area,index,obj)->{
+	    return false;
+	};
+params.inputHandler = (area,text)->{
+    return ConsoleArea2.InputHandler.Result.REJECTED;
+	};
+params.inputPos = ConsoleArea2.InputPos.BOTTOM;
+params.inputPrefix = "LUWRAIN>";
+
+	area = new ConsoleArea2(params){
 		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -53,15 +85,6 @@ public class ConsoleApp implements Application, MonoApp
 		    }
 		}
 	    };
-    }
-
-    private void addListener()
-    {
-	listener = (message)->{
-	    NullCheck.notNull(message, "message");
-	    area.addLine(message.component() + ":" + message.level() + ":" + message.message());
-	};
-	Log.addListener(listener);
     }
 
     @Override public AreaLayout getAreaLayout()
@@ -82,7 +105,12 @@ public class ConsoleApp implements Application, MonoApp
 
     @Override public void closeApp()
     {
-	Log.removeListener(listener);
+	base.removeListener();
 	luwrain.closeApp();
+    }
+
+    static public void installListener()
+    {
+	Base.installListener();
     }
 }

@@ -422,7 +422,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Application app = new org.luwrain.app.console.ConsoleApp();
+		    final Application app = new org.luwrain.app.console.App();
 		    env.launchApp(app);
 		}
 	    },

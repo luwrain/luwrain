@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -57,6 +57,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	public ClickHandler clickHandler = null;
 	public InputHandler inputHandler = null;
 	public InputPos inputPos = InputPos.TOP;
+	public String inputPrefix = ">";
     }
 
     protected String areaName = "";
@@ -67,7 +68,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
     protected final EmbeddedSingleLineEdit edit;
     protected final InputPos inputPos;
 
-    protected String enteringPrefix = ">";
+    protected String enteringPrefix = "";
     protected String enteringText = "";
 
     public ConsoleArea2(Params params)
@@ -78,11 +79,13 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.areaName, "params.areaName");
 	NullCheck.notNull(params.inputPos, "params.inputPos");
+	NullCheck.notNull(params.inputPrefix, "params.inputPrefix");
 	this.inputPos = params.inputPos;
 	this.consoleModel = params.model;
 	this.consoleAppearance = params.appearance;
 	this.consoleClickHandler = params.clickHandler;
 	this.consoleInputHandler = params.inputHandler;
+	this.enteringPrefix = params.inputPrefix;
 	this.areaName = params.areaName;
 	this.edit = new EmbeddedSingleLineEdit(context, this, this, regionPoint, 0, 0);
 	refresh();
