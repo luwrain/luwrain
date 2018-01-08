@@ -98,6 +98,11 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	environment.enqueueEvent(e);
     }
 
+    public void quit()
+    {
+	environment.quit();
+    }
+
     /**
      * Returns a path to the directory where the application may safely store
      * its auxiliary data. The returned directory, if it it isn't {@code null},

@@ -73,6 +73,8 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final EventQueue eventQueue = new EventQueue();
     protected final MainStopCondition mainStopCondition = new MainStopCondition();
     private EventResponse eventResponse = null;
+
+protected final I18nImpl i18n = new I18nImpl();
     protected Speech speech = null;
     protected final Braille braille = new Braille();
     private final Clipboard clipboard = new Clipboard();

@@ -26,15 +26,19 @@ class AppManager
     private int activeAppIndex = -1;
     private LaunchedApp defaultApp;
 
-    AppManager(Application defaultApp)
+    void setDefaultApp(Application app)
     {
-	if (defaultApp != null)
-	{
-	    this.defaultApp = new LaunchedApp(defaultApp);
-	    if (!this.defaultApp.init())
-		throw new IllegalArgumentException("Provided defaultApp does not suit for LaunchedApp.init() ");
-	} else
-	    this.defaultApp = null;
+	NullCheck.notNull(app, "app");
+	this.defaultApp = new LaunchedApp(app);
+	if (!this.defaultApp.init())
+	    throw new IllegalArgumentException("Provided defaultApp does not suit for LaunchedApp.init() ");
+    }
+
+    Application getDefaultApp()
+    {
+	if (defaultApp == null)
+	    return null;
+	return defaultApp.app;
     }
 
     Application[] getLaunchedApps()

@@ -21,15 +21,17 @@ import org.luwrain.core.queries.*;
 
 abstract class EnvironmentAreas extends Base
 {
-    protected ScreenContentManager screenContentManager;
+    protected final ScreenContentManager screenContentManager;
     protected WindowManager windowManager;
     protected final InterfaceManager interfaces = new InterfaceManager();
-    protected AppManager apps;
+    protected final AppManager apps;
 
     protected EnvironmentAreas(CmdLine cmdLine, Registry registry,
 			       org.luwrain.base.CoreProperties coreProps, String lang)
     {
 	super(cmdLine, registry, coreProps, lang);
+		this.apps = new AppManager();
+	this.screenContentManager = new ScreenContentManager(apps);
     }
 
     public void onNewAreasLayout()

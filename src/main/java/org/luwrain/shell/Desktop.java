@@ -37,8 +37,11 @@ public class Desktop implements Application
 
     public Desktop(Environment core)
     {
+	/*
 	NullCheck.notNull(core, "core");
 	this.core = core;
+	*/
+	this.core = null;
     }
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -91,7 +94,9 @@ public class Desktop implements Application
 			switch(event.getSpecial())
 			{ 
 			case ESCAPE:
-			    core.quit();
+			    if (luwrain == null)
+				return false;
+			    luwrain.quit();
 			    return true;
 			}
 		    return super.onKeyboardEvent(event);

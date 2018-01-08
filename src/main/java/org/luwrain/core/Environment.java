@@ -36,13 +36,11 @@ public class Environment extends EnvironmentAreas
 final Interaction interaction;
 
     private org.luwrain.core.extensions.Manager extensions;
-    private final org.luwrain.shell.Desktop desktop = new org.luwrain.shell.Desktop(this);
+    private final org.luwrain.shell.Desktop desktop = new org.luwrain.shell.Desktop(null);
     private GlobalKeys globalKeys;
     private final FileTypes fileTypes = new FileTypes();
         private AreaListening listening = null;
     private final org.luwrain.shell.Conversations conversations;
-
-    private final I18nImpl i18n = new I18nImpl();
     org.luwrain.player.Player player = null;
     final WavePlayers.Player wavePlayer = new WavePlayers.Player();
     public Settings.UserInterface uiSettings;//FIXME:final 
@@ -71,7 +69,9 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	init();
 	Log.debug(LOG_COMPONENT, "Total memory:" + (Runtime.getRuntime().totalMemory() / 1024) + "k");
 	Log.debug(LOG_COMPONENT, "Max memory:" + (Runtime.getRuntime().maxMemory() / 1024) + "k");
-	interaction.startInputEventsAccepting(this);
+
+
+    org.luwrain.player.Player player = null;	interaction.startInputEventsAccepting(this);
 	windowManager.redraw();
 	playSound(Sounds.STARTUP);//FIXME:
 	soundManager.startingMode();
@@ -118,8 +118,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	speech = new Speech(cmdLine, registry);
 	desktop.onLaunchApp(interfaces.requestNew(desktop, this));
 	desktop.setConversations(conversations);
-	apps = new AppManager(desktop);
-	screenContentManager = new ScreenContentManager(apps);
+	apps.setDefaultApp(desktop);
 	windowManager = new WindowManager(interaction, screenContentManager);
 	extensions = new org.luwrain.core.extensions.Manager(interfaces);
 	extensions.load((ext)->interfaces.requestNew(ext, this), cmdLine);
