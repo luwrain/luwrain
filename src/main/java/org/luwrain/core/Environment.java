@@ -68,8 +68,6 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	init();
 	Log.debug(LOG_COMPONENT, "Total memory:" + (Runtime.getRuntime().totalMemory() / 1024) + "k");
 	Log.debug(LOG_COMPONENT, "Max memory:" + (Runtime.getRuntime().maxMemory() / 1024) + "k");
-
-
     org.luwrain.player.Player player = null;	interaction.startInputEventsAccepting(this);
 	windowManager.redraw();
 	playSound(Sounds.STARTUP);//FIXME:
@@ -90,26 +88,54 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	Log.debug("core", "environment closed");
     }
 
-    private void greetingWorker(String text)
+        @Override public void onBeforeEventProcessing()
     {
-	NullCheck.notNull(text, "text");
-	if (text.trim().isEmpty())
-	    return;
-	workers.add("launch-greeting", new Worker(){
-		public int getLaunchPeriod()
+		  stopAreaListening();
+	  wasInputEvents = true;
+    }
+
+    @Override protected void processEventResponse(EventResponse eventResponse)
+    {
+	NullCheck.notNull(eventResponse, "eventResponse");
+	//FIXME:access level
+	eventResponse.announce(getObjForEnvironment(), (parts)->{
+		NullCheck.notNullItems(parts, "parts");
+		if (parts.length == 0)
+		    return;
+		if (parts.length == 1)
 		{
-		    return 60;
+		    speech.speakEventResponse(parts[0]);
+		    return;
 		}
-		public int getFirstLaunchDelay()
+		final StringBuilder b = new StringBuilder();
+		b.append(parts[0]);
+		for(int i = 1;i < parts.length;++i)
 		{
-		    return 15;
+		    b.append(", ");
+		    b.append(parts[i]);
 		}
-		public void run()
-		{
-		    if (!wasInputEvents)
-			getObjForEnvironment().message(text, Luwrain.MessageType.ANNOUNCEMENT);
-		}
+		speech.speakEventResponse(new String(b));
 	    });
+    }
+
+        @Override Area getValidActiveArea(boolean speakMessages)
+    {
+	final Area activeArea = getActiveArea();
+	if (activeArea == null)
+	{
+	    if (speakMessages)
+		noAppsMessage();
+	    return null;
+	}
+	return activeArea;
+    }
+
+    @Override public void onAltX()
+    {
+	final String cmdName = conversations.commandPopup(commands.getCommandNames());
+	if (cmdName != null && !cmdName.trim().isEmpty()&&
+	    !commands.run(cmdName.trim()))
+	    message(i18n.getStaticStr("NoCommand"), Luwrain.MessageType.ERROR);
     }
 
     private void init()
@@ -751,30 +777,6 @@ onNewAreasLayout();
 	}
     }
 
-    @Override Area getValidActiveArea(boolean speakMessages)
-    {
-	final Area activeArea = getActiveArea();
-	if (activeArea == null)
-	{
-	    if (speakMessages)
-		noAppsMessage();
-	    return null;
-	}
-	if (isAreaBlockedBySecurity(activeArea))
-	{
-	    if (speakMessages)
-		//		areaBlockedMessage();
-	    return null;
-	}
-	if (isActiveAreaBlockedByPopup())
-	{
-	    if (speakMessages)
-		//		areaBlockedMessage();
-	    return null;
-	}
-	return activeArea;
-    }
-
     void startAreaListening()
     {
 	final Area activeArea = getValidActiveArea(true);
@@ -794,34 +796,25 @@ onNewAreasLayout();
 	listening = null;
     }
 
-    @Override public void onBeforeEventProcessing()
+        private void greetingWorker(String text)
     {
-
-		  stopAreaListening();
-	  wasInputEvents = true;
-    }
-
-    @Override protected void processEventResponse(EventResponse eventResponse)
-    {
-	NullCheck.notNull(eventResponse, "eventResponse");
-	//FIXME:access level
-	eventResponse.announce(getObjForEnvironment(), (parts)->{
-		NullCheck.notNullItems(parts, "parts");
-		if (parts.length == 0)
-		    return;
-		if (parts.length == 1)
+	NullCheck.notNull(text, "text");
+	if (text.trim().isEmpty())
+	    return;
+	workers.add("launch-greeting", new Worker(){
+		@Override public int getLaunchPeriod()
 		{
-		    speech.speakEventResponse(parts[0]);
-		    return;
+		    return 60;
 		}
-		final StringBuilder b = new StringBuilder();
-		b.append(parts[0]);
-		for(int i = 1;i < parts.length;++i)
+		@Override public int getFirstLaunchDelay()
 		{
-		    b.append(", ");
-		    b.append(parts[i]);
+		    return 15;
 		}
-		speech.speakEventResponse(new String(b));
+		@Override public void run()
+		{
+		    if (!wasInputEvents)
+			getObjForEnvironment().message(text, Luwrain.MessageType.ANNOUNCEMENT);
+		}
 	    });
     }
 }

@@ -32,6 +32,7 @@ protected final GlobalKeys globalKeys;
 
 
     abstract protected void onBeforeEventProcessing();
+    abstract protected void onAltX();
 
     @Override protected boolean onEvent(Event event)
     {
@@ -211,11 +212,7 @@ protected final GlobalKeys globalKeys;
 	    EqualKeys.equalKeys(event.getChar(), 'x') &&
 	    event.withAltOnly())
 	{
-	    /*FIXME:
-	      final String cmdName = conversations.commandPopup(commands.getCommandNames());
-	      if (cmdName != null && !cmdName.trim().isEmpty()&& !commands.run(cmdName.trim()))
-	      message(i18n.getStaticStr("NoCommand"), Luwrain.MessageType.ERROR);
-	    */
+	    onAltX();
 	    return true;
 	}
 	return false;
