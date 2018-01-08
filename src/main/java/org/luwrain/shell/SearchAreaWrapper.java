@@ -44,7 +44,7 @@ public class SearchAreaWrapper implements Area
 	    hotPointX = 0;
 	if (hotPointY < 0)
 	    hotPointY = 0;
-	environment.message(environment.i18nIface().getStaticStr("SearchMode"), Luwrain.MESSAGE_REGULAR);
+	environment.message(environment.i18nIface().getStaticStr("SearchMode"), Luwrain.MessageType.REGULAR);
 	environment.playSound(Sounds.SEARCH);
     }
 
@@ -144,7 +144,7 @@ public class SearchAreaWrapper implements Area
 		hotPointX += pos;
 		expression = lookFor;
 		environment.onAreaNewHotPointIface(null, this);
-		environment.message(getLine(hotPointY).substring(hotPointX), Luwrain.MESSAGE_REGULAR);
+		environment.message(getLine(hotPointY).substring(hotPointX), Luwrain.MessageType.REGULAR);
 		return true;
 	    }
 	} //On the current line
@@ -159,7 +159,7 @@ public class SearchAreaWrapper implements Area
 		continue;
 	    hotPointX = pos;
 	    hotPointY = i;
-	    environment.message(line.substring(pos), Luwrain.MESSAGE_REGULAR);
+	    environment.message(line.substring(pos), Luwrain.MessageType.REGULAR);
 	    expression = lookFor;
 	    environment.onAreaNewHotPointIface(null, this);
 	    return true;
@@ -176,7 +176,7 @@ public class SearchAreaWrapper implements Area
 		return false;
 	    environment.setAreaIntroduction();
 	} else
-	    environment.message("Поиск отменён", Luwrain.MESSAGE_REGULAR);
+	    environment.message("Поиск отменён", Luwrain.MessageType.REGULAR);
 	environment.playSound(Sounds.CANCEL);
 disabling.disableAreaWrapper();
 	environment.onNewAreasLayout();

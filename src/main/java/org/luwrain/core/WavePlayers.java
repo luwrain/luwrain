@@ -212,7 +212,7 @@ class WavePlayers
 	}
     }
 
-    class Player implements MediaResourcePlayer
+    static class Player implements MediaResourcePlayer
     {
 	@Override public Instance newMediaResourcePlayer(Listener listener)
 	{

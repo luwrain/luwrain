@@ -482,7 +482,7 @@ class Commands
 			env.eventNotProcessedMessage();
 			return;
 		    }
-		    env.message(uniRefInfo.toString(), Luwrain.MESSAGE_OK);
+		    env.message(uniRefInfo.toString(), Luwrain.MessageType.OK);
 		    env.getClipboard().set(uniRef);
 		}
 	    },
@@ -595,7 +595,7 @@ class Commands
 		    NullCheck.notNull(luwrain, "luwrain");
 		    final String word = luwrain.getActiveAreaText(Luwrain.AreaTextType.WORD, true);
 		    if (word != null && !word.trim().isEmpty())
-			env.message(word, Luwrain.MESSAGE_REGULAR);
+			env.message(word, Luwrain.MessageType.REGULAR);
 		}
 	    },
 

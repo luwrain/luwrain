@@ -76,10 +76,10 @@ public class PartitionsPopup extends ListPopupBase
 	final int res = control.attachStorageDevice(selected);
 	if (res < 0)
 	{
-	    luwrain.message("Во время попытки подключения разделов на съёмном накопителе произошла ошибка", Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время попытки подключения разделов на съёмном накопителе произошла ошибка", Luwrain.MessageType.ERROR);
 	    return true;
 	}
-	luwrain.message("Подключено разделов: " + res, res > 0?Luwrain.MESSAGE_OK:Luwrain.MESSAGE_REGULAR);
+	luwrain.message("Подключено разделов: " + res, res > 0?Luwrain.MessageType.OK:Luwrain.MessageType.REGULAR);
 	refresh();
 	return true;
     }
@@ -94,10 +94,10 @@ public class PartitionsPopup extends ListPopupBase
 	final int res = control.detachStorageDevice(selected);
 	if (res < 0)
 	{
-	    luwrain.message("Во время попытки отключения разделов на съёмном накопителе произошла ошибка", Luwrain.MESSAGE_ERROR);
+	    luwrain.message("Во время попытки отключения разделов на съёмном накопителе произошла ошибка", Luwrain.MessageType.ERROR);
 	    return true;
 	}
-	luwrain.message("Отключено разделов: " + res, res > 0?Luwrain.MESSAGE_OK:Luwrain.MESSAGE_REGULAR);
+	luwrain.message("Отключено разделов: " + res, res > 0?Luwrain.MessageType.OK:Luwrain.MessageType.REGULAR);
 	refresh();
 	return true;
     }

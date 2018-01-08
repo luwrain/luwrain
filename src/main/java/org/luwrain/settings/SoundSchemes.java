@@ -90,10 +90,10 @@ class SoundSchemes extends ListArea implements SectionArea
 	    catch(Exception e)
 	    {
 		e.printStackTrace();
-		luwrain.message("Во время внесения изменений в реестр произошла неожиданная ошибка", Luwrain.MESSAGE_ERROR); 
+		luwrain.message("Во время внесения изменений в реестр произошла неожиданная ошибка", Luwrain.MessageType.ERROR); 
 	    }
 	    luwrain.reloadComponent(Luwrain.ReloadComponents.ENVIRONMENT_SOUNDS);
-	    luwrain.message("Новые настройки сохранены", Luwrain.MESSAGE_OK);
+	    luwrain.message("Новые настройки сохранены", Luwrain.MessageType.OK);
 	    return true;
 	}
     };

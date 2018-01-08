@@ -205,7 +205,7 @@ name, prefix, text, popupFlags);
 		if (!fileToCheck.isDirectory())
 		{
 		    if (announce)
-			luwrain.message("Указанный путь не является каталогом", Luwrain.MESSAGE_ERROR);
+			luwrain.message("Указанный путь не является каталогом", Luwrain.MessageType.ERROR);
 		    return false;
 		}
 		return true;

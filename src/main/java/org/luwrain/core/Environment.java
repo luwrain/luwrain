@@ -29,28 +29,29 @@ import org.luwrain.base.*;
 public class Environment extends EnvironmentAreas
 {
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
-
     static private final String PLAYER_CLASS_PROP_NAME = "luwrain.class.player";
-        static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
-    
+    static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
 
-    private AreaListening listening = null;
-final OperatingSystem os;
-    private final Interaction interaction;
+    final OperatingSystem os;
+final Interaction interaction;
 
     private org.luwrain.core.extensions.Manager extensions;
     private final org.luwrain.shell.Desktop desktop = new org.luwrain.shell.Desktop(this);
     private GlobalKeys globalKeys;
     private final FileTypes fileTypes = new FileTypes();
+        private AreaListening listening = null;
     private final org.luwrain.shell.Conversations conversations;
 
     private final I18nImpl i18n = new I18nImpl();
-    private final CommandManager commands = new CommandManager();
-final UniRefProcManager uniRefProcs = new UniRefProcManager();
     org.luwrain.player.Player player = null;
-
+    final WavePlayers.Player wavePlayer = new WavePlayers.Player();
     public Settings.UserInterface uiSettings;//FIXME:final 
     private volatile boolean wasInputEvents = false;
+
+    //FIXME:
+        private final CommandManager commands = new CommandManager();
+final UniRefProcManager uniRefProcs = new UniRefProcManager();
+
 
     Environment(CmdLine cmdLine, Registry registry,
 		OperatingSystem os, Interaction interaction, 
@@ -289,7 +290,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	{
 	    e.printStackTrace();
 	    interfaces.release(o);
-	    message(i18n.getStaticStr("AppLaunchNoEnoughMemory"), Luwrain.MESSAGE_ERROR);
+	    message(i18n.getStaticStr("AppLaunchNoEnoughMemory"), Luwrain.MessageType.ERROR);
 	    return;
 	}
 	catch (Exception e)
@@ -371,7 +372,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	    throw new IllegalArgumentException("Trying to close a desktop");
 	if (apps.hasPopupOfApp(app))
 	{
-	    message(i18n.getStaticStr("AppCloseHasPopup"), Luwrain.MESSAGE_ERROR);
+	    message(i18n.getStaticStr("AppCloseHasPopup"), Luwrain.MessageType.ERROR);
 	    return;
 	}
 	apps.closeApp(app);
@@ -534,7 +535,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	case POPUP_BLOCKING_TRY_AGAIN:
 	    return false;
 	case POPUP_BLOCKING_EVENT_REJECTED:
-	    areaBlockedMessage();
+	    //	    areaBlockedMessage();
 	    return true;
 	}
 	final Area activeArea = getActiveArea();
@@ -577,7 +578,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	if (commandName != null)
 	{
 	    if (!commands.run(commandName))
-		message(i18n.getStaticStr("NoCommand"), Luwrain.MESSAGE_ERROR);
+		message(i18n.getStaticStr("NoCommand"), Luwrain.MessageType.ERROR);
 	    return true;
 	}
 	if (event.isSpecial())
@@ -600,7 +601,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	{
 	    final String cmdName = conversations.commandPopup(commands.getCommandNames());
 	    if (cmdName != null && !cmdName.trim().isEmpty()&& !commands.run(cmdName.trim()))
-		message(i18n.getStaticStr("NoCommand"), Luwrain.MESSAGE_ERROR);
+		message(i18n.getStaticStr("NoCommand"), Luwrain.MessageType.ERROR);
 	    return true;
 	}
 	return false;
@@ -614,7 +615,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	case POPUP_BLOCKING_TRY_AGAIN:
 	    return false;
 	case POPUP_BLOCKING_EVENT_REJECTED:
-	    areaBlockedMessage();
+	    //	    areaBlockedMessage();
 	    return true;
 	}
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
@@ -783,34 +784,6 @@ onNewAreasLayout();
 	return windowManager.getAreaVisibleWidth(effectiveArea);
     }
 
-    public void message(String text, int semantic)
-    {
-	mainCoreThreadOnly();
-	switch(semantic)
-	{
-	case Luwrain.MESSAGE_ERROR:
-	    message(text, Sounds.ERROR);
-	    break;
-	case Luwrain.MESSAGE_OK:
-	    message(text, Sounds.OK);
-	    break;
-	case Luwrain.MESSAGE_DONE:
-	    message(text, Sounds.DONE);
-	    break;
-	case Luwrain.MESSAGE_ANNOUNCEMENT:
-	    message(text, Sounds.ANNOUNCEMENT);
-	    break;
-	case Luwrain.MESSAGE_UNAVAILABLE:
-	    message(text, Sounds.BLOCKED);
-	    break;
-	case Luwrain.MESSAGE_NOSOUND:
-	    message(text, Sounds.MESSAGE);//FIXME:
-	    break;
-	default:
-	    message(text,Sounds.MESSAGE);
-	}
-    }
-
     public void message(String text, Luwrain.MessageType messageType)
     {
 	mainCoreThreadOnly();
@@ -895,7 +868,7 @@ onNewAreasLayout();
 	mainCoreThreadOnly();
 	interaction.setDesirableFontSize(interaction.getFontSize() + 5); 
 	windowManager.redraw();
-	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MESSAGE_REGULAR);
+	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MessageType.REGULAR);
     }
 
     void onDecreaseFontSizeCommand()
@@ -905,7 +878,7 @@ onNewAreasLayout();
 	    return;
 	interaction.setDesirableFontSize(interaction.getFontSize() - 5); 
 	windowManager.redraw();
-	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MESSAGE_REGULAR);
+	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MessageType.REGULAR);
     }
 
     void openFiles(String[] fileNames)
@@ -998,11 +971,6 @@ onNewAreasLayout();
 	return res.toArray(new org.luwrain.cpanel.Factory[res.size()]);
     }
 
-    org.luwrain.browser.Browser createBrowserIface(Luwrain instance)
-    {
-	return interaction.createBrowser();
-    }
-
     void activateAreaSearch()
     {
 	final Area activeArea = getValidActiveArea(true);
@@ -1051,11 +1019,6 @@ onNewAreasLayout();
 	}
     }
 
-    private void areaBlockedMessage()
-    {
-	message(i18n.getStaticStr("AppBlockedByPopup"), Luwrain.MESSAGE_ERROR);
-    }
-
     @Override Area getValidActiveArea(boolean speakMessages)
     {
 	final Area activeArea = getActiveArea();
@@ -1068,13 +1031,13 @@ onNewAreasLayout();
 	if (isAreaBlockedBySecurity(activeArea))
 	{
 	    if (speakMessages)
-		areaBlockedMessage();
+		//		areaBlockedMessage();
 	    return null;
 	}
 	if (isActiveAreaBlockedByPopup())
 	{
 	    if (speakMessages)
-		areaBlockedMessage();
+		//		areaBlockedMessage();
 	    return null;
 	}
 	return activeArea;
@@ -1097,16 +1060,6 @@ onNewAreasLayout();
 	    return;
 	listening.cancel();
 	listening = null;
-    }
-
-    String[] getAllShortcutNames()
-    {
-	return objRegistry.getShortcutNames();
-    }
-
-    FilesOperations getFilesOperations()
-    {
-	return os.getFilesOperations();
     }
 
     @Override protected void processEventResponse(EventResponse eventResponse)

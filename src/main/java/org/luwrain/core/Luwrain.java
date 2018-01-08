@@ -32,14 +32,6 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	ENVIRONMENT_SOUNDS,
     };
 
-    static public final int MESSAGE_REGULAR = 0;
-    static public final int MESSAGE_OK = 1;
-    static public final int MESSAGE_DONE = 2;
-    static public final int MESSAGE_UNAVAILABLE = 3;
-    static public final int MESSAGE_ERROR = 4;
-    static public final int MESSAGE_NOSOUND = 5;
-    static public final int MESSAGE_ANNOUNCEMENT = 6;
-
     public enum MessageType {
 	ANNOUNCEMENT,
 	DONE,
@@ -186,19 +178,8 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	    return;
 	runUiSafely(()->{
 		environment.getBraille().textToSpeak(text);
-		environment.message(text, MESSAGE_REGULAR);
+		environment.message(text, MessageType.REGULAR);
 	    });
-    }
-
-    public void message(String text, int semantic)
-    {
-	NullCheck.notNull(text, "text");
-	if (text.trim().isEmpty())
-	    return;
-	    runUiSafely(()->{
-		    environment.getBraille().textToSpeak(text);
-	environment.message(text, semantic);
-		});
     }
 
     public void message(String text, MessageType messageType)
@@ -491,7 +472,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 
     public org.luwrain.browser.Browser createBrowser()
     {
-	return environment.createBrowserIface(this);
+	return environment.interaction.createBrowser();
     }
 
     public Channel getAnySpeechChannelByCond(Set<Channel.Features> cond)
@@ -581,7 +562,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 
     public String[] getAllShortcutNames()
     {
-	return environment.getAllShortcutNames();
+	return environment.objRegistry.getShortcutNames();
     }
 
     private String preprocess(String s)
@@ -704,7 +685,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 
 public FilesOperations getFilesOperations()
     {
-	return environment.getFilesOperations();
+	return environment.os.getFilesOperations();
     }
 
     public org.luwrain.popups.PartitionsPopup.Control getPartitionsPopupControl()
@@ -715,6 +696,13 @@ public FilesOperations getFilesOperations()
     public org.luwrain.player.Player getPlayer()
     {
 	return environment.player;
+    }
+
+    public org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers()
+    {
+	final List<org.luwrain.base.MediaResourcePlayer> res = new LinkedList();
+	res.add(environment.wavePlayer);
+	return res.toArray(new org.luwrain.base.MediaResourcePlayer[res.size()]);
     }
 
     private void sayHint(Hint hint)

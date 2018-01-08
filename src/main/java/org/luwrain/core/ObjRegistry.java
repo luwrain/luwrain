@@ -133,10 +133,10 @@ final class ObjRegistry
 	}
 	final String text = new String(b).trim();
 	if (!text.isEmpty())
-	    luwrain.message(text, exitCode == 0?Luwrain.MESSAGE_DONE:Luwrain.MESSAGE_ERROR); else
+	    luwrain.message(text, exitCode == 0?Luwrain.MessageType.DONE:Luwrain.MessageType.ERROR); else
 	    if (exitCode == 0)
-		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFinishedSuccessfully"), Luwrain.MESSAGE_DONE); else
-		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFailed"), Luwrain.MESSAGE_ERROR);
+		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFinishedSuccessfully"), Luwrain.MessageType.DONE); else
+		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFailed"), Luwrain.MessageType.ERROR);
     }
 
     static private class CommandLineToolCommand implements Command
