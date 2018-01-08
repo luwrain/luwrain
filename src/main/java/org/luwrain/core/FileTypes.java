@@ -49,9 +49,9 @@ public class FileTypes
 	}
     }
 
-    void launch(Environment env, Registry registry, String[] files)
+    void launch(Core core, Registry registry, String[] files)
     {
-	NullCheck.notNull(env, "env");
+	NullCheck.notNull(core, "core");
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNullItems(files, "files");
 	final String[] shortcuts = chooseShortcuts(files);
@@ -93,9 +93,9 @@ public class FileTypes
 	    if (!takesMultiple)
 	    {
 		for(String f: toOpen)
-		    env.launchAppIface(shortcut, new String[]{f});
+		    core.launchAppIface(shortcut, new String[]{f});
 	    } else
-		env.launchAppIface(shortcut, toOpen);
+		core.launchAppIface(shortcut, toOpen);
 	}
     }
 

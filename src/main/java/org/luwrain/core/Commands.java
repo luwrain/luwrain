@@ -42,9 +42,9 @@ class Commands
      * @param env The environment object to process commands on
      * @return The vector of created commands
      */
-    static Command[] createStandardCommands(Environment env, org.luwrain.shell.Conversations conversations)
+    static Command[] createStandardCommands(Core core, org.luwrain.shell.Conversations conversations)
     {
-	NullCheck.notNull(env, "env");
+	NullCheck.notNull(core, "core");
 	NullCheck.notNull(conversations, "conversations");
 	return new Command[]{
 
@@ -56,7 +56,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.mainMenu();
+		    core.mainMenu();
 		}
 	    },
 
@@ -68,7 +68,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.quit();
+		    core.quit();
 		}
 	    },
 
@@ -80,7 +80,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.activateAreaSearch();
+		    core.activateAreaSearch();
 		}
 	    },
 
@@ -92,7 +92,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.OK));
+		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.OK));
 		}
 	    },
 
@@ -104,7 +104,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CANCEL));
+		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CANCEL));
 		}
 	    },
 
@@ -116,7 +116,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLOSE));
+		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLOSE));
 		}
 	    },
 
@@ -140,7 +140,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.SAVE));
+		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.SAVE));
 		}
 	    },
 
@@ -155,9 +155,9 @@ class Commands
 		    final File res = conversations.openPopup();
 		    if (res == null)
 			return;
-		    final Area area = env.getValidActiveArea(false);
+		    final Area area = core.getValidActiveArea(false);
 		    if (area == null || !area.onEnvironmentEvent(new OpenEvent(res.getAbsolutePath())))
-			env.openFiles(new String[]{res.getAbsolutePath()});
+			core.openFiles(new String[]{res.getAbsolutePath()});
 		}
 	    },
 
@@ -169,7 +169,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.introduceActiveArea();
+		    core.introduceActiveArea();
 		}
 	    },
 
@@ -181,7 +181,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.REFRESH));
+		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.REFRESH));
 		}
 	    },
 
@@ -193,7 +193,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.ANNOUNCE_LINE)))
@@ -201,19 +201,19 @@ class Commands
 		    final int hotPointY = area.getHotPointY();
 		    if (hotPointY >= area.getLineCount())
 		    {
-			env.eventNotProcessedMessage();
+			core.eventNotProcessedMessage();
 			return;
 		    }
 		    final String line = area.getLine(hotPointY);
 		    if (line == null)
 		    {
-			env.eventNotProcessedMessage();
+			core.eventNotProcessedMessage();
 			return;
 		    }
 		    if (!line.trim().isEmpty())
-			env.getSpeech().speak(line, 0, 0); else
-			env.getObjForEnvironment().setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
-		    env.needForIntroduction = false;
+			core.getSpeech().speak(line, 0, 0); else
+			core.getObjForEnvironment().setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+		    core.needForIntroduction = false;
 		}
 	    },
 
@@ -225,12 +225,12 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
-			env.playSound(Sounds.REGION_POINT); else
-			env.eventNotProcessedMessage();
+			core.playSound(Sounds.REGION_POINT); else
+			core.eventNotProcessedMessage();
 		}
 	    },
 
@@ -242,12 +242,12 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)))
-			env.playSound(Sounds.COPIED); else
-			env.eventNotProcessedMessage();
+			core.playSound(Sounds.COPIED); else
+			core.eventNotProcessedMessage();
 		}
 	    },
 
@@ -259,12 +259,12 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)))
-			env.playSound(Sounds.COPIED); else
-			env.eventNotProcessedMessage();
+			core.playSound(Sounds.COPIED); else
+			core.eventNotProcessedMessage();
 		}
 	    },
 
@@ -276,12 +276,12 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)))
-			env.playSound(Sounds.CUT);else
-			env.eventNotProcessedMessage();
+			core.playSound(Sounds.CUT);else
+			core.eventNotProcessedMessage();
 		}
 	    },
 
@@ -293,12 +293,12 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)))
-			env.playSound(Sounds.DELETED); else
-			env.eventNotProcessedMessage();
+			core.playSound(Sounds.DELETED); else
+			core.eventNotProcessedMessage();
 		}
 	    },
 
@@ -312,15 +312,15 @@ class Commands
 		{
 		    if (luwrain.getClipboard().isEmpty())
 		    {
-			env.eventNotProcessedMessage();
+			core.eventNotProcessedMessage();
 			return;
 		    }
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_PASTE)))
-			env.playSound(Sounds.PASTE); else
-			env.eventNotProcessedMessage();
+			core.playSound(Sounds.PASTE); else
+			core.eventNotProcessedMessage();
 		}
 	    },
 
@@ -332,12 +332,12 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)))
-			env.playSound(Sounds.DELETED); else
-			env.eventNotProcessedMessage();
+			core.playSound(Sounds.DELETED); else
+			core.eventNotProcessedMessage();
 		}
 	    },
 
@@ -349,7 +349,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.HELP));
+		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.HELP));
 		}
 	    },
 
@@ -361,7 +361,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onSwitchNextAppCommand();
+		    core.onSwitchNextAppCommand();
 		}
 	    },
 
@@ -373,7 +373,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onSwitchNextAreaCommand();
+		    core.onSwitchNextAreaCommand();
 		}
 	    },
 
@@ -385,7 +385,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onIncreaseFontSizeCommand();
+		    core.onIncreaseFontSizeCommand();
 		}
 	    },
 
@@ -397,7 +397,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onDecreaseFontSizeCommand();
+		    core.onDecreaseFontSizeCommand();
 		}
 	    },
 
@@ -409,8 +409,8 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(env.getControlPanelFactories(), env.os.getHardware());
-		    env.launchApp(app);
+		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories(), core.os.getHardware());
+		    core.launchApp(app);
 		}
 	    },
 
@@ -423,7 +423,7 @@ class Commands
 		@Override public void onCommand(Luwrain luwrain)
 		{
 		    final Application app = new org.luwrain.app.console.App();
-		    env.launchApp(app);
+		    core.launchApp(app);
 		}
 	    },
 
@@ -437,7 +437,7 @@ class Commands
 		@Override public void onCommand(Luwrain luwrain)
 		{
 		    Application app = new org.luwrain.app.registry.RegistryApp();
-		    env.launchApp(app);
+		    core.launchApp(app);
 		}
 	    },
 
@@ -449,7 +449,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    env.onContextMenuCommand();
+		    core.onContextMenuCommand();
 		}
 	    },
 
@@ -461,29 +461,29 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    final ObjectUniRefQuery query = new ObjectUniRefQuery();
 		    if (!AreaQuery.ask(area, query))
 		    {
-			env.eventNotProcessedMessage();
+			core.eventNotProcessedMessage();
 			return;
 		    }
 		    final String uniRef = query.getAnswer();
 		    if (uniRef == null || uniRef.trim().isEmpty())
 		    {
-			env.eventNotProcessedMessage();
+			core.eventNotProcessedMessage();
 			return;
 		    }
-		    final UniRefInfo uniRefInfo = env.uniRefProcs.getInfo(uniRef);
+		    final UniRefInfo uniRefInfo = core.uniRefProcs.getInfo(uniRef);
 		    if (uniRefInfo == null)
 		    {
-			env.eventNotProcessedMessage();
+			core.eventNotProcessedMessage();
 			return;
 		    }
-		    env.message(uniRefInfo.toString(), Luwrain.MessageType.OK);
-		    env.getClipboard().set(uniRef);
+		    core.message(uniRefInfo.toString(), Luwrain.MessageType.OK);
+		    core.getClipboard().set(uniRef);
 		}
 	    },
 
@@ -495,7 +495,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = env.getSpeech();
+		    final Speech speech = core.getSpeech();
 		    speech.setPitch(speech.getPitch() + SPEECH_STEP);
 		    luwrain.message("Высота речи " + speech.getPitch());
 		}
@@ -509,7 +509,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = env.getSpeech();
+		    final Speech speech = core.getSpeech();
 		    speech.setPitch(speech.getPitch() - SPEECH_STEP);
 		    luwrain.message("Высота речи " + speech.getPitch());
 		}
@@ -523,7 +523,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = env.getSpeech();
+		    final Speech speech = core.getSpeech();
 		    speech.setRate(speech.getRate() - SPEECH_STEP);
 		    luwrain.message("Скорость речи " + (100 - speech.getRate()));
 		}
@@ -537,7 +537,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = env.getSpeech();
+		    final Speech speech = core.getSpeech();
 		    speech.setRate(speech.getRate() + SPEECH_STEP);
 		    luwrain.message("Скорость речи " + (100 - speech.getRate()));
 		}
@@ -551,7 +551,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final OperatingSystem os = env.os;
+		    final OperatingSystem os = core.os;
 		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() + VOLUME_STEP);
 		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
 		}
@@ -565,7 +565,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final OperatingSystem os = env.os;
+		    final OperatingSystem os = core.os;
 		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() - VOLUME_STEP);
 		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
 		}
@@ -579,8 +579,8 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    //		    env.onReadAreaCommand();
-		    env.startAreaListening();
+		    //		    core.onReadAreaCommand();
+		    core.startAreaListening();
 		}
 	    },
 
@@ -595,7 +595,7 @@ class Commands
 		    NullCheck.notNull(luwrain, "luwrain");
 		    final String word = luwrain.getActiveAreaText(Luwrain.AreaTextType.WORD, true);
 		    if (word != null && !word.trim().isEmpty())
-			env.message(word, Luwrain.MessageType.REGULAR);
+			core.message(word, Luwrain.MessageType.REGULAR);
 		}
 	    },
 
@@ -607,11 +607,11 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = env.getValidActiveArea(true);
+		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (!area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.PROPERTIES)))
-			env.eventNotProcessedMessage();
+			core.eventNotProcessedMessage();
 		}
 	    },
 
@@ -643,17 +643,17 @@ class Commands
 		@Override public void onCommand(Luwrain luwrain)
 		{
 		    /*
-		    final SimpleEditPopup popup = new SimpleEditPopup(env.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", Popups.DEFAULT_POPUP_FLAGS);
-		    env.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
+		    final SimpleEditPopup popup = new SimpleEditPopup(core.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", Popups.DEFAULT_POPUP_FLAGS);
+		    core.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
 		    if (popup.closing.cancelled() || popup.text().trim().isEmpty())
 			return;
 		    */
-		    final String cmd = Popups.editWithHistory(env.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
+		    final String cmd = Popups.editWithHistory(core.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
 		    if (cmd == null)
 			return;
 
 		    final String dir;
-		    final Area area = env.getValidActiveArea(false);
+		    final Area area = core.getValidActiveArea(false);
 		    if (area != null)
 		    {
 			final CurrentDirQuery query = new CurrentDirQuery();

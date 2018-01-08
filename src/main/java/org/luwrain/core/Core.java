@@ -26,7 +26,7 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
 
-class Environment extends EventDispatching
+class Core extends EventDispatching
 {
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
     static private final String PLAYER_CLASS_PROP_NAME = "luwrain.class.player";
@@ -42,15 +42,11 @@ final Interaction interaction;
     private final org.luwrain.shell.Conversations conversations;
     org.luwrain.player.Player player = null;
     final WavePlayers.Player wavePlayer = new WavePlayers.Player();
-    public Settings.UserInterface uiSettings;//FIXME:final 
+    Settings.UserInterface uiSettings;//FIXME:final 
     private volatile boolean wasInputEvents = false;
+    final UniRefProcManager uniRefProcs = new UniRefProcManager();//FIXME:
 
-    //FIXME:
-    //        private final CommandManager commands = new CommandManager();
-final UniRefProcManager uniRefProcs = new UniRefProcManager();
-
-
-    Environment(CmdLine cmdLine, Registry registry,
+    Core(CmdLine cmdLine, Registry registry,
 		OperatingSystem os, Interaction interaction, 
 		org.luwrain.base.CoreProperties coreProps, String lang)
     {
@@ -734,12 +730,11 @@ onNewAreasLayout();
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
 	    return;
-	final Environment e = this;
 	apps.setAreaWrapper(activeArea,
 				  new AreaWrapperFactory() {
 				      @Override public Area createAreaWrapper(Area areaToWrap, Disabling disabling)
 				      {
-					  return new Search(areaToWrap, e, disabling);
+					  return new Search(areaToWrap, Core.this, disabling);
 				      }
 				  });
 	onNewAreasLayout();

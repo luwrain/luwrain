@@ -24,13 +24,13 @@ import org.luwrain.util.*;
 public class Search implements Area
 {
     private final Area area;
-    private final Environment core;
+    private final Core core;
     private final AreaWrapperFactory.Disabling disabling;
     private int hotPointX = 0;
     private int hotPointY = 0;
     private String expression = "";//What we already have found
 
-    public Search(Area area, Environment core, AreaWrapperFactory.Disabling disabling)
+    public Search(Area area, Core core, AreaWrapperFactory.Disabling disabling)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(core, "core");

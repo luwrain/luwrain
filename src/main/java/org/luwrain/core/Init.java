@@ -238,7 +238,7 @@ public class Init implements org.luwrain.base.CoreProperties
 	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
 	    final boolean initRes = init();
 	    if (initRes)
-		new Environment(
+		new Core(
 				cmdLine, registry, os, interaction, 
 				this, //core properties
 				lang).run();

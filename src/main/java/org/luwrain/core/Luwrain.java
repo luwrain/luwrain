@@ -50,16 +50,16 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	URL,
     };
 
-    private final Environment environment;
+    private final Core core;
     private final org.luwrain.shell.PartitionsPopupControl partitionsPopupControl;
     private String charsToSkip = "";
 
-    public Luwrain(Environment environment)
+    Luwrain(Core core)
     {
-	NullCheck.notNull(environment, "environment");
-	this.environment = environment;
-	this.partitionsPopupControl = new org.luwrain.shell.PartitionsPopupControl(this, environment.os.getHardware());
-	Registry registry = environment.registry();
+	NullCheck.notNull(core, "core");
+	this.core = core;
+	this.partitionsPopupControl = new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware());
+	Registry registry = core.registry();
 	final String path = "/org/luwrain/speech/preprocess-cchars-to-skip";
 	if (registry.getTypeOf(path) == Registry.STRING)
 	    charsToSkip = registry.getString(path);
@@ -67,13 +67,13 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 
     public CmdLine getCmdLine()
     {
-	return environment.cmdLine;
+	return core.cmdLine;
     }
 
     public String getActiveAreaText(AreaTextType type, boolean issueErrorMessages)
     {
 	NullCheck.notNull(type, "type");
-	final Area activeArea = environment.getValidActiveArea(issueErrorMessages);
+	final Area activeArea = core.getValidActiveArea(issueErrorMessages);
 	if (activeArea == null)
 	    return null;
 	return new AreaText(activeArea).get(type);
@@ -83,7 +83,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     //Never returns null, returns user home dir if area doesn't speak about that
     public String currentAreaDir()
     {
-	final Area area = environment.getValidActiveArea(false);
+	final Area area = core.getValidActiveArea(false);
 	if (area == null)
 	    return getFileProperty("luwrain.dir.userhome").toString();
 	final CurrentDirQuery query = new CurrentDirQuery();
@@ -95,12 +95,12 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     @Override public void enqueueEvent(Event e)
     {
 	NullCheck.notNull(e, "e");
-	environment.enqueueEvent(e);
+	core.enqueueEvent(e);
     }
 
     public void quit()
     {
-	environment.quit();
+	core.quit();
     }
 
     /**
@@ -135,17 +135,17 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 
     public     void closeApp()
     {
-	environment.closeAppIface(this);
+	core.closeAppIface(this);
     }
 
     public Registry getRegistry()
     {
-	return environment.registry();
+	return core.registry();
     }
 
     public I18n i18n()
     {
-	return environment.i18nIface();
+	return core.i18nIface();
     }
 
     public void crash(Exception e)
@@ -153,26 +153,26 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	NullCheck.notNull(e, "e");
 	e.printStackTrace();
 	final Luwrain instance = this;
-	runInMainThread(()->environment.launchAppCrash(this, e));
+	runInMainThread(()->core.launchAppCrash(this, e));
     }
 
     public void launchApp(String shortcutName)
     {
 	NullCheck.notNull(shortcutName, "shortcutName");
-	environment.launchAppIface(shortcutName, new String[0]);
+	core.launchAppIface(shortcutName, new String[0]);
     }
 
     public void launchApp(String shortcutName, String[] args)
     {
 	NullCheck.notNull(shortcutName, "shortcutName");
 	NullCheck.notNullItems(args, "args");
-	environment.launchAppIface(shortcutName, args != null?args:new String[0]);
+	core.launchAppIface(shortcutName, args != null?args:new String[0]);
     }
 
     /*
     public LaunchContext launchContext()
     {
-	return environment.launchContextIface();
+	return core.launchContextIface();
     }
     */
 
@@ -182,8 +182,8 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	if (text.trim().isEmpty())
 	    return;
 	runUiSafely(()->{
-		environment.getBraille().textToSpeak(text);
-		environment.message(text, MessageType.REGULAR);
+		core.getBraille().textToSpeak(text);
+		core.message(text, MessageType.REGULAR);
 	    });
     }
 
@@ -194,8 +194,8 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	if (text.trim().isEmpty())
 	    return;
 	    runUiSafely(()->{
-		    environment.getBraille().textToSpeak(text);
-	environment.message(text, messageType);
+		    core.getBraille().textToSpeak(text);
+	core.message(text, messageType);
 		});
     }
 
@@ -206,8 +206,8 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	if (text.trim().isEmpty())
 	    return;
 	runUiSafely(()->{
-		environment.getBraille().textToSpeak(text);
-		environment.message(text, sound);
+		core.getBraille().textToSpeak(text);
+		core.message(text, sound);
 	    });
     }
 
@@ -224,7 +224,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void onAreaNewHotPoint(Area area)
     {
 	NullCheck.notNull(area, "area");
-	environment.onAreaNewHotPointIface(this, area);
+	core.onAreaNewHotPointIface(this, area);
     }
 
     /**
@@ -239,7 +239,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void onAreaNewContent(Area area)
     {
 	NullCheck.notNull(area, "area");
-	environment.onAreaNewContentIface(this, area);
+	core.onAreaNewContentIface(this, area);
     }
 
     /**
@@ -254,13 +254,13 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void onAreaNewName(Area area)
     {
 	NullCheck.notNull(area, "area");
-	environment.onAreaNewNameIface(this, area);
+	core.onAreaNewNameIface(this, area);
     }
 
     public void onAreaNewBackgroundSound(Area area)
     {
 	NullCheck.notNull(area, "area");
-	environment.onAreaNewBackgroundSound(this, area);
+	core.onAreaNewBackgroundSound(this, area);
     }
 
 
@@ -268,39 +268,39 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public int getAreaVisibleHeight(Area area)
     {
 	NullCheck.notNull(area, "area");
-	return environment.getAreaVisibleHeightIface(this, area);
+	return core.getAreaVisibleHeightIface(this, area);
     }
 
     public int getAreaVisibleWidth(Area area)
     {
 	NullCheck.notNull(area, "area");
-	return environment.getAreaVisibleWidthIface(this, area);
+	return core.getAreaVisibleWidthIface(this, area);
     }
 
     public int getScreenWidth()
     {
-	return environment.getScreenWidthIface();
+	return core.getScreenWidthIface();
     }
 
     public int getScreenHeight()
     {
-	return environment.getScreenHeightIface();
+	return core.getScreenHeightIface();
     }
 
     public void announceActiveArea()
     {
-	environment.announceActiveAreaIface();
+	core.announceActiveAreaIface();
     }
 
     public Clipboard getClipboard()
     {
-	return environment.getClipboard();
+	return core.getClipboard();
     }
 
     //Doesn't produce any announcement
     public void onNewAreaLayout()
     {
-	environment.onNewAreaLayoutIface(this);
+	core.onNewAreaLayoutIface(this);
     }
 
     public void openFile(String fileName)
@@ -308,13 +308,13 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	NullCheck.notNull(fileName, "fileName");
 	String[] s = new String[1];
 	s[0] = fileName;
-	environment.openFiles(s);
+	core.openFiles(s);
     }
 
     public void openFiles(String[] fileNames)
     {
 	NullCheck.notNullItems(fileNames, "fileNames");
-	environment.openFiles(fileNames);
+	core.openFiles(fileNames);
     }
 
     /**
@@ -330,26 +330,26 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void playSound(Sounds sound)
     {
 	NullCheck.notNull(sound, "sound");
-	environment.playSound(sound);
+	core.playSound(sound);
     }
 
     public void popup(Popup popup)
     {
 	NullCheck.notNull(popup, "popup");
-	environment.popupIface(popup);
+	core.popupIface(popup);
     }
 
     public boolean runCommand(String command)
     {
 	NullCheck.notNull(command, "command");
-	return environment.runCommand(command);
+	return core.runCommand(command);
     }
 
     public void say(String text)
     {
 	NullCheck.notNull(text, "text");
-	environment.getBraille().textToSpeak(text);
-	environment.getSpeech().speak(preprocess(text), 0, 0);
+	core.getBraille().textToSpeak(text);
+	core.getSpeech().speak(preprocess(text), 0, 0);
     }
 
     public void say(String text, Sounds sound)
@@ -363,20 +363,20 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void say(String text, int pitch)
     {
 	NullCheck.notNull(text, "text");
-	environment.getBraille().textToSpeak(text);
-	environment.getSpeech().speak(preprocess(text), pitch, 0);
+	core.getBraille().textToSpeak(text);
+	core.getSpeech().speak(preprocess(text), pitch, 0);
     }
 
     public void say(String text,
 		    int pitch, int rate)
     {
 	NullCheck.notNull(text, "text");
-	environment.getSpeech().speak(preprocess(text), pitch, rate);
+	core.getSpeech().speak(preprocess(text), pitch, rate);
     }
 
     public void sayLetter(char letter)
     {
-	environment.getBraille().textToSpeak("" + letter);
+	core.getBraille().textToSpeak("" + letter);
 	switch(letter)
 	{
 	case ' ':
@@ -388,7 +388,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
-	    environment.getSpeech().speakLetter(letter, 0, 0); else
+	    core.getSpeech().speakLetter(letter, 0, 0); else
 	    say(value, Speech.PITCH_HINT);//FIXME:
     }
 
@@ -405,7 +405,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
-	    environment.getSpeech().speakLetter(letter, pitch, 0); else
+	    core.getSpeech().speakLetter(letter, pitch, 0); else
 	    say(value, Speech.PITCH_HINT);
     }
 
@@ -423,13 +423,13 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	}
 	final String value = i18n().hasSpecialNameOfChar(letter);
 	if (value == null)
-	    environment.getSpeech().speakLetter(letter, pitch, rate); else
+	    core.getSpeech().speakLetter(letter, pitch, rate); else
 	    say(value, Speech.PITCH_HINT);
     }
 
     public void silence()
     {
-	environment.getSpeech().silence();
+	core.getSpeech().silence();
     }
 
     /**
@@ -446,7 +446,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void setActiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
-	environment.setActiveAreaIface(this, area);
+	core.setActiveAreaIface(this, area);
     }
 
     public String staticStr(LangStatic id)
@@ -460,48 +460,48 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	NullCheck.notNull(uniRef, "uniRef");
 	if (uniRef.isEmpty())
 	    return null;
-	return environment.uniRefProcs.getInfo(uniRef);
+	return core.uniRefProcs.getInfo(uniRef);
     }
 
     public boolean openUniRef(String uniRef)
     {
 	NullCheck.notNull(uniRef, "uniRef");
-	return environment.openUniRefIface(uniRef);
+	return core.openUniRefIface(uniRef);
     }
 
     public boolean openUniRef(UniRefInfo uniRefInfo)
     {
 	NullCheck.notNull(uniRefInfo, "uniRefInfo");
-	return environment.uniRefProcs.open(uniRefInfo.getValue());
+	return core.uniRefProcs.open(uniRefInfo.getValue());
     }
 
     public org.luwrain.browser.Browser createBrowser()
     {
-	return environment.interaction.createBrowser();
+	return core.interaction.createBrowser();
     }
 
     public Channel getAnySpeechChannelByCond(Set<Channel.Features> cond)
     {
 	NullCheck.notNull(cond, "cond");
-	return environment.getSpeech().getAnyChannelByCond(cond);
+	return core.getSpeech().getAnyChannelByCond(cond);
     }
 
     public Channel[] getSpeechChannelsByCond(Set<Channel.Features> cond)
     {
 	NullCheck.notNull(cond, "cond");
-	return environment.getSpeech().getChannelsByCond(cond);
+	return core.getSpeech().getChannelsByCond(cond);
     }
 
     public void runInMainThread(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
-	environment.enqueueEvent(new Environment.RunnableEvent(runnable));
+	core.enqueueEvent(new Core.RunnableEvent(runnable));
     }
 
     public void runUiSafely(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
-	if (!environment.isMainCoreThread())
+	if (!core.isMainCoreThread())
 	    runInMainThread(runnable); else
 	    runnable.run();
     }
@@ -509,8 +509,8 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public Object runLaterSync(Callable callable)
     {
 	NullCheck.notNull(callable, "callable");
-	final Environment.CallableEvent event = new Environment.CallableEvent(callable);
-	environment.enqueueEvent(event);
+	final Core.CallableEvent event = new Core.CallableEvent(callable);
+	core.enqueueEvent(event);
 	try {
 	    event.waitForBeProcessed();
 	}
@@ -525,14 +525,14 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public Object callUiSafely(Callable callable)
     {
 	NullCheck.notNull(callable, "callable");
-	if (environment.isMainCoreThread())
+	if (core.isMainCoreThread())
 	{
 	    try {
 		return callable.call(); 
 	    }
 	    catch(Throwable e)
 	    {
-		Log.error(Environment.LOG_COMPONENT, "exception on processing of CallableEvent:" + e.getClass().getName() + ":" + e.getMessage());
+		Log.error(Core.LOG_COMPONENT, "exception on processing of CallableEvent:" + e.getClass().getName() + ":" + e.getMessage());
 		return null;
 	    }
 	} else
@@ -542,32 +542,32 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void reloadComponent(ReloadComponents component)
     {
 	NullCheck.notNull(component, "component");
-	environment.reloadComponent(component);
+	core.reloadComponent(component);
     }
 
     public int getSpeechRate()
     {
-	return  environment.getSpeech().getRate();
+	return  core.getSpeech().getRate();
     }
 
     public void setSpeechRate(int value)
     {
-	environment.getSpeech().setRate(value);
+	core.getSpeech().setRate(value);
     }
 
     public int getSpeechPitch()
     {
-	return environment.getSpeech().getPitch();
+	return core.getSpeech().getPitch();
     }
 
     public void setSpeechPitch(int value)
     {
-	environment.getSpeech().setPitch(value);
+	core.getSpeech().setPitch(value);
     }
 
     public String[] getAllShortcutNames()
     {
-	return environment.objRegistry.getShortcutNames();
+	return core.objRegistry.getShortcutNames();
     }
 
     private String preprocess(String s)
@@ -589,7 +589,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     @Override public java.io.File getFileProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
-	return environment.getCoreProperties().getFileProperty(propName);
+	return core.getCoreProperties().getFileProperty(propName);
     }
 
     OsCommand runOsCommand(String cmd)
@@ -617,7 +617,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     {
 	NullCheck.notEmpty(cmd, "cmd");
 	NullCheck.notNull(dir, "dir");
-	return environment.os.runOsCommand(cmd, (!dir.isEmpty())?dir:getFileProperty("luwrain.dir.userhome").getAbsolutePath(), output, listener);
+	return core.os.runOsCommand(cmd, (!dir.isEmpty())?dir:getFileProperty("luwrain.dir.userhome").getAbsolutePath(), output, listener);
     }
 
     @Override public String getProperty(String propName)
@@ -638,7 +638,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	    {
 		return "";
 	    }
-	    final Channel[] channels = environment.getSpeech().getAllChannels();
+	    final Channel[] channels = core.getSpeech().getAllChannels();
 	    if (n >= channels.length)
 		return "";
 	    final Channel channel = channels[n];
@@ -649,7 +649,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	    case "class":
 		return channel.getClass().getName();
 	    case "default":
-		return environment.getSpeech().isDefaultChannel(channel)?"1":"0";
+		return core.getSpeech().isDefaultChannel(channel)?"1":"0";
 	    case "cansynthtospeakers":
 		return channel.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_SPEAKERS)?"1":"0";
 	    case "cansynthtostream":
@@ -663,34 +663,34 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	switch(propName)
 	{
 	case "luwrain.braille.active":
-	    return environment.getBraille().isActive()?"1":"0";
+	    return core.getBraille().isActive()?"1":"0";
 	case "luwrain.braille.driver":
-	    return environment.getBraille().getDriver();
+	    return core.getBraille().getDriver();
 	case "luwrain.braille.error":
-	    return environment.getBraille().getErrorMessage();
+	    return core.getBraille().getErrorMessage();
 	case "luwrain.braille.displaywidth":
-	    return "" + environment.getBraille().getDisplayWidth();
+	    return "" + core.getBraille().getDisplayWidth();
 	case "luwrain.braille.displayheight":
-	    return "" + environment.getBraille().getDisplayHeight();
+	    return "" + core.getBraille().getDisplayHeight();
 	default:
 	    if (propName.startsWith("luwrain.os.") || propName.startsWith("luwrain.hardware."))
 	    {
-		final String res = environment.os.getProperty(propName);
+		final String res = core.os.getProperty(propName);
 		return res != null?res:"";
 	    }
-	    return environment.getCoreProperties().getProperty(propName);
+	    return core.getCoreProperties().getProperty(propName);
 	}
     }
 
     public void setEventResponse(EventResponse eventResponse)
     {
 	NullCheck.notNull(eventResponse, "eventResponse");
-	environment.setEventResponse(eventResponse);
+	core.setEventResponse(eventResponse);
     }
 
 public FilesOperations getFilesOperations()
     {
-	return environment.os.getFilesOperations();
+	return core.os.getFilesOperations();
     }
 
     public org.luwrain.popups.PartitionsPopup.Control getPartitionsPopupControl()
@@ -700,13 +700,13 @@ public FilesOperations getFilesOperations()
 
     public org.luwrain.player.Player getPlayer()
     {
-	return environment.player;
+	return core.player;
     }
 
     public org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers()
     {
 	final List<org.luwrain.base.MediaResourcePlayer> res = new LinkedList();
-	res.add(environment.wavePlayer);
+	res.add(core.wavePlayer);
 	return res.toArray(new org.luwrain.base.MediaResourcePlayer[res.size()]);
     }
 

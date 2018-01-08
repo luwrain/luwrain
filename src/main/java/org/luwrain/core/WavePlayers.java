@@ -89,7 +89,7 @@ class WavePlayers
 	    } //try
 	    catch(UnsupportedAudioFileException | IOException | LineUnavailableException e)
 	    {
-		Log.error(Environment.LOG_COMPONENT, "unable to play audio file" + fileName + ":" + e.getClass().getName() + ":" + e.getMessage());
+		Log.error(Core.LOG_COMPONENT, "unable to play audio file" + fileName + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    }
 	}
 

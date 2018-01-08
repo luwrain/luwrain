@@ -46,26 +46,25 @@ public class InterfaceManager
     private Luwrain objForEnvironment = null;
     private final Vector<Entry> entries = new Vector<Entry>();
 
-    Luwrain requestNew(Application app, Environment environment)
+    Luwrain requestNew(Application app, Core core)
     {
 	if (app == null)
 	    throw new NullPointerException("app may not be null");
 	final Luwrain existing = findFor(app);
 	if (existing != null)
 	    return existing;
-	Luwrain luwrain = new Luwrain(environment);
+	final Luwrain luwrain = new Luwrain(core);
 	entries.add(new Entry(Entry.APP, app, luwrain));
 	return luwrain;
     }
 
-    Luwrain requestNew(Extension ext, Environment environment)
+    Luwrain requestNew(Extension ext, Core core)
     {
-	if (ext == null)
-	    throw new NullPointerException("ext may not be null");
+	NullCheck.notNull(ext, "ext");
 	final Luwrain existing = findFor(ext);
 	if (existing != null)
 	    return existing;
-	Luwrain luwrain = new Luwrain(environment);
+	final Luwrain luwrain = new Luwrain(core);
 	entries.add(new Entry(Entry.EXTENSION, ext, luwrain));
 	return luwrain;
     }
@@ -115,12 +114,12 @@ public class InterfaceManager
 	    }
     }
 
-    void createObjForEnvironment(Environment environment)
+    void createObjForEnvironment(Core core)
     {
-	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(core, "core");
 	if (objForEnvironment != null)
 	    return;
-	objForEnvironment = new Luwrain(environment);
+	objForEnvironment = new Luwrain(core);
     }
 
     Luwrain getObjForEnvironment()
