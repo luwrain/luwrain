@@ -87,6 +87,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final SoundsPlayer sounds = new SoundsPlayer();
     protected final SoundManager soundManager;
 
+    final FileTypes fileTypes = new FileTypes();
     final FileContentType contentTypes = new FileContentType();
     private final Clipboard clipboard = new Clipboard();
     protected boolean needForIntroduction = false;
@@ -111,9 +112,11 @@ abstract class Base implements org.luwrain.base.EventConsumer
 
     //True means the event is processed and there is no need to process it again;
     abstract protected boolean onEvent(Event event);
+        abstract protected void processEventResponse(EventResponse eventResponse);
+        abstract void message(String text, Luwrain.MessageType messageType);
     abstract protected void introduce(StopCondition stopCondition);
-    public abstract Luwrain getObjForEnvironment();
-    abstract protected void processEventResponse(EventResponse eventResponse);
+    abstract public Luwrain getObjForEnvironment();
+
 
     protected void eventLoop(StopCondition stopCondition)
     {

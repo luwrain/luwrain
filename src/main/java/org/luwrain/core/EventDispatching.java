@@ -13,9 +13,14 @@ import org.luwrain.base.*;
 
 abstract class EventDispatching extends EnvironmentAreas
 {
-        protected final CommandManager commands = new CommandManager();
-    private final GlobalKeys globalKeys;
-    private AreaListening listening = null;
+    static private final int POPUP_BLOCKING_MAY_PROCESS = 0;
+    static private final int POPUP_BLOCKING_EVENT_REJECTED = 1;
+    static private final int POPUP_BLOCKING_TRY_AGAIN = 2;
+
+    protected final CommandManager commands = new CommandManager();
+protected final GlobalKeys globalKeys;
+
+    protected AreaListening listening = null;
 
     protected EventDispatching(CmdLine cmdLine, Registry registry,
 			       org.luwrain.base.CoreProperties coreProps, String lang,
@@ -25,11 +30,8 @@ abstract class EventDispatching extends EnvironmentAreas
 	this.globalKeys = new GlobalKeys(registry);
     }
 
-    abstract void message(String text, Luwrain.MessageType messageType);
 
-
-    
-
+    abstract protected void onBeforeEventProcessing();
 
     @Override protected boolean onEvent(Event event)
     {
@@ -63,15 +65,12 @@ abstract class EventDispatching extends EnvironmentAreas
 	}
 	catch (Exception e)
 	{
-	    Log.error("core", "an exception of class " + e.getClass().getName() + " has been thrown while processing of event of class " + event.getClass().getName() + "::" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "an exception of class " + e.getClass().getName() + " has been thrown while processing of event of class " + event.getClass().getName() + "::" + e.getMessage());
 	    e.printStackTrace();
 	    return true;
 	}
     }
 
-    static private final int POPUP_BLOCKING_MAY_PROCESS = 0;
-    static private final int POPUP_BLOCKING_EVENT_REJECTED = 1;
-    static private final int POPUP_BLOCKING_TRY_AGAIN = 2;
     private int popupBlocking()
     {
 	final Application nonPopupDest = screenContentManager.isNonPopupDest();
@@ -140,10 +139,7 @@ abstract class EventDispatching extends EnvironmentAreas
 
     private boolean onKeyboardEvent(KeyboardEvent event)
     {
-	/*FIXME:
-	stopAreaListening();
-	wasInputEvents = true;
-	*/
+	onBeforeEventProcessing();
 	if (keyboardEventForEnvironment(event))
 	    return true;
 	switch(popupBlocking())
@@ -178,7 +174,7 @@ abstract class EventDispatching extends EnvironmentAreas
 	}
 	catch (Exception e)
 	{
-	    Log.error("core", "active area of class " + activeArea.getClass().getName() + " throws an exception on keyboard event processing:" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "active area of class " + activeArea.getClass().getName() + " throws an exception on keyboard event processing:" + e.getMessage());
 	    e.printStackTrace();
 	    speech.silence();
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
@@ -216,9 +212,9 @@ abstract class EventDispatching extends EnvironmentAreas
 	    event.withAltOnly())
 	{
 	    /*FIXME:
-	    final String cmdName = conversations.commandPopup(commands.getCommandNames());
-	    if (cmdName != null && !cmdName.trim().isEmpty()&& !commands.run(cmdName.trim()))
-		message(i18n.getStaticStr("NoCommand"), Luwrain.MessageType.ERROR);
+	      final String cmdName = conversations.commandPopup(commands.getCommandNames());
+	      if (cmdName != null && !cmdName.trim().isEmpty()&& !commands.run(cmdName.trim()))
+	      message(i18n.getStaticStr("NoCommand"), Luwrain.MessageType.ERROR);
 	    */
 	    return true;
 	}
@@ -238,11 +234,11 @@ abstract class EventDispatching extends EnvironmentAreas
 	}
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
-		res = screenContentManager.onEnvironmentEvent(event);
+	    res = screenContentManager.onEnvironmentEvent(event);
 	}
 	catch (Throwable e)
 	{
-	    Log.error("core", "environment event throws an exception:" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "environment event throws an exception:" + e.getMessage());
 	    e.printStackTrace();
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
 	    return true;
@@ -259,7 +255,7 @@ abstract class EventDispatching extends EnvironmentAreas
 	return true;
     }
 
-private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
+    private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	apps.sendBroadcastEvent(event);
@@ -297,42 +293,6 @@ private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
 	speech.speak(activeArea.getAreaName(), 0, 0);
     }
-
-    /*
-    boolean runCommand(String command)
-    {
-	mainCoreThreadOnly();
-	if (command == null)
-	    throw new NullPointerException("command may not be null");
-	if (command.trim().isEmpty())
-	    return false;
-	return commands.run(command.trim());
-    }
-    */
-
-    /*
-    void onContextMenuCommand()
-    {
-	final Area activeArea = getValidActiveArea(true);
-	if (activeArea == null)
-	    return;
-	final Action[] actions = activeArea.getAreaActions();
-	if (actions == null || actions.length < 1)
-	{
-	    areaInaccessibleMessage();
-	    return;
-	}
-	final org.luwrain.shell.ContextMenu menu = new org.luwrain.shell.ContextMenu(getObjForEnvironment(), actions);
-	popup(null, menu, Popup.Position.RIGHT, ()->menu.isPopupActive(), true, true);
-	if (menu.wasCancelled())
-	    return;
-	final Object selected = menu.selected();
-	if (selected == null || !(selected instanceof Action))//Should never happen
-	    return;
-	if (!activeArea.onEnvironmentEvent(new ActionEvent((Action)selected)))
-	    areaInaccessibleMessage();
-    }
-    */
 
     static class RunnableEvent extends Event
     {
