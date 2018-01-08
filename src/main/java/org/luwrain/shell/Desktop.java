@@ -18,8 +18,6 @@ package org.luwrain.shell;
 
 import java.util.*;
 import java.io.*;
-import java.nio.file.*;
-import java.nio.charset.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -31,18 +29,7 @@ public class Desktop implements Application
     private Luwrain luwrain = null;
     private Storing storing = null;
     private EditableListArea area = null;
-
-    private final Environment core;
     private Conversations conversations = null;
-
-    public Desktop(Environment core)
-    {
-	/*
-	NullCheck.notNull(core, "core");
-	this.core = core;
-	*/
-	this.core = null;
-    }
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {

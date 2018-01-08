@@ -70,24 +70,27 @@ abstract class Base implements org.luwrain.base.EventConsumer
 
     protected final CmdLine cmdLine;
     protected final  Registry registry;
+        protected final org.luwrain.base.CoreProperties coreProps;
+    protected final String lang;
+
+    private final Thread mainCoreThread;
+    final ObjRegistry objRegistry = new ObjRegistry();
+    protected final InterfaceManager interfaces = new InterfaceManager();
     protected final EventQueue eventQueue = new EventQueue();
     protected final MainStopCondition mainStopCondition = new MainStopCondition();
     private EventResponse eventResponse = null;
 
-protected final I18nImpl i18n = new I18nImpl();
-    protected Speech speech = null;
+    protected final WorkerManager workers = new WorkerManager();
+    protected final I18nImpl i18n = new I18nImpl();
+    protected final Speech speech;
     protected final Braille braille = new Braille();
-    private final Clipboard clipboard = new Clipboard();
     protected final SoundsPlayer sounds = new SoundsPlayer();
-    final ObjRegistry objRegistry = new ObjRegistry();
     protected final SoundManager soundManager;
-    protected final org.luwrain.base.CoreProperties coreProps;
-    protected final String lang;
+
+    final FileContentType contentTypes = new FileContentType();
+    private final Clipboard clipboard = new Clipboard();
     protected boolean needForIntroduction = false;
     protected boolean introduceApp = false;
-    private final Thread mainCoreThread;
-    protected final WorkerManager workers = new WorkerManager();
-    final FileContentType contentTypes = new FileContentType();
 
     protected Base(CmdLine cmdLine, Registry registry,
 			      org.luwrain.base.CoreProperties coreProps, String lang)
@@ -100,6 +103,7 @@ protected final I18nImpl i18n = new I18nImpl();
 	this.registry = registry;
 	this.coreProps = coreProps;
 	this.lang = lang;
+	this.speech = new Speech(cmdLine, registry);
 	this.soundManager = new SoundManager(registry, coreProps);
 	this.mainCoreThread = Thread.currentThread();
 	Log.debug(LOG_COMPONENT, "main core thread is \'" + mainCoreThread.getName() + "\'");

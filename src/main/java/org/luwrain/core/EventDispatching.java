@@ -13,17 +13,16 @@ import org.luwrain.base.*;
 
 abstract class EventDispatching extends EnvironmentAreas
 {
-        private GlobalKeys globalKeys = null;
-            private AreaListening listening = null;
-protected final CommandManager commands = new CommandManager();
+        protected final CommandManager commands = new CommandManager();
+    private final GlobalKeys globalKeys;
+    private AreaListening listening = null;
 
-    
-
-    
     protected EventDispatching(CmdLine cmdLine, Registry registry,
-			       org.luwrain.base.CoreProperties coreProps, String lang)
+			       org.luwrain.base.CoreProperties coreProps, String lang,
+			       org.luwrain.base.Interaction interaction)
     {
-	super(cmdLine, registry, coreProps, lang);
+	super(cmdLine, registry, coreProps, lang, interaction);
+	this.globalKeys = new GlobalKeys(registry);
     }
 
     abstract void message(String text, Luwrain.MessageType messageType);

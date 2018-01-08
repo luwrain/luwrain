@@ -35,8 +35,8 @@ public class Environment extends EnvironmentAreas
     final OperatingSystem os;
 final Interaction interaction;
 
-    private org.luwrain.core.extensions.Manager extensions;
-    private final org.luwrain.shell.Desktop desktop = new org.luwrain.shell.Desktop(null);
+    private final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
+    private final org.luwrain.shell.Desktop desktop = new org.luwrain.shell.Desktop();
     private GlobalKeys globalKeys;
     private final FileTypes fileTypes = new FileTypes();
         private AreaListening listening = null;
@@ -55,7 +55,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 		OperatingSystem os, Interaction interaction, 
 		org.luwrain.base.CoreProperties coreProps, String lang)
     {
-	super(cmdLine, registry, coreProps, lang);
+	super(cmdLine, registry, coreProps, lang, interaction);
 	NullCheck.notNull(os, "os");
 	NullCheck.notNull(interaction, "interaction");
 	this.os = os;
@@ -115,17 +115,14 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 
     private void init()
     {
-	speech = new Speech(cmdLine, registry);
 	desktop.onLaunchApp(interfaces.requestNew(desktop, this));
 	desktop.setConversations(conversations);
 	apps.setDefaultApp(desktop);
-	windowManager = new WindowManager(interaction, screenContentManager);
-	extensions = new org.luwrain.core.extensions.Manager(interfaces);
 	extensions.load((ext)->interfaces.requestNew(ext, this), cmdLine);
 	initI18n();
 	initObjects();
 	if (!speech.init())
-	    Log.warning("core", "unable to initialize speech core, very likely LUWRAIN will be silent");
+	    Log.warning(LOG_COMPONENT, "unable to initialize speech core, very likely LUWRAIN will be silent");
 	braille.init(registry, os.getBraille(), this);
 	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
