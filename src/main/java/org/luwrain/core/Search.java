@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -14,29 +14,29 @@
    General Public License for more details.
 */
 
-package org.luwrain.shell;
+package org.luwrain.core;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
-public class SearchAreaWrapper implements Area
+public class Search implements Area
 {
     private final Area area;
-    private final Environment environment;
+    private final Environment core;
     private final AreaWrapperFactory.Disabling disabling;
     private int hotPointX = 0;
     private int hotPointY = 0;
     private String expression = "";//What we already have found
 
-    public SearchAreaWrapper(Area area, Environment environment, AreaWrapperFactory.Disabling disabling)
+    public Search(Area area, Environment core, AreaWrapperFactory.Disabling disabling)
     {
 	NullCheck.notNull(area, "area");
-	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(core, "core");
 	NullCheck.notNull(disabling, "disabling");
 	this.area = area;
-	this.environment = environment;
+	this.core = core;
 	this.disabling = disabling;
 	hotPointX = area.getHotPointX();
 	hotPointY = area.getHotPointY();
@@ -44,8 +44,8 @@ public class SearchAreaWrapper implements Area
 	    hotPointX = 0;
 	if (hotPointY < 0)
 	    hotPointY = 0;
-	environment.message(environment.i18nIface().getStaticStr("SearchMode"), Luwrain.MessageType.REGULAR);
-	environment.playSound(Sounds.SEARCH);
+	core.message(core.i18nIface().getStaticStr("SearchMode"), Luwrain.MessageType.REGULAR);
+	core.playSound(Sounds.SEARCH);
     }
 
     @Override public String getAreaName()
@@ -130,7 +130,7 @@ public class SearchAreaWrapper implements Area
 	}
 	if (hotPointY > getLineCount())
 	{
-	    environment.playSound(Sounds.BLOCKED);
+	    core.playSound(Sounds.BLOCKED);
 	    return true;
 	}
 	String line = getLine(hotPointY);
@@ -143,8 +143,8 @@ public class SearchAreaWrapper implements Area
 	    {
 		hotPointX += pos;
 		expression = lookFor;
-		environment.onAreaNewHotPointIface(null, this);
-		environment.message(getLine(hotPointY).substring(hotPointX), Luwrain.MessageType.REGULAR);
+		core.onAreaNewHotPointIface(null, this);
+		core.message(getLine(hotPointY).substring(hotPointX), Luwrain.MessageType.REGULAR);
 		return true;
 	    }
 	} //On the current line
@@ -159,12 +159,12 @@ public class SearchAreaWrapper implements Area
 		continue;
 	    hotPointX = pos;
 	    hotPointY = i;
-	    environment.message(line.substring(pos), Luwrain.MessageType.REGULAR);
+	    core.message(line.substring(pos), Luwrain.MessageType.REGULAR);
 	    expression = lookFor;
-	    environment.onAreaNewHotPointIface(null, this);
+	    core.onAreaNewHotPointIface(null, this);
 	    return true;
 	}
-	environment.playSound(Sounds.BLOCKED);
+	core.playSound(Sounds.BLOCKED);
 	return true;
     }
 
@@ -174,12 +174,12 @@ public class SearchAreaWrapper implements Area
 	{
 	    if (!area.onEnvironmentEvent(new MoveHotPointEvent(hotPointX, hotPointY, false)))
 		return false;
-	    environment.setAreaIntroduction();
+	    core.setAreaIntroduction();
 	} else
-	    environment.message("Поиск отменён", Luwrain.MessageType.REGULAR);
-	environment.playSound(Sounds.CANCEL);
+	    core.message("Поиск отменён", Luwrain.MessageType.REGULAR);
+	core.playSound(Sounds.CANCEL);
 disabling.disableAreaWrapper();
-	environment.onNewAreasLayout();
+	core.onNewAreasLayout();
 	return true;
     }
 
@@ -190,7 +190,7 @@ disabling.disableAreaWrapper();
 	final String line = area.getLine(hotPointY);
 	if (line == null)//Security wrapper should make this impossible
 	    return false;
-	new Luwrain(environment).say(line);//FIXME:
+	new Luwrain(core).say(line);//FIXME:
 	return true;
     }
 }

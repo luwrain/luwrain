@@ -26,20 +26,17 @@ import org.luwrain.popups.*;
 public class Conversations
 {
     private final Luwrain luwrain;
-    private final Environment env;
 
-    public Conversations(Luwrain luwrain, Environment env)
+    public Conversations(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(env, "env");
-	this.luwrain = luwrain;
-	this.env = env;
+		this.luwrain = luwrain;
     }
 
     public boolean quitConfirmation()
     {
 	final YesNoPopup popup = new YesNoPopup(luwrain, luwrain.i18n().getStaticStr("QuitPopupName"), luwrain.i18n().getStaticStr("QuitPopupText"), true, Popups.DEFAULT_POPUP_FLAGS);
-	env.popupIface(popup);
+	luwrain.popup(popup);
 	return !popup.wasCancelled() && popup.result();
     }
 
@@ -63,7 +60,7 @@ public class Conversations
 		    }
 		}
 	    };
-	env.popupIface(popup);
+	luwrain.popup(popup);
 	if (popup.wasCancelled())
 	    return null;
 	return !popup.text().isEmpty()?popup.text():null;
@@ -77,7 +74,7 @@ public class Conversations
 					      luwrain.i18n().getStaticStr("OpenPopupPrefix"), 
 					      null, current, current,
 					      Popups.loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS);
-	env.popupIface(popup);
+	luwrain.popup(popup);
 	if (popup.wasCancelled())
 	    return null;
 	return popup.result();
@@ -91,7 +88,7 @@ public class Conversations
 						"Вы действительно хотите удалить элемент \"" + name + "\" с рабочего стола?",//FIXME:
 						false,
 						Popups.DEFAULT_POPUP_FLAGS);
-	env.popupIface(popup);
+	luwrain.popup(popup);
 	return !popup.wasCancelled() && popup.result();
     }
 
@@ -102,7 +99,7 @@ public class Conversations
 						"Вы действительно хотите удалить " + luwrain.i18n().getNumberStr(count, "items") + " с рабочего стола?",//FIXME:
 						false,
 						Popups.DEFAULT_POPUP_FLAGS);
-	env.popupIface(popup);
+	luwrain.popup(popup);
 	return !popup.wasCancelled() && popup.result();
     }
 }

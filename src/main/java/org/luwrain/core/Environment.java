@@ -26,7 +26,7 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
 
-public class Environment extends EventDispatching
+class Environment extends EventDispatching
 {
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
     static private final String PLAYER_CLASS_PROP_NAME = "luwrain.class.player";
@@ -60,7 +60,7 @@ final UniRefProcManager uniRefProcs = new UniRefProcManager();
 	this.os = os;
 	this.interaction = interaction;
 	this.interfaces.createObjForEnvironment(this);
-	this.conversations = new org.luwrain.shell.Conversations(getObjForEnvironment(), this);
+	this.conversations = new org.luwrain.shell.Conversations(getObjForEnvironment());
     }
 
     void run()
@@ -739,7 +739,7 @@ onNewAreasLayout();
 				  new AreaWrapperFactory() {
 				      @Override public Area createAreaWrapper(Area areaToWrap, Disabling disabling)
 				      {
-					  return new org.luwrain.shell.SearchAreaWrapper(areaToWrap, e, disabling);
+					  return new Search(areaToWrap, e, disabling);
 				      }
 				  });
 	onNewAreasLayout();
