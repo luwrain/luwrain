@@ -43,6 +43,7 @@ final class ObjRegistry
 
     private Map<String, Entry<Shortcut>> shortcuts = new HashMap();
     private Map<String, Entry<CommandLineTool>> cmdLineTools = new HashMap();
+    private Map<String, Entry<MediaResourcePlayer>> players = new HashMap();
 
     boolean add(Extension ext, ExtensionObject obj)
     {
@@ -54,12 +55,14 @@ final class ObjRegistry
 	if (obj instanceof CommandLineTool)
 	{
 	    final CommandLineTool tool = (CommandLineTool)obj;
+
 	    if (!cmdLineTools.containsKey(name))
 	    {
 		cmdLineTools.put(name, new Entry(ext, name, tool));
 		res = true;
 	    }
 	}
+
 	if (obj instanceof Shortcut)
 	{
 	    final Shortcut shortcut = (Shortcut)obj;
@@ -69,6 +72,17 @@ final class ObjRegistry
 		res = true;
 	    }
 	}
+
+		if (obj instanceof MediaResourcePlayer)
+	{
+	    final MediaResourcePlayer player = (MediaResourcePlayer)obj;
+	    if (!players.containsKey(name))
+	    {
+		players.put(name, new Entry(ext, name, player));
+		res = true;
+	    }
+	}
+
 	if (!res)
 	    Log.warning(LOG_COMPONENT, "failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
 	return res;
@@ -118,6 +132,14 @@ final class ObjRegistry
 	if (shortcut == null)
 	    return null;
 	return shortcut.prepareApp(args);
+    }
+
+    MediaResourcePlayer[] getMediaResourcePlayers()
+    {
+	final List<MediaResourcePlayer> res = new LinkedList();
+	for(Map.Entry<String, Entry<MediaResourcePlayer>> e: players.entrySet())
+	    res.add(e.getValue().obj);
+	return res.toArray(new MediaResourcePlayer[res.size()]);
     }
 
     static void issueResultingMessage(Luwrain luwrain, int exitCode, String[] lines)

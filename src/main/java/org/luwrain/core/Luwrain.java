@@ -707,6 +707,8 @@ public FilesOperations getFilesOperations()
     {
 	final List<org.luwrain.base.MediaResourcePlayer> res = new LinkedList();
 	res.add(core.wavePlayer);
+	for(org.luwrain.base.MediaResourcePlayer p: core.objRegistry.getMediaResourcePlayers())
+	    res.add(p);
 	return res.toArray(new org.luwrain.base.MediaResourcePlayer[res.size()]);
     }
 
