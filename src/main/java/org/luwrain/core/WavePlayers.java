@@ -224,5 +224,10 @@ class WavePlayers
 	{
 	    return ContentTypes.SOUND_WAVE_DEFAULT;
 	}
+
+	@Override public String getExtObjName()
+	{
+	    return "wav";
+	}
     }
 }

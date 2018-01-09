@@ -23,4 +23,12 @@ interface ContentTypes
     };
 
     static final String SOUND_WAVE_DEFAULT = SOUND_WAVE[0];
+
+    static final String[] SOUND_MP3 = new String[]{
+	"audio/mpeg",
+	"audio/MPA",
+	"audio/mpa-robust",
+    };
+
+    static final String SOUND_MP3_DEFAULT = SOUND_MP3[0];
 }
