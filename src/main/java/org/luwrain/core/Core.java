@@ -29,7 +29,7 @@ import org.luwrain.base.*;
 class Core extends EventDispatching
 {
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
-    static private final String PLAYER_CLASS_PROP_NAME = "luwrain.class.player";
+    static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.factory.player";
     static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
 
     final OperatingSystem os;
@@ -150,28 +150,33 @@ final Interaction interaction;
 	fileTypes.load(registry);
 
 	//loading player
-	if (!coreProps.getProperty(PLAYER_CLASS_PROP_NAME).isEmpty())
+	if (!coreProps.getProperty(PLAYER_FACTORY_PROP_NAME).isEmpty())
 	{
-	    final String playerClassName = coreProps.getProperty(PLAYER_CLASS_PROP_NAME);
+	    final String playerFactoryName = coreProps.getProperty(PLAYER_FACTORY_PROP_NAME);
 	    try {
-		final Object o = Class.forName(playerClassName).newInstance();
-		if (o instanceof org.luwrain.player.Player)
+		final Object o = Class.forName(playerFactoryName).newInstance();
+		if (o instanceof org.luwrain.player.Factory)
 		{
-		    this.player = (org.luwrain.player.Player)o;
-		    Log.debug(LOG_COMPONENT, "loaded player instance of class " + playerClassName);
-		} else
+		    final org.luwrain.player.Factory factory = (org.luwrain.player.Factory)o;
+		    final org.luwrain.player.Factory.Params params = new org.luwrain.player.Factory.Params();
+		    params.luwrain = getObjForEnvironment();
+		    this.player = factory.newPlayer(params);
+		    if (this.player != null)
+			Log.debug(LOG_COMPONENT, "loaded player instance of class " + this.player.getClass().getName()); else
+			Log.error(LOG_COMPONENT, "player factory of the class " + playerFactoryName + " returned null, no player");
+					} else
 		{
-		    Log.error(LOG_COMPONENT, "the player class " + playerClassName + " is not an instance of org.luwrain.player.Player");
-		    this.player = player;
+		    Log.error(LOG_COMPONENT, "the player factory class " + playerFactoryName + " is not an instance of org.luwrain.player.Factory ");
+		    this.player =null;
 		}
 	    }
 	    catch(Throwable e)
 	    {
-		Log.error(LOG_COMPONENT, "unable to load player class " + playerClassName + ":" + e.getClass().getName() + ":" + e.getMessage());
+		Log.error(LOG_COMPONENT, "unable to load player class " + playerFactoryName + ":" + e.getClass().getName() + ":" + e.getMessage());
 		this.player = null;
 	    }
 	} else
-	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_CLASS_PROP_NAME + " is empty");
+	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
 
 	desktop.ready(/*i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME)*/);
 	sounds.init(registry, coreProps.getFileProperty("luwrain.dir.data").toPath());
