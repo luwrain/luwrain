@@ -16,19 +16,43 @@
 
 package org.luwrain.core;
 
-interface ContentTypes
+public interface ContentTypes
 {
-    static final String[] SOUND_WAVE = new String[]{
+    static public final String DATA_BINARY[] = new String[]{
+	"application/octet-stream",
+    };
+
+    static public final String DATA_BINARY_DEFAULT = DATA_BINARY[0];
+
+    public enum ExpectedType {
+	ANY,
+	AUDIO,
+	TEXT,
+    };
+
+    static public final String[] TEXT_PLAIN = new String[]{
+	"text/plain",
+    };
+
+    static public final String TEXT_PLAIN_DEFAULT = TEXT_PLAIN[0];
+
+    static public final String[] TEXT_HTML = new String[]{
+	"text/html",
+    };
+
+    static public final String TEXT_HTML_DEFAULT = TEXT_HTML[0];
+
+    static public final String[] SOUND_WAVE = new String[]{
 	"audio/vnd.wave",
     };
 
-    static final String SOUND_WAVE_DEFAULT = SOUND_WAVE[0];
+    static public final String SOUND_WAVE_DEFAULT = SOUND_WAVE[0];
 
-    static final String[] SOUND_MP3 = new String[]{
+    static public final String[] SOUND_MP3 = new String[]{
 	"audio/mpeg",
 	"audio/MPA",
 	"audio/mpa-robust",
     };
 
-    static final String SOUND_MP3_DEFAULT = SOUND_MP3[0];
+    static public final String SOUND_MP3_DEFAULT = SOUND_MP3[0];
 }

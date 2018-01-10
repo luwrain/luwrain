@@ -21,37 +21,68 @@ import java.io.*;
 import java.net.*;
 import java.util.regex.*;
 
-class FileContentType
+final class FileContentType
 {
-    private final Map<String, String> contentTypes = new HashMap<String, String>();
+    private final Map<String, String> contentTypes = new HashMap();
 
     FileContentType()
     {
-	contentTypes.put(".*\\.dat", "application/octet-stream");
-	contentTypes.put(".*\\.raw", "application/octet-stream");
-	contentTypes.put(".*\\.htm", "text/html");
-	contentTypes.put(".*\\.html", "text/html");
-	contentTypes.put(".*\\.xhtml", "application/xhtml");
-	contentTypes.put(".*\\.xhtm", "application/xhtml");
-	contentTypes.put(".*\\.txt", "text/plain");
-	contentTypes.put(".*\\.pdf", "application/pdf");
-	contentTypes.put(".*\\.ps", "application/postscript");
-	contentTypes.put(".*\\.zip", "application/zip");
-	contentTypes.put(".*\\.doc", "application/msword");
-	contentTypes.put(".*\\.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-	contentTypes.put(".*\\.fb2", "application/fb2");
+	//Raw 
+		contentTypes.put(".*\\.dat", ContentTypes.DATA_BINARY_DEFAULT);
+	contentTypes.put(".*\\.raw", ContentTypes.DATA_BINARY_DEFAULT);
+
+	//Text
+		contentTypes.put(".*\\.txt", ContentTypes.TEXT_PLAIN_DEFAULT);
+		contentTypes.put(".*\\.htm", ContentTypes.TEXT_HTML_DEFAULT);
+	contentTypes.put(".*\\.html", ContentTypes.TEXT_HTML_DEFAULT);
+
+	//Audio
+		contentTypes.put(".*\\.mp3", ContentTypes.SOUND_MP3_DEFAULT);
+
+		contentTypes.put(".*\\.xhtml", "application/xhtml");
+		contentTypes.put(".*\\.xhtm", "application/xhtml");
+		contentTypes.put(".*\\.pdf", "application/pdf");
+		contentTypes.put(".*\\.ps", "application/postscript");
+		contentTypes.put(".*\\.zip", "application/zip");
+		contentTypes.put(".*\\.doc", "application/msword");
+		contentTypes.put(".*\\.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+		contentTypes.put(".*\\.fb2", "application/fb2");
     }
 
-    String suggestContentType(File file)
+    String suggestContentType(File file, ContentTypes.ExpectedType expectedType)
     {
 	NullCheck.notNull(file, "file");
-	return find(file.getName());
+	NullCheck.notNull(expectedType, "expectedType");
+	final String res = find(file.getName());
+	if (!res.isEmpty())
+	    return res;
+	switch(expectedType)
+	{
+	case TEXT:
+	    return ContentTypes.TEXT_PLAIN_DEFAULT;
+	case AUDIO:
+	    return ContentTypes.SOUND_MP3_DEFAULT;
+	default:
+	    return ContentTypes.DATA_BINARY_DEFAULT;
+	}
     }
 
-    String suggestContentType(URL url)
+    String suggestContentType(URL url, ContentTypes.ExpectedType expectedType)
     {
 	NullCheck.notNull(url, "url");
-	return find(url.getFile());
+	NullCheck.notNull(expectedType, "expectedType");
+final String res = find(url.getFile());
+if (!res.isEmpty())
+    return res;
+switch(expectedType)
+{
+case TEXT:
+    return ContentTypes.TEXT_PLAIN_DEFAULT;
+case AUDIO:
+    return ContentTypes.SOUND_MP3_DEFAULT;
+default:
+    return ContentTypes.DATA_BINARY_DEFAULT;
+}
     }
 
     private String find(String fileName)
@@ -64,7 +95,7 @@ class FileContentType
 	return "";
     }
 
-    private boolean match(String pattern, String line)
+    static private boolean match(String pattern, String line)
     {
 	NullCheck.notEmpty(pattern, "pattern");
 	NullCheck.notNull(line, "line");
