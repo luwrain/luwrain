@@ -29,7 +29,7 @@ import org.luwrain.base.*;
 class Core extends EventDispatching
 {
     static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
-    static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.factory.player";
+    static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
     static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
 
     final OperatingSystem os;

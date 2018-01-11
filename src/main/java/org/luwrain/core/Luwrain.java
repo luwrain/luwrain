@@ -81,7 +81,6 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	return new AreaText(activeArea).get(type);
     }
 
-
     //Never returns null, returns user home dir if area doesn't speak about that
     public String currentAreaDir()
     {
@@ -171,13 +170,6 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	core.launchAppIface(shortcutName, args != null?args:new String[0]);
     }
 
-    /*
-    public LaunchContext launchContext()
-    {
-	return core.launchContextIface();
-    }
-    */
-
     public void message(String text)
     {
 	NullCheck.notNull(text, "text");
@@ -265,7 +257,6 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	core.onAreaNewBackgroundSound(this, area);
     }
 
-
     //May return -1 if area is not shown on the screen;
     public int getAreaVisibleHeight(Area area)
     {
@@ -318,6 +309,21 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	NullCheck.notNullItems(fileNames, "fileNames");
 	core.openFiles(fileNames);
     }
+
+    public String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType)
+    {
+	NullCheck.notNull(url, "url");
+	NullCheck.notNull(expectedType, "expectedType");
+	return core.contentTypes.suggestContentType(url, expectedType);
+    }
+
+        public String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType)
+    {
+	NullCheck.notNull(file, "file");
+	NullCheck.notNull(expectedType, "expectedType");
+	return core.contentTypes.suggestContentType(file, expectedType);
+    }
+
 
     /**
     /**
