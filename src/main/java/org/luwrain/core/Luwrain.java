@@ -310,6 +310,8 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	core.openFiles(fileNames);
     }
 
+
+    //never returns null
     public String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType)
     {
 	NullCheck.notNull(url, "url");
@@ -317,6 +319,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	return core.contentTypes.suggestContentType(url, expectedType);
     }
 
+        //never returns null
         public String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType)
     {
 	NullCheck.notNull(file, "file");

@@ -53,6 +53,8 @@ final class FileContentType
     {
 	NullCheck.notNull(file, "file");
 	NullCheck.notNull(expectedType, "expectedType");
+	if (file.getAbsolutePath().isEmpty())
+	    return "";
 	final String res = find(file.getName());
 	if (!res.isEmpty())
 	    return res;
