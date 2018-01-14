@@ -198,7 +198,6 @@ class I18nImpl implements I18n, I18nExtension
     boolean chooseLang(String name)
     {
 	NullCheck.notEmpty(name, "name");
-	Log.debug(LOG_COMPONENT, "trying to choose the language, \'" + name + "\' requested");
 	if (langObjs.isEmpty())
 	{
 	    Log.warning(LOG_COMPONENT, "no langs registered, unable to choose the default");
@@ -215,12 +214,10 @@ class I18nImpl implements I18n, I18nExtension
 	    if (l.name.equals(EN_LANG))
 		enLang = l;
 	}
-	if (desiredLang != null)
-	    Log.debug(LOG_COMPONENT, "desired lang found"); else
-	    Log.debug(LOG_COMPONENT, "desired lang \'" + name + "\' not found");
-	if (enLang != null)
-	    Log.debug(LOG_COMPONENT, "English lang found"); else
-	    Log.debug(LOG_COMPONENT, "English lang not found");
+	if (desiredLang == null)
+	    Log.warning(LOG_COMPONENT, "desired lang \'" + name + "\' not found");
+	if (enLang == null)
+	    Log.warning(LOG_COMPONENT, "English lang not found");
 	if (desiredLang != null)
 	{
 	    chosenLang = desiredLang.lang;
@@ -236,7 +233,7 @@ class I18nImpl implements I18n, I18nExtension
 	chosenLang = l.lang;
 	chosenLangName = l.name;
 	    }
-	Log.info("core", "chosen lang is \'" + chosenLangName + "\'");
+	Log.debug("core", "chosen lang is \'" + chosenLangName + "\'");
 	return true;
     }
 

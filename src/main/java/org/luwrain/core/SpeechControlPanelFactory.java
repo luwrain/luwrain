@@ -26,8 +26,8 @@ class SpeechControlPanelFactory implements Factory
 {
     static private final Element channelsElement = new SimpleElement(StandardElements.SPEECH, SpeechControlPanelFactory.class.getName());
 
-    private Luwrain luwrain;
-    private Speech speech;
+    private final Luwrain luwrain;
+    private final Speech speech;
 
     SpeechControlPanelFactory(Luwrain luwrain, Speech speech)
     {
@@ -39,7 +39,7 @@ class SpeechControlPanelFactory implements Factory
 
     @Override public Element[] getElements()
     {
-	final LinkedList<Element> res = new LinkedList<Element>();
+	final List<Element> res = new LinkedList();
 	res.add(channelsElement);
 	final Element[] channels = readChannelsData(channelsElement, luwrain.getRegistry(), speech);
 	for(Element e: channels)
@@ -61,7 +61,7 @@ class SpeechControlPanelFactory implements Factory
 	if (!(el instanceof ChannelElement))
 	return null;
 	final ChannelElement c = (ChannelElement)el;
-	return speech.getSettingsSection(c.type(), el, c.path());
+	return speech.getSettingsSection(c.type, el, c.path);
     }
 
     private boolean onActionEvent(ControlPanel controlPanel, EnvironmentEvent event)
@@ -71,7 +71,7 @@ class SpeechControlPanelFactory implements Factory
 	if (!ActionEvent.isAction(event, "add-speech-channel"))
 	return false;
 	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final String[] types = "voiceman:command:emacspeak".split(":", -1);
+	final String[] types = luwrain.getLoadedSpeechFactories();
 	Arrays.sort(types);
 	    final Object res = Popups.fixedList(luwrain, luwrain.i18n().getStaticStr("CpAddNewSpeechChannelPopupName"), types);
 	    if (res == null)
@@ -89,7 +89,7 @@ class SpeechControlPanelFactory implements Factory
     static private Element[] readChannelsData(Element parent,
 					      Registry registry, Speech speech)
     {
-	final LinkedList<Element> res = new LinkedList<Element>();
+	final List<Element> res = new LinkedList();
 	final String path = Settings.SPEECH_CHANNELS_PATH;
 	final String[] dirs = registry.getDirectories(path);
 	for(String s: dirs)
@@ -106,11 +106,11 @@ class SpeechControlPanelFactory implements Factory
 
     static private class ChannelElement implements Element
     {
-	private Element parent;
-	private String type, path;
+	final Element parent;
+	final String type;
+	final String path;
 
-	ChannelElement(Element parent,
-		       String type, String path)
+	ChannelElement(Element parent, String type, String path)
 	{
 	    NullCheck.notNull(parent, "parent");
 	    NullCheck.notNull(type, "type");
@@ -142,8 +142,5 @@ class SpeechControlPanelFactory implements Factory
 	{
 	    return toString().hashCode();
 	}
-
-	String type() {return type;}
-	String path() {return path;}
     }
 }

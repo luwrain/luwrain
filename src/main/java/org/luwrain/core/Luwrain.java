@@ -723,6 +723,11 @@ public FilesOperations getFilesOperations()
 	return res.toArray(new org.luwrain.base.MediaResourcePlayer[res.size()]);
     }
 
+    public String[] getLoadedSpeechFactories()
+    {
+	return new String[0];
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");

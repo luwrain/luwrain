@@ -62,8 +62,6 @@ final Interaction interaction;
     void run()
     {
 	init();
-	Log.debug(LOG_COMPONENT, "Total memory:" + (Runtime.getRuntime().totalMemory() / 1024) + "k");
-	Log.debug(LOG_COMPONENT, "Max memory:" + (Runtime.getRuntime().maxMemory() / 1024) + "k");
     org.luwrain.player.Player player = null;	interaction.startInputEventsAccepting(this);
 	windowManager.redraw();
 	playSound(Sounds.STARTUP);//FIXME:

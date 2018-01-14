@@ -107,7 +107,6 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	this.speech = new Speech(cmdLine, registry);
 	this.soundManager = new SoundManager(registry, coreProps);
 	this.mainCoreThread = Thread.currentThread();
-	Log.debug(LOG_COMPONENT, "main core thread is \'" + mainCoreThread.getName() + "\'");
     }
 
     //True means the event is processed and there is no need to process it again;
