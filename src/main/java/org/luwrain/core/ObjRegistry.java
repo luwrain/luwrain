@@ -43,6 +43,9 @@ final class ObjRegistry
 
     private Map<String, Entry<Shortcut>> shortcuts = new HashMap();
     private Map<String, Entry<CommandLineTool>> cmdLineTools = new HashMap();
+
+        private Map<String, Entry<org.luwrain.speech.Factory>> speechFactorie = new HashMap();
+    
     private Map<String, Entry<MediaResourcePlayer>> players = new HashMap();
 
     boolean add(Extension ext, ExtensionObject obj)

@@ -220,7 +220,7 @@ class Speech
     boolean addFactory(Factory factory)
     {
 	NullCheck.notNull(factory, "factory");
-	factories.put(factory.getServedChannelType(), factory);
+	factories.put(factory.getExtObjName(), factory);
 	return true;
     }
 

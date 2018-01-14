@@ -19,9 +19,8 @@ package org.luwrain.speech;
 import org.luwrain.cpanel.Section;
 import org.luwrain.cpanel.Element;
 
-public interface Factory
+public interface Factory extends org.luwrain.base.ExtensionObject
 {
-    String getServedChannelType();
     Channel newChannel();
 Section     newSettingsSection(Element el, String registryPath);
 }

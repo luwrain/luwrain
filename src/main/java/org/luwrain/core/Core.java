@@ -224,7 +224,7 @@ final Interaction interaction;
 	    //speech factories
 	    for(org.luwrain.speech.Factory f: e.speechFactories)
 		if (!speech.addFactory(f))
-		    Log.warning("core", "speech factory \'" + f.getServedChannelType() + "\' of extension " + e.getClass().getName() + " has been refused by  speech core to be registered");
+		    Log.warning("core", "speech factory \'" + f.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  speech core to be registered");
 		}
 
     }
