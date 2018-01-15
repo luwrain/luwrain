@@ -23,7 +23,7 @@ import org.luwrain.speech.*;
 final class Speech
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-
+    
     static final int PITCH_HIGH = 25;
     static final int PITCH_NORMAL = 0;
     static final int PITCH_LOW = -25;
@@ -62,7 +62,7 @@ final class Speech
 	defaultChannel.speak(text, null, relPitch, relRate, true);
     }
 
-        //Always cancels any previous text to speak
+    //Always cancels any previous text to speak
     void speakEventResponse(String text)
     {
 	if (text == null || text.isEmpty())
