@@ -28,46 +28,6 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	boolean continueEventLoop();
     }
 
-    static protected class MainStopCondition implements StopCondition
-    {
-	private boolean shouldContinue = true;//FIXME:No static members
-
-	@Override public boolean continueEventLoop()
-	{
-	    return shouldContinue;
-	}
-
-	void stop()
-	{
-	    shouldContinue = false;
-	}
-    }
-
-    static class PopupStopCondition implements Base.StopCondition
-    {
-	private final StopCondition parentCondition;
-	private final Base.StopCondition popupCondition;
-	private boolean cancelled = false;
-
-	PopupStopCondition(StopCondition parentCondition, StopCondition popupCondition)
-	{
-	    NullCheck.notNull(parentCondition, "parentCondition");
-	    NullCheck.notNull(popupCondition, "popupCondition");
-	    this.parentCondition = parentCondition;
-	    this.popupCondition = popupCondition;
-	}
-
-	@Override public boolean continueEventLoop()
-	{
-	    return !cancelled && parentCondition.continueEventLoop() && popupCondition.continueEventLoop();
-	}
-
-	void cancel()
-	{
-	    cancelled = true;
-	}
-    }
-
     protected final CmdLine cmdLine;
     protected final  Registry registry;
         protected final org.luwrain.base.CoreProperties coreProps;
@@ -76,6 +36,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     private final Thread mainCoreThread;
     final ObjRegistry objRegistry = new ObjRegistry();
     protected final InterfaceManager interfaces = new InterfaceManager();
+    protected final org.luwrain.script.Core script = new org.luwrain.script.Core();
     protected final EventQueue eventQueue = new EventQueue();
     protected final MainStopCondition mainStopCondition = new MainStopCondition();
     private EventResponse eventResponse = null;
@@ -261,4 +222,45 @@ public void playSound(Sounds sound)
 	if (!isMainCoreThread())
 	    throw new RuntimeException("Not in the main thread of LUWRAIN core (current thread is \'" + Thread.currentThread().getName() + "\'");
     }
+
+	    static protected class MainStopCondition implements StopCondition
+    {
+	private boolean shouldContinue = true;//FIXME:No static members
+
+	@Override public boolean continueEventLoop()
+	{
+	    return shouldContinue;
+	}
+
+	void stop()
+	{
+	    shouldContinue = false;
+	}
+    }
+
+    static class PopupStopCondition implements Base.StopCondition
+    {
+	private final StopCondition parentCondition;
+	private final Base.StopCondition popupCondition;
+	private boolean cancelled = false;
+
+	PopupStopCondition(StopCondition parentCondition, StopCondition popupCondition)
+	{
+	    NullCheck.notNull(parentCondition, "parentCondition");
+	    NullCheck.notNull(popupCondition, "popupCondition");
+	    this.parentCondition = parentCondition;
+	    this.popupCondition = popupCondition;
+	}
+
+	@Override public boolean continueEventLoop()
+	{
+	    return !cancelled && parentCondition.continueEventLoop() && popupCondition.continueEventLoop();
+	}
+
+	void cancel()
+	{
+	    cancelled = true;
+	}
+    }
+
 }
