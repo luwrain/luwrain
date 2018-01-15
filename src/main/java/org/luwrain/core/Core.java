@@ -140,7 +140,7 @@ final Interaction interaction;
 	extensions.load((ext)->interfaces.requestNew(ext, this), cmdLine);
 	initI18n();
 	initObjects();
-	if (!speech.init())
+	if (!speech.init(objRegistry.getSpeechFactories()))
 	    Log.warning(LOG_COMPONENT, "unable to initialize speech core, very likely LUWRAIN will be silent");
 	braille.init(registry, os.getBraille(), this);
 	//	globalKeys = new GlobalKeys(registry);
@@ -223,9 +223,8 @@ final Interaction interaction;
 
 	    //speech factories
 	    for(org.luwrain.speech.Factory f: e.speechFactories)
-		if (!speech.addFactory(f))
-		    Log.warning("core", "speech factory \'" + f.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  speech core to be registered");
-		}
+		objRegistry.add(e.ext, f);
+	}
 
     }
 
@@ -717,8 +716,8 @@ onNewAreasLayout();
 
     org.luwrain.cpanel.Factory[] getControlPanelFactories()
     {
-	final LinkedList<org.luwrain.cpanel.Factory> res = new LinkedList<org.luwrain.cpanel.Factory>();
-	res.add(new SpeechControlPanelFactory(getObjForEnvironment(), speech));
+	final List<org.luwrain.cpanel.Factory> res = new LinkedList();
+	res.add(new SpeechControlPanelFactory(getObjForEnvironment(), objRegistry, speech));
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
 	    if (e.controlPanelFactories != null)

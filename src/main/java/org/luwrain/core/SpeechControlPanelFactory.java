@@ -27,13 +27,16 @@ class SpeechControlPanelFactory implements Factory
     static private final Element channelsElement = new SimpleElement(StandardElements.SPEECH, SpeechControlPanelFactory.class.getName());
 
     private final Luwrain luwrain;
+    private final ObjRegistry objRegistry;
     private final Speech speech;
 
-    SpeechControlPanelFactory(Luwrain luwrain, Speech speech)
+    SpeechControlPanelFactory(Luwrain luwrain, ObjRegistry objRegistry, Speech speech)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(objRegistry, "objRegistry");
 	NullCheck.notNull(speech, "speech");
 	this.luwrain = luwrain;
+	this.objRegistry = objRegistry;
 	this.speech = speech;
     }
 
@@ -61,7 +64,7 @@ class SpeechControlPanelFactory implements Factory
 	if (!(el instanceof ChannelElement))
 	return null;
 	final ChannelElement c = (ChannelElement)el;
-	return speech.getSettingsSection(c.type, el, c.path);
+	return objRegistry.getSpeechChannelSettingsSection(c.type, el, c.path);
     }
 
     private boolean onActionEvent(ControlPanel controlPanel, EnvironmentEvent event)
@@ -86,7 +89,7 @@ class SpeechControlPanelFactory implements Factory
 	    return true;
     }
 
-    static private Element[] readChannelsData(Element parent,
+private Element[] readChannelsData(Element parent,
 					      Registry registry, Speech speech)
     {
 	final List<Element> res = new LinkedList();
@@ -97,7 +100,7 @@ class SpeechControlPanelFactory implements Factory
 	    final String dir = Registry.join(path, s);
 	    final Settings.SpeechChannelBase channelBase = Settings.createSpeechChannelBase(registry, dir);
 	    final String type = channelBase.getType("");
-	    if (type.isEmpty() || !speech.hasFactoryForType(type))
+	    if (type.isEmpty() || !objRegistry.hasSpeechFactory(type))
 		continue;
 	    res.add(new ChannelElement(parent, type, dir));
 	}
