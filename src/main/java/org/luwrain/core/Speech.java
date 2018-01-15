@@ -22,6 +22,8 @@ import org.luwrain.speech.*;
 
 final class Speech
 {
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
+
     static final int PITCH_HIGH = 25;
     static final int PITCH_NORMAL = 0;
     static final int PITCH_LOW = -25;
@@ -131,7 +133,7 @@ final class Speech
     Channel[] getChannelsByCond(Set<Channel.Features> cond)
     {
 	NullCheck.notNull(cond, "cond");
-	final LinkedList<Channel> res = new LinkedList<Channel>();
+	final List<Channel> res = new LinkedList();
 	for(Map.Entry<String, Channel> e: channels.entrySet())
 	    if (e.getValue() != defaultChannel && e.getValue().getFeatures().containsAll(cond))
 		res.add(e.getValue());
@@ -148,7 +150,7 @@ final class Speech
 
     Channel[] getAllChannels()
     {
-	final LinkedList<Channel> res = new LinkedList<Channel>();
+	final List<Channel> res = new LinkedList<Channel>();
 	for(Map.Entry<String, Channel> e: channels.entrySet())
 	    res.add(e.getValue());
 	return res.toArray(new Channel[res.size()]);
@@ -169,7 +171,7 @@ final class Speech
 	    final Channel main = loadChannelByStr(speechArg, factories);
 	    if (main == null)
 	    {
-		Log.error("core", "unable to initialize default speech channel with arguments line \'" + speechArg + "\'");
+		Log.error(LOG_COMPONENT, "unable to initialize default speech channel with arguments line \'" + speechArg + "\'");
 		return false;
 	    }
 	    channels.put(main.getChannelName(), main);
@@ -183,7 +185,7 @@ final class Speech
 		    final String name = c.getChannelName();
 		    if (channels.containsKey(name))
 		    {
-			Log.error("core", "speech channel name \'" + name + "\' used more than ones");
+			Log.error(LOG_COMPONENT, "speech channel name \'" + name + "\' used more than ones");
 			return false;
 		    }
 		    channels.put(name, c);
@@ -196,11 +198,11 @@ final class Speech
 	    loadRegistryChannels(factories);
 	    if (!chooseDefaultChannel())
 	    {
-		Log.error("core", "unable to choose the default speech channel");
+		Log.error(LOG_COMPONENT, "unable to choose the default speech channel");
 		return false;
 	    }
 	}
-	Log.debug("core", "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
+	Log.debug(LOG_COMPONENT, "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
 	pitch = settings.getPitch(50);
 	rate = settings.getRate(50);
 	if (pitch < 0)
@@ -229,39 +231,39 @@ final class Speech
 	    final String type = channelBase.getType("");
 	    if (type.isEmpty())
 	    {
-		Log.error("core", "no type information in " + dir);
+		Log.error(LOG_COMPONENT, "no type information in " + dir);
 		continue;
 	    }
 	    if (!hasFactory(factories, type))
 	    {
-		Log.error("core", "no speech factory which is able to servc speech channels of type \'" + type + "\'");
+		Log.error(LOG_COMPONENT, "no speech factory which is able to servc speech channels of type \'" + type + "\'");
 		continue;
 	    }
 	    final Factory factory = findFactory(factories, type);
 	    final Channel channel = factory.newChannel();
 	    if (channel == null)
 	    {
-		Log.error("core", "speech factory of type \'" + type + "\' is unable to create a channel instance");
+		Log.error(LOG_COMPONENT, "speech factory of type \'" + type + "\' is unable to create a channel instance");
 		continue;
 	    }
 	    if (!channel.initByRegistry(registry, dir))
 	    {
-		Log.error("core", "speech channel " + channel.getClass().getName() + " unable to initialize by registry data in " + dir);
+		Log.error(LOG_COMPONENT, "speech channel " + channel.getClass().getName() + " unable to initialize by registry data in " + dir);
 		continue;
 	    }
 	    final String name = channel.getChannelName();
 	    if (name.isEmpty())
 	    {
-		Log.error("core", "no speech channel name in " + dir);
+		Log.error(LOG_COMPONENT, "no speech channel name in " + dir);
 		continue;
 	    }
 	    if (channels.containsKey(name))
 	    {
-		Log.error("core", "speech channels name \'" + name + " used more than ones, using only the first");
+		Log.error(LOG_COMPONENT, "speech channels name \'" + name + " used more than ones, using only the first");
 		continue;
 	    }
 	    channels.put(channel.getChannelName(), channel);
-	    Log.debug("core", "the registry speech channel " + name + "(" + dir + ") successfully loaded");
+	    Log.debug(LOG_COMPONENT, "the registry speech channel " + name + "(" + dir + ") successfully loaded");
 	}
     }
 
@@ -270,30 +272,30 @@ final class Speech
 	NullCheck.notNullItems(factories, "factories");
 	if (arg.isEmpty())
 	{
-	    Log.warning("core", "an empty value of speech channel arguments in command line option, skipping");
+	    Log.warning(LOG_COMPONENT, "an empty value of speech channel arguments in command line option, skipping");
 	    return null;
 	}
 	final String[] params = arg.split(":", -1);
 	final String type = params[0];
 	if (!hasFactory(factories, type))
 	{
-	    Log.error("core", "no speech factory to serve channel type \'" + type + "\'");
+	    Log.error(LOG_COMPONENT, "no speech factory to serve channel type \'" + type + "\'");
 	}
 	final Factory factory = findFactory(factories, type);
 	final Channel res = factory.newChannel();
 	if (res == null)
 	{
-	    Log.error("core", "the factory is unable to load new speech channel of type \'" + type + "\'");
+	    Log.error(LOG_COMPONENT, "the factory is unable to load new speech channel of type \'" + type + "\'");
 	    return null;
 	}
 	if (!res.initByArgs(params.length <= 1?new String[0]:Arrays.copyOfRange(params, 1, params.length)))
 	{
-	    Log.error("core", "newly created channel of type \'" + type + "\' refuses to initialize, complete arguments line is \'" + arg + "\'");
+	    Log.error(LOG_COMPONENT, "newly created channel of type \'" + type + "\' refuses to initialize, complete arguments line is \'" + arg + "\'");
 	    return null;
 	}
 	if (res.getChannelName().isEmpty())
 	{
-	    Log.error("core", "newly created channel of type \'" + type + "\' has an empty name");
+	    Log.error(LOG_COMPONENT, "newly created channel of type \'" + type + "\' has an empty name");
 	    return null;
 	}
 	return res;
@@ -316,7 +318,7 @@ final class Speech
 	}
 	if (any == null)
 	{
-	    Log.error("core", "unable to select a default speech channel capable of synthesizing to speakers");
+	    Log.error(LOG_COMPONENT, "unable to select a default speech channel capable of synthesizing to speakers");
 	    return false;
 	}
 	defaultChannel = any;

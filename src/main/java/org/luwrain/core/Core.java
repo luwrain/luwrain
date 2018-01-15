@@ -717,7 +717,7 @@ onNewAreasLayout();
     org.luwrain.cpanel.Factory[] getControlPanelFactories()
     {
 	final List<org.luwrain.cpanel.Factory> res = new LinkedList();
-	res.add(new SpeechControlPanelFactory(getObjForEnvironment(), objRegistry, speech));
+	res.add(new SpeechControlPanelFactory(getObjForEnvironment(), objRegistry));
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
 	    if (e.controlPanelFactories != null)

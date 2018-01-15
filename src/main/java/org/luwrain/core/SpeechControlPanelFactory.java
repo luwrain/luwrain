@@ -28,23 +28,20 @@ class SpeechControlPanelFactory implements Factory
 
     private final Luwrain luwrain;
     private final ObjRegistry objRegistry;
-    private final Speech speech;
 
-    SpeechControlPanelFactory(Luwrain luwrain, ObjRegistry objRegistry, Speech speech)
+    SpeechControlPanelFactory(Luwrain luwrain, ObjRegistry objRegistry)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(objRegistry, "objRegistry");
-	NullCheck.notNull(speech, "speech");
 	this.luwrain = luwrain;
 	this.objRegistry = objRegistry;
-	this.speech = speech;
     }
 
     @Override public Element[] getElements()
     {
 	final List<Element> res = new LinkedList();
 	res.add(channelsElement);
-	final Element[] channels = readChannelsData(channelsElement, luwrain.getRegistry(), speech);
+	final Element[] channels = readChannelsData(channelsElement);
 	for(Element e: channels)
 	    res.add(e);
 	return res.toArray(new Element[res.size()]);
@@ -89,15 +86,14 @@ class SpeechControlPanelFactory implements Factory
 	    return true;
     }
 
-private Element[] readChannelsData(Element parent,
-					      Registry registry, Speech speech)
+private Element[] readChannelsData(Element parent)
     {
+	final Registry registry = luwrain.getRegistry();
 	final List<Element> res = new LinkedList();
-	final String path = Settings.SPEECH_CHANNELS_PATH;
-	final String[] dirs = registry.getDirectories(path);
-	for(String s: dirs)
+	registry.addDirectory(Settings.SPEECH_CHANNELS_PATH);
+	for(String s: registry.getDirectories(Settings.SPEECH_CHANNELS_PATH))
 	{
-	    final String dir = Registry.join(path, s);
+	    final String dir = Registry.join(Settings.SPEECH_CHANNELS_PATH, s);
 	    final Settings.SpeechChannelBase channelBase = Settings.createSpeechChannelBase(registry, dir);
 	    final String type = channelBase.getType("");
 	    if (type.isEmpty() || !objRegistry.hasSpeechFactory(type))
