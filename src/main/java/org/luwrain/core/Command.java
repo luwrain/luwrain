@@ -26,7 +26,7 @@ package org.luwrain.core;
  *
  * @see Shortcut
  */
-public interface Command extends ExportedObject
+public interface Command
 {
     String getName();
     void onCommand(Luwrain luwrain);
