@@ -18,7 +18,7 @@ package org.luwrain.shell;
 
 import java.util.*;
 
-import org.luwrain.base.*;
+import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 import org.luwrain.popups.*;
 
@@ -88,7 +88,7 @@ public class PartitionsPopupControl implements PartitionsPopup.Control
         static private class PartWrapper implements PartitionsPopup.Partition
     {
 	private final Luwrain luwrain;
-	private final org.luwrain.base.Partition part;
+	private final org.luwrain.base.hardware.Partition part;
 
 	PartWrapper(Luwrain luwrain, Partition part)
 	{

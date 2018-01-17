@@ -21,7 +21,7 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.base.Partition;
+import org.luwrain.base.hardware.*;
 
 public class Popups
 {

@@ -18,7 +18,7 @@ package org.luwrain.settings;
 
 import java.util.*;
 
-import org.luwrain.base.Hardware;
+import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
 
@@ -85,7 +85,7 @@ public class StandardFactory implements Factory
 	if (parent.equals(hardwareSysDevices))
 	{
 	    final List<Element> res = new LinkedList<Element>();
-	    for(org.luwrain.base.SysDevice device: hardware.getSysDevices())
+	    for(org.luwrain.base.hardware.SysDevice device: hardware.getSysDevices())
 		res.add(new HardwareSysDevice.Element(parent, device ));
 	    return res.toArray(new Element[res.size()]);
 	}

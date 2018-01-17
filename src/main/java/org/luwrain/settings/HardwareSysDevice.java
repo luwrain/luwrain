@@ -16,7 +16,7 @@
 
 package org.luwrain.settings;
 
-import org.luwrain.base.SysDevice;
+import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;

@@ -31,6 +31,5 @@ public interface Extension
     void i18nExtension(Luwrain luwrain, I18nExtension i18nExt);
     org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain);
     UniRefProc[] getUniRefProcs(Luwrain luwrain);
-    org.luwrain.speech.Factory[] getSpeechFactories(Luwrain luwrain);
     void close();
 }

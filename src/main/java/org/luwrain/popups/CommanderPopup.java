@@ -150,7 +150,7 @@ setLoadingResultHandler((location, data, selectedIndex, announce)->{
 
     protected void openMountedPartitions()
     {
-	final org.luwrain.base.Partition part = Popups.mountedPartitions(luwrain, popupFlags);
+	final org.luwrain.base.hardware.Partition part = Popups.mountedPartitions(luwrain, popupFlags);
 	if (part == null)
 	    return;
 	open(part.getPartFile(), null);

@@ -220,12 +220,7 @@ final Interaction interaction;
 		    if (!commands.add(e.luwrain, c))
 			Log.warning("core", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
 		}
-
-	    //speech factories
-	    for(org.luwrain.speech.Factory f: e.speechFactories)
-		objRegistry.add(e.ext, f);
 	}
-
     }
 
     private void initI18n()
@@ -707,11 +702,6 @@ onNewAreasLayout();
     boolean openUniRefIface(String uniRef)
     {
 	return uniRefProcs.open(uniRef);
-    }
-
-    Hardware getHardware()
-    {
-	return os.getHardware();
     }
 
     org.luwrain.cpanel.Factory[] getControlPanelFactories()

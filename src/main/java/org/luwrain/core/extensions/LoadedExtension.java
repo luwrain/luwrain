@@ -29,5 +29,4 @@ public class LoadedExtension
     public UniRefProc[] uniRefProcs;
     public Worker[] workers;
     public org.luwrain.cpanel.Factory[] controlPanelFactories;
-    public org.luwrain.speech.Factory[] speechFactories;
 }

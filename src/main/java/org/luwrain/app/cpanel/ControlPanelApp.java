@@ -18,7 +18,7 @@ package org.luwrain.app.cpanel;
 
 import java.util.*;
 
-import org.luwrain.base.Hardware;
+import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
