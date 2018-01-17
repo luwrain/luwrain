@@ -95,6 +95,8 @@ public final class RegistryExtractor
 
     private void saveLines() throws IOException
     {
+		if (currentDir == null || currentFile == null)
+	    return;
 	final BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile, true));
 	try {
 	    for(String s: lines)
