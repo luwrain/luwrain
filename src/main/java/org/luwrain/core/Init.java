@@ -36,19 +36,12 @@ import org.luwrain.core.init.*;
 public class Init implements org.luwrain.base.CoreProperties
 {
     static private final String LOG_COMPONENT = "init";
-
+    static private final String GREETING = "LUWRAIN (see http://luwrain.org/doc/legal/ for legal notes)";
     static private final File DEBUG_FILE = new File(new File(System.getProperty("user.home")), "luwrain-debug.txt");
 
-    static private final String  PREFIX_PKG_LAUNCH = "--pkg-launch";
-    static private final String  PREFIX_DATA_DIR = "--data-dir=";
-    static private final String  PREFIX_USER_HOME_DIR = "--user-home-dir=";
-    static private final String  PREFIX_USER_DATA_DIR = "--user-data-dir=";
-    static private final String  PREFIX_LANG= "--lang=";
-
-    //    static private final String ENV_APP_DATA = "APPDATA";
-    //    static private final String ENV_USER_PROFILE = "USERPROFILE";
-    //    static private final String DEFAULT_USER_DATA_DIR_WINDOWS = "Luwrain";
-    //    static private final String DEFAULT_USER_DATA_DIR_LINUX = ".luwrain";
+    static private final String  CMDARG_HELP = "--help";
+    static private final String  CMDARG_PRINT_LANG = "--print-lang";
+    static private final String  CMDARG_PRINT_DIRS = "--print-dirs";
 
     private final CmdLine cmdLine;
     private final CoreProperties coreProps = new CoreProperties();
@@ -61,8 +54,7 @@ public class Init implements org.luwrain.base.CoreProperties
     private org.luwrain.base.Interaction interaction;
     private OperatingSystem os;
 
-    private Init(String[] cmdLine, String lang,
-		 File dataDir, File userDataDir)
+    private Init(String[] cmdLine, String lang, File dataDir, File userDataDir)
     {
 	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notEmpty(lang, "lang");
@@ -235,9 +227,33 @@ public class Init implements org.luwrain.base.CoreProperties
     private void start()
     {
 	try {
-	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
-	    final boolean initRes = init();
-	    if (initRes)
+
+	    if (cmdLine.used(CMDARG_HELP))
+	    {
+		System.out.println("Valid command line arguments are:");
+		System.out.println(CMDARG_HELP + " - print this help info and exit");
+		System.out.println(CMDARG_PRINT_LANG + " - print the chosen language and exit");
+		System.out.println(CMDARG_PRINT_DIRS + " - print the detected values of the system directories and exit");
+		System.exit(0);
+	    }
+
+	    if (cmdLine.used(CMDARG_PRINT_LANG))
+	    {
+		System.out.println("Chosen language: " + lang);
+		System.exit(0);
+	    }
+
+	    	    if (cmdLine.used(CMDARG_PRINT_DIRS))
+	    {
+		System.out.println("Data: " + dataDir.getAbsolutePath());
+				System.out.println("User profile: " + userDataDir.getAbsolutePath());
+								System.out.println("User home: " + userHomeDir.getAbsolutePath());
+														System.exit(0);
+	    }
+
+		    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
+		    final boolean initRes = init();
+		    if (initRes)
 		new Core(
 				cmdLine, registry, os, interaction, 
 				this, //core properties
@@ -273,14 +289,13 @@ public class Init implements org.luwrain.base.CoreProperties
 	    System.setErr(log);
 	} else
 	    Log.enableBriefMode();
-	System.out.println("LUWRAIN (see http://luwrain.org/doc/legal/ for legal notes)");
+	System.out.println(GREETING);
 	System.out.println();
 	setUtf8();
 	addJarsToClassPath("jar");
 	addJarsToClassPath("lib");
 
-		final File userDataDir = Checks.detectUserDataDir();
-		
+	final File userDataDir = Checks.detectUserDataDir();
 	if (userDataDir == null)
 	    System.exit(1);
 	new Init(args, "ru", new File("data"), userDataDir).start();//FIXME:lang
@@ -318,3 +333,4 @@ public class Init implements org.luwrain.base.CoreProperties
 	}
     }
 }
+
