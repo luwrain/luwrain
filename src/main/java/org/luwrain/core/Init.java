@@ -42,6 +42,7 @@ public class Init implements org.luwrain.base.CoreProperties
     static private final String  CMDARG_HELP = "--help";
     static private final String  CMDARG_PRINT_LANG = "--print-lang";
     static private final String  CMDARG_PRINT_DIRS = "--print-dirs";
+        static private final String  CMDARG_CREATE_PROFILE_IN = "--create-profile-in=";
 
     private final CmdLine cmdLine;
     private final CoreProperties coreProps = new CoreProperties();
@@ -230,7 +231,7 @@ public class Init implements org.luwrain.base.CoreProperties
 
 	    if (cmdLine.used(CMDARG_HELP))
 	    {
-		System.out.println("Valid command line arguments are:");
+		System.out.println("Valid command line options are:");
 		System.out.println(CMDARG_HELP + " - print this help info and exit");
 		System.out.println(CMDARG_PRINT_LANG + " - print the chosen language and exit");
 		System.out.println(CMDARG_PRINT_DIRS + " - print the detected values of the system directories and exit");
@@ -250,6 +251,25 @@ public class Init implements org.luwrain.base.CoreProperties
 								System.out.println("User home: " + userHomeDir.getAbsolutePath());
 														System.exit(0);
 	    }
+
+		    if (cmdLine.getArgs(CMDARG_CREATE_PROFILE_IN).length > 0)
+		    {
+			final String[] destDirs = cmdLine.getArgs((CMDARG_CREATE_PROFILE_IN));
+			try {
+			    for(String d: destDirs)
+			    {
+				final File destDir = new File(d);
+				System.out.println("Creating user profile in " + destDir.getAbsolutePath());
+				UserProfile.createUserProfile(dataDir, destDir, lang);
+			    }
+			    System.exit(0);
+			}
+			catch(IOException e)
+			{
+			    System.err.println("ERROR: " + e.getClass().getName() + ":" + e.getMessage());
+			    System.exit(1);
+			}
+		    }
 
 		    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
 		    final boolean initRes = init();

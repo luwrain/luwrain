@@ -21,7 +21,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
-public final class RegistryExtractor
+final class RegistryExtractor
 {
     static private final String DIR_PREFIX = "DIR ";
     static private final String FILE_PREFIX = "FILE ";
@@ -32,13 +32,13 @@ public final class RegistryExtractor
     private File currentFile = null;
     private final List<String> lines = new LinkedList();
 
-    public RegistryExtractor(File destDir)
+    RegistryExtractor(File destDir)
     {
 	NullCheck.notNull(destDir, "destDir");
 	this.destDir = destDir;
     }
 
-    public void extract(InputStream is) throws IOException
+    void extract(InputStream is) throws IOException
     {
 	NullCheck.notNull(is, "is");
 	final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -47,9 +47,12 @@ public final class RegistryExtractor
 	{
 	    line = line.trim();
 	    if (line.isEmpty() || line.charAt(0) == '#')
+	    {
+		line = reader.readLine();
 		continue;
+	    }
 	    if (line.startsWith(DIR_PREFIX))
-		onDir(line.substring(DIR_PREFIX.length()).trim());
+		onDir(line.substring(DIR_PREFIX.length()).trim()); else
 	    if (line.startsWith(FILE_PREFIX))
 		onFile(line.substring(FILE_PREFIX.length()).trim()); else
 		onValue(line);
@@ -100,8 +103,10 @@ public final class RegistryExtractor
 	final BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile, true));
 	try {
 	    for(String s: lines)
+	    {
 		writer.write(s);
-	    writer.newLine();
+		writer.newLine();
+	    }
 	}
 	finally {
 	    writer.close();
