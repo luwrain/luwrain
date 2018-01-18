@@ -18,6 +18,8 @@ package org.luwrain.core.init;
 
 import java.io.*;
 
+import org.luwrain.core.*;
+
 public class Checks
 {
     static private final String ENV_APP_DATA = "APPDATA";
@@ -27,6 +29,7 @@ public class Checks
 
     static public File detectUserDataDir()
     {
+	//Windows: in Application Data
 	if(System.getenv().containsKey(ENV_APP_DATA) && !System.getenv().get(ENV_APP_DATA).trim().isEmpty())
 	{
 	    final File appData = new File(System.getenv().get(ENV_APP_DATA));
@@ -37,8 +40,17 @@ public class Checks
 	    final File userProfile = new File(System.getenv().get(ENV_USER_PROFILE));
 	    return new File(new File(new File(userProfile, "Local Settings"), "Application Data"), DEFAULT_USER_DATA_DIR_WINDOWS);
 	}
+	
 	//We are likely on Linux
 	final File f = new File(System.getProperty("user.home"));
 	return new File(f, DEFAULT_USER_DATA_DIR_LINUX);
+    }
+
+    static public boolean isProfileInstalled(File userDataDir)
+    {
+	NullCheck.notNull(userDataDir, "userDataDir");
+	//Checking only if the directory for the registry exists
+	final File registryDir = new File("registry");
+	return registryDir.exists() && registryDir.isDirectory();
     }
 }
