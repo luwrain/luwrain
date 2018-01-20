@@ -25,8 +25,17 @@ public class Core
 {
     static private final String LOG_COMPONENT = "script";
 
-    public org.luwrain.core.extensions.DynamicExtension exec(String text)
+    private final InterfaceManager interfaces;
+
+    public Core(InterfaceManager interfaces)
     {
+	NullCheck.notNull(interfaces, "interfaces");
+	this.interfaces = interfaces;
+    }
+
+    public org.luwrain.core.extensions.DynamicExtension exec(Luwrain luwrain, String text)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(text, "text");
 	final ScriptExtension ext = new ScriptExtension("fixme", new Instance());
 	return ext;

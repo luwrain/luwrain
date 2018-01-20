@@ -134,10 +134,10 @@ final Interaction interaction;
 
     private void init()
     {
-	desktop.onLaunchApp(interfaces.requestNew(desktop, this));
+	desktop.onLaunchApp(interfaces.requestNew(desktop));
 	desktop.setConversations(conversations);
 	apps.setDefaultApp(desktop);
-	extensions.load((ext)->interfaces.requestNew(ext, this), cmdLine);
+	extensions.load((ext)->interfaces.requestNew(ext), cmdLine);
 	initI18n();
 	initObjects();
 	if (!speech.init(objRegistry.getSpeechFactories()))
@@ -295,7 +295,7 @@ final Interaction interaction;
 		    }
 		}
 	}
-	final Luwrain o = interfaces.requestNew(app, this);
+	final Luwrain o = interfaces.requestNew(app);
 	final InitResult initResult;
 	try {
 	    initResult = app.onLaunchApp(o);
@@ -347,7 +347,7 @@ final Interaction interaction;
 	NullCheck.notNull(e, "e");
 	System.gc();
 	final org.luwrain.app.crash.CrashApp crashApp = new org.luwrain.app.crash.CrashApp(app, e);
-	final Luwrain o = interfaces.requestNew(crashApp, this);
+	final Luwrain o = interfaces.requestNew(crashApp);
 	final InitResult initResult;
 	try {
 	    initResult = crashApp.onLaunchApp(o);
