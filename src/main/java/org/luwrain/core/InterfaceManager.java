@@ -25,12 +25,13 @@ public final class InterfaceManager
 {
     private final Core core;
     private final List<Entry> entries = new Vector();
-        private Luwrain objForEnvironment = null;
+    final Luwrain objForEnvironment;
 
     InterfaceManager(Base base)
     {
 	NullCheck.notNull(base, "base");
 	this.core = (Core)base;
+	this.objForEnvironment = new Luwrain(core);
     }
 
     Luwrain requestNew(Application app)
@@ -97,20 +98,7 @@ public void release(Luwrain luwrain)
 	    }
     }
 
-    void createObjForEnvironment(Core core)
-    {
-	NullCheck.notNull(core, "core");
-	if (objForEnvironment != null)
-	    return;
-	objForEnvironment = new Luwrain(core);
-    }
-
-    Luwrain getObjForEnvironment()
-    {
-	return objForEnvironment;
-    }
-
-    //returns true if it is object for environemnt or an extension instance
+    //returns true if it is object for the core or an extension instance
     boolean isSuitsForEnvironmentPopup(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");

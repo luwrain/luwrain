@@ -55,7 +55,6 @@ final Interaction interaction;
 	NullCheck.notNull(interaction, "interaction");
 	this.os = os;
 	this.interaction = interaction;
-	this.interfaces.createObjForEnvironment(this);
 	this.conversations = new org.luwrain.shell.Conversations(getObjForEnvironment());
     }
 
@@ -377,7 +376,7 @@ final Interaction interaction;
     {
 	NullCheck.notNull(instance, "instance");
 	mainCoreThreadOnly();
-	if (instance == interfaces.getObjForEnvironment())
+	if (instance == getObjForEnvironment())
 	    throw new IllegalArgumentException("Trying to close an application through the special interface object designed for environment operations");
 	final Application app = interfaces.findApp(instance);
 	if (app == null)

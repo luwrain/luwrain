@@ -107,10 +107,5 @@ abstract class EnvironmentAreas extends Base
 	return false;
     }
 
-    public Luwrain getObjForEnvironment()
-    {
-	return interfaces.getObjForEnvironment();
-    }
-
     abstract Area getValidActiveArea(boolean speakMessages);
 }

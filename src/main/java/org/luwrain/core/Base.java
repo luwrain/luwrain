@@ -75,7 +75,6 @@ abstract class Base implements org.luwrain.base.EventConsumer
         abstract protected void processEventResponse(EventResponse eventResponse);
         abstract void message(String text, Luwrain.MessageType messageType);
     abstract protected void introduce(StopCondition stopCondition);
-    abstract public Luwrain getObjForEnvironment();
 
 
     protected void eventLoop(StopCondition stopCondition)
@@ -221,6 +220,11 @@ public void playSound(Sounds sound)
     {
 	if (!isMainCoreThread())
 	    throw new RuntimeException("Not in the main thread of LUWRAIN core (current thread is \'" + Thread.currentThread().getName() + "\'");
+    }
+
+    public Luwrain getObjForEnvironment()
+    {
+	return interfaces.objForEnvironment;
     }
 
 	    static protected class MainStopCondition implements StopCondition
