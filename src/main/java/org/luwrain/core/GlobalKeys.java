@@ -19,58 +19,46 @@ package org.luwrain.core;
 import java.util.*;
 import org.luwrain.core.events.*;
 
-class GlobalKeys
+final class GlobalKeys
 {
-    class Item
+    private final List<Item> items = new Vector();
+    private final Registry registry;
+
+    GlobalKeys(Registry registry)
     {
-	public KeyboardEvent event;
-	public String actionName;
-
-	public Item(KeyboardEvent event, String actionName)
-	{
-	    this.event = event;
-	    this.actionName = actionName;
-	}
-    }
-
-    private Vector<Item> items = new Vector<Item>();
-    private Registry registry;
-
-    public GlobalKeys(Registry registry)
-    {
+	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
     }
 
-    public String getCommandName(KeyboardEvent event )
+    String getCommandName(KeyboardEvent event )
     {
-	if (event == null)
-	    return null;
+	NullCheck.notNull(event, "event");
 	for(int i = 0;i < items.size();i++)
 	{
-	    Item item = items.get(i);
+	    final Item item = items.get(i);
 	    if (item.event.equals(event))
 		return item.actionName;
 	}
 	return null;
     }
 
-    public void loadFromRegistry()
+    void loadFromRegistry()
     {
 	final String globalKeysDir = Settings.GLOBAL_KEYS_PATH;
 	String[] dirs = registry.getDirectories(Settings.GLOBAL_KEYS_PATH);
 	if (dirs != null)
 	    for(String s: dirs)
 	    {
-		KeyboardEvent event = getKeyboardEventFromRegistry(globalKeysDir + "/" + s);
+		final KeyboardEvent event = getKeyboardEventFromRegistry(globalKeysDir + "/" + s);
 		if (event != null)
 		    addMapping(event, s.trim());
 	    }
     }
 
-    public void addMapping(KeyboardEvent event, String actionName)
+    private void addMapping(KeyboardEvent event, String actionName)
     {
-	if (event == null || actionName == null)
-	    return;
+	NullCheck.notNull(event, "event");
+	NullCheck.notNull(actionName, "actionName");
 	if (getCommandName(event) != null)
 	    return;
 	items.add(new Item(event, actionName));
@@ -105,5 +93,19 @@ class GlobalKeys
 	final boolean withShift = proxy.getWithShift(false);
 	final boolean withAlt = proxy.getWithAlt(false);
 	return new KeyboardEvent(special != null, special, c, withShift, withControl, withAlt); 
+    }
+
+    static private class Item
+    {
+	final KeyboardEvent event;
+	final String actionName;
+
+	Item(KeyboardEvent event, String actionName)
+	{
+	    NullCheck.notNull(event, "event");
+	    NullCheck.notNull(actionName, "actionName");
+	    this.event = event;
+	    this.actionName = actionName;
+	}
     }
 }
