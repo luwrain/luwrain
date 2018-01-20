@@ -111,8 +111,7 @@ public class Manager
 		interfaces.release(iface);
 		continue;
 	    }
-	    final LoadedExtension loadedExt = new LoadedExtension();
-	    loadedExt.ext = ext;
+	    final LoadedExtension loadedExt = new LoadedExtension(ext);
 	    loadedExt.luwrain = iface;
 	    loadedExt.commands = getCommands(ext, iface);
 	    loadedExt.shortcuts = getShortcuts(ext, iface);

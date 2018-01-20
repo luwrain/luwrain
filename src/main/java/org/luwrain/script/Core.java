@@ -24,23 +24,11 @@ import org.luwrain.core.*;
 public class Core
 {
     static private final String LOG_COMPONENT = "script";
-    
-    private final ScriptEngine engine;
 
-    public Core()
+    public org.luwrain.core.extensions.DynamicExtension exec(String text)
     {
-	final ScriptEngine res;
-	try {
-	    ScriptEngineManager manager = new ScriptEngineManager();
-	    res = manager.getEngineByName("nashorn");
-	    	    Log.debug(LOG_COMPONENT, "the script core initialized");
-	}
-	catch(Exception e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to init the script core:" + e.getClass().getName() + ":" + e.getMessage());
-	    engine = null;
-	    return;
-	}
-	engine = res;
+	NullCheck.notNull(text, "text");
+	final ScriptExtension ext = new ScriptExtension("fixme", new Instance());
+	return ext;
     }
 }

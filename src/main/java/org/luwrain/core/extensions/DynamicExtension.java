@@ -14,25 +14,10 @@
    General Public License for more details.
 */
 
+//LWR_API 1.0
+
 package org.luwrain.core.extensions;
 
-import org.luwrain.base.*;
-import org.luwrain.core.*;
-
-public final class LoadedExtension
+public interface DynamicExtension extends Extension
 {
-    public final Extension ext;
-    public Luwrain luwrain;
-    public Command[] commands;
-    public Shortcut[] shortcuts;
-    public ExtensionObject[] extObjects;
-    public UniRefProc[] uniRefProcs;
-    public Worker[] workers;
-    public org.luwrain.cpanel.Factory[] controlPanelFactories;
-
-    LoadedExtension(Extension ext)
-    {
-	NullCheck.notNull(ext, "ext");
-	this.ext = ext;
-    }
 }
