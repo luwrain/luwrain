@@ -17,7 +17,6 @@
 package org.luwrain.core;
 
 import java.util.*;
-import java.util.concurrent.*;
 import java.io.*;
 import java.net.*;
 import javax.sound.sampled.*;
@@ -27,12 +26,12 @@ import org.luwrain.base.*;
 final class WavePlayers
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-    
+
     static class Simple implements Runnable
     {
 	private final String fileName;
 	private final int volumePercent;
-	private boolean interruptPlayback = false;
+	private volatile boolean interruptPlayback = false;
 	boolean finished = false;
 	private SourceDataLine audioLine = null;
 
@@ -104,10 +103,9 @@ final class WavePlayers
 
     static private final class PlayerInstance implements MediaResourcePlayer.Instance
     {
-	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private final MediaResourcePlayer.Listener listener;
 	private SourceDataLine line = null;
-	private boolean interruptPlayback = false;
+	private volatile boolean interruptPlayback = false;
 
 	PlayerInstance(MediaResourcePlayer.Listener listener)
 	{
@@ -135,11 +133,11 @@ final class WavePlayers
 		return new MediaResourcePlayer.Result(MediaResourcePlayer.Result.Type.INACCESSIBLE_SOURCE);
 	    }
 	    final AudioFormat format=audioInputStream.getFormat();
-	    final FutureTask task = new FutureTask(()->{
+	    new Thread(()->{
 		    try {
 			try {
 			    final DataLine.Info info=new DataLine.Info(SourceDataLine.class,format);
-			    line = (SourceDataLine)AudioSystem.getLine(info);
+			    PlayerInstance.this.line = (SourceDataLine)AudioSystem.getLine(info);
 			    // FloatControl volume=(FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN); 
 				line.open(format);
 				line.start();
@@ -156,7 +154,7 @@ final class WavePlayers
 			    while(bytesRead != -1 && !interruptPlayback)
 			    {
 				bytesRead = audioInputStream.read(buf, 0, buf.length);
-				if(bytesRead > 0)
+				if(bytesRead > 0 && !interruptPlayback)
 					line.write(buf, 0, bytesRead);
 					totalBytes += bytesRead;
 					final long currentMsec = bytesToMsec(format, totalBytes);
@@ -171,6 +169,7 @@ final class WavePlayers
 			    return;
 			}
 			finally {
+			    audioInputStream.close();
 			    synchronized(PlayerInstance.this) {
 				if(line != null)
 				    line.close();
@@ -183,18 +182,17 @@ final class WavePlayers
 			Log.error(LOG_COMPONENT, "unable to continue playing of " + url.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
 			listener.onPlayerError(e);
 		    }
-		}, null);
-	    executor.execute(task);
+	    }).start();
 	    return new MediaResourcePlayer.Result();
 	}
 
 	@Override public void stop()
 	{
-	    interruptPlayback=true;
+	    interruptPlayback = true;
 	    synchronized(PlayerInstance.this) {
 		if (line != null)
 		    line.stop();
-	    }
+	}
 	}
 
 	static private long mSecToBytes(AudioFormat format, float msec)
