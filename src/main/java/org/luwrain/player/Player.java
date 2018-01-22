@@ -26,7 +26,7 @@ public interface Player
     static public final Set<Flags> DEFAULT_FLAGS = EnumSet.noneOf(Flags.class);
 
     public enum Flags {CYCLED, RANDOM, STREAMING};
-    public enum Result {OK, INVALID_PLAYLIST, UNSUPPORTED_FORMAT_STARTING_TRACK};
+    public enum Result {OK, INVALID_PLAYLIST, UNSUPPORTED_FORMAT_STARTING_TRACK, INACCESSIBLE_SOURCE, GENERAL_PLAYER_ERROR};
     public enum State {LOADING, PLAYING, PAUSED, STOPPED};
 
     /**

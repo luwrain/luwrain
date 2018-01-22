@@ -37,7 +37,9 @@ final class FileContentType
 	contentTypes.put(".*\\.html", ContentTypes.TEXT_HTML_DEFAULT);
 
 	//Audio
-		contentTypes.put(".*\\.mp3", ContentTypes.SOUND_MP3_DEFAULT);
+	contentTypes.put(".*\\.wav", ContentTypes.SOUND_WAVE_DEFAULT);
+	contentTypes.put(".*\\.wave", ContentTypes.SOUND_WAVE_DEFAULT);
+	contentTypes.put(".*\\.mp3", ContentTypes.SOUND_MP3_DEFAULT);
 
 		contentTypes.put(".*\\.xhtml", "application/xhtml");
 		contentTypes.put(".*\\.xhtm", "application/xhtml");

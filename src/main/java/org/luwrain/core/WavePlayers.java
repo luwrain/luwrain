@@ -30,7 +30,6 @@ final class WavePlayers
     
     static class Simple implements Runnable
     {
-	private static final int BUF_SIZE = 512;
 	private final String fileName;
 	private final int volumePercent;
 	private boolean interruptPlayback = false;
@@ -61,7 +60,7 @@ final class WavePlayers
 		    if (volumePercent >= 0 || volumePercent < 100)
 			org.luwrain.util.SoundUtils.setLineMasterGanePercent(audioLine, volumePercent);
 		    int bytesRead = 0;
-		    final byte[] buf = new byte[BUF_SIZE];
+		    final byte[] buf = new byte[512];
 		    while (bytesRead != -1 && !interruptPlayback)
 		    {
 			bytesRead = audioInputStream.read(buf, 0, buf.length);
@@ -89,15 +88,14 @@ final class WavePlayers
 	    } //try
 	    catch(UnsupportedAudioFileException | IOException | LineUnavailableException e)
 	    {
-		Log.error(Core.LOG_COMPONENT, "unable to play audio file" + fileName + ":" + e.getClass().getName() + ":" + e.getMessage());
+		Log.error(LOG_COMPONENT, "unable to play audio file" + fileName + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    }
 	}
 
 	void stopPlaying()
 	{
 	    interruptPlayback = true;
-	    synchronized(this)
-	    {
+	    synchronized(this) {
 		if (audioLine != null)
 		    audioLine.stop();
 	    }
@@ -106,11 +104,9 @@ final class WavePlayers
 
     static private final class PlayerInstance implements MediaResourcePlayer.Instance
     {
-		private static final int NOTIFY_MSEC_COUNT=500;
-	private static final int BUF_SIZE = 512;
-
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private final MediaResourcePlayer.Listener listener;
+	private SourceDataLine line = null;
 	private boolean interruptPlayback = false;
 
 	PlayerInstance(MediaResourcePlayer.Listener listener)
@@ -136,44 +132,38 @@ final class WavePlayers
 	    catch(UnsupportedAudioFileException | IOException e)
 	    {
 		Log.error(LOG_COMPONENT, "unable to play " + url.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
-		return new MediaResourcePlayer.Result();//FIXME:
+		return new MediaResourcePlayer.Result(MediaResourcePlayer.Result.Type.INACCESSIBLE_SOURCE);
 	    }
 	    final AudioFormat format=audioInputStream.getFormat();
 	    final FutureTask task = new FutureTask(()->{
-		    SourceDataLine line = null;
 		    try {
 			try {
 			    final DataLine.Info info=new DataLine.Info(SourceDataLine.class,format);
-			    synchronized(this) {
-				line = (SourceDataLine)AudioSystem.getLine(info);
-				// FloatControl volume=(FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN); 
+			    line = (SourceDataLine)AudioSystem.getLine(info);
+			    // FloatControl volume=(FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN); 
 				line.open(format);
 				line.start();
-			    }
 			    long totalBytes = 0;
 			    if(params.playFromMsec > 0)
 			    {
-				// bytes count from msec pos, 8000 is a 8 bits in byte and 1000 ms in second
-				long skipBytes = mSecToBytesSamples(format, params.playFromMsec);
+				final long skipBytes = mSecToBytes(format, params.playFromMsec);
 				audioInputStream.skip(skipBytes);
 				totalBytes += skipBytes;
 			    }
-			    long lastNotifiedMsec = totalBytes;
-			    long notifyBytesCount = mSecToBytesSamples(format, NOTIFY_MSEC_COUNT);
+			    long notifiedMsec = bytesToMsec(format, totalBytes);
 			    int bytesRead = 0;
-			    final byte[] buf = new byte[BUF_SIZE];
+			    final byte[] buf = new byte[512];
 			    while(bytesRead != -1 && !interruptPlayback)
 			    {
 				bytesRead = audioInputStream.read(buf, 0, buf.length);
-				if(bytesRead >= 0)
-				    synchronized(this) {
+				if(bytesRead > 0)
 					line.write(buf, 0, bytesRead);
 					totalBytes += bytesRead;
-				    }
-				if (totalBytes > lastNotifiedMsec + notifyBytesCount)
+					final long currentMsec = bytesToMsec(format, totalBytes);
+					if (currentMsec > notifiedMsec + 50)
 				{
-				    lastNotifiedMsec = totalBytes;
-				    listener.onPlayerTime(PlayerInstance.this, (long)bytesSamplesTomSec(format, totalBytes));
+				    notifiedMsec = currentMsec;
+				    listener.onPlayerTime(PlayerInstance.this, currentMsec);
 				}
 			    } //while();
 			    line.drain();
@@ -181,9 +171,11 @@ final class WavePlayers
 			    return;
 			}
 			finally {
-			    if(line != null)
-				line.close();
-			    line = null;
+			    synchronized(PlayerInstance.this) {
+				if(line != null)
+				    line.close();
+				line = null;
+			    }
 			}
 		    }
 		    catch (Exception e)
@@ -199,18 +191,23 @@ final class WavePlayers
 	@Override public void stop()
 	{
 	    interruptPlayback=true;
+	    synchronized(PlayerInstance.this) {
+		if (line != null)
+		    line.stop();
+	    }
 	}
 
-	static private long mSecToBytesSamples(AudioFormat format, float msec)
+	static private long mSecToBytes(AudioFormat format, float msec)
 	{
 	    NullCheck.notNull(format, "format");
-	    return (long)(format.getSampleRate()*format.getSampleSizeInBits()*msec/8000);
+	    return (long)((format.getSampleRate() * format.getSampleSizeInBits() * msec) / 8000);
 	}
 
-	static private float bytesSamplesTomSec(AudioFormat format, long samples)
+	static private long bytesToMsec(AudioFormat format, long bytes)
 	{
 	    NullCheck.notNull(format, "format");
-	    return (8000f*samples/format.getSampleRate()*format.getSampleSizeInBits());
+	    final float samples = (8f * (float)bytes) / format.getSampleSizeInBits();
+	    return (long)((1000 * samples) / format.getSampleRate()); 
 	}
     }
 
