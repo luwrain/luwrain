@@ -50,6 +50,8 @@ public interface Player
     boolean hasPlaylist();
     Playlist getPlaylist();
     int getTrackNum();
+    int getVolume();
+    void setVolume(int volume);
     void addListener(Listener listener);
     void removeListener(Listener listener);
 }

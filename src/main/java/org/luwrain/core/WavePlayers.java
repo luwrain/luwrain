@@ -138,7 +138,9 @@ final class WavePlayers
 			try {
 			    final DataLine.Info info=new DataLine.Info(SourceDataLine.class,format);
 			    PlayerInstance.this.line = (SourceDataLine)AudioSystem.getLine(info);
-			    // FloatControl volume=(FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN); 
+
+			    if (!org.luwrain.util.SoundUtils.setLineMasterGanePercent(line, params.volume))
+				Log.error(LOG_COMPONENT, "unable to set the initial volume to " + params.volume);
 				line.open(format);
 				line.start();
 			    long totalBytes = 0;
@@ -193,6 +195,16 @@ final class WavePlayers
 		if (line != null)
 		    line.stop();
 	}
+	}
+
+	@Override public void setVolume(int value)
+	{
+	    if (value < 0 || value > 100)
+		throw new IllegalArgumentException("value (" + value + ") must be between 0 and 100 (inclusively)");
+	    if (line == null)
+		return;
+	    	if (!org.luwrain.util.SoundUtils.setLineMasterGanePercent(line, value))
+		    Log.error(LOG_COMPONENT, "unable to change the volume to " + value);
 	}
 
 	static private long mSecToBytes(AudioFormat format, float msec)
