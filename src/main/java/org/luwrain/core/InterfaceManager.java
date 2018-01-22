@@ -31,7 +31,8 @@ public final class InterfaceManager
     {
 	NullCheck.notNull(base, "base");
 	this.core = (Core)base;
-	this.objForEnvironment = new Luwrain(core);
+	NullCheck.notNull(core, "core");
+	this.objForEnvironment = new Luwrain((Core)base);
     }
 
     Luwrain requestNew(Application app)

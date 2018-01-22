@@ -22,12 +22,12 @@ import java.io.*;
 import java.net.*;
 import javax.sound.sampled.*;
 
-
 import org.luwrain.base.*;
-import org.luwrain.core.*;
 
-class WavePlayers
+final class WavePlayers
 {
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
+    
     static class Simple implements Runnable
     {
 	private static final int BUF_SIZE = 512;
@@ -104,17 +104,17 @@ class WavePlayers
 	}
     }
 
-    static private class PlayerInstance implements MediaResourcePlayer.Instance
+    static private final class PlayerInstance implements MediaResourcePlayer.Instance
     {
-	private static final int NOTIFY_MSEC_COUNT=500;
+		private static final int NOTIFY_MSEC_COUNT=500;
 	private static final int BUF_SIZE = 512;
 
+	    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+		private final MediaResourcePlayer.Listener listener;
+
 	private boolean interruptPlayback = false;
-	private SourceDataLine audioLine = null;
-	AudioFormat format=null;
-	private final MediaResourcePlayer.Listener listener;
+	//	private SourceDataLine audioLine = null;
 	private FutureTask<Boolean> futureTask = null;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	PlayerInstance(MediaResourcePlayer.Listener listener)
 	{
@@ -122,73 +122,78 @@ class WavePlayers
 	    this.listener = listener;
 	}
 
-	@Override public MediaResourcePlayer.Result play(URL url, long playFromMsec, Set<MediaResourcePlayer.Flags> flags)
+	@Override public MediaResourcePlayer.Result play(URL url, MediaResourcePlayer.Params params)
 	{
 	    NullCheck.notNull(url, "url");
-	    NullCheck.notNull(flags, "flags");
+	    NullCheck.notNull(params, "params");
+	    NullCheck.notNull(params.flags, "params.flags");
+	    if (params.playFromMsec < 0)
+		throw new IllegalArgumentException("params.playFromMsec (" + params.playFromMsec + ") may not be negative");
+	    if (params.volume < 0 || params.volume > 100)
+		throw new IllegalArgumentException("params.volume (" + params.volume + ") must be between 0 and 100 inclusively");
 	    interruptPlayback = false;
-	    NullCheck.notNull(url, "url");
-	    NullCheck.notNull(flags, "flags");
-	    AudioInputStream audioInputStream;
+	    final AudioInputStream audioInputStream;
 	    try {
-		audioInputStream=AudioSystem.getAudioInputStream(url.openStream());
+		audioInputStream = AudioSystem.getAudioInputStream(url.openStream());
 	    } 
-	    catch(Exception e)
+	    catch(UnsupportedAudioFileException | IOException e)
 	    {
-		e.printStackTrace();
-		listener.onPlayerFinish(PlayerInstance.this);
+		Log.error(LOG_COMPONENT, "unable to play " + url.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
 		return new MediaResourcePlayer.Result();
 	    }
-	    format=audioInputStream.getFormat();
-	    futureTask = new FutureTask<>(()->{
-		    try
-		    {
-			final DataLine.Info info=new DataLine.Info(SourceDataLine.class,format);
+
+	    //	    kaka
+	    final AudioFormat format=audioInputStream.getFormat();
+	    futureTask = new FutureTask(()->{
+SourceDataLine line = null;
+		    try {
+final DataLine.Info info=new DataLine.Info(SourceDataLine.class,format);
 			synchronized(this)
 			{
-			    audioLine=(SourceDataLine)AudioSystem.getLine(info);
+			    line = (SourceDataLine)AudioSystem.getLine(info);
 			    // FloatControl volume=(FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN); 
-			    audioLine.open(format);
-			    audioLine.start();
+			    line.open(format);
+			    line.start();
 			}
 			long totalBytes=0;
 			// skip if task need it
-			if(playFromMsec > 0)
+			if(params.playFromMsec > 0)
 			{
 			    // bytes count from msec pos, 8000 is a 8 bits in byte and 1000 ms in second
-			    long skipBytes=mSecToBytesSamples(playFromMsec);
+			    long skipBytes=mSecToBytesSamples(format, params.playFromMsec);
 			    audioInputStream.skip(skipBytes);
 			    totalBytes+=skipBytes;
 			}
 			long lastNotifiedMsec=totalBytes;
-			long notifyBytesCount=mSecToBytesSamples(NOTIFY_MSEC_COUNT);
+			long notifyBytesCount=mSecToBytesSamples(format, NOTIFY_MSEC_COUNT);
 			int bytesRead=0;
 			byte[] buf=new byte[BUF_SIZE];
 			while(bytesRead!=-1&&!interruptPlayback)
 			{
 			    bytesRead=audioInputStream.read(buf,0,buf.length);
-			    // System.out.println("bytesRead=" + bytesRead);
 			    if(bytesRead>=0) synchronized(this)
 					     {
-						 audioLine.write(buf,0,bytesRead);
+						 line.write(buf,0,bytesRead);
 						 totalBytes+=bytesRead;
 					     }
 			    if (totalBytes > lastNotifiedMsec + notifyBytesCount)
 			    {
 				lastNotifiedMsec = totalBytes;
-				listener.onPlayerTime(PlayerInstance.this, (long)bytesSamplesTomSec(totalBytes));
+				listener.onPlayerTime(PlayerInstance.this, (long)bytesSamplesTomSec(format, totalBytes));
 				//Log.debug("player","SoundPlayer: step"+(long)bytesSamplesTomSec(totalBytes));
 			    }
 			}
-			audioLine.drain();
-		    } catch(Exception e)
+			line.drain();
+		    }
+		    catch (Exception e)
 		    {
 			e.printStackTrace();
 			listener.onPlayerFinish(PlayerInstance.this);
 			return false;
 		    } finally
 		    {
-			if(audioLine!=null) audioLine.close();
+			if(line != null)
+			    line.close();
 		    }
 		    //Log.debug("player","SoundPlayer: finish");
 		    listener.onPlayerFinish(PlayerInstance.this);
@@ -198,12 +203,14 @@ class WavePlayers
 	    return new MediaResourcePlayer.Result();
 	}
 
-	private long mSecToBytesSamples(float msec)
+	static private long mSecToBytesSamples(AudioFormat format, float msec)
 	{
+	    NullCheck.notNull(format, "format");
 	    return (long)(format.getSampleRate()*format.getSampleSizeInBits()*msec/8000);
 	}
-	private float bytesSamplesTomSec(long samples)
+	static private float bytesSamplesTomSec(AudioFormat format, long samples)
 	{
+	    NullCheck.notNull(format, "format");
 	    return (8000f*samples/format.getSampleRate()*format.getSampleSizeInBits());
 	}
 	@Override public void stop()

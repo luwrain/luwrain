@@ -53,18 +53,19 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     };
 
     private final Core core;
-    private final org.luwrain.shell.PartitionsPopupControl partitionsPopupControl;
+    //    private final org.luwrain.shell.PartitionsPopupControl partitionsPopupControl;
     private String charsToSkip = "";
 
     Luwrain(Core core)
     {
 	NullCheck.notNull(core, "core");
 	this.core = core;
-	this.partitionsPopupControl = new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware());
+	/**
 	Registry registry = core.registry();
 	final String path = "/org/luwrain/speech/preprocess-cchars-to-skip";
 	if (registry.getTypeOf(path) == Registry.STRING)
 	    charsToSkip = registry.getString(path);
+	*/
     }
 
     public CmdLine getCmdLine()
@@ -706,7 +707,7 @@ public FilesOperations getFilesOperations()
 
     public org.luwrain.popups.PartitionsPopup.Control getPartitionsPopupControl()
     {
-	return partitionsPopupControl;
+return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware());
     }
 
     public org.luwrain.player.Player getPlayer()
