@@ -109,12 +109,9 @@ final class WavePlayers
 		private static final int NOTIFY_MSEC_COUNT=500;
 	private static final int BUF_SIZE = 512;
 
-	    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-		private final MediaResourcePlayer.Listener listener;
-
+	private final ExecutorService executor = Executors.newSingleThreadExecutor();
+	private final MediaResourcePlayer.Listener listener;
 	private boolean interruptPlayback = false;
-	//	private SourceDataLine audioLine = null;
-	private FutureTask<Boolean> futureTask = null;
 
 	PlayerInstance(MediaResourcePlayer.Listener listener)
 	{
@@ -139,68 +136,69 @@ final class WavePlayers
 	    catch(UnsupportedAudioFileException | IOException e)
 	    {
 		Log.error(LOG_COMPONENT, "unable to play " + url.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
-		return new MediaResourcePlayer.Result();
+		return new MediaResourcePlayer.Result();//FIXME:
 	    }
-
-	    //	    kaka
 	    final AudioFormat format=audioInputStream.getFormat();
-	    futureTask = new FutureTask(()->{
-SourceDataLine line = null;
+	    final FutureTask task = new FutureTask(()->{
+		    SourceDataLine line = null;
 		    try {
-final DataLine.Info info=new DataLine.Info(SourceDataLine.class,format);
-			synchronized(this)
-			{
-			    line = (SourceDataLine)AudioSystem.getLine(info);
-			    // FloatControl volume=(FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN); 
-			    line.open(format);
-			    line.start();
-			}
-			long totalBytes=0;
-			// skip if task need it
-			if(params.playFromMsec > 0)
-			{
-			    // bytes count from msec pos, 8000 is a 8 bits in byte and 1000 ms in second
-			    long skipBytes=mSecToBytesSamples(format, params.playFromMsec);
-			    audioInputStream.skip(skipBytes);
-			    totalBytes+=skipBytes;
-			}
-			long lastNotifiedMsec=totalBytes;
-			long notifyBytesCount=mSecToBytesSamples(format, NOTIFY_MSEC_COUNT);
-			int bytesRead=0;
-			byte[] buf=new byte[BUF_SIZE];
-			while(bytesRead!=-1&&!interruptPlayback)
-			{
-			    bytesRead=audioInputStream.read(buf,0,buf.length);
-			    if(bytesRead>=0) synchronized(this)
-					     {
-						 line.write(buf,0,bytesRead);
-						 totalBytes+=bytesRead;
-					     }
-			    if (totalBytes > lastNotifiedMsec + notifyBytesCount)
-			    {
-				lastNotifiedMsec = totalBytes;
-				listener.onPlayerTime(PlayerInstance.this, (long)bytesSamplesTomSec(format, totalBytes));
-				//Log.debug("player","SoundPlayer: step"+(long)bytesSamplesTomSec(totalBytes));
+			try {
+			    final DataLine.Info info=new DataLine.Info(SourceDataLine.class,format);
+			    synchronized(this) {
+				line = (SourceDataLine)AudioSystem.getLine(info);
+				// FloatControl volume=(FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN); 
+				line.open(format);
+				line.start();
 			    }
+			    long totalBytes = 0;
+			    if(params.playFromMsec > 0)
+			    {
+				// bytes count from msec pos, 8000 is a 8 bits in byte and 1000 ms in second
+				long skipBytes = mSecToBytesSamples(format, params.playFromMsec);
+				audioInputStream.skip(skipBytes);
+				totalBytes += skipBytes;
+			    }
+			    long lastNotifiedMsec = totalBytes;
+			    long notifyBytesCount = mSecToBytesSamples(format, NOTIFY_MSEC_COUNT);
+			    int bytesRead = 0;
+			    final byte[] buf = new byte[BUF_SIZE];
+			    while(bytesRead != -1 && !interruptPlayback)
+			    {
+				bytesRead = audioInputStream.read(buf, 0, buf.length);
+				if(bytesRead >= 0)
+				    synchronized(this) {
+					line.write(buf, 0, bytesRead);
+					totalBytes += bytesRead;
+				    }
+				if (totalBytes > lastNotifiedMsec + notifyBytesCount)
+				{
+				    lastNotifiedMsec = totalBytes;
+				    listener.onPlayerTime(PlayerInstance.this, (long)bytesSamplesTomSec(format, totalBytes));
+				}
+			    } //while();
+			    line.drain();
+			    listener.onPlayerFinish(PlayerInstance.this);
+			    return;
 			}
-			line.drain();
+			finally {
+			    if(line != null)
+				line.close();
+			    line = null;
+			}
 		    }
 		    catch (Exception e)
 		    {
-			e.printStackTrace();
-			listener.onPlayerFinish(PlayerInstance.this);
-			return false;
-		    } finally
-		    {
-			if(line != null)
-			    line.close();
+			Log.error(LOG_COMPONENT, "unable to continue playing of " + url.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
+			listener.onPlayerError(e);
 		    }
-		    //Log.debug("player","SoundPlayer: finish");
-		    listener.onPlayerFinish(PlayerInstance.this);
-		    return true;
-		});
-	    executor.execute(futureTask);
+		}, null);
+	    executor.execute(task);
 	    return new MediaResourcePlayer.Result();
+	}
+
+	@Override public void stop()
+	{
+	    interruptPlayback=true;
 	}
 
 	static private long mSecToBytesSamples(AudioFormat format, float msec)
@@ -208,14 +206,11 @@ final DataLine.Info info=new DataLine.Info(SourceDataLine.class,format);
 	    NullCheck.notNull(format, "format");
 	    return (long)(format.getSampleRate()*format.getSampleSizeInBits()*msec/8000);
 	}
+
 	static private float bytesSamplesTomSec(AudioFormat format, long samples)
 	{
 	    NullCheck.notNull(format, "format");
 	    return (8000f*samples/format.getSampleRate()*format.getSampleSizeInBits());
-	}
-	@Override public void stop()
-	{
-	    interruptPlayback=true;
 	}
     }
 
