@@ -20,7 +20,7 @@ abstract class EventDispatching extends EnvironmentAreas
     protected final CommandManager commands = new CommandManager();
 protected final GlobalKeys globalKeys;
 
-    protected AreaListening listening = null;
+    protected Listening listening = null;
 
     protected EventDispatching(CmdLine cmdLine, Registry registry,
 			       org.luwrain.base.CoreProperties coreProps, String lang,

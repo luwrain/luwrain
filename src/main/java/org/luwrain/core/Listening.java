@@ -20,14 +20,14 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.speech.*;
 
-class AreaListening
+class Listening
 {
     private final Luwrain luwrain;
     private final Speech speech;
     private final Area area;
     private Channel channel;
 
-    AreaListening(Luwrain luwrain, Speech speech, Area area)
+    Listening(Luwrain luwrain, Speech speech, Area area)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(speech, "speech");
@@ -43,6 +43,9 @@ channel = speech.getReadingChannel();
 if (channel == null)
     return false;
 Log.debug("core", "using the channel \'" + channel.getChannelName() + " for listening area of class " + area.getClass().getName());
+channel.setDefaultRate(70);
+channel.setDefaultPitch(30);
+luwrain.playSound(Sounds.PARAGRAPH);//FIXME:
 onFinish(null, null);
 	    return true;
     }

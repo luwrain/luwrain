@@ -770,7 +770,7 @@ onNewAreasLayout();
 	    return;
 	stopAreaListening();
 	speech.silence();
-	listening = new AreaListening(getObjForEnvironment(), speech, activeArea);
+	listening = new Listening(getObjForEnvironment(), speech, activeArea);
 	listening.start();
     }
 
