@@ -18,7 +18,9 @@
 
 package org.luwrain.core;
 
-public interface Worker extends Runnable
+import org.luwrain.base.*;
+
+public interface Worker extends Runnable, ExtensionObject
 {
     int getFirstLaunchDelay();
     int getLaunchPeriod();

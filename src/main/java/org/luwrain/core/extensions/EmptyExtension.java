@@ -38,11 +38,6 @@ public class EmptyExtension implements Extension
 	return new Shortcut[0];
     }
 
-    @Override public Worker[] getWorkers(Luwrain luwrain)
-    {
-	return new Worker[0];
-    }
-
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
 	return new ExtensionObject[0];

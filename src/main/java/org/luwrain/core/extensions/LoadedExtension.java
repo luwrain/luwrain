@@ -27,7 +27,6 @@ public final class LoadedExtension
     public Shortcut[] shortcuts;
     public ExtensionObject[] extObjects;
     public UniRefProc[] uniRefProcs;
-    public Worker[] workers;
     public org.luwrain.cpanel.Factory[] controlPanelFactories;
 
     LoadedExtension(Extension ext)

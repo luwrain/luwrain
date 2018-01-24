@@ -66,7 +66,7 @@ final Interaction interaction;
 	playSound(Sounds.STARTUP);//FIXME:
 	soundManager.startingMode();
 	greetingWorker(uiSettings.getLaunchGreeting(""));
-	workers.doWork();
+	workers.doWork(objRegistry.getWorkers());
 	eventLoop(mainStopCondition);
 	workers.finish();
 	playSound(Sounds.SHUTDOWN);
@@ -787,7 +787,11 @@ onNewAreasLayout();
 	NullCheck.notNull(text, "text");
 	if (text.trim().isEmpty())
 	    return;
-	workers.add("launch-greeting", new Worker(){
+	objRegistry.add(null, new Worker(){
+		@Override public String getExtObjName()
+		{
+		    return "luwrain.greeting";
+		}
 		@Override public int getLaunchPeriod()
 		{
 		    return 60;

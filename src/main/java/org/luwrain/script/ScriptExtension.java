@@ -58,11 +58,6 @@ public class ScriptExtension implements org.luwrain.core.extensions.DynamicExten
 	return new Shortcut[0];
     }
 
-    @Override public Worker[] getWorkers(Luwrain luwrain)
-    {
-	return new Worker[0];
-    }
-
     @Override public void i18nExtension(Luwrain luwrain, I18nExtension i18nExt)
     {
     }

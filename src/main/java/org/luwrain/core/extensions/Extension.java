@@ -26,7 +26,6 @@ public interface Extension
     String init(Luwrain luwrain);
     Command[] getCommands(Luwrain luwrain);
     Shortcut[] getShortcuts(Luwrain luwrain);
-    Worker[] getWorkers(Luwrain luwrain);
     ExtensionObject[] getExtObjects(Luwrain luwrain);
     void i18nExtension(Luwrain luwrain, I18nExtension i18nExt);
     org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain);

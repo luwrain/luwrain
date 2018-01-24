@@ -41,7 +41,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final MainStopCondition mainStopCondition = new MainStopCondition();
     private EventResponse eventResponse = null;
 
-    protected final WorkerManager workers = new WorkerManager();
+    protected final WorkersTracking workers = new WorkersTracking();
     protected final I18nImpl i18n = new I18nImpl();
     protected final Speech speech;
     protected final Braille braille = new Braille();
