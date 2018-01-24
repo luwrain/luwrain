@@ -33,7 +33,7 @@ class WorkersTracking
 	    return false;
 	final Entry e = workers.get(workerName);
 	synchronized (e) {
-	    if (e.task != null && !task.isDone())
+	    if (e.task != null && !e.task.isDone())
 		return false;
 	    e.task = new FutureTask(e.worker, null);
 	    e.executor.execute(e.task);
