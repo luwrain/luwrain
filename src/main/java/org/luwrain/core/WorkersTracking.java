@@ -22,9 +22,24 @@ import java.util.concurrent.*;
 class WorkersTracking 
 {
     static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
-    
-    private final Map<String, Entry> workers = new HashMap();
+
+        private final Map<String, Entry> workers = new HashMap();
     private volatile boolean continueWork = true;
+
+    boolean runExplicitly(String workerName)
+    {
+	NullCheck.notEmpty(workerName, "workerName");
+	if (!workers.containsKey(workerName))
+	    return false;
+	final Entry e = workers.get(workerName);
+	synchronized (e) {
+	    if (e.task != null && !task.isDone())
+		return false;
+	    e.task = new FutureTask(e.worker, null);
+	    e.executor.execute(e.task);
+	}
+	return true;
+    }
 
     void doWork(Worker[] workersList)
     {
@@ -47,16 +62,18 @@ class WorkersTracking
 		    for(Map.Entry<String, Entry> entry: workers.entrySet())
 		    {
 			final Entry e = entry.getValue();
-			if (e.task != null && !e.task.isDone())
-			    continue;
-			final int delay = e.worker.getFirstLaunchDelay();
-			final int period =     e.worker.getLaunchPeriod();
-			if (delay < 0 || period <= 0)
-			    continue;
-			if (counter >= delay && (counter - delay) % period == 0)
-			{
-			    e.task = new FutureTask(e.worker, null);
-			    e.executor.execute(e.task);
+			synchronized(e) {
+			    if (e.task != null && !e.task.isDone())
+				continue;
+			    final int delay = e.worker.getFirstLaunchDelay();
+			    final int period =     e.worker.getLaunchPeriod();
+			    if (delay < 0 || period <= 0)
+				continue;
+			    if (counter >= delay && (counter - delay) % period == 0)
+			    {
+				e.task = new FutureTask(e.worker, null);
+				e.executor.execute(e.task);
+			    }
 			}
 		    } //for(entries);
 		    try {
@@ -68,7 +85,7 @@ class WorkersTracking
 		    }
 		    ++counter;
 		}
-	}).start();
+	}, "luwrain.workers").start();
     }
 
     void finish()

@@ -729,6 +729,12 @@ return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware())
 	return new String[0];
     }
 
+    public boolean runWorker(String workerName)
+    {
+	NullCheck.notEmpty(workerName, "workerName");
+	return core.workers.runExplicitly(workerName);
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");
