@@ -720,13 +720,14 @@ onNewAreasLayout();
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
 	    return;
-	apps.setAreaWrapper(activeArea,
+	if (!apps.setAreaWrapper(activeArea,
 				  new AreaWrapperFactory() {
 				      @Override public Area createAreaWrapper(Area areaToWrap, Disabling disabling)
 				      {
 					  return new Search(areaToWrap, Core.this, disabling);
 				      }
-				  });
+				  }))
+	    playSound(Sounds.EVENT_NOT_PROCESSED);
 	onNewAreasLayout();
     }
 
