@@ -116,7 +116,7 @@ final Application app;
     {
 	if (areaWrappings != null)
 	    for(AreaWrapping w: areaWrappings)
-		w.reviewWrapper = null;
+		w.wrapper = null;
     }
 
     //Takes the reference of any kind, either to original area  or to a wrapper

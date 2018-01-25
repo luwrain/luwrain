@@ -20,47 +20,40 @@ import java.util.*;
 
 class LaunchedAppBase
 {
-    static class AreaWrapping implements AreaWrapperFactory.Disabling
+    static final class AreaWrapping implements AreaWrapperFactory.Disabling
     {
-	final Area origArea;
-	Area securityWrapper = null;
-	Area reviewWrapper = null;
+	final Area area;
+	Area wrapper = null;
 
 	AreaWrapping(Area area)
 	{
-	    origArea = area;
-	    securityWrapper = new SecurityAreaWrapper(origArea);
+	    NullCheck.notNull(area, "area");
+	    this.area = area;
 	}
 
 	boolean containsArea(Area area)
 	{
-	    if (area == null)
-		return false;
-	    return origArea == area ||
-	    securityWrapper == area ||
-	    reviewWrapper == area;
+	    NullCheck.notNull(area, "area");
+	    return this.area == area || wrapper == area;
 	}
 
 	Area getEffectiveArea()
 	{
-	    if (reviewWrapper != null)
-		return reviewWrapper;
-	    if (securityWrapper != null)
-		return securityWrapper;
-	    Log.warning("core", "there is no security wrapper for the area " + origArea.getClass().getName());
-	    return origArea;
+	    if (wrapper != null)
+		return wrapper;
+	    return area;
 	}
 
 	@Override public void disableAreaWrapper()
 	{
-	    reviewWrapper = null;
+	    wrapper = null;
 	}
     }
 
-    final Vector<Area> popups = new Vector<Area>();
-    final Vector<AreaWrapping> popupWrappings = new Vector<AreaWrapping>();
+    final List<Area> popups = new Vector();
+    final List<AreaWrapping> popupWrappings = new Vector();
 
-    //Returns the index of the new popup;
+    //Returns the index of the new popup
     int addPopup(Area popup)
     {
 	NullCheck.notNull(popup, "popup");
@@ -78,12 +71,16 @@ class LaunchedAppBase
 
     Area getNativeAreaOfPopup(int index)
     {
-	return popupWrappings.get(index).origArea;
+	if (index < 0 || index >= popupWrappings.size())
+	    throw new IllegalArgumentException("index (" + index + ") must be non-negative and less than " + popupWrappings.size());
+	return popupWrappings.get(index).area;
     }
 
     Area getEffectiveAreaOfPopup(int index)
     {
-	return popupWrappings.get(index).getEffectiveArea();
+		if (index < 0 || index >= popupWrappings.size())
+	    throw new IllegalArgumentException("index (" + index + ") must be non-negative and less than " + popupWrappings.size());
+			return popupWrappings.get(index).getEffectiveArea();
     }
 
     /**

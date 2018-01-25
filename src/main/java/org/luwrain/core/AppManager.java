@@ -397,7 +397,7 @@ class AppManager
 	final Area wrapper = factory.createAreaWrapper(area, wrapping);
 	if (wrapper == null)
 	    return false;
-	wrapping.reviewWrapper = wrapper;
+	wrapping.wrapper = wrapper;
 	return true;
     }
 
