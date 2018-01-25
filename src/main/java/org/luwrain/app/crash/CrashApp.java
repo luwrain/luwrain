@@ -32,9 +32,9 @@ public class CrashApp implements Application, Actions
     private Strings strings;
     private SimpleArea area;
     private Application app;
-    private Exception exception;
+    private Throwable exception;
 
-    public CrashApp(Application app, Exception exception)
+    public CrashApp(Application app, Throwable exception)
     {
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(exception, "exception");

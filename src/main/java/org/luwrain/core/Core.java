@@ -264,23 +264,22 @@ final Interaction interaction;
 	    if (a != null)
 		launchApp(a);
     }
-    
+
     void launchApp(Application app)
     {
 	NullCheck.notNull(app, "app");
 	mainCoreThreadOnly();
-	System.gc();
-	//Checking is it a mono application
+	//Checking if it is a mono app
 	if (app instanceof MonoApp)
 	{
-	    Log.debug("core", app.getClass().getName() + " is a mono app,  checking already launched instances");
+	    Log.debug(LOG_COMPONENT, app.getClass().getName() + " is a mono app,  checking already launched instances");
 	    final Application[] launchedApps = apps.getLaunchedApps();
 	    for(Application a: launchedApps)
 		if (a instanceof MonoApp && a.getClass().equals(app.getClass()))
 		{
 		    final MonoApp ma = (MonoApp)a;
 		    final MonoApp.Result res = ma.onMonoAppSecondInstance(app);
-		    Log.debug("core", "already launched instance found, result is " + res);
+		    Log.debug(LOG_COMPONENT, "already launched instance found, result is " + res);
 		    NullCheck.notNull(res, "res");
 		    if (res == MonoApp.Result.SECOND_INSTANCE_PERMITTED)
 			break;
@@ -294,36 +293,37 @@ final Interaction interaction;
 		    }
 		}
 	}
-	final Luwrain o = interfaces.requestNew(app);
+final Luwrain o = interfaces.requestNew(app);
+Luwrain toRelease = o;//Must be cleaned to null when we sure the app is completely acceptable
 	final InitResult initResult;
 	try {
-	    initResult = app.onLaunchApp(o);
+	    try {
+		initResult = app.onLaunchApp(o);
+	    }
+	    catch (OutOfMemoryError e)
+	    {
+		Log.error(LOG_COMPONENT, "no enough memory to launch the app of the class " + app.getClass().getName());
+		message(i18n.getStaticStr("AppLaunchNoEnoughMemory"), Luwrain.MessageType.ERROR);
+		return;
+	    }
+	    catch (Throwable e)
+	    {
+		Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
+		launchAppCrash(app, e);
+		return;
+	    }
+	    if (initResult == null || !initResult.isOk())
+	    {
+		//FIXME:message
+		return;
+	    }
+	    if (!apps.newApp(app))
+		return;
+	    toRelease = null;//We sure that the app is completely accepted
 	}
-	catch (OutOfMemoryError e)
-	{
-	    e.printStackTrace();
-	    interfaces.release(o);
-	    message(i18n.getStaticStr("AppLaunchNoEnoughMemory"), Luwrain.MessageType.ERROR);
-	    return;
-	}
-	catch (Exception e)
-	{
-	    interfaces.release(o);
-	    Log.error("core", "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
-	    e.printStackTrace();
-	    launchAppCrash(app, e);
-	    return;
-	}
-	if (initResult == null || !initResult.isOk())
-	{
-	    //FIXME:message
-	    interfaces.release(o);
-	    return;
-	}
-	if (!apps.newApp(app))
-	{
-	    interfaces.release(o);
-	    return; 
+	finally {
+	    if (toRelease != null)
+		interfaces.release(toRelease);
 	}
 	soundManager.stopStartingMode();
 	onNewAreasLayout();
@@ -331,7 +331,7 @@ final Interaction interaction;
 	introduceApp = true;
     }
 
-    void launchAppCrash(Luwrain instance, Exception e)
+    void launchAppCrash(Luwrain instance, Throwable e)
     {
 	NullCheck.notNull(instance, "instance");
 	NullCheck.notNull(e, "e");
@@ -340,11 +340,10 @@ final Interaction interaction;
 	    launchAppCrash(app, e);
     }
 
-    void launchAppCrash(Application app, Exception e)
+    void launchAppCrash(Application app, Throwable e)
     {
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(e, "e");
-	System.gc();
 	final org.luwrain.app.crash.CrashApp crashApp = new org.luwrain.app.crash.CrashApp(app, e);
 	final Luwrain o = interfaces.requestNew(crashApp);
 	final InitResult initResult;
