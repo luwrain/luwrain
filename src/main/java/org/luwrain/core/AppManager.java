@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 
-class AppManager
+final class AppManager
 {
     private final Vector<LaunchedApp> apps = new Vector<LaunchedApp>();
     private final LaunchedAppBase environment = new LaunchedAppBase();
@@ -392,7 +392,7 @@ class AppManager
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(factory, "factory");
 	final LaunchedAppBase.AreaWrapping wrapping = getAreaWrapping(area);
-	if (wrapping == null)
+	if (wrapping == null || wrapping.wrapper != null)
 	    return false;
 	final Area wrapper = factory.createAreaWrapper(area, wrapping);
 	if (wrapper == null)

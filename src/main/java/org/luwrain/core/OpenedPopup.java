@@ -16,22 +16,25 @@
 
 package org.luwrain.core;
 
-class OpenedPopup
+final class OpenedPopup
 {
-    Application app;
-    int index;//Popup index in the corresponding application
-    Popup.Position position;
-    Base.PopupStopCondition stopCondition;
-    boolean noMultipleCopies;
-    boolean isWeak; 
+    final Application app;
+    final int index;//Popup index in the corresponding application
+    final Popup.Position position;
+    final Base.PopupStopCondition stopCondition;
+    final boolean noMultipleCopies;
+    final boolean isWeak; 
 
     OpenedPopup(Application app,
-		       int index,
-		       Popup.Position position,
-		       Base.PopupStopCondition stopCondition,
-		       boolean noMultipleCopies,
-		       boolean isWeak)
+		int index,
+		Popup.Position position,
+		Base.PopupStopCondition stopCondition,
+		boolean noMultipleCopies,
+		boolean isWeak)
     {
+	//app may be null
+	NullCheck.notNull(position, "position");
+	NullCheck.notNull(stopCondition, "stopCondition");
 	this.app = app;
 	this.index = index;
 	this.position = position;
