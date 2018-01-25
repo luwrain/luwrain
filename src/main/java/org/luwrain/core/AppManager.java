@@ -21,10 +21,10 @@ import java.util.*;
 final class AppManager
 {
     private final Vector<LaunchedApp> apps = new Vector<LaunchedApp>();
-    private final LaunchedAppBase environment = new LaunchedAppBase();
+    private final LaunchedAppBase shell = new LaunchedAppBase();
     private final Vector<OpenedPopup> popups = new Vector<OpenedPopup>();
     private int activeAppIndex = -1;
-    private LaunchedApp defaultApp;
+    private LaunchedApp defaultApp = null;
 
     void setDefaultApp(Application app)
     {
@@ -225,7 +225,7 @@ final class AppManager
 		return;
 	    launchedApp = apps.get(index);
 	} else
-	    launchedApp = environment;
+	    launchedApp = shell;
 	final int popupIndex = 	launchedApp.addPopup(area);
 	popups.add(new OpenedPopup(app, popupIndex, position, stopCondition, noMultipleCopies, isWeak));
     }
@@ -246,7 +246,7 @@ final class AppManager
 		apps.get(appIndex).closeLastPopup(); else
 		Log.warning("core", "the popup being closing is associated with the unknown application");
 	} else
-	    environment.closeLastPopup();
+	    shell.closeLastPopup();
     }
 
     boolean isLastPopupDiscontinued()
@@ -272,7 +272,7 @@ final class AppManager
 		return false;
 	    launchedApp = apps.get(index);
 	} else
-	    launchedApp = environment;
+	    launchedApp = shell;
 	return launchedApp.popups.size() > 0;
     }
 
@@ -297,7 +297,7 @@ final class AppManager
 	    }
 	    launchedApp = apps.get(appIndex);
 	} else
-	    launchedApp = environment;
+	    launchedApp = shell;
 	return launchedApp.getEffectiveAreaOfPopup(popup.index);
     }
 
@@ -350,7 +350,7 @@ final class AppManager
 	    if (res != null)
 		return res;
 	}
-	final Area res = environment.getCorrespondingEffectiveArea(area);
+	final Area res = shell.getCorrespondingEffectiveArea(area);
 	if (res != null)
 	    return res;
 	return null;
@@ -366,22 +366,22 @@ final class AppManager
      * @param area The area designating a cell in application layout by the natural area itself or by any of its wrappers
      * @return The area wrapping which corresponds to  the requested cell of the application layout
      */
-    LaunchedAppBase.AreaWrapping getAreaWrapping(Area area)
+    OpenedArea getAreaWrapping(Area area)
     {
 	NullCheck.notNull(area, "area");
 	if (hasDefaultApp())
 	{
-	    final LaunchedAppBase.AreaWrapping res = defaultApp.getAreaWrapping(area);
+	    final OpenedArea res = defaultApp.getAreaWrapping(area);
 	    if (res != null)
 		return res;
 	}
 	for(LaunchedApp a: apps)
 	{
-	    final LaunchedAppBase.AreaWrapping res = a.getAreaWrapping(area);
+	    final OpenedArea res = a.getAreaWrapping(area);
 	    if (res != null)
 		return res;
 	}
-	final LaunchedAppBase.AreaWrapping res = environment.getAreaWrapping(area);
+	final OpenedArea res = shell.getAreaWrapping(area);
 	if (res != null)
 	    return res;
 	return null;
@@ -391,7 +391,7 @@ final class AppManager
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(factory, "factory");
-	final LaunchedAppBase.AreaWrapping wrapping = getAreaWrapping(area);
+	final OpenedArea wrapping = getAreaWrapping(area);
 	if (wrapping == null || wrapping.wrapper != null)
 	    return false;
 	final Area wrapper = factory.createAreaWrapper(area, wrapping);
@@ -427,7 +427,7 @@ final class AppManager
 		}
 		area = apps.get(index).getNativeAreaOfPopup(p.index);
 	    } else
-		area = environment.getNativeAreaOfPopup(p.index);
+		area = shell.getNativeAreaOfPopup(p.index);
 	    if (area == null)
 	    {
 		Log.error("core", "unable to find a native area of the popup with index " + p.index + " of " + (app != null?" the application " + app.getClass().getName():" the environment"));

@@ -21,7 +21,7 @@ class LaunchedApp extends LaunchedAppBase
 final Application app;
     int layoutType;
     Area[] areas;
-    AreaWrapping[] areaWrappings;
+    OpenedArea[] areaWrappings;
     int activeAreaIndex = 0;
     Application activeAppBeforeLaunch;
 
@@ -41,7 +41,7 @@ final Application app;
 	    Log.info("core", "application " + app.getClass().getName() + " has area layout without areas");
 	    return false;
 	}
-	areaWrappings = new AreaWrapping[areas.length];
+	areaWrappings = new OpenedArea[areas.length];
 	for(int i = 0;i < areas.length;++i)
 	{
 	    if (areas[i] == null)
@@ -49,7 +49,7 @@ final Application app;
 		Log.info("core", "application " + app.getClass().getName() + " has a null area");
 		return false;
 	    }
-	    areaWrappings[i] = new AreaWrapping(areas[i]);
+	    areaWrappings[i] = new OpenedArea(areas[i]);
 	}
 	return true;
     }
@@ -65,7 +65,7 @@ final Application app;
 	    Log.info("core", "application " + app.getClass().getName() + " has area layout without areas");
 	    return false;
 	}
-	final AreaWrapping[] newAreaWrappings = new AreaWrapping[newAreas.length];
+	final OpenedArea[] newAreaWrappings = new OpenedArea[newAreas.length];
 	for(int i = 0;i < newAreas.length;++i)
 	{
 	    if (newAreas[i] == null)
@@ -73,7 +73,7 @@ final Application app;
 		Log.info("core", "application " + app.getClass().getName() + " has a null area");
 		return false;
 	    }
-	    newAreaWrappings[i] = new AreaWrapping(newAreas[i]);
+	    newAreaWrappings[i] = new OpenedArea(newAreas[i]);
 	}
 	layoutType = newLayoutType;
 	areas = newAreas;
@@ -115,7 +115,7 @@ final Application app;
     void removeReviewWrappers()
     {
 	if (areaWrappings != null)
-	    for(AreaWrapping w: areaWrappings)
+	    for(OpenedArea w: areaWrappings)
 		w.wrapper = null;
     }
 
@@ -144,16 +144,16 @@ final Application app;
     @Override public Area getCorrespondingEffectiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
-	for(AreaWrapping w: areaWrappings)
+	for(OpenedArea w: areaWrappings)
 	    if (w.containsArea(area))
 		return w.getEffectiveArea();
 	return super.getCorrespondingEffectiveArea(area);
     }
 
-    @Override public AreaWrapping getAreaWrapping(Area area)
+    @Override public OpenedArea getAreaWrapping(Area area)
     {
 	NullCheck.notNull(area, "area");
-	for(AreaWrapping w: areaWrappings)
+	for(OpenedArea w: areaWrappings)
 	    if (w.containsArea(area))
 		return w;
 	return super.getAreaWrapping(area);
@@ -170,7 +170,7 @@ final Application app;
     void sendBroadcastEvent(org.luwrain.core.events.EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	for(AreaWrapping w: areaWrappings)
+	for(OpenedArea w: areaWrappings)
 	    w.getEffectiveArea().onEnvironmentEvent(event);
     }
 }

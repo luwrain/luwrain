@@ -20,45 +20,15 @@ import java.util.*;
 
 class LaunchedAppBase
 {
-    static final class AreaWrapping implements AreaWrapperFactory.Disabling
-    {
-	final Area area;
-	Area wrapper = null;
-
-	AreaWrapping(Area area)
-	{
-	    NullCheck.notNull(area, "area");
-	    this.area = area;
-	}
-
-	boolean containsArea(Area area)
-	{
-	    NullCheck.notNull(area, "area");
-	    return this.area == area || wrapper == area;
-	}
-
-	Area getEffectiveArea()
-	{
-	    if (wrapper != null)
-		return wrapper;
-	    return area;
-	}
-
-	@Override public void disableAreaWrapper()
-	{
-	    wrapper = null;
-	}
-    }
-
     final List<Area> popups = new Vector();
-    final List<AreaWrapping> popupWrappings = new Vector();
+    final List<OpenedArea> popupWrappings = new Vector();
 
     //Returns the index of the new popup
     int addPopup(Area popup)
     {
 	NullCheck.notNull(popup, "popup");
 	popups.add(popup);
-	final AreaWrapping wrapping = new AreaWrapping(popup);
+	final OpenedArea wrapping = new OpenedArea(popup);
 	popupWrappings.add(wrapping);
 	return popups.size() - 1;
     }
@@ -97,7 +67,7 @@ class LaunchedAppBase
     Area getCorrespondingEffectiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
-	for(AreaWrapping w: popupWrappings)
+	for(OpenedArea w: popupWrappings)
 	    if (w.containsArea(area))
 		return w.getEffectiveArea();
 	return null;
@@ -112,10 +82,10 @@ class LaunchedAppBase
      * @param area The area designating a cell in application layout by the natural area itself or by any of its wrappers
      * @return The area wrapping which corresponds to  the requested cell of the application layout
      */
-    AreaWrapping getAreaWrapping(Area area)
+    OpenedArea getAreaWrapping(Area area)
     {
 	NullCheck.notNull(area, "area");
-	for(AreaWrapping w: popupWrappings)
+	for(OpenedArea w: popupWrappings)
 	    if (w.containsArea(area))
 		return w;
 	return null;
