@@ -153,12 +153,10 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 	return true;
     }
 
-    @Override public boolean insertRegion(int x, int y, String[] content)
+    @Override public boolean insertRegion(int x, int y, String[] text)
     {
-	NullCheck.notNullItems(content, "content");
-	if (x < 0 || y < 0)
-	    throw new IllegalArgumentException("x (" + x + ") and y (" + y + ") may not be negative");
-	final String[] text = content;
+	NullCheck.notNullItems(text, "text");
+	checkPos(x, y);
 	if (text.length == 0)
 	    return true;
 	final String firstLine = text[0];
@@ -173,10 +171,12 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 	    endEditTrans(false);
 	    return true;
 	} //no previous content
+	//Checking if there is no need to split the line
 	if (text.length == 1)
 	{
 	    final String line = lines.getLine(y);
-	    final boolean needToMoveHotPoint = (hotPoint.getHotPointY() == y && x >= hotPoint.getHotPointX());
+	    //If the insertion happens before the current position of the hot point
+	    final boolean needToMoveHotPoint = (hotPoint.getHotPointY() == y && x <= hotPoint.getHotPointX());
 	    beginEditTrans();
 	    lines.setLine(y, line.substring(0, x) + firstLine + line.substring(x));
 	    if (needToMoveHotPoint)
@@ -184,12 +184,8 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 	    endEditTrans(false);
 	    return true;
 	}
-	//New text has multiple lines
-	String line = lines.getLine(y);
-	if (line == null)
-	    line = "";
-	while (line.length() < x)
-	    line += ' ';
+	//The new text has multiple lines
+	final String line = lines.getLine(y);
 	beginEditTrans();
 	lines.setLine(y, line.substring(0, x) + text[0]);
 	for(int i = 1;i < text.length - 1;++i)
@@ -206,12 +202,11 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 	return true;
     }
 
-    //Adds empty line with pos=0 and line=0 if previously there were no lines at all
+    //??Adds empty line with pos=0 and line=0 if previously there were no lines at all
     @Override public void insertChars(int pos, int lineIndex, String str)
     {
 	NullCheck.notNull(str, "str");
-	if (pos < 0 || lineIndex < 0)
-	    throw new IllegalArgumentException("pos (" + pos + ") and lineIndex (" + lineIndex + ") may not be negative");
+	checkPos(pos, lineIndex);
 	beginEditTrans();
 	if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
 	    lines.addLine("");
@@ -253,8 +248,7 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 
     @Override public String splitLines(int pos, int lineIndex)
     {
-	if (pos < 0 || lineIndex < 0)
-	    throw new IllegalArgumentException("pos (" + pos + ") and lineIndex (" + lineIndex + ") may not be negative");
+	checkPos(pos, lineIndex);
 	beginEditTrans();
 	if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
 	    lines.addLine("");
@@ -276,6 +270,20 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 		hotPoint.setHotPointY(hotPoint.getHotPointY() + 1);
 	endEditTrans(false);
 	return lines.getLine(lineIndex + 1);
+    }
+
+    protected void checkPos(int pos, int lineIndex)
+    {
+	if (pos < 0 || lineIndex < 0)
+	    throw new IllegalArgumentException("pos (" + pos + ") and lineIndex (" + lineIndex + ") may not be negative");
+	if (lines.getLineCount() == 0 && pos == 0 && lineIndex == 0)
+	    return;
+	if (lineIndex >= lines.getLineCount())
+	    throw new IllegalArgumentException("lineIndex (" + lineIndex + ") may not be equal or greater than " + lines.getLineCount());
+	final String line = lines.getLine(lineIndex);
+	NullCheck.notNull(line, "line");
+	if (pos > line.length())
+	    throw new IllegalArgumentException("pos (" + pos + ") may not be greater than " + line.length());
     }
 
     protected void beginEditTrans()
