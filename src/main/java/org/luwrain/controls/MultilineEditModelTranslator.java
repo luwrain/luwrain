@@ -156,35 +156,26 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
     @Override public boolean insertRegion(int x, int y, String[] content)
     {
 	NullCheck.notNullItems(content, "content");
+	if (x < 0 || y < 0)
+	    throw new IllegalArgumentException("x (" + x + ") and y (" + y + ") may not be negative");
 	final String[] text = content;
-	if (text.length < 1)
+	if (text.length == 0)
 	    return true;
 	final String firstLine = text[0];
 	final String lastLine = text[text.length - 1];
-	if (y >= lines.getLineCount())
+	if (y == 0 && x == 0 && lines.getLineCount() == 0)
 	{
-	    final boolean needToMoveHotPoint = hotPoint.getHotPointY() > lines.getLineCount();
 	    beginEditTrans();
-	    while(lines.getLineCount() < y)
-		lines.addLine("");
-	    if (x > 0)
-		lines.addLine(TextUtils.sameCharString(' ', x) + text[0]); else
-		lines.addLine(text[0]);
-	    for(int i = 1;i < text.length;++i)
+	    for(int i = 0;i < text.length;++i)
 		lines.addLine(text[i]);
-	    if (needToMoveHotPoint)
-		hotPoint.setHotPointX(text[text.length - 1].length());
+	    hotPoint.setHotPointX(text[text.length - 1].length());
 	    hotPoint.setHotPointY(lines.getLineCount() - 1);
 	    endEditTrans(false);
 	    return true;
-	}
+	} //no previous content
 	if (text.length == 1)
 	{
-	    String line = lines.getLine(y);
-	    if (line == null)
-		line = "";
-	    while (line.length() < x)
-		line += ' ';
+	    final String line = lines.getLine(y);
 	    final boolean needToMoveHotPoint = (hotPoint.getHotPointY() == y && x >= hotPoint.getHotPointX());
 	    beginEditTrans();
 	    lines.setLine(y, line.substring(0, x) + firstLine + line.substring(x));
