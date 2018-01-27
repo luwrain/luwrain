@@ -50,7 +50,7 @@ public class Checks
     {
 	NullCheck.notNull(userDataDir, "userDataDir");
 	//Checking only if the directory for the registry exists
-	final File registryDir = new File("registry");
+	final File registryDir = new File(userDataDir, "registry");
 	return registryDir.exists() && registryDir.isDirectory();
     }
 }
