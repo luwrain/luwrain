@@ -588,14 +588,13 @@ onNewAreasLayout();
 	    message(text, Sounds.BLOCKED);
 	    break;
 	case NONE:
-	    message(text, Sounds.MESSAGE);//FIXME:
+	    message(text, (Sounds)null);
 	    break;
 	    case REGULAR:
 	default:
 	    message(text,Sounds.MESSAGE);
 	}
     }
-
 
     public void message(String text, Sounds sound)
     {
