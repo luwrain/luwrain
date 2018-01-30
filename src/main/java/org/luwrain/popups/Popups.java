@@ -28,15 +28,18 @@ public class Popups
     static public final Set<Popup.Flags> DEFAULT_POPUP_FLAGS = EnumSet.noneOf(Popup.Flags.class);
 
     static public String simple(Luwrain luwrain,
-				String name, String prefix,
-				String text, Set<Popup.Flags> popupFlags)
+				String name,
+				String prefix,
+				String text,
+				SimpleEditPopup.Acceptance acceptance,
+				Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(popupFlags, "popupFlags");
-	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, popupFlags);
+	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, acceptance, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;
@@ -45,17 +48,25 @@ public class Popups
 
     static public String simple(Luwrain luwrain,
 				String name, String prefix,
+				String text,
+				SimpleEditPopup.Acceptance acceptance)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	return simple(luwrain, name, prefix, text, acceptance, DEFAULT_POPUP_FLAGS);
+    }
+
+        static public String simple(Luwrain luwrain,
+				String name, String prefix,
 				String text)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(text, "text");
-	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, DEFAULT_POPUP_FLAGS);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.text ();
+	return simple(luwrain, name, prefix, text, null, DEFAULT_POPUP_FLAGS);
     }
 
     static public String editWithHistory(Luwrain luwrain,
