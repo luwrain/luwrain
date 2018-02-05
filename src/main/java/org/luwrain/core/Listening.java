@@ -43,7 +43,7 @@ channel = speech.getReadingChannel();
 if (channel == null)
     return false;
 Log.debug("core", "using the channel \'" + channel.getChannelName() + " for listening area of class " + area.getClass().getName());
-channel.setDefaultRate(70);
+channel.setDefaultRate(60);
 channel.setDefaultPitch(30);
 luwrain.playSound(Sounds.PARAGRAPH);//FIXME:
 onFinish(null, null);

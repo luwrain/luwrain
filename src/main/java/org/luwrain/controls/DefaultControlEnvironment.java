@@ -141,4 +141,14 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	return luwrain.i18n();
     }
+
+    @Override public int getScreenWidth()
+    {
+	return luwrain.getScreenWidth();
+    }
+
+    @Override public int getScreenHeight()
+    {
+	return luwrain.getScreenHeight();
+    }
 }

@@ -39,4 +39,6 @@ int getAreaVisibleHeight(Area area);
     void setEventResponse(EventResponse eventResponse);
     Clipboard getClipboard();
     I18n getI18n();
+    int getScreenWidth();
+    int getScreenHeight();
 }
