@@ -36,7 +36,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     private final Thread mainCoreThread;
     final ObjRegistry objRegistry = new ObjRegistry();
     protected final InterfaceManager interfaces = new InterfaceManager(this);
-    protected final org.luwrain.script.Core script = new org.luwrain.script.Core(interfaces);
+    protected final org.luwrain.core.script.Core script = new org.luwrain.core.script.Core(interfaces);
     protected final EventQueue eventQueue = new EventQueue();
     protected final MainStopCondition mainStopCondition = new MainStopCondition();
     private EventResponse eventResponse = null;

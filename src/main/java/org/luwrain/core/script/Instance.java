@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.script;
+package org.luwrain.core.script;
 
 import java.io.*;
 
@@ -26,19 +26,30 @@ import org.luwrain.core.*;
 class Instance
 {
     static private final String LOG_COMPONENT = "script";
-    
-    private final ScriptEngine engine;
 
-Instance()
+    private final ScriptEngine engine;
+    private final Luwrain luwrain;
+
+Instance(Luwrain luwrain)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	this.luwrain = luwrain;
 	    final ScriptEngineManager manager = new ScriptEngineManager();
 	    this.engine = manager.getEngineByName("nashorn");
+	    this.engine.put("Luwrain", new Control(luwrain));
     }
 
     Invocable getInvocable()
     {
 	return (Invocable) engine;
     }
+
+        void exec(String text) throws ScriptException
+    {
+	NullCheck.notNull(text, "text");
+	engine.eval(text);
+    }
+
 
     void exec(InputStream is) throws ScriptException
     {

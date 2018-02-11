@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.script;
+package org.luwrain.core.script;
 
 import javax.script.*;
 import jdk.nashorn.api.scripting.*;
@@ -33,11 +33,22 @@ public class Core
 	this.interfaces = interfaces;
     }
 
-    public org.luwrain.core.extensions.DynamicExtension exec(Luwrain luwrain, String text)
+    public org.luwrain.core.extensions.DynamicExtension exec(String text)
     {
-	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(text, "text");
-	final ScriptExtension ext = new ScriptExtension("fixme", new Instance());
+		final ScriptExtension ext = new ScriptExtension("fixme");
+				final Luwrain luwrain = interfaces.requestNew(ext);
+		final Luwrain toRelease = luwrain;
+	try {
+	    ext.init(luwrain);
+	    ext.setInstance(new Instance(luwrain));
+	    ext.exec(text);
+	}
+	finally {
+	    if (toRelease != null)
+		interfaces.release(toRelease);
+	}
+
 	return ext;
     }
 }

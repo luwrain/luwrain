@@ -16,27 +16,51 @@
 
 //LWR_API 1.0
 
-package org.luwrain.script;
+package org.luwrain.core.script;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension
 {
+    static private final String LOG_COMPONENT = "core";
+    
     final String name;
-    final Instance instance;
+    private Instance instance = null;
+    private Luwrain luwrain = null;
 
-    ScriptExtension(String name, Instance instance)
+    ScriptExtension(String name)
     {
 	NullCheck.notEmpty(name, "name");
-	NullCheck.notNull(instance, "instance");
 	this.name = name;
-	this.instance = instance;
     }
-    
+
+    void exec(String text)
+    {
+		    NullCheck.notNull(text, "text");
+		    if (instance == null)
+			throw new RuntimeException("You must set the instance with setInstance() method before running the script");
+	try {
+	    	instance.exec(text);
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to execute the script:" + e.getClass().getName() + ":" + e.getMessage());
+	    luwrain.message(e.getClass().getName() + ":" + e.getMessage(), Luwrain.MessageType.ERROR);
+	}
+    }
+
     @Override public String init(Luwrain luwrain)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	this.luwrain = luwrain;
 	return null;
+    }
+
+    void setInstance(Instance instance)
+    {
+	NullCheck.notNull(instance, "instance");
+	this.instance = instance;
     }
 
         @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)

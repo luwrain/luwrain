@@ -735,6 +735,12 @@ return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware())
 	return core.workers.runExplicitly(workerName);
     }
 
+    public void execScript(String text)
+    {
+	NullCheck.notNull(text, "text");
+	core.script.exec(text);
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");

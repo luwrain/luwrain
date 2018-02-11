@@ -46,7 +46,7 @@ public final class InterfaceManager
 	return luwrain;
     }
 
-    Luwrain requestNew(Extension ext)
+    public Luwrain requestNew(Extension ext)
     {
 	NullCheck.notNull(ext, "ext");
 	final Luwrain existing = findFor(ext);

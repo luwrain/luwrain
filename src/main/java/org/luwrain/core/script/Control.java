@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.script;
+package org.luwrain.core.script;
 
 import javax.script.*;
 import jdk.nashorn.api.scripting.AbstractJSObject;                                                                      
@@ -22,11 +22,20 @@ import java.util.function.*;
 
 import org.luwrain.core.*;
 
-class Control extends AbstractJSObject
+final class Control extends AbstractJSObject
 {
+    private final Luwrain luwrain;
+
+    Control(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	this.luwrain = luwrain;
+    }
+
+    
     @Override public Object newObject(Object... args)
     {
-	return new Control();
+	return new Control(luwrain);
     }
 
     @Override public Object getMember(String name)
@@ -34,11 +43,19 @@ class Control extends AbstractJSObject
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
+	    	case "message":
+	    return (Consumer)this::message;
 	case "addCommand":
 	    return (Predicate)this::addCommand;
 	default:
 	    return null;
 	}
+    }
+
+    private void message(Object b)
+    {
+	if (b != null && !b.toString().trim().isEmpty())
+	    luwrain.message(b.toString());
     }
 
     private boolean addCommand(Object obj)
