@@ -55,7 +55,7 @@ public class FileTypes
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNullItems(files, "files");
 	final String[] shortcuts = chooseShortcuts(files);
-	final HashMap<String, LinkedList<String> > lists = new HashMap<String, LinkedList<String> >();
+	final Map<String, List<String> > lists = new HashMap();
 	for(int i = 0;i < files.length;++i)
 	{
 	    final String s = shortcuts[i];
@@ -67,11 +67,11 @@ public class FileTypes
 		lists.get(s).add(f);
 		continue;
 	    }
-	    final LinkedList<String> l = new LinkedList<String>();
+	    final List<String> l = new LinkedList();
 	    l.add(f);
 	    lists.put(s, l);
 	}
-	for(Map.Entry<String, LinkedList<String> > e: lists.entrySet())
+	for(Map.Entry<String, List<String> > e: lists.entrySet())
 	{
 	    final String shortcut = e.getKey();
 	    final Settings.FileTypeAppInfo info = Settings.createFileTypeAppInfo(registry, Registry.join(Settings.FILE_TYPES_APP_INFO_PATH, shortcut));

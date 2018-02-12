@@ -101,4 +101,14 @@ public class TestingControlEnvironment implements ControlEnvironment
     {
 	return "";
     }
+
+    @Override public int getScreenHeight()
+    {
+	return 25;
+    }
+
+    @Override public int getScreenWidth()
+    {
+	return 80;
+    }
 }
