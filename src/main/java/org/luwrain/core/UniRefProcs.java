@@ -16,6 +16,10 @@
 
 package org.luwrain.core;
 
+import java.io.*;
+
+import org.luwrain.util.*;
+
 class UniRefProcs
 {
     static UniRefProc[] createStandardUniRefProcs(Luwrain luwrain)
@@ -208,6 +212,47 @@ class UniRefProcs
 		    return delim < str.length()?delim:-1;
 		}
 	    },
+
+		    //script
+	    new UniRefProc() {
+		static private final String PREFIX = "script:";
+		@Override public String getUniRefType()
+		{
+		    return "script";
+		}
+		@Override public UniRefInfo getUniRefInfo(String uniRef)
+		{
+		    NullCheck.notNull(uniRef, "uniRef");
+		    if (!uniRef.startsWith(PREFIX))
+			return null;
+		    final String body = uniRef.substring(PREFIX.length());
+		    if (body.isEmpty())
+			return null;
+		    return new UniRefInfo(uniRef, "", body);
+		}
+		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
+		{
+		    NullCheck.notNull(uniRef, "uniRef");
+		    NullCheck.notNull(luwrain, "luwrain");
+		    if (!uniRef.startsWith(PREFIX))
+			return false;
+		    final String body = uniRef.substring(PREFIX.length());
+		    if (body.isEmpty())
+			return false;
+		    try {
+			final String text = FileUtils.readTextFileSingleString(new File(body), "UTF-8");
+			luwrain.execScript(text);
+			return true;
+		    }
+		    catch(Exception e)
+		    {
+			luwrain.message(luwrain.i18n().getExceptionDescr(e), Luwrain.MessageType.ERROR);
+			return true;
+		    }
+		}
+	    },
 	};
+
+    
     }
 }
