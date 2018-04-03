@@ -20,7 +20,8 @@ package org.luwrain.core.script;
 
 import java.util.*;
 import javax.script.*;
-import jdk.nashorn.api.scripting.AbstractJSObject;                                                                      
+import jdk.nashorn.api.scripting.AbstractJSObject;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import java.util.function.*;
 
 import org.luwrain.base.*;
@@ -65,14 +66,16 @@ final class Control extends AbstractJSObject
 	    luwrain.message(b.toString());
     }
 
-    private boolean addCommandLineTool(Object name, Object funcObj)
+    private boolean addCommandLineTool(Object name, Object obj)
     {
-	if (name == null || funcObj == null)
+	if (name == null || obj == null)
 	    return false;
-	if (!(funcObj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
+	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
 	    return false;
-	final jdk.nashorn.api.scripting.ScriptObjectMirror func = (jdk.nashorn.api.scripting.ScriptObjectMirror)funcObj;
-	func.call(null);
+	final jdk.nashorn.api.scripting.ScriptObjectMirror cons = (jdk.nashorn.api.scripting.ScriptObjectMirror)obj;
+	final Object newObj = cons.newObject();
+	final ScriptObjectMirror newJsObj = (ScriptObjectMirror)newObj;
+	luwrain.message(newJsObj.get("name").toString());
 	//	luwrain.message(o2.getClass().getName());
 	return true;
     }

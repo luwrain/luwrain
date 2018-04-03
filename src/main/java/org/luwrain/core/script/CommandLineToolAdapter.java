@@ -25,17 +25,31 @@ import org.luwrain.core.*;
 
 class CommandLineToolAdapter implements CommandLineTool
 {
-    private final ScriptObjectMirror outputFunc;
+    private final ScriptObjectMirror cons;
 
-    CommandLineToolAdapter(ScriptObjectMirror outputFunc)
+    CommandLineToolAdapter(ScriptObjectMirror cons)
     {
-	NullCheck.notNull(outputFunc, "outputFunc");
-	this.outputFunc = outputFunc;
+	NullCheck.notNull(cons, "cons");
+	this.cons = cons;
     }
 
-    
     @Override public Instance launch(Listener listener, String[] args)
     {
+	final Object newObj = cons.newObject();
+	if (newObj == null || !(newObj instanceof ScriptObjectMirror))
+	    return null;
+	final ScriptObjectMirror newJsObj = (ScriptObjectMirror)newObj;
+	if (newJsObj.get("name") == null || !(newJsObj.get("name") instanceof ScriptObjectMirror))
+	    return null;
+	if (newJsObj.get("cmdLine") == null || !(newJsObj.get("cmdLine") instanceof ScriptObjectMirror))
+	    return null;
+	if (newJsObj.get("output") == null || !(newJsObj.get("output") instanceof ScriptObjectMirror))
+	    return null;
+	final ScriptObjectMirror name = (ScriptObjectMirror)newJsObj.get("name");
+	final ScriptObjectMirror cmdLine = (ScriptObjectMirror)newJsObj.get("cmdLine");
+	final ScriptObjectMirror output = (ScriptObjectMirror)newJsObj.get("output");
+	if (!output.isFunction())
+	    return null;
 	//FIXME:
 	return null;
     }
@@ -55,33 +69,39 @@ class CommandLineToolAdapter implements CommandLineTool
     private class Instance implements CommandLineTool.Instance
     {
 	private final Listener listener;
+	private final String name;
 	private final Process proc;
 	private final Thread thread;
 	private boolean finished = false;
 	private int exitCode = 0;
 
-	Instance(Listener listener, Process proc)
+	Instance(Listener listener, String name, Process proc)
 	{
 	    NullCheck.notNull(listener, "listener");
+	    NullCheck.notNull(name, "name");
 	    NullCheck.notNull(proc, "proc");
 	    this.listener = listener;
+	    this.name = name;
 	    this.proc = proc;
 	    this.thread = new Thread(()->readOutput());
 	    this.thread.start();
 	}
 
-	@Override public void stop()
+	@Override synchronized public void stop()
 	{
+	    proc.destroy();
+	    finished = true;
+	    exitCode = -1;
 	}
 
 	@Override public String getInstanceName()
 	{
-	    return null;
+	    return name;
 	}
 
 	@Override public Status getStatus()
 	{
-	    return null;
+	    return finished?CommandLineTool.Status.FINISHED:CommandLineTool.Status.RUNNING;
 	}
 
 	@Override public int getExitCode()
@@ -91,22 +111,22 @@ class CommandLineToolAdapter implements CommandLineTool
 
 	@Override public boolean isFinishedSuccessfully()
 	{
-	    return finished;
+	    return finished && exitCode == 0;
 	}
 
 	@Override public String getSingleLineState()
 	{
-	    return null;
+	    return "";
 	}
 
 	@Override public String[] getMultilineState()
 	{
-	    return null;
+	    return new String[0];
 	}
 
 	@Override public String[] getNativeState()
 	{
-	    return null;
+	    return new String[0];
 	}
 
 	private void readOutput()
