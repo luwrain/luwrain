@@ -14,17 +14,22 @@
    General Public License for more details.
 */
 
+// https://docs.oracle.com/javase/8/docs/jdk/api/nashorn/jdk/nashorn/api/scripting/ScriptObjectMirror.html
+
 package org.luwrain.core.script;
 
+import java.util.*;
 import javax.script.*;
 import jdk.nashorn.api.scripting.AbstractJSObject;                                                                      
 import java.util.function.*;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 final class Control extends AbstractJSObject
 {
     private final Luwrain luwrain;
+    final List<CommandLineTool> cmdLineTools = new LinkedList();
 
     Control(Luwrain luwrain)
     {
@@ -45,6 +50,8 @@ final class Control extends AbstractJSObject
 	{
 	    	case "message":
 	    return (Consumer)this::message;
+	    	    	case "addCommandLineTool":
+	    return (BiPredicate)this::addCommandLineTool;
 	case "addCommand":
 	    return (Predicate)this::addCommand;
 	default:
@@ -56,6 +63,18 @@ final class Control extends AbstractJSObject
     {
 	if (b != null && !b.toString().trim().isEmpty())
 	    luwrain.message(b.toString());
+    }
+
+    private boolean addCommandLineTool(Object name, Object funcObj)
+    {
+	if (name == null || funcObj == null)
+	    return false;
+	if (!(funcObj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
+	    return false;
+	final jdk.nashorn.api.scripting.ScriptObjectMirror func = (jdk.nashorn.api.scripting.ScriptObjectMirror)funcObj;
+	func.call(null);
+	//	luwrain.message(o2.getClass().getName());
+	return true;
     }
 
     private boolean addCommand(Object obj)

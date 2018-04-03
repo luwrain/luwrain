@@ -29,6 +29,7 @@ class Instance
 
     private final ScriptEngine engine;
     private final Luwrain luwrain;
+    final Control control;
 
 Instance(Luwrain luwrain)
     {
@@ -36,7 +37,8 @@ Instance(Luwrain luwrain)
 	this.luwrain = luwrain;
 	    final ScriptEngineManager manager = new ScriptEngineManager();
 	    this.engine = manager.getEngineByName("nashorn");
-	    this.engine.put("Luwrain", new Control(luwrain));
+	    this.control = new Control(luwrain);
+	    this.engine.put("Luwrain", this.control);
     }
 
     Invocable getInvocable()
@@ -49,7 +51,6 @@ Instance(Luwrain luwrain)
 	NullCheck.notNull(text, "text");
 	engine.eval(text);
     }
-
 
     void exec(InputStream is) throws ScriptException
     {

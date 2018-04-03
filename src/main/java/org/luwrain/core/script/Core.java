@@ -48,7 +48,6 @@ public class Core
 	    if (toRelease != null)
 		interfaces.release(toRelease);
 	}
-
 	return ext;
     }
 }

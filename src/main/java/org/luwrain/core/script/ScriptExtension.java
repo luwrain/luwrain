@@ -24,7 +24,7 @@ import org.luwrain.core.*;
 public class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension
 {
     static private final String LOG_COMPONENT = "core";
-    
+
     final String name;
     private Instance instance = null;
     private Luwrain luwrain = null;
@@ -37,11 +37,11 @@ public class ScriptExtension implements org.luwrain.core.extensions.DynamicExten
 
     void exec(String text)
     {
-		    NullCheck.notNull(text, "text");
-		    if (instance == null)
-			throw new RuntimeException("You must set the instance with setInstance() method before running the script");
+	NullCheck.notNull(text, "text");
+	if (instance == null)
+	    throw new RuntimeException("You must set the instance with setInstance() method before running the script");
 	try {
-	    	instance.exec(text);
+	    instance.exec(text);
 	}
 	catch(Throwable e)
 	{
