@@ -14,6 +14,8 @@
    General Public License for more details.
 */
 
+// https://docs.oracle.com/javase/8/docs/jdk/api/nashorn/jdk/nashorn/api/scripting/ScriptObjectMirror.html
+
 package org.luwrain.core.script;
 
 import java.io.*;
@@ -25,33 +27,44 @@ import org.luwrain.core.*;
 
 class CommandLineToolAdapter implements CommandLineTool
 {
-    private final ScriptObjectMirror cons;
+    private final String name;
+    private final JSObject cons;
 
-    CommandLineToolAdapter(ScriptObjectMirror cons)
+    CommandLineToolAdapter(String name, JSObject cons)
     {
+	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(cons, "cons");
+	this.name = name;
 	this.cons = cons;
     }
 
     @Override public Instance launch(Listener listener, String[] args)
     {
+	NullCheck.notNull(listener, "listener");
+	NullCheck.notNullItems(args, "args");
 	final Object newObj = cons.newObject();
-	if (newObj == null || !(newObj instanceof ScriptObjectMirror))
+	if (newObj == null || !(newObj instanceof JSObject))
 	    return null;
 	final ScriptObjectMirror newJsObj = (ScriptObjectMirror)newObj;
-	if (newJsObj.get("name") == null || !(newJsObj.get("name") instanceof ScriptObjectMirror))
+	if (newJsObj.get("name") == null || !(newJsObj.get("name") instanceof JSObject))
 	    return null;
-	if (newJsObj.get("cmdLine") == null || !(newJsObj.get("cmdLine") instanceof ScriptObjectMirror))
+	if (newJsObj.get("cmdLine") == null || !(newJsObj.get("cmdLine") instanceof JSObject))
 	    return null;
-	if (newJsObj.get("output") == null || !(newJsObj.get("output") instanceof ScriptObjectMirror))
+	final String name = newJsObj.get("name").toString();
+	if (name == null || name.trim().isEmpty())
 	    return null;
-	final ScriptObjectMirror name = (ScriptObjectMirror)newJsObj.get("name");
-	final ScriptObjectMirror cmdLine = (ScriptObjectMirror)newJsObj.get("cmdLine");
-	final ScriptObjectMirror output = (ScriptObjectMirror)newJsObj.get("output");
-	if (!output.isFunction())
+	final List<String> cmdLine = getStringArray((JSObject)newJsObj.get("cmdLine"));
+	if (cmdLine == null || cmdLine.isEmpty())
 	    return null;
-	//FIXME:
-	return null;
+	final ProcessBuilder builder = new ProcessBuilder(cmdLine);
+	try {
+	    return new Instance(listener, name, newJsObj, builder.start());
+	}
+	catch(IOException e)
+	{
+	    //FIXME:
+	    return null;
+	}
     }
 
     @Override public Set<Flags> getToolFlags()
@@ -62,26 +75,49 @@ class CommandLineToolAdapter implements CommandLineTool
 
     @Override public String getExtObjName()
     {
-	//FIXME:
-	return "";
+	return name;
     }
 
-    private class Instance implements CommandLineTool.Instance
+    static private List<String> getStringArray(JSObject obj)
+    {
+	NullCheck.notNull(obj, "obj");
+	final List<String> res = new LinkedList();
+	if (!obj.isArray())
+	    return null;
+	int index = 0;
+	while (obj.hasSlot(index))
+	{
+	    final Object o = obj.getSlot(index);
+	    if (o == null || !(o instanceof JSObject))
+		break;
+	    res.add(o.toString());
+	    ++index;
+	}
+	return res;
+    }
+
+    static private class Instance implements CommandLineTool.Instance
     {
 	private final Listener listener;
 	private final String name;
+	private final ScriptObjectMirror jsObj;
 	private final Process proc;
 	private final Thread thread;
 	private boolean finished = false;
 	private int exitCode = 0;
+	private String state = "";
+	private String[] multilineState = new String[0];
+	private String[] nativeState = new String[0];
 
-	Instance(Listener listener, String name, Process proc)
+	Instance(Listener listener, String name, ScriptObjectMirror jsObj, Process proc)
 	{
 	    NullCheck.notNull(listener, "listener");
-	    NullCheck.notNull(name, "name");
+	    NullCheck.notEmpty(name, "name");
+	    NullCheck.notNull(jsObj, "jsObj");
 	    NullCheck.notNull(proc, "proc");
 	    this.listener = listener;
 	    this.name = name;
+	    this.jsObj = jsObj;
 	    this.proc = proc;
 	    this.thread = new Thread(()->readOutput());
 	    this.thread.start();
@@ -116,17 +152,17 @@ class CommandLineToolAdapter implements CommandLineTool
 
 	@Override public String getSingleLineState()
 	{
-	    return "";
+	    return state;
 	}
 
 	@Override public String[] getMultilineState()
 	{
-	    return new String[0];
+	    return multilineState;
 	}
 
 	@Override public String[] getNativeState()
 	{
-	    return new String[0];
+	    return nativeState;
 	}
 
 	private void readOutput()
@@ -168,12 +204,45 @@ class CommandLineToolAdapter implements CommandLineTool
 	    }
 	}
 
+	private void readUpdatedState()
+	{
+	    if (jsObj.get("state") == null && (jsObj.get("state") instanceof JSObject))
+	    {
+		final String value = jsObj.get("state").toString();
+		if (value != null && !state.equals(value))
+		{
+		    this.state = value;
+		    listener.onSingleLineStateChange(this);
+		}
+	    }
+	    if (jsObj.get("multilineState") != null && (jsObj.get("multilineState") instanceof JSObject))
+	    {
+		final List<String> value = getStringArray((JSObject)jsObj.get("multilineState"));
+		if (value != null)
+		{
+		    final String[] v = value.toArray(new String[value.size()]);
+		    if (!theSameMultilineState(v))
+		    {
+			this.multilineState = v;
+					    listener.onMultilineStateChange(this);
+		    }
+		}
+	    }
+	}
+
+	private boolean theSameMultilineState(String[] value)
+	{
+	    NullCheck.notNullItems(value, "value");
+	    if (value.length != multilineState.length)
+		return  false;
+	    for(int i = 0;i < value.length;++i)
+		if (!value[i].equals(multilineState[i]))
+		    return false;
+	    return true;
+	}
+
 	private void onLine(String line)
 	{
 	}
-
-
-
-	
     }
 }
