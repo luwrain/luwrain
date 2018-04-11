@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-fpackage org.luwrain.app.cmdtool;
+package org.luwrain.app.cmdtool;
 
 import org.luwrain.core.*;
 

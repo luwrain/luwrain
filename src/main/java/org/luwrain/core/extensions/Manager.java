@@ -23,7 +23,7 @@ import java.io.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-public class Manager
+public final class Manager
 {
     static private final String LOG_COMPONENT = "core";
     static private final String EXTENSIONS_LIST_PREFIX = "--extensions=";
@@ -33,18 +33,19 @@ public class Manager
 	Luwrain getInterfaceObj(Extension ext);
     }
 
-    private InterfaceManager interfaces;
+    private final InterfaceManager interfaces;
     private LoadedExtension[] extensions;
+    private final List<DynamicExtension> dynamicExtensions = new LinkedList();
 
     public Manager(InterfaceManager interfaces)
     {
+		NullCheck.notNull(interfaces, "interfaces");
 	this.interfaces = interfaces;
-	NullCheck.notNull(interfaces, "interfaces");
     }
 
     public void load(InterfaceRequest interfaceRequest, CmdLine cmdLine)
     {
-	LinkedList<LoadedExtension> res = new LinkedList<LoadedExtension>();
+	final List<LoadedExtension> res = new LinkedList();
 	// get extensions list from command line or jar-s manifests
 	String[] extensionsList = null;
 	final String[] cmdlineExtList = cmdLine.getArgs(EXTENSIONS_LIST_PREFIX);
@@ -67,29 +68,19 @@ public class Manager
 	{
 	    if (s == null || s.trim().isEmpty())
 		continue;
-	    Log.debug("core", "loading extension " + s);
-	    Object o;
+	    Log.debug(LOG_COMPONENT, "loading extension " + s);
+	    final Object o;
 	    try {
 		o = Class.forName(s).newInstance();
 	    }
-	    catch (InstantiationException e)
+	    catch (Throwable e)
 	    {
-		Log.error("environment", "loading of extension " + s + " failed:instantiation problem:" + e.getMessage());
-		continue;
-	    }
-	    catch (IllegalAccessException e)
-	    {
-		Log.error("core", "loading of extension " + s + " failed:illegal access:" + e.getMessage());
-		continue;
-	    }
-	    catch (ClassNotFoundException e)
-	    {
-		Log.error("core", "loading of extension " + s + " failed:class not found:" + e.getMessage());
+		Log.error(LOG_COMPONENT, "loading of extension " + s + " failed:" + e.getClass().getName() + ":" + e.getMessage());
 		continue;
 	    }
 	    if (!(o instanceof Extension))
 	    {
-		Log.error("core", "loading of extension " + s + " failed: this object isn\'t an instance of org.luwrain.core.Extension");
+		Log.error(LOG_COMPONENT, "loading of extension " + s + " failed: this object isn\'t an instance of org.luwrain.core.Extension");
 		continue;
 	    }
 	    final Extension ext = (Extension)o;
@@ -100,28 +91,20 @@ public class Manager
 	    }
 	    catch (Exception ee)
 	    {
-		Log.error("core", "loading of extension " + s + " failed: unexpected exception:" + ee.getMessage());
-		ee.printStackTrace();
+		Log.error(LOG_COMPONENT, "loading of extension " + s + " failed:" + ee.getClass().getName() + ":" + ee.getMessage());
 		interfaces.release(iface);
 		continue;
 	    }
 	    if (message != null)
 	    {
-		Log.error("core", "loading of extension " + s + " failed: " + message);
+		Log.error(LOG_COMPONENT, "loading of extension " + s + " failed: " + message);
 		interfaces.release(iface);
 		continue;
 	    }
-	    final LoadedExtension loadedExt = new LoadedExtension(ext);
-	    loadedExt.luwrain = iface;
-	    loadedExt.commands = getCommands(ext, iface);
-	    loadedExt.shortcuts = getShortcuts(ext, iface);
-	    loadedExt.extObjects = getExtObjects(ext, iface);
-	    loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
-	    loadedExt.controlPanelFactories = getControlPanelFactories(ext, iface);
-	    res.add(loadedExt);
+	    res.add(createLoadedExtension(ext, iface));
 	}
 	extensions = res.toArray(new LoadedExtension[res.size()]);
-	Log.debug("core", "loaded " + extensions.length + " extensions");
+	Log.debug(LOG_COMPONENT, "loaded " + extensions.length + " extensions");
     }
 
     public void close()
@@ -143,6 +126,20 @@ public class Manager
     public LoadedExtension[] getAllLoadedExtensions()
     {
 	return extensions;
+    }
+
+    private LoadedExtension createLoadedExtension(Extension ext, Luwrain iface)
+    {
+	NullCheck.notNull(ext, "ext");
+	NullCheck.notNull(iface, "iface");
+		    final LoadedExtension loadedExt = new LoadedExtension(ext);
+	    loadedExt.luwrain = iface;
+	    loadedExt.commands = getCommands(ext, iface);
+	    loadedExt.shortcuts = getShortcuts(ext, iface);
+	    loadedExt.extObjects = getExtObjects(ext, iface);
+	    loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
+	    loadedExt.controlPanelFactories = getControlPanelFactories(ext, iface);
+	    return loadedExt;
     }
 
     private Shortcut[] getShortcuts(Extension ext, Luwrain luwrain)

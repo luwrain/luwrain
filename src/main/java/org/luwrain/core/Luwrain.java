@@ -357,6 +357,14 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	return core.runCommand(command);
     }
 
+    public org.luwrain.base.CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener)
+    {
+	NullCheck.notNull(name, "name");
+	NullCheck.notNullItems(args, "args");
+	NullCheck.notNull(listener, "listener");
+	return core.commandLineTools.run(name, args, listener);
+    }
+
     public void say(String text)
     {
 	NullCheck.notNull(text, "text");
@@ -733,6 +741,16 @@ return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware())
     {
 	NullCheck.notEmpty(workerName, "workerName");
 	return core.workers.runExplicitly(workerName);
+    }
+
+    public String loadScriptExtension(String text)
+    {
+	NullCheck.notNull(text, "text");
+
+	final org.luwrain.core.extensions.DynamicExtension ext = core.script.exec(text);
+	if (ext == null)
+	    return "fixme";
+	return "";
     }
 
     public void execScript(String text)

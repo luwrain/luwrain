@@ -35,7 +35,7 @@ class Core extends EventDispatching
     final OperatingSystem os;
 final Interaction interaction;
 
-    private final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
+final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
     private final org.luwrain.shell.Desktop desktop = new org.luwrain.shell.Desktop();
 
     //        private AreaListening listening = null;

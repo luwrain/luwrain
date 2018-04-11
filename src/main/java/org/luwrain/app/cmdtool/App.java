@@ -24,17 +24,22 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 
-public class App implements Application
+public class App implements Application, CommandLineTool.Listener
 {
     private Luwrain luwrain = null;
     private Strings strings = null;
     private SimpleArea area = null;
-    private final CommandLineTool.Instance tool;
+    
+    private CommandLineTool.Instance tool = null;
+    private final String toolName;
+    private final String[] toolArgs;
 
-    public App(CommandLineTool.Instance tool)
+    public App(String toolName, String[] toolArgs)
     {
-	NullCheck.notNull(tool, "tool");
-	this.tool = tool;
+	NullCheck.notEmpty(toolName, "toolName");
+	NullCheck.notNullItems(toolArgs, "toolArgs");
+	this.toolName = toolName;
+	this.toolArgs = toolArgs.clone();
     }
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -63,6 +68,22 @@ public class App implements Application
 		    return false;
 		}
 	    };
+    }
+
+    @Override public void onStatusChange(CommandLineTool.Instance instance)
+    {
+    }
+
+    @Override public void onSingleLineStateChange(CommandLineTool.Instance instance)
+    {
+    }
+
+    @Override public void onMultilineStateChange(CommandLineTool.Instance instance)
+    {
+    }
+
+    @Override public void onNativeStateChange(CommandLineTool.Instance instance)
+    {
     }
 
     @Override public AreaLayout getAreaLayout()
