@@ -42,6 +42,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     private EventResponse eventResponse = null;
 
     protected final WorkersTracking workers = new WorkersTracking();
+    protected final CommandLineToolsTracking commandLineTools = new CommandLineToolsTracking(objRegistry);
     protected final I18nImpl i18n = new I18nImpl();
     protected final Speech speech;
     protected final Braille braille = new Braille();
