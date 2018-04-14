@@ -750,6 +750,17 @@ return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware())
 	final org.luwrain.core.extensions.DynamicExtension ext = core.script.exec(text);
 	if (ext == null)
 	    return "fixme";
+
+	final org.luwrain.core.extensions.LoadedExtension loadedExt = core.extensions.addDynamicExtension(ext, null);
+	if (loadedExt == null)
+	    return "fixme";
+
+	core.objRegistry.takeObjects(loadedExt);
+	//FIXME:
+	for(Command c: loadedExt.commands)
+	    core.commands.add(null, c);
+
+	
 	return "";
     }
 

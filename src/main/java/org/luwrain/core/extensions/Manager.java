@@ -34,8 +34,8 @@ public final class Manager
     }
 
     private final InterfaceManager interfaces;
-    private LoadedExtension[] extensions;
-    private final List<DynamicExtension> dynamicExtensions = new LinkedList();
+    private LoadedExtension[] extensions = new LoadedExtension[0];
+    private final List<LoadedExtension> dynamicExtensions = new LinkedList();
 
     public Manager(InterfaceManager interfaces)
     {
@@ -45,25 +45,12 @@ public final class Manager
 
     public void load(InterfaceRequest interfaceRequest, CmdLine cmdLine)
     {
-	final List<LoadedExtension> res = new LinkedList();
-	// get extensions list from command line or jar-s manifests
-	String[] extensionsList = null;
-	final String[] cmdlineExtList = cmdLine.getArgs(EXTENSIONS_LIST_PREFIX);
-	if(cmdlineExtList.length > 0)
-	{
-		// command line list prefix specified
-		for(String s: cmdlineExtList)
-		{
-		extensionsList=s.split(":",-1);
-		break; // FIXME: this code stops read multiple --extensions prefix and load list from only first, or replace string.split(...) command to read first prefix
-		}
-	} else
-	{
-		// load extensions list from manifest files
-		extensionsList = getExtensionsList();
-	}
+	NullCheck.notNull(interfaceRequest, "interfaceRequest");
+	NullCheck.notNull(cmdLine, "cmdLine");
+	final String[] extensionsList = getExtensionsList(cmdLine);
 	if (extensionsList == null || extensionsList.length < 1)
 	    return;
+	final List<LoadedExtension> res = new LinkedList();
 	for(String s: extensionsList)
 	{
 	    if (s == null || s.trim().isEmpty())
@@ -85,7 +72,7 @@ public final class Manager
 	    }
 	    final Extension ext = (Extension)o;
 	    final Luwrain iface = interfaceRequest.getInterfaceObj(ext);
-	    String message = null;
+	    final String message;
 	    try {
 		message = ext.init(iface);
 	    }
@@ -128,39 +115,46 @@ public final class Manager
 	return extensions;
     }
 
+    public LoadedExtension addDynamicExtension(DynamicExtension ext, Luwrain luwrain)
+    {
+	NullCheck.notNull(ext, "ext");
+	NullCheck.notNull(luwrain, "luwrain");
+	for(LoadedExtension e: dynamicExtensions)
+	    if (e.ext == ext)
+		return null;
+	for(LoadedExtension e: extensions)
+	    if (e.ext == ext)
+		return null;
+	final LoadedExtension loadedExt = createLoadedExtension(ext, luwrain);
+	dynamicExtensions.add(loadedExt);
+	return loadedExt;
+    }
+
     private LoadedExtension createLoadedExtension(Extension ext, Luwrain iface)
     {
 	NullCheck.notNull(ext, "ext");
 	NullCheck.notNull(iface, "iface");
-		    final LoadedExtension loadedExt = new LoadedExtension(ext);
-	    loadedExt.luwrain = iface;
+	final ExtensionObject[] extObjects = getExtObjects(ext, iface);
+	final LoadedExtension loadedExt = new LoadedExtension(ext, iface, extObjects);
 	    loadedExt.commands = getCommands(ext, iface);
-	    loadedExt.shortcuts = getShortcuts(ext, iface);
-	    loadedExt.extObjects = getExtObjects(ext, iface);
 	    loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
 	    loadedExt.controlPanelFactories = getControlPanelFactories(ext, iface);
 	    return loadedExt;
     }
 
-    private Shortcut[] getShortcuts(Extension ext, Luwrain luwrain)
-    {
-	try { 
-		final Shortcut[] res = ext.getShortcuts(luwrain);
-		return res != null?res:new Shortcut[0];
-	}
-	catch (Exception ee)
-	{
-	    Log.error("core", "extension " + ee.getClass().getName() + " has thrown an exception on providing the list of shortcuts:" + ee.getMessage());
-	    ee.printStackTrace();
-	    return new Shortcut[0];
-	}
-    }
-
     private ExtensionObject[] getExtObjects(Extension ext, Luwrain luwrain)
     {
-	try { 
-	    final ExtensionObject[] res = ext.getExtObjects(luwrain);
-	    return res != null?res:new ExtensionObject[0];
+	final List<ExtensionObject> res = new LinkedList();
+	try {
+	    final ExtensionObject[] e = ext.getExtObjects(luwrain);
+	    for(int i = 0;i < e.length;++i)
+		if (e[i] != null)
+		    res.add(e[i]);
+	    final Shortcut[] s = ext.getShortcuts(luwrain);
+	    for(int i = 0;i < s.length;++i)
+		if (s[i] != null)
+		    res.add(s[i]);
+	    return res.toArray(new ExtensionObject[res.size()]);
 	}
 	catch (Throwable ee)
 	{
@@ -211,7 +205,7 @@ public final class Manager
 	}
     }
 
-    private String[] getExtensionsList()
+    private String[] getExtensionsListFromManifest()
     {
 	Vector<String> res = new Vector<String>();
 	try {
@@ -238,5 +232,18 @@ public final class Manager
 	    ee.printStackTrace();
 	}
 	return res.toArray(new String[res.size()]);
+    }
+
+    private String[] getExtensionsList(CmdLine cmdLine)
+    {
+	NullCheck.notNull(cmdLine, "cmdLine");
+	final String[] cmdlineExtList = cmdLine.getArgs(EXTENSIONS_LIST_PREFIX);
+	if(cmdlineExtList.length > 0)
+	{
+	    for(String s: cmdlineExtList)
+		return s.split(":",-1);
+	    return new String[0];
+	}
+	return getExtensionsListFromManifest();
     }
 }

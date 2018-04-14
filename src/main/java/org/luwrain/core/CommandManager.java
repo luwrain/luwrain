@@ -18,40 +18,14 @@ package org.luwrain.core;
 
 import java.util.*;
 
-class CommandManager
+final class CommandManager
 {
-    class Entry 
+    private final Map<String, Entry> commands = new TreeMap();
+
+    boolean add(Luwrain luwrain, Command command)
     {
-	public Luwrain luwrain;
-	public String name = "";
-	public Command command;
-
-	public Entry(Luwrain luwrain,
-		     String name,
-		     Command command)
-	{
-	    this.luwrain = luwrain;
-	    this.name = name;
-	    this.command = command;
-	    if (luwrain == null)
-		throw new NullPointerException("luwrain may not be null");
-	    if (name == null)
-		throw new NullPointerException("name may not be null");
-	    if (name.trim().isEmpty())
-		throw new IllegalArgumentException("name may not be empty");
-	    if (command == null)
-		throw new NullPointerException("command may not be null");
-	}
-    }
-
-    private TreeMap<String, Entry> commands = new TreeMap<String, Entry>();
-
-    public boolean add(Luwrain luwrain, Command command)
-    {
-	if (luwrain == null)
-	    throw new NullPointerException("luwrain may not be null");
-	if (command == null)
-	    throw new NullPointerException("command may not be null");
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(command, "command");
 	final String name = command.getName();
 	if (name == null || name.trim().isEmpty())
 	    return false;
@@ -61,12 +35,9 @@ class CommandManager
 	return true;
     }
 
-    public boolean run(String name)
+    boolean run(String name)
     {
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (name.trim().isEmpty())
-	    throw new IllegalArgumentException("name may not be empty");
+	NullCheck.notEmpty(name, "name");
 	if (!commands.containsKey(name))
 	    return false;
 	final Entry entry = commands.get(name);
@@ -74,13 +45,30 @@ class CommandManager
 	return true;
     }
 
-    public String[] getCommandNames()
+    String[] getCommandNames()
     {
-	final LinkedList<String> res = new LinkedList<String>();
+	final List<String> res = new LinkedList();
 	for(Map.Entry<String, Entry> e: commands.entrySet())
 	    res.add(e.getKey());
 	String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);
 	return str;
+    }
+
+    static private class Entry 
+    {
+	final Luwrain luwrain;
+	final String name;
+	final Command command;
+
+	Entry(Luwrain luwrain, String name, Command command)
+	{
+	    NullCheck.notNull(luwrain, "luwrain ");
+	    NullCheck.notEmpty(name, "name");
+	    NullCheck.notNull(command, "command");
+	    this.luwrain = luwrain;
+	    this.name = name;
+	    this.command = command;
+	}
     }
 }

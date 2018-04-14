@@ -22,16 +22,22 @@ import org.luwrain.core.*;
 public final class LoadedExtension
 {
     public final Extension ext;
-    public Luwrain luwrain;
+    public final Luwrain luwrain;
+    public final ExtensionObject[] extObjects;
+    
     public Command[] commands;
-    public Shortcut[] shortcuts;
-    public ExtensionObject[] extObjects;
+    //    public Shortcut[] shortcuts;
     public UniRefProc[] uniRefProcs;
     public org.luwrain.cpanel.Factory[] controlPanelFactories;
 
-    LoadedExtension(Extension ext)
+    LoadedExtension(Extension ext, Luwrain luwrain,
+		    ExtensionObject[] extObjects)
     {
 	NullCheck.notNull(ext, "ext");
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNullItems(extObjects, "extObjects");
 	this.ext = ext;
+	this.luwrain = luwrain;
+	this.extObjects = extObjects;
     }
 }

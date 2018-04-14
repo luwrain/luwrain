@@ -191,34 +191,16 @@ final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.exte
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
 	{
+	    objRegistry.takeObjects(e);
 	    final Extension ext = e.ext;
-	    //Shortcuts
-	    for(Shortcut s: e.shortcuts)
-		if (s != null)
-		{
-		    if (!objRegistry.add(e.ext, s))
-			Log.warning(LOG_COMPONENT, "shortcut \'" + s.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  the shortcuts manager to be registered");
-		}
-
-	    for(ExtensionObject s: e.extObjects)
-		    if (!objRegistry.add(ext, s))
-			Log.warning(LOG_COMPONENT, "the shared object \'" + s.getExtObjName() + "\' of extension " + e.getClass().getName() + " has been refused by  the object registry to be registered");
-
-	    //UniRefProcs
+	    //FIXME:
 	    for(UniRefProc p: e.uniRefProcs)
-		if (p != null)
-		{
-		    if (!uniRefProcs.add(e.luwrain, p))
-			    Log.warning("core", "the uniRefProc \'" + p.getUniRefType() + "\' of extension " + e.getClass().getName() + " has been refused by  the uniRefProcs manager to be registered");
-		}
-
-	    //Commands
+		if (!uniRefProcs.add(e.luwrain, p))
+		    Log.warning("core", "the uniRefProc \'" + p.getUniRefType() + "\' of extension " + e.getClass().getName() + " has been refused by  the uniRefProcs manager to be registered");
+	    //FIXME:
 	    for(Command c: e.commands)
-		if (c != null)
-		{
-		    if (!commands.add(e.luwrain, c))
-			Log.warning("core", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
-		}
+		if (!commands.add(e.luwrain, c))
+		    Log.warning("core", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
 	}
     }
 

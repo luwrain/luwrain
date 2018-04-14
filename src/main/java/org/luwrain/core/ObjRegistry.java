@@ -216,7 +216,16 @@ final class ObjRegistry
 		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFailed"), Luwrain.MessageType.ERROR);
     }
 
-    static private class CommandLineToolCommand implements Command
+    void takeObjects(org.luwrain.core.extensions.LoadedExtension loadedExt)
+    {
+	NullCheck.notNull(loadedExt, "loadedExt");
+	    final Extension ext = loadedExt.ext;
+	    	    for(ExtensionObject s: loadedExt.extObjects)
+			if (!add(ext, s))
+			    Log.warning(LOG_COMPONENT, "the extension object \'" + s.getExtObjName() + "\' of the extension " + ext.getClass().getName() + " has been refused by  the object registry");
+    }
+
+    static private final class CommandLineToolCommand implements Command
     {
 	private final String name;
 	private final CommandLineTool tool;
@@ -242,7 +251,7 @@ final class ObjRegistry
 	}
     }
 
-    static private class CommandLineToolShortcut implements Shortcut
+    static private final class CommandLineToolShortcut implements Shortcut
     {
 	private final String name;
 	private final CommandLineTool tool;
