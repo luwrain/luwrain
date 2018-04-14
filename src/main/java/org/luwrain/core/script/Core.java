@@ -20,10 +20,45 @@ import javax.script.*;
 import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.extensions.*;
 
-public class Core
-{
+public final class Core
+    {
     static private final String LOG_COMPONENT = "script";
+
+	public final class ExecResult
+	{
+	    private final DynamicExtension ext;
+	    private final Luwrain luwrain;
+	    private final Exception exception;
+
+	    ExecResult(DynamicExtension ext, Luwrain luwrain, Exception exception )
+	    {
+		this.ext = ext;
+		this.luwrain = luwrain;
+		this.exception = exception;
+	    }
+
+	    public DynamicExtension getExtension()
+	    {
+		return ext;
+	    }
+
+	    public Luwrain getLuwrain()
+	    {
+		return luwrain;
+	    }
+
+	    public Exception getException()
+	    {
+		return exception;
+	    }
+
+	    public boolean isOk()
+	    {
+		return ext != null && exception == null;
+	    }
+	}
 
     private final InterfaceManager interfaces;
 
@@ -33,21 +68,30 @@ public class Core
 	this.interfaces = interfaces;
     }
 
-    public org.luwrain.core.extensions.DynamicExtension exec(String text)
-    {
-	NullCheck.notNull(text, "text");
-		final ScriptExtension ext = new ScriptExtension("fixme");
-				final Luwrain luwrain = interfaces.requestNew(ext);
-		final Luwrain toRelease = luwrain;
-	try {
-	    ext.init(luwrain);
-	    ext.setInstance(new Instance(luwrain));
-	    ext.exec(text);
+	public ExecResult exec(String text)
+	{
+	    NullCheck.notNull(text, "text");
+	    final ScriptExtension ext = new ScriptExtension("fixme");
+	    final Luwrain luwrain = interfaces.requestNew(ext);
+	    Luwrain toRelease = luwrain;
+	    try {
+		ext.init(luwrain);
+		final Instance instance = new Instance(luwrain);
+		ext.setInstance(instance);
+		try {
+		    instance.exec(text);
+		}
+		catch(Exception e)
+		{
+		    Log.error(LOG_COMPONENT, "unable to execute JavaScript:" + e.getClass().getName() + ":" + e.getMessage());
+		    return new ExecResult(null, null, e);
+		}
+		toRelease = null;
+		return new ExecResult(ext, luwrain, null);
+	    }
+	    finally {
+		if (toRelease != null)
+		    interfaces.release(toRelease);
+	    }
 	}
-	finally {
-	    if (toRelease != null)
-		interfaces.release(toRelease);
-	}
-	return ext;
-    }
 }

@@ -23,8 +23,6 @@ import org.luwrain.core.*;
 
 public class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension
 {
-    static private final String LOG_COMPONENT = "core";
-
     final String name;
     private Instance instance = null;
     private Luwrain luwrain = null;
@@ -35,19 +33,10 @@ public class ScriptExtension implements org.luwrain.core.extensions.DynamicExten
 	this.name = name;
     }
 
-    void exec(String text)
+        void setInstance(Instance instance)
     {
-	NullCheck.notNull(text, "text");
-	if (instance == null)
-	    throw new RuntimeException("You must set the instance with setInstance() method before running the script");
-	try {
-	    instance.exec(text);
-	}
-	catch(Throwable e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to execute the script:" + e.getClass().getName() + ":" + e.getMessage());
-	    luwrain.message(e.getClass().getName() + ":" + e.getMessage(), Luwrain.MessageType.ERROR);
-	}
+	NullCheck.notNull(instance, "instance");
+	this.instance = instance;
     }
 
     @Override public String init(Luwrain luwrain)
@@ -57,19 +46,13 @@ public class ScriptExtension implements org.luwrain.core.extensions.DynamicExten
 	return null;
     }
 
-    void setInstance(Instance instance)
+            @Override public void close()
     {
-	NullCheck.notNull(instance, "instance");
-	this.instance = instance;
     }
 
         @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
 	return new ExtensionObject[0];
-    }
-
-        @Override public void close()
-    {
     }
 
     @Override public Command[] getCommands(Luwrain luwrain)

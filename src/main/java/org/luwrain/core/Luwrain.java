@@ -743,25 +743,20 @@ return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware())
 	return core.workers.runExplicitly(workerName);
     }
 
-    public String loadScriptExtension(String text)
+    public String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(text, "text");
-
-	final org.luwrain.core.extensions.DynamicExtension ext = core.script.exec(text);
-	if (ext == null)
-	    return "fixme";
-
-	final org.luwrain.core.extensions.LoadedExtension loadedExt = core.extensions.addDynamicExtension(ext, null);
+	final org.luwrain.core.script.Core.ExecResult execRes = core.script.exec(text);
+	if (!execRes.isOk())
+	    throw new org.luwrain.core.extensions.DynamicExtensionException(execRes.getException());
+	final org.luwrain.core.extensions.LoadedExtension loadedExt = core.extensions.addDynamicExtension(execRes.getExtension(), execRes.getLuwrain());
 	if (loadedExt == null)
-	    return "fixme";
-
+	    throw new org.luwrain.core.extensions.DynamicExtensionException("Trying to load twice the same extension");
 	core.objRegistry.takeObjects(loadedExt);
 	//FIXME:
 	for(Command c: loadedExt.commands)
-	    core.commands.add(null, c);
-
-	
-	return "";
+	    core.commands.add(execRes.getLuwrain(), c);
+		return "";
     }
 
     public void execScript(String text)
