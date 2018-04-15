@@ -67,7 +67,7 @@ public class MutableLinesImpl implements MutableLines
 	return lines.get(index);
     }
 
-    public void setLines(String[] lines)
+    @Override public void setLines(String[] lines)
     {
 	NullCheck.notNullItems(lines, "lines");
 	this.lines.setSize(lines.length);
@@ -75,7 +75,7 @@ public class MutableLinesImpl implements MutableLines
 	    this.lines.set(i, lines[i]);
     }
 
-    public String[] getLines()
+    @Override public String[] getLines()
     {
 	return lines.toArray(new String[lines.size()]);
     }
@@ -111,7 +111,7 @@ public class MutableLinesImpl implements MutableLines
 	lines.remove(index);
     }
 
-    public void clear()
+    @Override public void clear()
     {
 	lines.clear();
     }

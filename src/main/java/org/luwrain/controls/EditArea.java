@@ -19,26 +19,75 @@ package org.luwrain.controls;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class EditArea extends SimpleArea
+public class EditArea extends NavigationArea
 {
-    protected final ControlEnvironment environment;
+    protected final MutableLines content = new MutableLinesImpl();
+    protected String areaName = "";
     protected final MultilineEdit edit;
     protected final ChangeListener listener;
 
-    public EditArea(ControlEnvironment environment, String name,
-		    String[] content, ChangeListener listener)
+    public EditArea(ControlEnvironment context, String areaName,
+		    String[] initialContent, ChangeListener listener)
     {
-	super(environment, name, content);
-	NullCheck.notNull(environment, "environment");
-	this.environment = environment;
+	super(context);
+	NullCheck.notNull(areaName, "areaName");
 	this.listener = listener;
-	edit = new MultilineEdit(environment, new MultilineEditModelChangeListener(new MultilineEditModelTranslator(super.content, this)){
+	this.areaName = areaName;
+	edit = new MultilineEdit(context, new MultilineEditModelChangeListener(new MultilineEditModelTranslator(content, this)){
 		@Override public void onMultilineEditChange()
 		{
 		    if (listener != null)
 			listener.onEditChange();
 		}
 	    });
+    }
+
+        @Override public int getLineCount()
+    {
+	final int value = content.getLineCount();
+	return value > 0?value:1;
+    }
+
+    @Override public String getLine(int index)
+    {
+	if (index < 0)
+	    throw new IllegalArgumentException("index (" + index + ") may not be negative");
+	if (index >= content.getLineCount())
+	    return "";
+	final String line = content.getLine(index);
+	return line != null?line:"";
+    }
+
+    @Override public String getAreaName()
+    {
+	return areaName;
+    }
+
+    public void setAreaName(String areaName)
+    {
+	NullCheck.notNull(areaName, "areaName");
+	this.areaName = areaName;
+	context.onAreaNewName(this);
+    }
+
+    public String[] getLines()
+    {
+	return content.getLines();
+    }
+
+    public void setLines(String[] lines)
+    {
+	NullCheck.notNullItems(lines, "lines");
+	content.setLines(lines);
+	context.onAreaNewContent(this);
+	setHotPoint(getHotPointX(), getHotPointY());
+    }
+
+    public void clear()
+    {
+	content.clear();
+		context.onAreaNewContent(this);
+		setHotPoint(0, 0);
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
