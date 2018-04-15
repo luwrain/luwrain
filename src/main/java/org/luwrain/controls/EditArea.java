@@ -21,28 +21,55 @@ import org.luwrain.core.events.*;
 
 public class EditArea extends NavigationArea
 {
-    protected final MutableLines content = new MutableLinesImpl();
-    protected String areaName = "";
-    protected final MultilineEdit edit;
-    protected final ChangeListener listener;
-
-    public EditArea(ControlEnvironment context, String areaName,
-		    String[] initialContent, ChangeListener listener)
+    public interface ChangeListener
     {
-	super(context);
-	NullCheck.notNull(areaName, "areaName");
-	this.listener = listener;
-	this.areaName = areaName;
-	edit = new MultilineEdit(context, new MultilineEditModelChangeListener(new MultilineEditModelTranslator(content, this)){
+	void onEditChange();
+    }
+
+    public interface ModelWrapperFactory
+    {
+	MultilineEdit.Model newModelWrapper(MultilineEdit.Model model);
+    }
+
+    public final class Params
+    {
+	public ControlEnvironment context = null;
+	public String name = "";
+	public MutableLines content = null;
+	public ChangeListener changeListener = null;
+	public ModelWrapperFactory modelWrapperFactory = null;
+    }
+
+    protected final MutableLines content;
+    protected String areaName = "";
+    protected final ChangeListener changeListener;
+    protected final MultilineEdit edit;
+
+    public EditArea(Params params)
+    {
+	super(params.context);
+	NullCheck.notNull(params, "params");
+	NullCheck.notNull(params.name, "params.name");
+	this.areaName = params.name;
+	this.content = params.content != null?params.content:new MutableLinesImpl();
+	this.changeListener = params.changeListener;
+	MultilineEdit.Model model = new MultilineEditModelTranslator(content, this);
+	if (params.modelWrapperFactory != null)
+	{
+	    final MultilineEdit.Model wrapped = params.modelWrapperFactory.newModelWrapper(model);
+	    if (wrapped != null)
+		model = wrapped;
+	}
+	edit = new MultilineEdit(context, new MultilineEditModelChangeListener(model){
 		@Override public void onMultilineEditChange()
 		{
-		    if (listener != null)
-			listener.onEditChange();
+		    if (changeListener != null)
+			changeListener.onEditChange();
 		}
 	    });
     }
 
-        @Override public int getLineCount()
+    @Override public int getLineCount()
     {
 	final int value = content.getLineCount();
 	return value > 0?value:1;
@@ -86,8 +113,8 @@ public class EditArea extends NavigationArea
     public void clear()
     {
 	content.clear();
-		context.onAreaNewContent(this);
-		setHotPoint(0, 0);
+	context.onAreaNewContent(this);
+	setHotPoint(0, 0);
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -117,10 +144,5 @@ public class EditArea extends NavigationArea
     protected String getTabSeq()
     {
 	return "\t";
-    }
-
-    public interface ChangeListener
-    {
-	void onEditChange();
     }
 }
