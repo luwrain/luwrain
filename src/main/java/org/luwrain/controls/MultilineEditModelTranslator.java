@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 // Hot point position may be adjusted to the content changes only on endEditTrans 
 
 //Keeps lines empty if it is possible providing a fake  first line to be consistent, as it is required by MultilineEdit.Model
-public class MultilineEditModelTranslator implements MultilineEdit.Model
+public class MultilineEditModelTranslator implements MultilineEditCorrector
 {
     protected final MutableLines lines;
     protected final HotPointControl hotPoint;
@@ -270,6 +270,12 @@ public class MultilineEditModelTranslator implements MultilineEdit.Model
 		hotPoint.setHotPointY(hotPoint.getHotPointY() + 1);
 	endEditTrans(false);
 	return lines.getLine(lineIndex + 1);
+    }
+
+    @Override public void doDirectAccessAction(DirectAccessAction action)
+    {
+	NullCheck.notNull(action, "action");
+	action.directAccessAction(lines, hotPoint);
     }
 
     protected void checkPos(int pos, int lineIndex)

@@ -31,7 +31,7 @@ public class EditArea extends NavigationArea
 	MultilineEdit.Model newModelWrapper(MultilineEdit.Model model);
     }
 
-    public final class Params
+    static public final class Params
     {
 	public ControlEnvironment context = null;
 	public String name = "";

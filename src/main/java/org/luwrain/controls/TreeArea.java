@@ -636,7 +636,7 @@ protected int getInitialHotPointX(int index)
 	void endChildEnumeration(Object obj);
     }
 
-    static public class Params
+    static public final class Params
     {
 	public ControlEnvironment environment;
 	public String name;
