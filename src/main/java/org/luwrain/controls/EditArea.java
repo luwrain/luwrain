@@ -26,9 +26,9 @@ public class EditArea extends NavigationArea
 	void onEditChange();
     }
 
-    public interface ModelWrapperFactory
+    public interface CorrectorWrapperFactory
     {
-	MultilineEdit.Model newModelWrapper(MultilineEdit.Model model);
+	MultilineEditCorrector newCorrectorWrapper(MultilineEditCorrector corrector);
     }
 
     static public final class Params
@@ -37,7 +37,7 @@ public class EditArea extends NavigationArea
 	public String name = "";
 	public MutableLines content = null;
 	public ChangeListener changeListener = null;
-	public ModelWrapperFactory modelWrapperFactory = null;
+	public CorrectorWrapperFactory correctorWrapperFactory = null;
     }
 
     protected final MutableLines content;
@@ -53,14 +53,14 @@ public class EditArea extends NavigationArea
 	this.areaName = params.name;
 	this.content = params.content != null?params.content:new MutableLinesImpl();
 	this.changeListener = params.changeListener;
-	MultilineEdit.Model model = new MultilineEditModelTranslator(content, this);
-	if (params.modelWrapperFactory != null)
+	MultilineEditCorrector corrector = new MultilineEditModelTranslator(content, this);
+	if (params.correctorWrapperFactory != null)
 	{
-	    final MultilineEdit.Model wrapped = params.modelWrapperFactory.newModelWrapper(model);
+	    final MultilineEditCorrector wrapped = params.correctorWrapperFactory.newCorrectorWrapper(corrector);
 	    if (wrapped != null)
-		model = wrapped;
+		corrector = wrapped;
 	}
-	edit = new MultilineEdit(context, new MultilineEditModelChangeListener(model){
+	edit = new MultilineEdit(context, new MultilineEditModelChangeListener(corrector){
 		@Override public void onMultilineEditChange()
 		{
 		    if (changeListener != null)
