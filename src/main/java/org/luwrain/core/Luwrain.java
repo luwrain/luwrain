@@ -342,7 +342,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void playSound(Sounds sound)
     {
 	NullCheck.notNull(sound, "sound");
-	core.playSound(sound);
+	runUiSafely(()->core.playSound(sound));
     }
 
     public void popup(Popup popup)
@@ -741,6 +741,13 @@ return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware())
     {
 	NullCheck.notEmpty(workerName, "workerName");
 	return core.workers.runExplicitly(workerName);
+    }
+
+    public void executeBkg(java.util.concurrent.FutureTask task)
+    {
+	NullCheck.notNull(task, "task");
+	//FIXME:maintaining the registry of executed tasks with their associations to Luwrain objects
+	java.util.concurrent.Executors.newSingleThreadExecutor().execute(task);
     }
 
     public java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text)

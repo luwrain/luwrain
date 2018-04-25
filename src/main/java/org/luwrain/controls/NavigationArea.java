@@ -398,7 +398,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     /**
      * Redraws content and updates hot point position.
      */
-    public void refresh()
+    public void redraw()
     {
 	context.onAreaNewContent(this);
 	final int lineCount = getValidLineCount();
