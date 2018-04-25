@@ -395,6 +395,30 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	}
     }
 
+    /**
+     * Redraws content and updates hot point position.
+     */
+    public void refresh()
+    {
+	context.onAreaNewContent(this);
+	final int lineCount = getValidLineCount();
+	if (hotPointY >= lineCount)
+	{
+	    hotPointY = lineCount - 1;
+	    final String line = getLineNotNull(hotPointY);
+	    if (hotPointX > line.length())
+		hotPointX = line.length();
+	    context.onAreaNewHotPoint(this);
+	    return;
+	}
+	final String line = getLineNotNull(hotPointY);
+	if (hotPointX > line.length())
+	{
+	    hotPointX = line.length();
+	    context.onAreaNewHotPoint(this);
+	}
+    }
+
     @Override public void beginHotPointTrans()
     {
 	//FIXME:
@@ -485,10 +509,8 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     protected int getValidLineCount()
     {
 	final int count = getLineCount();
-	if (count < 0)
-	    throw new RuntimeException("Negative number of lines (" + count + ")");
-	if (count == 0)
-	    Log.warning(LOG_COMPONENT, "number of lines equal to zero in NavigationArea");
+	if (count <= 0)
+	    throw new RuntimeException("The area of class " + getClass().getName() + " tries to have the number of lines (" + count + ") less than 1");
 	return count;
     }
 
