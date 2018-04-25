@@ -16,6 +16,7 @@
 
 package org.luwrain.core.script;
 
+import java.util.*;
 import java.io.*;
 
 import javax.script.*;
@@ -31,14 +32,17 @@ class Instance
     private final Luwrain luwrain;
     final Control control;
 
-Instance(Luwrain luwrain)
+    Instance(Luwrain luwrain, Map<String, JSObject> objs)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(objs, "objs");
 	this.luwrain = luwrain;
 	    final ScriptEngineManager manager = new ScriptEngineManager();
 	    this.engine = manager.getEngineByName("nashorn");
 	    this.control = new Control(luwrain);
 	    this.engine.put("Luwrain", this.control);
+	    for(Map.Entry<String, JSObject> e: objs.entrySet())
+		this.engine.put(e.getKey(), e.getValue());
     }
 
     Invocable getInvocable()

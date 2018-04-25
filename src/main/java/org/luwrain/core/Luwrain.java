@@ -743,6 +743,12 @@ return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware())
 	return core.workers.runExplicitly(workerName);
     }
 
+    public java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text)
+    {
+	NullCheck.notNull(context, "context");
+	return core.script.execFuture(this, context, text);
+    }
+
     public String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(text, "text");

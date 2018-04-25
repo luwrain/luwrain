@@ -16,6 +16,8 @@
 
 package org.luwrain.core.script;
 
+import java.util.*;
+
 import javax.script.*;
 import jdk.nashorn.api.scripting.*;
 
@@ -68,6 +70,21 @@ public final class Core
 	this.interfaces = interfaces;
     }
 
+	public java.util.concurrent.Callable execFuture(Luwrain luwrain, Context context, String text)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    NullCheck.notNull(context, "context");
+	    NullCheck.notNull(text, "text");
+	    final Map<String, JSObject> objs = new HashMap();
+	    if (context.output != null)
+		objs.put("Output", new Wrappers.Output(context.output));
+	    final Instance instance = new Instance(luwrain, new HashMap());
+	    return ()->{
+		instance.exec(text);
+		return null;
+	    };
+	}
+
 	public ExecResult exec(String text)
 	{
 	    NullCheck.notNull(text, "text");
@@ -76,7 +93,7 @@ public final class Core
 	    Luwrain toRelease = luwrain;
 	    try {
 		ext.init(luwrain);
-		final Instance instance = new Instance(luwrain);
+		final Instance instance = new Instance(luwrain, new HashMap());
 		ext.setInstance(instance);
 		try {
 		    instance.exec(text);
