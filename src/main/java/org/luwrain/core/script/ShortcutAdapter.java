@@ -45,14 +45,21 @@ final class ShortcutAdapter implements Shortcut
 	if (newObj == null || !(newObj instanceof JSObject))
 	    return null;
 	final ScriptObjectMirror newJsObj = (ScriptObjectMirror)newObj;
-	if (newJsObj.get("name") == null || !(newJsObj.get("name") instanceof JSObject))
-	    return null;
-	if (newJsObj.get("type") == null || !(newJsObj.get("type") instanceof JSObject))
+	if (newJsObj.get("name") == null || newJsObj.get("type") == null)
 	    return null;
 	final String name = newJsObj.get("name").toString();
-	if (name == null || name.trim().isEmpty())
+	if (name == null)
 	    return null;
-	return null;
+	final String type = newJsObj.get("type").toString();
+	if (type == null)
+	    return null;
+	switch(type.trim().toLowerCase())
+	{
+	case "simple":
+	    return new Application[]{new org.luwrain.core.script.app.Simple(name, newJsObj)};
+	default:
+	    return null;
+	}
     }
 
     @Override public String getExtObjName()

@@ -34,7 +34,7 @@ public final class Utils
 	while (obj.hasSlot(index))
 	{
 	    final Object o = obj.getSlot(index);
-	    if (o == null || !(o instanceof JSObject))
+	    if (o == null)
 		break;
 	    res.add(o.toString());
 	    ++index;

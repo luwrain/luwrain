@@ -60,6 +60,8 @@ final class Control extends AbstractJSObject
 	    return (BiPredicate)this::addShortcut;
 	case "addCommand":
 	    return (BiPredicate)this::addCommand;
+	case "launchApp":
+	    return (Predicate)this::launchApp;
 	default:
 	    return null;
 	}
@@ -111,5 +113,14 @@ final class Control extends AbstractJSObject
 	final JSObject func = (JSObject)obj;
 	commands.add(new CommandAdapter(name.toString(), func));
 	return true;
+    }
+
+    private boolean launchApp(Object name)
+    {
+	if (name == null)
+	    return false;
+luwrain.launchApp(name.toString());
+//FIXME:proper return value
+return true;
     }
 }

@@ -20,23 +20,27 @@ import java.util.*;
 import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 
 public final class Simple implements Application
 {
-	private final String name;
-	private final ScriptObjectMirror jsObj;
+    private final String name;
+    private final ScriptObjectMirror jsObj;
 
     private Luwrain luwrain = null;
     private NavigationArea area = null;
-    private String[] lines = new String[0];
+    private String[] lines = null;
 
-public Simple(String name, ScriptObjectMirror jsObj)
-	{
-	    NullCheck.notEmpty(name, "name");
-	    NullCheck.notNull(jsObj, "jsObj");
-	    this.name = name;
+    public Simple(String name, ScriptObjectMirror jsObj)
+    {
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(jsObj, "jsObj");
+	this.name = name;
 	    this.jsObj = jsObj;
+	    this.lines = requestLines();
+	    if (this.lines == null)
+		this.lines = new String[0];
 	}
 
         @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -50,6 +54,27 @@ public Simple(String name, ScriptObjectMirror jsObj)
     private void createArea()
     {
 	this.area = new NavigationArea(new DefaultControlEnvironment(luwrain)){
+		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		{
+		    NullCheck.notNull(event, "event");
+		    if (super.onKeyboardEvent(event))
+			return true;
+		    return Simple.this.handleKeyboardEvent(event);
+		}
+		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		{
+		    NullCheck.notNull(event, "event");
+		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+			return super.onEnvironmentEvent(event);
+		    switch(event.getCode())
+		    {
+		    case CLOSE:
+			closeApp();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
 		@Override public String getAreaName()
 		{
 		    return name;
@@ -67,6 +92,61 @@ public Simple(String name, ScriptObjectMirror jsObj)
 	    };
     }
 
+    private boolean handleKeyboardEvent(KeyboardEvent event)
+    {
+	if (jsObj.get("onInputEvent") == null || !(jsObj.get("onInputEvent") instanceof JSObject))
+	    return false;
+	final JSObject func = (JSObject)jsObj.get("onInputEvent");
+	final Object res = func.call(jsObj, new Object[]{makeInputEventName(event)});
+	if (res != null && (res instanceof java.lang.Boolean))
+	    if (((java.lang.Boolean)res).booleanValue())
+	{
+	    updateLines();
+	    return true;
+	}
+	return false;
+    }
+
+    private String[] requestLines()
+    {
+	    if (jsObj.get("lines") == null || !(jsObj.get("lines") instanceof JSObject))
+		return null;
+	    final List<String> value = org.luwrain.core.script.Utils.getStringArray((JSObject)jsObj.get("lines"));
+	    if (value == null)
+		return null;
+	    Log.debug("proba", "" + value.size());
+	    return value.toArray(new String[value.size()]);
+    }
+
+    private void updateLines()
+{
+    final String[] newLines = requestLines();
+    if (theSameLines(newLines))
+    {
+	this.lines = newLines;
+	luwrain.onAreaNewContent(area);
+    }
+}
+
+private boolean theSameLines(String[] value)
+{
+    NullCheck.notNullItems(value, "value");
+    if (value.length != lines.length)
+	return  false;
+    for(int i = 0;i < value.length;++i)
+	if (!value[i].equals(lines[i]))
+	    return false;
+    return true;
+}
+
+    private String makeInputEventName(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (event.isSpecial())
+	    return event.getSpecial().toString();
+	return "" + event.getChar();
+    }
+
 @Override public AreaLayout getAreaLayout()
 {
     return new AreaLayout(area);
@@ -81,27 +161,4 @@ public Simple(String name, ScriptObjectMirror jsObj)
     {
 	luwrain.closeApp();
     }
-
-private void updateLines()
-{
-    if (jsObj.get("lines") == null && (jsObj.get("lines") instanceof JSObject))
-    {
-	final List<String> value = org.luwrain.core.script.Utils.getStringArray((JSObject)jsObj.get("lines"));
-	if (value != null)
-	{
-	    this.lines = value.toArray(new String[value.size()]);
-	}
-    }
-}
-
-private boolean theSameLines(String[] value)
-{
-    NullCheck.notNullItems(value, "value");
-    if (value.length != lines.length)
-	return  false;
-    for(int i = 0;i < value.length;++i)
-	if (!value[i].equals(lines[i]))
-	    return false;
-    return true;
-}
 }
