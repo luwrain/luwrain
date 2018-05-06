@@ -38,9 +38,6 @@ public final class Simple implements Application
 	NullCheck.notNull(jsObj, "jsObj");
 	this.name = name;
 	    this.jsObj = jsObj;
-	    this.lines = requestLines();
-	    if (this.lines == null)
-		this.lines = new String[0];
 	}
 
         @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -53,6 +50,9 @@ public final class Simple implements Application
 
     private void createArea()
     {
+	    this.lines = requestLines();
+	    if (this.lines == null)
+		this.lines = new String[0];
 	this.area = new NavigationArea(new DefaultControlEnvironment(luwrain)){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
@@ -90,6 +90,9 @@ public final class Simple implements Application
 		    return index < lines.length?lines[index]:"";
 		}
 	    };
+	final int hotPointX = requestHotPointX();
+	final int hotPointY = requestHotPointY();
+	area.setHotPoint(hotPointX >= 0?hotPointX:0, hotPointY >= 0?hotPointY:0);
     }
 
     private boolean handleKeyboardEvent(KeyboardEvent event)
@@ -102,6 +105,7 @@ public final class Simple implements Application
 	    if (((java.lang.Boolean)res).booleanValue())
 	{
 	    updateLines();
+	    updateHotPoint();
 	    return true;
 	}
 	return false;
@@ -118,23 +122,55 @@ public final class Simple implements Application
 	    return value.toArray(new String[value.size()]);
     }
 
+    private int requestHotPointX()
+    {
+	    if (jsObj.get("hotPointX") == null || !(jsObj.get("hotPointX") instanceof java.lang.Integer))
+		return -1;
+	    final java.lang.Integer value = (java.lang.Integer)jsObj.get("hotPointX");
+	    if (value.intValue() < 0)
+		return -1;
+	    return value.intValue();
+    }
+
+	        private int requestHotPointY()
+    {
+	    if (jsObj.get("hotPointY") == null || !(jsObj.get("hotPointY") instanceof java.lang.Integer))
+		return -1;
+	    final java.lang.Integer value = (java.lang.Integer)jsObj.get("hotPointY");
+	    if (value.intValue() < 0)
+		return -1;
+	    return value.intValue();
+    }
+
     private void updateLines()
 {
     final String[] newLines = requestLines();
-    if (theSameLines(newLines))
+    if (!theSameLines(newLines))
     {
 	this.lines = newLines;
 	luwrain.onAreaNewContent(area);
     }
 }
 
+    private void updateHotPoint()
+    {
+int newX = requestHotPointX();
+int newY = requestHotPointY();
+if (newX < 0)
+    newX = area.getHotPointX();
+if (newY < 0)
+    newY = area.getHotPointY();
+if (newX != area.getHotPointX() || newY != area.getHotPointY())
+    area.setHotPoint(newX, newY);
+    }
+
 private boolean theSameLines(String[] value)
 {
     NullCheck.notNullItems(value, "value");
-    if (value.length != lines.length)
+    if (value.length != this.lines.length)
 	return  false;
     for(int i = 0;i < value.length;++i)
-	if (!value[i].equals(lines[i]))
+	if (!value[i].equals(this.lines[i]))
 	    return false;
     return true;
 }
