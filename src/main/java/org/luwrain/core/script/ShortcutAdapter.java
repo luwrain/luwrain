@@ -59,24 +59,4 @@ final class ShortcutAdapter implements Shortcut
     {
 	return name;
     }
-
-    /*
-    static private List<String> getStringArray(JSObject obj)
-    {
-	NullCheck.notNull(obj, "obj");
-	final List<String> res = new LinkedList();
-	if (!obj.isArray())
-	    return null;
-	int index = 0;
-	while (obj.hasSlot(index))
-	{
-	    final Object o = obj.getSlot(index);
-	    if (o == null || !(o instanceof JSObject))
-		break;
-	    res.add(o.toString());
-	    ++index;
-	}
-	return res;
-    }
-    */
 }

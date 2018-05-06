@@ -92,7 +92,9 @@ public class Init implements org.luwrain.base.CoreProperties
 	    return dataDir;
 	case "luwrain.dir.scripts":
 	    return new File(dataDir, "scripts");
-	case "luwrain.dir.properties":
+	case "luwrain.dir.js":
+	    return new File(dataDir, "js");
+    	case "luwrain.dir.properties":
 	    return new File(dataDir, "properties");
 	case "luwrain.dir.sounds":
 	    return new File(dataDir, "sounds");

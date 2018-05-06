@@ -18,6 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.io.*;
 import java.nio.file.*;
 
 import org.luwrain.core.events.*;
@@ -35,7 +36,7 @@ class Core extends EventDispatching
     final OperatingSystem os;
 final Interaction interaction;
 
-final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
+    //final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
     private final org.luwrain.shell.Desktop desktop = new org.luwrain.shell.Desktop();
 
     //        private AreaListening listening = null;
@@ -139,13 +140,33 @@ final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.exte
 	extensions.load((ext)->interfaces.requestNew(ext), cmdLine);
 	initI18n();
 	initObjects();
+	Log.debug(LOG_COMPONENT, "Loading dynamic script extensions");
+	if (coreProps.getFileProperty("luwrain.dir.js").exists() && coreProps.getFileProperty("luwrain.dir.js").isDirectory())
+	{
+	    final File[] files = coreProps.getFileProperty("luwrain.dir.js").listFiles();
+	    for(File f: files)
+	    {
+		if (!f.exists() || f.isDirectory())
+		    continue;
+		if (!f.getName().endsWith(".js"))
+		    continue;
+		try {
+		    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
+		    final String id = loadScriptExtensionFromFile(f);
+		    Log.debug(LOG_COMPONENT, "ID of the loaded script is " + id);
+		}
+		catch(org.luwrain.core.extensions.DynamicExtensionException e)
+		{
+		    Log.error(LOG_COMPONENT, "unable to load the script extension " + f.getAbsolutePath() + ":" + e.getMessage());
+		}
+	    }
+	} else
+	    Log.warning(LOG_COMPONENT, "the directory " + coreProps.getFileProperty("luwrain.dir.js").getAbsolutePath() + " does not exist, skipping loading of dynamic script extensions");
 	if (!speech.init(objRegistry.getSpeechFactories()))
 	    Log.warning(LOG_COMPONENT, "unable to initialize speech core, very likely LUWRAIN will be silent");
 	braille.init(registry, os.getBraille(), this);
-	//	globalKeys = new GlobalKeys(registry);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
-
 	//loading player
 	if (!coreProps.getProperty(PLAYER_FACTORY_PROP_NAME).isEmpty())
 	{
@@ -161,7 +182,7 @@ final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.exte
 		    if (this.player != null)
 			Log.debug(LOG_COMPONENT, "loaded player instance of class " + this.player.getClass().getName()); else
 			Log.error(LOG_COMPONENT, "player factory of the class " + playerFactoryName + " returned null, no player");
-					} else
+		} else
 		{
 		    Log.error(LOG_COMPONENT, "the player factory class " + playerFactoryName + " is not an instance of org.luwrain.player.Factory ");
 		    this.player =null;
@@ -174,7 +195,6 @@ final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.exte
 	    }
 	} else
 	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
-
 	desktop.ready(/*i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME)*/);
 	sounds.init(registry, coreProps.getFileProperty("luwrain.dir.data").toPath());
 	uiSettings = Settings.createUserInterface(registry);

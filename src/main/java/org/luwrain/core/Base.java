@@ -17,7 +17,10 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.io.*;
 import java.nio.file.*;
+
+import org.luwrain.util.*;
 
 abstract class Base implements org.luwrain.base.EventConsumer
 {
@@ -34,8 +37,9 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final String lang;
 
     private final Thread mainCoreThread;
-    final ObjRegistry objRegistry = new ObjRegistry();
     protected final InterfaceManager interfaces = new InterfaceManager(this);
+    final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
+         final ObjRegistry objRegistry = new ObjRegistry();
     protected final org.luwrain.core.script.Core script = new org.luwrain.core.script.Core(interfaces);
     protected final EventQueue eventQueue = new EventQueue();
     protected final MainStopCondition mainStopCondition = new MainStopCondition();
@@ -228,6 +232,38 @@ public void playSound(Sounds sound)
 	return interfaces.objForEnvironment;
     }
 
+String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
+    {
+	NullCheck.notNull(text, "text");
+	final org.luwrain.core.script.Core.ExecResult execRes = script.exec(text);
+	if (!execRes.isOk())
+	    throw new org.luwrain.core.extensions.DynamicExtensionException(execRes.getException());
+	final org.luwrain.core.extensions.LoadedExtension loadedExt = extensions.addDynamicExtension(execRes.getExtension(), execRes.getLuwrain());
+	if (loadedExt == null)
+	    throw new org.luwrain.core.extensions.DynamicExtensionException("Trying to load twice the same extension");
+objRegistry.takeObjects(loadedExt);
+/*
+	for(Command c: loadedExt.commands)
+	    core.commands.add(execRes.getLuwrain(), c);
+*/
+		return "";
+    }
+
+    String loadScriptExtensionFromFile(File file) throws org.luwrain.core.extensions.DynamicExtensionException
+    {
+	NullCheck.notNull(file, "file");
+	final String text;
+	try {
+	    text = FileUtils.readTextFileSingleString(file, "UTF-8");
+	}
+	catch(IOException e)
+	{
+	    throw new org.luwrain.core.extensions.DynamicExtensionException(e);
+	}
+	return loadScriptExtension(text);
+    }
+
+
 	    static protected class MainStopCondition implements StopCondition
     {
 	private boolean shouldContinue = true;//FIXME:No static members
@@ -241,7 +277,7 @@ public void playSound(Sounds sound)
 	{
 	    shouldContinue = false;
 	}
-    }
+	    }
 
     static class PopupStopCondition implements Base.StopCondition
     {

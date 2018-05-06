@@ -31,6 +31,7 @@ final class Control extends AbstractJSObject
 {
     private final Luwrain luwrain;
     final List<CommandLineTool> cmdLineTools = new LinkedList();
+    final List<Shortcut> shortcuts = new LinkedList();
 
     Control(Luwrain luwrain)
     {
@@ -53,6 +54,9 @@ final class Control extends AbstractJSObject
 	    return (Consumer)this::message;
 	    	    	case "addCommandLineTool":
 	    return (BiPredicate)this::addCommandLineTool;
+	    	    	    	case "addApp":
+	case "addShortcut":
+	    return (BiPredicate)this::addApp;
 	case "addCommand":
 	    return (Predicate)this::addCommand;
 	default:
@@ -77,6 +81,20 @@ final class Control extends AbstractJSObject
 	final ScriptObjectMirror newJsObj = (ScriptObjectMirror)newObj;
 	luwrain.message(newJsObj.get("name").toString());
 	//	luwrain.message(o2.getClass().getName());
+	return true;
+    }
+
+    private boolean addApp(Object name, Object obj)
+    {
+	if (name == null || obj == null)
+	    return false;
+	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
+	    return false;
+	for(Shortcut s: shortcuts)
+	    if (s.getExtObjName().equals(name.toString()))
+		return false;
+	final jdk.nashorn.api.scripting.ScriptObjectMirror cons = (jdk.nashorn.api.scripting.ScriptObjectMirror)obj;
+	shortcuts.add(new ShortcutAdapter(name.toString(), cons));
 	return true;
     }
 
