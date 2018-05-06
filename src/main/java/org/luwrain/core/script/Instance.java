@@ -45,20 +45,9 @@ class Instance
 		this.engine.put(e.getKey(), e.getValue());
     }
 
-    Invocable getInvocable()
-    {
-	return (Invocable) engine;
-    }
-
         void exec(String text) throws ScriptException
     {
 	NullCheck.notNull(text, "text");
 	engine.eval(text);
-    }
-
-    void exec(InputStream is) throws ScriptException
-    {
-	NullCheck.notNull(is, "is");
-	engine.eval(new BufferedReader(new InputStreamReader(is)));
     }
 }

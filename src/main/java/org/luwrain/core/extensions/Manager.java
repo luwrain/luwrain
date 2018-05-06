@@ -127,6 +127,7 @@ public final class Manager
 		return null;
 	final LoadedExtension loadedExt = createLoadedExtension(ext, luwrain);
 	dynamicExtensions.add(loadedExt);
+	Log.debug("proba", "" + loadedExt.extObjects.length);
 	return loadedExt;
     }
 

@@ -17,9 +17,7 @@ abstract class EventDispatching extends EnvironmentAreas
     static private final int POPUP_BLOCKING_EVENT_REJECTED = 1;
     static private final int POPUP_BLOCKING_TRY_AGAIN = 2;
 
-    final CommandManager commands = new CommandManager();
-protected final GlobalKeys globalKeys;
-
+    protected final GlobalKeys globalKeys;
     protected Listening listening = null;
 
     protected EventDispatching(CmdLine cmdLine, Registry registry,

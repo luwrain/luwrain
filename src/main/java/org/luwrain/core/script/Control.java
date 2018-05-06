@@ -20,8 +20,8 @@ package org.luwrain.core.script;
 
 import java.util.*;
 import javax.script.*;
-import jdk.nashorn.api.scripting.AbstractJSObject;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.api.*;
+import jdk.nashorn.api.scripting.*;
 import java.util.function.*;
 
 import org.luwrain.base.*;
@@ -32,6 +32,7 @@ final class Control extends AbstractJSObject
     private final Luwrain luwrain;
     final List<CommandLineTool> cmdLineTools = new LinkedList();
     final List<Shortcut> shortcuts = new LinkedList();
+    final List<Command> commands = new LinkedList();
 
     Control(Luwrain luwrain)
     {
@@ -50,15 +51,15 @@ final class Control extends AbstractJSObject
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
-	    	case "message":
+	case "message":
 	    return (Consumer)this::message;
-	    	    	case "addCommandLineTool":
+	case "addCommandLineTool":
 	    return (BiPredicate)this::addCommandLineTool;
-	    	    	    	case "addApp":
+	case "addApp":
 	case "addShortcut":
-	    return (BiPredicate)this::addApp;
+	    return (BiPredicate)this::addShortcut;
 	case "addCommand":
-	    return (Predicate)this::addCommand;
+	    return (BiPredicate)this::addCommand;
 	default:
 	    return null;
 	}
@@ -76,7 +77,7 @@ final class Control extends AbstractJSObject
 	    return false;
 	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
 	    return false;
-	final jdk.nashorn.api.scripting.ScriptObjectMirror cons = (jdk.nashorn.api.scripting.ScriptObjectMirror)obj;
+	final JSObject cons = (JSObject)obj;
 	final Object newObj = cons.newObject();
 	final ScriptObjectMirror newJsObj = (ScriptObjectMirror)newObj;
 	luwrain.message(newJsObj.get("name").toString());
@@ -84,7 +85,7 @@ final class Control extends AbstractJSObject
 	return true;
     }
 
-    private boolean addApp(Object name, Object obj)
+    private boolean addShortcut(Object name, Object obj)
     {
 	if (name == null || obj == null)
 	    return false;
@@ -93,13 +94,22 @@ final class Control extends AbstractJSObject
 	for(Shortcut s: shortcuts)
 	    if (s.getExtObjName().equals(name.toString()))
 		return false;
-	final jdk.nashorn.api.scripting.ScriptObjectMirror cons = (jdk.nashorn.api.scripting.ScriptObjectMirror)obj;
+	final JSObject cons = (JSObject)obj;
 	shortcuts.add(new ShortcutAdapter(name.toString(), cons));
 	return true;
     }
 
-    private boolean addCommand(Object obj)
+        private boolean addCommand(Object name, Object obj)
     {
-	return false;
+	if (name == null || obj == null)
+	    return false;
+	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
+	    return false;
+	for(Command c: commands)
+	    if (c.getName().equals(name.toString()))
+		return false;
+	final JSObject func = (JSObject)obj;
+	commands.add(new CommandAdapter(name.toString(), func));
+	return true;
     }
 }

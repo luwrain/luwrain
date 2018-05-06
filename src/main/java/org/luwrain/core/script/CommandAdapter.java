@@ -14,39 +14,37 @@
    General Public License for more details.
 */
 
+// https://docs.oracle.com/javase/8/docs/jdk/api/nashorn/jdk/nashorn/api/scripting/ScriptObjectMirror.html
+
 package org.luwrain.core.script;
 
-import javax.script.*;
+import java.io.*;
+import java.util.*;
+import jdk.nashorn.api.scripting.*;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-final class CommandAdapter implements Command 
+final class CommandAdapter implements Command
 {
-    private final Instance instance;
-    private final Object obj;
+    private final String name;
+    private final JSObject func;
 
-    CommandAdapter(Instance instance, Object obj)
+    CommandAdapter(String name, JSObject func)
     {
-	NullCheck.notNull(instance, "instance");
-	NullCheck.notNull(obj, "obj");
-	this.instance = instance;
-	this.obj = obj;
-    }
-
-    @Override public String getName()
-    {
-	return "";
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(func, "func");
+	this.name = name;
+	this.func = func;
     }
 
     @Override public void onCommand(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	try {
-	    final Object res = instance.getInvocable().invokeMethod(obj, "onCommand");
-	}
-	catch(ScriptException | NoSuchMethodException e)
-	{
-	    luwrain.crash(e);
-	}
+	func.call(null, new Object[0]);
+    }
+
+    @Override public String getName()
+    {
+	return name;
     }
 }

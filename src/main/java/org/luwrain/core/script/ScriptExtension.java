@@ -18,6 +18,8 @@
 
 package org.luwrain.core.script;
 
+import java.util.*;
+
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
@@ -50,14 +52,19 @@ public class ScriptExtension implements org.luwrain.core.extensions.DynamicExten
     {
     }
 
-        @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
+    @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	return new ExtensionObject[0];
+	final List<ExtensionObject> res = new LinkedList();
+	for(Shortcut s: instance.control.shortcuts )
+	    res.add(s);
+	for(CommandLineTool t: instance.control.cmdLineTools)
+	    res.add(t);
+	return res.toArray(new ExtensionObject[res.size()]);
     }
 
     @Override public Command[] getCommands(Luwrain luwrain)
     {
-	return new Command[0];
+	return instance.control.commands.toArray(new Command[instance.control.commands.size()]);
     }
 
     @Override public Shortcut[] getShortcuts(Luwrain luwrain)

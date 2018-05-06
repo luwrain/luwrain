@@ -40,6 +40,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final InterfaceManager interfaces = new InterfaceManager(this);
     final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
          final ObjRegistry objRegistry = new ObjRegistry();
+    final CommandManager commands = new CommandManager();//FIXME:must be merged into objRegistry
     protected final org.luwrain.core.script.Core script = new org.luwrain.core.script.Core(interfaces);
     protected final EventQueue eventQueue = new EventQueue();
     protected final MainStopCondition mainStopCondition = new MainStopCondition();
@@ -232,7 +233,7 @@ public void playSound(Sounds sound)
 	return interfaces.objForEnvironment;
     }
 
-String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
+    String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(text, "text");
 	final org.luwrain.core.script.Core.ExecResult execRes = script.exec(text);
@@ -240,13 +241,14 @@ String loadScriptExtension(String text) throws org.luwrain.core.extensions.Dynam
 	    throw new org.luwrain.core.extensions.DynamicExtensionException(execRes.getException());
 	final org.luwrain.core.extensions.LoadedExtension loadedExt = extensions.addDynamicExtension(execRes.getExtension(), execRes.getLuwrain());
 	if (loadedExt == null)
+	{
+	    interfaces.release(execRes.getLuwrain());
 	    throw new org.luwrain.core.extensions.DynamicExtensionException("Trying to load twice the same extension");
-objRegistry.takeObjects(loadedExt);
-/*
-	for(Command c: loadedExt.commands)
-	    core.commands.add(execRes.getLuwrain(), c);
-*/
-		return "";
+	}
+	objRegistry.takeObjects(loadedExt);
+	for(Command c: loadedExt.commands)//FIXME:
+	    commands.add(execRes.getLuwrain(), c);
+	return "fixme";
     }
 
     String loadScriptExtensionFromFile(File file) throws org.luwrain.core.extensions.DynamicExtensionException
