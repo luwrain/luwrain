@@ -121,11 +121,11 @@ public final class Simple implements Application
 	    return value.toArray(new String[value.size()]);
     }
 
-    private int requestHotPointX()
+        private int requestHotPointX()
     {
-	    if (jsObj.get("hotPointX") == null || !(jsObj.get("hotPointX") instanceof java.lang.Integer))
+	    	    if (jsObj.get("hotPointX") == null || !(jsObj.get("hotPointX") instanceof java.lang.Number))
 		return -1;
-	    final java.lang.Integer value = (java.lang.Integer)jsObj.get("hotPointX");
+		    final java.lang.Number value = (java.lang.Number)jsObj.get("hotPointX");
 	    if (value.intValue() < 0)
 		return -1;
 	    return value.intValue();
@@ -133,9 +133,9 @@ public final class Simple implements Application
 
 	        private int requestHotPointY()
     {
-	    if (jsObj.get("hotPointY") == null || !(jsObj.get("hotPointY") instanceof java.lang.Integer))
+	    if (jsObj.get("hotPointY") == null || !(jsObj.get("hotPointY") instanceof java.lang.Number))
 		return -1;
-	    final java.lang.Integer value = (java.lang.Integer)jsObj.get("hotPointY");
+	    final java.lang.Number value = (java.lang.Number)jsObj.get("hotPointY");
 	    if (value.intValue() < 0)
 		return -1;
 	    return value.intValue();
