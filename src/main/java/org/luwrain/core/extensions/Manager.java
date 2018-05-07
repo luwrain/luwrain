@@ -127,9 +127,30 @@ public final class Manager
 		return null;
 	final LoadedExtension loadedExt = createLoadedExtension(ext, luwrain);
 	dynamicExtensions.add(loadedExt);
-	Log.debug("proba", "" + loadedExt.extObjects.length);
 	return loadedExt;
     }
+
+    public boolean unloadDynamicExtension(Extension ext)
+    {
+	NullCheck.notNull(ext, "ext");
+	final Iterator<LoadedExtension> it = dynamicExtensions.iterator();
+	while (it.hasNext())
+	    if (it.next().ext == ext)
+	    {
+		dynamicExtensions.remove(it);
+		return true;
+	    }
+	return false;
+    }
+
+	public LoadedExtension getDynamicExtensionById(String id)
+	{
+	    NullCheck.notEmpty(id, "id");
+	    for(LoadedExtension e: dynamicExtensions)
+		if (e.id.equals(id))
+		    return e;
+	    return null;
+	}
 
     private LoadedExtension createLoadedExtension(Extension ext, Luwrain iface)
     {

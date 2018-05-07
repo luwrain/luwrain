@@ -146,7 +146,6 @@ if (newX != area.getLocalHotPointX() || newY != area.getLocalHotPointY())
 {
     area.setLocalHotPointX(newX);
     area.setLocalHotPointY(newY);
-    luwrain.message("" + area.getHotPointY());
 }
     }
 

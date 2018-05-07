@@ -55,6 +55,17 @@ final class CommandManager
 	return str;
     }
 
+    void deleteByInstance(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final List<String> deleting = new LinkedList();
+		for(Map.Entry<String, Entry> e: commands.entrySet())
+		    if (e.getValue().luwrain == luwrain)
+			deleting.add(e.getKey());
+		for(String s: deleting)
+		    commands.remove(s);
+    }
+
     static private class Entry 
     {
 	final Luwrain luwrain;

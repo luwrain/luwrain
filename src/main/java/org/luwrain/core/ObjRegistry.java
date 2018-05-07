@@ -43,7 +43,6 @@ final class ObjRegistry
 
     private Map<String, Entry<Shortcut>> shortcuts = new HashMap();
     private Map<String, Entry<CommandLineTool>> cmdLineTools = new HashMap();
-
     private Map<String, Entry<Worker>> workers = new HashMap();
     private Map<String, Entry<org.luwrain.speech.Factory>> speechFactories = new HashMap();
     private Map<String, Entry<MediaResourcePlayer>> players = new HashMap();
@@ -109,6 +108,16 @@ final class ObjRegistry
 								if (!res)
 	    Log.warning(LOG_COMPONENT, "failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
 	return res;
+    }
+
+    void deleteByExt(Extension ext)
+    {
+	NullCheck.notNull(ext, "ext");
+	removeEntriesByExt(shortcuts, ext);
+	removeEntriesByExt(cmdLineTools, ext);
+	removeEntriesByExt(workers, ext);
+	removeEntriesByExt(speechFactories, ext);
+	removeEntriesByExt(players, ext);
     }
 
     CommandLineTool getCommandLineTool(String name)
@@ -224,6 +233,19 @@ final class ObjRegistry
 			if (!add(ext, s))
 			    Log.warning(LOG_COMPONENT, "the extension object \'" + s.getExtObjName() + "\' of the extension " + ext.getClass().getName() + " has been refused by  the object registry");
     }
+
+    static private void removeEntriesByExt(Map map, Extension ext)
+    {
+	NullCheck.notNull(map, "map");
+	NullCheck.notNull(ext, "ext");
+	final Map<String, org.luwrain.core.ObjRegistry.Entry> entryMap = (Map<String, Entry>)map;
+	final List<String> deleting = new LinkedList();
+	for(Map.Entry<String, org.luwrain.core.ObjRegistry.Entry> e: entryMap.entrySet())
+	if (e.getValue().ext == ext)
+	    deleting.add(e.getKey());
+    for(String s: deleting)
+	map.remove(s);
+	}
 
     static private final class CommandLineToolCommand implements Command
     {

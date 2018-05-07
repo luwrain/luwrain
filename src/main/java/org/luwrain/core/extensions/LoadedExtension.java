@@ -23,6 +23,7 @@ public final class LoadedExtension
 {
     public final Extension ext;
     public final Luwrain luwrain;
+    public final String id;
     public final ExtensionObject[] extObjects;
     
     public Command[] commands;
@@ -38,6 +39,7 @@ public final class LoadedExtension
 	NullCheck.notNullItems(extObjects, "extObjects");
 	this.ext = ext;
 	this.luwrain = luwrain;
+	this.id = java.util.UUID.randomUUID().toString();
 	this.extObjects = extObjects;
     }
 }

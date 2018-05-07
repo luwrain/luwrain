@@ -236,7 +236,8 @@ public void playSound(Sounds sound)
     String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(text, "text");
-	final org.luwrain.core.script.Core.ExecResult execRes = script.exec(text);
+	mainCoreThreadOnly();
+		final org.luwrain.core.script.Core.ExecResult execRes = script.exec(text);
 	if (!execRes.isOk())
 	    throw new org.luwrain.core.extensions.DynamicExtensionException(execRes.getException());
 	final org.luwrain.core.extensions.LoadedExtension loadedExt = extensions.addDynamicExtension(execRes.getExtension(), execRes.getLuwrain());
@@ -248,7 +249,7 @@ public void playSound(Sounds sound)
 	objRegistry.takeObjects(loadedExt);
 	for(Command c: loadedExt.commands)//FIXME:
 	    commands.add(execRes.getLuwrain(), c);
-	return "fixme";
+	return loadedExt.id;
     }
 
     String loadScriptExtensionFromFile(File file) throws org.luwrain.core.extensions.DynamicExtensionException
@@ -263,6 +264,21 @@ public void playSound(Sounds sound)
 	    throw new org.luwrain.core.extensions.DynamicExtensionException(e);
 	}
 	return loadScriptExtension(text);
+    }
+
+        boolean unloadDynamicExtension(String extId)
+    {
+	NullCheck.notEmpty(extId, "extId");
+	Log.debug("proba", "deleting " + extId);
+	mainCoreThreadOnly();
+	final org.luwrain.core.extensions.LoadedExtension ext = extensions.getDynamicExtensionById(extId);
+	if (ext == null)
+	    return false;
+	Log.debug("proba", "found");
+	objRegistry.deleteByExt(ext.ext);
+	//FIXME:workers
+	commands.deleteByInstance(ext.luwrain);
+	return extensions.unloadDynamicExtension(ext.ext);
     }
 
 
