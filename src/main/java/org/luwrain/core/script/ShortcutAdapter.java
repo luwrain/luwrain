@@ -57,7 +57,9 @@ final class ShortcutAdapter implements Shortcut
 	{
 	case "simple":
 	    return new Application[]{new org.luwrain.core.script.app.Simple(name, newJsObj)};
-	default:
+	    	case "simple-centered":
+	    return new Application[]{new org.luwrain.core.script.app.SimpleCentered(name, newJsObj)};
+	    	default:
 	    return null;
 	}
     }
