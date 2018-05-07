@@ -269,12 +269,10 @@ public void playSound(Sounds sound)
         boolean unloadDynamicExtension(String extId)
     {
 	NullCheck.notEmpty(extId, "extId");
-	Log.debug("proba", "deleting " + extId);
 	mainCoreThreadOnly();
 	final org.luwrain.core.extensions.LoadedExtension ext = extensions.getDynamicExtensionById(extId);
 	if (ext == null)
 	    return false;
-	Log.debug("proba", "found");
 	objRegistry.deleteByExt(ext.ext);
 	//FIXME:workers
 	commands.deleteByInstance(ext.luwrain);

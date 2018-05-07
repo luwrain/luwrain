@@ -118,7 +118,6 @@ public final class Simple implements Application
 	    final List<String> value = org.luwrain.core.script.Utils.getStringArray((JSObject)jsObj.get("lines"));
 	    if (value == null)
 		return null;
-	    Log.debug("proba", "" + value.size());
 	    return value.toArray(new String[value.size()]);
     }
 

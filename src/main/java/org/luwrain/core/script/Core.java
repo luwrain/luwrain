@@ -78,7 +78,6 @@ public final class Core
 	    final Map<String, JSObject> objs = new HashMap();
 	    if (context.output != null)
 		objs.put("Output", new Wrappers.Output(context.output));
-	    Log.debug("proba", "objs " + objs.size());
 	    final Instance instance = new Instance(luwrain, objs);
 	    return ()->{
 		instance.exec(text);
