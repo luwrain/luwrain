@@ -342,7 +342,7 @@ public class Init implements org.luwrain.base.CoreProperties
 	final File userDataDir = Checks.detectUserDataDir();
 	if (userDataDir == null)
 	    System.exit(1);
-	new Init(args, "ru", new File("data"), userDataDir).start();//FIXME:lang
+	new Init(args, Checks.detectLang(), new File("data"), userDataDir).start();
     }
 
     static private void addJarsToClassPath(String dirName)

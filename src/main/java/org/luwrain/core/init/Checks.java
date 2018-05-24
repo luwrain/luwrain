@@ -22,6 +22,7 @@ import org.luwrain.core.*;
 
 public class Checks
 {
+    static private final String ENV_LANG = "LUWRAIN_LANG"; 
     static private final String ENV_APP_DATA = "APPDATA";
     static private final String ENV_USER_PROFILE = "USERPROFILE";
     static private final String DEFAULT_USER_DATA_DIR_WINDOWS = "Luwrain";
@@ -52,5 +53,21 @@ public class Checks
 	//Checking only if the directory for the registry exists
 	final File registryDir = new File(userDataDir, "registry");
 	return registryDir.exists() && registryDir.isDirectory();
+    }
+
+    static public String detectLang()
+    {
+
+		if(System.getenv().containsKey(ENV_LANG) && !System.getenv().get(ENV_LANG).trim().isEmpty())
+		{
+		    final String lang = System.getenv().get(ENV_LANG).toLowerCase().trim();
+		    switch(lang)
+		    {
+		    case "en":
+		    case "ru":
+			return lang;
+		    }
+		}
+		return "ru";
     }
 }
