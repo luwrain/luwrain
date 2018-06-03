@@ -25,5 +25,5 @@ public final class Context
 	void onOutputLine(String line);
     }
 
-    public Output output;
+    public Output output = null;
 }

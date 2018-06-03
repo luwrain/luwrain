@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.io.*;
 import java.nio.file.*;
 
@@ -264,6 +265,39 @@ public void playSound(Sounds sound)
 	    throw new org.luwrain.core.extensions.DynamicExtensionException(e);
 	}
 	return loadScriptExtension(text);
+    }
+
+    boolean runFunc(Luwrain luwrain, String name)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	if (name.startsWith("js:"))
+	{
+	    final String scriptName = name.substring("js:".length());
+	    if (scriptName.isEmpty())
+		return false;
+	    final String text;
+	    try {
+		text = FileUtils.readTextFileSingleString(new File(scriptName), "UTF-8");
+	    }
+	    catch(IOException e)
+	    {
+		Log.error(LOG_COMPONENT, "unable to run the function \'" + name + "\':" + e.getClass().getName() + ":" + e.getMessage());
+		return false;
+	    }
+	    final org.luwrain.core.script.Context context = new org.luwrain.core.script.Context();
+	    final Callable callable = script.execFuture(luwrain, context, text);
+	    try {
+		callable.call();
+	    }
+	    catch(Throwable e)
+	    {
+		Log.error(LOG_COMPONENT, "unable to run the function \'" + name + "\':" + e.getClass().getName() + ":" + e.getMessage());
+		return false;
+	    }
+	    return true;
+	}
+	return true;
     }
 
         boolean unloadDynamicExtension(String extId)
