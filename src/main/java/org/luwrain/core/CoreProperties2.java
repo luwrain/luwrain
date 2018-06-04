@@ -46,6 +46,21 @@ final class CoreProperties2
 	return true;
     }
 
+    /**
+     * Returns a value of the property.
+     *
+     * @param propName A name of the property, may not be empty
+     * @returns A value of the property or {@code null}, if there is no such property
+     */
+    String getProperty(String propName)
+    {
+	NullCheck.notEmpty(propName, "propName");
+	for(Provider p: providers)
+	    if (p.matches(propName))
+		return p.provider.getProperty(propName);
+	return null;
+	}
+
     static private final class Provider
     {
 	final CorePropertiesProvider provider;
