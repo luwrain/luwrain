@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-class Braille
+public final class Braille
 {
     private Registry registry;
     private org.luwrain.base.Braille braille;
@@ -58,27 +58,27 @@ class Braille
 	braille.writeText(text);
     }
 
-    boolean isActive()
+    public boolean isActive()
     {
 	return active;
     }
 
-    String getDriver()
+    public String getDriver()
     {
 	return braille != null?braille.getDriverName():"";
     }
 
-    String getErrorMessage()
+    public String getErrorMessage()
     {
 	return errorMessage;
     }
 
-    int getDisplayWidth()
+    public int getDisplayWidth()
     {
 	return braille != null?braille.getDisplayWidth():0;
     }
 
-    int getDisplayHeight()
+    public int getDisplayHeight()
     {
 	return braille != null?braille.getDisplayHeight():0;
     }
