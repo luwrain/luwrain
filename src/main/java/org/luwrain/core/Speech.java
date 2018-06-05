@@ -20,7 +20,7 @@ import java.util.*;
 
 import org.luwrain.speech.*;
 
-final class Speech
+public final class Speech
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     
@@ -148,7 +148,7 @@ final class Speech
 	return res[0];
     }
 
-    Channel[] getAllChannels()
+    public Channel[] getAllChannels()
     {
 	final List<Channel> res = new LinkedList<Channel>();
 	for(Map.Entry<String, Channel> e: channels.entrySet())
@@ -156,7 +156,7 @@ final class Speech
 	return res.toArray(new Channel[res.size()]);
     }
 
-    boolean isDefaultChannel(Channel channel)
+    public boolean isDefaultChannel(Channel channel)
     {
 	NullCheck.notNull(channel, "channel");
 	return channel == defaultChannel;

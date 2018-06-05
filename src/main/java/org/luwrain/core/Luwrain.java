@@ -177,7 +177,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	if (text.trim().isEmpty())
 	    return;
 	runUiSafely(()->{
-		core.getBraille().textToSpeak(text);
+		core.braille.textToSpeak(text);
 		core.message(text, MessageType.REGULAR);
 	    });
     }
@@ -189,7 +189,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	if (text.trim().isEmpty())
 	    return;
 	    runUiSafely(()->{
-		    core.getBraille().textToSpeak(text);
+		    core.braille.textToSpeak(text);
 	core.message(text, messageType);
 		});
     }
@@ -201,7 +201,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	if (text.trim().isEmpty())
 	    return;
 	runUiSafely(()->{
-		core.getBraille().textToSpeak(text);
+		core.braille.textToSpeak(text);
 		core.message(text, sound);
 	    });
     }
@@ -368,7 +368,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void say(String text)
     {
 	NullCheck.notNull(text, "text");
-	core.getBraille().textToSpeak(text);
+	core.braille.textToSpeak(text);
 	core.getSpeech().speak(preprocess(text), 0, 0);
     }
 
@@ -383,7 +383,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public void say(String text, int pitch)
     {
 	NullCheck.notNull(text, "text");
-	core.getBraille().textToSpeak(text);
+	core.braille.textToSpeak(text);
 	core.getSpeech().speak(preprocess(text), pitch, 0);
     }
 
@@ -396,7 +396,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 
     public void sayLetter(char letter)
     {
-	core.getBraille().textToSpeak("" + letter);
+	core.braille.textToSpeak("" + letter);
 	switch(letter)
 	{
 	case ' ':
@@ -680,26 +680,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 		return "";
 	    }
 	}
-	switch(propName)
-	{
-	case "luwrain.braille.active":
-	    return core.getBraille().isActive()?"1":"0";
-	case "luwrain.braille.driver":
-	    return core.getBraille().getDriver();
-	case "luwrain.braille.error":
-	    return core.getBraille().getErrorMessage();
-	case "luwrain.braille.displaywidth":
-	    return "" + core.getBraille().getDisplayWidth();
-	case "luwrain.braille.displayheight":
-	    return "" + core.getBraille().getDisplayHeight();
-	default:
-	    if (propName.startsWith("luwrain.os.") || propName.startsWith("luwrain.hardware."))
-	    {
-		final String res = core.os.getProperty(propName);
-		return res != null?res:"";
-	    }
 	    return core.getCoreProperties().getProperty(propName);
-	}
     }
 
     public void setEventResponse(EventResponse eventResponse)
