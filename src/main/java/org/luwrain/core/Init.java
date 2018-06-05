@@ -18,10 +18,8 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.io.*;
-//import java.nio.file.*;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-
 
 import org.luwrain.base.OperatingSystem;
 import org.luwrain.core.init.*;
@@ -33,7 +31,7 @@ import org.luwrain.core.init.*;
  * contains {@code main()} static method which should be used to launch
  * Java virtual machine with LUWRAIN.
  */
-public class Init implements org.luwrain.base.CoreProperties
+public class Init
 {
     static public final String LOG_COMPONENT = "init";
     static private final String GREETING = "LUWRAIN (visit http://luwrain.org/doc/legal/ for legal notes)";
@@ -46,15 +44,16 @@ public class Init implements org.luwrain.base.CoreProperties
     static private final String  CMDARG_CREATE_PROFILE_IN = "--create-profile-in=";
 
     private final CmdLine cmdLine;
-    private final CoreProperties coreProps = new CoreProperties();
     private final File dataDir;
     private final File userDataDir;
     private final File userHomeDir;
     private final String lang;
+        private final org.luwrain.core.properties.Basic basicProps;
+    private final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
 
-    private Registry registry;
-    private org.luwrain.base.Interaction interaction;
-    private OperatingSystem os;
+    private Registry registry = null;
+    private org.luwrain.base.Interaction interaction = null;
+    private OperatingSystem os = null;
 
     private Init(String[] cmdLine, String lang, File dataDir, File userDataDir)
     {
@@ -67,49 +66,12 @@ public class Init implements org.luwrain.base.CoreProperties
 	this.dataDir = dataDir;
 	this.userDataDir = userDataDir;
 	this.userHomeDir = new File(System.getProperty("user.home"));
-    }
-
-    public String getProperty(String propName)
-    {
-	NullCheck.notEmpty(propName, "propName");
-			   switch(propName)
-			   {
-			   case "luwrain.lang":
-			       return lang;
-			   default:
-			       return coreProps.getProperty(propName);
-			   }
-    }
-
-    public File getFileProperty(String propName)
-    {
-	NullCheck.notEmpty(propName, "propName");
-	switch(propName)
-	{
-	case "luwrain.dir.userhome":
-	    return userHomeDir;
-	case "luwrain.dir.data":
-	    return dataDir;
-	case "luwrain.dir.scripts":
-	    return new File(dataDir, "scripts");
-	case "luwrain.dir.js":
-	    return new File(dataDir, "js");
-    	case "luwrain.dir.properties":
-	    return new File(dataDir, "properties");
-	case "luwrain.dir.sounds":
-	    return new File(dataDir, "sounds");
-	case "luwrain.dir.userdata":
-	    return userDataDir;
-	case "luwrain.dir.appdata":
-	    return new File(userDataDir, "app");
-	default:
-	    return coreProps.getFileProperty(propName);
-	}
+	this.basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
+	this.filesProps.load(new File(dataDir, "properties"), new File(userDataDir, "properties"));
     }
 
     private boolean init()
     {
-	coreProps.load(new File(dataDir, "properties"), new File(userDataDir, "properties"));
 	registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(userDataDir, "registry").toPath());
 
 	    //time zone
@@ -134,7 +96,7 @@ public class Init implements org.luwrain.base.CoreProperties
 	interactionParams.loadFromRegistry(registry);
 	final Object o;
 	try {
-	    final String interactionClass = coreProps.getProperty("luwrain.class.interaction");
+	    final String interactionClass = filesProps.getProperty("luwrain.class.interaction");
 	    if (interactionClass.isEmpty())
 	    {
 		Log.fatal(LOG_COMPONENT, "unable to load interaction:no luwrain.class.interaction property among loaded properties");
@@ -182,7 +144,7 @@ public class Init implements org.luwrain.base.CoreProperties
 
     private boolean initOs()
     {
-	final String osClass = coreProps.getProperty("luwrain.class.os");
+	final String osClass = filesProps.getProperty("luwrain.class.os");
 	if (osClass.isEmpty())
 	{
 	    Log.fatal("init", "unable to load operating system interface:no luwrain.class.os property in loaded core properties");
@@ -216,7 +178,7 @@ public class Init implements org.luwrain.base.CoreProperties
 	    return false;
 	}
 	os = (org.luwrain.base.OperatingSystem)o;
-	final InitResult initRes = os.init(this);
+	final InitResult initRes = os.init(basicProps);//FIXME:
 	if (initRes == null || !initRes.isOk())
 	{
 	    if (initRes != null)
@@ -300,7 +262,7 @@ public class Init implements org.luwrain.base.CoreProperties
 		    if (initRes)
 		new Core(
 				cmdLine, registry, os, interaction, 
-				this, //core properties
+				filesProps, //FIXME:
 				lang).run();
 	    if (interaction != null)
 	    {
@@ -374,105 +336,6 @@ public class Init implements org.luwrain.base.CoreProperties
 	} catch(Exception e)
 	{
 	    e.printStackTrace();
-	}
-    }
-
-    static private final class PropertiesProvider implements org.luwrain.base.CorePropertiesProvider
-    {
-	private final File dataDir;
-	private final File userDataDir;
-	private final File userHomeDir;
-	private org.luwrain.base.CorePropertiesProvider.Listener listener = null;
-
-	PropertiesProvider(File dataDir,
-			   File userDataDir,
-			   File userHomeDir)
-	{
-	    NullCheck.notNull(dataDir, "dataDir");
-	    NullCheck.notNull(userDataDir, "userDataDir");
-	    NullCheck.notNull(userHomeDir, "userHomeDir");
-	    this.dataDir = dataDir;
-	    this.userDataDir = userDataDir;
-	    this.userHomeDir = userHomeDir;
-	}
-
-	@Override public String getExtObjName()
-	{
-	    return this.getClass().getName();
-	}
-
-	@Override public String[] getPropertiesRegex()
-	{
-	    return new String[]{
-		"luwrain.dir.userhome",
-		"luwrain.dir.data",
-		"luwrain.dir.scripts",
-		"luwrain.dir.js",
-		"luwrain.dir.properties",
-		"luwrain.dir.sounds",
-		"luwrain.dir.userdata",
-		"luwrain.dir.appdata"};
-	}
-
-	@Override public Set<org.luwrain.base.CorePropertiesProvider.Flags> getPropertyFlags(String propName)
-	{
-	    NullCheck.notEmpty(propName, "propName");
-	    final File value = getFileProperty(propName);
-	    if (value != null)
-		return EnumSet.of(org.luwrain.base.CorePropertiesProvider.Flags.PUBLIC,
-				  org.luwrain.base.CorePropertiesProvider.Flags.FILE);
-	    return null;
-	}
-
-	@Override public File getFileProperty(String propName)
-	{
-	    NullCheck.notNull(propName, "propName");
-	    switch(propName)
-	    {
-	    case "luwrain.dir.userhome":
-		return userHomeDir;
-	    case "luwrain.dir.data":
-		return dataDir;
-	    case "luwrain.dir.scripts":
-		return new File(dataDir, "scripts");
-	    case "luwrain.dir.js":
-		return new File(dataDir, "js");
-	    case "luwrain.dir.properties":
-		return new File(dataDir, "properties");
-	    case "luwrain.dir.sounds":
-		return new File(dataDir, "sounds");
-	    case "luwrain.dir.userdata":
-		return userDataDir;
-	    case "luwrain.dir.appdata":
-		return new File(userDataDir, "app");
-	    default:
-		return null;
-	    }
-	}
-
-	@Override public boolean setFileProperty(String propName, File value)
-	{
-	    NullCheck.notEmpty(propName, "propName");
-	    NullCheck.notNull(value, "value");
-	    return false;
-	}
-
-	@Override public String getProperty(String propName)
-	{
-	    NullCheck.notEmpty(propName, "propName");
-	    return null;
-	}
-
-	@Override public boolean setProperty(String propName, String value)
-	{
-	    NullCheck.notEmpty(propName, "propName");
-	    NullCheck.notNull(value, "value");
-	    return false;
-	}
-
-	@Override public void setListener(org.luwrain.base.CorePropertiesProvider.Listener listener)
-	{
-	    this.listener = listener;
 	}
     }
 }

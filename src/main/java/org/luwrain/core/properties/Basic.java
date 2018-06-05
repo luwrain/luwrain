@@ -22,7 +22,7 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-public final class Base implements CorePropertiesProvider
+public final class Basic implements CorePropertiesProvider, org.luwrain.base.CoreProperties
 {
     private final File dataDir;
     private final File userDataDir;
@@ -30,7 +30,7 @@ public final class Base implements CorePropertiesProvider
 
     private CorePropertiesProvider.Listener listener = null;
 
-    Base(File dataDir,
+    public Basic(File dataDir,
 	 File userDataDir,
 	 File userHomeDir)
     {

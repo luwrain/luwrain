@@ -21,24 +21,17 @@ import java.util.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
+import org.luwrain.speech.*;
 
-public final class PropertiesFiles implements CorePropertiesProvider, org.luwrain.base.CoreProperties
+public final class Speech implements CorePropertiesProvider
 {
-    static private final String LOG_COMPONENT = Init.LOG_COMPONENT;
-
-    private final Properties props = new Properties();
+    private final org.luwrain.core.Speech speech;
     private CorePropertiesProvider.Listener listener = null;
 
-    public void load(File systemProperties, File userProperties)
+    public Speech(org.luwrain.core.Speech speech)
     {
-	NullCheck.notNull(systemProperties, "systemProperties");
-	NullCheck.notNull(userProperties, "userProperties");
-	for (File f: systemProperties.listFiles())
-	    if (!f.isDirectory())
-		readProps(f);
-	for(File f: userProperties.listFiles())
-	    if (!f.isDirectory())
-		readProps(f);
+	NullCheck.notNull(speech, "speech");
+	this.speech = speech;
     }
 
     @Override public String getExtObjName()
@@ -48,7 +41,7 @@ public final class PropertiesFiles implements CorePropertiesProvider, org.luwrai
 
     @Override public String[] getPropertiesRegex()
     {
-	return new String[0];
+	return new String[]{"^luwrain \\.speech\\."};
     }
 
     @Override public Set<CorePropertiesProvider.Flags> getPropertyFlags(String propName)
@@ -59,7 +52,43 @@ public final class PropertiesFiles implements CorePropertiesProvider, org.luwrai
     @Override public String getProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
-return props.getProperty(propName);
+	if (!propName.startsWith("luwrain.speech.channel."))
+	    return null;
+	final String arg = propName.substring("luwrain.speech.channel.".length());
+	final String[] args = arg.split("\\.", -1);
+	if (args.length != 2 ||
+	    args[0].isEmpty() ||
+	    args[1].isEmpty())
+	    return null;
+	final int n;
+	try {
+	    n = Integer.parseInt(args[0]);
+	}
+	catch(NumberFormatException e)
+	{
+	    return null;
+	}
+	final Channel[] channels = speech.getAllChannels();
+	if (n < 0 || n >= channels.length)
+	    return null;
+	final Channel channel = channels[n];
+	switch(args[1])
+	{
+	case "name":
+	    return channel.getChannelName();
+	case "class":
+	    return channel.getClass().getName();
+	case "default":
+	    return speech.isDefaultChannel(channel)?"1":"0";
+	case "cansynthtospeakers":
+	    return channel.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_SPEAKERS)?"1":"0";
+	case "cansynthtostream":
+	    return channel.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_STREAM)?"1":"0";
+	case "cannotifywhenfinished":
+	    return channel.getFeatures().contains(Channel.Features.CAN_NOTIFY_WHEN_FINISHED)?"1":"0";
+	default:
+	    return null;
+	}
     }
 
     @Override public File getFileProperty(String propName)
@@ -86,25 +115,4 @@ return props.getProperty(propName);
     {
 	this.listener = listener;
     }
-
-    private void readProps(File file)
-    {
-	NullCheck.notNull(file, "file");
-	if (file.isDirectory() || !file.getName().endsWith(".properties"))
-	    return;
-	Log.debug(LOG_COMPONENT, "reading properties from " + file.getAbsolutePath());
-	try {
-	    final InputStream s = new FileInputStream(file);
-	    try {
-		props.load(new InputStreamReader(new BufferedInputStream(s), "UTF-8"));
-	    }
-	    finally {
-		s.close();
-	    }
-	}
-	catch(IOException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to read properties file " + file.getAbsolutePath() + ":" + e.getClass().getName() + ":" + e.getMessage());
-	}
-	}
 }
