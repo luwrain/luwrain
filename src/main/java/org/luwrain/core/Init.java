@@ -35,7 +35,7 @@ import org.luwrain.core.init.*;
  */
 public class Init implements org.luwrain.base.CoreProperties
 {
-    static private final String LOG_COMPONENT = "init";
+    static public final String LOG_COMPONENT = "init";
     static private final String GREETING = "LUWRAIN (visit http://luwrain.org/doc/legal/ for legal notes)";
     static private final File DEBUG_FILE = new File(new File(System.getProperty("user.home")), "luwrain-debug.txt");
 
