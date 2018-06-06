@@ -31,26 +31,29 @@ final class PropertiesRegistry implements PropertiesBase
     {
 	NullCheck.notNullItems(basicProviders, "basicProviders");
 	this.basicProviders = basicProviders;
+	setProviders(new PropertiesProvider[0]);//to apply the list of basic providers
     }
 
     /**
      * Sets new list of providers.
      *
-     * @param p The new providers
+     * @param providers The new providers
      * @return True if all providers are valid and the current list was updated, FALSE otherwise
      */
-    boolean setProviders(PropertiesProvider[] p)
+    boolean setProviders(PropertiesProvider[] providers)
     {
-	NullCheck.notNullItems(p, "p");
-	if (p.length == 0)
-	    return false;
-	final Provider[] newProviders = new Provider[p.length];
-	for(int i = 0;i < p.length;++i)
-	    newProviders[i] = new Provider(p[i]);
-	for(Provider pr: newProviders)
+	NullCheck.notNullItems(providers, "providers");
+	final List<Provider> newProviders = new LinkedList();
+	for(PropertiesProvider p: basicProviders)
+	    newProviders.add(new Provider(p));
+		for(PropertiesProvider p: providers)
+	    newProviders.add(new Provider(p));
+		/*
+			for(Provider pr: newProviders)
 	    if (!pr.isValid())
 		return false;
-	this.providers = newProviders;
+		*/
+	this.providers = newProviders.toArray(new Provider[newProviders.size()]);
 	return true;
     }
 
@@ -63,15 +66,36 @@ final class PropertiesRegistry implements PropertiesBase
     @Override public String getProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
+
+		for(Provider p: providers)
+		    if (!p.hasResponsibilitySpace())
+		    {
+			final String value = p.provider.getProperty(propName);
+			if (value != null)
+			    return value;
+		    }
+		
+
+		/*
 	for(Provider p: providers)
 	    if (p.matches(propName))
 		return p.provider.getProperty(propName);
-	return null;
+		*/
+	return "";
 	}
 
     @Override public File getFileProperty(String propName)
     {
 	NullCheck.notNull(propName, "propName");
+
+			for(Provider p: providers)
+		    if (!p.hasResponsibilitySpace())
+		    {
+			final File value = p.provider.getFileProperty(propName);
+			if (value != null)
+			    return value;
+		    }
+
 	return null;
     }
 
@@ -93,7 +117,7 @@ final class PropertiesRegistry implements PropertiesBase
 	    this.patterns = patterns.toArray(new Pattern[patterns.size()]);
 	}
 
-	boolean isValid()
+	boolean hasResponsibilitySpace()
 	{
 	    return patterns.length > 0;
 	}

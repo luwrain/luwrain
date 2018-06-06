@@ -49,15 +49,7 @@ public final class Basic implements PropertiesProvider
 
     @Override public String[] getPropertiesRegex()
     {
-	return new String[]{
-	    "luwrain.dir.userhome",
-	    "luwrain.dir.data",
-	    "luwrain.dir.scripts",
-	    "luwrain.dir.js",
-	    "luwrain.dir.properties",
-	    "luwrain.dir.sounds",
-	    "luwrain.dir.userdata",
-	    "luwrain.dir.appdata"};
+	return new String[0];
     }
 
     @Override public Set<org.luwrain.base.PropertiesProvider.Flags> getPropertyFlags(String propName)
