@@ -22,12 +22,12 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-public final class PropertiesFiles implements CorePropertiesProvider, org.luwrain.base.CoreProperties
+public final class PropertiesFiles implements PropertiesProvider
 {
     static private final String LOG_COMPONENT = Init.LOG_COMPONENT;
 
     private final Properties props = new Properties();
-    private CorePropertiesProvider.Listener listener = null;
+    private PropertiesProvider.Listener listener = null;
 
     public void load(File systemProperties, File userProperties)
     {
@@ -51,9 +51,9 @@ public final class PropertiesFiles implements CorePropertiesProvider, org.luwrai
 	return new String[0];
     }
 
-    @Override public Set<CorePropertiesProvider.Flags> getPropertyFlags(String propName)
+    @Override public Set<PropertiesProvider.Flags> getPropertyFlags(String propName)
     {
-	return EnumSet.of(CorePropertiesProvider.Flags.PUBLIC);
+	return EnumSet.of(PropertiesProvider.Flags.PUBLIC);
     }
 
     @Override public String getProperty(String propName)
@@ -82,7 +82,7 @@ return props.getProperty(propName);
 	return false;
     }
 
-    @Override public void setListener(CorePropertiesProvider.Listener listener)
+    @Override public void setListener(PropertiesProvider.Listener listener)
     {
 	this.listener = listener;
     }

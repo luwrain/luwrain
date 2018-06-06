@@ -26,10 +26,10 @@ abstract class EnvironmentAreas extends Base
     protected final AppManager apps;
 
     protected EnvironmentAreas(CmdLine cmdLine, Registry registry,
-			       org.luwrain.base.CoreProperties coreProps, String lang,
+			       PropertiesRegistry props, String lang,
 			       org.luwrain.base.Interaction interaction)
     {
-	super(cmdLine, registry, coreProps, lang);
+	super(cmdLine, registry, props, lang);
 	NullCheck.notNull(interaction, "interaction");
 	this.apps = new AppManager();
 	this.screenContentManager = new ScreenContentManager(apps);

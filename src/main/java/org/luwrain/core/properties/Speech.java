@@ -23,10 +23,10 @@ import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.speech.*;
 
-public final class Speech implements CorePropertiesProvider
+public final class Speech implements PropertiesProvider
 {
     private final org.luwrain.core.Speech speech;
-    private CorePropertiesProvider.Listener listener = null;
+    private PropertiesProvider.Listener listener = null;
 
     public Speech(org.luwrain.core.Speech speech)
     {
@@ -44,9 +44,9 @@ public final class Speech implements CorePropertiesProvider
 	return new String[]{"^luwrain \\.speech\\."};
     }
 
-    @Override public Set<CorePropertiesProvider.Flags> getPropertyFlags(String propName)
+    @Override public Set<PropertiesProvider.Flags> getPropertyFlags(String propName)
     {
-	return EnumSet.of(CorePropertiesProvider.Flags.PUBLIC);
+	return EnumSet.of(PropertiesProvider.Flags.PUBLIC);
     }
 
     @Override public String getProperty(String propName)
@@ -111,7 +111,7 @@ public final class Speech implements CorePropertiesProvider
 	return false;
     }
 
-    @Override public void setListener(CorePropertiesProvider.Listener listener)
+    @Override public void setListener(PropertiesProvider.Listener listener)
     {
 	this.listener = listener;
     }

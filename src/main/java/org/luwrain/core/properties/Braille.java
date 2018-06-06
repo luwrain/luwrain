@@ -22,10 +22,10 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-public final class Braille implements CorePropertiesProvider
+public final class Braille implements PropertiesProvider
 {
     private final org.luwrain.core.Braille braille;
-    private CorePropertiesProvider.Listener listener = null;
+    private PropertiesProvider.Listener listener = null;
 
     public Braille(org.luwrain.core.Braille braille)
     {
@@ -43,9 +43,9 @@ public final class Braille implements CorePropertiesProvider
 	return new String[]{"^luwrain \\.braille\\."};
     }
 
-    @Override public Set<CorePropertiesProvider.Flags> getPropertyFlags(String propName)
+    @Override public Set<PropertiesProvider.Flags> getPropertyFlags(String propName)
     {
-	return EnumSet.of(CorePropertiesProvider.Flags.PUBLIC);
+	return EnumSet.of(PropertiesProvider.Flags.PUBLIC);
     }
 
     @Override public String getProperty(String propName)
@@ -88,7 +88,7 @@ public final class Braille implements CorePropertiesProvider
 	return false;
     }
 
-    @Override public void setListener(CorePropertiesProvider.Listener listener)
+    @Override public void setListener(PropertiesProvider.Listener listener)
     {
 	this.listener = listener;
     }

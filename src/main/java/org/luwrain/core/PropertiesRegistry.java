@@ -16,12 +16,13 @@
 
 package org.luwrain.core;
 
+import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
 import org.luwrain.base.*;
 
-final class CoreProperties2
+final class PropertiesRegistry implements PropertiesBase
 {
     private Provider[] providers = new Provider[0];
 
@@ -31,7 +32,7 @@ final class CoreProperties2
      * @param p The new providers
      * @return True if all providers are valid and the current list was updated, FALSE otherwise
      */
-    boolean setProviders(CorePropertiesProvider[] p)
+    boolean setProviders(PropertiesProvider[] p)
     {
 	NullCheck.notNullItems(p, "p");
 	if (p.length == 0)
@@ -52,7 +53,7 @@ final class CoreProperties2
      * @param propName A name of the property, may not be empty
      * @returns A value of the property or {@code null}, if there is no such property
      */
-    String getProperty(String propName)
+    @Override public String getProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
 	for(Provider p: providers)
@@ -61,12 +62,18 @@ final class CoreProperties2
 	return null;
 	}
 
+    @Override public File getFileProperty(String propName)
+    {
+	NullCheck.notNull(propName, "propName");
+	return null;
+    }
+
     static private final class Provider
     {
-	final CorePropertiesProvider provider;
+	final PropertiesProvider provider;
 	final Pattern[] patterns;
 
-	Provider(CorePropertiesProvider provider)
+	Provider(PropertiesProvider provider)
 	{
 	    NullCheck.notNull(provider, "provider");
 	    this.provider = provider;

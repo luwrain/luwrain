@@ -49,9 +49,9 @@ final Interaction interaction;
 
     Core(CmdLine cmdLine, Registry registry,
 		OperatingSystem os, Interaction interaction, 
-		org.luwrain.base.CoreProperties coreProps, String lang)
+		PropertiesRegistry props, String lang)
     {
-	super(cmdLine, registry, coreProps, lang, interaction);
+	super(cmdLine, registry, props, lang, interaction);
 	NullCheck.notNull(os, "os");
 	NullCheck.notNull(interaction, "interaction");
 	this.os = os;
@@ -141,9 +141,9 @@ final Interaction interaction;
 	initI18n();
 	initObjects();
 	Log.debug(LOG_COMPONENT, "Loading dynamic script extensions");
-	if (coreProps.getFileProperty("luwrain.dir.js").exists() && coreProps.getFileProperty("luwrain.dir.js").isDirectory())
+	if (props.getFileProperty("luwrain.dir.js").exists() && props.getFileProperty("luwrain.dir.js").isDirectory())
 	{
-	    final File[] files = coreProps.getFileProperty("luwrain.dir.js").listFiles();
+	    final File[] files = props.getFileProperty("luwrain.dir.js").listFiles();
 	    for(File f: files)
 	    {
 		if (!f.exists() || f.isDirectory())
@@ -161,16 +161,16 @@ final Interaction interaction;
 		}
 	    }
 	} else
-	    Log.warning(LOG_COMPONENT, "the directory " + coreProps.getFileProperty("luwrain.dir.js").getAbsolutePath() + " does not exist, skipping loading of dynamic script extensions");
+	    Log.warning(LOG_COMPONENT, "the directory " + props.getFileProperty("luwrain.dir.js").getAbsolutePath() + " does not exist, skipping loading of dynamic script extensions");
 	if (!speech.init(objRegistry.getSpeechFactories()))
 	    Log.warning(LOG_COMPONENT, "unable to initialize speech core, very likely LUWRAIN will be silent");
 	braille.init(registry, os.getBraille(), this);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
 	//loading player
-	if (!coreProps.getProperty(PLAYER_FACTORY_PROP_NAME).isEmpty())
+	if (!props.getProperty(PLAYER_FACTORY_PROP_NAME).isEmpty())
 	{
-	    final String playerFactoryName = coreProps.getProperty(PLAYER_FACTORY_PROP_NAME);
+	    final String playerFactoryName = props.getProperty(PLAYER_FACTORY_PROP_NAME);
 	    try {
 		final Object o = Class.forName(playerFactoryName).newInstance();
 		if (o instanceof org.luwrain.player.Factory)
@@ -196,7 +196,7 @@ final Interaction interaction;
 	} else
 	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
 	desktop.ready(/*i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME)*/);
-	sounds.init(registry, coreProps.getFileProperty("luwrain.dir.data").toPath());
+	sounds.init(registry, props.getFileProperty("luwrain.dir.data").toPath());
 	uiSettings = Settings.createUserInterface(registry);
     }
 
@@ -759,7 +759,7 @@ onNewAreasLayout();
 	switch(component)
 	{
 	case ENVIRONMENT_SOUNDS:
-	    sounds.init(registry, coreProps.getFileProperty("luwrain.dir.data").toPath());
+	    sounds.init(registry, props.getFileProperty("luwrain.dir.data").toPath());
 	    break;
 	}
     }

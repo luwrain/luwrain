@@ -22,13 +22,13 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-public final class Basic implements CorePropertiesProvider, org.luwrain.base.CoreProperties
+public final class Basic implements PropertiesProvider
 {
     private final File dataDir;
     private final File userDataDir;
     private final File userHomeDir;
 
-    private CorePropertiesProvider.Listener listener = null;
+    private PropertiesProvider.Listener listener = null;
 
     public Basic(File dataDir,
 	 File userDataDir,
@@ -60,13 +60,13 @@ public final class Basic implements CorePropertiesProvider, org.luwrain.base.Cor
 	    "luwrain.dir.appdata"};
     }
 
-    @Override public Set<org.luwrain.base.CorePropertiesProvider.Flags> getPropertyFlags(String propName)
+    @Override public Set<org.luwrain.base.PropertiesProvider.Flags> getPropertyFlags(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
 	final File value = getFileProperty(propName);
 	if (value != null)
-	    return EnumSet.of(org.luwrain.base.CorePropertiesProvider.Flags.PUBLIC,
-			      org.luwrain.base.CorePropertiesProvider.Flags.FILE);
+	    return EnumSet.of(PropertiesProvider.Flags.PUBLIC,
+			      PropertiesProvider.Flags.FILE);
 	return null;
     }
 
@@ -116,7 +116,7 @@ public final class Basic implements CorePropertiesProvider, org.luwrain.base.Cor
 	return false;
     }
 
-    @Override public void setListener(org.luwrain.base.CorePropertiesProvider.Listener listener)
+    @Override public void setListener(org.luwrain.base.PropertiesProvider.Listener listener)
     {
 	this.listener = listener;
     }

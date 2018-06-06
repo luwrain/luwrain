@@ -28,7 +28,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.speech.Channel;
 
-public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrain.base.CoreProperties
+public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrain.base.PropertiesBase
 {
     public enum ReloadComponents {
 	ENVIRONMENT_SOUNDS,
@@ -609,7 +609,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     @Override public java.io.File getFileProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
-	return core.getCoreProperties().getFileProperty(propName);
+	return core.props.getFileProperty(propName);
     }
 
     OsCommand runOsCommand(String cmd)
@@ -680,7 +680,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 		return "";
 	    }
 	}
-	    return core.getCoreProperties().getProperty(propName);
+	    return core.props.getProperty(propName);
     }
 
     public void setEventResponse(EventResponse eventResponse)

@@ -29,12 +29,12 @@ class SoundManager
     private OggPlayer bkgOggPlayer = null;
     private boolean startingMode = false;
 
-    SoundManager(Registry registry, org.luwrain.base.CoreProperties coreProps)
+    SoundManager(Registry registry, PropertiesRegistry props)
     {
 	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(coreProps, "coreProps");
+	NullCheck.notNull(props, "props");
 	this.sett = Settings.createBackgroundSounds(registry);
-	this.soundsDir = coreProps.getFileProperty("luwrain.dir.sounds").toPath();
+	this.soundsDir = props.getFileProperty("luwrain.dir.sounds").toPath();
     }
 
 

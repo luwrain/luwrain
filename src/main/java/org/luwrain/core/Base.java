@@ -34,7 +34,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 
     protected final CmdLine cmdLine;
     protected final  Registry registry;
-        protected final org.luwrain.base.CoreProperties coreProps;
+    final PropertiesRegistry props;
     protected final String lang;
 
     private final Thread mainCoreThread;
@@ -62,18 +62,18 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected boolean introduceApp = false;
 
     protected Base(CmdLine cmdLine, Registry registry,
-			      org.luwrain.base.CoreProperties coreProps, String lang)
+			      PropertiesRegistry props, String lang)
     {
 	NullCheck.notNull(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(coreProps, "coreProps");
+	NullCheck.notNull(props, "props");
 	NullCheck.notEmpty(lang, "lang");
 	this.cmdLine = cmdLine;
 	this.registry = registry;
-	this.coreProps = coreProps;
+	this.props = props;
 	this.lang = lang;
 	this.speech = new Speech(cmdLine, registry);
-	this.soundManager = new SoundManager(registry, coreProps);
+	this.soundManager = new SoundManager(registry, props);
 	this.mainCoreThread = Thread.currentThread();
     }
 
@@ -121,7 +121,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 public void playSound(Sounds sound)
     {
 	NullCheck.notNull(sound, "sound");
-	final String volumeStr = coreProps.getProperty("luwrain.sounds.iconsvol");
+	final String volumeStr = props.getProperty("luwrain.sounds.iconsvol");
 	int volume = 100;
 	try {
 	    if (!volumeStr.trim().isEmpty())
@@ -190,11 +190,6 @@ public void playSound(Sounds sound)
     Speech getSpeech()
     {
 	return speech;
-    }
-
-    org.luwrain.base.CoreProperties getCoreProperties()
-    {
-	return coreProps;
     }
 
     String getLang()

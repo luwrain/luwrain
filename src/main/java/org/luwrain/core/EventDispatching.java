@@ -21,10 +21,10 @@ abstract class EventDispatching extends EnvironmentAreas
     protected Listening listening = null;
 
     protected EventDispatching(CmdLine cmdLine, Registry registry,
-			       org.luwrain.base.CoreProperties coreProps, String lang,
+			       PropertiesRegistry props, String lang,
 			       org.luwrain.base.Interaction interaction)
     {
-	super(cmdLine, registry, coreProps, lang, interaction);
+	super(cmdLine, registry, props, lang, interaction);
 	this.globalKeys = new GlobalKeys(registry);
     }
 

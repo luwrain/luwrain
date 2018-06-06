@@ -43,17 +43,19 @@ public class Init
     static private final String  CMDARG_CREATE_PROFILE = "--create-profile";
     static private final String  CMDARG_CREATE_PROFILE_IN = "--create-profile-in=";
 
-    private final CmdLine cmdLine;
     private final File dataDir;
     private final File userDataDir;
     private final File userHomeDir;
     private final String lang;
-        private final org.luwrain.core.properties.Basic basicProps;
+
+    private final CmdLine cmdLine;
+    private final Registry registry;
+    private final PropertiesRegistry props;
+    private final org.luwrain.core.properties.Basic basicProps;
     private final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
 
-    private Registry registry = null;
-    private org.luwrain.base.Interaction interaction = null;
     private OperatingSystem os = null;
+    private org.luwrain.base.Interaction interaction = null;
 
     private Init(String[] cmdLine, String lang, File dataDir, File userDataDir)
     {
@@ -68,13 +70,13 @@ public class Init
 	this.userHomeDir = new File(System.getProperty("user.home"));
 	this.basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	this.filesProps.load(new File(dataDir, "properties"), new File(userDataDir, "properties"));
+	this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(this.userDataDir, "registry").toPath());
+	this.props = new PropertiesRegistry();
     }
 
     private boolean init()
     {
-	registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(userDataDir, "registry").toPath());
-
-	    //time zone
+	//time zone
 	{
 	    final Settings.DateTime sett = Settings.createDateTime(registry);
 	    final String value = sett.getTimeZone("");
@@ -83,8 +85,8 @@ public class Init
 		final TimeZone timeZone = TimeZone.getTimeZone(value.trim());
 		if (timeZone != null)
 		{
-		Log.debug(LOG_COMPONENT, "Setting time zone to " + value.trim());
-		TimeZone.setDefault(timeZone);
+		    Log.debug(LOG_COMPONENT, "Setting time zone to " + value.trim());
+		    TimeZone.setDefault(timeZone);
 		} else
 		    Log.warning(LOG_COMPONENT, "time zone " + value.trim() + " is unknown");
 	    }
@@ -102,7 +104,7 @@ public class Init
 		Log.fatal(LOG_COMPONENT, "unable to load interaction:no luwrain.class.interaction property among loaded properties");
 		return false;
 	    }
-		o = Class.forName(interactionClass).newInstance();
+	    o = Class.forName(interactionClass).newInstance();
 	}
 	catch(Exception e)
 	{
@@ -134,13 +136,6 @@ public class Init
 	//OK!
 	return true;
     }
-
-    /*
-    private boolean initRegistry()
-    {
-	return true;
-    }
-    */
 
     private boolean initOs()
     {
@@ -178,7 +173,7 @@ public class Init
 	    return false;
 	}
 	os = (org.luwrain.base.OperatingSystem)o;
-	final InitResult initRes = os.init(basicProps);//FIXME:
+	final InitResult initRes = os.init(props);
 	if (initRes == null || !initRes.isOk())
 	{
 	    if (initRes != null)
@@ -262,8 +257,7 @@ public class Init
 		    if (initRes)
 		new Core(
 				cmdLine, registry, os, interaction, 
-				filesProps, //FIXME:
-				lang).run();
+				props, lang).run();
 	    if (interaction != null)
 	    {
 		Log.debug(LOG_COMPONENT, "closing interaction");
