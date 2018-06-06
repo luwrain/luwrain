@@ -238,6 +238,7 @@ public class Init
 	{
 	    Log.fatal(LOG_COMPONENT, "terminating LUWRAIN very abnormally due to unexpected exception:" + e.getClass().getName() + ":" + e.getMessage());
 	    e.printStackTrace();
+	    System.exit(1);
 	}
     }
 

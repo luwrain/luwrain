@@ -27,19 +27,14 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
 
-class Core extends EventDispatching
+final class Core extends EventDispatching
 {
-    static private final String DEFAULT_MAIN_MENU_CONTENT = "control:registry";
     static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
-    static private final String STRINGS_OBJECT_NAME = "luwrain.environment";
+    static private final String DESKTOP_PROP_NAME = "luwrain.class.desktop";
 
     final OperatingSystem os;
 final Interaction interaction;
-
-    //final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
-    private final Desktop desktop = new org.luwrain.shell.Desktop();
-
-    //        private AreaListening listening = null;
+    private final Desktop desktop;
     private final org.luwrain.shell.Conversations conversations;
     org.luwrain.player.Player player = null;
     final WavePlayers.Player wavePlayer = new WavePlayers.Player();
@@ -48,8 +43,8 @@ final Interaction interaction;
     final UniRefProcManager uniRefProcs = new UniRefProcManager();//FIXME:
 
     Core(CmdLine cmdLine, Registry registry,
-		OperatingSystem os, Interaction interaction, 
-		PropertiesRegistry props, String lang)
+	 OperatingSystem os, Interaction interaction, 
+	 PropertiesRegistry props, String lang)
     {
 	super(cmdLine, registry, props, lang, interaction);
 	NullCheck.notNull(os, "os");
@@ -57,6 +52,14 @@ final Interaction interaction;
 	this.os = os;
 	this.interaction = interaction;
 	this.conversations = new org.luwrain.shell.Conversations(getObjForEnvironment());
+	if (props.getProperty(DESKTOP_PROP_NAME).isEmpty())
+	{
+	    Log.error(LOG_COMPONENT, "no property " + DESKTOP_PROP_NAME + ", unable to create a desktop");
+	    throw new RuntimeException("unable to create a desktop");
+	}
+	this.desktop = (Desktop)newInstanceOf(props.getProperty(DESKTOP_PROP_NAME), Desktop.class);
+	if (this.desktop == null)
+	    throw new RuntimeException("unable to create a desktop");
     }
 
     void run()
