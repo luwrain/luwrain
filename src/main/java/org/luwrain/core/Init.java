@@ -95,31 +95,21 @@ public class Init
 	    return false;
 	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();
 	interactionParams.loadFromRegistry(registry);
-	final Object o;
-	try {
-	    final String interactionClass = props.getProperty("luwrain.class.interaction");
-	    if (interactionClass.isEmpty())
-	    {
-		Log.fatal(LOG_COMPONENT, "unable to load interaction:no luwrain.class.interaction property among loaded properties");
-		return false;
-	    }
-	    o = Class.forName(interactionClass).newInstance();
-	}
-	catch(Exception e)
+	final String interactionClass = props.getProperty("luwrain.class.interaction");
+	if (interactionClass.isEmpty())
 	{
-	    Log.fatal("init", "Unable to create an instance of  interaction class:" + e.getMessage());
+	    Log.fatal(LOG_COMPONENT, "unable to load interaction:no luwrain.class.interaction property among loaded properties");
 	    return false;
 	}
-	Log.debug("init", "using interaction of class " + o.getClass().getName());
-	if (!(o instanceof org.luwrain.base.Interaction))
+	interaction = (org.luwrain.base.Interaction)Base.newInstanceOf(interactionClass, org.luwrain.base.Interaction.class);
+	if (interaction == null)
 	{
-	    Log.fatal("init", "The instance of " + o.getClass().getName() + " isn\'t an instance of org.luwrain.core.Interaction");
+	    Log.fatal(LOG_COMPONENT, "Unable to create an instance of  the interaction class " + interactionClass);
 	    return false;
 	}
-	interaction = (org.luwrain.base.Interaction)o;
 	if (!interaction.init(interactionParams,os))
 	{
-	    Log.fatal("init", "interaction initialization failed");
+	    Log.fatal(LOG_COMPONENT, "interaction initialization failed");
 	    return false;
 	}
 
@@ -141,43 +131,21 @@ public class Init
 	final String osClass = props.getProperty("luwrain.class.os");
 	if (osClass.isEmpty())
 	{
-	    Log.fatal("init", "unable to load operating system interface:no luwrain.class.os property in loaded core properties");
+	    Log.fatal(LOG_COMPONENT, "unable to load operating system interface:no luwrain.class.os property in loaded core properties");
 	    return false;
 	}
-	Object o;
-	try {
-	    o = Class.forName(osClass).newInstance();
-	}
-	catch (InstantiationException e)
+	os = (org.luwrain.base.OperatingSystem)Base.newInstanceOf(osClass, org.luwrain.base.OperatingSystem.class);
+	if (os == null)
 	{
-	    Log.fatal("init", "an error while creating a new instance of class " + osClass + ":InstantiationException:" + e.getMessage());
-	    e.printStackTrace();
+	    Log.fatal(LOG_COMPONENT, "unable to create a new instance of the operating system class " + osClass);
 	    return false;
 	}
-	catch (IllegalAccessException e)
-	{
-	    Log.fatal("init", "an error while creating a new instance of class " + osClass + ":IllegalAccessException:" + e.getMessage());
-	    e.printStackTrace();
-	    return false;
-	}
-	catch (ClassNotFoundException e)
-	{
-	    Log.fatal("init", "an error while creating a new instance of class " + osClass + ":ClassNotFoundException:" + e.getMessage());
-	    e.printStackTrace();
-	    return false;
-	}
-	if (!(o instanceof OperatingSystem))
-	{
-	    Log.fatal("init", "created instance of class " + osClass + " is not an instance of org.luwrain.os.OperatingSystem");
-	    return false;
-	}
-	os = (org.luwrain.base.OperatingSystem)o;
 	final InitResult initRes = os.init(props);
 	if (initRes == null || !initRes.isOk())
 	{
 	    if (initRes != null)
-	    Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName() + ":" + initRes.toString()); else
-	    Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName());
+		Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName() + ":" + initRes.toString()); else
+		Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName());
 	    return false;
 	}
 	Log.debug(LOG_COMPONENT, "OS (" + osClass + ") initialized successfully");

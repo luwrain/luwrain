@@ -303,8 +303,38 @@ public void playSound(Sounds sound)
 	return extensions.unloadDynamicExtension(ext.ext);
     }
 
+    /**
+     * Creates new instance of the requested class and ensures that
+     * it can be safely assigned to some class or interface.
+     *
+     *
+ @param className The name of the class to create instance of
+ * @param ensureInstanceOf The class object of the class to check the casting is possible (can be {@code null} what means to checking is required)
+ * @return The created object or {@code null}, if something goes wrong (detailed information goes only to the log)
+ */
+    static Object newInstanceOf(String className, Class ensureInstanceOf)
+    {
+	NullCheck.notEmpty(className, "className");
+	final Object obj;
+	try {
+	    obj = Class.forName(className).newInstance();
+	}
+	catch (Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to create an instance of the class " + className + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    return null;
+	}
+	if (ensureInstanceOf == null)
+	    return obj;
+	if (!ensureInstanceOf.isInstance(obj))
+	{
+	    Log.error(LOG_COMPONENT, "the newly created instance of the class " + className + " is not an instance of " + ensureInstanceOf.getName());
+	    return null;
+	}
+	return obj;
+    }
 
-	    static protected class MainStopCondition implements StopCondition
+    static protected final class MainStopCondition implements StopCondition
     {
 	private boolean shouldContinue = true;//FIXME:No static members
 
