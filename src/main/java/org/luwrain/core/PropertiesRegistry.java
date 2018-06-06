@@ -24,7 +24,14 @@ import org.luwrain.base.*;
 
 final class PropertiesRegistry implements PropertiesBase
 {
+    private final PropertiesProvider[] basicProviders;
     private Provider[] providers = new Provider[0];
+
+    PropertiesRegistry(PropertiesProvider[] basicProviders)
+    {
+	NullCheck.notNullItems(basicProviders, "basicProviders");
+	this.basicProviders = basicProviders;
+    }
 
     /**
      * Sets new list of providers.

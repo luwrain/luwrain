@@ -51,8 +51,6 @@ public class Init
     private final CmdLine cmdLine;
     private final Registry registry;
     private final PropertiesRegistry props;
-    private final org.luwrain.core.properties.Basic basicProps;
-    private final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
 
     private OperatingSystem os = null;
     private org.luwrain.base.Interaction interaction = null;
@@ -68,10 +66,11 @@ public class Init
 	this.dataDir = dataDir;
 	this.userDataDir = userDataDir;
 	this.userHomeDir = new File(System.getProperty("user.home"));
-	this.basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
-	this.filesProps.load(new File(dataDir, "properties"), new File(userDataDir, "properties"));
+	final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
+	final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
+	filesProps.load(new File(dataDir, "properties"), new File(userDataDir, "properties"));
+	this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
 	this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(this.userDataDir, "registry").toPath());
-	this.props = new PropertiesRegistry();
     }
 
     private boolean init()
@@ -98,7 +97,7 @@ public class Init
 	interactionParams.loadFromRegistry(registry);
 	final Object o;
 	try {
-	    final String interactionClass = filesProps.getProperty("luwrain.class.interaction");
+	    final String interactionClass = props.getProperty("luwrain.class.interaction");
 	    if (interactionClass.isEmpty())
 	    {
 		Log.fatal(LOG_COMPONENT, "unable to load interaction:no luwrain.class.interaction property among loaded properties");
@@ -139,7 +138,7 @@ public class Init
 
     private boolean initOs()
     {
-	final String osClass = filesProps.getProperty("luwrain.class.os");
+	final String osClass = props.getProperty("luwrain.class.os");
 	if (osClass.isEmpty())
 	{
 	    Log.fatal("init", "unable to load operating system interface:no luwrain.class.os property in loaded core properties");
