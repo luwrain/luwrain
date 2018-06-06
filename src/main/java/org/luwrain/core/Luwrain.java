@@ -731,6 +731,24 @@ return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware())
 	java.util.concurrent.Executors.newSingleThreadExecutor().execute(task);
     }
 
+    /**
+     * Registers new extension object.  This operation is allowed for highly
+     * privileged interfaces only, what, for example, can be useful for
+     * custom startup and shutdown procedures. Custom objects may be of any
+     * kind, they are registered as they would be a part of the core.
+     *
+     * @param extObj The object to register
+     * @return True if the object was successfully registered, false otherwise
+     * @throws RuntimeException on any attempt to do this operation without enough privileged level
+     */
+    public boolean registerExtObj(ExtensionObject extObj)
+    {
+	NullCheck.notNull(extObj, "extObj");
+	if (this != core.getObjForEnvironment())
+	    throw new RuntimeException("registerExtObj() may be called only for privileged interfaces");
+	return core.objRegistry.add(null, extObj);
+    }
+
     public java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text)
     {
 	NullCheck.notNull(context, "context");
