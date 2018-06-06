@@ -37,7 +37,7 @@ class Core extends EventDispatching
 final Interaction interaction;
 
     //final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
-    private final org.luwrain.shell.Desktop desktop = new org.luwrain.shell.Desktop();
+    private final Desktop desktop = new org.luwrain.shell.Desktop();
 
     //        private AreaListening listening = null;
     private final org.luwrain.shell.Conversations conversations;
@@ -195,7 +195,7 @@ final Interaction interaction;
 	    }
 	} else
 	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
-	desktop.ready(/*i18n.getChosenLangName(), i18n.getStrings(org.luwrain.desktop.App.STRINGS_NAME)*/);
+	desktop.ready();
 	sounds.init(registry, props.getFileProperty("luwrain.dir.data").toPath());
 	uiSettings = Settings.createUserInterface(registry);
     }

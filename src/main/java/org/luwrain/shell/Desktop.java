@@ -24,7 +24,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.Popups;
 
-public class Desktop implements Application
+public class Desktop implements org.luwrain.core.Desktop
 {
     private Luwrain luwrain = null;
     private Storing storing = null;
@@ -40,13 +40,13 @@ public class Desktop implements Application
     }
 
     //Runs by the core when language extensions loaded 
-    public void ready()
+    @Override public void ready()
     {
 	storing.load();
 	luwrain.onAreaNewName(area);
     }
 
-    public void setConversations(Conversations conversations)
+    @Override public void setConversations(Conversations conversations)
     {
 	this.conversations = conversations;
     }

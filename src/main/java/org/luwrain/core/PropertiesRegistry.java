@@ -26,6 +26,8 @@ final class PropertiesRegistry implements PropertiesBase
 {
     private final PropertiesProvider[] basicProviders;
     private Provider[] providers = new Provider[0];
+    private final Map<String, Provider> propsCache = new HashMap();
+        private final Map<String, Provider> filesPropsCache = new HashMap();
 
     PropertiesRegistry(PropertiesProvider[] basicProviders)
     {
@@ -45,15 +47,12 @@ final class PropertiesRegistry implements PropertiesBase
 	NullCheck.notNullItems(providers, "providers");
 	final List<Provider> newProviders = new LinkedList();
 	for(PropertiesProvider p: basicProviders)
-	    newProviders.add(new Provider(p));
+	    newProviders.add(new Provider(true, p));
 		for(PropertiesProvider p: providers)
-	    newProviders.add(new Provider(p));
-		/*
-			for(Provider pr: newProviders)
-	    if (!pr.isValid())
-		return false;
-		*/
+		    newProviders.add(new Provider(false, p));
 	this.providers = newProviders.toArray(new Provider[newProviders.size()]);
+	propsCache.clear();
+	filesPropsCache.clear();
 	return true;
     }
 
@@ -66,21 +65,57 @@ final class PropertiesRegistry implements PropertiesBase
     @Override public String getProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
+	if (propsCache.containsKey(propName))
+	{
+	    final String value = propsCache.get(propName).provider.getProperty(propName);
+	    if (value != null)
+		return value;
+	    propsCache.remove(propName);
+	}
+	for(Provider p: providers)
+	    if (p.basic && p.hasResponsibilitySpace() && p.matches(propName))
+	    {
+		final String value = p.provider.getProperty(propName);
+		if (value != null)
+		{
+		    propsCache.put(propName, p);
+		    return value;
+		}
+	    }
+	for(Provider p: providers)
+	    if (p.basic && !p.hasResponsibilitySpace())
+	    {
+		final String value = p.provider.getProperty(propName);
+		if (value != null)
+		{
+		    propsCache.put(propName, p);
+		    return value;
+		}
+	    }
+	for(Provider p: providers)
+	    if (!p.basic && p.hasResponsibilitySpace() && p.matches(propName))
+	    {
+		final String value = p.provider.getProperty(propName);
+		if (value != null)
+		{
+		    propsCache.put(propName, p);
+		    return value;
+		}
+	    }
 
-		for(Provider p: providers)
-		    if (!p.hasResponsibilitySpace())
+				for(Provider p: providers)
+		    if (!p.basic && !p.hasResponsibilitySpace())
 		    {
 			final String value = p.provider.getProperty(propName);
 			if (value != null)
+			{
+			    propsCache.put(propName, p);
 			    return value;
+			}
 		    }
-		
 
-		/*
-	for(Provider p: providers)
-	    if (p.matches(propName))
-		return p.provider.getProperty(propName);
-		*/
+
+		
 	return "";
 	}
 
@@ -101,12 +136,14 @@ final class PropertiesRegistry implements PropertiesBase
 
     static private final class Provider
     {
+	final boolean basic;
 	final PropertiesProvider provider;
 	final Pattern[] patterns;
 
-	Provider(PropertiesProvider provider)
+	Provider(boolean basic, PropertiesProvider provider)
 	{
 	    NullCheck.notNull(provider, "provider");
+	    this.basic = basic;
 	    this.provider = provider;
 	    final String[] regex = provider.getPropertiesRegex();
 	    NullCheck.notNullItems(regex, "regex");
