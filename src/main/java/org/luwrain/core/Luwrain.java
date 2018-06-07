@@ -643,6 +643,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     @Override public String getProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
+	/*
 	if (propName.startsWith("luwrain.speech.channel."))
 	{
 	    final String arg = propName.substring("luwrain.speech.channel.".length());
@@ -680,6 +681,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 		return "";
 	    }
 	}
+	*/
 	    return core.props.getProperty(propName);
     }
 

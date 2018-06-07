@@ -39,7 +39,7 @@ final class Startup implements java.util.function.Consumer
 		}
 		@Override public int getLaunchPeriod()
 		{
-		    return 60;
+		    return 5;
 		}
 		@Override public int getFirstLaunchDelay()
 		{
@@ -47,8 +47,8 @@ final class Startup implements java.util.function.Consumer
 		}
 		@Override public void run()
 		{
-		    //		    if (!wasInputEvents)
-		    luwrain.message(text, Luwrain.MessageType.ANNOUNCEMENT);
+		    if (luwrain.getProperty("luwrain.startingmode").equals("1"))
+			luwrain.message(text, Luwrain.MessageType.ANNOUNCEMENT);
 		}
 	    });
     }

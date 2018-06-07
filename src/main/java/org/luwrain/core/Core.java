@@ -74,6 +74,7 @@ final class Core extends EventDispatching
 	soundManager.startingMode();
 	workers.doWork(objRegistry.getWorkers());
 	eventLoop(mainStopCondition);
+	props.setProviders(new org.luwrain.base.PropertiesProvider[]{new StartingModeProperty()});
 	workers.finish();
 	playSound(Sounds.SHUTDOWN);
 	    try {
@@ -785,5 +786,53 @@ onNewAreasLayout();
 	    return;
 	listening.cancel();
 	listening = null;
+    }
+
+    private final class StartingModeProperty implements org.luwrain.base.PropertiesProvider
+    {
+	static private final String PROP_NAME = "luwrain.startingmode";
+        @Override public String getExtObjName()
+	{
+	    return this.getClass().getName();
+	}
+	@Override public String[] getPropertiesRegex()
+	{
+	    return new String[0];
+	}
+	@Override public Set<org.luwrain.base.PropertiesProvider.Flags> getPropertyFlags(String propName)
+	{
+	    NullCheck.notEmpty(propName, "propName");
+	    if (propName.equals(PROP_NAME))
+		return EnumSet.of(PropertiesProvider.Flags.PUBLIC,
+				  PropertiesProvider.Flags.READ_ONLY);
+	    return null;
+	}
+	@Override public File getFileProperty(String propName)
+	{
+	    NullCheck.notNull(propName, "propName");
+	    return null;
+	}
+	@Override public boolean setFileProperty(String propName, File value)
+	{
+	    NullCheck.notEmpty(propName, "propName");
+	    NullCheck.notNull(value, "value");
+	    return false;
+	}
+	@Override public String getProperty(String propName)
+	{
+	    NullCheck.notEmpty(propName, "propName");
+	    if (propName.equals(PROP_NAME))
+		return wasInputEvents?"0":"1";
+	    return null;
+	}
+	@Override public boolean setProperty(String propName, String value)
+	{
+	    NullCheck.notEmpty(propName, "propName");
+	    NullCheck.notNull(value, "value");
+	    return false;
+	}
+	@Override public void setListener(org.luwrain.base.PropertiesProvider.Listener listener)
+	{
+	}
     }
 }
