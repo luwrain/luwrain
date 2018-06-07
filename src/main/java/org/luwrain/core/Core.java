@@ -29,11 +29,12 @@ import org.luwrain.base.*;
 
 final class Core extends EventDispatching
 {
-    static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
     static private final String DESKTOP_PROP_NAME = "luwrain.class.desktop";
+    static private final String STARTUP_PROP_NAME = "luwrain.func.startup";
+    static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
 
     final OperatingSystem os;
-final Interaction interaction;
+    final Interaction interaction;
     private final Desktop desktop;
     private final org.luwrain.shell.Conversations conversations;
     org.luwrain.player.Player player = null;
@@ -65,11 +66,12 @@ final Interaction interaction;
     void run()
     {
 	init();
-    org.luwrain.player.Player player = null;	interaction.startInputEventsAccepting(this);
+    interaction.startInputEventsAccepting(this);
 	windowManager.redraw();
-	playSound(Sounds.STARTUP);//FIXME:
+	if (!props.getProperty(STARTUP_PROP_NAME).isEmpty())
+	    runFunc(getObjForEnvironment(), props.getProperty(STARTUP_PROP_NAME)); else
+	    Log.warning(LOG_COMPONENT, "no property " + STARTUP_PROP_NAME + ", skipping startup procedure");
 	soundManager.startingMode();
-	greetingWorker(uiSettings.getLaunchGreeting(""));
 	workers.doWork(objRegistry.getWorkers());
 	eventLoop(mainStopCondition);
 	workers.finish();
@@ -82,7 +84,6 @@ final Interaction interaction;
 	    }
 	interaction.stopInputEventsAccepting();
 	extensions.close();
-	Log.debug("core", "environment closed");
     }
 
         @Override public void onBeforeEventProcessing()
@@ -784,31 +785,5 @@ onNewAreasLayout();
 	    return;
 	listening.cancel();
 	listening = null;
-    }
-
-        private void greetingWorker(String text)
-    {
-	NullCheck.notNull(text, "text");
-	if (text.trim().isEmpty())
-	    return;
-	objRegistry.add(null, new Worker(){
-		@Override public String getExtObjName()
-		{
-		    return "luwrain.greeting";
-		}
-		@Override public int getLaunchPeriod()
-		{
-		    return 60;
-		}
-		@Override public int getFirstLaunchDelay()
-		{
-		    return 15;
-		}
-		@Override public void run()
-		{
-		    if (!wasInputEvents)
-			getObjForEnvironment().message(text, Luwrain.MessageType.ANNOUNCEMENT);
-		}
-	    });
     }
 }

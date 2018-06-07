@@ -261,9 +261,9 @@ public void playSound(Sounds sound)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
-	if (name.startsWith("js:"))
+	if (name.startsWith("jsfile:"))
 	{
-	    final String scriptName = name.substring("js:".length());
+	    final String scriptName = name.substring("jsfile:".length());
 	    if (scriptName.isEmpty())
 		return false;
 	    final String text;
@@ -286,6 +286,17 @@ public void playSound(Sounds sound)
 		return false;
 	    }
 	    return true;
+	}
+	final java.util.function.Consumer func = (java.util.function.Consumer)newInstanceOf(name, java.util.function.Consumer.class);
+	if (func == null)
+	    return false;
+	try {
+	    func.accept(luwrain);
+	}
+	catch(Throwable e)
+	{
+	    		Log.error(LOG_COMPONENT, "unable to run the function \'" + name + "\':" + e.getClass().getName() + ":" + e.getMessage());
+			return false;
 	}
 	return true;
     }
