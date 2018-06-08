@@ -74,7 +74,6 @@ final class Core extends EventDispatching
 	soundManager.startingMode();
 	workers.doWork(objRegistry.getWorkers());
 	eventLoop(mainStopCondition);
-	props.setProviders(new org.luwrain.base.PropertiesProvider[]{new StartingModeProperty()});
 	workers.finish();
 	playSound(Sounds.SHUTDOWN);
 	    try {
@@ -145,6 +144,7 @@ final class Core extends EventDispatching
 	extensions.load((ext)->interfaces.requestNew(ext), cmdLine);
 	initI18n();
 	initObjects();
+	objRegistry.add(null, new StartingModeProperty());
 	Log.debug(LOG_COMPONENT, "Loading dynamic script extensions");
 	if (props.getFileProperty("luwrain.dir.js").exists() && props.getFileProperty("luwrain.dir.js").isDirectory())
 	{
@@ -202,6 +202,7 @@ final class Core extends EventDispatching
 	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
 	desktop.ready();
 	sounds.init(registry, props.getFileProperty("luwrain.dir.data").toPath());
+	props.setProviders(objRegistry.getPropertiesProviders());
 	uiSettings = Settings.createUserInterface(registry);
     }
 

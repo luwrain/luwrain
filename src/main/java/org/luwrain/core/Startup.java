@@ -33,13 +33,14 @@ final class Startup implements java.util.function.Consumer
 	if (text.trim().isEmpty())
 	    return;
 	luwrain.registerExtObj(new Worker(){
+		int count = 10;//TODO:to registry
 		@Override public String getExtObjName()
 		{
 		    return "luwrain.greeting";
 		}
 		@Override public int getLaunchPeriod()
 		{
-		    return 5;
+		    return 30;
 		}
 		@Override public int getFirstLaunchDelay()
 		{
@@ -47,8 +48,12 @@ final class Startup implements java.util.function.Consumer
 		}
 		@Override public void run()
 		{
-		    if (luwrain.getProperty("luwrain.startingmode").equals("1"))
+		    if (!luwrain.getProperty("luwrain.startingmode").equals("1"))
+			return;
+		    if (count <= 0)
+			return;
 			luwrain.message(text, Luwrain.MessageType.ANNOUNCEMENT);
+			--count;
 		}
 	    });
     }

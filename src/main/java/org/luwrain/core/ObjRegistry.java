@@ -46,6 +46,7 @@ final class ObjRegistry
     private Map<String, Entry<Worker>> workers = new HashMap();
     private Map<String, Entry<org.luwrain.speech.Factory>> speechFactories = new HashMap();
     private Map<String, Entry<MediaResourcePlayer>> players = new HashMap();
+        private Map<String, Entry<PropertiesProvider>> propsProviders = new HashMap();
 
     boolean add(Extension ext, ExtensionObject obj)
     {
@@ -105,7 +106,17 @@ final class ObjRegistry
 	    }
 	}
 
-								if (!res)
+																if (obj instanceof PropertiesProvider)
+	{
+	    final PropertiesProvider provider = (PropertiesProvider)obj;
+	    if (!propsProviders.containsKey(name))
+	    {
+		propsProviders.put(name, new Entry(ext, name, provider));
+		res = true;
+	    }
+	}
+
+																if (!res)
 	    Log.warning(LOG_COMPONENT, "failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
 	return res;
     }
@@ -206,6 +217,14 @@ final class ObjRegistry
 	return res.toArray(new Worker[res.size()]);
     }
 
+                PropertiesProvider[] getPropertiesProviders()
+    {
+	final List<PropertiesProvider> res = new LinkedList();
+	for(Map.Entry<String, Entry<PropertiesProvider>> e: propsProviders.entrySet())
+	    res.add(e.getValue().obj);
+	return res.toArray(new PropertiesProvider[res.size()]);
+    }
+
     static void issueResultingMessage(Luwrain luwrain, int exitCode, String[] lines)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -245,7 +264,7 @@ final class ObjRegistry
 	    deleting.add(e.getKey());
     for(String s: deleting)
 	map.remove(s);
-	}
+    }
 
     static private final class CommandLineToolCommand implements Command
     {
