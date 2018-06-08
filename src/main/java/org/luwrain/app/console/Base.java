@@ -20,16 +20,43 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
+import org.luwrain.controls.ConsoleArea2.InputHandler;
 
-class Base
+final class Base
 {
+        static private final List messages = new LinkedList();
+
     private final Luwrain luwrain;
-    static private final List<Log.Message> messages = new LinkedList();
+    private final ConsoleCommand[] commands;
 
     Base(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	this.commands = new ConsoleCommand[]{
+
+	    new Commands.Prop(luwrain),
+
+	};
+    }
+
+    InputHandler.Result onInput(String text, Runnable updating)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(updating, "updating");
+	if (text.trim().isEmpty())
+	    return InputHandler.Result.REJECTED;
+	for(ConsoleCommand c: commands)
+	    if (c.onCommand(text, messages))
+	    {
+	updating.run();
+	luwrain.playSound(Sounds.OK);
+		return InputHandler.Result.CLEAR_INPUT;
+	    }
+	messages.add("Unknown command: " + firstWord(text));
+	updating.run();
+	luwrain.playSound(Sounds.ERROR);
+	return InputHandler.Result.CLEAR_INPUT;
     }
 
     Model createModel()
@@ -39,7 +66,6 @@ class Base
 
     static void installListener()
     {
-
 	Log.addListener((message)->{
 	    NullCheck.notNull(message, "message");
 	    messages.add(message);
@@ -51,6 +77,20 @@ class Base
     {
 	//	Log.removeListener(listener);
     }
+
+    static String firstWord(String text)
+    {
+	NullCheck.notNull(text, "text");
+	final int pos = text.indexOf(" ");
+	if (pos < 0)
+	    return text.trim();
+	return text.substring(0, pos).trim();
+    }
+
+interface ConsoleCommand
+{
+    boolean onCommand(String text, List messages);
+}
 
     static private class Model implements ConsoleArea2.Model
     {

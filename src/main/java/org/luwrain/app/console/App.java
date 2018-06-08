@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 
-public class App implements Application, MonoApp
+public final class App implements Application, MonoApp
 {
     private Luwrain luwrain = null;
     private Base base = null;
@@ -66,7 +66,7 @@ params.clickHandler = (area,index,obj)->{
 	    return false;
 	};
 params.inputHandler = (area,text)->{
-    return ConsoleArea2.InputHandler.Result.REJECTED;
+    return base.onInput(text, ()->area.refresh());
 	};
 params.inputPos = ConsoleArea2.InputPos.BOTTOM;
 params.inputPrefix = "LUWRAIN>";
