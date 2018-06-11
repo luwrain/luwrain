@@ -18,7 +18,6 @@ package org.luwrain.popups;
 
 import java.util.*;
 import java.io.*;
-//import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -97,7 +96,7 @@ setLoadingResultHandler((location, data, selectedIndex, announce)->{
 	switch(event.getCode())
 	{
 	case PROPERTIES:
-	    openMountedPartitions();
+	    openVolumes();
 	    return true;
 	case OK:
 	    if (getSelectedEntry() != null)
@@ -148,12 +147,12 @@ setLoadingResultHandler((location, data, selectedIndex, announce)->{
 	return closing.cancelled();
     }
 
-    protected void openMountedPartitions()
+    protected void openVolumes()
     {
-	final org.luwrain.base.hardware.Partition part = Popups.mountedPartitions(luwrain, popupFlags);
-	if (part == null)
+	final File res = Popups.disksVolumes(luwrain, "Выберите раздел:", popupFlags);
+	if (res == null)
 	    return;
-	open(part.getPartFile(), null);
+	open(res, null);
     }
 
     static private CommanderArea.Params<File> constructParams(Luwrain luwrain)

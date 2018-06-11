@@ -21,7 +21,6 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.base.hardware.*;
 
 public class Popups
 {
@@ -253,22 +252,24 @@ name, prefix, text, popupFlags);
 	return commanderSingle(luwrain, name, path, null, null, popupFlags);
     }
 
-    static public Partition mountedPartitions(Luwrain luwrain, Set<Popup.Flags> popupFlags)
+    static public File disksVolumes(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
 	NullCheck.notNull(popupFlags, "popupFlags");
-	final PartitionsPopup popup = new PartitionsPopup(luwrain, luwrain.getPartitionsPopupControl(),
-							  luwrain.i18n().getStaticStr("PartitionsPopupName"), popupFlags, EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP));
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
+	final String className = luwrain.getProperty("luwrain.class.disksvolumespopupfactory");
+	if (className.isEmpty())
 	    return null;
-	return (Partition)popup.result().getObject();
-    }
-
-    static public Partition mountedPartitions(Luwrain luwrain)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	return mountedPartitions(luwrain, DEFAULT_POPUP_FLAGS);
+	final DisksVolumesPopupFactory factory = (DisksVolumesPopupFactory)org.luwrain.util.ClassUtils.newInstanceOf(className, DisksVolumesPopupFactory.class);
+	if (factory == null)
+	    return null;
+	final DisksVolumesPopup popup = factory.newDisksVolumesPopup(luwrain, name, popupFlags);
+	if (popup == null)
+	    return null;
+	luwrain.popup(popup);
+	if (popup.wasCancelled())
+	    return null;
+	return popup.result();
     }
 
     static public String fixedEditList(Luwrain luwrain,

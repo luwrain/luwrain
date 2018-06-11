@@ -101,7 +101,7 @@ public class Init
 	    Log.fatal(LOG_COMPONENT, "unable to load interaction:no luwrain.class.interaction property among loaded properties");
 	    return false;
 	}
-	interaction = (org.luwrain.base.Interaction)Base.newInstanceOf(interactionClass, org.luwrain.base.Interaction.class);
+	interaction = (org.luwrain.base.Interaction)org.luwrain.util.ClassUtils.newInstanceOf(interactionClass, org.luwrain.base.Interaction.class);
 	if (interaction == null)
 	{
 	    Log.fatal(LOG_COMPONENT, "Unable to create an instance of  the interaction class " + interactionClass);
@@ -134,7 +134,7 @@ public class Init
 	    Log.fatal(LOG_COMPONENT, "unable to load operating system interface:no luwrain.class.os property in loaded core properties");
 	    return false;
 	}
-	os = (org.luwrain.base.OperatingSystem)Base.newInstanceOf(osClass, org.luwrain.base.OperatingSystem.class);
+	os = (org.luwrain.base.OperatingSystem)org.luwrain.util.ClassUtils.newInstanceOf(osClass, org.luwrain.base.OperatingSystem.class);
 	if (os == null)
 	{
 	    Log.fatal(LOG_COMPONENT, "unable to create a new instance of the operating system class " + osClass);

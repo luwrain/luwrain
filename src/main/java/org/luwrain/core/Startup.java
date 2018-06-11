@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-final class Startup implements java.util.function.Consumer
+public final class Startup implements java.util.function.Consumer
 {
     @Override public void accept(Object obj)
     {

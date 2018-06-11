@@ -58,7 +58,7 @@ final class Core extends EventDispatching
 	    Log.error(LOG_COMPONENT, "no property " + DESKTOP_PROP_NAME + ", unable to create a desktop");
 	    throw new RuntimeException("unable to create a desktop");
 	}
-	this.desktop = (Desktop)newInstanceOf(props.getProperty(DESKTOP_PROP_NAME), Desktop.class);
+	this.desktop = (Desktop)org.luwrain.util.ClassUtils.newInstanceOf(props.getProperty(DESKTOP_PROP_NAME), Desktop.class);
 	if (this.desktop == null)
 	    throw new RuntimeException("unable to create a desktop");
     }
