@@ -696,11 +696,6 @@ public FilesOperations getFilesOperations()
 	return core.os.getFilesOperations();
     }
 
-    public org.luwrain.popups.PartitionsPopup.Control getPartitionsPopupControl()
-    {
-return new org.luwrain.shell.PartitionsPopupControl(this, core.os.getHardware());
-    }
-
     public org.luwrain.player.Player getPlayer()
     {
 	return core.player;
