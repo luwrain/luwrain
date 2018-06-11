@@ -18,7 +18,6 @@ package org.luwrain.settings;
 
 import java.util.*;
 
-import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
 
@@ -39,14 +38,11 @@ public class StandardFactory implements Factory
     static private final Element soundSchemes = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundSchemes");
 
     private final Luwrain luwrain;
-    private final Hardware hardware;
 
-    public StandardFactory(Luwrain luwrain, Hardware hardware)
+    public StandardFactory(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(hardware, "hardware");
 	this.luwrain = luwrain;
-	this.hardware = hardware;
     }
 
     @Override public Element[] getElements()
@@ -82,13 +78,6 @@ public class StandardFactory implements Factory
     @Override public Element[] getOnDemandElements(Element parent)
     {
 	NullCheck.notNull(parent, "parent");
-	if (parent.equals(hardwareSysDevices))
-	{
-	    final List<Element> res = new LinkedList<Element>();
-	    for(org.luwrain.base.hardware.SysDevice device: hardware.getSysDevices())
-		res.add(new HardwareSysDevice.Element(parent, device ));
-	    return res.toArray(new Element[res.size()]);
-	}
 	return new Element[0];
     }
 
@@ -97,8 +86,6 @@ public class StandardFactory implements Factory
 	NullCheck.notNull(el, "el");
 	if (el.equals(hardwareSysDevices))
 	    return new SimpleSection(hardwareSysDevices, "Системные устройства");
-	if (el instanceof HardwareSysDevice.Element)
-	    return new SimpleSection(el, el.toString(), (controlPanel)->HardwareSysDevice.create(controlPanel, el));
 	if (el.equals(StandardElements.ROOT))
 	    return new SimpleSection(StandardElements.ROOT, "Панель управления");
 	if (el.equals(StandardElements.APPLICATIONS))

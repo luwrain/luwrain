@@ -18,7 +18,6 @@ package org.luwrain.app.cpanel;
 
 import java.util.*;
 
-import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
@@ -32,18 +31,15 @@ public class ControlPanelApp implements Application, MonoApp, Actions
     private ControlPanelImpl iface;
 
     private final Factory[] factories;
-    private final Hardware hardware;
 
     private Section currentSection = null;
     private TreeArea sectionsArea;
     private SectionArea currentOptionsArea = null;
 
-    public ControlPanelApp(Factory[] factories, Hardware hardware)
+    public ControlPanelApp(Factory[] factories)
     {
 	NullCheck.notNullItems(factories, "factories");
-	NullCheck.notNull(hardware, "hardware");
 	this.factories = factories;
-	this.hardware = hardware;
     }
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -54,7 +50,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
 	strings = (Strings)o;
 	this.luwrain = luwrain;
-	base = new Base(luwrain, factories, hardware);
+	base = new Base(luwrain, factories);
 	iface = new ControlPanelImpl(luwrain, this);
 	createArea();
 	return new InitResult();

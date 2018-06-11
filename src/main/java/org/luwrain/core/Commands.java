@@ -409,7 +409,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories(), core.os.getHardware());
+		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories());
 		    core.launchApp(app);
 		}
 	    },
@@ -540,34 +540,6 @@ class Commands
 		    final Speech speech = core.getSpeech();
 		    speech.setRate(speech.getRate() + SPEECH_STEP);
 		    luwrain.message("Скорость речи " + (100 - speech.getRate()));
-		}
-	    },
-
-	    //volume-inc
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "volume-inc";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final OperatingSystem os = core.os;
-		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() + VOLUME_STEP);
-		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
-		}
-	    },
-
-	    //volume-dec
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "volume-dec";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final OperatingSystem os = core.os;
-		    os.getHardware().getAudioMixer().setMasterVolume(os.getHardware().getAudioMixer().getMasterVolume() - VOLUME_STEP);
-		    luwrain.message("Громкость " + os.getHardware().getAudioMixer().getMasterVolume());
 		}
 	    },
 

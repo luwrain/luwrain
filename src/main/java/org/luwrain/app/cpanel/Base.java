@@ -18,7 +18,6 @@ package org.luwrain.app.cpanel;
 
 import java.util.*;
 
-import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
@@ -28,20 +27,17 @@ class Base
 {
     private final Luwrain luwrain;
     private final Factory[] factories;
-    private Hardware hardware;
     private final StandardFactory standardFactory;
     private HashMap<Element, TreeItem> treeItems = new HashMap<Element, TreeItem>();
     private SectionsTreeModelSource treeModelSource;
     private CachedTreeModel treeModel;
 
-    Base(Luwrain luwrain, Factory[] factories, Hardware hardware)
+    Base(Luwrain luwrain, Factory[] factories)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNullItems(factories, "factories");
-	NullCheck.notNull(hardware, "hardware");
 	this.luwrain = luwrain;
-	this.hardware = hardware;
-	this.standardFactory = new StandardFactory(luwrain, hardware);
+	this.standardFactory = new StandardFactory(luwrain);
 	this.factories = factories;
 	treeModelSource = new SectionsTreeModelSource(this, 
 treeItems);
