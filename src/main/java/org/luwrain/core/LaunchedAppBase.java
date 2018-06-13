@@ -90,4 +90,11 @@ class LaunchedAppBase
 		return w;
 	return null;
     }
+
+        void sendBroadcastEvent(org.luwrain.core.events.EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	for(Area area: popups)
+	    area.onEnvironmentEvent(event);
+    }
 }

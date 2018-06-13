@@ -170,6 +170,7 @@ final Application app;
     void sendBroadcastEvent(org.luwrain.core.events.EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	//	super.sendBroadcastEvent(event);
 	for(OpenedArea w: areaWrappings)
 	    w.getEffectiveArea().onEnvironmentEvent(event);
     }

@@ -455,6 +455,7 @@ final class AppManager
     void sendBroadcastEvent(org.luwrain.core.events.EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	//	shell.sendBroadcastEvent(event);
 	for(LaunchedApp a: apps)
 	    a.sendBroadcastEvent(event);
     }
