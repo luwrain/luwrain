@@ -272,6 +272,14 @@ name, prefix, text, popupFlags);
 	return popup.result();
     }
 
+        static public File disksVolumes(Luwrain luwrain, String name)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	return disksVolumes(luwrain, name, DEFAULT_POPUP_FLAGS);
+    }
+
+
     static public String fixedEditList(Luwrain luwrain,
 				       String name, String prefix, String text,
 				       String[] items)
