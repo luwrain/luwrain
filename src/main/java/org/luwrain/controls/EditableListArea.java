@@ -66,7 +66,7 @@ public class EditableListArea extends ListArea
 	    switch(event.getSpecial())
 	    { 
 	    case DELETE:
-		return onDeleteSingle(getHotPointY(), true);
+		return onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION));
 	    }
 	return super.onKeyboardEvent(event);
     }
@@ -79,14 +79,7 @@ public class EditableListArea extends ListArea
 	switch(event.getCode())
 	{
 	case CLEAR:
-	    if (isEmpty())
-		return false;
-	    if (confirmation != null && !confirmation.confirmDeleting(this, editableListModel, 0, editableListModel.getItemCount()))
-		return true;
-	    if (!editableListModel.clearList())
-		return false;
-	    refresh();
-	    return true;
+	    return false;
 	case CLIPBOARD_PASTE:
 	    return onClipboardPaste();
 	default:
