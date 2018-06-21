@@ -19,10 +19,12 @@
 package org.luwrain.core.script;
 
 import java.util.*;
+import java.util.function.*;
+import java.util.concurrent.*;
 import javax.script.*;
 import jdk.nashorn.api.*;
 import jdk.nashorn.api.scripting.*;
-import java.util.function.*;
+
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
@@ -60,8 +62,14 @@ final class Control extends AbstractJSObject
 	    return (BiPredicate)this::addShortcut;
 	case "addCommand":
 	    return (BiPredicate)this::addCommand;
+	    	case "getActiveAreaText":
+	    return (Function)this::getActiveAreaText;
+
+	    
 	case "launchApp":
 	    return (Predicate)this::launchApp;
+	    	case "runBkg":
+		    return (Predicate)this::runBkg;
 	default:
 	    return null;
 	}
@@ -113,6 +121,49 @@ final class Control extends AbstractJSObject
 	final JSObject func = (JSObject)obj;
 	commands.add(new CommandAdapter(name.toString(), func));
 	return true;
+    }
+
+    private boolean runBkg(Object obj)
+    {
+	if (obj == null)
+	    return false;
+	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
+	    return false;
+	final JSObject func = (JSObject)obj;
+	luwrain.executeBkg(new FutureTask(()->{
+		    func.call(null, new Object[0]);
+	}, null));
+	return true;
+    }
+
+    private String getActiveAreaText(Object type)
+    {
+	if (type == null)
+	    return null;
+	final String typeStr = type.toString();
+	if (typeStr == null)
+	    return null;
+	final Luwrain.AreaTextType typeValue;
+	switch(typeStr.toLowerCase().trim())
+	{
+	case "region":
+	    typeValue = Luwrain.AreaTextType.REGION;
+	    break;
+	case "word":
+	    typeValue = Luwrain.AreaTextType.WORD;
+	    break;
+	case "line":
+	    typeValue = Luwrain.AreaTextType.LINE;
+	    break;
+	case "sentence":
+	    typeValue = Luwrain.AreaTextType.SENTENCE;
+	    break;
+	case "url":
+	    typeValue = Luwrain.AreaTextType.URL;
+	default:
+	    return null;
+	}
+	return luwrain.getActiveAreaText(typeValue, false);
     }
 
     private boolean launchApp(Object name)

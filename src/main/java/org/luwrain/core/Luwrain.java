@@ -76,6 +76,7 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
     public String getActiveAreaText(AreaTextType type, boolean issueErrorMessages)
     {
 	NullCheck.notNull(type, "type");
+	core.mainCoreThreadOnly();
 	final Area activeArea = core.getValidActiveArea(issueErrorMessages);
 	if (activeArea == null)
 	    return null;

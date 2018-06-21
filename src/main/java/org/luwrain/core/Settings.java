@@ -189,6 +189,7 @@ public interface DateTime
 	String getCopied(String defValue);
 	String getCut(String defValue);
 	String getDeleted(String defValue);
+	String getDesktopItem(String defValue);
 	String getDocSection(String defValue);
 	String getDone(String defValue);
 	String getEmptyLine(String defValue);
@@ -231,6 +232,7 @@ public interface DateTime
 	void setCopied(String value);
 	void setCut(String value);
 	void setDeleted(String value);
+	void setDesktopItem(String value);
 	void setDocSection(String value);
 	void setDone(String value);
 	void setEmptyLine(String value);

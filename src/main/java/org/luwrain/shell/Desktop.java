@@ -216,7 +216,7 @@ public class Desktop implements org.luwrain.core.Desktop
 
 	
 		default:
-		    		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.MAIN_MENU_ITEM, uniRefInfo.getTitle(), Suggestions.CLICKABLE_LIST_ITEM));
+		    		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.DESKTOP_ITEM, uniRefInfo.getTitle(), Suggestions.CLICKABLE_LIST_ITEM));
 		}
     }
     }

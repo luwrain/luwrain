@@ -27,6 +27,7 @@ public enum Sounds
     COPIED,
     CUT,
     DELETED,
+    DESKTOP_ITEM,
     DOC_SECTION,
     DONE,
     EMPTY_LINE,
