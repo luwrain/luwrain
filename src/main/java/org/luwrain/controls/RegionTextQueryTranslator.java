@@ -46,11 +46,6 @@ public class RegionTextQueryTranslator
 	this.flags = flags;
     }
 
-        public RegionTextQueryTranslator(Provider provider, AbstractRegionPoint regionPoint)
-    {
-	this(provider, regionPoint, EnumSet.noneOf(Flags.class));
-    }
-
     public boolean onEnvironmentEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
     {
 	NullCheck.notNull(event, "event");

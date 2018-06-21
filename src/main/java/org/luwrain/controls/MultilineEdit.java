@@ -99,7 +99,7 @@ public class MultilineEdit
 		    return model.deleteRegion(fromX, fromY, toX, toY);
 		}
 	    }, regionPoint);
-	this.regionTextQueryTranslator = new RegionTextQueryTranslator(new LinesRegionTextQueryProvider(model), regionPoint);
+	this.regionTextQueryTranslator = new RegionTextQueryTranslator(new LinesRegionTextQueryProvider(model), regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));
     }
 
     public boolean onKeyboardEvent(KeyboardEvent event)

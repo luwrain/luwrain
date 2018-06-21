@@ -100,7 +100,7 @@ public interface ClipboardSaver
     protected final ControlEnvironment context;
     protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint, EnumSet.of(ClipboardTranslator.Flags.ALLOWED_EMPTY, ClipboardTranslator.Flags.ALLOWED_WITHOUT_REGION_POINT));
-    protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint);
+    protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));
     protected String areaName = "";
     protected final Model listModel;
     protected final Appearance listAppearance;
