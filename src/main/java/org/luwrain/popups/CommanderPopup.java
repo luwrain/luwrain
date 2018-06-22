@@ -47,7 +47,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	this.acceptance = acceptance;
 	setClickHandler(clickHandler != null?clickHandler:this);
 setLoadingResultHandler((location, data, selectedIndex, announce)->{
-		luwrain.runInMainThread(()->acceptNewLocation(location, data, selectedIndex, announce));
+		luwrain.runUiSafely(()->acceptNewLocation(location, data, selectedIndex, announce));
 	    });
 	open(file);
     }

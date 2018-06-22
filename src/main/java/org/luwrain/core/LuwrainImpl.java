@@ -488,7 +488,7 @@ final class LuwrainImpl implements Luwrain
 	return core.getSpeech().getChannelsByCond(cond);
     }
 
-    @Override public void runInMainThread(Runnable runnable)
+    void runInMainThread(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
 	core.enqueueEvent(new Core.RunnableEvent(runnable));

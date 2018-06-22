@@ -183,7 +183,7 @@ public interface Luwrain extends org.luwrain.base.EventConsumer, PropertiesBase
     boolean registerExtObj(ExtensionObject extObj);
     boolean runCommand(String command);
     CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener);
-    void runInMainThread(Runnable runnable);
+    //    void runInMainThread(Runnable runnable);
     Object runLaterSync(java.util.concurrent.Callable callable);
     OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);
     java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text);

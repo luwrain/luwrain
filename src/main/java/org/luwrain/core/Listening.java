@@ -77,7 +77,7 @@ onFinish(null, null);
 	final Channel.Listener listener = new Channel.Listener(){
 		@Override public void onFinished(long id)
 		{
-		    luwrain.runInMainThread(()->onFinish(text, extraInfo));
+		    luwrain.runUiSafely(()->onFinish(text, extraInfo));
 		}};
 	channel .speak(text, listener, 0, 0, false);
     }
