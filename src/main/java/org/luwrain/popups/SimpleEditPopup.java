@@ -39,7 +39,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
     protected final Luwrain luwrain;
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final RegionPoint regionPoint = new RegionPoint();
-    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint);
+    protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint, EnumSet.noneOf(ClipboardTranslator.Flags.class));
     protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));
     protected final EmbeddedSingleLineEdit edit;
     protected final String name;

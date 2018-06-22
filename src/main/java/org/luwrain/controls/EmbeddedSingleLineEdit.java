@@ -38,7 +38,7 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
      * @param offsetY The Y position of this edit in the area
      */
     public EmbeddedSingleLineEdit(ControlEnvironment context, EmbeddedEditLines lines,
-				  HotPointControl hotPoint,  RegionPoint regionPoint,
+				  HotPointControl hotPoint,  AbstractRegionPoint regionPoint,
 				  int offsetX, int offsetY)
     {
 	NullCheck.notNull(context, "context");
@@ -115,13 +115,13 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 	return "\t";//FIXME:
     }
 
-    static protected class ShiftedRegionPoint implements AbstractRegionPoint
+    static protected final class ShiftedRegionPoint implements AbstractRegionPoint
     {
 	protected final AbstractRegionPoint regionPoint;
 	protected int offsetX = 0;
 	protected int offsetY = 0;
 
-	public ShiftedRegionPoint(AbstractRegionPoint regionPoint, int offsetX, int offsetY)
+	ShiftedRegionPoint(AbstractRegionPoint regionPoint, int offsetX, int offsetY)
 	{
 	    NullCheck.notNull(regionPoint, "regionPoint");
 	    if (offsetX < 0 || offsetY < 0)

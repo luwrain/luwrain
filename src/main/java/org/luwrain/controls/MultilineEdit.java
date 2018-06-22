@@ -98,7 +98,7 @@ public class MultilineEdit
 		{
 		    return model.deleteRegion(fromX, fromY, toX, toY);
 		}
-	    }, regionPoint);
+	    }, regionPoint, EnumSet.noneOf(ClipboardTranslator.Flags.class));
 	this.regionTextQueryTranslator = new RegionTextQueryTranslator(new LinesRegionTextQueryProvider(model), regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));
     }
 
