@@ -190,7 +190,7 @@ disabling.disableAreaWrapper();
 	final String line = area.getLine(hotPointY);
 	if (line == null)//Security wrapper should make this impossible
 	    return false;
-	new Luwrain(core).say(line);//FIXME:
+	new LuwrainImpl(core).say(line);//FIXME:
 	return true;
     }
 }

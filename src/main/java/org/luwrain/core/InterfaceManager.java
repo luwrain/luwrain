@@ -32,7 +32,7 @@ public final class InterfaceManager
 	NullCheck.notNull(base, "base");
 	this.core = (Core)base;
 	NullCheck.notNull(core, "core");
-	this.objForEnvironment = new Luwrain((Core)base);
+	this.objForEnvironment = new LuwrainImpl((Core)base);
     }
 
     Luwrain requestNew(Application app)
@@ -41,7 +41,7 @@ public final class InterfaceManager
 	final Luwrain existing = findFor(app);
 	if (existing != null)
 	    return existing;
-	final Luwrain luwrain = new Luwrain(core);
+	final Luwrain luwrain = new LuwrainImpl(core);
 	entries.add(new Entry(Entry.APP, app, luwrain));
 	return luwrain;
     }
@@ -52,7 +52,7 @@ public final class InterfaceManager
 	final Luwrain existing = findFor(ext);
 	if (existing != null)
 	    return existing;
-	final Luwrain luwrain = new Luwrain(core);
+	final Luwrain luwrain = new LuwrainImpl(core);
 	entries.add(new Entry(Entry.EXTENSION, ext, luwrain));
 	return luwrain;
     }

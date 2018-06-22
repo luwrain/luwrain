@@ -210,10 +210,10 @@ final class Core extends EventDispatching
     {
 	final Command[] standardCommands = Commands.createStandardCommands(this, conversations);
 	for(Command sc: standardCommands)
-	    commands.add(new Luwrain(this), sc);//FIXME:
+	    commands.add(getObjForEnvironment(), sc);//FIXME:
 	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(getObjForEnvironment());
 	for(UniRefProc proc: standardUniRefProcs)
-	    uniRefProcs.add(new Luwrain(this), proc);//FIXME:
+	    uniRefProcs.add(getObjForEnvironment(), proc);//FIXME:
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
 	{
