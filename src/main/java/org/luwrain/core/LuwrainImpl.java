@@ -39,6 +39,7 @@ final class LuwrainImpl implements Luwrain
 
     @Override public CmdLine getCmdLine()
     {
+	core.mainCoreThreadOnly();
 	return core.cmdLine;
     }
 
@@ -255,6 +256,119 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(file, "file");
 	NullCheck.notNull(expectedType, "expectedType");
 	return core.contentTypes.suggestContentType(file, expectedType);
+    }
+
+        @Override public void playSound(Sounds sound)
+    {
+	NullCheck.notNull(sound, "sound");
+	runUiSafely(()->core.playSound(sound));
+    }
+
+    @Override public void popup(Popup popup)
+    {
+	NullCheck.notNull(popup, "popup");
+	core.popupIface(popup);
+    }
+
+    @Override public boolean runCommand(String command)
+    {
+	NullCheck.notNull(command, "command");
+	return core.runCommand(command);
+    }
+
+    @Override public org.luwrain.base.CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener)
+    {
+	NullCheck.notNull(name, "name");
+	NullCheck.notNullItems(args, "args");
+	NullCheck.notNull(listener, "listener");
+	return core.commandLineTools.run(name, args, listener);
+    }
+
+    @Override public void say(String text)
+    {
+	NullCheck.notNull(text, "text");
+	core.braille.textToSpeak(text);
+	core.getSpeech().speak(preprocess(text), 0, 0);
+    }
+
+    @Override public void say(String text, Sounds sound)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(sound, "sound");
+	playSound(sound);
+	say(text);
+    }
+
+    @Override public void say(String text, int pitch)
+    {
+	NullCheck.notNull(text, "text");
+	core.braille.textToSpeak(text);
+	core.getSpeech().speak(preprocess(text), pitch, 0);
+    }
+
+    @Override public void say(String text,
+			      int pitch, int rate)
+    {
+	NullCheck.notNull(text, "text");
+	core.getSpeech().speak(preprocess(text), pitch, rate);
+    }
+
+    @Override public void sayLetter(char letter)
+    {
+	core.braille.textToSpeak("" + letter);
+	switch(letter)
+	{
+	case ' ':
+	    sayHint(Hint.SPACE);
+	    return;
+	case '\t':
+	    sayHint(Hint.TAB);
+	    return;
+	}
+	final String value = i18n().hasSpecialNameOfChar(letter);
+	if (value == null)
+	    core.getSpeech().speakLetter(letter, 0, 0); else
+	    say(value, Speech.PITCH_HINT);//FIXME:
+    }
+
+    @Override public void sayLetter(char letter, int pitch)
+    {
+	switch(letter)
+	{
+	case ' ':
+	    sayHint(Hint.SPACE);
+	    return;
+	case '\t':
+	    sayHint(Hint.TAB);
+	    return;
+	}
+	final String value = i18n().hasSpecialNameOfChar(letter);
+	if (value == null)
+	    core.getSpeech().speakLetter(letter, pitch, 0); else
+	    say(value, Speech.PITCH_HINT);
+    }
+
+    @Override public void speakLetter(char letter,
+				      int pitch, int rate)
+    {
+	switch(letter)
+	{
+	case ' ':
+	    sayHint(Hint.SPACE);
+	    return;
+	case '\t':
+	    sayHint(Hint.TAB);
+	    return;
+	}
+	final String value = i18n().hasSpecialNameOfChar(letter);
+	if (value == null)
+	    core.getSpeech().speakLetter(letter, pitch, rate); else
+	    say(value, Speech.PITCH_HINT);
+    }
+
+    @Override public void silence()
+    {
+	core.getSpeech().silence();
     }
 
     @Override public void setActiveArea(Area area)
