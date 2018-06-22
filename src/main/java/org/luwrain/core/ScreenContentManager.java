@@ -43,14 +43,14 @@ class ScreenContentManager
     }
 
     /*
-    int onKeyboardEvent(KeyboardEvent event)
+    int onInputEvent(KeyboardEvent event)
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)
 	    return NO_APPLICATIONS;
 	if (isActiveAreaBlockedByPopup())
 	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
-	return activeArea.onKeyboardEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
+	return activeArea.onInputEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
     }
     */
 

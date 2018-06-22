@@ -51,7 +51,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	this.context = context;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!event.isSpecial() || event.isModified())

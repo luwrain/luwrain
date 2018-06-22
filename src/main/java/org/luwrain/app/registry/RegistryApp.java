@@ -116,7 +116,7 @@ public class RegistryApp implements Application, Actions
 	    treeParams.name = strings.dirsAreaName();
 
 	    dirsArea = new TreeArea(treeParams){
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -129,9 +129,9 @@ return actions.insertDir();
 			actions.gotoValues();
 			return true;
 		    default:
-			return super.onKeyboardEvent(event);
+			return super.onInputEvent(event);
 		    }
-			return super.onKeyboardEvent(event);
+			return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
@@ -166,7 +166,7 @@ return actions.insertDir();
 
 	valuesArea = new ListArea(params)
 	    {
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -177,9 +177,9 @@ return actions.insertDir();
 			actions.gotoDirs();
 			return true;
 		    default:
-			return super.onKeyboardEvent(event);
+			return super.onInputEvent(event);
 		    }
-			return super.onKeyboardEvent(event);
+			return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{

@@ -54,10 +54,10 @@ public final class Simple implements Application
 	    if (this.lines == null)
 		this.lines = new String[0];
 	this.area = new NavigationArea(new DefaultControlEnvironment(luwrain)){
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (super.onKeyboardEvent(event))
+		    if (super.onInputEvent(event))
 			return true;
 		    return Simple.this.handleKeyboardEvent(event);
 		}

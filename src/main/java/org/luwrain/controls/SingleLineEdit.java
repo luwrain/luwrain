@@ -61,7 +61,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
     }
 
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.withControl() || event.withAlt())

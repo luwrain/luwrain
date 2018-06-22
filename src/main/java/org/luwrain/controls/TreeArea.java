@@ -94,7 +94,7 @@ public class TreeArea implements Area
 	return hotPointY >= 0?hotPointY:0;
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (items == null || items.length < 1)

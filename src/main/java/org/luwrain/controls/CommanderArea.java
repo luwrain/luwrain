@@ -365,7 +365,7 @@ public class CommanderArea<E> extends ListArea
 	throw new UnsupportedOperationException("Changing list click handler for commander areas not allowed, use setClickHandler(CommanderArea.ClickHandler)instead");
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && !event.isModified())
@@ -376,7 +376,7 @@ public class CommanderArea<E> extends ListArea
 	    case INSERT:
 		return onMarking(event);
 	    }
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public String getAreaName()

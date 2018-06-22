@@ -50,7 +50,7 @@ public class EditableListAreaTest extends Assert
 	params.name = "test";
 	final EditableListArea area = new EditableListArea(params);
 	for(int k = 0;k < i;++k)
-	    assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
+	    assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
 	assertTrue(area.selected().equals("" + i));
 	assertTrue(area.selectedIndex() == i);
 	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
@@ -75,7 +75,7 @@ public class EditableListAreaTest extends Assert
 	params.name = "test";
 	final EditableListArea area = new EditableListArea(params);
 	for(int k = 0;k < i;++k)
-	    assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
+	    assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
 	assertTrue(area.selected().equals("" + i));
 	assertTrue(area.selectedIndex() == i);
 	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)));

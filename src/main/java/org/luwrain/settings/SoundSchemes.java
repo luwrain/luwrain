@@ -107,12 +107,12 @@ class SoundSchemes extends ListArea implements SectionArea
 	this.controlPanel = controlPanel;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (controlPanel.onKeyboardEvent(event))
+	if (controlPanel.onInputEvent(event))
 	    return true;
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)

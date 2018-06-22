@@ -73,7 +73,7 @@ public class Search implements Area
 	return area.getLine(index);
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	if (event.isSpecial() && !event.isModified())
 	    switch(event.getSpecial())

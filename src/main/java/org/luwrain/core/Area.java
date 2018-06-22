@@ -82,7 +82,7 @@ public interface Area extends Lines, HotPoint
     String getAreaName();
     int getHotPointX();
     int getHotPointY();
-    boolean onKeyboardEvent(KeyboardEvent event);
+    boolean onInputEvent(KeyboardEvent event);
     boolean onSystemEvent(EnvironmentEvent event);
     boolean onAreaQuery(AreaQuery areaQuery);
     Action[] getAreaActions();

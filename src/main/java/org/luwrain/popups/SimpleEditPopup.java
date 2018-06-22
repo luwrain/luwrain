@@ -100,12 +100,12 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return 0;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (closing.onKeyboardEvent(event))
+	if (closing.onInputEvent(event))
 	    return true;
-	if (edit.isPosCovered(pos, 0) && edit.onKeyboardEvent(event))
+	if (edit.isPosCovered(pos, 0) && edit.onInputEvent(event))
 	    return true;
 	if (!event.isSpecial() || event.isModified())
 	    return false;

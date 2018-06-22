@@ -49,12 +49,12 @@ class UserInterface extends FormArea implements SectionArea
 	//	addCheckbox("cycling-popup-lists", "Зацикливать навигацию по всплывающим спискам:", settings.getCyclingPopupLists(false));
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (controlPanel.onKeyboardEvent(event))
+	if (controlPanel.onInputEvent(event))
 	    return true;
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)

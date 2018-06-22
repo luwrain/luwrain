@@ -59,7 +59,7 @@ public class EditableListArea extends ListArea
 	return confirmation;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && !event.isModified())
@@ -68,7 +68,7 @@ public class EditableListArea extends ListArea
 	    case DELETE:
 		return onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION));
 	    }
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)

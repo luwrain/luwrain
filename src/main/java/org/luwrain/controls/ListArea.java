@@ -398,7 +398,7 @@ public interface ClipboardSaver
 	return listModel.getItemCount() <= 0;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!event.isSpecial() && (!event.isModified() || event.withShiftOnly()))

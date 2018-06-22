@@ -47,7 +47,7 @@ class ControlPanelImpl implements org.luwrain.cpanel.ControlPanel
 app.refreshSectionsTree();
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && !event.isModified())

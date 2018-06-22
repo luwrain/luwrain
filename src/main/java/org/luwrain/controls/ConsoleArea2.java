@@ -196,7 +196,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	return areaName;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!edit.isPosCovered(getHotPointX(), getHotPointY()) && !event.isSpecial())
@@ -209,7 +209,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 		case ENTER:
 		    return onEnterInEdit();
 		}
-	    if (edit.onKeyboardEvent(event))
+	    if (edit.onInputEvent(event))
 		return true;
 	}
 
@@ -229,7 +229,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	    break;
 	}
 
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)

@@ -38,10 +38,10 @@ public class MainMenu extends ListArea implements PopupClosingTranslator.Provide
 	setListClickHandler((area,index,obj)->closing.doOk());
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (closing.onKeyboardEvent(event))
+	if (closing.onInputEvent(event))
 	    return true;
 	if (event.isSpecial() && !event.isModified())
 	    switch(event.getSpecial())
@@ -77,7 +77,7 @@ public class MainMenu extends ListArea implements PopupClosingTranslator.Provide
 context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 		return true;
 	    }
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)

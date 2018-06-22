@@ -68,10 +68,10 @@ setLoadingResultHandler((location, data, selectedIndex, announce)->{
 	return result;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (closing.onKeyboardEvent(event))
+	if (closing.onInputEvent(event))
 	    return true;
 	if (!event.isSpecial() && !event.isModified())
 	    switch(event.getChar())
@@ -85,7 +85,7 @@ setLoadingResultHandler((location, data, selectedIndex, announce)->{
 		refresh();
 		return true;
 	    }
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)

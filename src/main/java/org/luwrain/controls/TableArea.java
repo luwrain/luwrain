@@ -206,7 +206,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	this.clickHandler = clickHandler;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");

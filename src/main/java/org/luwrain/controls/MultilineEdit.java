@@ -104,7 +104,7 @@ public class MultilineEdit
 	this.regionTextQueryTranslator = new RegionTextQueryTranslator(new LinesRegionTextQueryProvider(model), regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));
     }
 
-    public boolean onKeyboardEvent(KeyboardEvent event)
+    public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!event.isSpecial())//&&

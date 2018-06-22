@@ -33,7 +33,7 @@ public class ListPopup extends ListPopupBase
 	super(luwrain, params, popupFlags);
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && !event.isModified())
@@ -42,7 +42,7 @@ public class ListPopup extends ListPopupBase
 case ENTER:
 return closing.doOk();
  }
-return super.onKeyboardEvent(event);
+return super.onInputEvent(event);
     }
 
     @Override public boolean onOk()

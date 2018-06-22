@@ -50,10 +50,10 @@ public final class SimpleCentered implements Application
     private void createArea()
     {
 	this.area = new CenteredArea(new DefaultControlEnvironment(luwrain), name){
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (super.onKeyboardEvent(event))
+		    if (super.onInputEvent(event))
 			return true;
 		    return SimpleCentered.this.handleKeyboardEvent(event);
 		}

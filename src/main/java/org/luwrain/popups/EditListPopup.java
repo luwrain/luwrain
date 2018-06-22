@@ -89,7 +89,7 @@ public class EditListPopup extends SimpleEditPopup
 	this.model = model;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && !event.isModified())
@@ -111,9 +111,9 @@ public class EditListPopup extends SimpleEditPopup
 		onKeyUp(true);
 		return true;
 	    default:
-		return super.onKeyboardEvent(event);
+		return super.onInputEvent(event);
 	    }
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     private void onTab()

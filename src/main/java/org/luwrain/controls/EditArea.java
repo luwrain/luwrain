@@ -117,12 +117,12 @@ public class EditArea extends NavigationArea
 	setHotPoint(0, 0);
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (edit.onKeyboardEvent(event))
+	if (edit.onInputEvent(event))
 	    return true;
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)

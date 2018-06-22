@@ -448,7 +448,7 @@ public class FormArea  extends NavigationArea
 	return false;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	//Delete on a uniref;
 	if (event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.DELETE &&
@@ -507,12 +507,12 @@ public class FormArea  extends NavigationArea
 	for(Item i: items)
 	    if (i.type == Type.EDIT && i.edit != null &&
 		i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
-		i.onKeyboardEvent(event))
+		i.onInputEvent(event))
 		return true;
 	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
-	    multilineEdit.onKeyboardEvent(event))
+	    multilineEdit.onInputEvent(event))
 	    return true;
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)
@@ -726,9 +726,9 @@ Type type, String name)
 	    this.name = name;
 	}
 
-	boolean onKeyboardEvent(KeyboardEvent event)
+	boolean onInputEvent(KeyboardEvent event)
 	{
-	    return edit != null?edit.onKeyboardEvent(event):false;
+	    return edit != null?edit.onInputEvent(event):false;
 	}
 
 	boolean onSystemEvent(EnvironmentEvent event)

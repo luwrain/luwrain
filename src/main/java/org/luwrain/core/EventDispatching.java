@@ -40,7 +40,7 @@ abstract class EventDispatching extends EnvironmentAreas
 	    if (event instanceof CallableEvent)
 		return onCallableEvent((CallableEvent)event);
 	    if (event instanceof KeyboardEvent)
-		return onKeyboardEvent(Keyboard.translate((KeyboardEvent)event));
+		return onInputEvent(Keyboard.translate((KeyboardEvent)event));
 	    if (event instanceof EnvironmentEvent)
 	    {
 		final EnvironmentEvent environmentEvent = (EnvironmentEvent)event;
@@ -136,7 +136,7 @@ abstract class EventDispatching extends EnvironmentAreas
 	return true;
     }
 
-    private boolean onKeyboardEvent(KeyboardEvent event)
+    private boolean onInputEvent(KeyboardEvent event)
     {
 	onBeforeEventProcessing();
 	if (keyboardEventForEnvironment(event))
@@ -167,7 +167,7 @@ abstract class EventDispatching extends EnvironmentAreas
 			return true;
 		    break;
 		}
-	    if (!activeArea.onKeyboardEvent(event))
+	    if (!activeArea.onInputEvent(event))
 		playSound(Sounds.EVENT_NOT_PROCESSED);
 	    return true;
 	}

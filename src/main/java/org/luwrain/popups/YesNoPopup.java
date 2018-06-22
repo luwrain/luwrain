@@ -67,10 +67,10 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	return 0;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (closing.onKeyboardEvent(event))
+	if (closing.onInputEvent(event))
 	    return true;
 	if (!event.isSpecial())
 	{
