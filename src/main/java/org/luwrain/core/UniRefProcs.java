@@ -241,7 +241,7 @@ class UniRefProcs
 			return false;
 		    try {
 			final String text = FileUtils.readTextFileSingleString(new File(body), "UTF-8");
-			luwrain.execScript(text);
+			luwrain.xExecScript(text);
 			return true;
 		    }
 		    catch(Exception e)

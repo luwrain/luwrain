@@ -71,7 +71,7 @@ class SpeechControlPanelFactory implements Factory
 	if (!ActionEvent.isAction(event, "add-speech-channel"))
 	return false;
 	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final String[] types = luwrain.getLoadedSpeechFactories();
+	final String[] types = luwrain.xGetLoadedSpeechFactories();
 	Arrays.sort(types);
 	    final Object res = Popups.fixedList(luwrain, luwrain.i18n().getStaticStr("CpAddNewSpeechChannelPopupName"), types);
 	    if (res == null)

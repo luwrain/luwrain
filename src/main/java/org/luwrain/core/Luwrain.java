@@ -14,6 +14,8 @@
    General Public License for more details.
 */
 
+//LWR_API 1.0
+
 package org.luwrain.core;
 
 import java.util.Set;
@@ -51,7 +53,7 @@ import org.luwrain.speech.Channel;
  * of access.  It is necessary to make extensions using more accurate and
  * transparent.
  */
-public interface Luwrain extends org.luwrain.base.EventConsumer, org.luwrain.base.PropertiesBase
+public interface Luwrain extends org.luwrain.base.EventConsumer, PropertiesBase
 {
     public enum MessageType {
 	ANNOUNCEMENT,
@@ -63,7 +65,6 @@ public interface Luwrain extends org.luwrain.base.EventConsumer, org.luwrain.bas
 	UNAVAILABLE,
     };
 
-   
     public enum AreaTextType {
 	REGION,
 	WORD,
@@ -72,13 +73,21 @@ public interface Luwrain extends org.luwrain.base.EventConsumer, org.luwrain.bas
 	URL,
     };
 
-    
+    void announceActiveArea();
+        Object callUiSafely(java.util.concurrent.Callable callable);
+        void closeApp();
+            org.luwrain.browser.Browser createBrowser();
+        void crash(Exception e);
+            //Never returns null, returns user home dir if area doesn't speak about that
+    String getActiveAreaDir();
     String getActiveAreaText(AreaTextType type, boolean issueErrorMessage);
+        String[] getAllShortcutNames();
+    Channel getAnySpeechChannelByCond(Set<Channel.Features> cond);
 
-    //Never returns null, returns user home dir if area doesn't speak about that
-    String currentAreaDir();
 
-    void enqueueEvent(Event e);
+
+
+
 
     /**
      * Returns a path to the directory where the application may safely store
@@ -95,19 +104,32 @@ public interface Luwrain extends org.luwrain.base.EventConsumer, org.luwrain.bas
      */
     Path getAppDataDir(String appName);
 
-    void closeApp();
+            //May return -1 if area is not shown on the screen;
+int getAreaVisibleHeight(Area area);
+    int getAreaVisibleWidth(Area area);
+    Clipboard getClipboard();
+        CmdLine getCmdLine();
+            FilesOperations getFilesOperations();
+        String[] xGetLoadedSpeechFactories();
+        org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers();
+        org.luwrain.player.Player getPlayer();
     Registry getRegistry();
-    I18n i18n();
-    void crash(Exception e);
+    int getScreenWidth();
+    int getScreenHeight();
+    Channel[] getSpeechChannelsByCond(Set<Channel.Features> cond);
+        //Never returns null, doesn't take empty strings
+UniRefInfo getUniRefInfo(String uniRef);
+        void executeBkg(java.util.concurrent.FutureTask task);
+        I18n i18n();//FIXME:
     void launchApp(String shortcutName);
-void launchApp(String shortcutName, String[] args);
-    /*
-LaunchContext launchContext();
+    void launchApp(String shortcutName, String[] args);
+        String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException;
 
-void message(String text);
-void message(String text, MessageType semantic);
-void message(String text, Sounds sound);
-
+        void message(String text);
+    void message(String text, MessageType messageType);
+    void message(String text, Sounds sound);
+        void onAreaNewBackgroundSound(Area area);
+    
     /**
      * Notifies the environment that the area gets new position of the hot
      * point. This method causes updating of the visual position of the hot
@@ -142,21 +164,16 @@ void onAreaNewContent(Area area);
      */
     void onAreaNewName(Area area);
 
-    void onAreaNewBackgroundSound(Area area);
 
-    //May return -1 if area is not shown on the screen;
-int getAreaVisibleHeight(Area area);
-    int getAreaVisibleWidth(Area area);
-int getScreenWidth();
-    int getScreenHeight();
-void announceActiveArea();
 
-Clipboard getClipboard();
 
     //Doesn't produce any announcement
 void onNewAreaLayout();
 void openFile(String fileName);
     void openFiles(String[] fileNames);
+        boolean openUniRef(String uniRef);
+    boolean openUniRef(UniRefInfo uniRefInfo);
+
 
     /**
     /**
@@ -169,15 +186,24 @@ void openFile(String fileName);
     * @param sound The identifier of the sound to play
     */
     void playSound(Sounds sound);
-
     void popup(Popup popup);
-    boolean runCommand(String command);
-    void say(String text);
+    boolean registerExtObj(ExtensionObject extObj);
+        boolean runCommand(String command);
+        org.luwrain.base.CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener);
+                void runInMainThread(Runnable runnable);
+    Object runLaterSync(java.util.concurrent.Callable callable);
+        OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);
+        java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text);
+        void runUiSafely(Runnable runnable);
+    boolean runWorker(String workerName);
+        void say(String text);
     void say(String text, Sounds sound);
     void sayLetter(char letter);
-    void silence();
+        void say(String text, int pitch);
+    void say(String text, int pitch, int rate);
+    void sayLetter(char letter, int pitch);
 
-    /**
+            /**
      * Sets the new active area of the application. This method asks the
      * environment to choose another visible area as an active area of the
      * application. This operation is applicable only to regular areas, not
@@ -188,70 +214,21 @@ void openFile(String fileName);
      *
      * @param area The area to choose as an active
      */
-    void setActiveArea(Area area);
-
-    //Never returns null, doesn't take empty strings
-UniRefInfo getUniRefInfo(String uniRef);
-    boolean openUniRef(String uniRef);
-    boolean openUniRef(UniRefInfo uniRefInfo);
-    org.luwrain.browser.Browser createBrowser();
-Channel getAnySpeechChannelByCond(Set<Channel.Features> cond);
-Channel[] getSpeechChannelsByCond(Set<Channel.Features> cond);
-    void runInMainThread(Runnable runnable);
-    String[] getAllShortcutNames();
-java.io.File getFileProperty(String propName);
-    OsCommand runOsCommand(String cmd);
-    OsCommand runOsCommand(String cmd, String dir);
-    OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output);
-    OsCommand runOsCommand(String cmd, String dir,
-			   OsCommand.Output output, OsCommand.Listener listener);
-String getProperty(String propName);
+        void setActiveArea(Area area);
     void setEventResponse(EventResponse eventResponse);
-    FilesOperations getFilesOperations();
-    boolean registerExtObj(ExtensionObject extObj);
-    CmdLine getCmdLine();
-    void message(String text);
-    void message(String text, MessageType messageType);
-    void message(String text, Sounds sound);
-    String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType);
+    
+        void silence();
+    void speakLetter(char letter, int pitch, int rate);
+    String staticStr(LangStatic id);//FIXME:
+        String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType);
     String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType);
-    org.luwrain.base.CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener);
-    void say(String text, int pitch);
+            boolean unloadDynamicExtension(String extId);
 
-    void say(String text,
-	     int pitch, int rate);
+    void xExecScript(String text);
+    void xQuit();
 
-    void sayLetter(char letter, int pitch);
-
-    void speakLetter(char letter,
-		     int pitch, int rate);
-
-    String staticStr(LangStatic id);
-    void runUiSafely(Runnable runnable);
-
-    Object runLaterSync(java.util.concurrent.Callable callable);
-
-    Object callUiSafely(java.util.concurrent.Callable callable);
-
-    int getSpeechRate();
-    void setSpeechRate(int value);
-
-
-    int getSpeechPitch();
-    void setSpeechPitch(int value);
-
-    org.luwrain.player.Player getPlayer();
-    org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers();
-    String[] getLoadedSpeechFactories();
-
-    boolean runWorker(String workerName);
-    void executeBkg(java.util.concurrent.FutureTask task);
-
-    java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text);
-    String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException;
-
-    boolean unloadDynamicExtension(String extId);
-    void execScript(String text);
-
-    void quit();
+    void xSetSpeechRate(int value);
+            int xGetSpeechRate();
+        int xGetSpeechPitch();
+    void xSetSpeechPitch(int value);
 }

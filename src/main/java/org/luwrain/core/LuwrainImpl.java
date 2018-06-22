@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.core;
 
 import java.util.*;
@@ -61,7 +59,7 @@ final class LuwrainImpl implements Luwrain
     }
 
     //Never returns null, returns user home dir if area doesn't speak about that
-    @Override public String currentAreaDir()
+    @Override public String getActiveAreaDir()
     {
 	final Area area = core.getValidActiveArea(false);
 	if (area == null)
@@ -78,7 +76,7 @@ final class LuwrainImpl implements Luwrain
 	core.enqueueEvent(e);
     }
 
-    @Override public void quit()
+    @Override public void xQuit()
     {
 	core.quit();
     }
@@ -537,22 +535,22 @@ final class LuwrainImpl implements Luwrain
 	    return runLaterSync(callable);
     }
 
-    @Override public int getSpeechRate()
+    @Override public int xGetSpeechRate()
     {
 	return  core.getSpeech().getRate();
     }
 
-    @Override public void setSpeechRate(int value)
+    @Override public void xSetSpeechRate(int value)
     {
 	core.getSpeech().setRate(value);
     }
 
-    @Override public int getSpeechPitch()
+    @Override public int xGetSpeechPitch()
     {
 	return core.getSpeech().getPitch();
     }
 
-    @Override public void setSpeechPitch(int value)
+    @Override public void xSetSpeechPitch(int value)
     {
 	core.getSpeech().setPitch(value);
     }
@@ -584,25 +582,6 @@ final class LuwrainImpl implements Luwrain
 	return core.props.getFileProperty(propName);
     }
 
-    @Override public OsCommand runOsCommand(String cmd)
-    {
-	NullCheck.notEmpty(cmd, "cmd");
-	return runOsCommand(cmd, "", null, null);
-    }
-
-    @Override public OsCommand runOsCommand(String cmd, String dir)
-    {
-	NullCheck.notEmpty(cmd, "cmd");
-	NullCheck.notNull(dir, "dir");
-	return runOsCommand(cmd, dir, null, null);
-    }
-
-    @Override public OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output)
-    {
-	NullCheck.notEmpty(cmd, "cmd");
-	NullCheck.notNull(dir, "dir");
-	return runOsCommand(cmd, dir, output, null);
-    }
 
     @Override public OsCommand runOsCommand(String cmd, String dir,
 			   OsCommand.Output output, OsCommand.Listener listener)
@@ -682,7 +661,7 @@ final class LuwrainImpl implements Luwrain
 	return res.toArray(new org.luwrain.base.MediaResourcePlayer[res.size()]);
     }
 
-    @Override public String[] getLoadedSpeechFactories()
+    @Override public String[] xGetLoadedSpeechFactories()
     {
 	return new String[0];
     }
@@ -736,7 +715,7 @@ final class LuwrainImpl implements Luwrain
 	return core.unloadDynamicExtension(extId);
     }
 
-    @Override public void execScript(String text)
+    @Override public void xExecScript(String text)
     {
 	NullCheck.notNull(text, "text");
 	core.script.exec(text);

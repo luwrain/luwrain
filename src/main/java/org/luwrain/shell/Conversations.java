@@ -68,7 +68,7 @@ public class Conversations
 
     public File openPopup()
     {
-	final File current = new File(luwrain.currentAreaDir());
+	final File current = new File(luwrain.getActiveAreaDir());
 	final FilePopup popup = new FilePopup(luwrain, 
 					      luwrain.i18n().getStaticStr("OpenPopupName"),
 					      luwrain.i18n().getStaticStr("OpenPopupPrefix"), 

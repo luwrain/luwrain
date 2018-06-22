@@ -83,7 +83,7 @@ public class Desktop implements org.luwrain.core.Desktop
 			case ESCAPE:
 			    if (luwrain == null)
 				return false;
-			    luwrain.quit();
+			    luwrain.xQuit();
 			    return true;
 			}
 		    return super.onKeyboardEvent(event);
