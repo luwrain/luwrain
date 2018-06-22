@@ -23,6 +23,7 @@ import java.io.File;
 import java.nio.file.*;//FIXME:
 
 import org.luwrain.base.*;
+import org.luwrain.core.events.*;
 import org.luwrain.speech.Channel;
 
 /**
@@ -53,7 +54,7 @@ import org.luwrain.speech.Channel;
  * of access.  It is necessary to make extensions using more accurate and
  * transparent.
  */
-public interface Luwrain extends org.luwrain.base.EventConsumer, PropertiesBase
+public interface Luwrain extends PropertiesBase
 {
     public enum MessageType {
 	ANNOUNCEMENT,
@@ -195,6 +196,8 @@ public interface Luwrain extends org.luwrain.base.EventConsumer, PropertiesBase
     void say(String text, int pitch);
     void say(String text, int pitch, int rate);
     void sayLetter(char letter, int pitch);
+        void sendBroadcastEvent(EnvironmentEvent event);
+    void sendInputEvent(KeyboardEvent event);
 
     /**
      * Sets the new active area of the application. This method asks the

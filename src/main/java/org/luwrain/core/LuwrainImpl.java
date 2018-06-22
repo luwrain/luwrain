@@ -70,11 +70,18 @@ final class LuwrainImpl implements Luwrain
 	return query.getAnswer();
     }
 
-    @Override public void enqueueEvent(Event e)
+    @Override public void sendBroadcastEvent(EnvironmentEvent e)
     {
 	NullCheck.notNull(e, "e");
 	core.enqueueEvent(e);
     }
+
+        @Override public void sendInputEvent(KeyboardEvent e)
+    {
+	NullCheck.notNull(e, "e");
+	core.enqueueEvent(e);
+    }
+
 
     @Override public void xQuit()
     {
