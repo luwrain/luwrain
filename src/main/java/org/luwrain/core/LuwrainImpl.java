@@ -35,12 +35,6 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(core, "core");
 	this.core = core;
-	/**
-	Registry registry = core.registry();
-	final String path = "/org/luwrain/speech/preprocess-cchars-to-skip";
-	if (registry.getTypeOf(path) == Registry.STRING)
-	    charsToSkip = registry.getString(path);
-	*/
     }
 
     @Override public CmdLine getCmdLine()
@@ -58,7 +52,6 @@ final class LuwrainImpl implements Luwrain
 	return new AreaText(activeArea).get(type);
     }
 
-    //Never returns null, returns user home dir if area doesn't speak about that
     @Override public String getActiveAreaDir()
     {
 	final Area area = core.getValidActiveArea(false);
@@ -76,31 +69,17 @@ final class LuwrainImpl implements Luwrain
 	core.enqueueEvent(e);
     }
 
-        @Override public void sendInputEvent(KeyboardEvent e)
+    @Override public void sendInputEvent(KeyboardEvent e)
     {
 	NullCheck.notNull(e, "e");
 	core.enqueueEvent(e);
     }
-
 
     @Override public void xQuit()
     {
 	core.quit();
     }
 
-    /**
-     * Returns a path to the directory where the application may safely store
-     * its auxiliary data. The returned directory, if it it isn't {@code null},
-     * always exists and always belongs to the current user. Meaning,
-     * different users get different directories for the same
-     * application. Application must be identified with some short string. We
-     * discourage using application names starting with "luwrain.", because
-     * such names are usually used by the applications from LUWRAIN standard
-     * distribution.
-     *
-     * @param appName A short string for application identification, the same application name will result in the same directory
-     * @return The application data directory or {@code null} if the directory cannot be created
-     */
     @Override public Path getAppDataDir(String appName)
     {
 	NullCheck.notEmpty(appName, "appName");
@@ -171,10 +150,10 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(messageType, "messageType");
 	if (text.trim().isEmpty())
 	    return;
-	    runUiSafely(()->{
-		    core.braille.textToSpeak(text);
-	core.message(text, messageType);
-		});
+	runUiSafely(()->{
+		core.braille.textToSpeak(text);
+		core.message(text, messageType);
+	    });
     }
 
     @Override public void message(String text, Sounds sound)
@@ -189,46 +168,18 @@ final class LuwrainImpl implements Luwrain
 	    });
     }
 
-    /**
-     * Notifies the environment that the area gets new position of the hot
-     * point. This method causes updating of the visual position of the hot
-     * point on the screen for low vision users.  Please keep in mind that
-     * this method doesn't produce any speech announcement of the new
-     * position and you should do that on your own, depending on the
-     * behaviour of your application.
-     *
-     * @param area The area which gets new position of the hot point
-     */
     @Override public void onAreaNewHotPoint(Area area)
     {
 	NullCheck.notNull(area, "area");
 	core.onAreaNewHotPointIface(this, area);
     }
 
-    /**
-     * Notifies the environment that the area gets new content. This method
-     * causes updating of the visual representation of the area content on
-     * the screen for low vision users.  Please keep in mind that this method
-     * doesn't produce any speech announcement of the changes and you should
-     * do that on your own, depending on the behaviour of your application.
-     *
-     * @param area The area which gets new content
-     */
     @Override public void onAreaNewContent(Area area)
     {
 	NullCheck.notNull(area, "area");
 	core.onAreaNewContentIface(this, area);
     }
 
-    /**
-     * Notifies the environment that the area gets new name. This method
-     * causes updating of the visual title of the area on the screen for low
-     * vision users.  Please keep in mind that this method doesn't produce
-     * any speech announcement of name changes and you should do that on your
-     * own, depending on the behaviour of your application.
-     *
-     * @param area The area which gets new name
-     */
     @Override public void onAreaNewName(Area area)
     {
 	NullCheck.notNull(area, "area");
@@ -241,7 +192,6 @@ final class LuwrainImpl implements Luwrain
 	core.onAreaNewBackgroundSound(this, area);
     }
 
-    //May return -1 if area is not shown on the screen;
     @Override public int getAreaVisibleHeight(Area area)
     {
 	NullCheck.notNull(area, "area");
@@ -274,7 +224,6 @@ final class LuwrainImpl implements Luwrain
 	return core.getClipboard();
     }
 
-    //Doesn't produce any announcement
     @Override public void onNewAreaLayout()
     {
 	core.onNewAreaLayoutIface(this);
@@ -294,8 +243,6 @@ final class LuwrainImpl implements Luwrain
 	core.openFiles(fileNames);
     }
 
-
-    //never returns null
     @Override public String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType)
     {
 	NullCheck.notNull(url, "url");
@@ -303,149 +250,13 @@ final class LuwrainImpl implements Luwrain
 	return core.contentTypes.suggestContentType(url, expectedType);
     }
 
-        //never returns null
-        @Override public String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType)
+    @Override public String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType)
     {
 	NullCheck.notNull(file, "file");
 	NullCheck.notNull(expectedType, "expectedType");
 	return core.contentTypes.suggestContentType(file, expectedType);
     }
 
-
-    /**
-    /**
-    * Plays one of the system sounds.  This method takes an identifier of
-    * the system sound, stops any previous playing, if there was any, and
-    * plays. The exact sound is selected depending on user's
-    * settings. Please node that sounds playing isn't interfering with
-    * speech. 
-    *
-    * @param sound The identifier of the sound to play
-    */
-    @Override public void playSound(Sounds sound)
-    {
-	NullCheck.notNull(sound, "sound");
-	runUiSafely(()->core.playSound(sound));
-    }
-
-    @Override public void popup(Popup popup)
-    {
-	NullCheck.notNull(popup, "popup");
-	core.popupIface(popup);
-    }
-
-    @Override public boolean runCommand(String command)
-    {
-	NullCheck.notNull(command, "command");
-	return core.runCommand(command);
-    }
-
-    @Override public org.luwrain.base.CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener)
-    {
-	NullCheck.notNull(name, "name");
-	NullCheck.notNullItems(args, "args");
-	NullCheck.notNull(listener, "listener");
-	return core.commandLineTools.run(name, args, listener);
-    }
-
-    @Override public void say(String text)
-    {
-	NullCheck.notNull(text, "text");
-	core.braille.textToSpeak(text);
-	core.getSpeech().speak(preprocess(text), 0, 0);
-    }
-
-    @Override public void say(String text, Sounds sound)
-    {
-	NullCheck.notNull(text, "text");
-	NullCheck.notNull(sound, "sound");
-	playSound(sound);
-	say(text);
-    }
-
-    @Override public void say(String text, int pitch)
-    {
-	NullCheck.notNull(text, "text");
-	core.braille.textToSpeak(text);
-	core.getSpeech().speak(preprocess(text), pitch, 0);
-    }
-
-    @Override public void say(String text,
-		    int pitch, int rate)
-    {
-	NullCheck.notNull(text, "text");
-	core.getSpeech().speak(preprocess(text), pitch, rate);
-    }
-
-    @Override public void sayLetter(char letter)
-    {
-	core.braille.textToSpeak("" + letter);
-	switch(letter)
-	{
-	case ' ':
-	    sayHint(Hint.SPACE);
-	    return;
-	case '\t':
-	    sayHint(Hint.TAB);
-	    return;
-	}
-	final String value = i18n().hasSpecialNameOfChar(letter);
-	if (value == null)
-	    core.getSpeech().speakLetter(letter, 0, 0); else
-	    say(value, Speech.PITCH_HINT);//FIXME:
-    }
-
-    @Override public void sayLetter(char letter, int pitch)
-    {
-	switch(letter)
-	{
-	case ' ':
-	    sayHint(Hint.SPACE);
-	    return;
-	case '\t':
-	    sayHint(Hint.TAB);
-	    return;
-	}
-	final String value = i18n().hasSpecialNameOfChar(letter);
-	if (value == null)
-	    core.getSpeech().speakLetter(letter, pitch, 0); else
-	    say(value, Speech.PITCH_HINT);
-    }
-
-    @Override public void speakLetter(char letter,
-			    int pitch, int rate)
-    {
-	switch(letter)
-	{
-	case ' ':
-	    sayHint(Hint.SPACE);
-	    return;
-	case '\t':
-	    sayHint(Hint.TAB);
-	    return;
-	}
-	final String value = i18n().hasSpecialNameOfChar(letter);
-	if (value == null)
-	    core.getSpeech().speakLetter(letter, pitch, rate); else
-	    say(value, Speech.PITCH_HINT);
-    }
-
-    @Override public void silence()
-    {
-	core.getSpeech().silence();
-    }
-
-    /**
-     * Sets the new active area of the application. This method asks the
-     * environment to choose another visible area as an active area of the
-     * application. This operation is applicable only to regular areas, not
-     * for popup areas, for which it is pointless. In contrast to
-     * {@code onAreaNewHotPoint()}, {@code onAreaNewName()} and 
-     * {@code onAreaNewContent()} methods, this one produces proper introduction of
-     * the area being activated.
-     *
-     * @param area The area to choose as an active
-     */
     @Override public void setActiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
@@ -493,12 +304,6 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(cond, "cond");
 	return core.getSpeech().getChannelsByCond(cond);
-    }
-
-    void runInMainThread(Runnable runnable)
-    {
-	NullCheck.notNull(runnable, "runnable");
-	core.enqueueEvent(new Core.RunnableEvent(runnable));
     }
 
     @Override public void runUiSafely(Runnable runnable)
@@ -567,31 +372,14 @@ final class LuwrainImpl implements Luwrain
 	return core.objRegistry.getShortcutNames();
     }
 
-    private String preprocess(String s)
-    {
-	StringBuilder b = new StringBuilder();
-	for(int i = 0;i < s.length();++i)
-	{
-	    final char c = s.charAt(i);
-	    int k;
-	    for(k = 0;k < charsToSkip.length();++k)
-		if (c == charsToSkip.charAt(k))
-		    break;
-	    if (k >= charsToSkip.length())
-		b.append(c);
-	}
-	return b.toString();
-    }
-
     @Override public java.io.File getFileProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
 	return core.props.getFileProperty(propName);
     }
 
-
     @Override public OsCommand runOsCommand(String cmd, String dir,
-			   OsCommand.Output output, OsCommand.Listener listener)
+					    OsCommand.Output output, OsCommand.Listener listener)
     {
 	NullCheck.notEmpty(cmd, "cmd");
 	NullCheck.notNull(dir, "dir");
@@ -601,46 +389,7 @@ final class LuwrainImpl implements Luwrain
     @Override public String getProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
-	/*
-	if (propName.startsWith("luwrain.speech.channel."))
-	{
-	    final String arg = propName.substring("luwrain.speech.channel.".length());
-	    final String[] args = arg.split("\\.", -1);
-	    if (args.length != 2 || 
-		args[0].isEmpty() || args[1].isEmpty())
-		return "";
-	    int n = 0;
-	    try {
-		n = Integer.parseInt(args[0]);
-	    }
-	    catch(NumberFormatException e)
-	    {
-		return "";
-	    }
-	    final Channel[] channels = core.getSpeech().getAllChannels();
-	    if (n >= channels.length)
-		return "";
-	    final Channel channel = channels[n];
-	    switch(args[1])
-	    {
-	    case "name":
-		return channel.getChannelName();
-	    case "class":
-		return channel.getClass().getName();
-	    case "default":
-		return core.getSpeech().isDefaultChannel(channel)?"1":"0";
-	    case "cansynthtospeakers":
-		return channel.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_SPEAKERS)?"1":"0";
-	    case "cansynthtostream":
-		return channel.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_STREAM)?"1":"0";
-	    case "cannotifywhenfinished":
-		return channel.getFeatures().contains(Channel.Features.CAN_NOTIFY_WHEN_FINISHED)?"1":"0";
-	    default:
-		return "";
-	    }
-	}
-	*/
-	    return core.props.getProperty(propName);
+	return core.props.getProperty(propName);
     }
 
     @Override public void setEventResponse(EventResponse eventResponse)
@@ -649,7 +398,7 @@ final class LuwrainImpl implements Luwrain
 	core.setEventResponse(eventResponse);
     }
 
-@Override public FilesOperations getFilesOperations()
+    @Override public FilesOperations getFilesOperations()
     {
 	return core.os.getFilesOperations();
     }
@@ -686,16 +435,6 @@ final class LuwrainImpl implements Luwrain
 	java.util.concurrent.Executors.newSingleThreadExecutor().execute(task);
     }
 
-    /**
-     * Registers new extension object.  This operation is allowed for highly
-     * privileged interfaces only, what, for example, can be useful for
-     * custom startup and shutdown procedures. Custom objects may be of any
-     * kind, they are registered as they would be a part of the core.
-     *
-     * @param extObj The object to register
-     * @return True if the object was successfully registered, false otherwise
-     * @throws RuntimeException on any attempt to do this operation without enough privileged level
-     */
     @Override public boolean registerExtObj(ExtensionObject extObj)
     {
 	NullCheck.notNull(extObj, "extObj");
@@ -731,9 +470,31 @@ final class LuwrainImpl implements Luwrain
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");
-		    	final LangStatic staticStrId = EventResponses.hintToStaticStrMap(hint);
+	final LangStatic staticStrId = EventResponses.hintToStaticStrMap(hint);
 	if (staticStrId == null)
 	    return;
 	say(i18n().staticStr(staticStrId), Speech.PITCH_HINT);
+    }
+
+    private void runInMainThread(Runnable runnable)
+    {
+	NullCheck.notNull(runnable, "runnable");
+	core.enqueueEvent(new Core.RunnableEvent(runnable));
+    }
+
+    private String preprocess(String s)
+    {
+	StringBuilder b = new StringBuilder();
+	for(int i = 0;i < s.length();++i)
+	{
+	    final char c = s.charAt(i);
+	    int k;
+	    for(k = 0;k < charsToSkip.length();++k)
+		if (c == charsToSkip.charAt(k))
+		    break;
+	    if (k >= charsToSkip.length())
+		b.append(c);
+	}
+	return b.toString();
     }
 }

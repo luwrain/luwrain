@@ -181,6 +181,17 @@ public interface Luwrain extends PropertiesBase
        */
     void playSound(Sounds sound);
     void popup(Popup popup);
+
+    /**
+     * Registers new extension object.  This operation is allowed for highly
+     * privileged interfaces only, what, for example, can be useful for
+     * custom startup and shutdown procedures. Custom objects may be of any
+     * kind, they are registered as they would be a part of the core.
+     *
+     * @param extObj The object to register
+     * @return True if the object was successfully registered, false otherwise
+     * @throws RuntimeException on any attempt to do this operation without enough privileged level
+     */
     boolean registerExtObj(ExtensionObject extObj);
     boolean runCommand(String command);
     CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener);
@@ -215,7 +226,11 @@ public interface Luwrain extends PropertiesBase
     void silence();
     void speakLetter(char letter, int pitch, int rate);
     String staticStr(LangStatic id);//FIXME:
+
+        //never returns null
     String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType);
+
+        //never returns null
     String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType);
     boolean unloadDynamicExtension(String extId);
     void xExecScript(String text);
