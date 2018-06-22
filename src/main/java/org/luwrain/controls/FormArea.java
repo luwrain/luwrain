@@ -383,7 +383,7 @@ public class FormArea  extends NavigationArea
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = null;
 	this.multilineEditModel = wrapMultilineEditModel(model);
-	this.multilineEdit = new MultilineEdit(environment, model);
+	this.multilineEdit = new MultilineEdit(environment, model, regionPoint);
 	multilineEditEnabled = enabled;
 	updateControlsPos();
 	environment.onAreaNewContent(this);
@@ -400,7 +400,7 @@ public class FormArea  extends NavigationArea
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = new MutableLinesImpl(lines);
 	this.multilineEditModel = wrapMultilineEditModel(new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint));
-	this.multilineEdit = new MultilineEdit(environment, multilineEditModel);
+	this.multilineEdit = new MultilineEdit(environment, multilineEditModel, regionPoint);
 	multilineEditEnabled = enabled;
 	updateControlsPos();
 	environment.onAreaNewContent(this);

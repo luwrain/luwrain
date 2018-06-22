@@ -66,7 +66,7 @@ public class EditArea extends NavigationArea
 		    if (changeListener != null)
 			changeListener.onEditChange();
 		}
-	    });
+	    }, regionPoint);
     }
 
     @Override public int getLineCount()

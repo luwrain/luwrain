@@ -74,16 +74,18 @@ public class MultilineEdit
     }
 
     protected final ControlEnvironment environment;
-    protected final RegionPoint regionPoint = new RegionPoint();
+    protected final AbstractRegionPoint regionPoint;
     protected final ClipboardTranslator clipboardTranslator;
     protected final RegionTextQueryTranslator regionTextQueryTranslator;
     protected final Model model;
 
-    public MultilineEdit(ControlEnvironment environment, Model model)
+    public MultilineEdit(ControlEnvironment environment, Model model, AbstractRegionPoint regionPoint)
     {
 	NullCheck.notNull(environment, "environment");
 	NullCheck.notNull(model, "model");
+	NullCheck.notNull(regionPoint, "regionPoint");
 	this.environment = environment;
+	this.regionPoint = regionPoint;
 	this.model = model;
 	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(model, ()->environment.getClipboard()){
 		@Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
