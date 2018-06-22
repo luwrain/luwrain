@@ -88,11 +88,11 @@ setLoadingResultHandler((location, data, selectedIndex, announce)->{
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	switch(event.getCode())
 	{
 	case PROPERTIES:
@@ -104,9 +104,9 @@ setLoadingResultHandler((location, data, selectedIndex, announce)->{
 	    closing.doOk();
 	    return true;
 	default:
-	    if (closing.onEnvironmentEvent(event))
+	    if (closing.onSystemEvent(event))
 		return true;
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	}
     }
 

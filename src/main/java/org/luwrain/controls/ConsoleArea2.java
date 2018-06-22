@@ -232,12 +232,12 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onEnvironmentEvent(event);
-	if (edit.isPosCovered(getHotPointX(), getHotPointY()) && edit.onEnvironmentEvent(event))
+	    return super.onSystemEvent(event);
+	if (edit.isPosCovered(getHotPointX(), getHotPointY()) && edit.onSystemEvent(event))
 	    return true;
 	switch(event.getCode())
 	{
@@ -246,7 +246,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 		return onEnterInEdit();
 	    return false;
 	default:
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	}
     }
 

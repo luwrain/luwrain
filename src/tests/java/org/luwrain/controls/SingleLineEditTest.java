@@ -135,7 +135,7 @@ public class SingleLineEditTest extends Assert
 	{
 	    model.text = text;
 	    model.hotPoint = i;
-	    assertTrue(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)));
+	    assertTrue(edit.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)));
 	    assertTrue(model.text.isEmpty());
 	    assertTrue(model.hotPoint == 0);
 	}
@@ -149,9 +149,9 @@ public class SingleLineEditTest extends Assert
 	for(int i = 0;i < model.text.length();++i)
 	{
 	    model.hotPoint = i;
-	    assertFalse(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)));
-	    assertFalse(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)));
-	    	    assertFalse(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
+	    assertFalse(edit.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)));
+	    assertFalse(edit.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)));
+	    	    assertFalse(edit.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
 	}
     }
 
@@ -165,14 +165,14 @@ public class SingleLineEditTest extends Assert
 	for(int i = 0;i < model.text.length();++i)
 	{
 	    model.hotPoint = i;
-	    assertTrue(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)));
+	    assertTrue(edit.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)));
 	    assertTrue(model.hotPoint == i);
 	    assertTrue(context.clipboard.get().length == 1);
 	    assertTrue(context.clipboard.get()[0].equals(text));
 	}
 	model.text = "";
 	model.hotPoint = 0;
-	assertTrue(edit.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)));
+	assertTrue(edit.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)));
 	assertTrue(model.hotPoint == 0);
 	assertTrue(context.clipboard.get().length == 1);
 	assertTrue(context.clipboard.get()[0].equals(""));

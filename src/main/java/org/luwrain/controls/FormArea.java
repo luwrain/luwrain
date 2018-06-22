@@ -515,11 +515,11 @@ public class FormArea  extends NavigationArea
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	//Insert command for a uniref
 
 	/*
@@ -545,12 +545,12 @@ public class FormArea  extends NavigationArea
 
 	for(Item i: items)
 	    if (i.isEnabledEdit() && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
-		i.onEnvironmentEvent(event))
+		i.onSystemEvent(event))
 		return true;
 	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
-	    multilineEdit.onEnvironmentEvent(event))
+	    multilineEdit.onSystemEvent(event))
 	    return true;
-	return super.onEnvironmentEvent(event);
+	return super.onSystemEvent(event);
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)
@@ -731,9 +731,9 @@ Type type, String name)
 	    return edit != null?edit.onKeyboardEvent(event):false;
 	}
 
-	boolean onEnvironmentEvent(EnvironmentEvent event)
+	boolean onSystemEvent(EnvironmentEvent event)
 	{
-	    return edit != null?edit.onEnvironmentEvent(event):false;
+	    return edit != null?edit.onSystemEvent(event):false;
 	}
 
 	boolean onAreaQuery(AreaQuery query)

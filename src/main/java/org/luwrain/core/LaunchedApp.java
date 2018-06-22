@@ -172,6 +172,6 @@ final Application app;
 	NullCheck.notNull(event, "event");
 	//	super.sendBroadcastEvent(event);
 	for(OpenedArea w: areaWrappings)
-	    w.getEffectiveArea().onEnvironmentEvent(event);
+	    w.getEffectiveArea().onSystemEvent(event);
     }
 }

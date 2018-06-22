@@ -83,7 +83,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	return onCharacter(event);
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() !=EnvironmentEvent.Type.REGULAR)
@@ -95,9 +95,9 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	case CLEAR:
 	    return onClear();
 	default:
-	    if (clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), 0))
+	    if (clipboardTranslator.onSystemEvent(event, model.getHotPointX(), 0))
 		return true;
-	    	    if (regionTextQueryTranslator.onEnvironmentEvent(event, model.getHotPointX(), 0))
+	    	    if (regionTextQueryTranslator.onSystemEvent(event, model.getHotPointX(), 0))
 		return true;
 		    return false;
 	    	}

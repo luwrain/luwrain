@@ -54,10 +54,10 @@ public class ListPopup2 extends ListArea implements Popup, PopupClosingTranslato
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (closing.onEnvironmentEvent(event))
+	if (closing.onSystemEvent(event))
 	    return true;
 	switch(event.getCode())
 	{
@@ -67,7 +67,7 @@ public class ListPopup2 extends ListArea implements Popup, PopupClosingTranslato
 	    luwrain.say(getAreaName());
 	    return true;
 	default:
-	return super.onEnvironmentEvent(event);
+	return super.onSystemEvent(event);
 	}
     }
 

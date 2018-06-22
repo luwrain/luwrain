@@ -66,16 +66,16 @@ public class EditableListArea extends ListArea
 	    switch(event.getSpecial())
 	    { 
 	    case DELETE:
-		return onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION));
+		return onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION));
 	    }
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	switch(event.getCode())
 	{
 	case CLEAR:
@@ -83,7 +83,7 @@ public class EditableListArea extends ListArea
 	case CLIPBOARD_PASTE:
 	    return onClipboardPaste();
 	default:
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	}
     }
 

@@ -80,13 +80,13 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (closing.onEnvironmentEvent(event))
+	if (closing.onSystemEvent(event))
 	    return true;
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	switch(event.getCode())
 	{
 	case INTRODUCE:
@@ -95,7 +95,7 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	    luwrain.say(getAreaName());
 	    return true;
 	default:
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	}
     }
 

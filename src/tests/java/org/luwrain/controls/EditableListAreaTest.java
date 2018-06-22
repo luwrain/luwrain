@@ -33,7 +33,7 @@ public class EditableListAreaTest extends Assert
 	params.appearance = new ListUtils.DefaultAppearance(params.context);
 	params.name = "test";
 	final EditableListArea area = new EditableListArea(params);
-	assertTrue(area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)));
+	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)));
 	assertTrue(model.getItemCount() == 0);
     }
 
@@ -53,7 +53,7 @@ public class EditableListAreaTest extends Assert
 	    assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
 	assertTrue(area.selected().equals("" + i));
 	assertTrue(area.selectedIndex() == i);
-	assertTrue(area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
+	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
 	assertTrue(model.getItemCount() == 4);
 	for(int k = 0;k < model.getItemCount();++k)
 	    assertTrue(!model.getItem(k).equals("" + i));
@@ -78,7 +78,7 @@ public class EditableListAreaTest extends Assert
 	    assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
 	assertTrue(area.selected().equals("" + i));
 	assertTrue(area.selectedIndex() == i);
-	assertTrue(area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)));
+	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)));
 	assertTrue(model.getItemCount() == 4);
 	for(int k = 0;k < model.getItemCount();++k)
 	    assertTrue(!model.getItem(k).equals("" + i));

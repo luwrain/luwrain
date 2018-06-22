@@ -46,7 +46,7 @@ public class RegionTextQueryTranslator
 	this.flags = flags;
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
+    public boolean onSystemEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
@@ -56,7 +56,7 @@ public class RegionTextQueryTranslator
 	switch(event.getCode())
 	{
 	case REGION_POINT:
-	    return regionPoint.onEnvironmentEvent(event, hotPointX, hotPointY);
+	    return regionPoint.onSystemEvent(event, hotPointX, hotPointY);
 	default:
 	    return false;
 	}

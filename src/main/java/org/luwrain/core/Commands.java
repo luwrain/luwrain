@@ -156,7 +156,7 @@ class Commands
 		    if (res == null)
 			return;
 		    final Area area = core.getValidActiveArea(false);
-		    if (area == null || !area.onEnvironmentEvent(new OpenEvent(res.getAbsolutePath())))
+		    if (area == null || !area.onSystemEvent(new OpenEvent(res.getAbsolutePath())))
 			core.openFiles(new String[]{res.getAbsolutePath()});
 		}
 	    },
@@ -196,7 +196,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.ANNOUNCE_LINE)))
+		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.ANNOUNCE_LINE)))
 			return;
 		    final int hotPointY = area.getHotPointY();
 		    if (hotPointY >= area.getLineCount())
@@ -228,7 +228,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
+		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
 			core.playSound(Sounds.REGION_POINT); else
 			core.eventNotProcessedMessage();
 		}
@@ -245,7 +245,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)))
+		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)))
 			core.playSound(Sounds.COPIED); else
 			core.eventNotProcessedMessage();
 		}
@@ -262,7 +262,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)))
+		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)))
 			core.playSound(Sounds.COPIED); else
 			core.eventNotProcessedMessage();
 		}
@@ -279,7 +279,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)))
+		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)))
 			core.playSound(Sounds.CUT);else
 			core.eventNotProcessedMessage();
 		}
@@ -296,7 +296,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)))
+		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)))
 			core.playSound(Sounds.DELETED); else
 			core.eventNotProcessedMessage();
 		}
@@ -318,7 +318,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_PASTE)))
+		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_PASTE)))
 			core.playSound(Sounds.PASTE); else
 			core.eventNotProcessedMessage();
 		}
@@ -335,7 +335,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)))
+		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)))
 			core.playSound(Sounds.DELETED); else
 			core.eventNotProcessedMessage();
 		}
@@ -582,7 +582,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (!area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.PROPERTIES)))
+		    if (!area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.PROPERTIES)))
 			core.eventNotProcessedMessage();
 		}
 	    },

@@ -101,7 +101,7 @@ public class CenteredArea implements org.luwrain.core.Area
 	return false;
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	return false;

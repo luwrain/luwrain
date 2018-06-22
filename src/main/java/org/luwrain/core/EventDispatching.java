@@ -52,7 +52,7 @@ abstract class EventDispatching extends EnvironmentAreas
 		switch(environmentEvent.getType())
 		{
 		case REGULAR:
-		    return onEnvironmentEvent(environmentEvent);
+		    return onSystemEvent(environmentEvent);
 		case BROADCAST:
 		    return onBroadcastEnvironmentEvent(environmentEvent);
 		default:
@@ -163,7 +163,7 @@ abstract class EventDispatching extends EnvironmentAreas
 		    final KeyboardEvent actionEvent = a.keyboardEvent();
 		    if (actionEvent == null || !actionEvent.equals(event))
 			continue;
-		    if (activeArea.onEnvironmentEvent(new ActionEvent(a)))
+		    if (activeArea.onSystemEvent(new ActionEvent(a)))
 			return true;
 		    break;
 		}
@@ -216,7 +216,7 @@ abstract class EventDispatching extends EnvironmentAreas
 	return false;
     }
 
-    private boolean onEnvironmentEvent(EnvironmentEvent event)
+    private boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	switch(popupBlocking())
@@ -229,7 +229,7 @@ abstract class EventDispatching extends EnvironmentAreas
 	}
 	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
 	try {
-	    res = screenContentManager.onEnvironmentEvent(event);
+	    res = screenContentManager.onSystemEvent(event);
 	}
 	catch (Throwable e)
 	{
@@ -282,7 +282,7 @@ abstract class EventDispatching extends EnvironmentAreas
 	    return;
 	}
 	if (!isActiveAreaBlockedByPopup() && !isAreaBlockedBySecurity(activeArea) &&
-	    activeArea.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.INTRODUCE)))
+	    activeArea.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.INTRODUCE)))
 	    return;
 	speech.silence();
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);

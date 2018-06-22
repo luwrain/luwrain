@@ -255,7 +255,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	}
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
@@ -265,7 +265,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	    refresh();
 	    return true;
 	default:
-	    return clipboardTranslator.onEnvironmentEvent(event, hotPointX, hotPointY);
+	    return clipboardTranslator.onSystemEvent(event, hotPointX, hotPointY);
 	}
     }
 

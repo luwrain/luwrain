@@ -63,8 +63,8 @@ onFinish(null, null);
 	if (text != null)
 	{
 	    if (extraInfo == null || !(extraInfo instanceof PositionInfo))
-	    area.onEnvironmentEvent(new ListeningFinishedEvent(extraInfo)); else
-		area.onEnvironmentEvent(new MoveHotPointEvent(((PositionInfo)extraInfo).x, ((PositionInfo)extraInfo).y, false));
+	    area.onSystemEvent(new ListeningFinishedEvent(extraInfo)); else
+		area.onSystemEvent(new MoveHotPointEvent(((PositionInfo)extraInfo).x, ((PositionInfo)extraInfo).y, false));
 	}
 	final BeginListeningQuery query = new BeginListeningQuery();
 	if (AreaQuery.ask(area, query))

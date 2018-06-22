@@ -96,9 +96,9 @@ public class Search implements Area
 	return onNewChar(event.getChar());
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
-	return area.onEnvironmentEvent(event);
+	return area.onSystemEvent(event);
     }
 
     @Override public Action[] getAreaActions()
@@ -172,7 +172,7 @@ public class Search implements Area
     {
 	if (accept )
 	{
-	    if (!area.onEnvironmentEvent(new MoveHotPointEvent(hotPointX, hotPointY, false)))
+	    if (!area.onSystemEvent(new MoveHotPointEvent(hotPointX, hotPointY, false)))
 		return false;
 	    core.setAreaIntroduction();
 	} else

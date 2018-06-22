@@ -107,7 +107,7 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	}
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
@@ -124,7 +124,7 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	    luwrain.say(text);
 	    return true;
 	default:
-	return closing.onEnvironmentEvent(event);
+	return closing.onSystemEvent(event);
 	}
     }
 

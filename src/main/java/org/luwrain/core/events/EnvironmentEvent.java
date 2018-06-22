@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 /**
  * An event addressed to one or several areas and not related to user
  * input. Environment events are delivered to areas through 
- * {@code onEnvironmentEvent()} method and notifies that area should do some
+ * {@code onSystemEvent()} method and notifies that area should do some
  * action which certainly not related to user input.  The area may decide
  * on its own whether it would like to perform the required action or to
  * ignore it. There can be both system-defined environment events and

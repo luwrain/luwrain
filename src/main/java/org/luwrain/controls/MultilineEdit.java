@@ -127,7 +127,7 @@ return onEnter(event);
 	}
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
@@ -139,9 +139,9 @@ return onEnter(event);
 	case CLIPBOARD_PASTE:
 	    return onClipboardPaste();
 	default:
-	    if (clipboardTranslator.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY()))
+	    if (clipboardTranslator.onSystemEvent(event, model.getHotPointX(), model.getHotPointY()))
 		return true;
-	return regionTextQueryTranslator.onEnvironmentEvent(event, model.getHotPointX(), model.getHotPointY());
+	return regionTextQueryTranslator.onSystemEvent(event, model.getHotPointX(), model.getHotPointY());
 	}
     }
 

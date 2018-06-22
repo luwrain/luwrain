@@ -86,7 +86,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return false;
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
@@ -102,9 +102,9 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    }
 	    return false;
 	default:
-	    if (clipboardTranslator.onEnvironmentEvent(event, hotPointX, hotPointY))
+	    if (clipboardTranslator.onSystemEvent(event, hotPointX, hotPointY))
 		return true;
-	    return regionTextQueryTranslator.onEnvironmentEvent(event, hotPointX, hotPointY);
+	    return regionTextQueryTranslator.onSystemEvent(event, hotPointX, hotPointY);
 	}
     }
 

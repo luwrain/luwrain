@@ -46,12 +46,12 @@ public class FormPopup extends FormArea implements Popup, PopupClosingTranslator
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onEnvironmentEvent(event);
-	if (closing.onEnvironmentEvent(event))
+	    return super.onSystemEvent(event);
+	if (closing.onSystemEvent(event))
 	    return true;
 	switch(event.getCode())
 	{
@@ -60,7 +60,7 @@ public class FormPopup extends FormArea implements Popup, PopupClosingTranslator
 	    luwrain.say(getAreaName());
 	    return true;
 	default:
-	return super.onEnvironmentEvent(event);
+	return super.onSystemEvent(event);
 	}
     }
 

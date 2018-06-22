@@ -24,7 +24,7 @@ public class RegionPoint implements AbstractRegionPoint
     protected int hotPointX = -1;
     protected int hotPointY = -1;
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
+    public boolean onSystemEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
     {
 	NullCheck.notNull(event, "event");
 	if (hotPointX < 0 || hotPointY < 0)

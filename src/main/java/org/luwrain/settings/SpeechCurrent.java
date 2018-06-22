@@ -40,11 +40,11 @@ class SpeechCurrent extends SimpleArea implements SectionArea
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
-	if (controlPanel.onEnvironmentEvent(event))
+	if (controlPanel.onSystemEvent(event))
 	    return true;
-	return super.onEnvironmentEvent(event);
+	return super.onSystemEvent(event);
     }
 
     @Override public boolean saveSectionData()

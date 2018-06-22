@@ -63,7 +63,7 @@ public class CrashApp implements Application, Actions
 	final Actions actions = this;
 
 	area = new SimpleArea(new DefaultControlEnvironment(luwrain), strings.appName()){
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    switch (event.getCode())
 		    {

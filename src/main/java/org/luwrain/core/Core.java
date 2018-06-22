@@ -756,7 +756,7 @@ onNewAreasLayout();
 	final Object selected = menu.selected();
 	if (selected == null || !(selected instanceof Action))//Should never happen
 	    return;
-	if (!activeArea.onEnvironmentEvent(new ActionEvent((Action)selected)))
+	if (!activeArea.onSystemEvent(new ActionEvent((Action)selected)))
 	    areaInaccessibleMessage();
     }
 

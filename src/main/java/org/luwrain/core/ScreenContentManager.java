@@ -54,14 +54,14 @@ class ScreenContentManager
     }
     */
 
-    int onEnvironmentEvent(EnvironmentEvent event)
+    int onSystemEvent(EnvironmentEvent event)
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)
 	return NO_APPLICATIONS;
 	if (isActiveAreaBlockedByPopup())
 	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
-	    return activeArea.onEnvironmentEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
+	    return activeArea.onSystemEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
 
     }
 

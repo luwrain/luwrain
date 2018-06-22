@@ -36,14 +36,14 @@ public class ListAreaTest extends Assert
 	final ListArea area = new ListArea(params);
 	//Without region point at all
 	assertFalse(area.onAreaQuery(query));
-	assertTrue(area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)));
+	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)));
 	query = new RegionTextQuery();
 	//With the region point at initial position
 	assertFalse(area.onAreaQuery(query));
 	//Moving hot point right on three positions
 	for(int i = 0;i < 3;++i)
 	    assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT)));
-	assertTrue(area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)));
+	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)));
 	query = new RegionTextQuery();
 	//With the region point shift on three positions right
 	assertFalse(area.onAreaQuery(query));
@@ -58,7 +58,7 @@ params.name = "test";
 params.model = model;
 params.appearance = new ListUtils.DefaultAppearance(params.context);
 final ListArea area = new ListArea(params);
-assertTrue(area.onEnvironmentEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)));
+assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)));
 for(int i = 1;i <= 3;++i)
 {
         assertTrue(area.onKeyboardEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT)));

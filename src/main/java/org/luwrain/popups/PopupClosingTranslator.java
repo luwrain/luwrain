@@ -84,7 +84,7 @@ public class PopupClosingTranslator
 	return false;
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    public boolean onSystemEvent(EnvironmentEvent event)
     {
 	if (event.getCode() == EnvironmentEvent.Code.CANCEL || event.getCode() == EnvironmentEvent.Code.CLOSE)
 	{

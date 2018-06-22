@@ -59,17 +59,17 @@ public class FilePopup extends EditListPopup
 	return new File(defaultDir, text());
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	switch(event.getCode())
 	{
 	case PROPERTIES:
 	    return openCommanderPopup();
 	default:
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	}
     }
 

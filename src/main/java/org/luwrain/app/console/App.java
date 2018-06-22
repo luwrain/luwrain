@@ -72,7 +72,7 @@ params.inputPos = ConsoleArea2.InputPos.BOTTOM;
 params.inputPrefix = "LUWRAIN>";
 
 	area = new ConsoleArea2(params){
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    switch(event.getCode())
@@ -81,7 +81,7 @@ params.inputPrefix = "LUWRAIN>";
 			closeApp();
 			return true;
 		    default:
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    }
 		}
 	    };

@@ -23,7 +23,7 @@ public interface ControlPanel
 {
     void close();
     void gotoSectionsTree();
-    boolean onEnvironmentEvent(EnvironmentEvent event);
+    boolean onSystemEvent(EnvironmentEvent event);
     boolean onKeyboardEvent(KeyboardEvent event);
     void refreshSectionsTree();
     Luwrain getCoreInterface();

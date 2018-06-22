@@ -80,9 +80,9 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 	return edit.onKeyboardEvent(event);
     }
 
-    public boolean onEnvironmentEvent(EnvironmentEvent event)
+    public boolean onSystemEvent(EnvironmentEvent event)
     {
-	return edit.onEnvironmentEvent(event);
+	return edit.onSystemEvent(event);
     }
 
     public boolean onAreaQuery(AreaQuery query)
@@ -131,7 +131,7 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 	    this.offsetY = offsetY;
 	}
 
-	@Override public boolean onEnvironmentEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
+	@Override public boolean onSystemEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
 	{
 	    NullCheck.notNull(event, "event");
 	    if (hotPointX < 0 || hotPointY < 0)

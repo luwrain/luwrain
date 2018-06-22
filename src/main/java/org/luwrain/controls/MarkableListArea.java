@@ -68,19 +68,19 @@ public class MarkableListArea extends ListArea
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	switch(event.getCode())
 	{
 	case REGION_POINT:
 	    marksInfo.clearMarks();
 	    context.onAreaNewContent(this);
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	default:
-	    return super.onEnvironmentEvent(event);
+	    return super.onSystemEvent(event);
 	}
     }
 

@@ -88,7 +88,7 @@ public class Desktop implements org.luwrain.core.Desktop
 			}
 		    return super.onKeyboardEvent(event);
 		}
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    switch(event.getCode())
@@ -98,7 +98,7 @@ public class Desktop implements org.luwrain.core.Desktop
 			luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"), Sounds.NO_APPLICATIONS);
 			return true;
 		    default:
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    }
 		}
 		@Override protected String noContentStr()

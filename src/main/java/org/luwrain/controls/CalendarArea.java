@@ -93,7 +93,7 @@ public class CalendarArea implements Area
 	return true;
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	return false;
     }

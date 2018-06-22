@@ -131,7 +131,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	}
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() != EnvironmentEvent.Type.REGULAR)
@@ -143,13 +143,13 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	    luwrain.say(prefix + text);
 	    return true;
 	}
-	if (edit.isPosCovered(pos, 0) && edit.onEnvironmentEvent(event))
+	if (edit.isPosCovered(pos, 0) && edit.onSystemEvent(event))
 	    return true;
-	if (clipboardTranslator.onEnvironmentEvent(event, pos, 0))
+	if (clipboardTranslator.onSystemEvent(event, pos, 0))
 	    return true;
-		if (regionTextQueryTranslator.onEnvironmentEvent(event, pos, 0))
+		if (regionTextQueryTranslator.onSystemEvent(event, pos, 0))
 	    return true;
-			return closing.onEnvironmentEvent(event);
+			return closing.onSystemEvent(event);
     }
 
     @Override public boolean onAreaQuery(AreaQuery query)

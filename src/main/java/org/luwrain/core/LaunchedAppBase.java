@@ -95,6 +95,6 @@ class LaunchedAppBase
     {
 	NullCheck.notNull(event, "event");
 	for(Area area: popups)
-	    area.onEnvironmentEvent(event);
+	    area.onSystemEvent(event);
     }
 }

@@ -133,7 +133,7 @@ return actions.insertDir();
 		    }
 			return super.onKeyboardEvent(event);
 		}
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -146,7 +146,7 @@ return actions.insertDir();
 			actions.refresh();
 			return true;
 		    default:
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    }
 		}
 		@Override public void onClick(Object obj)
@@ -181,7 +181,7 @@ return actions.insertDir();
 		    }
 			return super.onKeyboardEvent(event);
 		}
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -191,7 +191,7 @@ return actions.insertDir();
 			actions.closeApp();
 			return true;
 		    default:
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    }
 		}
 	    };

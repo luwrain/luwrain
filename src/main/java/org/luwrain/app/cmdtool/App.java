@@ -56,7 +56,7 @@ public class App implements Application, CommandLineTool.Listener
     private void createArea()
     {
 	area = new SimpleArea(new DefaultControlEnvironment(luwrain), strings.appName()){
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    switch (event.getCode())
