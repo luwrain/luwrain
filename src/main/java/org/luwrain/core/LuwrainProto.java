@@ -20,7 +20,7 @@ import java.util.Set;
 import java.io.File;
 import java.nio.file.*;//FIXME:
 
-import org.luwrain.base.FilesOperations;
+import org.luwrain.base.*;
 import org.luwrain.speech.Channel;
 
 /**
@@ -72,6 +72,7 @@ public interface LuwrainProto extends org.luwrain.base.EventConsumer, org.luwrai
 	URL,
     };
 
+    
     String getActiveAreaText(AreaTextType type, boolean issueErrorMessage);
 
     //Never returns null, returns user home dir if area doesn't speak about that
@@ -209,4 +210,50 @@ java.io.File getFileProperty(String propName);
 String getProperty(String propName);
     void setEventResponse(EventResponse eventResponse);
     FilesOperations getFilesOperations();
+    boolean registerExtObj(ExtensionObject extObj);
+    CmdLine getCmdLine();
+    void message(String text);
+    void message(String text, MessageType messageType);
+    void message(String text, Sounds sound);
+    String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType);
+    String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType);
+    org.luwrain.base.CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener);
+    void say(String text, int pitch);
+
+    void say(String text,
+	     int pitch, int rate);
+
+    void sayLetter(char letter, int pitch);
+
+    void speakLetter(char letter,
+		     int pitch, int rate);
+
+    String staticStr(LangStatic id);
+    void runUiSafely(Runnable runnable);
+
+    Object runLaterSync(java.util.concurrent.Callable callable);
+
+    Object callUiSafely(java.util.concurrent.Callable callable);
+
+    int getSpeechRate();
+    void setSpeechRate(int value);
+
+
+    int getSpeechPitch();
+    void setSpeechPitch(int value);
+
+    org.luwrain.player.Player getPlayer();
+    org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers();
+    String[] getLoadedSpeechFactories();
+
+    boolean runWorker(String workerName);
+    void executeBkg(java.util.concurrent.FutureTask task);
+
+    java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text);
+    String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException;
+
+    boolean unloadDynamicExtension(String extId);
+    void execScript(String text);
+
+    void quit();
 }
