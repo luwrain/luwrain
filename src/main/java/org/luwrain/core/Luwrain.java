@@ -30,23 +30,7 @@ import org.luwrain.speech.Channel;
 
 public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrain.base.PropertiesBase, LuwrainProto
 {
-    public enum ReloadComponents {
-	ENVIRONMENT_SOUNDS,
-    };
-
-    public enum MessageType {
-	ANNOUNCEMENT,
-	DONE,
-	ERROR,
-	NONE,
-	OK,
-	REGULAR,
-	UNAVAILABLE,
-    };
-
-
     private final Core core;
-    //    private final org.luwrain.shell.PartitionsPopupControl partitionsPopupControl;
     private String charsToSkip = "";
 
     Luwrain(Core core)
@@ -551,12 +535,6 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	    }
 	} else
 	    return runLaterSync(callable);
-    }
-
-    public void reloadComponent(ReloadComponents component)
-    {
-	NullCheck.notNull(component, "component");
-	core.reloadComponent(component);
     }
 
     public int getSpeechRate()

@@ -53,24 +53,23 @@ import org.luwrain.speech.Channel;
  */
 public interface LuwrainProto extends org.luwrain.base.EventConsumer, org.luwrain.base.PropertiesBase
 {
+    public enum MessageType {
+	ANNOUNCEMENT,
+	DONE,
+	ERROR,
+	NONE,
+	OK,
+	REGULAR,
+	UNAVAILABLE,
+    };
+
+   
     public enum AreaTextType {
 	REGION,
 	WORD,
 	LINE,
 	SENTENCE,
 	URL,
-    };
-
-    
-
-    public enum MessageType {
-	ANNOUNCEMENT,
-	DONE,
-	ERROR,
-	NOSOUND,
-	OK,
-	REGULAR,
-	UNAVAILABLE,
     };
 
     String getActiveAreaText(AreaTextType type, boolean issueErrorMessage);

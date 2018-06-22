@@ -760,16 +760,6 @@ onNewAreasLayout();
 	    areaInaccessibleMessage();
     }
 
-    void reloadComponent(Luwrain.ReloadComponents component)
-    {
-	switch(component)
-	{
-	case ENVIRONMENT_SOUNDS:
-	    sounds.init(registry, props.getFileProperty("luwrain.dir.data").toPath());
-	    break;
-	}
-    }
-
     void startAreaListening()
     {
 	final Area activeArea = getValidActiveArea(true);

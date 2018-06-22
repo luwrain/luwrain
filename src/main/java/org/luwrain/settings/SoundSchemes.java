@@ -92,7 +92,6 @@ class SoundSchemes extends ListArea implements SectionArea
 		e.printStackTrace();
 		luwrain.message("Во время внесения изменений в реестр произошла неожиданная ошибка", Luwrain.MessageType.ERROR); 
 	    }
-	    luwrain.reloadComponent(Luwrain.ReloadComponents.ENVIRONMENT_SOUNDS);
 	    luwrain.message("Новые настройки сохранены", Luwrain.MessageType.OK);
 	    return true;
 	}
