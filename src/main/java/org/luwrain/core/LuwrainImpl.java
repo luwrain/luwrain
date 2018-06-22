@@ -55,6 +55,7 @@ final class LuwrainImpl implements Luwrain
 
     @Override public String getActiveAreaDir()
     {
+	core.mainCoreThreadOnly();
 	final Area area = core.getValidActiveArea(false);
 	if (area == null)
 	    return getFileProperty("luwrain.dir.userhome").toString();
@@ -78,12 +79,14 @@ final class LuwrainImpl implements Luwrain
 
     @Override public void xQuit()
     {
+	core.mainCoreThreadOnly();
 	core.quit();
     }
 
     @Override public Path getAppDataDir(String appName)
     {
 	NullCheck.notEmpty(appName, "appName");
+	core.mainCoreThreadOnly();
 	if (appName.indexOf("/") >= 0)
 	    throw new IllegalArgumentException("appName contains illegal characters");
 	final Path res = getFileProperty("luwrain.dir.appdata").toPath().resolve(appName);
@@ -100,6 +103,7 @@ final class LuwrainImpl implements Luwrain
 
     @Override public     void closeApp()
     {
+	core.mainCoreThreadOnly();
 	core.closeAppIface(this);
     }
 
@@ -118,20 +122,20 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(e, "e");
 	e.printStackTrace();
 	final Luwrain instance = this;
-	runInMainThread(()->core.launchAppCrash(this, e));
+	runUiSafely(()->core.launchAppCrash(this, e));
     }
 
     @Override public void launchApp(String shortcutName)
     {
 	NullCheck.notNull(shortcutName, "shortcutName");
-	core.launchAppIface(shortcutName, new String[0]);
+	runUiSafely(()->core.launchAppIface(shortcutName, new String[0]));
     }
 
     @Override public void launchApp(String shortcutName, String[] args)
     {
 	NullCheck.notNull(shortcutName, "shortcutName");
 	NullCheck.notNullItems(args, "args");
-	core.launchAppIface(shortcutName, args != null?args:new String[0]);
+	runUiSafely(()->core.launchAppIface(shortcutName, args != null?args:new String[0]));
     }
 
     @Override public void message(String text)
@@ -172,51 +176,60 @@ final class LuwrainImpl implements Luwrain
     @Override public void onAreaNewHotPoint(Area area)
     {
 	NullCheck.notNull(area, "area");
+	core.mainCoreThreadOnly();
 	core.onAreaNewHotPointIface(this, area);
     }
 
     @Override public void onAreaNewContent(Area area)
     {
 	NullCheck.notNull(area, "area");
+	core.mainCoreThreadOnly();
 	core.onAreaNewContentIface(this, area);
     }
 
     @Override public void onAreaNewName(Area area)
     {
 	NullCheck.notNull(area, "area");
+	core.mainCoreThreadOnly();
 	core.onAreaNewNameIface(this, area);
     }
 
     @Override public void onAreaNewBackgroundSound(Area area)
     {
 	NullCheck.notNull(area, "area");
+	core.mainCoreThreadOnly();
 	core.onAreaNewBackgroundSound(this, area);
     }
 
     @Override public int getAreaVisibleHeight(Area area)
     {
 	NullCheck.notNull(area, "area");
+	core.mainCoreThreadOnly();
 	return core.getAreaVisibleHeightIface(this, area);
     }
 
     @Override public int getAreaVisibleWidth(Area area)
     {
 	NullCheck.notNull(area, "area");
+	core.mainCoreThreadOnly();
 	return core.getAreaVisibleWidthIface(this, area);
     }
 
     @Override public int getScreenWidth()
     {
+	core.mainCoreThreadOnly();
 	return core.getScreenWidthIface();
     }
 
     @Override public int getScreenHeight()
     {
+	core.mainCoreThreadOnly();
 	return core.getScreenHeightIface();
     }
 
     @Override public void announceActiveArea()
     {
+	core.mainCoreThreadOnly();
 	core.announceActiveAreaIface();
     }
 
@@ -227,27 +240,31 @@ final class LuwrainImpl implements Luwrain
 
     @Override public void onNewAreaLayout()
     {
+	core.mainCoreThreadOnly();
 	core.onNewAreaLayoutIface(this);
     }
 
     @Override public void openFile(String fileName)
     {
 	NullCheck.notNull(fileName, "fileName");
-	String[] s = new String[1];
-	s[0] = fileName;
-	core.openFiles(s);
+	runUiSafely(()->{
+		String[] s = new String[1];
+		s[0] = fileName;
+		core.openFiles(s);
+	    });
     }
 
     @Override public void openFiles(String[] fileNames)
     {
 	NullCheck.notNullItems(fileNames, "fileNames");
-	core.openFiles(fileNames);
+	runUiSafely(()->core.openFiles(fileNames));
     }
 
     @Override public String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType)
     {
 	NullCheck.notNull(url, "url");
 	NullCheck.notNull(expectedType, "expectedType");
+	core.mainCoreThreadOnly();
 	return core.contentTypes.suggestContentType(url, expectedType);
     }
 
@@ -255,10 +272,11 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(file, "file");
 	NullCheck.notNull(expectedType, "expectedType");
+	core.mainCoreThreadOnly();
 	return core.contentTypes.suggestContentType(file, expectedType);
     }
 
-        @Override public void playSound(Sounds sound)
+    @Override public void playSound(Sounds sound)
     {
 	NullCheck.notNull(sound, "sound");
 	runUiSafely(()->core.playSound(sound));
@@ -267,12 +285,14 @@ final class LuwrainImpl implements Luwrain
     @Override public void popup(Popup popup)
     {
 	NullCheck.notNull(popup, "popup");
+	core.mainCoreThreadOnly();
 	core.popupIface(popup);
     }
 
     @Override public boolean runCommand(String command)
     {
 	NullCheck.notNull(command, "command");
+	core.mainCoreThreadOnly();
 	return core.runCommand(command);
     }
 
@@ -281,111 +301,126 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(name, "name");
 	NullCheck.notNullItems(args, "args");
 	NullCheck.notNull(listener, "listener");
+	core.mainCoreThreadOnly();
 	return core.commandLineTools.run(name, args, listener);
     }
 
     @Override public void say(String text)
     {
 	NullCheck.notNull(text, "text");
-	core.braille.textToSpeak(text);
-	core.getSpeech().speak(preprocess(text), 0, 0);
+	runUiSafely(()->{
+		core.braille.textToSpeak(text);
+		core.getSpeech().speak(preprocess(text), 0, 0);
+	    });
     }
 
     @Override public void say(String text, Sounds sound)
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(sound, "sound");
-	playSound(sound);
-	say(text);
+	runUiSafely(()->{
+		playSound(sound);
+		say(text);
+	    });
     }
 
     @Override public void say(String text, int pitch)
     {
 	NullCheck.notNull(text, "text");
-	core.braille.textToSpeak(text);
-	core.getSpeech().speak(preprocess(text), pitch, 0);
+	runUiSafely(()->{
+		core.braille.textToSpeak(text);
+		core.getSpeech().speak(preprocess(text), pitch, 0);
+	    });
     }
 
-    @Override public void say(String text,
-			      int pitch, int rate)
+    @Override public void say(String text, int pitch, int rate)
     {
 	NullCheck.notNull(text, "text");
-	core.getSpeech().speak(preprocess(text), pitch, rate);
+	runUiSafely(()->core.getSpeech().speak(preprocess(text), pitch, rate));
     }
 
     @Override public void sayLetter(char letter)
     {
 	core.braille.textToSpeak("" + letter);
-	switch(letter)
-	{
-	case ' ':
-	    sayHint(Hint.SPACE);
-	    return;
-	case '\t':
-	    sayHint(Hint.TAB);
-	    return;
-	}
-	final String value = i18n().hasSpecialNameOfChar(letter);
-	if (value == null)
-	    core.getSpeech().speakLetter(letter, 0, 0); else
-	    say(value, Speech.PITCH_HINT);//FIXME:
+	runUiSafely(()->{
+		switch(letter)
+		{
+		case ' ':
+		    sayHint(Hint.SPACE);
+		    return;
+		case '\t':
+		    sayHint(Hint.TAB);
+		    return;
+		}
+		final String value = i18n().hasSpecialNameOfChar(letter);
+		if (value == null)
+		    core.getSpeech().speakLetter(letter, 0, 0); else
+		    say(value, Speech.PITCH_HINT);//FIXME:
+	    });
     }
 
     @Override public void sayLetter(char letter, int pitch)
     {
-	switch(letter)
-	{
-	case ' ':
-	    sayHint(Hint.SPACE);
-	    return;
-	case '\t':
-	    sayHint(Hint.TAB);
-	    return;
-	}
-	final String value = i18n().hasSpecialNameOfChar(letter);
-	if (value == null)
-	    core.getSpeech().speakLetter(letter, pitch, 0); else
-	    say(value, Speech.PITCH_HINT);
+	runUiSafely(()->{
+		switch(letter)
+		{
+		case ' ':
+		    sayHint(Hint.SPACE);
+		    return;
+		case '\t':
+		    sayHint(Hint.TAB);
+		    return;
+		}
+		final String value = i18n().hasSpecialNameOfChar(letter);
+		if (value == null)
+		    core.getSpeech().speakLetter(letter, pitch, 0); else
+		    say(value, Speech.PITCH_HINT);
+	    });
     }
 
     @Override public void speakLetter(char letter,
 				      int pitch, int rate)
     {
-	switch(letter)
-	{
-	case ' ':
-	    sayHint(Hint.SPACE);
-	    return;
-	case '\t':
-	    sayHint(Hint.TAB);
-	    return;
-	}
-	final String value = i18n().hasSpecialNameOfChar(letter);
-	if (value == null)
-	    core.getSpeech().speakLetter(letter, pitch, rate); else
-	    say(value, Speech.PITCH_HINT);
+	runUiSafely(()->{
+		switch(letter)
+		{
+		case ' ':
+		    sayHint(Hint.SPACE);
+		    return;
+		case '\t':
+		    sayHint(Hint.TAB);
+		    return;
+		}
+		final String value = i18n().hasSpecialNameOfChar(letter);
+		if (value == null)
+		    core.getSpeech().speakLetter(letter, pitch, rate); else
+		    say(value, Speech.PITCH_HINT);
+	    });
     }
 
     @Override public void silence()
     {
-	core.getSpeech().silence();
+	runUiSafely(()->core.getSpeech().silence());
     }
 
     @Override public void setActiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
+	core.mainCoreThreadOnly();
 	core.setActiveAreaIface(this, area);
     }
 
     @Override public String staticStr(LangStatic id)
     {
 	NullCheck.notNull(id, "id");
+	core.mainCoreThreadOnly();
 	return i18n().staticStr(id);
     }
 
     @Override public UniRefInfo getUniRefInfo(String uniRef)
     {
 	NullCheck.notNull(uniRef, "uniRef");
+	core.mainCoreThreadOnly();
 	if (uniRef.isEmpty())
 	    return null;
 	return core.uniRefProcs.getInfo(uniRef);
@@ -394,29 +429,34 @@ final class LuwrainImpl implements Luwrain
     @Override public boolean openUniRef(String uniRef)
     {
 	NullCheck.notNull(uniRef, "uniRef");
+	core.mainCoreThreadOnly();
 	return core.openUniRefIface(uniRef);
     }
 
     @Override public boolean openUniRef(UniRefInfo uniRefInfo)
     {
 	NullCheck.notNull(uniRefInfo, "uniRefInfo");
+	core.mainCoreThreadOnly();
 	return core.uniRefProcs.open(uniRefInfo.getValue());
     }
 
     @Override public org.luwrain.browser.Browser createBrowser()
     {
+	core.mainCoreThreadOnly();
 	return core.interaction.createBrowser();
     }
 
     @Override public Channel getAnySpeechChannelByCond(Set<Channel.Features> cond)
     {
 	NullCheck.notNull(cond, "cond");
+	core.mainCoreThreadOnly();
 	return core.getSpeech().getAnyChannelByCond(cond);
     }
 
     @Override public Channel[] getSpeechChannelsByCond(Set<Channel.Features> cond)
     {
 	NullCheck.notNull(cond, "cond");
+	core.mainCoreThreadOnly();
 	return core.getSpeech().getChannelsByCond(cond);
     }
 
@@ -463,32 +503,38 @@ final class LuwrainImpl implements Luwrain
 
     @Override public int xGetSpeechRate()
     {
+	core.mainCoreThreadOnly();
 	return  core.getSpeech().getRate();
     }
 
     @Override public void xSetSpeechRate(int value)
     {
+	core.mainCoreThreadOnly();
 	core.getSpeech().setRate(value);
     }
 
     @Override public int xGetSpeechPitch()
     {
+	core.mainCoreThreadOnly();
 	return core.getSpeech().getPitch();
     }
 
     @Override public void xSetSpeechPitch(int value)
     {
+	core.mainCoreThreadOnly();
 	core.getSpeech().setPitch(value);
     }
 
     @Override public String[] getAllShortcutNames()
     {
+	core.mainCoreThreadOnly();
 	return core.objRegistry.getShortcutNames();
     }
 
     @Override public java.io.File getFileProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
+	core.mainCoreThreadOnly();
 	return core.props.getFileProperty(propName);
     }
 
@@ -497,23 +543,27 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notEmpty(cmd, "cmd");
 	NullCheck.notNull(dir, "dir");
+	core.mainCoreThreadOnly();
 	return core.os.runOsCommand(cmd, (!dir.isEmpty())?dir:getFileProperty("luwrain.dir.userhome").getAbsolutePath(), output, listener);
     }
 
     @Override public String getProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
+	core.mainCoreThreadOnly();
 	return core.props.getProperty(propName);
     }
 
     @Override public void setEventResponse(EventResponse eventResponse)
     {
 	NullCheck.notNull(eventResponse, "eventResponse");
+	core.mainCoreThreadOnly();
 	core.setEventResponse(eventResponse);
     }
 
     @Override public FilesOperations getFilesOperations()
     {
+	core.mainCoreThreadOnly();
 	return core.os.getFilesOperations();
     }
 
@@ -524,6 +574,7 @@ final class LuwrainImpl implements Luwrain
 
     @Override public org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers()
     {
+	core.mainCoreThreadOnly();
 	final List<org.luwrain.base.MediaResourcePlayer> res = new LinkedList();
 	res.add(core.wavePlayer);
 	for(org.luwrain.base.MediaResourcePlayer p: core.objRegistry.getMediaResourcePlayers())
@@ -533,18 +584,21 @@ final class LuwrainImpl implements Luwrain
 
     @Override public String[] xGetLoadedSpeechFactories()
     {
+	core.mainCoreThreadOnly();
 	return new String[0];
     }
 
     @Override public boolean runWorker(String workerName)
     {
 	NullCheck.notEmpty(workerName, "workerName");
+	core.mainCoreThreadOnly();
 	return core.workers.runExplicitly(workerName);
     }
 
     @Override public void executeBkg(java.util.concurrent.FutureTask task)
     {
 	NullCheck.notNull(task, "task");
+	core.mainCoreThreadOnly();
 	//FIXME:maintaining the registry of executed tasks with their associations to Luwrain objects
 	java.util.concurrent.Executors.newSingleThreadExecutor().execute(task);
     }
@@ -552,6 +606,7 @@ final class LuwrainImpl implements Luwrain
     @Override public boolean registerExtObj(ExtensionObject extObj)
     {
 	NullCheck.notNull(extObj, "extObj");
+	core.mainCoreThreadOnly();
 	if (this != core.getObjForEnvironment())
 	    throw new RuntimeException("registerExtObj() may be called only for privileged interfaces");
 	return core.objRegistry.add(null, extObj);
@@ -560,24 +615,28 @@ final class LuwrainImpl implements Luwrain
     @Override public java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text)
     {
 	NullCheck.notNull(context, "context");
+	core.mainCoreThreadOnly();
 	return core.script.execFuture(this, context, text);
     }
 
     @Override public String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(text, "text");
+	core.mainCoreThreadOnly();
 	return core.loadScriptExtension(text);
     }
 
     @Override public boolean unloadDynamicExtension(String extId)
     {
 	NullCheck.notEmpty(extId, "extId");
+	core.mainCoreThreadOnly();
 	return core.unloadDynamicExtension(extId);
     }
 
     @Override public void xExecScript(String text)
     {
 	NullCheck.notNull(text, "text");
+	core.mainCoreThreadOnly();
 	core.script.exec(text);
     }
 
