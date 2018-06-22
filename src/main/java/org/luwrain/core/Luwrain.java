@@ -28,7 +28,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.speech.Channel;
 
-public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrain.base.PropertiesBase
+public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrain.base.PropertiesBase, LuwrainProto
 {
     public enum ReloadComponents {
 	ENVIRONMENT_SOUNDS,
@@ -44,13 +44,6 @@ public final class Luwrain implements org.luwrain.base.EventConsumer, org.luwrai
 	UNAVAILABLE,
     };
 
-    public enum AreaTextType {
-	REGION,
-	WORD,
-	LINE,
-	SENTENCE,
-	URL,
-    };
 
     private final Core core;
     //    private final org.luwrain.shell.PartitionsPopupControl partitionsPopupControl;

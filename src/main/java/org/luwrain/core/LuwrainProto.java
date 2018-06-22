@@ -18,6 +18,7 @@ package org.luwrain.core;
 
 import java.util.Set;
 import java.io.File;
+import java.nio.file.*;//FIXME:
 
 import org.luwrain.base.FilesOperations;
 import org.luwrain.speech.Channel;
@@ -52,9 +53,15 @@ import org.luwrain.speech.Channel;
  */
 public interface LuwrainProto extends org.luwrain.base.EventConsumer, org.luwrain.base.PropertiesBase
 {
-    public enum ReloadComponents {
-	ENVIRONMENT_SOUNDS,
+    public enum AreaTextType {
+	REGION,
+	WORD,
+	LINE,
+	SENTENCE,
+	URL,
     };
+
+    
 
     public enum MessageType {
 	ANNOUNCEMENT,
@@ -64,14 +71,6 @@ public interface LuwrainProto extends org.luwrain.base.EventConsumer, org.luwrai
 	OK,
 	REGULAR,
 	UNAVAILABLE,
-    };
-
-    public enum AreaTextType {
-	REGION,
-	WORD,
-	LINE,
-	SENTENCE,
-	URL,
     };
 
     String getActiveAreaText(AreaTextType type, boolean issueErrorMessage);
@@ -94,14 +93,10 @@ public interface LuwrainProto extends org.luwrain.base.EventConsumer, org.luwrai
      * @param appName A short string for application identification, the same application name will result in the same directory
      * @return The application data directory or {@code null} if the directory cannot be created
      */
-    File getAppDataDir(String appName);
+    Path getAppDataDir(String appName);
 
     void closeApp();
     Registry getRegistry();
-    Object getSharedObject(String id);
-    void hint(String text);
-    void hint(String text, int code);
-    boolean hint(int code);
     I18n i18n();
     void crash(Exception e);
     void launchApp(String shortcutName);
@@ -177,9 +172,9 @@ void openFile(String fileName);
 
     void popup(Popup popup);
     boolean runCommand(String command);
-    void speak(String text);
-    void speak(String text, Sounds sound);
-    void speakLetter(char letter);
+    void say(String text);
+    void say(String text, Sounds sound);
+    void sayLetter(char letter);
     void silence();
 
     /**
@@ -194,7 +189,6 @@ void openFile(String fileName);
      * @param area The area to choose as an active
      */
     void setActiveArea(Area area);
-    String getStaticStr(LangStatic id);
 
     //Never returns null, doesn't take empty strings
 UniRefInfo getUniRefInfo(String uniRef);
@@ -204,14 +198,15 @@ UniRefInfo getUniRefInfo(String uniRef);
 Channel getAnySpeechChannelByCond(Set<Channel.Features> cond);
 Channel[] getSpeechChannelsByCond(Set<Channel.Features> cond);
     void runInMainThread(Runnable runnable);
-    void reloadComponent(ReloadComponents component);
     String[] getAllShortcutNames();
 java.io.File getFileProperty(String propName);
+    /*
     OsCommand runOsCommand(String cmd);
     OsCommand runOsCommand(String cmd, String dir);
     OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output);
     OsCommand runOsCommand(String cmd, String dir,
 			   OsCommand.Output output, OsCommand.Listener listener);
+    */
 String getProperty(String propName);
     void setEventResponse(EventResponse eventResponse);
     FilesOperations getFilesOperations();
