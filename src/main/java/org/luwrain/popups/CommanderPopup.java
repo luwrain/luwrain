@@ -49,7 +49,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 setLoadingResultHandler((location, data, selectedIndex, announce)->{
 		luwrain.runUiSafely(()->acceptNewLocation(location, data, selectedIndex, announce));
 	    });
-	open(file);
+open(file, null, false);
     }
 
     @Override public CommanderArea.ClickHandler.Result onCommanderClick(CommanderArea area, File file, boolean dir)
@@ -95,6 +95,10 @@ setLoadingResultHandler((location, data, selectedIndex, announce)->{
 	    return super.onSystemEvent(event);
 	switch(event.getCode())
 	{
+	case INTRODUCE:
+	    luwrain.silence();
+	    luwrain.say(getAreaName(), Sounds.INTRO_POPUP);
+	    return true;
 	case PROPERTIES:
 	    openVolumes();
 	    return true;

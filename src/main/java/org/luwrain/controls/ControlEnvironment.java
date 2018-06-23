@@ -41,4 +41,5 @@ int getAreaVisibleHeight(Area area);
     I18n getI18n();
     int getScreenWidth();
     int getScreenHeight();
+    void executeBkg(java.util.concurrent.FutureTask task);
 }

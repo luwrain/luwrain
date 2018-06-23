@@ -29,7 +29,7 @@ public class CommanderArea<E> extends ListArea
 {
     static public final String PARENT_DIR = "..";
     public enum Flags {MARKING};
-    public enum EntryType {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, SPECIAL};
+    public enum EntryType {REGULAR, DIR, PARENT, SYMLINK, SYMLINK_DIR, ARCHIVE, SPECIAL};
 
     public interface Model<E>
     {
@@ -62,9 +62,7 @@ public class CommanderArea<E> extends ListArea
 	void onLoadingResult(E location, Object data, int selectedIndex, boolean announce);
     }
 
-    
-
-    public interface NativeItem<E>
+    protected interface NativeItem<E>//FIXME:to delete
     {
 	E getNativeObj();
 	EntryType getEntryType();
@@ -92,11 +90,9 @@ public class CommanderArea<E> extends ListArea
     protected Filter<E> filter = null;
     protected Comparator comparator = null;
     protected LoadingResultHandler<E> loadingResultHandler = null;
+    
     protected E currentLocation = null;
-
-    protected final ExecutorService executor = Executors.newSingleThreadExecutor();
     protected FutureTask task = null;
-
     protected boolean closed = false;
 
     public CommanderArea(Params<E> params)
@@ -116,7 +112,7 @@ public class CommanderArea<E> extends ListArea
 
     public CommanderArea.Model<E> getCommanderModel()
     {
-	return model;
+	return this.model;
     }
 
     public void setCommanderFilter(Filter filter)
@@ -313,7 +309,7 @@ public class CommanderArea<E> extends ListArea
 		    Log.error("core", "unexpected error on commander content reading:" + e.getClass().getName() + ":" + e.getMessage());
 		}
 	    }, null);
-	executor.execute(task);
+	context.executeBkg(task);
 	return true;
     }
 

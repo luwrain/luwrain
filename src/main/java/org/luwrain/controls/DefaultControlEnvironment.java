@@ -151,4 +151,9 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	return luwrain.getScreenHeight();
     }
+
+    @Override public void executeBkg(java.util.concurrent.FutureTask task)
+    {
+	luwrain.executeBkg(task);
+    }
 }
