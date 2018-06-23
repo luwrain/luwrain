@@ -159,7 +159,9 @@ public class Init
 	    System.out.println("Valid command line options are:");
 	    System.out.println(CMDARG_HELP + " - print this help info and exit");
 	    System.out.println(CMDARG_PRINT_LANG + " - print the chosen language and exit");
-	    System.out.println(CMDARG_PRINT_DIRS + " - print the detected values of the system directories and exit");
+
+	    	    System.out.println(Checks.CMDARG_LANG + " - set the language to use");
+		    	    System.out.println(CMDARG_PRINT_DIRS + " - print the detected values of the system directories and exit");
 	    System.out.println(CMDARG_CREATE_PROFILE + " - generate the user profile directory in its default location and exit");
 	    System.out.println(CMDARG_CREATE_PROFILE_IN + "<DESTDIR> - generate the user profile directory in <DESTDIR> and exit");
 	    System.exit(0);
@@ -262,11 +264,16 @@ public class Init
 	setUtf8();
 	addJarsToClassPath("jar");
 	addJarsToClassPath("lib");
-
 	final File userDataDir = Checks.detectUserDataDir();
 	if (userDataDir == null)
 	    System.exit(1);
-	new Init(args, Checks.detectLang(), new File("data"), userDataDir).start();
+	final String lang = Checks.detectLang(new CmdLine(args));
+	if (lang.isEmpty())
+	{
+	    Log.error(LOG_COMPONENT, "unable to select a language to use");
+	    System.exit(1);
+	}
+	new Init(args, lang, new File("data"), userDataDir).start();
     }
 
     static private void addJarsToClassPath(String dirName)
