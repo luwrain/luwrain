@@ -111,4 +111,9 @@ public class TestingControlEnvironment implements ControlEnvironment
     {
 	return 80;
     }
+
+    @Override public void executeBkg(java.util.concurrent.FutureTask task)
+    {
+	NullCheck.notNull(task, "task");
+    }
 }
