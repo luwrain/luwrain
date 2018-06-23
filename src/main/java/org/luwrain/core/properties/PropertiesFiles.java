@@ -33,12 +33,16 @@ public final class PropertiesFiles implements PropertiesProvider
     {
 	NullCheck.notNull(systemProperties, "systemProperties");
 	NullCheck.notNull(userProperties, "userProperties");
-	for (File f: systemProperties.listFiles())
-	    if (!f.isDirectory())
-		readProps(f);
-	for(File f: userProperties.listFiles())
-	    if (!f.isDirectory())
-		readProps(f);
+	final File[] systemPropertiesFiles = systemProperties.listFiles();
+	if (systemPropertiesFiles != null)
+	    for (File f: systemPropertiesFiles)
+		if (!f.isDirectory())
+		    readProps(f);
+	final File[] userPropertiesFiles = userProperties.listFiles();
+	if (userPropertiesFiles != null)
+	    for(File f: userPropertiesFiles)
+		if (!f.isDirectory())
+		    readProps(f);
     }
 
     @Override public String getExtObjName()
