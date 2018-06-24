@@ -16,9 +16,9 @@
 
 package org.luwrain.core;
 
-class  EventResponses
+final class  EventResponses
 {
-    static class Hint implements EventResponse
+    static final class Hint implements EventResponse
     {
 	final org.luwrain.core.Hint hint;
 	final String text;
@@ -121,11 +121,11 @@ class  EventResponses
 switch(suggestion)
 {
 case CLICKABLE_LIST_ITEM:
-    return "Элемент списка, нажмите Enter для активации";
+    return i18n.getStaticStr("SuggestionClickableListItem");
 case LIST_ITEM:
-    return "Элемент списка";
+    return i18n.getStaticStr("SuggestionListItem");
 case POPUP_LIST_ITEM:
-    return "Элемент списка, нажмите Enter для выбора";
+    return i18n.getStaticStr("SuggestionPopupListItem");
 default:
     return null;
 }
