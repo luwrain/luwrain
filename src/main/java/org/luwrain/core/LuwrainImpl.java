@@ -534,7 +534,7 @@ final class LuwrainImpl implements Luwrain
     @Override public java.io.File getFileProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
-	core.mainCoreThreadOnly();
+	//FIXME:	core.mainCoreThreadOnly();
 	return core.props.getFileProperty(propName);
     }
 
@@ -550,7 +550,7 @@ final class LuwrainImpl implements Luwrain
     @Override public String getProperty(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
-	core.mainCoreThreadOnly();
+	//FIXME:	core.mainCoreThreadOnly();
 	return core.props.getProperty(propName);
     }
 
