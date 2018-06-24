@@ -52,7 +52,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final I18nImpl i18n = new I18nImpl();
     protected final Speech speech;
     final Braille braille = new Braille();
-    protected final SoundsPlayer sounds = new SoundsPlayer();
+    protected final org.luwrain.core.sound.EnvironmentSounds sounds;
     protected final SoundManager soundManager;
 
     final FileTypes fileTypes = new FileTypes();
@@ -73,6 +73,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	this.props = props;
 	this.lang = lang;
 	this.speech = new Speech(cmdLine, registry);
+	this.sounds = new org.luwrain.core.sound.EnvironmentSounds(registry);
 	this.soundManager = new SoundManager(registry, props);
 	this.mainCoreThread = Thread.currentThread();
     }

@@ -14,19 +14,25 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.core.sound;
 
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 import javax.sound.sampled.*;
 
-class SoundsPlayer
+import org.luwrain.core.*;
+
+public final class EnvironmentSounds
 {
     private final Map<Sounds, String> soundFiles = new HashMap();
     private WavePlayers.Simple previous = null;
 
-    void play(Sounds sound, int volumePercent)
+    public EnvironmentSounds(Registry registry)
+    {
+    }
+
+    public void play(Sounds sound, int volumePercent)
     {
 	NullCheck.notNull(sound, "sound");
 	if (!soundFiles.containsKey(sound) || soundFiles.get(sound).isEmpty())
@@ -45,7 +51,7 @@ class SoundsPlayer
 	return previous == null || previous.finished;
     }
 
-    void init(Registry registry, Path dataDir)
+    public void init(Registry registry, Path dataDir)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(dataDir, "dataDir");

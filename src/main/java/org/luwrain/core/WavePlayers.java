@@ -23,19 +23,19 @@ import javax.sound.sampled.*;
 
 import org.luwrain.base.*;
 
-final class WavePlayers
+public final class WavePlayers
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
-    static class Simple implements Runnable
+    static public class Simple implements Runnable
     {
 	private final String fileName;
 	private final int volumePercent;
 	private volatile boolean interruptPlayback = false;
-	boolean finished = false;
+	public boolean finished = false;
 	private SourceDataLine audioLine = null;
 
-	Simple(String fileName, int volumePercent)
+	public Simple(String fileName, int volumePercent)
 	{
 	    NullCheck.notEmpty(fileName, "fileName");
 	    this.fileName = fileName;
@@ -91,7 +91,7 @@ final class WavePlayers
 	    }
 	}
 
-	void stopPlaying()
+	public void stopPlaying()
 	{
 	    interruptPlayback = true;
 	    synchronized(this) {
