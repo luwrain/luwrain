@@ -18,98 +18,61 @@ package org.luwrain.core.sound;
 
 import java.util.*;
 import java.io.*;
-import java.nio.file.*;
-import javax.sound.sampled.*;
 
 import org.luwrain.core.*;
 
 public final class EnvironmentSounds
 {
-    private final Map<Sounds, String> soundFiles = new HashMap();
+    private final Registry registry;
+    private final File soundsDir;
+    private final Map<Sounds, File> soundFiles = new HashMap();
     private WavePlayers.Simple previous = null;
 
-    public EnvironmentSounds(Registry registry)
+    public EnvironmentSounds(Registry registry, File soundsDir)
     {
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notNull(soundsDir, "soundsDir");
+	this.registry = registry;
+	this.soundsDir = soundsDir;
     }
 
     public void play(Sounds sound, int volumePercent)
     {
 	NullCheck.notNull(sound, "sound");
-	if (!soundFiles.containsKey(sound) || soundFiles.get(sound).isEmpty())
+	final File soundFile;
+	if (!soundFiles.containsKey(sound))
 	{
-	    Log.error("core", "no sound for playing:" + sound);
-	    return;
-	}
+	    soundFile = getSoundFile(sound);
+	    if (soundFile == null)
+	    {
+		Log.error("core", "no sound file specified for Sounds." + sound.toString());
+		return;
+	    }
+	    soundFiles.put(sound, soundFile);
+	} else
+	    soundFile = soundFiles.get(sound);
 	if (previous != null)
 	    previous.stopPlaying();
-	previous = new WavePlayers.Simple(soundFiles.get(sound), volumePercent);
+	previous = new WavePlayers.Simple(soundFile.getAbsolutePath(), volumePercent);
 	new Thread(previous).start();
     }
 
-    boolean finished()
+    private File getSoundFile(Sounds sound)
     {
-	return previous == null || previous.finished;
+	NullCheck.notNull(sound, "sound");
+	final String path = getRegistryPathForSound(sound);
+	if (registry.getTypeOf(path) != Registry.STRING)
+	    return null;
+	final String value = registry.getString(path);
+	if (value == null || value.isEmpty())
+	    return null;
+	return new File(soundsDir, value);
     }
 
-    public void init(Registry registry, Path dataDir)
+    private String getRegistryPathForSound(Sounds sound)
     {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(dataDir, "dataDir");
-	final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(registry);
-	setSoundFile(dataDir, scheme.getEventNotProcessed(""), Sounds.EVENT_NOT_PROCESSED);
-	setSoundFile(dataDir, scheme.getEndOfLine(""), Sounds.END_OF_LINE);
-	setSoundFile(dataDir, scheme.getEmptyLine(""), Sounds.EMPTY_LINE);
-	setSoundFile(dataDir, scheme.getAnnouncement(""), Sounds.ANNOUNCEMENT);
-	setSoundFile(dataDir, scheme.getAttention(""), Sounds.ATTENTION);
-	setSoundFile(dataDir, scheme.getChatMessage(""), Sounds.CHAT_MESSAGE);
-	setSoundFile(dataDir, scheme.getNoApplications(""), Sounds.NO_APPLICATIONS);
-	setSoundFile(dataDir, scheme.getStartup(""), Sounds.STARTUP);
-	setSoundFile(dataDir, scheme.getMessage(""), Sounds.MESSAGE);
-	setSoundFile(dataDir, scheme.getShutdown(""), Sounds.SHUTDOWN);
-	setSoundFile(dataDir, scheme.getMainMenu(""), Sounds.MAIN_MENU);
-	setSoundFile(dataDir, scheme.getMainMenuItem(""), Sounds.MAIN_MENU_ITEM);
-	setSoundFile(dataDir, scheme.getMainMenuEmptyLine(""), Sounds.MAIN_MENU_EMPTY_LINE);
-	setSoundFile(dataDir, scheme.getError(""), Sounds.ERROR);
-	setSoundFile(dataDir, scheme.getFatal(""), Sounds.FATAL);
-	setSoundFile(dataDir, scheme.getOk(""), Sounds.OK);
-	setSoundFile(dataDir, scheme.getDone(""), Sounds.DONE);
-	setSoundFile(dataDir, scheme.getBlocked(""), Sounds.BLOCKED);
-	setSoundFile(dataDir, scheme.getIntroRegular(""), Sounds.INTRO_REGULAR);
-	setSoundFile(dataDir, scheme.getIntroPopup(""), Sounds.INTRO_POPUP);
-	setSoundFile(dataDir, scheme.getIntroApp(""), Sounds.INTRO_APP);
-	setSoundFile(dataDir, scheme.getNoItemsAbove(""), Sounds.NO_ITEMS_ABOVE);
-	setSoundFile(dataDir, scheme.getNoItemsBelow(""), Sounds.NO_ITEMS_BELOW);
-	setSoundFile(dataDir, scheme.getNoLinesAbove(""), Sounds.NO_LINES_ABOVE);
-	setSoundFile(dataDir, scheme.getNoLinesBelow(""), Sounds.NO_LINES_BELOW);
-	setSoundFile(dataDir, scheme.getCommanderLocation(""), Sounds.COMMANDER_LOCATION);
-	setSoundFile(dataDir, scheme.getListItem(""), Sounds.LIST_ITEM);
-	setSoundFile(dataDir, scheme.getParagraph(""), Sounds.PARAGRAPH);
-	setSoundFile(dataDir, scheme.getGeneralTime(""), Sounds.GENERAL_TIME);
-	setSoundFile(dataDir, scheme.getTermBell(""), Sounds.TERM_BELL);
-	setSoundFile(dataDir, scheme.getTableCell(""), Sounds.TABLE_CELL);
-		setSoundFile(dataDir, scheme.getDesktopItem(""), Sounds.DESKTOP_ITEM);
-	setSoundFile(dataDir, scheme.getDocSection(""), Sounds.DOC_SECTION);
-	setSoundFile(dataDir, scheme.getNoContent(""), Sounds.NO_CONTENT);
-	setSoundFile(dataDir, scheme.getSearch(""), Sounds.SEARCH);
-	setSoundFile(dataDir, scheme.getSelected(""), Sounds.SELECTED);
-	setSoundFile(dataDir, scheme.getDeleted(""), Sounds.DELETED);
-	setSoundFile(dataDir, scheme.getCancel(""), Sounds.CANCEL);
-	setSoundFile(dataDir, scheme.getRegionPoint(""), Sounds.REGION_POINT);
-	setSoundFile(dataDir, scheme.getPaste(""), Sounds.PASTE);
-	setSoundFile(dataDir, scheme.getCopied(""), Sounds.COPIED);
-	setSoundFile(dataDir, scheme.getUnselected(""), Sounds.UNSELECTED);
-	setSoundFile(dataDir, scheme.getCut(""), Sounds.CUT);
+	NullCheck.notNull(sound, "sound");
+	final String paramName = sound.toString().toLowerCase().replaceAll("_", "-");
+	return Registry.join(org.luwrain.core.Settings.CURRENT_SOUND_SCHEME_PATH, paramName);
     }
-
-    private void setSoundFile(Path dataDir, String fileName,
-			      Sounds sound)
-    {
-NullCheck.notNull(sound, "sound");
-	if (fileName.isEmpty())
-	    return;
-	Path path = Paths.get(fileName);
-	if (!path.isAbsolute())
-	    path = dataDir.resolve(path);
-	soundFiles.put(sound, path.toString());
-    }
-    }
+}

@@ -33,7 +33,7 @@ public interface Settings
     static final String MAIN_MENU_SECTIONS_PATH = "/org/luwrain/main-menu/sections";
     static final String SPEECH_PATH = "/org/luwrain/speech";
     static final String BRAILLE_PATH = "/org/luwrain/braille";
-    static final String CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/scheme";
+    static public final String CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/scheme";
     static final String INTERACTION_PARAMS_PATH = "/org/luwrain/interaction";
     static final String OS_COMMANDS_PATH = "/org/luwrain/os/commands";
     static final String OS_SHORTCUTS_PATH = "/org/luwrain/os/shortcuts";

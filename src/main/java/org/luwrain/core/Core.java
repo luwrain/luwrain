@@ -201,7 +201,6 @@ final class Core extends EventDispatching
 	} else
 	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
 	desktop.ready();
-	sounds.init(registry, props.getFileProperty("luwrain.dir.data").toPath());
 	props.setProviders(objRegistry.getPropertiesProviders());
 	uiSettings = Settings.createUserInterface(registry);
     }
