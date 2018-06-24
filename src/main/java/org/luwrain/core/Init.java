@@ -262,26 +262,51 @@ public class Init
 	System.out.println(GREETING);
 	System.out.println();
 	setUtf8();
-	addJarsToClassPath("jar");
-	addJarsToClassPath("lib");
+	addJarsToClassPath(new File("jar"));
+	addJarsToClassPath(new File("lib"));
 	final File userDataDir = Checks.detectUserDataDir();
 	if (userDataDir == null)
+	{
+	    Log.fatal(LOG_COMPONENT, "unable to detect the user data directory");
 	    System.exit(1);
+	}
+	addExtensionsJarsToClassPath(new File(userDataDir, "extensions"));
 	final String lang = Checks.detectLang(new CmdLine(args));
 	if (lang.isEmpty())
 	{
-	    Log.error(LOG_COMPONENT, "unable to select a language to use");
+	    Log.fatal(LOG_COMPONENT, "unable to select a language to use");
 	    System.exit(1);
 	}
 	new Init(args, lang, new File("data"), userDataDir).start();
     }
 
-    static private void addJarsToClassPath(String dirName)
+    static private void addExtensionsJarsToClassPath(File extensionsDir)
     {
-	NullCheck.notEmpty(dirName, "dirName");
+	NullCheck.notNull(extensionsDir, "extensionsDir");
+	final File[] subdirs = extensionsDir.listFiles();
+	if (subdirs == null)
+	    return;
+	for(File s: subdirs)
+	{
+	    if (!s.isDirectory())
+		continue;
+	    final File jarsDir = new File(s, "jar");
+	    if (!jarsDir.isDirectory())
+		continue;
+	    Log.debug(LOG_COMPONENT, "registering extension jars from the directory " + jarsDir.getAbsolutePath());
+	    addJarsToClassPath(jarsDir);
+	}
+    }
+
+    static private void addJarsToClassPath(File file)
+    {
+	NullCheck.notNull(file, "file");
 	try {
-	    for(File f: new File(dirName).listFiles())
-		if (f.getName().toLowerCase().trim().endsWith(".jar"))
+	    final File[] files = file.listFiles();
+	    if (files == null)
+		return;
+	    for(File f: files)
+		if (!f.isDirectory() && f.getName().toLowerCase().trim().endsWith(".jar"))
 		{
 		    final java.net.URL url = f.toURI().toURL();
 		    ClassPath.addUrl(url);
@@ -289,7 +314,7 @@ public class Init
 	}
 	catch(IOException e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to add to the classpath the directory " + dirName + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "unable to add to the classpath the directory " + file.getAbsolutePath() + ":" + e.getClass().getName() + ":" + e.getMessage());
 	}
     }
 
