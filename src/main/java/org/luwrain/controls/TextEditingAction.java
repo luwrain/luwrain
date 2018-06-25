@@ -16,12 +16,7 @@
 
 package org.luwrain.controls;
 
-public interface MultilineEditCorrector extends MultilineEdit.Model
+public interface TextEditingAction
 {
-    public interface DirectAccessAction
-    {
-	void directAccessAction(MutableLines lines, HotPointControl hotPoint);
-    }
-
-    void doDirectAccessAction(DirectAccessAction action);
+    void doTextEditingAction(MutableLines lines, HotPointControl hotPoint);
 }
