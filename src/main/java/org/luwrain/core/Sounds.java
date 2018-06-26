@@ -53,6 +53,7 @@ public enum Sounds
     OK,
     PARAGRAPH,
     PASTE,
+    PROTECTED_RESOURCE,
     REGION_POINT,
     SEARCH,
     SELECTED,
