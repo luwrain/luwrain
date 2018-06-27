@@ -198,6 +198,7 @@ abstract class EventDispatching extends EnvironmentAreas
 	    if (code == KeyboardEvent.Special.CONTROL)
 	    {
 		speech.silence();
+		soundManager.stopStartingMode();
 		return true;
 	    }
 	    if (code == KeyboardEvent.Special.SHIFT ||
