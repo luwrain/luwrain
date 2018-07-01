@@ -74,6 +74,12 @@ public interface Luwrain extends PropertiesBase
 	URL,
     };
 
+    public enum SpokenTextType {
+	NONE,
+	NATURAL,
+	PROGRAMMING,
+    };
+
     void announceActiveArea();
     Object callUiSafely(java.util.concurrent.Callable callable);
     void closeApp();
@@ -229,6 +235,7 @@ public interface Luwrain extends PropertiesBase
 
         //never returns null
     String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType);
+    String getSpokenText(String text, SpokenTextType type);
 
         //never returns null
     String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType);

@@ -640,6 +640,13 @@ final class LuwrainImpl implements Luwrain
 	core.script.exec(text);
     }
 
+        @Override public String getSpokenText(String text, SpokenTextType type)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(type, "type");
+	return core.text.translate(text, type);
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");

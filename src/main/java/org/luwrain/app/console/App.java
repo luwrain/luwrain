@@ -50,11 +50,11 @@ params.appearance = new ConsoleArea2.Appearance()
 	    NullCheck.notNull(item, "item");
 	    if (!(item instanceof Log.Message))
 	    {
-		luwrain.setEventResponse(DefaultEventResponse.text(item.toString()));
+		luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpokenText(item.toString(), Luwrain.SpokenTextType.PROGRAMMING)));
 		return;
 	    }
 	    final Log.Message message = (Log.Message)item;
-	    luwrain.setEventResponse(DefaultEventResponse.text(message.message));
+	    luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpokenText(message.message, Luwrain.SpokenTextType.PROGRAMMING)));
 	}
 	@Override public String getTextAppearance(Object item)
 	{
