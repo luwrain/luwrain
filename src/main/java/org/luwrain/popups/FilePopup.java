@@ -59,6 +59,12 @@ public class FilePopup extends EditListPopup
 	return new File(defaultDir, text());
     }
 
+    @Override protected String getSpokenText(String text)
+    {
+	NullCheck.notNull(text, "text");
+	return luwrain.getSpokenText(text, Luwrain.SpokenTextType.PROGRAMMING);
+    }
+
     @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
