@@ -16,6 +16,8 @@
 
 package org.luwrain.controls;
 
+import org.luwrain.core.*;
+
 public interface MultilineEditCorrector extends MultilineEdit.Model
 {
     public interface DirectAccessAction

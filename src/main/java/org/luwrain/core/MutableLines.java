@@ -14,9 +14,17 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls;
+package org.luwrain.core;
 
-public interface TextEditingAction
+public interface MutableLines extends Lines
 {
-    void doTextEditingAction(MutableLines lines, HotPointControl hotPoint);
+    void beginLinesTrans();
+    void endLinesTrans();
+    String[] getLines();
+    void setLines(String[] lines);
+    void addLine(String line);
+    void insertLine(int index, String line);
+    void removeLine(int index);
+    void setLine(int index, String line);
+    void clear();
 }

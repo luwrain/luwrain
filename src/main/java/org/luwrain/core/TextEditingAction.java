@@ -14,16 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls;
+package org.luwrain.core;
 
-import org.luwrain.core.*;
-
-public interface HotPointControl extends HotPoint
+public interface TextEditingAction
 {
-    void beginHotPointTrans();
-    void endHotPointTrans();
-    int getHotPointX();
-    void setHotPointX(int value);
-    int getHotPointY();
-    void setHotPointY(int value);
+    void doTextEditingAction(MutableLines lines, HotPointControl hotPoint);
 }

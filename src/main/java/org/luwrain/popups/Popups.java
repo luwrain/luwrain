@@ -22,7 +22,7 @@ import java.io.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 
-public class Popups
+public final class Popups
 {
     static public final Set<Popup.Flags> DEFAULT_POPUP_FLAGS = EnumSet.noneOf(Popup.Flags.class);
 
@@ -225,7 +225,6 @@ name, prefix, text, popupFlags);
 	return res;
     }
 
-
     static public File commanderSingle(Luwrain luwrain, String name,
 				       File path, FilePopup.Acceptance acceptance,
 				       CommanderArea.ClickHandler clickHandler, Set<Popup.Flags> popupFlags)
@@ -278,7 +277,6 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(name, "name");
 	return disksVolumes(luwrain, name, DEFAULT_POPUP_FLAGS);
     }
-
 
     static public String fixedEditList(Luwrain luwrain,
 				       String name, String prefix, String text,

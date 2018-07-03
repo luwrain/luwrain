@@ -14,19 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls;
+package org.luwrain.core;
 
-import org.luwrain.core.*;
-
-public interface MutableLines extends Lines
+public interface HotPointControl extends HotPoint
 {
-    void beginLinesTrans();
-    void endLinesTrans();
-    String[] getLines();
-    void setLines(String[] lines);
-    void addLine(String line);
-    void insertLine(int index, String line);
-    void removeLine(int index);
-    void setLine(int index, String line);
-    void clear();
+    void beginHotPointTrans();
+    void endHotPointTrans();
+    int getHotPointX();
+    void setHotPointX(int value);
+    int getHotPointY();
+    void setHotPointY(int value);
 }

@@ -16,7 +16,7 @@
 
 package org.luwrain.controls;
 
-import java.util.Vector;
+import java.util.*;
 
 import org.luwrain.core.*;
 

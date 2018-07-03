@@ -16,7 +16,7 @@
 
 package org.luwrain.controls;
 
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 
 public class HotPointShift implements HotPointControl
 {
