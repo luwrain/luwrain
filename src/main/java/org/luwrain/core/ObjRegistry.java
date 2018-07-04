@@ -47,6 +47,7 @@ final class ObjRegistry
     private Map<String, Entry<org.luwrain.speech.Factory>> speechFactories = new HashMap();
     private Map<String, Entry<MediaResourcePlayer>> players = new HashMap();
         private Map<String, Entry<PropertiesProvider>> propsProviders = new HashMap();
+            private Map<String, Entry<TextEditingExtension>> textEditingExts = new HashMap();
 
     boolean add(Extension ext, ExtensionObject obj)
     {
@@ -112,6 +113,16 @@ final class ObjRegistry
 	    if (!propsProviders.containsKey(name))
 	    {
 		propsProviders.put(name, new Entry(ext, name, provider));
+		res = true;
+	    }
+	}
+
+																																if (obj instanceof TextEditingExtension)
+	{
+	    final TextEditingExtension textEditing = (TextEditingExtension)obj;
+	    if (!textEditingExts.containsKey(name))
+	    {
+		textEditingExts.put(name, new Entry(ext, name, textEditing));
 		res = true;
 	    }
 	}
@@ -224,6 +235,15 @@ final class ObjRegistry
 	    res.add(e.getValue().obj);
 	return res.toArray(new PropertiesProvider[res.size()]);
     }
+
+                    TextEditingExtension[] getTextEditingExtensions()
+    {
+	final List<TextEditingExtension> res = new LinkedList();
+	for(Map.Entry<String, Entry<TextEditingExtension>> e: textEditingExts.entrySet())
+	    res.add(e.getValue().obj);
+	return res.toArray(new TextEditingExtension[res.size()]);
+    }
+
 
     static void issueResultingMessage(Luwrain luwrain, int exitCode, String[] lines)
     {
