@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -13,6 +13,8 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
 */
+
+//LWR_API 1.0
 
 package org.luwrain.speech;
 
@@ -40,6 +42,12 @@ public interface Channel
     {
 	//Called only on successful finishing, not on cancelling 
 	void onFinished(long id);
+    }
+
+    public interface StreamedSpeaking
+    {
+	boolean speak(String text, OutputStream stream);
+	void close();
     }
 
     boolean initByRegistry(Registry registry, String path);
@@ -82,7 +90,7 @@ boolean cancelPrevious);
     //Cancels speaking, listener will never get onFinished call
     void silence();
     AudioFormat[] getSynthSupportedFormats();
-    boolean synth(String text, int pitch, int rate, AudioFormat format, OutputStream stream);
+    StreamedSpeaking createStreamedSpeaking(int pitch, int rate, AudioFormat format);
 
     static int adjustParamValue(int value)
     {
