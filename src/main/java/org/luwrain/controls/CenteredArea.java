@@ -16,6 +16,8 @@
 
 //LWR_API 1.0
 
+//LWR_API 1.0
+
 package org.luwrain.controls;
 
 import org.luwrain.core.*;
