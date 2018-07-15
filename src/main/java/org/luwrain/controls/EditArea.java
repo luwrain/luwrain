@@ -87,6 +87,15 @@ public class EditArea extends NavigationArea
 	return line != null?line:"";
     }
 
+    public void setLine(int index, String line)
+    {
+	NullCheck.notNull(line, "line");
+	if (index < 0)
+	    throw new IllegalArgumentException("index (" + index + ") may not be negative");
+	content.setLine(index, line);
+	context.onAreaNewContent(this);
+    }
+
     @Override public String getAreaName()
     {
 	return areaName;
@@ -117,6 +126,11 @@ public class EditArea extends NavigationArea
 	content.clear();
 	context.onAreaNewContent(this);
 	setHotPoint(0, 0);
+    }
+
+    public MutableLines getContent()
+    {
+	return content;
     }
 
     @Override public boolean onInputEvent(KeyboardEvent event)
