@@ -25,7 +25,7 @@ import org.luwrain.core.*;
 
 public final class Manager
 {
-    static private final String LOG_COMPONENT = "core";
+    static final String LOG_COMPONENT = "core";
     static private final String EXTENSIONS_LIST_PREFIX = "--extensions=";
 
     public interface InterfaceRequest 
