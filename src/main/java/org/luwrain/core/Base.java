@@ -348,6 +348,21 @@ public void playSound(Sounds sound)
 	return true;
     }
 
+    File[] getInstalledPacksDirs()
+    {
+	final File packsDir = props.getFileProperty("luwrain.dir.packs");
+	if (!packsDir.exists() || !packsDir.isDirectory())
+	    return new File[0];
+	final File[] files = packsDir.listFiles();
+	if (files == null)
+	    return new File[0];
+	final List<File> res = new LinkedList();
+	for(File f: files)
+	    if (f.exists() && f.isDirectory())
+		res.add(f);
+	return res.toArray(new File[res.size()]);
+    }
+
         boolean unloadDynamicExtension(String extId)
     {
 	NullCheck.notEmpty(extId, "extId");

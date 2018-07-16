@@ -83,6 +83,8 @@ public final class Basic implements PropertiesProvider
 	    return userDataDir;
 	case "luwrain.dir.appdata":
 	    return new File(userDataDir, "app");
+	    	case "luwrain.dir.packs":
+	    return new File(userDataDir, "extensions");
 	default:
 	    return null;
 	}
