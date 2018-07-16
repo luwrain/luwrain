@@ -259,6 +259,51 @@ public void playSound(Sounds sound)
 	return loadScriptExtension(text);
     }
 
+    String loadTextExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
+    {
+	NullCheck.notNull(text, "text");
+	mainCoreThreadOnly();
+	final org.luwrain.core.extensions.TextExtension textExt = new org.luwrain.core.extensions.TextExtension();
+	final Luwrain luwrain = interfaces.requestNew(textExt);
+	Luwrain toRelease = luwrain;
+	try {
+	    try {
+		textExt.load(text);
+	    }
+	    catch(Exception e)
+	    {
+		throw new org.luwrain.core.extensions.DynamicExtensionException(e);
+	    }
+	    final org.luwrain.core.extensions.LoadedExtension loadedExt = extensions.addDynamicExtension(textExt, luwrain);
+	    if (loadedExt == null)
+		throw new org.luwrain.core.extensions.DynamicExtensionException("Trying to load twice the same extension");
+	    toRelease = null;
+	    objRegistry.takeObjects(loadedExt);
+	    for(Command c: loadedExt.commands)//FIXME:
+		commands.add(luwrain, c);
+	    return loadedExt.id;
+	}
+	finally {
+	    if (toRelease != null)
+		interfaces.release(toRelease);
+	}
+    }
+
+    String loadTextExtensionFromFile(File file) throws org.luwrain.core.extensions.DynamicExtensionException
+    {
+	NullCheck.notNull(file, "file");
+	final String text;
+	try {
+	    text = FileUtils.readTextFileSingleString(file, "UTF-8");
+	}
+	catch(IOException e)
+	{
+	    throw new org.luwrain.core.extensions.DynamicExtensionException(e);
+	}
+	return loadTextExtension(text);
+    }
+
+
     boolean runFunc(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");

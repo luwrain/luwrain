@@ -22,7 +22,7 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-final class TextExtension implements DynamicExtension
+public final class TextExtension implements DynamicExtension
 {
     static private final String LOG_COMPONENT = Manager.LOG_COMPONENT;
     
@@ -33,10 +33,9 @@ final class TextExtension implements DynamicExtension
 
     private final Map<String, CmdEntry> commands = new HashMap();
 
-    TextExtension(String name)
+    public TextExtension()
     {
-	NullCheck.notEmpty(name, "name");
-	this.name = name;
+	this.name = "";
     }
 
 @Override public String init(Luwrain luwrain)
@@ -46,16 +45,16 @@ final class TextExtension implements DynamicExtension
 	return null;
     }
 
-    private void load(File file) throws IOException
+    public void load(String text) throws IOException
     {
-	NullCheck.notNull(file, "file");
+	NullCheck.notNull(text, "text");
 	final Properties props = new Properties();
-	final InputStream is = new FileInputStream(file);
+	final StringReader reader = new StringReader(text);
 	try {
-	    props.load(is);
+	    props.load(reader);
 	}
 	finally {
-	    is.close();
+	    reader.close();
 	}
 	for(Map.Entry e: props.entrySet())
 	{

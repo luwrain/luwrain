@@ -145,28 +145,7 @@ final class Core extends EventDispatching
 	initI18n();
 	initObjects();
 	objRegistry.add(null, new StartingModeProperty());
-	Log.debug(LOG_COMPONENT, "Loading dynamic script extensions");
-	if (props.getFileProperty("luwrain.dir.js").exists() && props.getFileProperty("luwrain.dir.js").isDirectory())
-	{
-	    final File[] files = props.getFileProperty("luwrain.dir.js").listFiles();
-	    for(File f: files)
-	    {
-		if (!f.exists() || f.isDirectory())
-		    continue;
-		if (!f.getName().endsWith(".js"))
-		    continue;
-		try {
-		    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
-		    final String id = loadScriptExtensionFromFile(f);
-		    Log.debug(LOG_COMPONENT, "ID of the loaded script is " + id);
-		}
-		catch(org.luwrain.core.extensions.DynamicExtensionException e)
-		{
-		    Log.error(LOG_COMPONENT, "unable to load the script extension " + f.getAbsolutePath() + ":" + e.getMessage());
-		}
-	    }
-	} else
-	    Log.warning(LOG_COMPONENT, "the directory " + props.getFileProperty("luwrain.dir.js").getAbsolutePath() + " does not exist, skipping loading of dynamic script extensions");
+	initDynamicExtensions();
 	if (!speech.init(objRegistry.getSpeechFactories()))
 	    Log.warning(LOG_COMPONENT, "unable to initialize speech core, very likely LUWRAIN will be silent");
 	braille.init(registry, os.getBraille(), this);
@@ -203,6 +182,34 @@ final class Core extends EventDispatching
 	desktop.ready();
 	props.setProviders(objRegistry.getPropertiesProviders());
 	uiSettings = Settings.createUserInterface(registry);
+    }
+
+    private void initDynamicExtensions()
+    {
+	final File jsDir = props.getFileProperty("luwrain.dir.js");
+	if (jsDir.exists() && jsDir.isDirectory())
+	{
+	    final File[] files = jsDir.listFiles();
+	    if (files != null)
+	    for(File f: files)
+	    {
+		if (!f.exists() || f.isDirectory())
+		    continue;
+		if (!f.getName().toLowerCase().endsWith(".js"))
+		    continue;
+		try {
+		    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
+		    final String id = loadScriptExtensionFromFile(f);
+		}
+		catch(org.luwrain.core.extensions.DynamicExtensionException e)
+		{
+		    Log.error(LOG_COMPONENT, "unable to load the script extension " + f.getAbsolutePath() + ":" + e.getMessage());
+		}
+	    }
+	} else
+	    Log.warning(LOG_COMPONENT, "the directory " + jsDir.getAbsolutePath() + " does not exist, skipping loading of dynamic script extensions");
+
+	
     }
 
     private void initObjects()
