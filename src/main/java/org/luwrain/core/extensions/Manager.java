@@ -112,7 +112,12 @@ public final class Manager
 
     public LoadedExtension[] getAllLoadedExtensions()
     {
-	return extensions;
+	final List<LoadedExtension> res = new LinkedList();
+	for(LoadedExtension e: extensions)
+	    res.add(e);
+	for(LoadedExtension e: dynamicExtensions)
+	    res.add(e);
+	return res.toArray(new LoadedExtension[res.size()]);
     }
 
     public LoadedExtension addDynamicExtension(DynamicExtension ext, Luwrain luwrain)

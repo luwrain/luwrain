@@ -142,10 +142,10 @@ final class Core extends EventDispatching
 	desktop.setConversations(conversations);
 	apps.setDefaultApp(desktop);
 	extensions.load((ext)->interfaces.requestNew(ext), cmdLine);
-	initI18n();
-	initObjects();
-	objRegistry.add(null, new StartingModeProperty());
 	initDynamicExtensions();
+	initI18n();
+			initObjects();
+	objRegistry.add(null, new StartingModeProperty());
 	if (!speech.init(objRegistry.getSpeechFactories()))
 	    Log.warning(LOG_COMPONENT, "unable to initialize speech core, very likely LUWRAIN will be silent");
 	braille.init(registry, os.getBraille(), this);
@@ -280,8 +280,7 @@ final class Core extends EventDispatching
 	    }
 	    catch (Exception ee)
 	    {
-		Log.error("core", "extension " + e.getClass().getName() + " has thrown an exception on i18n:" + ee.getMessage());
-		ee.printStackTrace();
+		Log.error(LOG_COMPONENT, "extension " + e.getClass().getName() + " has thrown an exception on i18n:" + ee.getMessage());
 	    }
 	if (!i18n.chooseLang(lang))
 	{

@@ -31,6 +31,7 @@ public final class TextExtension implements DynamicExtension
     private Luwrain luwrain = null;
 
     private final Map<String, CmdEntry> commands = new HashMap();
+    private final Map<String, LangEntry> langs = new HashMap();
 
     public TextExtension(File baseDir)
     {
@@ -74,12 +75,31 @@ public final class TextExtension implements DynamicExtension
 	NullCheck.notNull(key, "key");
 	NullCheck.notNull(value, "value");
 	final String SUFFIX_FILE = ".file";
+	if (key.matches(".*\\.title\\..."))
+	{
+	    final String cmdName = key.substring(0, key.length() - 9);
+	    final String lang = key.substring(key.length() - 2).toLowerCase();
+	    if (cmdName.trim().isEmpty())
+	    {
+		Log.error(LOG_COMPONENT, "a command without a name in text extension");
+		return;
+	    }
+	    if (value.isEmpty())
+	    {
+		Log.error(LOG_COMPONENT, "no argument for the title of the command \'" + cmdName + "\' in text extension");
+		return;
+	    }
+	    if (!langs.containsKey(lang))
+		langs.put(lang, new LangEntry(lang));
+	    langs.get(lang).cmdTitles.put(cmdName, value);
+	    return;
+	}
 	if (key.endsWith(SUFFIX_FILE))
 	{
 	    final String cmdName = key.substring(0, key.length() - SUFFIX_FILE.length());
 	    if (cmdName.trim().isEmpty())
 	    {
-		Log.error(LOG_COMPONENT, "a command without a name in text text extension");
+		Log.error(LOG_COMPONENT, "a command without a name in text extension");
 		return;
 	    }
 	    if (value.isEmpty())
@@ -138,6 +158,14 @@ public final class TextExtension implements DynamicExtension
 
     @Override public void i18nExtension(Luwrain luwrain, I18nExtension i18nExt)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(i18nExt, "i18nExt");
+	for(Map.Entry<String, LangEntry> l: langs.entrySet())
+	{
+	    final LangEntry lang = l.getValue();
+	    for(Map.Entry<String, String> c: lang.cmdTitles.entrySet())
+		i18nExt.addCommandTitle(lang.langName, c.getKey(), c.getValue());
+	}
     }
 
     @Override public org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain)
@@ -155,11 +183,9 @@ public final class TextExtension implements DynamicExtension
 	enum Type {
 	    FILE,
 	};
-
 	final String name;
 	final Type type;
 	final String arg;
-
 	CmdEntry(String name, Type type, String arg)
 	{
 	    NullCheck.notEmpty(name, "name");
@@ -168,6 +194,17 @@ public final class TextExtension implements DynamicExtension
 	    this.name = name;
 	    this.type = type;
 	    this.arg = arg;
+	}
+    }
+
+    static private final class LangEntry
+    {
+	final String langName;
+	final Map<String, String> cmdTitles = new HashMap();
+	LangEntry(String langName)
+	{
+	    NullCheck.notEmpty(langName, "langName");
+	    this.langName = langName;
 	}
     }
 }
