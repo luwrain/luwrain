@@ -259,11 +259,12 @@ public void playSound(Sounds sound)
 	return loadScriptExtension(text);
     }
 
-    String loadTextExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
+    String loadTextExtension(String text, File baseDir) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(text, "text");
+	NullCheck.notNull(baseDir, "baseDir");
 	mainCoreThreadOnly();
-	final org.luwrain.core.extensions.TextExtension textExt = new org.luwrain.core.extensions.TextExtension();
+	final org.luwrain.core.extensions.TextExtension textExt = new org.luwrain.core.extensions.TextExtension(baseDir);
 	final Luwrain luwrain = interfaces.requestNew(textExt);
 	Luwrain toRelease = luwrain;
 	try {
@@ -289,9 +290,10 @@ public void playSound(Sounds sound)
 	}
     }
 
-    String loadTextExtensionFromFile(File file) throws org.luwrain.core.extensions.DynamicExtensionException
+    String loadTextExtensionFromFile(File file, File baseDir) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(file, "file");
+	NullCheck.notNull(baseDir, "baseDir");
 	final String text;
 	try {
 	    text = FileUtils.readTextFileSingleString(file, "UTF-8");
@@ -300,7 +302,7 @@ public void playSound(Sounds sound)
 	{
 	    throw new org.luwrain.core.extensions.DynamicExtensionException(e);
 	}
-	return loadTextExtension(text);
+	return loadTextExtension(text, baseDir);
     }
 
 

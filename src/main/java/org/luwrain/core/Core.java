@@ -224,9 +224,20 @@ final class Core extends EventDispatching
 		    continue;
 		if (!f.getName().toLowerCase().endsWith(".ext"))
 		    continue;
+		final File dataDir = new File(pack, "data");
+		if (dataDir.exists() && !dataDir.isDirectory())
+		{
+		    Log.error(LOG_COMPONENT, dataDir.getAbsolutePath() + " exists, skipping the pack");
+		    continue;
+		}
+		if (!dataDir.exists() && !dataDir.mkdir())
+		{
+		    Log.error(LOG_COMPONENT, "unable to create " + dataDir.getAbsolutePath() + ", skipping the pack");
+		    continue;
+		}
 		try {
 		    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
-		    final String id = loadTextExtensionFromFile(f);
+		    final String id = loadTextExtensionFromFile(f, dataDir);
 		}
 		catch(org.luwrain.core.extensions.DynamicExtensionException e)
 		{

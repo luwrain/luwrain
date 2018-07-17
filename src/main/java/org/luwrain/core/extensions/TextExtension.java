@@ -25,23 +25,22 @@ import org.luwrain.core.*;
 public final class TextExtension implements DynamicExtension
 {
     static private final String LOG_COMPONENT = Manager.LOG_COMPONENT;
-    
     static private final String PREFIX_COMMAND = "command.";
-    
-    final String name;
+
+    private File baseDir;
     private Luwrain luwrain = null;
 
     private final Map<String, CmdEntry> commands = new HashMap();
 
-    public TextExtension()
+    public TextExtension(File baseDir)
     {
-	this.name = "";
+	NullCheck.notNull(baseDir, "baseDir");
+	this.baseDir = baseDir;
     }
 
-@Override public String init(Luwrain luwrain)
+    @Override public String init(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	this.luwrain = luwrain;
+	//Never called for this type of extension
 	return null;
     }
 
@@ -70,31 +69,31 @@ public final class TextExtension implements DynamicExtension
 	}
     }
 
-	private void addCommand(String key, String value)
+    private void addCommand(String key, String value)
+    {
+	NullCheck.notNull(key, "key");
+	NullCheck.notNull(value, "value");
+	final String SUFFIX_FILE = ".file";
+	if (key.endsWith(SUFFIX_FILE))
 	{
-	    NullCheck.notNull(key, "key");
-	    NullCheck.notNull(value, "value");
-	    final String SUFFIX_FILE = ".file";
-	    if (key.endsWith(SUFFIX_FILE))
+	    final String cmdName = key.substring(0, key.length() - SUFFIX_FILE.length());
+	    if (cmdName.trim().isEmpty())
 	    {
-		final String cmdName = key.substring(0, key.length() - SUFFIX_FILE.length());
-		if (cmdName.trim().isEmpty())
-		{
-		    Log.error(LOG_COMPONENT, "a command without a name in the text extension \'" + name + "\'");
-		    return;
-		}
-		if (value.isEmpty())
-		{
-		    Log.error(LOG_COMPONENT, "no argument for the file command \'" + cmdName + "\' in the text extension \'" + name + "\'");
-		    return;
-		}
-		this.commands.put(cmdName, new CmdEntry(cmdName, CmdEntry.Type.FILE, value));
+		Log.error(LOG_COMPONENT, "a command without a name in text text extension");
 		return;
 	    }
-	    Log.error(LOG_COMPONENT, "unrecognized entry \'" + key + "\' in the text extension \'" + name + "\'");
+	    if (value.isEmpty())
+	    {
+		Log.error(LOG_COMPONENT, "no argument for the file command \'" + cmdName + "\' in text extension");
+		return;
+	    }
+	    this.commands.put(cmdName, new CmdEntry(cmdName, CmdEntry.Type.FILE, value));
+	    return;
 	}
-	
-            @Override public void close()
+	Log.error(LOG_COMPONENT, "unrecognized entry \'" + key + "\' in text extension");
+    }
+
+    @Override public void close()
     {
     }
 
@@ -108,7 +107,27 @@ public final class TextExtension implements DynamicExtension
     @Override public Command[] getCommands(Luwrain luwrain)
     {
 	final List<Command> res = new LinkedList();
-	//FIXME:
+	for(Map.Entry<String, CmdEntry> e: commands.entrySet())
+	{
+	    final CmdEntry entry = e.getValue();
+	    final Command cmd = new Command(){
+		    @Override public String getName()
+		    {
+			return entry.name;
+		    }
+		    @Override public void onCommand(Luwrain luwrain)
+		    {
+			NullCheck.notNull(luwrain, "luwrain");
+			switch(entry.type)
+			{
+			case  FILE:
+			    luwrain.openFile(new File(baseDir, entry.arg).getAbsolutePath());
+			    break;
+			}
+		    }
+		};
+	    res.add(cmd);
+	}
 	return res.toArray(new Command[res.size()]);
     }
 
@@ -136,7 +155,7 @@ public final class TextExtension implements DynamicExtension
 	enum Type {
 	    FILE,
 	};
-	
+
 	final String name;
 	final Type type;
 	final String arg;
