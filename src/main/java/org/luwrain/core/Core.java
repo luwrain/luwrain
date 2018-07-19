@@ -142,9 +142,9 @@ final class Core extends EventDispatching
 	desktop.setConversations(conversations);
 	apps.setDefaultApp(desktop);
 	extensions.load((ext)->interfaces.requestNew(ext), cmdLine);
+				initObjects();
 	initDynamicExtensions();
 	initI18n();
-			initObjects();
 	objRegistry.add(null, new StartingModeProperty());
 	if (!speech.init(objRegistry.getSpeechFactories()))
 	    Log.warning(LOG_COMPONENT, "unable to initialize speech core, very likely LUWRAIN will be silent");
