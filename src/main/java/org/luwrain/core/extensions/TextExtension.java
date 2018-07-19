@@ -76,6 +76,7 @@ public final class TextExtension implements DynamicExtension
 	NullCheck.notNull(value, "value");
 	final String SUFFIX_FILE = ".file";
 	final String SUFFIX_RADIO = ".radio";
+	final String SUFFIX_READER = ".reader";
 	if (key.matches(".*\\.title\\..."))
 	{
 	    final String cmdName = key.substring(0, key.length() - 9);
@@ -96,26 +97,28 @@ public final class TextExtension implements DynamicExtension
 	    return;
 	}
 	if (key.endsWith(SUFFIX_FILE) ||
-	    key.endsWith(SUFFIX_RADIO))
+	    key.endsWith(SUFFIX_RADIO) ||
+	    key.endsWith(SUFFIX_READER))
 	{
 	    final CmdEntry.Type type;
+	    final String suffix;
 	    if (key.endsWith(SUFFIX_FILE))
-		type = CmdEntry.Type.FILE; else
-		if (key.endsWith(SUFFIX_RADIO))
-		    type = CmdEntry.Type.RADIO; else
-		    return;//never happens
-	    final String cmdName;
-	    switch(type)
 	    {
-	    case FILE:
-		cmdName = key.substring(0, key.length() - SUFFIX_FILE.length());
-		break;
-	    case RADIO:
-		cmdName = key.substring(0, key.length() - SUFFIX_RADIO.length());
-		break;
-	    default:
-		return;//never happens
-	    }
+		type = CmdEntry.Type.FILE;
+		suffix = SUFFIX_FILE;
+	    }else
+		if (key.endsWith(SUFFIX_RADIO))
+		{
+		    type = CmdEntry.Type.RADIO;
+		    suffix = SUFFIX_RADIO;
+		} else
+		    		if (key.endsWith(SUFFIX_READER))
+		{
+		    type = CmdEntry.Type.READER;
+		    suffix = SUFFIX_READER;
+		} else
+				    		    return;//never happens
+	    final String cmdName = key.substring(0, key.length() - suffix.length());
 	    if (cmdName.trim().isEmpty())
 	    {
 		Log.error(LOG_COMPONENT, "a command without a name in text extension");
@@ -170,6 +173,9 @@ public final class TextExtension implements DynamicExtension
 			    luwrain.playSound(Sounds.PARAGRAPH);//FIXME:
 			    luwrain.getPlayer().play(new org.luwrain.player.Playlist(entry.arg), 0, 0, EnumSet.of(org.luwrain.player.Player.Flags.STREAMING));
 			    break;
+			case READER:
+			    luwrain.launchApp("reader", new String[]{entry.arg});
+			    break;
 			}
 		    }
 		};
@@ -210,6 +216,7 @@ public final class TextExtension implements DynamicExtension
 	enum Type {
 	    FILE,
 	    RADIO,
+	    READER,
 	};
 	final String name;
 	final Type type;
