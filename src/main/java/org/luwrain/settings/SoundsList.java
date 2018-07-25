@@ -24,50 +24,72 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SoundsList extends ListArea implements SectionArea
+final class SoundsList extends ListArea implements SectionArea, ListClickHandler
 {
-static private class Item 
-{
-    Settings.SoundScheme scheme;
-    String title;
-    String path;
-
-    Item(Settings.SoundScheme scheme, String title,
-	 String path, Object saver)
-    {
-	this.scheme = scheme;
-	this.title = title;
-	this.path = path;
-    }
-
-    @Override public String toString()
-    {
-	return title + ": " + path;
-    }
-}
-
-    static private class ClickHandler implements ListClickHandler
-    {
-	private Luwrain luwrain;
-
-	ClickHandler(Luwrain luwrain)
-	{
-	    this.luwrain = luwrain;
-	}
-
-	@Override public boolean onListClick(ListArea area, int index, Object obj)
-	{
-	    return false;
-	}
+    static private final Sounds[] allSounds = new Sounds[]{
+	Sounds.ANNOUNCEMENT,
+	Sounds.ATTENTION,
+	Sounds.BLOCKED,
+	Sounds.CANCEL,
+	Sounds.CHAT_MESSAGE,
+	Sounds.CLICK,
+	Sounds.COMMANDER_LOCATION,
+	Sounds.COPIED,
+	Sounds.CUT,
+	Sounds.DELETED,
+	Sounds.DESKTOP_ITEM,
+	Sounds.DOC_SECTION,
+	Sounds.DONE,
+	Sounds.EMPTY_LINE,
+	Sounds.END_OF_LINE,
+	Sounds.ERROR,
+	Sounds.EVENT_NOT_PROCESSED,
+	Sounds.FATAL,
+	Sounds.GENERAL_TIME,
+	Sounds.INTRO_APP,
+	Sounds.INTRO_POPUP,
+	Sounds.INTRO_REGULAR,
+	Sounds.LIST_ITEM,
+	Sounds.MAIN_MENU,
+	Sounds.MAIN_MENU_ITEM,
+	Sounds.MESSAGE,
+	Sounds.NO_APPLICATIONS,
+	Sounds.NO_CONTENT,
+	Sounds.NO_ITEMS_ABOVE,
+	Sounds.NO_ITEMS_BELOW,
+	Sounds.NO_LINES_ABOVE,
+	Sounds.NO_LINES_BELOW,
+	Sounds.OK,
+	Sounds.PARAGRAPH,
+	Sounds.PASTE,
+	Sounds.PROTECTED_RESOURCE,
+	Sounds.REGION_POINT,
+	Sounds.SEARCH,
+	Sounds.SELECTED,
+	Sounds.SHUTDOWN,
+	Sounds.STARTUP,
+	Sounds.TABLE_CELL,
+	Sounds.TERM_BELL,
+	Sounds.UNSELECTED,
     };
 
-    private ControlPanel controlPanel;
+    private final ControlPanel controlPanel;
+    private final Luwrain luwrain;
 
     SoundsList(ControlPanel controlPanel, ListArea.Params params)
     {
 	super(params);
 	NullCheck.notNull(controlPanel, "controlPanel");
+	NullCheck.notNull(params, "params");
 	this.controlPanel = controlPanel;
+	this.luwrain = controlPanel.getCoreInterface();
+	setListClickHandler(this);
+    }
+
+    @Override public boolean onListClick(ListArea area, int index, Object obj)
+    {
+	luwrain.message("aaa");
+	return true;
     }
 
     @Override public boolean onInputEvent(KeyboardEvent event)
@@ -93,30 +115,10 @@ static private class Item
 
     static private Item[] loadItems(Registry registry)
     {
-	final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(registry);
-	final LinkedList<Item> items = new LinkedList<Item>();
-		items.add(new Item(scheme, "Событие не обработано", scheme.getEventNotProcessed(""), null));
-	items.add(new Item(scheme, "Общая ошибка", scheme.getError(""), null));
-	items.add(new Item(scheme, "Сообщение о завершённой работе", scheme.getDone(""), null));
-	items.add(new Item(scheme, "Сообщение о неприменимости действия", scheme.getBlocked(""), null));
-	items.add(new Item(scheme, "Сообщение об успешной операции", scheme.getOk(""), null));
-	items.add(new Item(scheme, "Нет запущенных приложений", scheme.getNoApplications(""), null));
-	items.add(new Item(scheme, "Загрузка системы", scheme.getStartup(""), null));
-	items.add(new Item(scheme, "Завершение работы", scheme.getShutdown(""), null));
-	items.add(new Item(scheme, "Открытие главного меню", scheme.getMainMenu(""), null));
-	items.add(new Item(scheme, "Пустая строка в главном меню", scheme.getMainMenuEmptyLine(""), null));
-	items.add(new Item(scheme, "Элементы выше отсутствуют", scheme.getNoItemsAbove(""), null));
-	items.add(new Item(scheme, "Элементы ниже отсутствуют", scheme.getNoItemsBelow(""), null));
-	items.add(new Item(scheme, "Строки выше отсутствуют", scheme.getNoLinesAbove(""), null));
-	items.add(new Item(scheme, "Строки ниже отсутствуют", scheme.getNoLinesBelow(""), null));
-	items.add(new Item(scheme, "Элемент списка", scheme.getListItem(""), null));
-	items.add(new Item(scheme, "Переход к новой области", scheme.getIntroRegular(""), null));
-	items.add(new Item(scheme, "Переход к всплывающей области", scheme.getIntroPopup(""), null));
-	items.add(new Item(scheme, "Переход к другому приложению", scheme.getIntroApp(""), null));
-	items.add(new Item(scheme, "Новая папка в обзоре файлов", scheme.getCommanderLocation(""), null));
-	items.add(new Item(scheme, "Время", scheme.getGeneralTime(""), null));
-	items.add(new Item(scheme, "Сигнал в терминале", scheme.getTermBell(""), null));
-	return items.toArray(new Item[items.size()]);
+	final List<Item> res = new LinkedList();
+	for(Sounds s: allSounds)
+	    res.add(new Item(s, s.toString(), new File("/tmp")));
+	return res.toArray(new Item[res.size()]);
     }
 
     static SoundsList create(ControlPanel controlPanel)
@@ -130,4 +132,25 @@ static private class Item
 	params.model = new ListUtils.FixedModel(loadItems(luwrain.getRegistry()));
 	return new SoundsList(controlPanel, params);
     }
+
+    static private final class Item 
+    {
+	final Sounds sound;
+	final String title;
+	final File file;
+	Item(Sounds sound, String title, File file)
+	{
+	    NullCheck.notNull(sound, "sound");
+	    NullCheck.notNull(title, "title");
+	    NullCheck.notNull(file, "file");
+	    this.sound = sound;
+	    this.title = title;
+	    this.file = file;
+	}
+	@Override public String toString()
+	{
+	    return title + ": " + file.getAbsolutePath();
+	}
+    }
+    
 }
