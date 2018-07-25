@@ -56,7 +56,7 @@ public class StandardFactory implements Factory
 	    uiGeneral, 
 	    hotKeys,
 	    mainMenu,
-	    soundSchemes,
+			    //soundSchemes,
 	    soundsList,
 	    fileTypes,
 	    StandardElements.HARDWARE,
@@ -129,7 +129,7 @@ public class StandardFactory implements Factory
 	if (el.equals(speechCurrent))
 	    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel));
 	if (el.equals(soundsList))
-	    return new SimpleSection(soundsList, "Звуки системных событий", (controlPanel)->SoundsList.create(controlPanel));
+	    return new SimpleSection(soundsList, luwrain.i18n().getStaticStr("CpSoundsList"), (controlPanel)->SoundsList.create(controlPanel));
 	if (el.equals(soundSchemes))
 	    return new SimpleSection(soundSchemes, "Звуковые схемы", (controlPanel)->SoundSchemes.create(controlPanel));
 	return null;

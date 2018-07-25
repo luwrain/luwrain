@@ -113,11 +113,21 @@ final class SoundsList extends ListArea implements SectionArea, ListClickHandler
 	return true;
     }
 
-    static private Item[] loadItems(Registry registry)
+    static private Item[] loadItems(Luwrain luwrain)
     {
+	NullCheck.notNull(luwrain, "luwrain");
+	final Registry registry = luwrain.getRegistry();
 	final List<Item> res = new LinkedList();
+	final File soundsDir = luwrain.getFileProperty("luwrain.dir.sounds");
 	for(Sounds s: allSounds)
-	    res.add(new Item(s, s.toString(), new File("/tmp")));
+	{
+	    final String path = getRegistryPath(s);
+	    final String file;
+	    if (registry.getTypeOf(path) == Registry.STRING)
+		file = registry.getString(path); else
+		file = "";
+	    res.add(new Item(s, luwrain.i18n().getStaticStr(getI18nName(s)), new File(soundsDir, file)));
+	}
 	return res.toArray(new Item[res.size()]);
     }
 
@@ -128,10 +138,40 @@ final class SoundsList extends ListArea implements SectionArea, ListClickHandler
 	final ListArea.Params params = new ListArea.Params();
 	params.context = new DefaultControlEnvironment(luwrain);
 	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.LIST_ITEM);
-	params.name = "Звуки системных событий";
-	params.model = new ListUtils.FixedModel(loadItems(luwrain.getRegistry()));
+	params.name = luwrain.i18n().getStaticStr("CpSoundsList");
+	params.model = new ListUtils.FixedModel(loadItems(luwrain));
 	return new SoundsList(controlPanel, params);
     }
+
+    static private String getI18nName(Sounds sound)
+    {
+	NullCheck.notNull(sound, "sound");
+	final StringBuilder b = new StringBuilder();
+	final String str = sound.toString();
+	boolean wasLetter = false;
+	for(int i = 0;i < str.length();i++)
+	{
+	    final char c = str.charAt(i);
+	    if (Character.isLetter(c) || Character.isDigit(c))
+	    {
+		b.append("" + (wasLetter?Character.toLowerCase(c):c));
+		wasLetter = true;
+		continue;
+	    }
+	    wasLetter = false;
+	}
+	return "CpSoundsList" + (new String(b));
+    }
+
+    static private String getRegistryPath(Sounds sound)
+    {
+	NullCheck.notNull(sound, "sound");
+	final String str = sound.toString();
+	return Registry.join(Settings.CURRENT_SOUND_SCHEME_PATH, str.toLowerCase().replaceAll("_", "-"));
+	
+    }
+
+    
 
     static private final class Item 
     {
@@ -152,5 +192,4 @@ final class SoundsList extends ListArea implements SectionArea, ListClickHandler
 	    return title + ": " + file.getAbsolutePath();
 	}
     }
-    
 }
