@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -48,6 +48,7 @@ public class StandardFactory implements Factory
     @Override public Element[] getElements()
     {
 	return new Element[]{
+	    	    	    version,
 	    StandardElements.ROOT,
 	    personalInfo,
 	    StandardElements.APPLICATIONS,
@@ -70,7 +71,6 @@ public class StandardFactory implements Factory
 	    dateTime,
 	    StandardElements.EXTENSIONS,
 	    StandardElements.WORKERS,
-	    version,
 	    speechCurrent,
 	};
     }
@@ -125,7 +125,7 @@ public class StandardFactory implements Factory
 	if (el.equals(hardwareCpuMem))
 	    return new SimpleSection(hardwareCpuMem, "Процессор и память", (controlPanel)->HardwareCpuMem.create(controlPanel));
 	if (el.equals(version))
-	    return new SimpleSection(version, "Версия системы", (controlPanel)->Version.create(controlPanel));
+	    return new SimpleSection(version, luwrain.i18n().getStaticStr("CpVersion"), (controlPanel)->Version.create(controlPanel));
 	if (el.equals(speechCurrent))
 	    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel));
 	if (el.equals(soundsList))

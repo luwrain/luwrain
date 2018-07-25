@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -21,14 +21,14 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class Version extends SimpleArea implements SectionArea
+final class Version extends SimpleArea implements SectionArea
 {
     private final ControlPanel controlPanel;
     private final Luwrain luwrain;
 
     Version(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), "Версия системы");
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), controlPanel.getCoreInterface().i18n().getStaticStr("CpVersion"));
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();
@@ -37,16 +37,18 @@ class Version extends SimpleArea implements SectionArea
 
     private void fillData()
     {
+	Runtime.getRuntime().gc();
+	final long memUsedBytes = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+	final String luwrainVersion = luwrain.i18n().getStaticStr("CpVersionLuwrain") + " " + luwrain.getProperty("luwrain.version") + " (" + System.getProperty("sun.arch.data.model") + " " + luwrain.i18n().getStaticStr("CpVersionLuwrainBits") + ")";
+	final String osVersion = luwrain.i18n().getStaticStr("CpVersionOs") + " " + System.getProperty("os.name") + " " + System.getProperty("os.version");
+	final String javaVersion = luwrain.i18n().getStaticStr("CpVersionJava") + " " + System.getProperty("java.version") + " (" + System.getProperty("java.vm.vendor") + ")";
+	final String memUsed = luwrain.i18n().getStaticStr("CpVersionMemUsed") + " " + (memUsedBytes / 1048576) + "M";
 	beginLinesTrans();
-	addLine("Версия LUWRAIN: " + luwrain.getProperty("luwrain.version"));
-	addLine("Операционная система: " + System.getProperty("os.name"));
-	addLine("Версия операционной системы: " + System.getProperty("os.version"));
-	addLine("Архитектура: " + System.getProperty("os.arch"));
-	addLine("Версия Java: " + System.getProperty("java.version"));
-	addLine("Поставщик виртуальной машины: " + System.getProperty("java.vm.vendor"));
-	addLine("Разрядность виртуальной машины: " + System.getProperty("sun.arch.data.model") + " бита");
-	addLine("Базовый каталог виртуальной машины: " + System.getProperty("java.home"));
 	addLine("");
+	addLine(luwrainVersion);
+	addLine(osVersion);
+	addLine(javaVersion);
+	addLine(memUsed);
 	endLinesTrans();
     }
 
