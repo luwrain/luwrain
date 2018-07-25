@@ -22,6 +22,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.popups.*;
 import org.luwrain.cpanel.*;
 
 final class SoundsList extends ListArea implements SectionArea, ListClickHandler
@@ -88,7 +89,21 @@ final class SoundsList extends ListArea implements SectionArea, ListClickHandler
 
     @Override public boolean onListClick(ListArea area, int index, Object obj)
     {
-	luwrain.message("aaa");
+	if (obj == null || !(obj instanceof Item))
+	    return false;
+	final Item item = (Item)obj;
+	final File file = Popups.path(luwrain, luwrain.i18n().getStaticStr("CpSoundsList"), luwrain.i18n().getStaticStr("CpSoundsListChangePopupPrefix"), item.file.getAbsoluteFile());//FIXME:change to Popups.file()
+	if (file == null || file.isDirectory())
+	    return true;
+	final String soundsDirPath = luwrain.getFileProperty("luwrain.dir.sounds").getAbsolutePath();
+	final String path = file.getAbsolutePath();
+	final String res;
+	if (soundsDirPath.length() + 1 < path.length() && path.startsWith(soundsDirPath))
+	    res = path.substring(soundsDirPath.length() + 1); else
+	    res = path;
+	luwrain.getRegistry().setString(getRegistryPath(item.sound), res);
+	item.file = file;
+	refresh();
 	return true;
     }
 
@@ -168,16 +183,13 @@ final class SoundsList extends ListArea implements SectionArea, ListClickHandler
 	NullCheck.notNull(sound, "sound");
 	final String str = sound.toString();
 	return Registry.join(Settings.CURRENT_SOUND_SCHEME_PATH, str.toLowerCase().replaceAll("_", "-"));
-	
     }
-
-    
 
     static private final class Item 
     {
 	final Sounds sound;
 	final String title;
-	final File file;
+	File file;
 	Item(Sounds sound, String title, File file)
 	{
 	    NullCheck.notNull(sound, "sound");

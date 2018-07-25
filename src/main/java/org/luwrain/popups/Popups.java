@@ -202,7 +202,7 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
 	return path(luwrain, name, prefix,
-		    startWith, startWith, 
+		    startWith,  luwrain.getFileProperty("luwrain.dir.userhome"),
 		    (fileToCheck, announce)->{return true;}, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
 

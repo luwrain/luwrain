@@ -21,7 +21,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
 
-public class StandardFactory implements Factory
+public final class StandardFactory implements Factory
 {
     static private final String ELEMENT_PREFIX = "org.luwrain.settings.StandardFactory:";
     static private final Element personalInfo = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "PersonalInfo");
