@@ -410,6 +410,24 @@ public class FormArea  extends NavigationArea
 	return true;
     }
 
+        public boolean activateMultilineEdit(String caption, String lines[], boolean enabled)
+    {
+	NullCheck.notNull(caption, "caption");
+	NullCheck.notNullItems(lines, "lines");
+	if (isMultilineEditActivated())
+	    return false;
+	this.multilineEditCaption = caption;
+	this.multilineEditLines = new MutableLinesImpl(lines);
+	this.multilineEditModel = wrapMultilineEditModel(new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint));
+	this.multilineEdit = new MultilineEdit(environment, multilineEditModel, regionPoint);
+	multilineEditEnabled = enabled;
+	updateControlsPos();
+	environment.onAreaNewContent(this);
+	environment.onAreaNewHotPoint(this);
+	return true;
+    }
+
+
     public boolean activateMultilineEdit(String caption, String lines)
     {
 	NullCheck.notNull(caption, "caption");
