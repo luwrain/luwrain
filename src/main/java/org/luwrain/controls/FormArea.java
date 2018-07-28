@@ -440,6 +440,11 @@ public class FormArea  extends NavigationArea
 	return multilineEditLines != null?multilineEditLines.getWholeText():"";
     }
 
+        public String[] getMultilineEditTextVec()
+    {
+	return multilineEditLines != null?multilineEditLines.getLines():new String[0];
+    }
+
     public boolean removeItemOnLine(int index)
     {
 	if (index < 0 || index >= items.size())
