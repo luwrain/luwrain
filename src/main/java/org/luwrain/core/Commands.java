@@ -414,6 +414,19 @@ class Commands
 		}
 	    },
 
+	    	    //calc
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "calc";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    NullCheck.notNull(luwrain, "luwrain");
+		    core.launchApp(new org.luwrain.app.calc.App());
+		}
+	    },
+
 	    //console
 	    new Command() {
 		@Override public String getName()
