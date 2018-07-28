@@ -24,6 +24,8 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 import org.luwrain.cpanel.*;
+import org.luwrain.player.*;
+import org.luwrain.util.*;
 
 final class SoundsList extends ListArea implements SectionArea, ListClickHandler
 {
@@ -107,11 +109,31 @@ final class SoundsList extends ListArea implements SectionArea, ListClickHandler
 	return true;
     }
 
+    private boolean playSound()
+    {
+	final Object obj = selected();
+	if (obj == null || !(obj instanceof Item))
+	    return false;
+	final Item item = (Item)obj;
+	if (item.file == null || !item.file.exists() || item.file.isDirectory())
+	    return false;
+	if (luwrain.getPlayer() == null)
+	    return false;
+	luwrain.getPlayer().play(new Playlist(Urls.toUrl(item.file).toString()), 0, 0, Player.DEFAULT_FLAGS);
+	return true;
+    }
+
     @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (controlPanel.onInputEvent(event))
 	    return true;
+	if (!event.isSpecial() && !event.isModified())
+	    switch(event.getChar())
+	    {
+	    case ' ':
+		return playSound();
+			    }
 	return super.onInputEvent(event);
     }
 

@@ -23,7 +23,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SpeechCurrent extends SimpleArea implements SectionArea
+final class SpeechCurrent extends SimpleArea implements SectionArea
 {
     private ControlPanel controlPanel;
 
