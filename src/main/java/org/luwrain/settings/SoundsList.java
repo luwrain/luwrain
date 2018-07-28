@@ -65,6 +65,7 @@ final class SoundsList extends ListArea implements SectionArea, ListClickHandler
 	Sounds.OK,
 	Sounds.PARAGRAPH,
 	Sounds.PASTE,
+	Sounds.PLAYING,
 	Sounds.PROTECTED_RESOURCE,
 	Sounds.REGION_POINT,
 	Sounds.SEARCH,

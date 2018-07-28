@@ -120,8 +120,6 @@ public final class StandardFactory implements Factory
 	    return new SimpleSection(personalInfo, luwrain.i18n().getStaticStr("CpPersonalInfoSection"), (controlPanel)->{return new PersonalInfo(controlPanel);});
 	if (el.equals(fileTypes))
 	    return new SimpleSection(fileTypes, "Типы файлов", (controlPanel)->FileTypes.create(controlPanel));
-	if (el.equals(mainMenu))
-	    return new SimpleSection(mainMenu, "Главное меню");
 	if (el.equals(hardwareCpuMem))
 	    return new SimpleSection(hardwareCpuMem, "Процессор и память", (controlPanel)->HardwareCpuMem.create(controlPanel));
 	if (el.equals(version))
@@ -130,6 +128,8 @@ public final class StandardFactory implements Factory
 	    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel));
 	if (el.equals(soundsList))
 	    return new SimpleSection(soundsList, luwrain.i18n().getStaticStr("CpSoundsList"), (controlPanel)->SoundsList.create(controlPanel));
+	if (el.equals(mainMenu))
+	    return new SimpleSection(mainMenu, luwrain.i18n().getStaticStr("CpMainMenu"), (controlPanel)->MainMenu.create(controlPanel));
 	if (el.equals(soundSchemes))
 	    return new SimpleSection(soundSchemes, "Звуковые схемы", (controlPanel)->SoundSchemes.create(controlPanel));
 	return null;
