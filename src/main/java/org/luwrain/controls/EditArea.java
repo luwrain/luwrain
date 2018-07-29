@@ -55,6 +55,7 @@ public class EditArea extends NavigationArea
 	this.areaName = params.name;
 	this.content = params.content != null?params.content:new MutableLinesImpl();
 	this.changeListener = params.changeListener;
+	/*
 	MultilineEditCorrector corrector = new MultilineEditModelTranslator(content, this);
 	if (params.correctorWrapperFactory != null)
 	{
@@ -69,6 +70,25 @@ public class EditArea extends NavigationArea
 			changeListener.onEditChange();
 		}
 	    }, regionPoint);
+	*/
+    edit = new MultilineEdit(context, createMultilineEditModel(params.correctorWrapperFactory), regionPoint);
+    }
+
+    protected MultilineEdit.Model createMultilineEditModel(CorrectorWrapperFactory correctorWrapperFactory)
+    {
+	MultilineEditCorrector corrector = new MultilineEditModelTranslator(content, this);
+	if (correctorWrapperFactory != null)
+	{
+	    final MultilineEditCorrector wrapped = correctorWrapperFactory.newCorrectorWrapper(corrector);
+	    if (wrapped != null)
+		corrector = wrapped;
+	}
+	return new MultilineEditModelChangeListener(corrector){
+	    @Override public void onMultilineEditChange()
+	    {
+		if (changeListener != null)
+		    changeListener.onEditChange();
+	    }};
     }
 
     @Override public int getLineCount()
