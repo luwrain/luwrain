@@ -72,7 +72,7 @@ public class MultilineEdit
 	 * @param lineIndex The 0-based index of the line to split
 	 * @return The fragment moved onto newly inserted line
 	 */
-	String splitLines(int pos, int lineIndex);
+	String splitLine(int pos, int lineIndex);
     }
 
     protected final ControlEnvironment environment;
@@ -208,8 +208,9 @@ return onEnter(event);
 
     protected boolean onEnter(KeyboardEvent event)
     {
-	final String line = model.splitLines(model.getHotPointX(), model.getHotPointY());
-	NullCheck.notNull(line, "line");
+	final String line = model.splitLine(model.getHotPointX(), model.getHotPointY());
+	if (line == null)
+	    return false;
 	if (line.isEmpty())
 	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
 	    environment.say(line);

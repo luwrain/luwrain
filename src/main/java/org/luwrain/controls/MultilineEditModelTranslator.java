@@ -250,7 +250,7 @@ public class MultilineEditModelTranslator implements MultilineEditCorrector
 	return true;
     }
 
-    @Override public String splitLines(int pos, int lineIndex)
+    @Override public String splitLine(int pos, int lineIndex)
     {
 	checkPos(pos, lineIndex);
 	beginEditTrans();

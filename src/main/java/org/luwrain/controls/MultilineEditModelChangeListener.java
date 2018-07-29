@@ -111,9 +111,11 @@ return res;
 	return true;
     }
 
-    @Override public String splitLines(int pos, int lineIndex)
+    @Override public String splitLine(int pos, int lineIndex)
     {
-final String res = model.splitLines(pos, lineIndex);
+final String res = model.splitLine(pos, lineIndex);
+if (res == null)
+    return null;
 onMultilineEditChange();
 return res;
     }

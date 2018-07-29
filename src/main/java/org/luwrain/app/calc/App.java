@@ -212,9 +212,9 @@ public class App implements Application
 	    {
 		return origModel.mergeLines(firstLineIndex);
 	    }
-	    @Override public String splitLines(int pos, int lineIndex)
+	    @Override public String splitLine(int pos, int lineIndex)
 	    {
-		return origModel.splitLines(pos, lineIndex);
+		return origModel.splitLine(pos, lineIndex);
 	    }
 	};
     }

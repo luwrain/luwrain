@@ -53,7 +53,7 @@ public class MultilineEditModelTranslatorTest extends Assert
 	final MutableLinesImpl lines = new MutableLinesImpl(new String[0]);
 	final TestingHotPointControl hotPoint = new TestingHotPointControl();
 	final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
-	assertTrue(translator.splitLines(0, 0).equals(""));
+	assertTrue(translator.splitLine(0, 0).equals(""));
 	assertTrue(lines.getLineCount() == 2);
 	assertTrue(translator.getLineCount() == 2);
 	assertTrue(translator.getLine(0).equals(""));
@@ -169,7 +169,7 @@ public class MultilineEditModelTranslatorTest extends Assert
 			hotPoint.x = x;
 			hotPoint.y = y;
 			final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
-			final String res = translator.splitLines(pos, lineIndex);
+			final String res = translator.splitLine(pos, lineIndex);
 			assertNotNull(res);
 			assertTrue(lines.getLineCount() == 4);
 			assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex].substring(0, pos)));
