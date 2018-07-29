@@ -57,33 +57,14 @@ public class App implements Application
 		{
 		     NullCheck.notNull(event, "event");
 		     if (!event.isSpecial())
-		     {
-			 if (getHotPointY() >= getLineCount() - 3 )
-			     return false;
 			 switch(event.getChar())
 			 {
 			     case '\'':
 			 case '\"':
 			 case ';':
+			 case '=':
 			     return false;
-			 default:
-			     return super.onInputEvent(event);
 			 }
-		     }
-		     switch(event.getSpecial())
-		     {
-		     case BACKSPACE:
-			 		     if (getHotPointY() >= getLineCount() - 3)
-			 return false;
-					     break;
-					     		     case DELETE:
-
-								 			 		     if (getHotPointY() >= getLineCount() - 3)
-			 return false;
-													     if (getHotPointY() == getLineCount() - 4 && getHotPointX() == getLine(getHotPointY()).length())
-														 return false;
-													     break;
-			 		     }
 		     return super.onInputEvent(event);
 		     }
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
@@ -93,16 +74,6 @@ public class App implements Application
 			return super.onSystemEvent(event);
 		    switch (event.getCode())
 		    {
-		    case CLIPBOARD_PASTE:
-						if (getHotPointY() >= getLineCount() - 3)
-			 return false;
-						return super.onSystemEvent(event);
-				    case CLEAR_REGION:
-		    case CLIPBOARD_CUT:
-			if (getHotPointY() >= getLineCount() - 3 ||
-			    regionPoint.getHotPointY() >= getLineCount() - 3)
-			 return false;
-																     return super.onSystemEvent(event);
 		    case CLEAR:
 			setLines(new String[]{"0", "", "# 0", ""});
 			setHotPoint(0, 0);
@@ -194,26 +165,77 @@ public class App implements Application
 	    }
 	    @Override public char deleteChar(int pos, int lineIndex)
 	    {
+		if (lineIndex >= getLineCount() - 3)
+		    return '\0';
 		return origModel.deleteChar(pos, lineIndex);
 	    }
 	    @Override public boolean deleteRegion(int fromX, int fromY, int toX, int toY)
 	    {
+		final int x;
+		final int y;
+		if (fromY < toY)
+		{
+		    y = toY;
+		    x = toX;
+		} else
+		    if (fromY > toY)
+		    {
+			y = fromY;
+			x = fromX;
+		    } else
+		    {
+			y = fromY;
+			x = Math.max(fromX, toX);
+		    }
+		final int count = getLineCount();
+		if (y >= count - 2)
+		    return false;
+		if (y == count - 3 && x > 0)
+		    return false;
+		//There may not be less than 4 lines
+		if (count - (Math.abs(toY - fromY)) < 4)
+		    return false;
 		return origModel.deleteRegion(fromX, fromY, toX, toY);
 	    }
 	    @Override public boolean insertRegion(int x, int y, String[] lines)
 	    {
+		NullCheck.notNullItems(lines, "lines");
+		if (y >= getLineCount() - 3)
+		    return false;
+		for(String s: lines)
+		{
+		    		    if (s.indexOf(";") >= 0)
+			return false;
+		    if (s.indexOf("=") >= 0)
+			return false;
+		    if (s.indexOf("\'") >= 0)
+			return false;
+		    if (s.indexOf("\"") >= 0)
+			return false;
+		}
 		return origModel.insertRegion(x, y, lines);
 	    }
 	    @Override public boolean insertChars(int pos, int lineIndex, String str)
 	    {
+		if (lineIndex >= getLineCount() - 3)
+		    return false;
 		return origModel.insertChars(pos, lineIndex, str);
 	    }
 	    @Override public boolean mergeLines(int firstLineIndex)
 	    {
+		final int count = getLineCount();
+		if (count <= 4)
+		    return false;
+		if (firstLineIndex >= count - 3)
+		    return false;
+		if (firstLineIndex == count - 4 && !getLine(firstLineIndex).isEmpty())
+		    return false;
 		return origModel.mergeLines(firstLineIndex);
 	    }
 	    @Override public String splitLine(int pos, int lineIndex)
 	    {
+		if (lineIndex >= getLineCount() - 3)
+		    return null;
 		return origModel.splitLine(pos, lineIndex);
 	    }
 	};
