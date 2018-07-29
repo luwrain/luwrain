@@ -58,7 +58,7 @@ public class MultilineEdit
 	boolean deleteRegion(int fromX, int fromY, int toX, int toY);
 	boolean insertRegion(int x, int y, String[] lines);
     //Adds empty line with pos=0 and line=0 if previously there were no lines at all
-	void insertChars(int pos, int lineIndex, String str);
+	boolean insertChars(int pos, int lineIndex, String str);
 	void mergeLines(int firstLineIndex);
 
 	/**
@@ -198,7 +198,8 @@ return onEnter(event);
 	final String tabSeq = model.getTabSeq();
 	if (tabSeq == null)
 	    return false;
-	model.insertChars(model.getHotPointX(), model.getHotPointY(), tabSeq);
+	if (!model.insertChars(model.getHotPointX(), model.getHotPointY(), tabSeq))
+	    return false;
 	environment.setEventResponse(DefaultEventResponse.hint(Hint.TAB));
 	    return true;
     }
@@ -218,7 +219,8 @@ return onEnter(event);
 	final char c = event.getChar();
 	final String line = model.getLine(model.getHotPointY());
 	NullCheck.notNull(line, "line");
-	model.insertChars(model.getHotPointX(), model.getHotPointY(), "" + c);
+	if (!model.insertChars(model.getHotPointX(), model.getHotPointY(), "" + c))
+	    return false;
 	if (Character.isSpace(c))
 	{
 	    final String newLine = model.getLine(model.getHotPointY());

@@ -55,23 +55,7 @@ public class EditArea extends NavigationArea
 	this.areaName = params.name;
 	this.content = params.content != null?params.content:new MutableLinesImpl();
 	this.changeListener = params.changeListener;
-	/*
-	MultilineEditCorrector corrector = new MultilineEditModelTranslator(content, this);
-	if (params.correctorWrapperFactory != null)
-	{
-	    final MultilineEditCorrector wrapped = params.correctorWrapperFactory.newCorrectorWrapper(corrector);
-	    if (wrapped != null)
-		corrector = wrapped;
-	}
-	edit = new MultilineEdit(context, new MultilineEditModelChangeListener(corrector){
-		@Override public void onMultilineEditChange()
-		{
-		    if (changeListener != null)
-			changeListener.onEditChange();
-		}
-	    }, regionPoint);
-	*/
-    edit = new MultilineEdit(context, createMultilineEditModel(params.correctorWrapperFactory), regionPoint);
+	edit = new MultilineEdit(context, createMultilineEditModel(params.correctorWrapperFactory), regionPoint);
     }
 
     protected MultilineEdit.Model createMultilineEditModel(CorrectorWrapperFactory correctorWrapperFactory)

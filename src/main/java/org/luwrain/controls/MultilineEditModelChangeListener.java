@@ -95,10 +95,12 @@ if (res)
 return res;
     }
 
-    @Override public void insertChars(int pos, int lineIndex, String str)
+    @Override public boolean insertChars(int pos, int lineIndex, String str)
     {
-	model.insertChars(pos, lineIndex, str);
+	if (!model.insertChars(pos, lineIndex, str))
+	    return false;
 	onMultilineEditChange();
+	return true;
     }
 
     @Override public void mergeLines(int firstLineIndex)

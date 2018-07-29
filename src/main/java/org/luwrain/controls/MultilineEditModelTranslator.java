@@ -205,7 +205,7 @@ public class MultilineEditModelTranslator implements MultilineEditCorrector
     }
 
     //??Adds empty line with pos=0 and line=0 if previously there were no lines at all
-    @Override public void insertChars(int pos, int lineIndex, String str)
+    @Override public boolean insertChars(int pos, int lineIndex, String str)
     {
 	NullCheck.notNull(str, "str");
 	checkPos(pos, lineIndex);
@@ -223,6 +223,7 @@ public class MultilineEditModelTranslator implements MultilineEditCorrector
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
 	    hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
 	endEditTrans(false);
+	return true;
     }
 
     @Override public void mergeLines(int firstLineIndex)

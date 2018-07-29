@@ -48,6 +48,11 @@ public class App implements Application
 	params.context = new DefaultControlEnvironment(luwrain);
 	params.name = strings.appName();
 	this.editArea = new EditArea(params){
+		@Override public MultilineEdit.Model createMultilineEditModel(CorrectorWrapperFactory correctorWrapperFactory)
+		{
+		    final MultilineEdit.Model model = super.createMultilineEditModel(correctorWrapperFactory);
+		    return createBlockingModel(model);
+		}
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		     NullCheck.notNull(event, "event");
@@ -162,5 +167,55 @@ public class App implements Application
     @Override public void closeApp()
     {
 	luwrain.closeApp();
+    }
+
+    static private MultilineEdit.Model createBlockingModel(MultilineEdit.Model origModel)
+    {
+	return new MultilineEdit.Model(){
+	    @Override public int getLineCount()
+	    {
+		return origModel.getLineCount();
+	    }
+	    @Override public String getLine(int index)
+	    {
+		return origModel.getLine(index);
+	    }
+	    @Override public int getHotPointX()
+	    {
+		return origModel.getHotPointX();
+	    }
+	    @Override public int getHotPointY()
+	    {
+		return origModel.getHotPointY();
+	    }
+	    @Override public String getTabSeq()
+	    {
+		return origModel.getTabSeq();
+	    }
+	    @Override public char deleteChar(int pos, int lineIndex)
+	    {
+		return origModel.deleteChar(pos, lineIndex);
+	    }
+	    @Override public boolean deleteRegion(int fromX, int fromY, int toX, int toY)
+	    {
+		return origModel.deleteRegion(fromX, fromY, toX, toY);
+	    }
+	    @Override public boolean insertRegion(int x, int y, String[] lines)
+	    {
+		return origModel.insertRegion(x, y, lines);
+	    }
+	    @Override public boolean insertChars(int pos, int lineIndex, String str)
+	    {
+		return origModel.insertChars(pos, lineIndex, str);
+	    }
+	    @Override public void mergeLines(int firstLineIndex)
+	    {
+		origModel.mergeLines(firstLineIndex);
+	    }
+	    @Override public String splitLines(int pos, int lineIndex)
+	    {
+		return origModel.splitLines(pos, lineIndex);
+	    }
+	};
     }
 }
