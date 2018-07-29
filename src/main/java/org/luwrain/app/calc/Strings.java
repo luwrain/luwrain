@@ -21,4 +21,5 @@ public interface Strings
     static final String NAME = "luwrain.calc";
 
     String appName();
+    String error();
 }

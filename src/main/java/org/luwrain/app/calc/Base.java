@@ -43,11 +43,20 @@ final class Base
 	this.engine = manager.getEngineByName("nashorn");
     }
 
-    Number calculate(String expr) throws Exception
+    Number calculate(String[] expr) throws Exception
     {
-	NullCheck.notNull(expr, "expr");
-	final String prescript = (readPrescript() + "\n");
-	final Object res = engine.eval(prescript + expr + ";");
+	NullCheck.notNullItems(expr, "expr");
+	final StringBuilder text = new StringBuilder();
+	for(String s: expr)
+	{
+	    final String str = s.replaceAll("//", "#");
+	    final int pos = str.indexOf("#");
+	    if (pos < 0)
+		text.append(str + " "); else
+		text.append(str.substring(0, pos) + " ");
+	}
+	final String prescript = readPrescript();
+	final Object res = engine.eval(prescript + new String(text) + ";");
 	if (res != null && res instanceof Number)
 	    return (Number)res;
 	return null;

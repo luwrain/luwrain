@@ -47,6 +47,7 @@ public class App implements Application
 	final EditArea.Params params = new EditArea.Params();
 	params.context = new DefaultControlEnvironment(luwrain);
 	params.name = strings.appName();
+	params.changeListener = ()->hotUpdate();
 	this.editArea = new EditArea(params){
 		@Override public MultilineEdit.Model createMultilineEditModel(CorrectorWrapperFactory correctorWrapperFactory)
 		{
@@ -79,16 +80,11 @@ public class App implements Application
 			setHotPoint(0, 0);
 			return true;
 		    case OK:
-			{
-			    final StringBuilder b = new StringBuilder();
-			    final String[] lines = getLines();
-			    for(int i = 0;i < lines.length - 3;i++)
-				b.append(lines[i] + " ");
 			    try {
-				final Number res = base.calculate(new String(b));
-				if (res == null)
-				    return false;
+				final Number res = base.calculate(getLinesToEval());
+				if (res != null)
 				luwrain.message(luwrain.getSpokenText( res.toString(), Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK);
+				luwrain.message("0", Luwrain.MessageType.OK);
 							    return true;
 			    }
 			    catch(Exception e)
@@ -96,7 +92,6 @@ public class App implements Application
 				luwrain.playSound(Sounds.ERROR);
 				return true;
 			    }
-			}
 		    case CLOSE:
 			closeApp();
 			return true;
@@ -114,8 +109,6 @@ public class App implements Application
 	    }
 		luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpokenText(line, Luwrain.SpokenTextType.PROGRAMMING)));
 	}
-
-		
 	    };
 	editArea.getContent().setLines(new String[]{
 		"0",
@@ -123,6 +116,35 @@ public class App implements Application
 		"# 0",
 		"",
 	    });
+    }
+
+    private void hotUpdate()
+    {
+	try {
+	    final Number res = base.calculate(getLinesToEval());
+	    if (res != null)
+		putResLine("# " + res.toString()); else
+		putResLine("# 0");
+	}
+	catch(Exception e)
+	{
+	    putResLine("# " + strings.error());
+	}
+    }
+
+    private void putResLine(String text)
+    {
+	NullCheck.notNull(text, "text");
+	editArea.setLine(editArea.getLineCount() - 2, text);
+    }
+
+    private String[] getLinesToEval()
+    {
+	final String[] lines = editArea.getLines();
+	final List<String> res = new LinkedList();
+	for(int i = 0;i < lines.length - 3;i++)
+	    res.add(lines[i]);
+	return res.toArray(new String[res.size()]);
     }
 
         @Override public String getAppName()
