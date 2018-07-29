@@ -27,6 +27,7 @@ public class App implements Application
 {
     private Luwrain luwrain = null;
     private Strings strings = null;
+    private Base base = null;
     private EditArea editArea = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -36,6 +37,7 @@ public class App implements Application
 	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
 	this.strings = (Strings)o;
 	this.luwrain = luwrain;
+	this.base = new Base(luwrain, strings);
 	createArea();
 	return new InitResult();
     }
@@ -48,8 +50,28 @@ public class App implements Application
 	this.editArea = new EditArea(params){
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
+		    NullCheck.notNull(event, "event");
+		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+			return super.onSystemEvent(event);
 		    switch (event.getCode())
 		    {
+		    case OK:
+			{
+			    final StringBuilder b = new StringBuilder();
+			    for(String s: getLines())
+				b.append(s + " ");
+			    try {
+				base.calculate(new String(b));
+							    return true;
+			    }
+			    catch(Exception e)
+			    {
+				luwrain.message(e.getClass().getName() + ":" + e.getMessage());
+				return true;
+			    }
+
+
+			}
 		    case CLOSE:
 			closeApp();
 			return true;
