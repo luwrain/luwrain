@@ -168,7 +168,12 @@ return onEnter(event);
 		return false;
 	    environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	} else
-	    environment.sayLetter(model.deleteChar(model.getHotPointX() - 1, model.getHotPointY()));
+	{
+	    final char res = model.deleteChar(model.getHotPointX() - 1, model.getHotPointY());
+	    if (res == '\0')
+		return false;
+	    environment.sayLetter(res);
+	}
 	return true;
     }
 
@@ -181,7 +186,10 @@ return onEnter(event);
 	    return false;
 	if (model.getHotPointX() < line.length())
 	{
-	    environment.sayLetter(model.deleteChar(model.getHotPointX(), model.getHotPointY()));
+	    final char res = model.deleteChar(model.getHotPointX(), model.getHotPointY());
+	    if (res == '\0')
+		return false;
+	    environment.sayLetter(res);
 	    return true;
 	}
 	if (model.getHotPointY() + 1 >= model.getLineCount())
