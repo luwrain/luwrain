@@ -208,9 +208,9 @@ public class App implements Application
 	    {
 		return origModel.insertChars(pos, lineIndex, str);
 	    }
-	    @Override public void mergeLines(int firstLineIndex)
+	    @Override public boolean mergeLines(int firstLineIndex)
 	    {
-		origModel.mergeLines(firstLineIndex);
+		return origModel.mergeLines(firstLineIndex);
 	    }
 	    @Override public String splitLines(int pos, int lineIndex)
 	    {

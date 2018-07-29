@@ -59,7 +59,7 @@ public class MultilineEdit
 	boolean insertRegion(int x, int y, String[] lines);
     //Adds empty line with pos=0 and line=0 if previously there were no lines at all
 	boolean insertChars(int pos, int lineIndex, String str);
-	void mergeLines(int firstLineIndex);
+	boolean mergeLines(int firstLineIndex);
 
 	/**
 	 * Splits the specified line at the specified position. This method
@@ -164,7 +164,8 @@ return onEnter(event);
 	}
 	if (model.getHotPointX() <= 0)
 	{
-	    model.mergeLines(model.getHotPointY() - 1);
+	    if (!model.mergeLines(model.getHotPointY() - 1))
+		return false;
 	    environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	} else
 	    environment.sayLetter(model.deleteChar(model.getHotPointX() - 1, model.getHotPointY()));
@@ -188,7 +189,8 @@ return onEnter(event);
 	    environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_TEXT));
 	    return true;
 	}
-	model.mergeLines(model.getHotPointY());
+	if (!model.mergeLines(model.getHotPointY()))
+	    return false;
 	environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); 
 	return true;
     }

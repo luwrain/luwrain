@@ -103,10 +103,12 @@ return res;
 	return true;
     }
 
-    @Override public void mergeLines(int firstLineIndex)
+    @Override public boolean mergeLines(int firstLineIndex)
     {
-	model.mergeLines(firstLineIndex);
+	if (!model.mergeLines(firstLineIndex))
+	    return false;
 	onMultilineEditChange();
+	return true;
     }
 
     @Override public String splitLines(int pos, int lineIndex)

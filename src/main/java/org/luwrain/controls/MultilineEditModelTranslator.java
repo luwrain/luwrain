@@ -226,7 +226,7 @@ public class MultilineEditModelTranslator implements MultilineEditCorrector
 	return true;
     }
 
-    @Override public void mergeLines(int firstLineIndex)
+    @Override public boolean mergeLines(int firstLineIndex)
     {
 	if (firstLineIndex < 0)
 	    throw new IllegalArgumentException("firstLineIndex (" + firstLineIndex + ") may not be negative");
@@ -247,6 +247,7 @@ public class MultilineEditModelTranslator implements MultilineEditCorrector
 	    if (hotPoint.getHotPointY() > firstLineIndex + 1)
 		hotPoint.setHotPointY(hotPoint.getHotPointY() - 1);
 	endEditTrans(true);
+	return true;
     }
 
     @Override public String splitLines(int pos, int lineIndex)
