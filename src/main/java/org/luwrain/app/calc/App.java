@@ -48,6 +48,39 @@ public class App implements Application
 	params.context = new DefaultControlEnvironment(luwrain);
 	params.name = strings.appName();
 	this.editArea = new EditArea(params){
+		@Override public boolean onInputEvent(KeyboardEvent event)
+		{
+		     NullCheck.notNull(event, "event");
+		     if (!event.isSpecial())
+		     {
+			 if (getHotPointY() >= getLineCount() - 3 )
+			     return false;
+			 switch(event.getChar())
+			 {
+			     case '\'':
+			 case '\"':
+			 case ';':
+			     return false;
+			 default:
+			     return super.onInputEvent(event);
+			 }
+		     }
+		     switch(event.getSpecial())
+		     {
+		     case BACKSPACE:
+			 		     if (getHotPointY() >= getLineCount() - 3)
+			 return false;
+					     break;
+					     		     case DELETE:
+
+								 			 		     if (getHotPointY() >= getLineCount() - 3)
+			 return false;
+													     if (getHotPointY() == getLineCount() - 4 && getHotPointX() == getLine(getHotPointY()).length())
+														 return false;
+													     break;
+			 		     }
+		     return super.onInputEvent(event);
+		     }
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -55,13 +88,31 @@ public class App implements Application
 			return super.onSystemEvent(event);
 		    switch (event.getCode())
 		    {
+		    case CLIPBOARD_PASTE:
+						if (getHotPointY() >= getLineCount() - 3)
+			 return false;
+						return super.onSystemEvent(event);
+				    case CLEAR_REGION:
+		    case CLIPBOARD_CUT:
+			if (getHotPointY() >= getLineCount() - 3 ||
+			    regionPoint.getHotPointY() >= getLineCount() - 3)
+			 return false;
+																     return super.onSystemEvent(event);
+		    case CLEAR:
+			setLines(new String[]{"0", "", "# 0", ""});
+			setHotPoint(0, 0);
+			return true;
 		    case OK:
 			{
 			    final StringBuilder b = new StringBuilder();
-			    for(String s: getLines())
-				b.append(s + " ");
+			    final String[] lines = getLines();
+			    for(int i = 0;i < lines.length - 3;i++)
+				b.append(lines[i] + " ");
 			    try {
-				base.calculate(new String(b));
+				final Number res = base.calculate(new String(b));
+				if (res == null)
+				    return false;
+				luwrain.message(luwrain.getSpokenText( res.toString(), Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK);
 							    return true;
 			    }
 			    catch(Exception e)
@@ -69,16 +120,33 @@ public class App implements Application
 				luwrain.message(e.getClass().getName() + ":" + e.getMessage());
 				return true;
 			    }
-
-
 			}
 		    case CLOSE:
 			closeApp();
 			return true;
+		    default:
+			return super.onSystemEvent(event);
 		    }
-		    return false;
 		}
+		@Override public void announceLine(int index, String line)
+	{
+	    NullCheck.notNull(line, "line");
+	    if (line.trim().isEmpty())
+	    {
+		luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+		return;
+	    }
+		luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpokenText(line, Luwrain.SpokenTextType.PROGRAMMING)));
+	}
+
+		
 	    };
+	editArea.getContent().setLines(new String[]{
+		"0",
+		"",
+		"# 0",
+		"",
+	    });
     }
 
         @Override public String getAppName()
