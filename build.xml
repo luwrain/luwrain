@@ -34,6 +34,9 @@
       <fileset dir="./build/main">
         <include name="**/*.class"/>
       </fileset>
+            <fileset dir="./src/main/resources">
+        <include name="**/*"/>
+      </fileset>
     </jar>
   </target>
   <target name="compile-tests" depends="jar">

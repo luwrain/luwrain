@@ -17,6 +17,8 @@
 package org.luwrain.app.calc;
 
 import java.util.*;
+import java.io.*;
+import java.net.*;
 import javax.script.*;
 
 import org.luwrain.core.*;
@@ -25,6 +27,8 @@ import org.luwrain.controls.*;
 
 final class Base
 {
+    static private final String RESOURCE_PATH = "org/luwrain/app/calc/prescript.js";
+    
     private final Luwrain luwrain;
     private final Strings strings;
     final ScriptEngine engine;
@@ -42,9 +46,38 @@ final class Base
     Number calculate(String expr) throws Exception
     {
 	NullCheck.notNull(expr, "expr");
-	final Object res = engine.eval("" + expr + ";");
+	final String prescript = (readPrescript() + "\n");
+	final Object res = engine.eval(prescript + expr + ";");
 	if (res != null && res instanceof Number)
 	    return (Number)res;
 	return null;
+    }
+
+    private String readPrescript()
+    {
+	final StringBuilder b = new StringBuilder();
+
+		final URL url = ClassLoader.getSystemResource(RESOURCE_PATH);
+		try {
+		    		final InputStream is = url.openStream();
+		    try {
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+			String line = reader.readLine();
+			while (line != null)
+			{
+			    b.append(line + "\n");
+			    line = reader.readLine();
+			}
+			return new String(b);
+		    }
+		    finally {
+			is.close();
+		    }
+		}
+		catch(IOException e)
+		{
+		    luwrain.crash(e);
+		    return "";
+		}
     }
 }

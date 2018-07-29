@@ -93,7 +93,7 @@ public class App implements Application
 			    }
 			    catch(Exception e)
 			    {
-				luwrain.message(e.getClass().getName() + ":" + e.getMessage());
+				luwrain.playSound(Sounds.ERROR);
 				return true;
 			    }
 			}
