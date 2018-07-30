@@ -65,6 +65,13 @@ public class App implements Application
 			 case ';':
 			 case '=':
 			     return false;
+			 default:
+			     if (getContent().getLineCount() == 4 &&
+				 getContent().getLine(0).equals("0") &&
+				 getHotPointX() == 0 &&
+				 getHotPointY() == 0)
+				 getContent().setLine(0, "");
+			     		     return super.onInputEvent(event);
 			 }
 		     return super.onInputEvent(event);
 		     }
@@ -83,7 +90,7 @@ public class App implements Application
 			    try {
 				final Number res = base.calculate(getLinesToEval());
 				if (res != null)
-				luwrain.message(luwrain.getSpokenText( res.toString(), Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK);
+				    luwrain.message(luwrain.getSpokenText(formatNum(res), Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK); else
 				luwrain.message("0", Luwrain.MessageType.OK);
 							    return true;
 			    }
@@ -123,7 +130,7 @@ public class App implements Application
 	try {
 	    final Number res = base.calculate(getLinesToEval());
 	    if (res != null)
-		putResLine("# " + res.toString()); else
+		putResLine("# " + formatNum(res)); else
 		putResLine("# 0");
 	}
 	catch(Exception e)
@@ -145,6 +152,13 @@ public class App implements Application
 	for(int i = 0;i < lines.length - 3;i++)
 	    res.add(lines[i]);
 	return res.toArray(new String[res.size()]);
+    }
+
+    private String formatNum(Number num)
+    {
+	if (num instanceof Integer || num instanceof Long)
+	    return "" + num.intValue();
+	return String.format("%.5f", num.floatValue());
     }
 
         @Override public String getAppName()

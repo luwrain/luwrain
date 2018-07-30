@@ -22,3 +22,4 @@ function max(x, y) {return java.lang.Math.max(x, y);}
 function min(x, y) {return java.lang.Math.min(x, y);}
 function pow(x, y) {return java.lang.Math.pow(x, y);}
 
+var pi = toRadians(180);
