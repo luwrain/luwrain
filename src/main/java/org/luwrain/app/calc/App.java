@@ -63,8 +63,9 @@ public class App implements Application
 			     case '\'':
 			 case '\"':
 			 case ';':
-			 case '=':
 			     return false;
+			 case '=':
+			     return onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.OK));
 			 default:
 			     if (getContent().getLineCount() == 4 &&
 				 getContent().getLine(0).equals("0") &&
