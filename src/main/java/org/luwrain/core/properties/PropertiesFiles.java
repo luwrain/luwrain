@@ -36,12 +36,12 @@ public final class PropertiesFiles implements PropertiesProvider
 	final File[] systemPropertiesFiles = systemProperties.listFiles();
 	if (systemPropertiesFiles != null)
 	    for (File f: systemPropertiesFiles)
-		if (!f.isDirectory())
+		if (f != null && !f.isDirectory())
 		    readProps(f);
 	final File[] userPropertiesFiles = userProperties.listFiles();
 	if (userPropertiesFiles != null)
 	    for(File f: userPropertiesFiles)
-		if (!f.isDirectory())
+		if (f != null && !f.isDirectory())
 		    readProps(f);
     }
 
