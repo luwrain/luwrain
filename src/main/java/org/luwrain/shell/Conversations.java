@@ -50,10 +50,10 @@ public class Conversations
 		    NullCheck.notNull(query, "query");
 		    switch(query.getQueryCode())
 		    {
-		    case AreaQuery.OBJECT_UNIREF:
+		    case AreaQuery.UNIREF_AREA:
 			if (text.trim().isEmpty())
 			    return false;
-			((ObjectUniRefQuery)query).answer("command:" + text().trim());
+			((UniRefAreaQuery)query).answer("command:" + text().trim());
 			return true;
 		    default:
 			return super.onAreaQuery(query);

@@ -22,7 +22,7 @@ import java.nio.file.*;
 
 import org.luwrain.core.*;
 
-public class BackgroundSoundQuery extends AreaQuery
+public final class BackgroundSoundQuery extends AreaQuery
 {
     protected Answer answer;
 

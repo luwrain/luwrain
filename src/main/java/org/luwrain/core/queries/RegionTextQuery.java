@@ -20,7 +20,7 @@ package org.luwrain.core.queries;
 
 import org.luwrain.core.*;
 
-public class RegionTextQuery extends AreaQuery
+public final class RegionTextQuery extends AreaQuery
 {
     private String regionText = null;
 

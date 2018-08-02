@@ -104,10 +104,10 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	NullCheck.notNull(query, "query");
 	switch(query.getQueryCode())
 	{
-	case AreaQuery.OBJECT_UNIREF:
+	case AreaQuery.UNIREF_HOT_POINT:
 	    if (selected() == null || !(selected() instanceof UniRefInfo))
 		return false;
-	    ((ObjectUniRefQuery)query).answer(((UniRefInfo)selected()).getValue());
+	    ((UniRefHotPointQuery)query).answer(((UniRefInfo)selected()).getValue());
 	    return true;
 	case AreaQuery.BACKGROUND_SOUND:
 	    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.MAIN_MENU));

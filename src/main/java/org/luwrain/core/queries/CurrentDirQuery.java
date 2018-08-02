@@ -22,7 +22,7 @@ import java.nio.file.*;
 
 import org.luwrain.core.*;
 
-public class CurrentDirQuery extends AreaQuery
+public final class CurrentDirQuery extends AreaQuery
 {
     protected String answer = null;
 

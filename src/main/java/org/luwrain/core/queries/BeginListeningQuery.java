@@ -20,7 +20,7 @@ package org.luwrain.core.queries;
 
 import org.luwrain.core.*;
 
-public class BeginListeningQuery extends AreaQuery
+public final class BeginListeningQuery extends AreaQuery
 {
     protected Answer answer = null;
 
