@@ -53,8 +53,9 @@ final class LuwrainImpl implements Luwrain
 	return new AreaText(activeArea).get(type);
     }
 
-    @Override public String getActiveAreaDir()
+    @Override public String getActiveAreaAttr(AreaAttr attr)
     {
+	NullCheck.notNull(attr, "attr");
 	core.mainCoreThreadOnly();
 	final Area area = core.getValidActiveArea(false);
 	if (area == null)

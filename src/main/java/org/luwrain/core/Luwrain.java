@@ -80,6 +80,14 @@ public interface Luwrain extends PropertiesBase
 	PROGRAMMING,
     };
 
+    public enum AreaAttr {
+	DIRECTORY,
+	UNIREF,
+	URL,
+	UNIREF_UNDER_HOT_POINT,
+	URL_UNDER_HOT_POINT,
+    };
+
     void announceActiveArea();
     Object callUiSafely(java.util.concurrent.Callable callable);
     void closeApp();
@@ -87,7 +95,7 @@ public interface Luwrain extends PropertiesBase
     void crash(Exception e);
 
     //Never returns null, returns user home dir if area doesn't speak about that
-    String getActiveAreaDir();
+    String getActiveAreaAttr(AreaAttr attr);
     String getActiveAreaText(AreaTextType type, boolean issueErrorMessage);
     String[] getAllShortcutNames();
     Channel getAnySpeechChannelByCond(Set<Channel.Features> cond);

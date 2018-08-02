@@ -466,37 +466,95 @@ class Commands
 		}
 	    },
 
-	    //copy-object-uniref
+	    //copy-uniref-area
 	    new Command() {
 		@Override public String getName()
 		{
-		    return "copy-object-uniref";
+		    return "copy-uniref-area";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = core.getValidActiveArea(true);
-		    if (area == null)
-			return;
-		    final ObjectUniRefQuery query = new ObjectUniRefQuery();
-		    if (!AreaQuery.ask(area, query))
+		    NullCheck.notNull(luwrain, "luwrain");
+		    final String res = luwrain.getActiveAreaAttr(Luwrain.AreaAttr.UNIREF);
+		    if (res == null || res.isEmpty())
 		    {
 			core.eventNotProcessedMessage();
 			return;
 		    }
-		    final String uniRef = query.getAnswer();
-		    if (uniRef == null || uniRef.trim().isEmpty())
-		    {
-			core.eventNotProcessedMessage();
-			return;
-		    }
-		    final UniRefInfo uniRefInfo = core.uniRefProcs.getInfo(uniRef);
+		    final UniRefInfo uniRefInfo = core.uniRefProcs.getInfo(res);
 		    if (uniRefInfo == null)
 		    {
 			core.eventNotProcessedMessage();
 			return;
 		    }
 		    core.message(uniRefInfo.toString(), Luwrain.MessageType.OK);
-		    core.getClipboard().set(uniRef);
+		    core.getClipboard().set(res);
+		}
+	    },
+
+	    	    //copy-uniref-hot-point
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "copy-uniref-hot-point";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    NullCheck.notNull(luwrain, "luwrain");
+		    final String res = luwrain.getActiveAreaAttr(Luwrain.AreaAttr.UNIREF_UNDER_HOT_POINT);
+		    if (res == null || res.isEmpty())
+		    {
+			core.eventNotProcessedMessage();
+			return;
+		    }
+		    final UniRefInfo uniRefInfo = core.uniRefProcs.getInfo(res);
+		    if (uniRefInfo == null)
+		    {
+			core.eventNotProcessedMessage();
+			return;
+		    }
+		    core.message(uniRefInfo.toString(), Luwrain.MessageType.OK);
+		    core.getClipboard().set(res);
+		}
+	    },
+
+	    	    //copy-url-area
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "copy-url-area";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    NullCheck.notNull(luwrain, "luwrain");
+		    final String res = luwrain.getActiveAreaAttr(Luwrain.AreaAttr.URL);
+		    if (res == null || res.isEmpty())
+		    {
+			core.eventNotProcessedMessage();
+			return;
+		    }
+		    core.message(res, Luwrain.MessageType.OK);
+		    core.getClipboard().set(res);
+		}
+	    },
+
+	    	    //copy-url-hot-point
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "copy-url-hot-point";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    NullCheck.notNull(luwrain, "luwrain");
+		    final String res = luwrain.getActiveAreaAttr(Luwrain.AreaAttr.URL_UNDER_HOT_POINT);
+		    if (res == null || res.isEmpty())
+		    {
+			core.eventNotProcessedMessage();
+			return;
+		    }
+		    core.message(res, Luwrain.MessageType.OK);
+		    core.getClipboard().set(res);
 		}
 	    },
 
