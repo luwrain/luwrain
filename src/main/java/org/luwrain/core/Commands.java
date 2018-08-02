@@ -492,7 +492,7 @@ class Commands
 		}
 	    },
 
-	    	    //copy-uniref-hot-point
+	    //copy-uniref-hot-point
 	    new Command() {
 		@Override public String getName()
 		{
@@ -518,7 +518,7 @@ class Commands
 		}
 	    },
 
-	    	    //copy-url-area
+	    //copy-url-area
 	    new Command() {
 		@Override public String getName()
 		{
@@ -538,7 +538,7 @@ class Commands
 		}
 	    },
 
-	    	    //copy-url-hot-point
+	    //copy-url-hot-point
 	    new Command() {
 		@Override public String getName()
 		{
