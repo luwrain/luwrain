@@ -59,11 +59,53 @@ final class LuwrainImpl implements Luwrain
 	core.mainCoreThreadOnly();
 	final Area area = core.getValidActiveArea(false);
 	if (area == null)
-	    return getFileProperty("luwrain.dir.userhome").toString();
-	final CurrentDirQuery query = new CurrentDirQuery();
-	if (!area.onAreaQuery(query) || !query.hasAnswer())
-	    return getFileProperty("luwrain.dir.userhome").toString();
-	return query.getAnswer();
+	    return attr == AreaAttr.DIRECTORY?getFileProperty("luwrain.dir.userhome").toString():null;
+	switch(attr)
+	{
+	case DIRECTORY:
+	    {
+		final CurrentDirQuery query = new CurrentDirQuery();
+		if (!AreaQuery.ask(area, query))
+		    return getFileProperty("luwrain.dir.userhome").toString();
+		return query.getAnswer();
+	    }
+	case UNIREF:
+	    {
+		final UniRefAreaQuery query = new UniRefAreaQuery();
+		if (!AreaQuery.ask(area, query))
+		    return null;
+		return query.getAnswer();
+	    }
+	case UNIREF_UNDER_HOT_POINT:
+	    {
+		final UniRefHotPointQuery query = new UniRefHotPointQuery();
+		if (!AreaQuery.ask(area, query))
+		    return null;
+		return query.getAnswer();
+	    }
+	case URL:
+	    {
+		final UrlAreaQuery query = new UrlAreaQuery();
+		if (AreaQuery.ask(area, query))
+		    return query.getAnswer();
+		final UniRefAreaQuery query2 = new UniRefAreaQuery();
+		if (!AreaQuery.ask(area, query2))
+		    return null;
+		return extractUrl(query2.getAnswer());
+	    }
+	case URL_UNDER_HOT_POINT:
+	    {
+		final UrlHotPointQuery query = new UrlHotPointQuery();
+		if (AreaQuery.ask(area, query))
+		    return query.getAnswer();
+		final UniRefHotPointQuery query2 = new UniRefHotPointQuery();
+		if (!AreaQuery.ask(area, query2))
+		    return null;
+		return extractUrl(query2.getAnswer());
+	    }
+	default:
+	    return null;
+	}
     }
 
     @Override public void sendBroadcastEvent(EnvironmentEvent e)
@@ -677,5 +719,13 @@ final class LuwrainImpl implements Luwrain
 		b.append(c);
 	}
 	return b.toString();
+    }
+
+    static private String extractUrl(String uniRef)
+    {
+	NullCheck.notNull(uniRef, "uniRef");
+	if (!uniRef.startsWith("url:"))
+	    return null;
+	return uniRef.substring("url:".length());
     }
 }

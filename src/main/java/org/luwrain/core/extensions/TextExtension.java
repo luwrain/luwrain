@@ -170,7 +170,7 @@ public final class TextExtension implements DynamicExtension
 				luwrain.playSound(Sounds.ERROR);//FIXME: message
 				return;
 			    }
-			    luwrain.playSound(Sounds.PARAGRAPH);//FIXME:
+			    luwrain.playSound(Sounds.PLAYING);
 			    luwrain.getPlayer().play(new org.luwrain.player.Playlist(entry.arg), 0, 0, EnumSet.of(org.luwrain.player.Player.Flags.STREAMING));
 			    break;
 			case READER:

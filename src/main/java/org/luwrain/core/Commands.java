@@ -533,7 +533,7 @@ class Commands
 			core.eventNotProcessedMessage();
 			return;
 		    }
-		    core.message(res, Luwrain.MessageType.OK);
+		    core.message(luwrain.getSpokenText(res, Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK);
 		    core.getClipboard().set(res);
 		}
 	    },
