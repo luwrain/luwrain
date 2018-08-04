@@ -23,6 +23,7 @@ import java.util.*;
 public interface Settings
 {
     static final String UI_PATH = "/org/luwrain/ui";
+        static final String HELP_SECTIONS_PATH = "/org/luwrain/help/sections";
     static final String NETWORK_PATH = "/org/luwrain/network";
     static final String DATETIME_PATH = "/org/luwrain/date-time";
 

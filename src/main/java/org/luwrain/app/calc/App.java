@@ -83,6 +83,8 @@ public class App implements Application
 			return super.onSystemEvent(event);
 		    switch (event.getCode())
 		    {
+		    case HELP:
+			return luwrain.openHelp("luwrain.calc");
 		    case CLEAR:
 			setLines(new String[]{"0", "", "# 0", ""});
 			setHotPoint(0, 0);

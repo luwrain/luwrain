@@ -303,6 +303,18 @@ final class LuwrainImpl implements Luwrain
 	runUiSafely(()->core.openFiles(fileNames));
     }
 
+    @Override public boolean openHelp(String sectName)
+    {
+	NullCheck.notEmpty(sectName, "sectName");
+	core.mainCoreThreadOnly();
+	final String url = core.helpSects.getSectionUrl(sectName);
+	if (url.isEmpty())
+	    return false;
+	launchApp("reader", new String[]{url});
+	return true;
+    }
+
+
     @Override public String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType)
     {
 	NullCheck.notNull(url, "url");

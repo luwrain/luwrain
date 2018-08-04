@@ -35,6 +35,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final CmdLine cmdLine;
     protected final  Registry registry;
     final PropertiesRegistry props;
+    final HelpSections helpSects;
     protected final String lang;
 
     private final Thread mainCoreThread;
@@ -73,6 +74,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	this.registry = registry;
 	this.props = props;
 	this.lang = lang;
+	this.helpSects = new HelpSections(registry);
 	this.speech = new Speech(cmdLine, registry);
 	this.sounds = new org.luwrain.core.sound.EnvironmentSounds(registry, props.getFileProperty("luwrain.dir.sounds"));
 	this.soundManager = new SoundManager(registry, props);

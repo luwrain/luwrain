@@ -180,6 +180,7 @@ public interface Luwrain extends PropertiesBase
     void onNewAreaLayout();
     void openFile(String fileName);
     void openFiles(String[] fileNames);
+    boolean openHelp(String sectName);
     boolean openUniRef(String uniRef);
     boolean openUniRef(UniRefInfo uniRefInfo);
 
