@@ -93,6 +93,8 @@ public class Desktop implements org.luwrain.core.Desktop
 		    NullCheck.notNull(event, "event");
 		    switch(event.getCode())
 		    {
+		    case HELP:
+			return luwrain.openHelp("luwrain.default");
 		    case CLOSE:
 			luwrain.silence();
 			luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"), Sounds.NO_APPLICATIONS);
