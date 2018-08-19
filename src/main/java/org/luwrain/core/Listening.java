@@ -39,15 +39,15 @@ class Listening
 
     boolean start()
     {
-channel = speech.getReadingChannel();
-if (channel == null)
-    return false;
-Log.debug("core", "using the channel \'" + channel.getChannelName() + " for listening area of class " + area.getClass().getName());
-channel.setDefaultRate(60);
-channel.setDefaultPitch(30);
-luwrain.playSound(Sounds.PARAGRAPH);//FIXME:
-onFinish(null, null);
-	    return true;
+	channel = speech.getReadingChannel();
+	if (channel == null)
+	    return false;
+	Log.debug("core", "using the channel \'" + channel.getChannelName() + " for listening area of class " + area.getClass().getName());
+	channel.setDefaultRate(45);
+	channel.setDefaultPitch(30);
+	luwrain.playSound(Sounds.PLAYING);
+	onFinish(null, null);
+	return true;
     }
 
     void cancel()
@@ -63,7 +63,7 @@ onFinish(null, null);
 	if (text != null)
 	{
 	    if (extraInfo == null || !(extraInfo instanceof PositionInfo))
-	    area.onSystemEvent(new ListeningFinishedEvent(extraInfo)); else
+		area.onSystemEvent(new ListeningFinishedEvent(extraInfo)); else
 		area.onSystemEvent(new MoveHotPointEvent(((PositionInfo)extraInfo).x, ((PositionInfo)extraInfo).y, false));
 	}
 	final BeginListeningQuery query = new BeginListeningQuery();
@@ -100,23 +100,23 @@ onFinish(null, null);
 	int pos = 0;
 	while(true)
 	{
-	while (pos < line.length() && 
-	       line.charAt(pos) != '.' && line.charAt(pos) != '!' && line.charAt(pos) != '?')
-	    ++pos;
-	if (pos >= line.length())
-	{
-	    b.append(line + " ");
-	    pos = 0;
-	    ++index;
-	    if (index >= count)
-		break;
-	    line = area.getLine(index);
-	    if (line == null)
-		line = "";
-	    continue;
-	}
-	b.append(line.substring(0, pos + 1));
-	break;
+	    while (pos < line.length() && 
+		   line.charAt(pos) != '.' && line.charAt(pos) != '!' && line.charAt(pos) != '?')
+		++pos;
+	    if (pos >= line.length())
+	    {
+		b.append(line + " ");
+		pos = 0;
+		++index;
+		if (index >= count)
+		    break;
+		line = area.getLine(index);
+		if (line == null)
+		    line = "";
+		continue;
+	    }
+	    b.append(line.substring(0, pos + 1));
+	    break;
 	} //while(true)
 	int nextPosX = pos + 1;
 	int nextPosY = index;

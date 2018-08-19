@@ -319,7 +319,6 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(url, "url");
 	NullCheck.notNull(expectedType, "expectedType");
-	core.mainCoreThreadOnly();
 	return core.contentTypes.suggestContentType(url, expectedType);
     }
 
@@ -327,7 +326,6 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(file, "file");
 	NullCheck.notNull(expectedType, "expectedType");
-	core.mainCoreThreadOnly();
 	return core.contentTypes.suggestContentType(file, expectedType);
     }
 

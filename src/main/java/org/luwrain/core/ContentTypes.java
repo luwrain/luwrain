@@ -41,8 +41,7 @@ public interface ContentTypes
     static public final String[] TEXT_HTML = new String[]{
 	"text/html",
     };
-
-    static public final String TEXT_HTML_DEFAULT = TEXT_HTML[0];
+    static public final String TEXT_HTML_DEFAULT = "text/html";
 
     static public final String[] SOUND_WAVE = new String[]{
 	"audio/vnd.wave",

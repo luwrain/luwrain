@@ -28,7 +28,10 @@ import org.luwrain.util.*;
 
 public class ListArea  implements Area, ClipboardTranslator.Provider, RegionTextQueryTranslator.Provider
 {
-    public enum Flags {EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM};
+    public enum Flags {
+	EMPTY_LINE_TOP,
+	EMPTY_LINE_BOTTOM,
+	AREA_ANNOUNCE_SELECTED};
 
     static protected final Set<Appearance.Flags> NONE_APPEARANCE_FLAGS = EnumSet.noneOf(Appearance.Flags.class);
     static protected final Set<Appearance.Flags> BRIEF_ANNOUNCEMENT_ONLY = EnumSet.of(Appearance.Flags.BRIEF);
@@ -542,15 +545,31 @@ public interface ClipboardSaver
 	context.onAreaNewName(this);
     }
 
+    /**
+     * Announces the list area. If the area is created with {@code AREA_ANNOUNCE_SELECTED} 
+     * flag, this method speaks the screen text of
+     * the currently selected item or the area name otherwise (without the
+     * flag or if there is no selected item).
+     */
     protected boolean onAnnounce()
     {
-	context.playSound(Sounds.INTRO_REGULAR);
-	String item = "";
+	if (!listFlags.contains(Flags.AREA_ANNOUNCE_SELECTED))
+	{
+	    context.say(getAreaName(), Sounds.INTRO_REGULAR);
+	    return true;
+	}
+	final String item;
 	if (selected() != null)
-	    item = listAppearance.getScreenAppearance(selected(), EnumSet.noneOf(Appearance.Flags.class)).trim();
-	if (!item.isEmpty())
-	    item = " " + item;
-	context.say(getAreaName() + item);
+	{
+	    final String value = listAppearance.getScreenAppearance(selected(), EnumSet.noneOf(Appearance.Flags.class)).trim();
+	    if (value != null && !value.trim().isEmpty())
+		item = value; else
+		item = selected().toString();
+	} else
+	    item = "";
+	if (!item.trim().isEmpty())
+	    context.say(item, Sounds.INTRO_REGULAR); else
+	    context.say(getAreaName(), Sounds.INTRO_REGULAR);
 	return true;
     }
 
