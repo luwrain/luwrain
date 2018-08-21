@@ -36,6 +36,8 @@ final class FileContentType
 		contentTypes.put(".*\\.txt", ContentTypes.TEXT_PLAIN_DEFAULT);
 		contentTypes.put(".*\\.htm", ContentTypes.TEXT_HTML_DEFAULT);
 	contentTypes.put(".*\\.html", ContentTypes.TEXT_HTML_DEFAULT);
+			contentTypes.put(".*\\.doc", ContentTypes.APP_DOC_DEFAULT);
+		contentTypes.put(".*\\.docx", ContentTypes.APP_DOCX_DEFAULT);
 
 	//Audio
 	contentTypes.put(".*\\.wav", ContentTypes.SOUND_WAVE_DEFAULT);
@@ -47,8 +49,6 @@ final class FileContentType
 		contentTypes.put(".*\\.pdf", "application/pdf");
 		contentTypes.put(".*\\.ps", "application/postscript");
 		contentTypes.put(".*\\.zip", "application/zip");
-		contentTypes.put(".*\\.doc", "application/msword");
-		contentTypes.put(".*\\.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 		contentTypes.put(".*\\.fb2", "application/fb2");
     }
 
