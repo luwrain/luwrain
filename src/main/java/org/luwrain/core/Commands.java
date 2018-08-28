@@ -381,11 +381,11 @@ class Commands
 	    new Command() {
 		@Override public String getName()
 		{
-		    return "increase-font-size";
+		    return "font-size-inc";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.onIncreaseFontSizeCommand();
+		    core.fontSizeInc();
 		}
 	    },
 
@@ -393,11 +393,11 @@ class Commands
 	    new Command() {
 		@Override public String getName()
 		{
-		    return "decrease-font-size";
+		    return "font-size-dec";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.onDecreaseFontSizeCommand();
+		    core.fontSizeDec();
 		}
 	    },
 

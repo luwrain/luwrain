@@ -659,21 +659,23 @@ onNewAreasLayout();
 	interaction.endDrawSession();
     }
 
-    void onIncreaseFontSizeCommand()
+    void fontSizeInc()
     {
 	mainCoreThreadOnly();
 	interaction.setDesirableFontSize(interaction.getFontSize() + 5); 
 	windowManager.redraw();
+	apps.sendBroadcastEvent(new EnvironmentEvent(EnvironmentEvent.Type.BROADCAST, EnvironmentEvent.Code.FONT_SIZE_CHANGED));
 	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MessageType.REGULAR);
     }
 
-    void onDecreaseFontSizeCommand()
+    void fontSizeDec()
     {
 	mainCoreThreadOnly();
 	if (interaction.getFontSize() < 15)
 	    return;
 	interaction.setDesirableFontSize(interaction.getFontSize() - 5); 
 	windowManager.redraw();
+	apps.sendBroadcastEvent(new EnvironmentEvent(EnvironmentEvent.Type.BROADCAST, EnvironmentEvent.Code.FONT_SIZE_CHANGED));
 	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MessageType.REGULAR);
     }
 

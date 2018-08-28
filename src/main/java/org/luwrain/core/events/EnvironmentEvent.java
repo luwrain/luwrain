@@ -74,6 +74,7 @@ public class EnvironmentEvent extends Event
 	CLIPBOARD_CUT,
 	CLIPBOARD_PASTE,
 	CLOSE,
+	FONT_SIZE_CHANGED,
 	HELP,
 	INTRODUCE,
 	LISTENING_FINISHED,

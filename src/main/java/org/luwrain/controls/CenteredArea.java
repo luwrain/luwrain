@@ -106,6 +106,14 @@ public class CenteredArea implements org.luwrain.core.Area
     @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (event.getCode() == EnvironmentEvent.Code.FONT_SIZE_CHANGED)
+	{
+	    this.screenWidth = context.getScreenWidth();
+	    this.screenHeight = context.getScreenHeight();
+	    context.onAreaNewContent(this);
+	    context.onAreaNewHotPoint(this);
+	    return true;
+	}
 	return false;
     }
 
