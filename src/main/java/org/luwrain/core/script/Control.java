@@ -67,7 +67,7 @@ final class Control extends AbstractJSObject
 
 	    
 	case "launchApp":
-	    return (Predicate)this::launchApp;
+	    return (BiPredicate)this::launchApp;
 	    	case "runBkg":
 		    return (Predicate)this::runBkg;
 	default:
@@ -166,11 +166,18 @@ final class Control extends AbstractJSObject
 	return luwrain.getActiveAreaText(typeValue, false);
     }
 
-    private boolean launchApp(Object name)
+    private boolean launchApp(Object name, Object args)
     {
-	if (name == null)
+	if (name == null || args == null || !(args instanceof JSObject))
 	    return false;
-luwrain.launchApp(name.toString());
+
+	final JSObject jsArgs = (JSObject)args;
+	if (!jsArgs.isArray())
+	    return false;
+	final List<String> argsList = Utils.getStringArray(jsArgs);
+	if (argsList == null)
+	    return false;
+	luwrain.launchApp(name.toString(), argsList.toArray(new String[argsList.size()]));
 //FIXME:proper return value
 return true;
     }
