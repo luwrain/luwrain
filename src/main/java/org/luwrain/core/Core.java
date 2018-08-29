@@ -195,7 +195,7 @@ final class Core extends EventDispatching
 		if (files != null)
 		    for(File f: files)
 		    {
-			if (!f.exists() || f.isDirectory())
+			if (f == null || !f.exists() || f.isDirectory())
 			    continue;
 			if (!f.getName().toLowerCase().endsWith(".js"))
 			    continue;
@@ -248,7 +248,7 @@ final class Core extends EventDispatching
 		continue;
 	    for(File f: files)
 	    {
-		if (!f.exists() || f.isDirectory())
+		if (f == null || !f.exists() || f.isDirectory())
 		    continue;
 		if (!f.getName().toLowerCase().endsWith(".ext"))
 		    continue;

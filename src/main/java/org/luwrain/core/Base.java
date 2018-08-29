@@ -362,7 +362,7 @@ public void playSound(Sounds sound)
 	    return new File[0];
 	final List<File> res = new LinkedList();
 	for(File f: files)
-	    if (f.exists() && f.isDirectory())
+	    if (f != null && f.exists() && f.isDirectory())
 		res.add(f);
 	return res.toArray(new File[res.size()]);
     }
