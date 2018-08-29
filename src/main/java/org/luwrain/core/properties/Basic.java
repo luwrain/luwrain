@@ -75,6 +75,8 @@ public final class Basic implements PropertiesProvider
 	    return new File(dataDir, "scripts");
 	case "luwrain.dir.js":
 	    return new File(dataDir, "js");
+	    	case "luwrain.dir.textext":
+	    return new File(dataDir, "text");
 	case "luwrain.dir.properties":
 	    return new File(dataDir, "properties");
 	case "luwrain.dir.sounds":
