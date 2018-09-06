@@ -18,23 +18,34 @@ package org.luwrain.core;
 
 import java.util.*;
 
-class I18nImpl implements I18n, I18nExtension
+final class I18nImpl implements I18n, I18nExtension
 {
     static private final String LOG_COMPONENT = "core";
     static private final String EN_LANG = "en";
+    static private final String NO_CHOSEN_LANG = "#NO CHOSEN LANGUAGE#";
 
-    private final Vector<CommandTitle> commandTitles = new Vector<CommandTitle>();
-    private final Vector<StringsObj> stringsObjs = new Vector<StringsObj>();
-    private final Vector<LangObj> langObjs = new Vector<LangObj>();
-
-    private Lang chosenLang;
+    private Lang chosenLang = null;
     private String chosenLangName = "";
+
+    private final List<CommandTitle> commandTitles = new LinkedList();
+    private final List<StringsObj> stringsObjs = new LinkedList();
+    private final List<LangObj> langObjs = new LinkedList();
+
+String getSpokenText(String text, Luwrain.SpokenTextType spokenTextType)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(spokenTextType, "spokenTextType");
+	if (chosenLang == null)
+	    return NO_CHOSEN_LANG;
+	final String value = chosenLang.getSpokenText(text, spokenTextType);
+	return value != null?value:"";
+    }
 
     @Override public String getPastTimeBrief(Date date)
     {
 	NullCheck.notNull(date, "date");
 	if (chosenLang == null)
-	    return "#NO CHOSEN LANGUAGE#";
+	    return NO_CHOSEN_LANG;
 	final String value = chosenLang.pastTimeBrief(date);
 	return value != null?value:"";
     }
@@ -94,9 +105,7 @@ class I18nImpl implements I18n, I18nExtension
 
     @Override public String getCommandTitle(String command)
     {
-	NullCheck.notNull(command, "command");
-	if (command.trim().isEmpty())
-	    throw new IllegalArgumentException("command may not be empty");
+	NullCheck.notEmpty(command, "command");
 	String chosenLangValue = null;
 	String enLangValue = null;
 	String anyLangValue = null;
@@ -118,30 +127,20 @@ class I18nImpl implements I18n, I18nExtension
 	return anyLangValue != null?anyLangValue:command;
     }
 
-    @Override public void addCommandTitle(String lang,
-					  String command,
-					  String title)
+    @Override public void addCommandTitle(String lang, String command, String title)
     {
-	if (lang == null || lang.trim().isEmpty() ||
-	    command == null || command.trim().isEmpty() ||
-	    title == null || title.trim().isEmpty())
-	    return;
-	for(CommandTitle t: commandTitles)
+	NullCheck.notEmpty(lang, "lang");
+	NullCheck.notEmpty(command, "command");
+	NullCheck.notEmpty(title, "title");
+for(CommandTitle t: commandTitles)
 	    if (t.lang.equals(lang) && t.command.equals(command))
 		return;
-	CommandTitle t = new CommandTitle();
-	t.lang = lang;
-	t.command = command;
-	t.title = title;
-	commandTitles.add(t);
+	commandTitles.add(new CommandTitle(lang, command, title));
     }
 
     @Override public Object getStrings(String component)
     {
-	if (component == null)
-	    throw new NullPointerException("component may not be null");
-	if (component.trim().isEmpty())
-	    throw new IllegalArgumentException("component may not be empty");
+	NullCheck.notEmpty(component, "component");
 	Object chosenLangObj = null;
 	Object enLangObj = null;
 	Object anyLangObj = null;
@@ -163,14 +162,11 @@ class I18nImpl implements I18n, I18nExtension
 	return anyLangObj != null?anyLangObj:null;
     }
 
-    @Override public void addStrings(String lang,
-			   String component,
-			   Object obj)
+    @Override public void addStrings(String lang, String component, Object obj)
     {
-	if (lang == null || lang.trim().isEmpty() ||
-	    component == null || component.trim().isEmpty() ||
-	    obj == null)
-	    return;
+	NullCheck.notEmpty(lang, "lang");
+	NullCheck.notEmpty(component, "component");
+	NullCheck.notNull(obj, "obj");
 	for(StringsObj o: stringsObjs)
 	    if (o.lang.equals(lang) && o.component.equals(component))
 		return;
@@ -183,9 +179,8 @@ class I18nImpl implements I18n, I18nExtension
 
     @Override public void addLang(String name, Lang lang)
     {
-	if (name == null || name.trim().isEmpty() ||
-	    lang == null)
-	    return;
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(lang, "lang");
 	for(LangObj l: langObjs)
 	    if (l.name.equals(name))
 		return;
@@ -262,11 +257,20 @@ class I18nImpl implements I18n, I18nExtension
 	return b.toString();
     }
 
-    static private class CommandTitle
+    static private final class CommandTitle
     {
-	String lang = "";
-	String command = "";
-	String title = "";
+	final String lang;
+	final String command;
+	final String title;
+	CommandTitle(String lang, String command, String title)
+	{
+	    NullCheck.notEmpty(lang, "lang");
+	    NullCheck.notEmpty(command, "command");
+	    NullCheck.notEmpty(title, "title");
+	    this.lang = lang;
+	    this.command = command;
+	    this.title = title;
+	}
     }
 
     static private class StringsObj

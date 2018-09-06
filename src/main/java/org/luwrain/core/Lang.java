@@ -18,6 +18,8 @@
 
 package org.luwrain.core;
 
+import org.luwrain.core.Luwrain.SpokenTextType;
+
 /**
  * The interface for classes implementing national languages. This
  * interface has necessary operations to make environment comfortable for
@@ -50,5 +52,7 @@ public interface Lang
     //FIXME:
     String pastTimeBrief(java.util.Date date);
     String getNumberStr(int count, String entities);
+
+    String getSpokenText(String text, SpokenTextType spokenTextType);
 
 }
