@@ -697,7 +697,7 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(type, "type");
-	return core.text.translate(text, type);
+	return core.i18n.getSpokenText(text, type);
     }
 
     private void sayHint(Hint hint)

@@ -20,7 +20,7 @@ import java.util.*;
 
 final class I18nImpl implements I18n, I18nExtension
 {
-    static private final String LOG_COMPONENT = "core";
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     static private final String EN_LANG = "en";
     static private final String NO_CHOSEN_LANG = "#NO CHOSEN LANGUAGE#";
 
@@ -31,7 +31,7 @@ final class I18nImpl implements I18n, I18nExtension
     private final List<StringsObj> stringsObjs = new LinkedList();
     private final List<LangObj> langObjs = new LinkedList();
 
-String getSpokenText(String text, Luwrain.SpokenTextType spokenTextType)
+    String getSpokenText(String text, Luwrain.SpokenTextType spokenTextType)
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(spokenTextType, "spokenTextType");
@@ -132,7 +132,7 @@ String getSpokenText(String text, Luwrain.SpokenTextType spokenTextType)
 	NullCheck.notEmpty(lang, "lang");
 	NullCheck.notEmpty(command, "command");
 	NullCheck.notEmpty(title, "title");
-for(CommandTitle t: commandTitles)
+	for(CommandTitle t: commandTitles)
 	    if (t.lang.equals(lang) && t.command.equals(command))
 		return;
 	commandTitles.add(new CommandTitle(lang, command, title));
@@ -170,11 +170,7 @@ for(CommandTitle t: commandTitles)
 	for(StringsObj o: stringsObjs)
 	    if (o.lang.equals(lang) && o.component.equals(component))
 		return;
-	StringsObj o = new StringsObj();
-	o.lang = lang;
-	o.component = component;
-	o.obj = obj;
-	stringsObjs.add(o);
+	stringsObjs.add(new StringsObj(lang, component, obj));
     }
 
     @Override public void addLang(String name, Lang lang)
@@ -184,10 +180,7 @@ for(CommandTitle t: commandTitles)
 	for(LangObj l: langObjs)
 	    if (l.name.equals(name))
 		return;
-	LangObj l = new LangObj();
-	l.name = name;
-	l.lang = lang;
-	langObjs.add(l);
+	langObjs.add(new LangObj(name, lang));
     }
 
     boolean chooseLang(String name)
@@ -195,7 +188,7 @@ for(CommandTitle t: commandTitles)
 	NullCheck.notEmpty(name, "name");
 	if (langObjs.isEmpty())
 	{
-	    Log.warning(LOG_COMPONENT, "no langs registered, unable to choose the default");
+	    Log.error(LOG_COMPONENT, "no langs registered, unable to choose the default");
 	    return false;
 	}
 	for(LangObj l: langObjs)
@@ -224,9 +217,9 @@ for(CommandTitle t: commandTitles)
 		chosenLangName = enLang.name;
 	    } else
 	    {
-	final LangObj l = langObjs.get(0);
-	chosenLang = l.lang;
-	chosenLangName = l.name;
+		final LangObj l = langObjs.get(0);
+		chosenLang = l.lang;
+		chosenLangName = l.name;
 	    }
 	Log.debug("core", "chosen lang is \'" + chosenLangName + "\'");
 	return true;
@@ -273,17 +266,32 @@ for(CommandTitle t: commandTitles)
 	}
     }
 
-    static private class StringsObj
+    static private final class StringsObj
     {
-	String lang = "";
-	String component = "";
-	Object obj;
+	final String lang;
+	final String component;
+	final Object obj;
+	StringsObj(String lang, String component, Object obj)
+	{
+	    NullCheck.notEmpty(lang, "lang");
+	    NullCheck.notEmpty(component, "component");
+	    NullCheck.notNull(obj, "obj");
+	    this.lang = lang;
+	    this.component = component;
+	    this.obj = obj;
+	}
     };
 
-    static private class LangObj
+    static private final class LangObj
     {
-	String name = "";
-	Lang lang;
+	final String name;
+	final Lang lang;
+	LangObj(String name, Lang lang)
+	{
+	    NullCheck.notEmpty(name, "name");
+	    NullCheck.notNull(lang, "lang");
+	    this.name = name;
+	    this.lang = lang;
+	}
     }
-
 }
