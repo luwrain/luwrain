@@ -84,6 +84,19 @@ public class ListUtils
 
 	abstract public boolean isSectionItem(Object item);
 
+		public void announceNonSection(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+		environment.playSound(Sounds.LIST_ITEM);
+		environment.say(item.toString());
+	}
+
+	public String getNonSectionScreenAppearance(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    return item.toString();
+	}
+
 	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
@@ -94,10 +107,7 @@ public class ListUtils
 		environment.playSound(Sounds.DOC_SECTION);
 		environment.say(item.toString());
 	    } else
-	    {
-		environment.playSound(Sounds.LIST_ITEM);
-		environment.say(item.toString());
-	    }
+		announceNonSection(item);
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
@@ -106,7 +116,7 @@ public class ListUtils
 	    NullCheck.notNull(flags, "flags");
 	    if (isSectionItem(item))
 		return item.toString();
-	    return "  " + item.toString();
+	    return "  " + getNonSectionScreenAppearance(item);
 	}
 
 	@Override public int getObservableLeftBound(Object item)
