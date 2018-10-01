@@ -211,6 +211,7 @@ final class Core extends EventDispatching
 	    } else
 		Log.warning(LOG_COMPONENT, "the directory " + jsDir.getAbsolutePath() + " does not exist, skipping loading of script extensions");
 	}
+	
 	//Common text extensions
 	{
 	    final File textExtDir = props.getFileProperty("luwrain.dir.textext");
@@ -236,6 +237,7 @@ final class Core extends EventDispatching
 	    } else
 		Log.warning(LOG_COMPONENT, "the directory " + textExtDir.getAbsolutePath() + " does not exist, skipping loading of text extensions");
 	}
+	
 	//Text extensions from packs
 	final File[] packs = getInstalledPacksDirs();
 	for(File pack: packs)
@@ -266,6 +268,44 @@ final class Core extends EventDispatching
 		try {
 		    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
 		    final String id = loadTextExtensionFromFile(f, dataDir);
+		}
+		catch(org.luwrain.core.extensions.DynamicExtensionException e)
+		{
+		    Log.error(LOG_COMPONENT, "unable to load the text extension " + f.getAbsolutePath() + ":" + e.getMessage());
+		}
+	    }
+	}
+
+	//JavaScript extensions from packs
+	for(File pack: packs)
+	{
+	    final File jsExtDir = new File(pack, "js");
+	    if (!jsExtDir.exists() || !jsExtDir.isDirectory())
+		continue;
+	    final File[] files = jsExtDir.listFiles();
+	    if (files == null)
+		continue;
+	    for(File f: files)
+	    {
+		if (f == null || !f.exists() || f.isDirectory())
+		    continue;
+		if (!f.getName().toLowerCase().endsWith(".js"))
+		    continue;
+		final File dataDir = new File(pack, "data");
+		if (dataDir.exists() && !dataDir.isDirectory())
+		{
+		    Log.error(LOG_COMPONENT, dataDir.getAbsolutePath() + " exists, skipping the pack");
+		    continue;
+		}
+		if (!dataDir.exists() && !dataDir.mkdir())
+		{
+		    Log.error(LOG_COMPONENT, "unable to create " + dataDir.getAbsolutePath() + ", skipping the pack");
+		    continue;
+		}
+		try {
+		    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
+		    //FIXME:providing data dir
+		    final String id = loadScriptExtensionFromFile(f);
 		}
 		catch(org.luwrain.core.extensions.DynamicExtensionException e)
 		{
