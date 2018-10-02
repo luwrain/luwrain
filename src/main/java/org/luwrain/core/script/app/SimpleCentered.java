@@ -22,7 +22,9 @@ import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.controls.*;
+import org.luwrain.util.*;
 
 public final class SimpleCentered implements Application
 {
@@ -78,7 +80,21 @@ public final class SimpleCentered implements Application
 		}
 		@Override public boolean onAreaQuery(AreaQuery query)
 		{
-		    return false;
+		    NullCheck.notNull(query, "query");
+		    switch(query.getQueryCode())
+		    {
+		    case AreaQuery.BACKGROUND_SOUND:
+			if (bkgSound.isEmpty())
+			    return false;
+			{
+			    final File f = new File(dataDir, bkgSound);
+			    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(Urls.toUrl(f).toString()));
+			    return true;
+			}
+			//return false;
+		    default:
+			return super.onAreaQuery(query);
+		    }
 		}
 	    };
 	final String[] lines = requestLines();
@@ -142,7 +158,7 @@ bkgSound = requestBkgSound();
     {
 	    	    if (jsObj.get("bkgSound") == null || !(jsObj.get("bkgSound") instanceof java.lang.String))
 		return "";
-		    final String value = (String)jsObj.get("hotPointX");
+		    final String value = (String)jsObj.get("bkgSound");
 		    return value != null?value:"";
     }
 
