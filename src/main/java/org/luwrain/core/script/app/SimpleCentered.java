@@ -30,6 +30,7 @@ public final class SimpleCentered implements Application
 
     private Luwrain luwrain = null;
     private CenteredArea area = null;
+    private String bkgSound = "";
 
     public SimpleCentered(String name, ScriptObjectMirror jsObj)
     {
@@ -71,6 +72,10 @@ public final class SimpleCentered implements Application
 			return super.onSystemEvent(event);
 		    }
 		}
+		@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    return false;
+		}
 	    };
 	final String[] lines = requestLines();
 if (lines != null)
@@ -79,6 +84,7 @@ if (lines != null)
 	final int hotPointY = requestHotPointY();
 	area.setLocalHotPointX(hotPointX >= 0?hotPointX:0);
 		area.setLocalHotPointY(hotPointY >= 0?hotPointY:0);
+bkgSound = requestBkgSound();
     }
 
     private boolean handleKeyboardEvent(KeyboardEvent event)
@@ -92,6 +98,7 @@ if (lines != null)
 	{
 	    updateLines();
 	    updateHotPoint();
+	    updateBkgSound();
 	    return true;
 	}
 	return false;
@@ -127,6 +134,14 @@ if (lines != null)
 	    return value.intValue();
     }
 
+        private String requestBkgSound()
+    {
+	    	    if (jsObj.get("bkgSound") == null || !(jsObj.get("bkgSound") instanceof java.lang.String))
+		return "";
+		    final String value = (String)jsObj.get("hotPointX");
+		    return value != null?value:"";
+    }
+
     private void updateLines()
 {
     final String[] newLines = requestLines();
@@ -146,6 +161,16 @@ if (newX != area.getLocalHotPointX() || newY != area.getLocalHotPointY())
 {
     area.setLocalHotPointX(newX);
     area.setLocalHotPointY(newY);
+}
+    }
+
+        private void updateBkgSound()
+    {
+	final String value = requestBkgSound();
+	if (!bkgSound.equals(value))
+{
+    bkgSound = value;
+    luwrain.onAreaNewBackgroundSound(area);
 }
     }
 
