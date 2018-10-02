@@ -18,6 +18,7 @@
 
 package org.luwrain.core.script;
 
+import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.concurrent.*;
@@ -25,27 +26,29 @@ import javax.script.*;
 import jdk.nashorn.api.*;
 import jdk.nashorn.api.scripting.*;
 
-
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 final class Control extends AbstractJSObject
 {
     private final Luwrain luwrain;
+    private final File dataDir;
     final List<CommandLineTool> cmdLineTools = new LinkedList();
     final List<Shortcut> shortcuts = new LinkedList();
     final List<Command> commands = new LinkedList();
 
-    Control(Luwrain luwrain)
+    Control(Luwrain luwrain, File dataDir)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(dataDir, "dataDir");
 	this.luwrain = luwrain;
+	this.dataDir = dataDir;
     }
 
     
     @Override public Object newObject(Object... args)
     {
-	return new Control(luwrain);
+	return new Control(luwrain, dataDir);
     }
 
     @Override public Object getMember(String name)
@@ -105,7 +108,7 @@ final class Control extends AbstractJSObject
 	    if (s.getExtObjName().equals(name.toString()))
 		return false;
 	final JSObject cons = (JSObject)obj;
-	shortcuts.add(new ShortcutAdapter(name.toString(), cons));
+	shortcuts.add(new ShortcutAdapter(name.toString(), dataDir, cons));
 	return true;
     }
 

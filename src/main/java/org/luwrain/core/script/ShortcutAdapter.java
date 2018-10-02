@@ -28,13 +28,16 @@ import org.luwrain.core.*;
 final class ShortcutAdapter implements Shortcut
 {
     private final String name;
+    private final File dataDir;
     private final JSObject cons;
 
-    ShortcutAdapter(String name, JSObject cons)
+    ShortcutAdapter(String name, File dataDir, JSObject cons)
     {
 	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(dataDir, "dateDir");
 	NullCheck.notNull(cons, "cons");
 	this.name = name;
+	this.dataDir = dataDir;
 	this.cons = cons;
     }
 
@@ -58,7 +61,7 @@ final class ShortcutAdapter implements Shortcut
 	case "simple":
 	    return new Application[]{new org.luwrain.core.script.app.Simple(name, newJsObj)};
 	    	case "simple-centered":
-	    return new Application[]{new org.luwrain.core.script.app.SimpleCentered(name, newJsObj)};
+		    return new Application[]{new org.luwrain.core.script.app.SimpleCentered(name, dataDir, newJsObj)};
 	    	default:
 	    return null;
 	}

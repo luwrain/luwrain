@@ -213,7 +213,7 @@ public interface Luwrain extends PropertiesBase
     //    void runInMainThread(Runnable runnable);
     Object runLaterSync(java.util.concurrent.Callable callable);
     OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);
-    java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text);
+    java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, File dataDir, String text);
     void runUiSafely(Runnable runnable);
     boolean runWorker(String workerName);
     void say(String text);
@@ -249,7 +249,7 @@ public interface Luwrain extends PropertiesBase
         //never returns null
     String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType);
     boolean unloadDynamicExtension(String extId);
-    void xExecScript(String text);
+    void xExecScript(File dataDir, String text);
     void xQuit();
     void xSetSpeechRate(int value);
     int xGetSpeechRate();

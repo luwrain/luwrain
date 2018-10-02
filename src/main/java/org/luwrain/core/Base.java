@@ -227,11 +227,11 @@ public void playSound(Sounds sound)
 	return interfaces.objForEnvironment;
     }
 
-    String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
+    String loadScriptExtension(File dataDir, String text) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(text, "text");
 	mainCoreThreadOnly();
-		final org.luwrain.core.script.Core.ExecResult execRes = script.exec(text);
+	final org.luwrain.core.script.Core.ExecResult execRes = script.exec(dataDir, text);
 	if (!execRes.isOk())
 	    throw new org.luwrain.core.extensions.DynamicExtensionException(execRes.getException());
 	final org.luwrain.core.extensions.LoadedExtension loadedExt = extensions.addDynamicExtension(execRes.getExtension(), execRes.getLuwrain());
@@ -246,7 +246,7 @@ public void playSound(Sounds sound)
 	return loadedExt.id;
     }
 
-    String loadScriptExtensionFromFile(File file) throws org.luwrain.core.extensions.DynamicExtensionException
+    String loadScriptExtensionFromFile(File dataDir, File file) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(file, "file");
 	final String text;
@@ -257,7 +257,7 @@ public void playSound(Sounds sound)
 	{
 	    throw new org.luwrain.core.extensions.DynamicExtensionException(e);
 	}
-	return loadScriptExtension(text);
+	return loadScriptExtension(dataDir, text);
     }
 
     String loadTextExtension(String text, File baseDir) throws org.luwrain.core.extensions.DynamicExtensionException
@@ -326,7 +326,7 @@ public void playSound(Sounds sound)
 		return false;
 	    }
 	    final org.luwrain.core.script.Context context = new org.luwrain.core.script.Context();
-	    final Callable callable = script.execFuture(luwrain, context, text);
+	    final Callable callable = script.execFuture(luwrain, props.getFileProperty("luwrain.dir.data"), context, text);
 	    try {
 		callable.call();
 	    }

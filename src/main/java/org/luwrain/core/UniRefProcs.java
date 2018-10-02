@@ -241,7 +241,7 @@ class UniRefProcs
 			return false;
 		    try {
 			final String text = FileUtils.readTextFileSingleString(new File(body), "UTF-8");
-			luwrain.xExecScript(text);
+			luwrain.xExecScript(luwrain.getFileProperty("luwrain.dir.data"), text);
 			return true;
 		    }
 		    catch(Exception e)

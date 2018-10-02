@@ -17,6 +17,7 @@
 package org.luwrain.core.script.app;
 
 import java.util.*;
+import java.io.*;
 import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.core.*;
@@ -26,17 +27,20 @@ import org.luwrain.controls.*;
 public final class SimpleCentered implements Application
 {
     private final String name;
+    private final File dataDir;
     private final ScriptObjectMirror jsObj;
 
     private Luwrain luwrain = null;
     private CenteredArea area = null;
     private String bkgSound = "";
 
-    public SimpleCentered(String name, ScriptObjectMirror jsObj)
+    public SimpleCentered(String name, File dataDir, ScriptObjectMirror jsObj)
     {
 	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(dataDir, "dataDir");
 	NullCheck.notNull(jsObj, "jsObj");
 	this.name = name;
+	this.dataDir = dataDir;
 	    this.jsObj = jsObj;
 	}
 

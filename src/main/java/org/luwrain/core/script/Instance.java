@@ -32,14 +32,15 @@ class Instance
     private final Luwrain luwrain;
     final Control control;
 
-    Instance(Luwrain luwrain, Map<String, JSObject> objs)
+    Instance(Luwrain luwrain, File dataDir, Map<String, JSObject> objs)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(dataDir, "dataDir");
 	NullCheck.notNull(objs, "objs");
 	this.luwrain = luwrain;
 	    final ScriptEngineManager manager = new ScriptEngineManager();
 	    this.engine = manager.getEngineByName("nashorn");
-	    this.control = new Control(luwrain);
+	    this.control = new Control(luwrain, dataDir);
 	    this.engine.put("Luwrain", this.control);
 	    for(Map.Entry<String, JSObject> e: objs.entrySet())
 		this.engine.put(e.getKey(), e.getValue());

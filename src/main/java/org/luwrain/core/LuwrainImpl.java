@@ -665,18 +665,20 @@ final class LuwrainImpl implements Luwrain
 	return core.objRegistry.add(null, extObj);
     }
 
-    @Override public java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, String text)
+    @Override public java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, File dataDir, String text)
     {
 	NullCheck.notNull(context, "context");
+	NullCheck.notNull(dataDir, "dataDir");
+	NullCheck.notNull(text, "text");
 	core.mainCoreThreadOnly();
-	return core.script.execFuture(this, context, text);
+	return core.script.execFuture(this, dataDir, context, text);
     }
 
     @Override public String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(text, "text");
 	core.mainCoreThreadOnly();
-	return core.loadScriptExtension(text);
+	return core.loadScriptExtension(core.props.getFileProperty("luwrain.dir.data"), text);
     }
 
     @Override public boolean unloadDynamicExtension(String extId)
@@ -686,11 +688,12 @@ final class LuwrainImpl implements Luwrain
 	return core.unloadDynamicExtension(extId);
     }
 
-    @Override public void xExecScript(String text)
+    @Override public void xExecScript(File dataDir, String text)
     {
+	NullCheck.notNull(dataDir, "dataDir");
 	NullCheck.notNull(text, "text");
 	core.mainCoreThreadOnly();
-	core.script.exec(text);
+	core.script.exec(dataDir, text);
     }
 
         @Override public String getSpokenText(String text, SpokenTextType type)

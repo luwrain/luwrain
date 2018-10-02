@@ -17,6 +17,7 @@
 package org.luwrain.core.script;
 
 import java.util.*;
+import java.io.*;
 
 import javax.script.*;
 import jdk.nashorn.api.scripting.*;
@@ -70,30 +71,32 @@ public final class Core
 	this.interfaces = interfaces;
     }
 
-	public java.util.concurrent.Callable execFuture(Luwrain luwrain, Context context, String text)
+	public java.util.concurrent.Callable execFuture(Luwrain luwrain, File dataDir, Context context, String text)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
+	    NullCheck.notNull(dataDir, "dataDir");
 	    NullCheck.notNull(context, "context");
 	    NullCheck.notNull(text, "text");
 	    final Map<String, JSObject> objs = new HashMap();
 	    if (context.output != null)
 		objs.put("Output", new Wrappers.Output(context.output));
-	    final Instance instance = new Instance(luwrain, objs);
+	    final Instance instance = new Instance(luwrain, dataDir, objs);
 	    return ()->{
 		instance.exec(text);
 		return null;
 	    };
 	}
 
-	public ExecResult exec(String text)
+	public ExecResult exec(File dataDir, String text)
 	{
+	    NullCheck.notNull(dataDir, "dataDir");
 	    NullCheck.notNull(text, "text");
 	    final ScriptExtension ext = new ScriptExtension("fixme");
 	    final Luwrain luwrain = interfaces.requestNew(ext);
 	    Luwrain toRelease = luwrain;
 	    try {
 		ext.init(luwrain);
-		final Instance instance = new Instance(luwrain, new HashMap());
+		final Instance instance = new Instance(luwrain, dataDir, new HashMap());
 		ext.setInstance(instance);
 		try {
 		    instance.exec(text);
