@@ -91,8 +91,10 @@ public interface Luwrain extends PropertiesBase
     void announceActiveArea();
     Object callUiSafely(java.util.concurrent.Callable callable);
     void closeApp();
+        void crash(Exception e);
     org.luwrain.browser.Browser createBrowser();
-    void crash(Exception e);
+    org.luwrain.interaction.graphical.Pdf createPdfPreview(org.luwrain.interaction.graphical.Pdf.Listener listener, File file);
+
 
     //Never returns null, returns user home dir if area doesn't speak about that
     String getActiveAreaAttr(AreaAttr attr);
