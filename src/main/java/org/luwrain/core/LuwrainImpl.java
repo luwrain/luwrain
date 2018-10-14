@@ -499,12 +499,18 @@ final class LuwrainImpl implements Luwrain
 	return core.interaction.createBrowser();
     }
 
-        @Override public org.luwrain.interaction.graphical.Pdf createPdfPreview(org.luwrain.interaction.graphical.Pdf.Listener listener, File file)
+        @Override public org.luwrain.interaction.graphical.Pdf createPdfPreview(org.luwrain.interaction.graphical.Pdf.Listener listener, File file) throws Exception
     {
 	NullCheck.notNull(listener, "listener");
 	NullCheck.notNull(file, "file");
 		core.mainCoreThreadOnly();
-		return core.interaction.createPdfPreview(listener, file);
+		return core.interaction.createPdfPreview(new org.luwrain.interaction.graphical.Pdf.Listener(){
+			@Override public void onInputEvent(KeyboardEvent event)
+			{
+			    NullCheck.notNull(event, "event");
+			    runUiSafely(()->listener.onInputEvent(event));
+			}
+		    }, file);
     }
 
     @Override public Channel getAnySpeechChannelByCond(Set<Channel.Features> cond)
