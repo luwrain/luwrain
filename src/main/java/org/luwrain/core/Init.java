@@ -49,6 +49,7 @@ public class Init
     private final String lang;
 
     private final CmdLine cmdLine;
+    private final boolean standaloneMode;
     private final Registry registry;
     private final PropertiesRegistry props;
 
@@ -64,13 +65,39 @@ public class Init
 	this.cmdLine = new CmdLine(cmdLine);
 	this.lang = lang;
 	this.dataDir = dataDir;
-	this.userDataDir = userDataDir;
 	this.userHomeDir = new File(System.getProperty("user.home"));
 	final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
 	filesProps.load(new File(dataDir, "properties"), new File(userDataDir, "properties"));
 	this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
-	this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(this.userDataDir, "registry").toPath());
+	final String standaloneValue = filesProps.getProperty("luwrain.standalone.enable");
+	if (standaloneValue != null && standaloneValue.trim().toLowerCase().equals("true"))
+	{
+	    Log.info(LOG_COMPONENT, "enabling standalone mode");
+	    this.standaloneMode = true;
+	    this.registry = new org.luwrain.registry.mem.RegistryImpl();
+	    File tmpDir = null;
+	    try {
+		tmpDir = File.createTempFile("lwrtmpdatadir", "");
+		tmpDir.delete();
+		if (!tmpDir.mkdir())
+		{
+		    Log.fatal(LOG_COMPONENT, "unable to create temporary directory " + tmpDir.getAbsolutePath());
+		    System.exit(1);
+		}
+	    }
+	    catch(IOException e)
+	    {
+		Log.fatal(LOG_COMPONENT, "unable to create the temporary user data directory:" + e.getClass().getName() + ":" + e.getMessage());
+		System.exit(1);
+	    }
+	    this.userDataDir = tmpDir;
+	} else
+	{
+	    this.standaloneMode = true;
+	    this.userDataDir = userDataDir;	    
+	    this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(this.userDataDir, "registry").toPath());
+	}
     }
 
     private boolean init()
