@@ -167,7 +167,9 @@ final class Directory
 	final List<String> v = new LinkedList();
 	for(Map.Entry<String, Value> i: values.entrySet())
 	    v.add(i.getKey());
-	return v.toArray(new String[v.size()]);
+final String[] res = v.toArray(new String[v.size()]);
+Arrays.sort(res);
+return res;
     }
 
     boolean hasValue(String valueName)
