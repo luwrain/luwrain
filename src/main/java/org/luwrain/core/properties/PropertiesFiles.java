@@ -29,18 +29,12 @@ public final class PropertiesFiles implements PropertiesProvider
     private final Properties props = new Properties();
     private PropertiesProvider.Listener listener = null;
 
-    public void load(File systemProperties, File userProperties)
+    public void load(File propsDir)
     {
-	NullCheck.notNull(systemProperties, "systemProperties");
-	NullCheck.notNull(userProperties, "userProperties");
-	final File[] systemPropertiesFiles = systemProperties.listFiles();
+	NullCheck.notNull(propsDir, "propsDir");
+	final File[] systemPropertiesFiles = propsDir.listFiles();
 	if (systemPropertiesFiles != null)
 	    for (File f: systemPropertiesFiles)
-		if (f != null && !f.isDirectory())
-		    readProps(f);
-	final File[] userPropertiesFiles = userProperties.listFiles();
-	if (userPropertiesFiles != null)
-	    for(File f: userPropertiesFiles)
 		if (f != null && !f.isDirectory())
 		    readProps(f);
     }

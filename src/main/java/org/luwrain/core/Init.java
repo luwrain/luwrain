@@ -56,26 +56,23 @@ public class Init
     private OperatingSystem os = null;
     private org.luwrain.base.Interaction interaction = null;
 
-    private Init(String[] cmdLine, String lang, File dataDir, File userDataDir)
+    private Init(String[] cmdLine, String lang, File dataDir)
     {
 	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notEmpty(lang, "lang");
 	NullCheck.notNull(dataDir, "dataDir");
-	NullCheck.notNull(userDataDir, "userDataDir");
 	this.cmdLine = new CmdLine(cmdLine);
 	this.lang = lang;
 	this.dataDir = dataDir;
 	this.userHomeDir = new File(System.getProperty("user.home"));
-	final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
-	final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
-	filesProps.load(new File(dataDir, "properties"), new File(userDataDir, "properties"));
-	this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
-	final String standaloneValue = filesProps.getProperty("luwrain.standalone.enable");
+
+		final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
+			filesProps.load(new File(dataDir, "properties"));
+						final String standaloneValue = filesProps.getProperty("luwrain.standalone.enable");
 	if (standaloneValue != null && standaloneValue.trim().toLowerCase().equals("true"))
 	{
 	    Log.info(LOG_COMPONENT, "enabling standalone mode");
 	    this.standaloneMode = true;
-	    this.registry = new org.luwrain.registry.mem.RegistryImpl();
 	    File tmpDir = null;
 	    try {
 		tmpDir = File.createTempFile("lwrtmpdatadir", "");
@@ -92,10 +89,22 @@ public class Init
 		System.exit(1);
 	    }
 	    this.userDataDir = tmpDir;
+		    	final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
+	this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
+		    	    this.registry = new org.luwrain.registry.mem.RegistryImpl();
 	} else
 	{
-	    this.standaloneMode = true;
-	    this.userDataDir = userDataDir;	    
+	    this.standaloneMode = false;
+	    this.userDataDir = Checks.detectUserDataDir();
+	if (userDataDir == null)
+	{
+	    Log.fatal(LOG_COMPONENT, "unable to detect the user data directory");
+	    System.exit(1);
+	}
+	addExtensionsJarsToClassPath(new File(userDataDir, "extensions"));
+		final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
+		filesProps.load(new File(userDataDir, "properties"));
+	this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
 	    this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(this.userDataDir, "registry").toPath());
 	}
     }
@@ -189,8 +198,11 @@ public class Init
 
 	    	    System.out.println(Checks.CMDARG_LANG + " - set the language to use");
 		    	    System.out.println(CMDARG_PRINT_DIRS + " - print the detected values of the system directories and exit");
+			    if (!standaloneMode)
+			    {
 	    System.out.println(CMDARG_CREATE_PROFILE + " - generate the user profile directory in its default location and exit");
 	    System.out.println(CMDARG_CREATE_PROFILE_IN + "<DESTDIR> - generate the user profile directory in <DESTDIR> and exit");
+			    }
 	    System.exit(0);
 	}
 
@@ -208,7 +220,7 @@ public class Init
 	    System.exit(0);
 	}
 
-	if (cmdLine.getArgs(CMDARG_CREATE_PROFILE_IN).length > 0)
+	if (!standaloneMode && cmdLine.getArgs(CMDARG_CREATE_PROFILE_IN).length > 0)
 	{
 	    final String[] destDirs = cmdLine.getArgs((CMDARG_CREATE_PROFILE_IN));
 	    try {
@@ -227,7 +239,7 @@ public class Init
 	    }
 	}
 
-	if (cmdLine.used(CMDARG_CREATE_PROFILE))
+	if (!standaloneMode && cmdLine.used(CMDARG_CREATE_PROFILE))
 	{
 	    try {
 		System.out.println("Creating user profile in " + userDataDir.getAbsolutePath());
@@ -243,6 +255,11 @@ public class Init
 
 	try {
 		    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
+		    if (standaloneMode)
+		    {
+
+						UserProfile.createUserProfile(dataDir, userDataDir, lang);
+		    } else 
 		    if (!Checks.isProfileInstalled(userDataDir))
 		    {
 			Log.debug(LOG_COMPONENT, "generating the initial content of the user data directory " + userDataDir.getAbsolutePath());
@@ -291,20 +308,13 @@ public class Init
 	setUtf8();
 	addJarsToClassPath(new File("jar"));
 	addJarsToClassPath(new File("lib"));
-	final File userDataDir = Checks.detectUserDataDir();
-	if (userDataDir == null)
-	{
-	    Log.fatal(LOG_COMPONENT, "unable to detect the user data directory");
-	    System.exit(1);
-	}
-	addExtensionsJarsToClassPath(new File(userDataDir, "extensions"));
 	final String lang = Checks.detectLang(new CmdLine(args));
 	if (lang.isEmpty())
 	{
 	    Log.fatal(LOG_COMPONENT, "unable to select a language to use");
 	    System.exit(1);
 	}
-	new Init(args, lang, new File("data"), userDataDir).start();
+	new Init(args, lang, new File("data")).start();
     }
 
     static private void addExtensionsJarsToClassPath(File extensionsDir)
