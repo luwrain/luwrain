@@ -90,7 +90,17 @@ public class Init
 	    this.userDataDir = tmpDir;
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
-	    this.registry = new org.luwrain.registry.mem.RegistryImpl();
+	    final org.luwrain.registry.mem.RegistryImpl reg = new org.luwrain.registry.mem.RegistryImpl();
+	    this.registry = reg;
+	    try {
+		reg.load(new File(dataDir, "registry.dat"));
+				reg.load(new File(dataDir, "registry." + lang + ".dat"));
+	    }
+	    catch(IOException e)
+	    {
+		Log.fatal(LOG_COMPONENT, "unable to load initial registry data:" + e.getClass().getName() + ":" + e.getMessage());
+		System.exit(1);
+	    }
 	} else
 	{
 	    this.standaloneMode = false;

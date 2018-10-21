@@ -114,7 +114,41 @@ final class Loader
 		    registry.setString(Registry.join(currentDir, lineParser.key), lineParser.value);
 		    return;
 		case "integers.txt":
+		    {
+			final int intValue;
+			try {
+			    intValue = Integer.parseInt(lineParser.value);
+			}
+			catch(NumberFormatException e)
+			{
+			    Log.error(LOG_COMPONENT, "illegal integer value \'" + lineParser.value + "\' in the line \'" + value + "\' for the directory " + currentDir);
+			    return;
+			}
+					    registry.setInteger(Registry.join(currentDir, lineParser.key), intValue);
+					    return;
+		    }
 		case "booleans.txt":
+		    {
+		    final boolean boolValue;
+
+		    switch (lineParser.value.trim().toLowerCase())
+		    {
+		    case "true":
+		    case "yes":
+		    case "1":
+			boolValue = true;
+		    break;
+		    case "false":
+		    case "no":
+		    case "0":
+			boolValue = false;
+		    default:
+			Log.error(LOG_COMPONENT, "unknown boolean value \'" + lineParser.value + "\' in the line \'" + value + "\' for the directory " + currentDir);
+			return;
+		    }
+		    					    registry.setBoolean(Registry.join(currentDir, lineParser.key), boolValue);
+							    return;
+		    }
 		default:
 		    Log.warning(LOG_COMPONENT, "unknown file specification \'" + currentFile + "\' for the directory " + currentDir);
 				}

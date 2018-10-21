@@ -17,6 +17,7 @@
 package org.luwrain.registry.mem;
 
 import java.util.*;
+import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.registry.Path;
@@ -240,6 +241,19 @@ public final class RegistryImpl implements Registry
 		return false;
 	}
 	return d.setString(p.valueName(), value);
+    }
+
+    public void load(File file) throws IOException
+    {
+	NullCheck.notNull(file, "file");
+	final Loader loader = new Loader(this);
+	final InputStream is = new FileInputStream(file);
+	try {
+	    loader.load(is);
+	}
+	finally {
+	    is.close();
+	}
     }
 
     //Returns the root if path is empty, null is returned if there is no such path without throwing an exception;
