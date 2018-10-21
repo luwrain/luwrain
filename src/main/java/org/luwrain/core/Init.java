@@ -65,10 +65,9 @@ public class Init
 	this.lang = lang;
 	this.dataDir = dataDir;
 	this.userHomeDir = new File(System.getProperty("user.home"));
-
-		final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
-			filesProps.load(new File(dataDir, "properties"));
-						final String standaloneValue = filesProps.getProperty("luwrain.standalone.enable");
+	final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
+	filesProps.load(new File(dataDir, "properties"));
+	final String standaloneValue = filesProps.getProperty("luwrain.standalone.enabled");
 	if (standaloneValue != null && standaloneValue.trim().toLowerCase().equals("true"))
 	{
 	    Log.info(LOG_COMPONENT, "enabling standalone mode");
@@ -89,22 +88,22 @@ public class Init
 		System.exit(1);
 	    }
 	    this.userDataDir = tmpDir;
-		    	final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
-	this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
-		    	    this.registry = new org.luwrain.registry.mem.RegistryImpl();
+	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
+	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
+	    this.registry = new org.luwrain.registry.mem.RegistryImpl();
 	} else
 	{
 	    this.standaloneMode = false;
 	    this.userDataDir = Checks.detectUserDataDir();
-	if (userDataDir == null)
-	{
-	    Log.fatal(LOG_COMPONENT, "unable to detect the user data directory");
-	    System.exit(1);
-	}
-	addExtensionsJarsToClassPath(new File(userDataDir, "extensions"));
-		final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
-		filesProps.load(new File(userDataDir, "properties"));
-	this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
+	    if (userDataDir == null)
+	    {
+		Log.fatal(LOG_COMPONENT, "unable to detect the user data directory");
+		System.exit(1);
+	    }
+	    addExtensionsJarsToClassPath(new File(userDataDir, "extensions"));
+	    filesProps.load(new File(userDataDir, "properties"));
+	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
+	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
 	    this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(this.userDataDir, "registry").toPath());
 	}
     }
