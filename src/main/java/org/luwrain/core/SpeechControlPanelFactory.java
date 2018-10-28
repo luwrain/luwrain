@@ -41,9 +41,6 @@ class SpeechControlPanelFactory implements Factory
     {
 	final List<Element> res = new LinkedList();
 	res.add(channelsElement);
-	final Element[] channels = readChannelsData(channelsElement);
-	for(Element e: channels)
-	    res.add(e);
 	return res.toArray(new Element[res.size()]);
     }
 
@@ -63,6 +60,7 @@ class SpeechControlPanelFactory implements Factory
 
     private boolean onActionEvent(ControlPanel controlPanel, EnvironmentEvent event)
     {
+	/*
 	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(event, "event");
 	if (!ActionEvent.isAction(event, "add-speech-channel"))
@@ -81,8 +79,11 @@ class SpeechControlPanelFactory implements Factory
 	    settings.setType(res.toString());
 	    settings.setName(luwrain.i18n().getStaticStr("CpNewSpeechChannelName") + " " + num);
 	    return true;
+	*/
+	return false;
     }
 
+    /*
 private Element[] readChannelsData(Element parent)
     {
 	final Registry registry = luwrain.getRegistry();
@@ -139,4 +140,5 @@ private Element[] readChannelsData(Element parent)
 	    return toString().hashCode();
 	}
     }
+    */
 }

@@ -29,7 +29,6 @@ public interface Settings
 
     static final String FILE_TYPES_APP_INFO_PATH = "/org/luwrain/file-types/app-info";
     static final String FILE_TYPES_PATH = "/org/luwrain/file-types";
-    static final String SPEECH_CHANNELS_PATH = "/org/luwrain/speech/channels";
     static final String GLOBAL_KEYS_PATH = "/org/luwrain/global-keys";
     static final String MAIN_MENU_SECTIONS_PATH = "/org/luwrain/main-menu/sections";
     static final String SPEECH_PATH = "/org/luwrain/speech";
@@ -277,18 +276,14 @@ public interface DateTime
 
     public interface SpeechParams
     {
+	String getMainEngineName(String defValue);
+	String getMainEngineParams(String defValue);
 	int getPitch(int defValue);
 	int getRate(int defValue);
 	void setPitch(int value);
 	void setRate(int value);
-    }
-
-    public interface SpeechChannelBase
-    {
-	String getType(String defValue);
-	String getName(String defValue);
-	void setType(String value);
-	void setName(String value);
+	void setMainEngineName(String value);
+	void setMainEngineParams(String params);
     }
 
     static public InteractionParams createInteractionParams(Registry registry)
@@ -333,11 +328,6 @@ public interface DateTime
     static public SpeechParams createSpeechParams(Registry registry)
     {
 	return RegistryProxy.create(registry, SPEECH_PATH, SpeechParams.class);
-    }
-
-    static public SpeechChannelBase createSpeechChannelBase(Registry registry, String path)
-    {
-	return RegistryProxy.create(registry, path, SpeechChannelBase.class);
     }
 
     static public FileTypeAppInfo createFileTypeAppInfo(Registry registry, String path)

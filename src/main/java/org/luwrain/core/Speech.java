@@ -31,11 +31,9 @@ public final class Speech
     static final int PITCH_MESSAGE = -25;
 
     static private final String SPEECH_PREFIX = "--speech=";
-    static private final String ADD_SPEECH_PREFIX = "--add-speech=";
 
     private final CmdLine cmdLine;
-    private final Registry registry;
-    private final Settings.SpeechParams settings;
+    private final Settings.SpeechParams sett;
 
     private final Map<String, Engine> engines = new HashMap();
     private Channel2 defaultChannel = null;
@@ -48,9 +46,74 @@ public final class Speech
 	NullCheck.notNull(cmdLine, "cmdLine");
 	NullCheck.notNull(registry, "registry");
 	this.cmdLine = cmdLine;
-	this.registry = registry;
-	this.settings = Settings.createSpeechParams(registry);
+	this.sett = Settings.createSpeechParams(registry);
     }
+
+        void init(Engine[] engines)
+    {
+	NullCheck.notNullItems(engines, "engines");
+	for(Engine e: engines)
+	{
+	    final String name = e.getExtObjName();
+	    if (name == null || name.isEmpty())
+	    {
+		Log.warning(LOG_COMPONENT, "the speech engine with empty name found, skipping it");
+		continue;
+	    }
+	    if (this.engines.containsKey(name))
+	    {
+		Log.warning(LOG_COMPONENT, "two speech engine with the same name \'" + name + "\'");
+		continue;
+	    }
+	    this.engines.put(name, e);
+	}
+	final String engineName;
+	final Map<String, String> params = new HashMap();
+	final String speechArg = cmdLine.getFirstArg(SPEECH_PREFIX);
+	if (speechArg != null && !speechArg.isEmpty())
+	{
+	    engineName = parseChannelLine(speechArg, params);
+	    if (engineName == null)
+	    {
+		Log.error(LOG_COMPONENT, "unable to parse speech channel loading line: \'" + speechArg + "\'");
+		defaultChannel = null;
+		return;
+	    }
+	} else
+	{
+	    engineName = sett.getMainEngineName("");
+	    if (engineName.isEmpty())
+	    {
+		Log.error(LOG_COMPONENT, "no engine name in the registry for the main speech channel");
+		defaultChannel = null;
+		return;
+	    }
+	    final String paramsLine = sett.getMainEngineParams("");
+	    if (!parseParams(paramsLine, params))
+	    {
+		Log.error(LOG_COMPONENT, "unable to parse the params line for the engine \'" + engineName + "\':" + paramsLine);
+		defaultChannel = null;
+		return;
+	    }
+	}
+	this.defaultChannel = loadChannel(engineName, params);
+	if (defaultChannel != null)
+	    Log.info(LOG_COMPONENT, "main speech engine is \'" + engineName + "\'"); else
+	    Log.error(LOG_COMPONENT, "unable to load the default channel of the engine \'" + engineName + "\'");
+    }
+
+    private Channel2 loadChannel(String engineName, Map<String, String> params)
+    {
+	NullCheck.notEmpty(engineName, "engineName");
+	NullCheck.notNull(params, "params");
+	if (!engines.containsKey(engineName))
+	{
+	    Log.error(LOG_COMPONENT, "no such speech engine: \'" + engineName + "\'");
+	    return null;
+	}
+	return engines.get(engineName).newChannel(params);
+    }
+
 
     //Always cancels any previous text to speak
     void speak(String text, int relPitch, int relRate)
@@ -131,57 +194,6 @@ public final class Speech
 	*/
     }
 
-    boolean init(Engine[] engines)
-    {
-	NullCheck.notNullItems(engines, "engines");
-	for(Engine e: engines)
-	{
-	    final String name = e.getExtObjName();
-	    if (name == null || name.isEmpty())
-	    {
-		Log.warning(LOG_COMPONENT, "the speech engine with empty name found, skipping it");
-		continue;
-	    }
-	    if (this.engines.containsKey(name))
-	    {
-		Log.warning(LOG_COMPONENT, "two speech engine with the same name \'" + name + "\'");
-		continue;
-	    }
-	    this.engines.put(name, e);
-	}
-	final String engineName;
-	final Map<String, String> params = new HashMap();
-	final String speechArg = cmdLine.getFirstArg(SPEECH_PREFIX);
-	if (speechArg != null && !speechArg.isEmpty())
-	{
-	    engineName = parseChannelLine(speechArg, params);
-	    if (engineName == null)
-	    {
-		Log.error(LOG_COMPONENT, "unable to parse speech channel loading line: \'" + speechArg + "\'");
-		return false;
-	    }
-	} else
-	engineName = "rhvoice";//Take from registry
-	this.defaultChannel = loadChannel(engineName, params);
-	if (defaultChannel == null)
-	{
-	    Log.error(LOG_COMPONENT, "unable to load the default channel of the engine \'" + engineName + "\'");
-	    return false;
-	}
-	return true;
-    }
-
-    private Channel2 loadChannel(String engineName, Map<String, String> params)
-    {
-	NullCheck.notEmpty(engineName, "engineName");
-	NullCheck.notNull(params, "params");
-	if (!engines.containsKey(engineName))
-	{
-	    Log.error(LOG_COMPONENT, "no such speech engine: \'" + engineName + "\'");
-	    return null;
-	}
-	return engines.get(engineName).newChannel(params);
-    }
 
 
     static private Factory findFactory(Factory[] factories, String name)
