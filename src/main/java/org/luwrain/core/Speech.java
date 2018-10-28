@@ -34,10 +34,8 @@ public final class Speech
 
     private final CmdLine cmdLine;
     private final Settings.SpeechParams sett;
-
     private final Map<String, Engine> engines = new HashMap();
     private Channel2 defaultChannel = null;
-
     private int pitch = 50;
     private int rate = 50;
 
@@ -47,6 +45,8 @@ public final class Speech
 	NullCheck.notNull(registry, "registry");
 	this.cmdLine = cmdLine;
 	this.sett = Settings.createSpeechParams(registry);
+	this.pitch = sett.getPitch(this.pitch);
+	this.rate = sett.getRate(this.rate);
     }
 
         void init(Engine[] engines)
@@ -114,25 +114,22 @@ public final class Speech
 	return engines.get(engineName).newChannel(params);
     }
 
-
     //Always cancels any previous text to speak
     void speak(String text, int relPitch, int relRate)
     {
-	if (text == null || text.isEmpty())
+	NullCheck.notNull(text, "text");
+	if (defaultChannel == null || text.isEmpty())
 	    return;
-	if (defaultChannel == null)
-	    return;
-	defaultChannel.speak(text, null, relPitch, relRate, true);
+	defaultChannel.speak(text, null, makePitch(relPitch), makeRate(relRate), true);
     }
 
     //Always cancels any previous text to speak
     void speakEventResponse(String text)
     {
-	if (text == null || text.isEmpty())
+	NullCheck.notNull(text, "text");
+	if (defaultChannel == null || text.isEmpty())
 	    return;
-	if (defaultChannel == null)
-	    return;
-	defaultChannel.speak(text, null, 0, 0, true);
+	defaultChannel.speak(text, null, makePitch(0), makeRate(0), true);
     }
 
     //Always cancels any previous text to speak
@@ -140,7 +137,7 @@ public final class Speech
     {
 	if (defaultChannel == null)
 	    return;
-	defaultChannel.speakLetter(letter, null, relPitch, relRate, true);
+	defaultChannel.speakLetter(letter, null, makePitch(relPitch), makeRate(relRate), true);
     }
 
     void silence()
@@ -157,6 +154,11 @@ public final class Speech
 
     void setRate(int value)
     {
+	if (value < 0)
+	    this.rate = 0;
+	if (value > 100)
+	    this.rate = 100;
+	this.rate = value;
     }
 
     int getPitch()
@@ -166,51 +168,31 @@ public final class Speech
 
     void setPitch(int value)
     {
+	if (value < 0)
+	    this.pitch = 0;
+	if (value > 100)
+	    this.pitch = 100;
+	this.pitch = value;
     }
 
-
-    //Never returns default channe
-    Channel2[] getChannelsByCond(Set<Channel.Features> cond)
+    private int makePitch(int relPitch)
     {
-	NullCheck.notNull(cond, "cond");
-	final List<Channel> res = new LinkedList();
-	return null;
-	/*	
-	for(Map.Entry<String, Channel> e: channels.entrySet())
-	    if (e.getValue() != defaultChannel && e.getValue().getFeatures().containsAll(cond))
-		res.add(e.getValue());
-	return res.toArray(new Channel[res.size()]);
-	*/
+	final int value = pitch + relPitch;
+	if (value < 0)
+	    return 0;
+	if (value > 100)
+	    return 100;
+	return value;
     }
 
-    Channel getAnyChannelByCond(Set<Channel.Features> cond)
+        private int makeRate(int relRate)
     {
-	return null;
-	/*
-	final Channel[] res = getChannelsByCond(cond);
-	if (res.length < 1)
-	    return null;
-	return res[0];
-	*/
-    }
-
-
-
-    static private Factory findFactory(Factory[] factories, String name)
-    {
-	NullCheck.notNullItems(factories, "factories");
-	NullCheck.notEmpty(name, "name");
-	for(Factory f: factories)
-	    if (f.getExtObjName().equals(name))
-		return f;
-	return null;
-    }
-
-    static private boolean hasFactory(Factory[] factories, String name)
-    {
-	NullCheck.notNullItems(factories, "factories");
-	NullCheck.notEmpty(name, "name");
-	return findFactory(factories, name) != null;
+	final int value = rate + relRate;
+	if (value < 0)
+	    return 0;
+	if (value > 100)
+	    return 100;
+	return value;
     }
 
     static private String parseChannelLine(String line, Map<String, String> params)
