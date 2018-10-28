@@ -33,7 +33,7 @@ public final class StandardFactory implements Factory
     static private final Element hardwareSysDevices = new SimpleElement(StandardElements.HARDWARE, ELEMENT_PREFIX + "HardwareSysDevices");
     static private final Element version = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "Version");
     static private final Element dateTime = new SimpleElement(StandardElements.ROOT, ELEMENT_PREFIX + "DateTime");
-    static private final Element speechCurrent = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechCurrent");
+    static private final Element speechGeneral = new SimpleElement(StandardElements.SPEECH, ELEMENT_PREFIX + "SpeechCurrent");
     static private final Element soundsList = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundsList");
     static private final Element soundSchemes = new SimpleElement(StandardElements.UI, ELEMENT_PREFIX + "SoundSchemes");
 
@@ -59,19 +59,19 @@ public final class StandardFactory implements Factory
 			    //soundSchemes,
 	    soundsList,
 	    fileTypes,
-	    StandardElements.HARDWARE,
-	    hardwareCpuMem,
-	    hardwareSysDevices,
 	    StandardElements.INPUT_OUTPUT,
 	    StandardElements.SPEECH,
 	    StandardElements.BRAILLE,
 	    StandardElements.SOUND,
 	    StandardElements.KEYBOARD,
+			    	    StandardElements.HARDWARE,
+	    hardwareCpuMem,
+	    hardwareSysDevices,
 	    StandardElements.NETWORK,
 	    dateTime,
 	    StandardElements.EXTENSIONS,
 	    StandardElements.WORKERS,
-	    speechCurrent,
+			    speechGeneral,
 	};
     }
 
@@ -101,7 +101,7 @@ public final class StandardFactory implements Factory
 	if (el.equals(StandardElements.BRAILLE))
 	    return new SimpleSection(StandardElements.BRAILLE, "Браиль", (controlPanel)->Braille.create(controlPanel));
 	if (el.equals(StandardElements.SPEECH))
-	    return new SimpleSection(StandardElements.SPEECH, "Речь");
+	    return new SimpleSection(StandardElements.SPEECH, luwrain.i18n().getStaticStr("CpSpeech"));
 	if (el.equals(StandardElements.NETWORK))
 	    return new SimpleSection(StandardElements.NETWORK, "Сеть");
 	if (el.equals(StandardElements.HARDWARE))
@@ -124,8 +124,8 @@ public final class StandardFactory implements Factory
 	    return new SimpleSection(hardwareCpuMem, "Процессор и память", (controlPanel)->HardwareCpuMem.create(controlPanel));
 	if (el.equals(version))
 	    return new SimpleSection(version, luwrain.i18n().getStaticStr("CpVersion"), (controlPanel)->Version.create(controlPanel));
-	if (el.equals(speechCurrent))
-	    return new SimpleSection(speechCurrent, "Загруженные каналы", (controlPanel)->SpeechCurrent.create(controlPanel));
+	if (el.equals(speechGeneral))
+	    return new SimpleSection(speechGeneral, luwrain.i18n().getStaticStr("CpSpeechGeneral"), (controlPanel)->Speech.create(controlPanel));
 	if (el.equals(soundsList))
 	    return new SimpleSection(soundsList, luwrain.i18n().getStaticStr("CpSoundsList"), (controlPanel)->SoundsList.create(controlPanel));
 	if (el.equals(mainMenu))

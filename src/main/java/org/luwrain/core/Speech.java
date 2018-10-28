@@ -172,21 +172,21 @@ public final class Speech
 
     private int makePitch(int relPitch)
     {
-	final int value = pitch + relPitch;
-	if (value < 0)
-	    return 0;
-	if (value > 100)
-	    return 100;
+	final int value = pitch + relPitch - 50;
+	if (value < -50)
+	    return -50;
+	if (value > 50)
+	    return 50;
 	return value;
     }
 
     private int makeRate(int relRate)
     {
-	final int value = rate + relRate;
-	if (value < 0)
-	    return 0;
-	if (value > 100)
-	    return 100;
+	final int value = rate + relRate - 50;
+	if (value < -50)
+	    return -50;
+	if (value > 50)
+	    return 50;
 	return value;
     }
 

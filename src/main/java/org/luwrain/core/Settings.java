@@ -278,12 +278,16 @@ public interface DateTime
     {
 	String getMainEngineName(String defValue);
 	String getMainEngineParams(String defValue);
+	String getListeningEngineName(String defValue);
+	String getListeningEngineParams(String defValue);
 	int getPitch(int defValue);
 	int getRate(int defValue);
-	void setPitch(int value);
-	void setRate(int value);
 	void setMainEngineName(String value);
 	void setMainEngineParams(String params);
+	void setListeningEngineName(String value);
+	void setListeningEngineParams(String params);
+	void setPitch(int value);
+	void setRate(int value);
     }
 
     static public InteractionParams createInteractionParams(Registry registry)
