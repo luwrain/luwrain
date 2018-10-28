@@ -146,7 +146,7 @@ final class Core extends EventDispatching
 	initDynamicExtensions();
 	initI18n();
 	objRegistry.add(null, new StartingModeProperty());
-	if (!speech.init(objRegistry.getSpeechFactories()))
+	if (!speech.init(objRegistry.getSpeechEngines()))
 	    Log.warning(LOG_COMPONENT, "unable to initialize speech core, very likely LUWRAIN will be silent");
 	braille.init(registry, os.getBraille(), this);
 	globalKeys.loadFromRegistry();

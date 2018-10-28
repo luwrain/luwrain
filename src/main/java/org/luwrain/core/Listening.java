@@ -39,7 +39,7 @@ class Listening
 
     boolean start()
     {
-	channel = speech.getReadingChannel();
+	channel = null;//FIXME:
 	if (channel == null)
 	    return false;
 	Log.debug("core", "using the channel \'" + channel.getChannelName() + " for listening area of class " + area.getClass().getName());

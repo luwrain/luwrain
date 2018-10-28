@@ -100,7 +100,6 @@ public interface Luwrain extends PropertiesBase
     String getActiveAreaAttr(AreaAttr attr);
     String getActiveAreaText(AreaTextType type, boolean issueErrorMessage);
     String[] getAllShortcutNames();
-    Channel getAnySpeechChannelByCond(Set<Channel.Features> cond);
 
     /**
      * Returns a path to the directory where the application may safely store
@@ -130,7 +129,6 @@ public interface Luwrain extends PropertiesBase
     Registry getRegistry();
     int getScreenWidth();
     int getScreenHeight();
-    Channel[] getSpeechChannelsByCond(Set<Channel.Features> cond);
 
     //Never returns null, doesn't take empty strings
     UniRefInfo getUniRefInfo(String uniRef);

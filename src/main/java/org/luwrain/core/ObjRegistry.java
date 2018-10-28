@@ -44,7 +44,7 @@ final class ObjRegistry
     private Map<String, Entry<Shortcut>> shortcuts = new HashMap();
     private Map<String, Entry<CommandLineTool>> cmdLineTools = new HashMap();
     private Map<String, Entry<Worker>> workers = new HashMap();
-    private Map<String, Entry<org.luwrain.speech.Factory>> speechFactories = new HashMap();
+    private Map<String, Entry<org.luwrain.speech.Engine>> speechEngines = new HashMap();
     private Map<String, Entry<MediaResourcePlayer>> players = new HashMap();
         private Map<String, Entry<PropertiesProvider>> propsProviders = new HashMap();
             private Map<String, Entry<TextEditingExtension>> textEditingExts = new HashMap();
@@ -87,12 +87,12 @@ final class ObjRegistry
 	    }
 	}
 
-				if (obj instanceof org.luwrain.speech.Factory)
+				if (obj instanceof org.luwrain.speech.Engine)
 	{
-	    final org.luwrain.speech.Factory factory = (org.luwrain.speech.Factory)obj;
-	    if (!speechFactories.containsKey(name))
+	    final org.luwrain.speech.Engine engine = (org.luwrain.speech.Engine)obj;
+	    if (!speechEngines.containsKey(name))
 	    {
-		speechFactories.put(name, new Entry(ext, name, factory));
+		speechEngines.put(name, new Entry(ext, name, engine));
 		res = true;
 	    }
 	}
@@ -138,7 +138,7 @@ final class ObjRegistry
 	removeEntriesByExt(shortcuts, ext);
 	removeEntriesByExt(cmdLineTools, ext);
 	removeEntriesByExt(workers, ext);
-	removeEntriesByExt(speechFactories, ext);
+	removeEntriesByExt(speechEngines, ext);
 	removeEntriesByExt(players, ext);
     }
 
@@ -196,28 +196,18 @@ final class ObjRegistry
 	return res.toArray(new MediaResourcePlayer[res.size()]);
     }
 
-    org.luwrain.cpanel.Section getSpeechChannelSettingsSection(String name, org.luwrain.cpanel.Element el, String path)
+    boolean hasSpeechEngine(String name)
     {
 	NullCheck.notEmpty(name, "name");
-	NullCheck.notNull(el, "el");
-	NullCheck.notEmpty(path, "path");
-	if (!speechFactories.containsKey(name))
-	    return null;
-	return speechFactories.get(name).obj.newSettingsSection(el, path);
+	return speechEngines.containsKey(name);
     }
 
-    boolean hasSpeechFactory(String name)
+        org.luwrain.speech.Engine[] getSpeechEngines()
     {
-	NullCheck.notEmpty(name, "name");
-	return speechFactories.containsKey(name);
-    }
-
-        org.luwrain.speech.Factory[] getSpeechFactories()
-    {
-	final List<org.luwrain.speech.Factory> res = new LinkedList();
-	for(Map.Entry<String, Entry<org.luwrain.speech.Factory>> e: speechFactories.entrySet())
+	final List<org.luwrain.speech.Engine> res = new LinkedList();
+	for(Map.Entry<String, Entry<org.luwrain.speech.Engine>> e: speechEngines.entrySet())
 	    res.add(e.getValue().obj);
-	return res.toArray(new org.luwrain.speech.Factory[res.size()]);
+	return res.toArray(new org.luwrain.speech.Engine[res.size()]);
     }
 
             Worker[] getWorkers()

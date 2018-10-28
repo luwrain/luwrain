@@ -58,10 +58,7 @@ class SpeechControlPanelFactory implements Factory
 	if (el.equals(channelsElement))
 	    return new SimpleSection(channelsElement, luwrain.i18n().getStaticStr("CpSpeechChannels"), null,
 				     new Action[]{new Action("add-speech-channel", luwrain.i18n().getStaticStr("CpAddNewSpeechChannel"))}, (controlPanel, event)->onActionEvent(controlPanel, event));
-	if (!(el instanceof ChannelElement))
 	return null;
-	final ChannelElement c = (ChannelElement)el;
-	return objRegistry.getSpeechChannelSettingsSection(c.type, el, c.path);
     }
 
     private boolean onActionEvent(ControlPanel controlPanel, EnvironmentEvent event)
@@ -96,7 +93,7 @@ private Element[] readChannelsData(Element parent)
 	    final String dir = Registry.join(Settings.SPEECH_CHANNELS_PATH, s);
 	    final Settings.SpeechChannelBase channelBase = Settings.createSpeechChannelBase(registry, dir);
 	    final String type = channelBase.getType("");
-	    if (type.isEmpty() || !objRegistry.hasSpeechFactory(type))
+	    if (type.isEmpty() || !objRegistry.hasSpeechEngine(type))
 		continue;
 	    res.add(new ChannelElement(parent, type, dir));
 	}

@@ -68,6 +68,7 @@ public final class Speech implements PropertiesProvider
 	{
 	    return null;
 	}
+	/*
 	final Channel[] channels = speech.getAllChannels();
 	if (n < 0 || n >= channels.length)
 	    return null;
@@ -89,6 +90,8 @@ public final class Speech implements PropertiesProvider
 	default:
 	    return null;
 	}
+	*/
+	return null;
     }
 
     @Override public File getFileProperty(String propName)

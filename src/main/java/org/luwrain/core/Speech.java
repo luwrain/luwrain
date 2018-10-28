@@ -23,7 +23,7 @@ import org.luwrain.speech.*;
 public final class Speech
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-    
+
     static final int PITCH_HIGH = 25;
     static final int PITCH_NORMAL = 0;
     static final int PITCH_LOW = -25;
@@ -37,8 +37,8 @@ public final class Speech
     private final Registry registry;
     private final Settings.SpeechParams settings;
 
-    private final Map<String, Channel> channels = new HashMap();
-    private Channel defaultChannel = null;
+    private final Map<String, Engine> engines = new HashMap();
+    private Channel2 defaultChannel = null;
 
     private int pitch = 50;
     private int rate = 50;
@@ -94,13 +94,6 @@ public final class Speech
 
     void setRate(int value)
     {
-	if (value < 0)
-	    rate = 0; else 
-	    if (value > 100)
-		rate = 100; else
-		rate = value;
-	defaultChannel.setDefaultRate(rate);
-	settings.setRate(rate);
     }
 
     int getPitch()
@@ -110,220 +103,86 @@ public final class Speech
 
     void setPitch(int value)
     {
-	if (value < 0)
-	    pitch = 0; else 
-	    if (value > 100)
-		pitch = 100; else
-		pitch = value;
-	defaultChannel.setDefaultPitch(pitch);
-	settings.setPitch(pitch);
     }
 
-    Channel getReadingChannel()
-    {
-	return getAnyChannelByCond(EnumSet.of(Channel.Features.CAN_SYNTH_TO_SPEAKERS, Channel.Features.CAN_NOTIFY_WHEN_FINISHED));
-    }
-
-    boolean hasReadingChannel()
-    {
-	return false;
-    }
 
     //Never returns default channe
-    Channel[] getChannelsByCond(Set<Channel.Features> cond)
+    Channel2[] getChannelsByCond(Set<Channel.Features> cond)
     {
 	NullCheck.notNull(cond, "cond");
 	final List<Channel> res = new LinkedList();
+	return null;
+	/*	
 	for(Map.Entry<String, Channel> e: channels.entrySet())
 	    if (e.getValue() != defaultChannel && e.getValue().getFeatures().containsAll(cond))
 		res.add(e.getValue());
 	return res.toArray(new Channel[res.size()]);
+	*/
     }
 
     Channel getAnyChannelByCond(Set<Channel.Features> cond)
     {
+	return null;
+	/*
 	final Channel[] res = getChannelsByCond(cond);
 	if (res.length < 1)
 	    return null;
 	return res[0];
+	*/
     }
 
-    public Channel[] getAllChannels()
+    boolean init(Engine[] engines)
     {
-	final List<Channel> res = new LinkedList<Channel>();
-	for(Map.Entry<String, Channel> e: channels.entrySet())
-	    res.add(e.getValue());
-	return res.toArray(new Channel[res.size()]);
-    }
-
-    public boolean isDefaultChannel(Channel channel)
-    {
-	NullCheck.notNull(channel, "channel");
-	return channel == defaultChannel;
-    }
-
-    boolean init(Factory[] factories)
-    {
-	NullCheck.notNullItems(factories, "factories");
+	NullCheck.notNullItems(engines, "engines");
+	for(Engine e: engines)
+	{
+	    final String name = e.getExtObjName();
+	    if (name == null || name.isEmpty())
+	    {
+		Log.warning(LOG_COMPONENT, "the speech engine with empty name found, skipping it");
+		continue;
+	    }
+	    if (this.engines.containsKey(name))
+	    {
+		Log.warning(LOG_COMPONENT, "two speech engine with the same name \'" + name + "\'");
+		continue;
+	    }
+	    this.engines.put(name, e);
+	}
+	final String engineName;
+	final Map<String, String> params = new HashMap();
 	final String speechArg = cmdLine.getFirstArg(SPEECH_PREFIX);
 	if (speechArg != null && !speechArg.isEmpty())
 	{
-	    final Channel main = loadChannelByStr(speechArg, factories);
-	    if (main == null)
+	    engineName = parseChannelLine(speechArg, params);
+	    if (engineName == null)
 	    {
-		Log.error(LOG_COMPONENT, "unable to initialize default speech channel with arguments line \'" + speechArg + "\'");
+		Log.error(LOG_COMPONENT, "unable to parse speech channel loading line: \'" + speechArg + "\'");
 		return false;
 	    }
-	    channels.put(main.getChannelName(), main);
-	    final String[] additional = cmdLine.getArgs(ADD_SPEECH_PREFIX);
-	    final List<Channel> res = new LinkedList();
-	    for(String s: additional)
-	    {
-		final Channel c = loadChannelByStr(s, factories);
-		if (c != null)
-		{
-		    final String name = c.getChannelName();
-		    if (channels.containsKey(name))
-		    {
-			Log.error(LOG_COMPONENT, "speech channel name \'" + name + "\' used more than ones");
-			return false;
-		    }
-		    channels.put(name, c);
-		}
-	    }
-	    defaultChannel = main;
 	} else
+	engineName = "rhvoice";//Take from registry
+	this.defaultChannel = loadChannel(engineName, params);
+	if (defaultChannel == null)
 	{
-	    //from registry
-	    loadRegistryChannels(factories);
-	    if (!chooseDefaultChannel())
-	    {
-		Log.error(LOG_COMPONENT, "unable to choose the default speech channel");
-		return false;
-	    }
-	}
-	Log.debug(LOG_COMPONENT, "default speech channel is \'" + defaultChannel.getChannelName() + "\'");
-	pitch = settings.getPitch(50);
-	rate = settings.getRate(50);
-	if (pitch < 0)
-	    pitch = 0;
-	if (pitch > 100)
-	    pitch = 100;
-	if (rate < 0)
-	    rate = 0;
-	if (rate > 100)
-	    rate = 100;
-	defaultChannel.setDefaultRate(rate);
-	defaultChannel.setDefaultPitch(pitch);
-	defaultChannel.setCurrentPuncMode(Channel.PuncMode.NONE);
-	return true;
-    }
-
-    private void loadRegistryChannels(Factory[] factories)
-    {
-	NullCheck.notNullItems(factories, "factories");
-	final String path = Settings.SPEECH_CHANNELS_PATH;
-	final String[] dirs = registry.getDirectories(path);
-	for(String s: dirs)
-	{
-	    final String dir = Registry.join(path, s);
-	    final Settings.SpeechChannelBase channelBase = Settings.createSpeechChannelBase(registry, dir);
-	    final String type = channelBase.getType("");
-	    if (type.isEmpty())
-	    {
-		Log.error(LOG_COMPONENT, "no type information in " + dir);
-		continue;
-	    }
-	    if (!hasFactory(factories, type))
-	    {
-		Log.error(LOG_COMPONENT, "no speech factory which is able to servc speech channels of type \'" + type + "\'");
-		continue;
-	    }
-	    final Factory factory = findFactory(factories, type);
-	    final Channel channel = factory.newChannel();
-	    if (channel == null)
-	    {
-		Log.error(LOG_COMPONENT, "speech factory of type \'" + type + "\' is unable to create a channel instance");
-		continue;
-	    }
-	    if (!channel.initByRegistry(registry, dir))
-	    {
-		Log.error(LOG_COMPONENT, "speech channel " + channel.getClass().getName() + " unable to initialize by registry data in " + dir);
-		continue;
-	    }
-	    final String name = channel.getChannelName();
-	    if (name.isEmpty())
-	    {
-		Log.error(LOG_COMPONENT, "no speech channel name in " + dir);
-		continue;
-	    }
-	    if (channels.containsKey(name))
-	    {
-		Log.error(LOG_COMPONENT, "speech channels name \'" + name + " used more than ones, using only the first");
-		continue;
-	    }
-	    channels.put(channel.getChannelName(), channel);
-	    Log.debug(LOG_COMPONENT, "the registry speech channel " + name + "(" + dir + ") successfully loaded");
-	}
-    }
-
-    private Channel loadChannelByStr(String arg, Factory[] factories)
-    {
-	NullCheck.notNullItems(factories, "factories");
-	if (arg.isEmpty())
-	{
-	    Log.warning(LOG_COMPONENT, "an empty value of speech channel arguments in command line option, skipping");
-	    return null;
-	}
-	final String[] params = arg.split(":", -1);
-	final String type = params[0];
-	if (!hasFactory(factories, type))
-	{
-	    Log.error(LOG_COMPONENT, "no speech factory to serve channel type \'" + type + "\'");
-	}
-	final Factory factory = findFactory(factories, type);
-	final Channel res = factory.newChannel();
-	if (res == null)
-	{
-	    Log.error(LOG_COMPONENT, "the factory is unable to load new speech channel of type \'" + type + "\'");
-	    return null;
-	}
-	if (!res.initByArgs(params.length <= 1?new String[0]:Arrays.copyOfRange(params, 1, params.length)))
-	{
-	    Log.error(LOG_COMPONENT, "newly created channel of type \'" + type + "\' refuses to initialize, complete arguments line is \'" + arg + "\'");
-	    return null;
-	}
-	if (res.getChannelName().isEmpty())
-	{
-	    Log.error(LOG_COMPONENT, "newly created channel of type \'" + type + "\' has an empty name");
-	    return null;
-	}
-	return res;
-    }
-
-    private boolean chooseDefaultChannel()
-    {
-	Channel any = null;
-	for(Map.Entry<String, Channel> e: channels.entrySet())
-	{
-	    final Channel c = e.getValue();
-	    if (!c.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_SPEAKERS))
-		continue;
-	    any = c;
-	    if (c.isDefault())
-	    {
-		defaultChannel = c;
-		return true;
-	    }
-	}
-	if (any == null)
-	{
-	    Log.error(LOG_COMPONENT, "unable to select a default speech channel capable of synthesizing to speakers");
+	    Log.error(LOG_COMPONENT, "unable to load the default channel of the engine \'" + engineName + "\'");
 	    return false;
 	}
-	defaultChannel = any;
 	return true;
     }
+
+    private Channel2 loadChannel(String engineName, Map<String, String> params)
+    {
+	NullCheck.notEmpty(engineName, "engineName");
+	NullCheck.notNull(params, "params");
+	if (!engines.containsKey(engineName))
+	{
+	    Log.error(LOG_COMPONENT, "no such speech engine: \'" + engineName + "\'");
+	    return null;
+	}
+	return engines.get(engineName).newChannel(params);
+    }
+
 
     static private Factory findFactory(Factory[] factories, String name)
     {
@@ -340,5 +199,54 @@ public final class Speech
 	NullCheck.notNullItems(factories, "factories");
 	NullCheck.notEmpty(name, "name");
 	return findFactory(factories, name) != null;
+    }
+
+    static private String parseChannelLine(String line, Map<String, String> params)
+    {
+	NullCheck.notNull(line, "line");
+	NullCheck.notNull(params, "params");
+	final int pos = line.indexOf(line);
+	if (pos <= 0)
+	    return null;
+	if (!parseParams(line.substring(pos + 1), params))
+	    return null;
+	return line.substring(0, pos);
+    }
+
+    static private boolean parseParams(String line, Map<String, String> params)
+    {
+	NullCheck.notNull(line, "line");
+	NullCheck.notNull(params, "params");
+	if (line.isEmpty())
+	    return true;
+	final List<String> items = new LinkedList();
+	String item = "";
+	for(int i = 0;i < line.length();++i)
+	{
+	    final char c = line.charAt(i);
+	    switch(c)
+	    {
+	    case ',':
+		if (i == 0 || line.charAt(i - 1) != '\\')
+		{
+		    items.add(item);
+		    item = "";
+		    continue;
+		}
+				item += c;
+				break;
+	    default:
+		item += c;
+	    }
+	}
+	items.add(item);
+	for(String s: items)
+	{
+	    final int pos = s.indexOf("=");
+	    if (pos <= 0)
+		return false;
+	    params.put(s.substring(0, pos), s.substring(pos + 1));
+	}
+	return true;
     }
 }

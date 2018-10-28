@@ -513,20 +513,6 @@ final class LuwrainImpl implements Luwrain
 		    }, file);
     }
 
-    @Override public Channel getAnySpeechChannelByCond(Set<Channel.Features> cond)
-    {
-	NullCheck.notNull(cond, "cond");
-	core.mainCoreThreadOnly();
-	return core.getSpeech().getAnyChannelByCond(cond);
-    }
-
-    @Override public Channel[] getSpeechChannelsByCond(Set<Channel.Features> cond)
-    {
-	NullCheck.notNull(cond, "cond");
-	core.mainCoreThreadOnly();
-	return core.getSpeech().getChannelsByCond(cond);
-    }
-
     @Override public void runUiSafely(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
