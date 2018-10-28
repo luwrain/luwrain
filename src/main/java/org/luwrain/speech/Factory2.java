@@ -20,9 +20,6 @@ package org.luwrain.speech;
 
 import java.util.*;
 
-import org.luwrain.cpanel.Section;
-import org.luwrain.cpanel.Element;
-
 public interface Factory2 extends org.luwrain.base.ExtensionObject
 {
     public enum Features {
@@ -32,6 +29,5 @@ public interface Factory2 extends org.luwrain.base.ExtensionObject
     };
 
         Set<Features>  getFeatures();
-            Channel2 newChannel(Map<String, Object> params);
-Section     newSettingsSection(Element el, String registryPath);
+            Channel2 newChannel(Map<String, String> params);
 }
