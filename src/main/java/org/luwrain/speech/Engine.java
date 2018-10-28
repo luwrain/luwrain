@@ -20,7 +20,7 @@ package org.luwrain.speech;
 
 import java.util.*;
 
-public interface Factory2 extends org.luwrain.base.ExtensionObject
+public interface Engine extends org.luwrain.base.ExtensionObject
 {
     public enum Features {
 	CAN_SYNTH_TO_STREAM,
