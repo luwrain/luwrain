@@ -23,13 +23,8 @@ import org.luwrain.speech.*;
 public final class Speech
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-
-    static final int PITCH_HIGH = 25;
-    static final int PITCH_NORMAL = 0;
-    static final int PITCH_LOW = -25;
     static final int PITCH_HINT = -25;
     static final int PITCH_MESSAGE = -25;
-
     static private final String SPEECH_PREFIX = "--speech=";
 
     private final CmdLine cmdLine;
@@ -49,7 +44,7 @@ public final class Speech
 	this.rate = sett.getRate(this.rate);
     }
 
-        void init(Engine[] engines)
+    void init(Engine[] engines)
     {
 	NullCheck.notNullItems(engines, "engines");
 	for(Engine e: engines)
@@ -155,10 +150,10 @@ public final class Speech
     void setRate(int value)
     {
 	if (value < 0)
-	    this.rate = 0;
-	if (value > 100)
-	    this.rate = 100;
-	this.rate = value;
+	    this.rate = 0; else
+	    if (value > 100)
+		this.rate = 100; else
+		this.rate = value;
     }
 
     int getPitch()
@@ -169,10 +164,10 @@ public final class Speech
     void setPitch(int value)
     {
 	if (value < 0)
-	    this.pitch = 0;
-	if (value > 100)
-	    this.pitch = 100;
-	this.pitch = value;
+	    this.pitch = 0; else
+	    if (value > 100)
+		this.pitch = 100; else
+		this.pitch = value;
     }
 
     private int makePitch(int relPitch)
@@ -185,7 +180,7 @@ public final class Speech
 	return value;
     }
 
-        private int makeRate(int relRate)
+    private int makeRate(int relRate)
     {
 	final int value = rate + relRate;
 	if (value < 0)
@@ -227,8 +222,8 @@ public final class Speech
 		    item = "";
 		    continue;
 		}
-				item += c;
-				break;
+		item += c;
+		break;
 	    default:
 		item += c;
 	    }
