@@ -280,12 +280,16 @@ public interface DateTime
 	String getMainEngineParams(String defValue);
 	String getListeningEngineName(String defValue);
 	String getListeningEngineParams(String defValue);
+	int getListeningPitch(int defValue);
+	int getListeningRate(int defValue);
 	int getPitch(int defValue);
 	int getRate(int defValue);
 	void setMainEngineName(String value);
 	void setMainEngineParams(String params);
 	void setListeningEngineName(String value);
 	void setListeningEngineParams(String params);
+	void setListeningPitch(int value);
+	void setListeningRate(int value);
 	void setPitch(int value);
 	void setRate(int value);
     }

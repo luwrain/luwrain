@@ -39,6 +39,8 @@ final class Speech extends FormArea implements SectionArea
 	addEdit("main-engine-params", luwrain.i18n().getStaticStr("CpSpeechMainEngineParams"), sett.getMainEngineParams(""));
 	addEdit("listening-engine-name", luwrain.i18n().getStaticStr("CpSpeechListeningEngineName"), sett.getListeningEngineName(""));
 	addEdit("listening-engine-params", luwrain.i18n().getStaticStr("CpSpeechListeningEngineParams"), sett.getListeningEngineParams(""));
+	addEdit("listening-pitch", luwrain.i18n().getStaticStr("CpSpeechListeningPitch"), "" + sett.getListeningPitch(50));
+	addEdit("listening-rate", luwrain.i18n().getStaticStr("CpSpeechListeningRate"), "" + sett.getListeningRate(50));
     }
 
     @Override public boolean saveSectionData()
@@ -47,6 +49,36 @@ final class Speech extends FormArea implements SectionArea
 	sett.setMainEngineParams(getEnteredText("main-engine-params"));
 	sett.setListeningEngineName(getEnteredText("listening-engine-name"));
 	sett.setListeningEngineParams(getEnteredText("listening-engine-params"));
+	final int listeningPitch;
+	try {
+	    listeningPitch = Integer.parseInt(getEnteredText("listening-pitch"));
+	}
+	catch(NumberFormatException e)
+	{
+	    luwrain.message(luwrain.i18n().getStaticStr("CpSpeechInvalidListeningPitch"), Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	if (listeningPitch < 0 || listeningPitch > 100)
+	{
+	    luwrain.message(luwrain.i18n().getStaticStr("CpSpeechInvalidListeningPitch"), Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	sett.setListeningPitch(listeningPitch);
+	final int listeningRate;
+	try {
+	    listeningRate = Integer.parseInt(getEnteredText("listening-rate"));
+	}
+	catch(NumberFormatException e)
+	{
+	    luwrain.message(luwrain.i18n().getStaticStr("CpSpeechInvalidListeningRate"), Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	if (listeningRate < 0 || listeningRate > 100)
+	{
+	    luwrain.message(luwrain.i18n().getStaticStr("CpSpeechInvalidListeningRate"), Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	sett.setListeningRate(listeningRate);
 	return true;
     }
 

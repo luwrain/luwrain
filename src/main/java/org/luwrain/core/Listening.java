@@ -20,12 +20,13 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.speech.*;
 
-class Listening
+final class Listening
 {
     private final Luwrain luwrain;
     private final Speech speech;
     private final Area area;
-    private Channel channel;
+    private final Settings.SpeechParams sett;
+    private Channel2 channel;
 
     Listening(Luwrain luwrain, Speech speech, Area area)
     {
@@ -35,16 +36,18 @@ class Listening
 	this.luwrain = luwrain;
 	this.speech = speech;
 	this.area = area;
+	this.sett = Settings.createSpeechParams(luwrain.getRegistry());
     }
 
     boolean start()
     {
-	channel = null;//FIXME:
+	if (sett.getListeningEngineName("").isEmpty())
+	    return false;
+	channel = speech.loadChannel(sett.getListeningEngineName(""), sett.getListeningEngineParams(""));
 	if (channel == null)
 	    return false;
-	Log.debug("core", "using the channel \'" + channel.getChannelName() + " for listening area of class " + area.getClass().getName());
-	channel.setDefaultRate(45);
-	channel.setDefaultPitch(30);
+	//channel.setDefaultRate(45);
+	//channel.setDefaultPitch(30);
 	luwrain.playSound(Sounds.PLAYING);
 	onFinish(null, null);
 	return true;
@@ -74,12 +77,12 @@ class Listening
 
     private void startNormal(String text, Object extraInfo)
     {
-	final Channel.Listener listener = new Channel.Listener(){
+	final Channel2.Listener listener = new Channel2.Listener(){
 		@Override public void onFinished(long id)
 		{
 		    luwrain.runUiSafely(()->onFinish(text, extraInfo));
 		}};
-	channel .speak(text, listener, 0, 0, false);
+	channel .speak(text, listener, sett.getListeningPitch(50) - 50, 50 - sett.getListeningRate(50), false);
     }
 
     private void startGeneral()

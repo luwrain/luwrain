@@ -568,7 +568,7 @@ class Commands
 		{
 		    final Speech speech = core.getSpeech();
 		    speech.setPitch(speech.getPitch() + SPEECH_STEP);
-		    luwrain.message("Высота речи " + speech.getPitch());
+		    luwrain.message("Высота речи " + speech.getPitch());//FIXME:
 		}
 	    },
 

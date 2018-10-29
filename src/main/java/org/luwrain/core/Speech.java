@@ -97,6 +97,16 @@ public final class Speech
 	    Log.error(LOG_COMPONENT, "unable to load the default channel of the engine \'" + engineName + "\'");
     }
 
+        Channel2 loadChannel(String engineName, String paramsLine)
+    {
+	NullCheck.notEmpty(engineName, "engineName");
+	NullCheck.notNull(paramsLine, "paramsLine");
+	final Map<String, String> params = new HashMap();
+	if (!parseParams(paramsLine, params))
+	    return null;
+	return loadChannel(engineName, params);
+    }
+
     private Channel2 loadChannel(String engineName, Map<String, String> params)
     {
 	NullCheck.notEmpty(engineName, "engineName");
@@ -154,6 +164,7 @@ public final class Speech
 	    if (value > 100)
 		this.rate = 100; else
 		this.rate = value;
+	sett.setRate(this.rate);
     }
 
     int getPitch()
@@ -168,6 +179,7 @@ public final class Speech
 	    if (value > 100)
 		this.pitch = 100; else
 		this.pitch = value;
+	sett.setPitch(this.pitch);
     }
 
     private int makePitch(int relPitch)
