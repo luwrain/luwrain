@@ -30,7 +30,7 @@ public final class Speech
     private final CmdLine cmdLine;
     private final Settings.SpeechParams sett;
     private final Map<String, Engine> engines = new HashMap();
-    private Channel2 defaultChannel = null;
+    private Channel defaultChannel = null;
     private int pitch = 50;
     private int rate = 50;
 
@@ -97,7 +97,7 @@ public final class Speech
 	    Log.error(LOG_COMPONENT, "unable to load the default channel of the engine \'" + engineName + "\'");
     }
 
-        Channel2 loadChannel(String engineName, String paramsLine)
+        Channel loadChannel(String engineName, String paramsLine)
     {
 	NullCheck.notEmpty(engineName, "engineName");
 	NullCheck.notNull(paramsLine, "paramsLine");
@@ -107,7 +107,7 @@ public final class Speech
 	return loadChannel(engineName, params);
     }
 
-    private Channel2 loadChannel(String engineName, Map<String, String> params)
+    private Channel loadChannel(String engineName, Map<String, String> params)
     {
 	NullCheck.notEmpty(engineName, "engineName");
 	NullCheck.notNull(params, "params");

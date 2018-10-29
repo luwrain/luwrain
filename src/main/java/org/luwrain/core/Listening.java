@@ -26,7 +26,7 @@ final class Listening
     private final Speech speech;
     private final Area area;
     private final Settings.SpeechParams sett;
-    private Channel2 channel;
+    private Channel channel;
 
     Listening(Luwrain luwrain, Speech speech, Area area)
     {
@@ -77,7 +77,7 @@ final class Listening
 
     private void startNormal(String text, Object extraInfo)
     {
-	final Channel2.Listener listener = new Channel2.Listener(){
+	final Channel.Listener listener = new Channel.Listener(){
 		@Override public void onFinished(long id)
 		{
 		    luwrain.runUiSafely(()->onFinish(text, extraInfo));

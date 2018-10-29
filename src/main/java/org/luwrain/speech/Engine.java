@@ -29,5 +29,5 @@ public interface Engine extends org.luwrain.base.ExtensionObject
     };
 
         Set<Features>  getFeatures();
-            Channel2 newChannel(Map<String, String> params);
+            Channel newChannel(Map<String, String> params);
 }
