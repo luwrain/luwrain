@@ -206,9 +206,9 @@ public final class Speech
     {
 	NullCheck.notNull(line, "line");
 	NullCheck.notNull(params, "params");
-	final int pos = line.indexOf(line);
+	final int pos = line.indexOf(":");
 	if (pos <= 0)
-	    return null;
+	    return line;
 	if (!parseParams(line.substring(pos + 1), params))
 	    return null;
 	return line.substring(0, pos);
