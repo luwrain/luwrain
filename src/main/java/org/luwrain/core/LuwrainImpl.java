@@ -681,6 +681,13 @@ final class LuwrainImpl implements Luwrain
 	return core.loadScriptExtension(core.props.getFileProperty("luwrain.dir.data"), text);
     }
 
+    @Override public org.luwrain.speech.Channel loadSpeechChannel(String engineName, String params) throws org.luwrain.speech.SpeechException
+    {
+	NullCheck.notEmpty(engineName, "engineName");
+	NullCheck.notNull(params, "params");
+	return core.speech.loadChannel(engineName, params);
+    }
+
     @Override public boolean unloadDynamicExtension(String extId)
     {
 	NullCheck.notEmpty(extId, "extId");

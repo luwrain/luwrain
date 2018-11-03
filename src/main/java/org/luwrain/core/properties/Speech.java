@@ -54,43 +54,7 @@ public final class Speech implements PropertiesProvider
 	NullCheck.notEmpty(propName, "propName");
 	if (!propName.startsWith("luwrain.speech.channel."))
 	    return null;
-	final String arg = propName.substring("luwrain.speech.channel.".length());
-	final String[] args = arg.split("\\.", -1);
-	if (args.length != 2 ||
-	    args[0].isEmpty() ||
-	    args[1].isEmpty())
-	    return null;
-	final int n;
-	try {
-	    n = Integer.parseInt(args[0]);
-	}
-	catch(NumberFormatException e)
-	{
-	    return null;
-	}
-	/*
-	final Channel[] channels = speech.getAllChannels();
-	if (n < 0 || n >= channels.length)
-	    return null;
-	final Channel channel = channels[n];
-	switch(args[1])
-	{
-	case "name":
-	    return channel.getChannelName();
-	case "class":
-	    return channel.getClass().getName();
-	case "default":
-	    return speech.isDefaultChannel(channel)?"1":"0";
-	case "cansynthtospeakers":
-	    return channel.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_SPEAKERS)?"1":"0";
-	case "cansynthtostream":
-	    return channel.getFeatures().contains(Channel.Features.CAN_SYNTH_TO_STREAM)?"1":"0";
-	case "cannotifywhenfinished":
-	    return channel.getFeatures().contains(Channel.Features.CAN_NOTIFY_WHEN_FINISHED)?"1":"0";
-	default:
-	    return null;
-	}
-	*/
+	//FIXME:
 	return null;
     }
 

@@ -137,6 +137,7 @@ public interface Luwrain extends PropertiesBase
     void launchApp(String shortcutName);
     void launchApp(String shortcutName, String[] args);
     String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException;
+    org.luwrain.speech.Channel loadSpeechChannel(String engineName, String params) throws org.luwrain.speech.SpeechException;
     void message(String text);
     void message(String text, MessageType messageType);
     void message(String text, Sounds sound);
