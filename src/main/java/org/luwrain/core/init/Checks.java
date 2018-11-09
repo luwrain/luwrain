@@ -71,6 +71,7 @@ public final class Checks
 		    {
 		    case "ru":
 		    case "en":
+		    case "ro":
 			return cmdLineArg.trim().toLowerCase();
 		    default:
 			Log.error(LOG_COMPONENT, "unknown language \'" + cmdLineArg + "\' in the command line options");
