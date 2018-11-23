@@ -131,9 +131,40 @@ final class Core extends EventDispatching
     @Override public void onAltX()
     {
 	final String cmdName = conversations.commandPopup(commands.getCommandNames());
-	if (cmdName != null && !cmdName.trim().isEmpty()&&
-	    !commands.run(cmdName.trim()))
+	if (cmdName == null || cmdName.trim().isEmpty())
+	    return;
+	if (cmdName.trim().startsWith("app "))
+	{
+	    if (!runAppCommand(cmdName.trim()))
+			    message(i18n.getStaticStr("NoCommand"), Luwrain.MessageType.ERROR);
+	    return;
+	}
+	if (!commands.run(cmdName.trim()))
 	    message(i18n.getStaticStr("NoCommand"), Luwrain.MessageType.ERROR);
+    }
+
+        private boolean runAppCommand(String command)
+    {
+	NullCheck.notEmpty(command, "command");
+	Log.debug("proba", "command " + command);
+	if (!command.startsWith("app "))
+	    return false;
+	final String params = command.substring("app ".length());
+	Log.debug("proba", "params " + params);
+	String shortcut = null;
+	final List<String> args = new LinkedList();
+	//FIXME:quotes
+	for(String s: params.split(" ", -1))
+	    if (!s.trim().isEmpty())
+	    {
+		if (shortcut == null)
+		    shortcut = s.trim(); else
+		    args.add(s.trim());
+	    }
+	if (shortcut == null)
+	    return false;
+	launchAppIface(shortcut, args.toArray(new String[args.size()]));
+	return true;
     }
 
     private void init()
@@ -804,9 +835,8 @@ onNewAreasLayout();
 
     boolean runCommand(String command)
     {
+	NullCheck.notNull(command, "command");
 	mainCoreThreadOnly();
-	if (command == null)
-	    throw new NullPointerException("command may not be null");
 	if (command.trim().isEmpty())
 	    return false;
 	return commands.run(command.trim());
