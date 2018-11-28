@@ -62,18 +62,23 @@ final class  EventResponses
 
     static class Text implements EventResponse
     {
+	final Sounds sound;
 	final String text;
 
-	Text(String text)
+	Text(Sounds sound, String text)
 	{
 	    NullCheck.notNull(text, "text");
+	    this.sound = sound;
 	    this.text = text;
 	}
 
 	@Override public void announce(Luwrain luwrain, Speech speech)
 	{
+	    NullCheck.notNull(luwrain, "luwrain");
 	    NullCheck.notNull(text, "text");
 	    NullCheck.notNull(speech, "speech");
+	    if (sound != null)
+		luwrain.playSound(sound);
 	    if (!text.trim().isEmpty())
 	    speech.speak(new String[]{text});
 	}

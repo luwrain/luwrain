@@ -23,8 +23,15 @@ public class DefaultEventResponse
 static public EventResponse text(String text) 
     {
 	NullCheck.notNull(text, "text");
-	return new EventResponses.Text(text);
+	return new EventResponses.Text(null, text);
     }
+
+    static public EventResponse text(Sounds sound, String text) 
+    {
+	NullCheck.notNull(text, "text");
+	return new EventResponses.Text(sound, text);
+    }
+
 
         static public EventResponse hint(Hint hint) 
     {
