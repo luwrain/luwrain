@@ -23,6 +23,7 @@ public interface EventResponse
     public interface Speech
     {
 	void speak(String[] parts);
+	void speakLetter(char letter);
     }
 
     void announce(Luwrain luwrain, org.luwrain.core.EventResponse.Speech speech);

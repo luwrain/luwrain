@@ -26,12 +26,22 @@ static public EventResponse text(String text)
 	return new EventResponses.Text(null, text);
     }
 
+    /**
+     * Speak a text with simultaneous sound.
+     *
+     * @param sound A sound, may be null (no sound needed)
+     * @param text A text to say
+     */
     static public EventResponse text(Sounds sound, String text) 
     {
 	NullCheck.notNull(text, "text");
 	return new EventResponses.Text(sound, text);
     }
 
+    static public EventResponse letter(char letter)
+    {
+	return new EventResponses.Letter(letter);
+    }
 
         static public EventResponse hint(Hint hint) 
     {

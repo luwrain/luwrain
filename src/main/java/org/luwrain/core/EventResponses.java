@@ -84,6 +84,24 @@ final class  EventResponses
 	}
     }
 
+        static class Letter implements EventResponse
+    {
+	final char letter;
+
+	Letter(char letter)
+	{
+	    this.letter = letter;
+	}
+
+	@Override public void announce(Luwrain luwrain, Speech speech)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    NullCheck.notNull(speech, "speech");
+	    speech.speakLetter(letter);
+	}
+    }
+
+
     static class ListItem implements EventResponse
     {
 	final Sounds sound;

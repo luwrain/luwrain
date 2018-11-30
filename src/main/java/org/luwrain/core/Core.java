@@ -96,24 +96,29 @@ final class Core extends EventDispatching
     {
 	NullCheck.notNull(eventResponse, "eventResponse");
 	//FIXME:access level
-	eventResponse.announce(getObjForEnvironment(), (parts)->{
-		NullCheck.notNullItems(parts, "parts");
-		if (parts.length == 0)
-		    return;
-		if (parts.length == 1)
-		{
-		    speech.speakEventResponse(parts[0]);
-		    return;
-		}
-		final StringBuilder b = new StringBuilder();
-		b.append(parts[0]);
-		for(int i = 1;i < parts.length;++i)
-		{
-		    b.append(", ");
-		    b.append(parts[i]);
-		}
-		speech.speakEventResponse(new String(b));
-	    });
+	eventResponse.announce(getObjForEnvironment(),
+			       new EventResponse.Speech(){
+				   @Override public void speak(String[] parts)
+				   {
+				       NullCheck.notNullItems(parts, "parts");
+				       if (parts.length == 0)
+					   return;
+				       if (parts.length == 1)
+				       {
+					   speech.speakEventResponse(parts[0]);
+					   return;
+				       }
+				       final StringBuilder b = new StringBuilder();
+				       b.append(parts[0]);
+				       for(int i = 1;i < parts.length;++i)
+					   b.append(", ").append(parts[i]);
+				       speech.speakEventResponse(new String(b));
+				   }
+				   @Override public void speakLetter(char letter)
+				   {
+				       speech.speakLetter(letter, 0, 0);
+				   }
+			       });
     }
 
         @Override Area getValidActiveArea(boolean speakMessages)
