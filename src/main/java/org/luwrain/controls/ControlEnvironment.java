@@ -44,4 +44,5 @@ int getAreaVisibleHeight(Area area);
     int getScreenWidth();
     int getScreenHeight();
     void executeBkg(java.util.concurrent.FutureTask task);
+    void onAreaNewBackgroundSound(Area area);
 }

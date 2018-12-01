@@ -158,4 +158,10 @@ public class DefaultControlEnvironment implements ControlEnvironment
     {
 	luwrain.executeBkg(task);
     }
+
+    @Override public void onAreaNewBackgroundSound(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	luwrain.onAreaNewBackgroundSound(area);
+    }
 }
