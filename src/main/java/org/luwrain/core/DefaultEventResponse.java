@@ -40,6 +40,8 @@ static public EventResponse text(String text)
 
     static public EventResponse letter(char letter)
     {
+	if (Character.isSpace(letter) || letter == 160)//with non-breaking space
+	    return new EventResponses.Hint(Hint.SPACE);
 	return new EventResponses.Letter(letter);
     }
 
