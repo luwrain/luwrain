@@ -116,4 +116,8 @@ public class TestingControlEnvironment implements ControlEnvironment
     {
 	NullCheck.notNull(task, "task");
     }
+
+    @Override public void onAreaNewBackgroundSound(Area area)
+    {
+    }
 }
