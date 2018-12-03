@@ -308,6 +308,7 @@ private class Model implements EditableListArea.EditableModel
 	}
 	void load()
 	{
+	    registry.addDirectory(Settings.DESKTOP_UNIREFS_PATH);
 	    final String[] values = registry.getValues(Settings.DESKTOP_UNIREFS_PATH);
 	    for(String v: values)
 	    {
