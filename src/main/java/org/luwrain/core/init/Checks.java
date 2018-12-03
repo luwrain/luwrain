@@ -80,9 +80,15 @@ public final class Checks
 		if(System.getenv().containsKey(ENV_LANG) && !System.getenv().get(ENV_LANG).trim().isEmpty())
 		{
 		    final String lang = System.getenv().get(ENV_LANG).toLowerCase().trim();
-		    if (lang.equals("en") || lang.equals("ru"))
+		    switch(lang)
+		    {
+		    case "en":
+		    case "ru":
+		    case "ro":
 			return lang;
-		    Log.warning(LOG_COMPONENT, "the environment variable " + ENV_LANG + " contains the improper value \'" + lang + "\', ignoring it");
+		    default:
+		    Log.warning(LOG_COMPONENT, "the environment variable " + ENV_LANG + " contains an improper value \'" + lang + "\', ignoring it");
+		}
 		}
 		final String lang = Locale.getDefault().getISO3Language().trim().toLowerCase();
 		switch(lang)
