@@ -29,27 +29,27 @@ final class FileContentType
     FileContentType()
     {
 	//Raw 
-		contentTypes.put(".*\\.dat", ContentTypes.DATA_BINARY_DEFAULT);
-	contentTypes.put(".*\\.raw", ContentTypes.DATA_BINARY_DEFAULT);
+	contentTypes.put(".*\\.dat$", ContentTypes.DATA_BINARY_DEFAULT);
+	contentTypes.put(".*\\.raw$", ContentTypes.DATA_BINARY_DEFAULT);
 
 	//Text
-		contentTypes.put(".*\\.txt", ContentTypes.TEXT_PLAIN_DEFAULT);
-		contentTypes.put(".*\\.htm", ContentTypes.TEXT_HTML_DEFAULT);
-	contentTypes.put(".*\\.html", ContentTypes.TEXT_HTML_DEFAULT);
-			contentTypes.put(".*\\.doc", ContentTypes.APP_DOC_DEFAULT);
-		contentTypes.put(".*\\.docx", ContentTypes.APP_DOCX_DEFAULT);
+	contentTypes.put(".*\\.txt$", ContentTypes.TEXT_PLAIN_DEFAULT);
+	contentTypes.put(".*\\.htm$", ContentTypes.TEXT_HTML_DEFAULT);
+	contentTypes.put(".*\\.html$", ContentTypes.TEXT_HTML_DEFAULT);
+	contentTypes.put(".*\\.doc$", ContentTypes.APP_DOC_DEFAULT);
+	contentTypes.put(".*\\.docx$", ContentTypes.APP_DOCX_DEFAULT);
 
 	//Audio
-	contentTypes.put(".*\\.wav", ContentTypes.SOUND_WAVE_DEFAULT);
-	contentTypes.put(".*\\.wave", ContentTypes.SOUND_WAVE_DEFAULT);
-	contentTypes.put(".*\\.mp3", ContentTypes.SOUND_MP3_DEFAULT);
+	contentTypes.put(".*\\.wav$", ContentTypes.SOUND_WAVE_DEFAULT);
+	contentTypes.put(".*\\.wave$", ContentTypes.SOUND_WAVE_DEFAULT);
+	contentTypes.put(".*\\.mp3$", ContentTypes.SOUND_MP3_DEFAULT);
 
-		contentTypes.put(".*\\.xhtml", "application/xhtml");
-		contentTypes.put(".*\\.xhtm", "application/xhtml");
-		contentTypes.put(".*\\.pdf", "application/pdf");
-		contentTypes.put(".*\\.ps", "application/postscript");
-		contentTypes.put(".*\\.zip", "application/zip");
-		contentTypes.put(".*\\.fb2", "application/fb2");
+	contentTypes.put(".*\\.xhtml$", "application/xhtml");
+	contentTypes.put(".*\\.xhtm$", "application/xhtml");
+	contentTypes.put(".*\\.pdf$", "application/pdf");
+	contentTypes.put(".*\\.ps$", "application/postscript");
+	contentTypes.put(".*\\.zip$", "application/zip");
+	contentTypes.put(".*\\.fb2$", "application/fb2");
     }
 
     String suggestContentType(File file, ContentTypes.ExpectedType expectedType)
@@ -76,18 +76,18 @@ final class FileContentType
     {
 	NullCheck.notNull(url, "url");
 	NullCheck.notNull(expectedType, "expectedType");
-final String res = find(url.getFile());
-if (!res.isEmpty())
-    return res;
-switch(expectedType)
-{
-case TEXT:
-    return ContentTypes.TEXT_PLAIN_DEFAULT;
-case AUDIO:
-    return ContentTypes.SOUND_MP3_DEFAULT;
-default:
-    return ContentTypes.DATA_BINARY_DEFAULT;
-}
+	final String res = find(url.getFile());
+	if (!res.isEmpty())
+	    return res;
+	switch(expectedType)
+	{
+	case TEXT:
+	    return ContentTypes.TEXT_PLAIN_DEFAULT;
+	case AUDIO:
+	    return ContentTypes.SOUND_MP3_DEFAULT;
+	default:
+	    return ContentTypes.DATA_BINARY_DEFAULT;
+	}
     }
 
     private String find(String fileName)
