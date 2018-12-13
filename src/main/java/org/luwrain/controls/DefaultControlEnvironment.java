@@ -70,6 +70,11 @@ public class DefaultControlEnvironment implements ControlEnvironment
 	luwrain.onAreaNewHotPoint(area);
     }
 
+        @Override public int getAreaVisibleWidth(Area area)
+    {
+	return luwrain.getAreaVisibleWidth(area);
+    }
+
     @Override public int getAreaVisibleHeight(Area area)
     {
 	return luwrain.getAreaVisibleHeight(area);

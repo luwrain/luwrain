@@ -32,6 +32,7 @@ public interface ControlEnvironment
     void onAreaNewName(Area area);
     void onAreaNewHotPoint(Area area);
 int getAreaVisibleHeight(Area area);
+    int getAreaVisibleWidth(Area area);
     void popup(Popup popupObj);
     String staticStr(LangStatic id);
     String getStaticStr(String id);
