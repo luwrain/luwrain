@@ -459,7 +459,13 @@ Luwrain toRelease = o;//Must be cleaned to null when we sure the app is complete
 	    catch (Throwable e)
 	    {
 		Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
-		launchAppCrash(app, e);
+		launchAppCrash(new org.luwrain.app.crash.App(org.luwrain.app.crash.App.Type.APP_EXCEPT, app, e));
+		return;
+	    }
+	    switch(initResult.getType())
+	    {
+	    case NETWORK_SERVICE_INACCESSIBLE:
+		launchAppCrash(new org.luwrain.app.crash.App(org.luwrain.app.crash.App.Type.NETWORK_SERVICE_INACCESSIBLE, app, null));
 		return;
 	    }
 	    if (initResult == null || !initResult.isOk())
@@ -487,22 +493,19 @@ Luwrain toRelease = o;//Must be cleaned to null when we sure the app is complete
 	NullCheck.notNull(e, "e");
 	final Application app = interfaces.findApp(instance);
 	if (app != null)
-	    launchAppCrash(app, e);
+	    launchAppCrash(new org.luwrain.app.crash.App(org.luwrain.app.crash.App.Type.APP_EXCEPT, app, e));
     }
 
-    void launchAppCrash(Application app, Throwable e)
+    void launchAppCrash(org.luwrain.app.crash.App app)
     {
 	NullCheck.notNull(app, "app");
-	NullCheck.notNull(e, "e");
-	final org.luwrain.app.crash.CrashApp crashApp = new org.luwrain.app.crash.CrashApp(app, e);
-	final Luwrain o = interfaces.requestNew(crashApp);
+	final Luwrain o = interfaces.requestNew(app);
 	final InitResult initResult;
 	try {
-	    initResult = crashApp.onLaunchApp(o);
+	    initResult = app.onLaunchApp(o);
 	}
 	catch (OutOfMemoryError ee)
 	{
-	    ee.printStackTrace();
 	    interfaces.release(o);
 	    return;
 	}
@@ -511,7 +514,7 @@ Luwrain toRelease = o;//Must be cleaned to null when we sure the app is complete
 		interfaces.release(o);
 		return;
 	    }
-	if (!apps.newApp(crashApp))
+	if (!apps.newApp(app))
 	{
 	    interfaces.release(o);
 	    return; 
