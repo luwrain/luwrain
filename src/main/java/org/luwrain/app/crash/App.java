@@ -24,7 +24,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-public class App implements Application, Actions
+public class App implements Application
 {
     public enum Type {
 	APP_EXCEPT,
@@ -75,20 +75,24 @@ public class App implements Application, Actions
 
     @Override public String getAppName()
     {
+	switch(type)
+	{
+	case NETWORK_SERVICE_INACCESSIBLE:
+	    return "Сетевой сервис недоступен";
+	default:
 	return strings.appName();
+	}
     }
 
     private void createArea()
     {
-	final Actions actions = this;
-
 	area = new SimpleArea(new DefaultControlEnvironment(luwrain), strings.appName()){
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    switch (event.getCode())
 		    {
 		    case CLOSE:
-			actions.closeApp();
+			closeApp();
 			return true;
 		    }
 		    return false;
@@ -96,6 +100,10 @@ public class App implements Application, Actions
 	    };
 
 	area.beginLinesTrans();
+	switch(type)
+	{
+	case APP_EXCEPT:
+	    {
 	final String[] msg = strings.introMessage();
 	area.addLine("");
 	for(String s: msg)
@@ -112,6 +120,14 @@ public class App implements Application, Actions
 	final String[] trace = sw.toString().split("\n", -1);
 	for(String s: trace)
 	area.addLine(s);
+	break;
+	    }
+	case NETWORK_SERVICE_INACCESSIBLE:
+	    {
+		area.addLine("Сетевой сервис недоступен");
+		break;
+	    }
+	}
 	area.endLinesTrans();
     }
 

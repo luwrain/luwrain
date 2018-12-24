@@ -160,7 +160,13 @@ final class LuwrainImpl implements Luwrain
 	return core.i18nIface();
     }
 
-    @Override public void crash(Exception e)
+    @Override public void crash(org.luwrain.app.crash.App app)
+    {
+	NullCheck.notNull(app, "app");
+	runUiSafely(()->core.launchAppCrash(app));
+    }
+
+        @Override public void crash(Exception e)
     {
 	NullCheck.notNull(e, "e");
 	e.printStackTrace();
