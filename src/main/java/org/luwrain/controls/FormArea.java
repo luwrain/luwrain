@@ -427,8 +427,7 @@ public class FormArea  extends NavigationArea
 	return true;
     }
 
-
-    public boolean activateMultilineEdit(String caption, String lines)
+    public boolean activateMultilineEdit(String caption, String lines)//FIXME:to delete
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(lines, "lines");

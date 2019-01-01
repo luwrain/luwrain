@@ -170,19 +170,6 @@ name, prefix, text, popupFlags);
 
     static public File path(Luwrain luwrain,
 			    String name, String prefix,
-			    File startWith, File defaultPath, FilePopup.Acceptance acceptance)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(prefix, "prefix");
-	NullCheck.notNull(acceptance, "acceptance");
-	return path(luwrain, name, prefix,
-		    startWith, defaultPath, 
-		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
-    }
-
-    static public File path(Luwrain luwrain,
-			    String name, String prefix,
 			    File startWith, FilePopup.Acceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -204,6 +191,46 @@ name, prefix, text, popupFlags);
 	return path(luwrain, name, prefix,
 		    startWith,  luwrain.getFileProperty("luwrain.dir.userhome"),
 		    (fileToCheck, announce)->{return true;}, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
+    }
+
+    static public File file(Luwrain luwrain, String name, String prefix, File startWith, String[] extensions)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(prefix, "prefix");
+	NullCheck.notNull(startWith, "startWith");
+	NullCheck.notNullItems(extensions, "extensions");
+	return path(luwrain, name, prefix, startWith, (fileToCheck, announce)->{
+		if (!fileToCheck.isFile())
+		{
+		    if (announce)
+			luwrain.message(fileToCheck.getName() + " не является файлом", Luwrain.MessageType.ERROR);
+		    return false;
+		}
+		if (extensions.length > 0)
+		{
+		    int i = 0;
+		    for(i = 0;i < extensions.length;++i)
+			if (!extensions[i].isEmpty() && fileToCheck.getName().toLowerCase().endsWith(extensions[i].toLowerCase()))
+			    break;
+		    if (i == extensions.length)
+		    {
+			if (announce)
+			    luwrain.message(fileToCheck.getName() + " неявляется файлом допустимого типа", Luwrain.MessageType.ERROR);
+			return false;
+		    }
+		}
+		return true;
+	    });
+    }
+
+    static public File file(Luwrain luwrain, String name, String prefix, String[] extensions)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(prefix, "prefix");
+	NullCheck.notNullItems(extensions, "extensions");
+	return file(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), extensions);
     }
 
     static public File directory(Luwrain luwrain, String name, String prefix, File startWith)
