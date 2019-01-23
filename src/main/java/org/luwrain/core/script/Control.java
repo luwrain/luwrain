@@ -36,6 +36,7 @@ final class Control extends AbstractJSObject
     final List<CommandLineTool> cmdLineTools = new LinkedList();
     final List<Shortcut> shortcuts = new LinkedList();
     final List<Command> commands = new LinkedList();
+        final List<TextEditingExtension> textEdits = new LinkedList();
 
     Control(Luwrain luwrain, File dataDir)
     {
@@ -65,6 +66,8 @@ final class Control extends AbstractJSObject
 	    return (BiPredicate)this::addShortcut;
 	case "addCommand":
 	    return (BiPredicate)this::addCommand;
+	    	    	case "addTextEditing":
+	    return (BiPredicate)this::addTextEditing;
 	    	case "getActiveAreaText":
 	    return (Function)this::getActiveAreaText;
 
@@ -123,6 +126,20 @@ final class Control extends AbstractJSObject
 		return false;
 	final JSObject func = (JSObject)obj;
 	commands.add(new CommandAdapter(name.toString(), func));
+	return true;
+    }
+
+            private boolean addTextEditing(Object name, Object obj)
+    {
+	if (name == null || obj == null)
+	    return false;
+	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
+	    return false;
+	for(TextEditingExtension t: textEdits)
+	    if (t.getExtObjName().equals(name.toString()))
+		return false;
+	final JSObject func = (JSObject)obj;
+	//textEdits.add(new TextEditingAdapter(name.toString(), func));
 	return true;
     }
 
