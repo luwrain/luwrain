@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -87,6 +87,21 @@ public interface Luwrain extends PropertiesBase
 	UNIREF_UNDER_HOT_POINT,
 	URL_UNDER_HOT_POINT,
     };
+
+    public enum HookResult {
+	CONTINUE,
+	BREAK,
+    };
+
+    public interface Hook
+    {
+	Object run(Object[] args);
+    }
+
+    public interface HookRunner
+    {
+	HookResult runHook(Hook hook);
+    }
 
     void announceActiveArea();
     Object callUiSafely(java.util.concurrent.Callable callable);
@@ -257,4 +272,5 @@ public interface Luwrain extends PropertiesBase
     int xGetSpeechRate();
     int xGetSpeechPitch();
     void xSetSpeechPitch(int value);
+    void xRunHook(String hookName, HookRunner runner);
 }

@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 // https://docs.oracle.com/javase/8/docs/jdk/api/nashorn/jdk/nashorn/api/scripting/ScriptObjectMirror.html
 
@@ -36,7 +21,7 @@ final class Control extends AbstractJSObject
     final List<CommandLineTool> cmdLineTools = new LinkedList();
     final List<Shortcut> shortcuts = new LinkedList();
     final List<Command> commands = new LinkedList();
-        final List<TextEditingExtension> textEdits = new LinkedList();
+    final List<TextEditingExtension> textEdits = new LinkedList();
 
     Control(Luwrain luwrain, File dataDir)
     {
@@ -46,17 +31,13 @@ final class Control extends AbstractJSObject
 	this.dataDir = dataDir;
     }
 
-    
-    @Override public Object newObject(Object... args)
-    {
-	return new Control(luwrain, dataDir);
-    }
-
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
+	case "prop":
+	    return new Prop(luwrain, "");
 	case "message":
 	    return (Consumer)this::message;
 	case "addCommandLineTool":
