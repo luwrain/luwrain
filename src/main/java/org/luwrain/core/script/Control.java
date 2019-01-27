@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 // https://docs.oracle.com/javase/8/docs/jdk/api/nashorn/jdk/nashorn/api/scripting/ScriptObjectMirror.html
 
@@ -92,7 +107,7 @@ final class Control extends AbstractJSObject
 	    if (s.getExtObjName().equals(name.toString()))
 		return false;
 	final JSObject cons = (JSObject)obj;
-	shortcuts.add(new ShortcutAdapter(name.toString(), dataDir, cons));
+	shortcuts.add(new org.luwrain.core.script.api.ShortcutImpl(name.toString(), dataDir, cons));
 	return true;
     }
 
@@ -106,7 +121,7 @@ final class Control extends AbstractJSObject
 	    if (c.getName().equals(name.toString()))
 		return false;
 	final JSObject func = (JSObject)obj;
-	commands.add(new CommandAdapter(name.toString(), func));
+	commands.add(new org.luwrain.core.script.api.CommandImpl(name.toString(), func));
 	return true;
     }
 
