@@ -16,7 +16,7 @@
 
 // https://docs.oracle.com/javase/8/docs/jdk/api/nashorn/jdk/nashorn/api/scripting/ScriptObjectMirror.html
 
-package org.luwrain.core.script;
+package org.luwrain.core.script.api;
 
 import java.io.*;
 import java.util.*;
@@ -28,17 +28,18 @@ import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
+import org.luwrain.core.script.Utils;
 
-final class Control extends AbstractJSObject
+public final class LuwrainObj extends AbstractJSObject
 {
     private final Luwrain luwrain;
     private final File dataDir;
-    final List<CommandLineTool> cmdLineTools = new LinkedList();
-    final List<Shortcut> shortcuts = new LinkedList();
-    final List<Command> commands = new LinkedList();
-    final List<TextEditingExtension> textEdits = new LinkedList();
+    public final List<CommandLineTool> cmdLineTools = new LinkedList();
+    public final List<Shortcut> shortcuts = new LinkedList();
+    public final List<Command> commands = new LinkedList();
+    public final List<TextEditingExtension> textEdits = new LinkedList();
 
-    Control(Luwrain luwrain, File dataDir)
+    public LuwrainObj(Luwrain luwrain, File dataDir)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(dataDir, "dataDir");

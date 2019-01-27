@@ -30,7 +30,7 @@ class Instance
 
     private final ScriptEngine engine;
     private final Luwrain luwrain;
-    final Control control;
+    final org.luwrain.core.script.api.LuwrainObj luwrainObj;
 
     Instance(Luwrain luwrain, File dataDir, Map<String, JSObject> objs)
     {
@@ -40,8 +40,8 @@ class Instance
 	this.luwrain = luwrain;
 	    final ScriptEngineManager manager = new ScriptEngineManager();
 	    this.engine = manager.getEngineByName("nashorn");
-	    this.control = new Control(luwrain, dataDir);
-	    this.engine.put("Luwrain", this.control);
+	    this.luwrainObj = new org.luwrain.core.script.api.LuwrainObj(luwrain, dataDir);
+	    this.engine.put("Luwrain", this.luwrainObj);
 	    for(Map.Entry<String, JSObject> e: objs.entrySet())
 		this.engine.put(e.getKey(), e.getValue());
     }
