@@ -38,6 +38,7 @@ public final class LuwrainObj extends AbstractJSObject
     public final List<Shortcut> shortcuts = new LinkedList();
     public final List<Command> commands = new LinkedList();
     public final List<TextEditingExtension> textEdits = new LinkedList();
+    public final Map<String, List<Hook>> hooks = new HashMap();
 
     public LuwrainObj(Luwrain luwrain, File dataDir)
     {
@@ -127,6 +128,19 @@ public final class LuwrainObj extends AbstractJSObject
 	commands.add(new org.luwrain.core.script.api.CommandImpl(name.toString(), func));
 	return true;
     }
+
+            private boolean addHook(Object name, Object func)
+    {
+	if (name == null || func == null)
+	    return false;
+	if (!(func instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
+	    return false;
+	if (!hooks.containsKey(name.toString()))
+	    hooks.put(name.toString(), new LinkedList());
+	hooks.get(name.toString()).add(new org.luwrain.core.script.api.Hook((jdk.nashorn.api.scripting.ScriptObjectMirror)func));
+	return true;
+    }
+
 
             private boolean addTextEditing(Object name, Object obj)
     {

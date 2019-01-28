@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.core.script;
 
 import java.util.*;
@@ -23,7 +21,7 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-public class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension
+class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension
 {
     final String name;
     private Instance instance = null;
