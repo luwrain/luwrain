@@ -52,6 +52,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     final CommandLineToolsTracking commandLineTools = new CommandLineToolsTracking(objRegistry);
     protected final I18nImpl i18n = new I18nImpl();
     final Speech speech;
+    final org.luwrain.core.speech.SpeakingText speakingText = new org.luwrain.core.speech.SpeakingText();
     final Braille braille = new Braille();
     protected final org.luwrain.core.sound.EnvironmentSounds sounds;
     protected final SoundManager soundManager;

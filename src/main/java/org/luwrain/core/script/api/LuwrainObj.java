@@ -55,10 +55,12 @@ public final class LuwrainObj extends AbstractJSObject
 	{
 	case "prop":
 	    return new PropObj(luwrain, "");
-	    	case "i18n":
+	case "i18n":
 	    return new I18nObj(luwrain);
 	case "message":
 	    return (Consumer)this::message;
+	case "addHook":
+	    return (BiPredicate)this::addHook;
 	case "addCommandLineTool":
 	    return (BiPredicate)this::addCommandLineTool;
 	case "addApp":
@@ -66,16 +68,14 @@ public final class LuwrainObj extends AbstractJSObject
 	    return (BiPredicate)this::addShortcut;
 	case "addCommand":
 	    return (BiPredicate)this::addCommand;
-	    	    	case "addTextEditing":
+	case "addTextEditing":
 	    return (BiPredicate)this::addTextEditing;
-	    	case "getActiveAreaText":
+	case "getActiveAreaText":
 	    return (Function)this::getActiveAreaText;
-
-	    
 	case "launchApp":
 	    return (BiPredicate)this::launchApp;
-	    	case "runBkg":
-		    return (Predicate)this::runBkg;
+	case "runBkg":
+	    return (Predicate)this::runBkg;
 	default:
 	    return super.getMember(name);
 	}

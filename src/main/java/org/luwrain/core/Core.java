@@ -105,14 +105,14 @@ final class Core extends EventDispatching
 					   return;
 				       if (parts.length == 1)
 				       {
-					   speech.speakEventResponse(SpeakingText.processText(parts[0]));
+					   speech.speakEventResponse(speakingText.processEventResponse(getObjForEnvironment(), parts[0]));
 					   return;
 				       }
 				       final StringBuilder b = new StringBuilder();
 				       b.append(parts[0]);
 				       for(int i = 1;i < parts.length;++i)
 					   b.append(", ").append(parts[i]);
-				       speech.speakEventResponse(SpeakingText.processText(new String(b)));
+				       speech.speakEventResponse(speakingText.processEventResponse(getObjForEnvironment(), new String(b)));
 				   }
 				   @Override public void speakLetter(char letter)
 				   {
