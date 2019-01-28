@@ -21,8 +21,10 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension
+class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension, org.luwrain.core.HookContainer
 {
+    static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
+
     final String name;
     private Instance instance = null;
     private Luwrain luwrain = null;
@@ -48,6 +50,35 @@ class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension
 
             @Override public void close()
     {
+    }
+
+    @Override public boolean runHooks(String hookName, Luwrain.HookRunner runner)
+    {
+	NullCheck.notEmpty(hookName, "hookName");
+	if (!instance.luwrainObj.hooks.containsKey(hookName))
+	    return true;
+	for(org.luwrain.core.script.api.Hook h: instance.luwrainObj.hooks.get(hookName))
+	{
+	    try {
+		final Luwrain.HookResult res = runner.runHook(h);
+		if (res == null)
+		    return false;
+		switch(res)
+		{
+		case BREAK:
+		    return false;
+		case CONTINUE:
+		default:
+		    continue;
+		}
+	    }
+	    catch(Throwable e)
+	    {
+		Log.error(LOG_COMPONENT, "running of the hook \'" + hookName + "\' failed in the extension \'" + name + "\':" + e.getClass().getName() + ":" + e.getMessage());
+		return false;
+	    }
+	}
+	return true;
     }
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)

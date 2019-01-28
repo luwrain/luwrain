@@ -27,7 +27,7 @@ import org.luwrain.core.extensions.*;
 
 public final class Core
     {
-    static private final String LOG_COMPONENT = "script";
+    static final String LOG_COMPONENT = "script";
 
 	public final class ExecResult
 	{

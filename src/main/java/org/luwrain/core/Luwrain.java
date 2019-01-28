@@ -272,5 +272,5 @@ public interface Luwrain extends PropertiesBase
     int xGetSpeechRate();
     int xGetSpeechPitch();
     void xSetSpeechPitch(int value);
-    void xRunHook(String hookName, HookRunner runner);
+    void xRunHooks(String hookName, HookRunner runner);
 }

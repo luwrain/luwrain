@@ -716,8 +716,11 @@ final class LuwrainImpl implements Luwrain
 	return core.i18n.getSpokenText(text, type);
     }
 
-        @Override public void xRunHook(String hookName, HookRunner runner)
+        @Override public void xRunHooks(String hookName, HookRunner runner)
     {
+	NullCheck.notEmpty(hookName, "hookName");
+	NullCheck.notNull(runner, "runner");
+	core.extensions.runHooks(hookName, runner);
     }
 
     

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -14,28 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.script.api;
+package org.luwrain.core;
 
-import java.io.*;
-import java.util.*;
-import jdk.nashorn.api.scripting.*;
-
-import org.luwrain.base.*;
-import org.luwrain.core.*;
-
-public final class Hook implements Luwrain.Hook
+public interface HookContainer
 {
-    private final JSObject func;
-
-    Hook(JSObject func)
-    {
-	NullCheck.notNull(func, "func");
-	this.func = func;
-    }
-
-    @Override public Object run(Object[] args)
-    {
-	//FIXME:checking types
-	return func.call(null, args);
-    }
+    //Returns true if execution must be continued
+    boolean runHooks(String hookName, Luwrain.HookRunner runner);
 }
