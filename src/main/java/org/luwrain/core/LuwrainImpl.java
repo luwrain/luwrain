@@ -369,7 +369,7 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(text, "text");
 	runUiSafely(()->{
 		core.braille.textToSpeak(text);
-		core.getSpeech().speak(preprocess(text), 0, 0);
+		core.speech.speak(preprocess(text), 0, 0);
 	    });
     }
 
@@ -388,14 +388,14 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(text, "text");
 	runUiSafely(()->{
 		core.braille.textToSpeak(text);
-		core.getSpeech().speak(preprocess(text), pitch, 0);
+		core.speech.speak(preprocess(text), pitch, 0);
 	    });
     }
 
     @Override public void say(String text, int pitch, int rate)
     {
 	NullCheck.notNull(text, "text");
-	runUiSafely(()->core.getSpeech().speak(preprocess(text), pitch, rate));
+	runUiSafely(()->core.speech.speak(preprocess(text), pitch, rate));
     }
 
     @Override public void sayLetter(char letter)
@@ -413,7 +413,7 @@ final class LuwrainImpl implements Luwrain
 		}
 		final String value = i18n().hasSpecialNameOfChar(letter);
 		if (value == null)
-		    core.getSpeech().speakLetter(letter, 0, 0); else
+		    core.speech.speakLetter(letter, 0, 0); else
 		    say(value, Speech.PITCH_HINT);//FIXME:
 	    });
     }
@@ -432,7 +432,7 @@ final class LuwrainImpl implements Luwrain
 		}
 		final String value = i18n().hasSpecialNameOfChar(letter);
 		if (value == null)
-		    core.getSpeech().speakLetter(letter, pitch, 0); else
+		    core.speech.speakLetter(letter, pitch, 0); else
 		    say(value, Speech.PITCH_HINT);
 	    });
     }
@@ -452,14 +452,14 @@ final class LuwrainImpl implements Luwrain
 		}
 		final String value = i18n().hasSpecialNameOfChar(letter);
 		if (value == null)
-		    core.getSpeech().speakLetter(letter, pitch, rate); else
+		    core.speech.speakLetter(letter, pitch, rate); else
 		    say(value, Speech.PITCH_HINT);
 	    });
     }
 
     @Override public void silence()
     {
-	runUiSafely(()->core.getSpeech().silence());
+	runUiSafely(()->core.speech.silence());
     }
 
     @Override public void setActiveArea(Area area)
@@ -563,25 +563,25 @@ final class LuwrainImpl implements Luwrain
     @Override public int xGetSpeechRate()
     {
 	core.mainCoreThreadOnly();
-	return  core.getSpeech().getRate();
+	return  core.speech.getRate();
     }
 
     @Override public void xSetSpeechRate(int value)
     {
 	core.mainCoreThreadOnly();
-	core.getSpeech().setRate(value);
+	core.speech.setRate(value);
     }
 
     @Override public int xGetSpeechPitch()
     {
 	core.mainCoreThreadOnly();
-	return core.getSpeech().getPitch();
+	return core.speech.getPitch();
     }
 
     @Override public void xSetSpeechPitch(int value)
     {
 	core.mainCoreThreadOnly();
-	core.getSpeech().setPitch(value);
+	core.speech.setPitch(value);
     }
 
     @Override public String[] getAllShortcutNames()

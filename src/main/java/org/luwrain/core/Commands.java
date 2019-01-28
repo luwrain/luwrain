@@ -211,7 +211,7 @@ class Commands
 			return;
 		    }
 		    if (!line.trim().isEmpty())
-			core.getSpeech().speak(line, 0, 0); else
+			core.speech.speak(line, 0, 0); else
 			core.getObjForEnvironment().setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 		    core.needForIntroduction = false;
 		}
@@ -566,7 +566,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = core.getSpeech();
+		    final Speech speech = core.speech;
 		    speech.setPitch(speech.getPitch() + SPEECH_STEP);
 		    luwrain.message("Высота речи " + speech.getPitch());//FIXME:
 		}
@@ -580,7 +580,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = core.getSpeech();
+		    final Speech speech = core.speech;
 		    speech.setPitch(speech.getPitch() - SPEECH_STEP);
 		    luwrain.message("Высота речи " + speech.getPitch());
 		}
@@ -594,7 +594,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = core.getSpeech();
+		    final Speech speech = core.speech;
 		    speech.setRate(speech.getRate() - SPEECH_STEP);
 		    luwrain.message("Скорость речи " + (100 - speech.getRate()));
 		}
@@ -608,7 +608,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Speech speech = core.getSpeech();
+		    final Speech speech = core.speech;
 		    speech.setRate(speech.getRate() + SPEECH_STEP);
 		    luwrain.message("Скорость речи " + (100 - speech.getRate()));
 		}

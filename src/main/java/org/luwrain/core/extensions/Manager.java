@@ -120,16 +120,17 @@ public final class Manager
 	return res.toArray(new LoadedExtension[res.size()]);
     }
 
-    public void runHooks(String hookName, Luwrain.HookRunner runner)
+    public boolean runHooks(String hookName, Luwrain.HookRunner runner)
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(runner, "runner");
 	for(LoadedExtension e: extensions)
-	    if (e.ext instanceof HookContainer)
-		((HookContainer)e.ext).runHooks(hookName, runner);
+	    if (e.ext instanceof HookContainer && !((HookContainer)e.ext).runHooks(hookName, runner))
+		return false;
 	for(LoadedExtension e: dynamicExtensions)
-	    if (e.ext instanceof HookContainer)
-		((HookContainer)e.ext).runHooks(hookName, runner);
+	    if (e.ext instanceof HookContainer && !((HookContainer)e.ext).runHooks(hookName, runner))
+		return false;
+	return true;
     }
 
     public LoadedExtension addDynamicExtension(DynamicExtension ext, Luwrain luwrain)

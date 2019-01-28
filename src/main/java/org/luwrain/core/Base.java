@@ -51,7 +51,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     protected final WorkersTracking workers = new WorkersTracking();
     final CommandLineToolsTracking commandLineTools = new CommandLineToolsTracking(objRegistry);
     protected final I18nImpl i18n = new I18nImpl();
-    protected final Speech speech;
+    final Speech speech;
     final Braille braille = new Braille();
     protected final org.luwrain.core.sound.EnvironmentSounds sounds;
     protected final SoundManager soundManager;
@@ -188,11 +188,6 @@ public void playSound(Sounds sound)
     {
 	needForIntroduction = true;
 	introduceApp = true;
-    }
-
-    Speech getSpeech()
-    {
-	return speech;
     }
 
     String getLang()
