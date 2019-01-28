@@ -27,12 +27,12 @@ import jdk.nashorn.api.scripting.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-final class Prop extends AbstractJSObject
+final class PropObj extends AbstractJSObject
 {
     private final Luwrain luwrain;
     private final String propName;
 
-    Prop(Luwrain luwrain, String propName)
+    PropObj(Luwrain luwrain, String propName)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(propName, "propName");
@@ -44,10 +44,10 @@ final class Prop extends AbstractJSObject
     {
 	NullCheck.notNull(name, "name");
 	if (name.isEmpty())
-	    return null;
+	    return super.getMember(name);
 	if (propName.isEmpty())
-	    return new Prop(luwrain, name);
-	return new Prop(luwrain, propName + "." + name);
+	    return new PropObj(luwrain, name);
+	return new PropObj(luwrain, propName + "." + name);
     }
 
     @Override public String toString()

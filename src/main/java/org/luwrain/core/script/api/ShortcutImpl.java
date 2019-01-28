@@ -23,13 +23,13 @@ import jdk.nashorn.api.scripting.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-public final class ShortcutImpl implements Shortcut
+final class ShortcutImpl implements Shortcut
 {
     private final String name;
     private final File dataDir;
     private final JSObject cons;
 
-    public ShortcutImpl(String name, File dataDir, JSObject cons)
+    ShortcutImpl(String name, File dataDir, JSObject cons)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(dataDir, "dateDir");

@@ -53,7 +53,9 @@ public final class LuwrainObj extends AbstractJSObject
 	switch(name)
 	{
 	case "prop":
-	    return new Prop(luwrain, "");
+	    return new PropObj(luwrain, "");
+	    	case "i18n":
+	    return new I18nObj(luwrain);
 	case "message":
 	    return (Consumer)this::message;
 	case "addCommandLineTool":
@@ -74,7 +76,7 @@ public final class LuwrainObj extends AbstractJSObject
 	    	case "runBkg":
 		    return (Predicate)this::runBkg;
 	default:
-	    return null;
+	    return super.getMember(name);
 	}
     }
 
