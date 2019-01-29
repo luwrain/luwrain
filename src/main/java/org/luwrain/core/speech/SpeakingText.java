@@ -20,21 +20,25 @@ import org.luwrain.core.*;
 
 public class SpeakingText
 {
-    public String  processRegular(Luwrain luwrain, String text)
+    private final org.luwrain.core.extensions.Manager extensions;
+    
+    public SpeakingText(org.luwrain.core.extensions.Manager extensions)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(text, "text");
-	
-	return text.replaceAll("\\h", " ");
+	NullCheck.notNull(extensions, "extensions");
+	this.extensions = extensions;
     }
 
-        public String  processEventResponse(Luwrain luwrain, String text)
+        public String  processRegular(String text)
     {
-	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(text, "text");
 	final SpeakingHook hook = new SpeakingHook(text);
-	luwrain.xRunHooks("luwrain.speech.text.regular", hook);
-	return hook.getText();
+	extensions.runHooks("luwrain.speech.text.regular", hook);
+	return hook.getText().replaceAll("\\h", " ");
     }
 
+        public String  processEventResponse(String text)
+    {
+	NullCheck.notNull(text, "text");
+	return processRegular(text);
+    }
 }

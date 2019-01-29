@@ -369,7 +369,7 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(text, "text");
 	runUiSafely(()->{
 		core.braille.textToSpeak(text);
-		core.speech.speak(preprocess(text), 0, 0);
+		core.speech.speak(core.speakingText.processRegular(text), 0, 0);
 	    });
     }
 

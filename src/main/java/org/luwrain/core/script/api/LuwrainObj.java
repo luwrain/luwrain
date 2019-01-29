@@ -135,9 +135,12 @@ public final class LuwrainObj extends AbstractJSObject
 	    return false;
 	if (!(func instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
 	    return false;
+	final  jdk.nashorn.api.scripting.ScriptObjectMirror funcObj = (jdk.nashorn.api.scripting.ScriptObjectMirror)func;
 	if (!hooks.containsKey(name.toString()))
+	    if (!funcObj.isFunction())
+		return false;
 	    hooks.put(name.toString(), new LinkedList());
-	hooks.get(name.toString()).add(new org.luwrain.core.script.api.Hook((jdk.nashorn.api.scripting.ScriptObjectMirror)func));
+	hooks.get(name.toString()).add(new org.luwrain.core.script.api.Hook(funcObj));
 	return true;
     }
 
