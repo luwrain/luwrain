@@ -16,12 +16,6 @@
 
 package org.luwrain.core.script.api;
 
-import java.io.*;
-import java.util.*;
-import java.util.function.*;
-import java.util.concurrent.*;
-import javax.script.*;
-import jdk.nashorn.api.*;
 import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.base.*;

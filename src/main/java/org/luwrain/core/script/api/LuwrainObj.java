@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-// https://docs.oracle.com/javase/8/docs/jdk/api/nashorn/jdk/nashorn/api/scripting/ScriptObjectMirror.html
-
 package org.luwrain.core.script.api;
 
 import java.io.*;
@@ -23,7 +21,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.concurrent.*;
 import javax.script.*;
-import jdk.nashorn.api.*;
 import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.base.*;
@@ -40,12 +37,15 @@ public final class LuwrainObj extends AbstractJSObject
     public final List<TextEditingExtension> textEdits = new LinkedList();
     public final Map<String, List<Hook>> hooks = new HashMap();
 
+    private final RegistryObj registryObj;
+
     public LuwrainObj(Luwrain luwrain, File dataDir)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(dataDir, "dataDir");
 	this.luwrain = luwrain;
 	this.dataDir = dataDir;
+	this.registryObj = new RegistryObj(luwrain.getRegistry(), "/");
     }
 
     @Override public Object getMember(String name)
@@ -53,6 +53,8 @@ public final class LuwrainObj extends AbstractJSObject
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
+	case "registry":
+	    return registryObj;
 	case "prop":
 	    return new PropObj(luwrain, "");
 	case "i18n":
