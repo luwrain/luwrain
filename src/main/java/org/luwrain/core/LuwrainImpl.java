@@ -29,7 +29,6 @@ import org.luwrain.speech.Channel;
 final class LuwrainImpl implements Luwrain
 {
     private final Core core;
-    private String charsToSkip = "";
 
     LuwrainImpl(Core core)
     {
@@ -388,14 +387,14 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(text, "text");
 	runUiSafely(()->{
 		core.braille.textToSpeak(text);
-		core.speech.speak(preprocess(text), pitch, 0);
+		core.speech.speak(core.speakingText.processRegular(text), pitch, 0);
 	    });
     }
 
     @Override public void say(String text, int pitch, int rate)
     {
 	NullCheck.notNull(text, "text");
-	runUiSafely(()->core.speech.speak(preprocess(text), pitch, rate));
+	runUiSafely(()->core.speech.speak(core.speakingText.processRegular(text), pitch, rate));
     }
 
     @Override public void sayLetter(char letter)
@@ -738,22 +737,6 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(runnable, "runnable");
 	core.enqueueEvent(new Core.RunnableEvent(runnable));
-    }
-
-    private String preprocess(String s)
-    {
-	StringBuilder b = new StringBuilder();
-	for(int i = 0;i < s.length();++i)
-	{
-	    final char c = s.charAt(i);
-	    int k;
-	    for(k = 0;k < charsToSkip.length();++k)
-		if (c == charsToSkip.charAt(k))
-		    break;
-	    if (k >= charsToSkip.length())
-		b.append(c);
-	}
-	return b.toString();
     }
 
     static private String extractUrl(String uniRef)
