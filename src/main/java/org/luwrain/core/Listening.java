@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -58,6 +58,7 @@ final class Listening
 	if (channel == null)
 	    return;
 	channel.silence();
+	channel.close();
 	channel = null;
     }
 
@@ -82,7 +83,7 @@ final class Listening
 		{
 		    luwrain.runUiSafely(()->onFinish(text, extraInfo));
 		}};
-	channel .speak(text, listener, sett.getListeningPitch(50) - 50, 50 - sett.getListeningRate(50), false);
+	channel .speak(luwrain.getSpokenText(text, Luwrain.SpokenTextType.NATURAL), listener, sett.getListeningPitch(50) - 50, 50 - sett.getListeningRate(50), false);
     }
 
     private void startGeneral()
@@ -135,15 +136,14 @@ final class Listening
 	startNormal(new String(b), new PositionInfo(nextPosX, nextPosY));
     }
 
-static private class PositionInfo
-{
-    final int x;
-    final int y;
-
-    PositionInfo(int x, int y)
+    static private final class PositionInfo
     {
-	this.x = x;
-	this.y = y;
+	final int x;
+	final int y;
+	PositionInfo(int x, int y)
+	{
+	    this.x = x;
+	    this.y = y;
+	}
     }
-}
 }
