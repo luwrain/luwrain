@@ -38,6 +38,7 @@ public final class LuwrainObj extends AbstractJSObject
     public final Map<String, List<Hook>> hooks = new HashMap();
 
     private final RegistryObj registryObj;
+    private final PopupsObj popupsObj; 
 
     public LuwrainObj(Luwrain luwrain, File dataDir)
     {
@@ -46,6 +47,7 @@ public final class LuwrainObj extends AbstractJSObject
 	this.luwrain = luwrain;
 	this.dataDir = dataDir;
 	this.registryObj = new RegistryObj(luwrain.getRegistry(), "/");
+	this.popupsObj = new PopupsObj(luwrain);
     }
 
     @Override public Object getMember(String name)
@@ -55,6 +57,8 @@ public final class LuwrainObj extends AbstractJSObject
 	{
 	case "registry":
 	    return registryObj;
+	case "popups":
+	    return popupsObj;
 	case "prop":
 	    return new PropObj(luwrain, "");
 	case "i18n":
