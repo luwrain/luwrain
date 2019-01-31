@@ -49,9 +49,9 @@ public class App implements Application
 	params.name = strings.appName();
 	params.changeListener = ()->hotUpdate();
 	this.editArea = new EditArea(params){
-		@Override public MultilineEdit.Model createMultilineEditModel(CorrectorWrapperFactory correctorWrapperFactory)
+		@Override public MultilineEdit.Model createMultilineEditModel(CorrectorFactory correctorFactory)
 		{
-		    final MultilineEdit.Model model = super.createMultilineEditModel(correctorWrapperFactory);
+		    final MultilineEdit.Model model = super.createMultilineEditModel(correctorFactory);
 		    return createBlockingModel(model);
 		}
 		@Override public boolean onInputEvent(KeyboardEvent event)
