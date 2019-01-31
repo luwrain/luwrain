@@ -42,7 +42,7 @@ final class ShortcutImpl implements Shortcut
     @Override public Application[] prepareApp(String[] args)
     {
 	NullCheck.notNullItems(args, "args");
-	final Object newObj = cons.newObject();
+	final Object newObj = cons.newObject(org.luwrain.script.ScriptUtils.createReadOnlyArray(args));
 	if (newObj == null || !(newObj instanceof JSObject))
 	    return null;
 	final ScriptObjectMirror newJsObj = (ScriptObjectMirror)newObj;
