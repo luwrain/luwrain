@@ -109,15 +109,17 @@ public final class LuwrainObj extends AbstractJSObject
 
     private boolean addShortcut(Object name, Object obj)
     {
-	if (name == null || obj == null)
-	    return false;
-	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
+	final String nameStr = org.luwrain.script.ScriptUtils.getStringValue(name);
+	if (nameStr == null || nameStr.isEmpty()  ||
+	    obj == null || !(obj instanceof JSObject))
 	    return false;
 	for(Shortcut s: shortcuts)
-	    if (s.getExtObjName().equals(name.toString()))
+	    if (s.getExtObjName().equals(nameStr))
 		return false;
 	final JSObject cons = (JSObject)obj;
-	shortcuts.add(new org.luwrain.core.script.api.ShortcutImpl(name.toString(), dataDir, cons));
+	if (!cons.isFunction())
+	    return false;
+	shortcuts.add(new org.luwrain.core.script.api.ShortcutImpl(nameStr, dataDir, cons));
 	return true;
     }
 
