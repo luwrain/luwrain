@@ -63,6 +63,8 @@ public final class LuwrainObj extends AbstractJSObject
 	    return new PropObj(luwrain, "");
 	case "i18n":
 	    return new I18nObj(luwrain);
+	case "os":
+	    return luwrain.xGetOsInterface();
 	case "message":
 	    return (Consumer)this::message;
 	case "addHook":

@@ -722,6 +722,11 @@ final class LuwrainImpl implements Luwrain
 	core.extensions.runHooks(hookName, runner);
     }
 
+    @Override public OsInterface xGetOsInterface()
+    {
+	return core.os.getInterface();
+    }
+
     
 
     private void sayHint(Hint hint)
