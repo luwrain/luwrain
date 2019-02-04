@@ -186,34 +186,7 @@ final class Core extends EventDispatching
 	braille.init(registry, os.getBraille(), this);
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
-	//loading player
-	if (!props.getProperty(PLAYER_FACTORY_PROP_NAME).isEmpty())
-	{
-	    final String playerFactoryName = props.getProperty(PLAYER_FACTORY_PROP_NAME);
-	    try {
-		final Object o = Class.forName(playerFactoryName).newInstance();
-		if (o instanceof org.luwrain.player.Factory)
-		{
-		    final org.luwrain.player.Factory factory = (org.luwrain.player.Factory)o;
-		    final org.luwrain.player.Factory.Params params = new org.luwrain.player.Factory.Params();
-		    params.luwrain = getObjForEnvironment();
-		    this.player = factory.newPlayer(params);
-		    if (this.player != null)
-			Log.debug(LOG_COMPONENT, "loaded player instance of class " + this.player.getClass().getName()); else
-			Log.error(LOG_COMPONENT, "player factory of the class " + playerFactoryName + " returned null, no player");
-		} else
-		{
-		    Log.error(LOG_COMPONENT, "the player factory class " + playerFactoryName + " is not an instance of org.luwrain.player.Factory ");
-		    this.player =null;
-		}
-	    }
-	    catch(Throwable e)
-	    {
-		Log.error(LOG_COMPONENT, "unable to load player class " + playerFactoryName + ":" + e.getClass().getName() + ":" + e.getMessage());
-		this.player = null;
-	    }
-	} else
-	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
+	loadPlayer();
 	desktop.ready();
 	props.setProviders(objRegistry.getPropertiesProviders());
 	uiSettings = Settings.createUserInterface(registry);
@@ -387,6 +360,41 @@ final class Core extends EventDispatching
 	if (!i18n.chooseLang(lang))
 	{
 	    Log.fatal("core", "unable to choose matching language for i18n, requested language is \'" + lang + "\'");
+	    return;
+	}
+    }
+
+    private void loadPlayer()
+    {
+	this.player =null;
+	if (props.getProperty(PLAYER_FACTORY_PROP_NAME).isEmpty())
+	{
+	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
+	    return;
+	}
+	final String playerFactoryName = props.getProperty(PLAYER_FACTORY_PROP_NAME);
+	final Object o = org.luwrain.util.ClassUtils.newInstanceOf(playerFactoryName, org.luwrain.player.Factory.class);		    final org.luwrain.player.Factory factory = (org.luwrain.player.Factory)o;
+	try {
+	    final org.luwrain.player.Factory.Params params = new org.luwrain.player.Factory.Params();
+	    params.luwrain = getObjForEnvironment();
+	    this.player = factory.newPlayer(params);
+	    if (this.player == null)
+	    {
+		Log.error(LOG_COMPONENT, "player factory of the class " + playerFactoryName + " returned null, no player");
+		return;
+	    }
+	    Log.debug(LOG_COMPONENT, "loaded player instance of class " + this.player.getClass().getName());
+	    for (PropertiesProvider p: props.getBasicProviders())
+		if (p instanceof org.luwrain.core.properties.Player)
+		{
+		    player.addListener((org.luwrain.player.Listener)p);
+		    break;
+		}
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to load player class " + playerFactoryName + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    this.player = null;
 	    return;
 	}
     }

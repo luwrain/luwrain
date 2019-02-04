@@ -89,7 +89,7 @@ public class Init
 	    }
 	    this.userDataDir = tmpDir;
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
-	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps});
+	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
 	    final org.luwrain.registry.mem.RegistryImpl reg = new org.luwrain.registry.mem.RegistryImpl();
 	    this.registry = reg;
 	    try {

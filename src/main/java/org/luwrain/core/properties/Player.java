@@ -21,25 +21,14 @@ import java.util.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
+import org.luwrain.player.*;
 
-public final class Basic implements PropertiesProvider
+public final class Player implements PropertiesProvider, org.luwrain.player.Listener
 {
-    private final File dataDir;
-    private final File userDataDir;
-    private final File userHomeDir;
-
     private PropertiesProvider.Listener listener = null;
 
-    public Basic(File dataDir,
-	 File userDataDir,
-	 File userHomeDir)
+    public Player()
     {
-	NullCheck.notNull(dataDir, "dataDir");
-	NullCheck.notNull(userDataDir, "userDataDir");
-	NullCheck.notNull(userHomeDir, "userHomeDir");
-	this.dataDir = dataDir;
-	this.userDataDir = userDataDir;
-	this.userHomeDir = userHomeDir;
     }
 
     @Override public String getExtObjName()
@@ -65,31 +54,7 @@ public final class Basic implements PropertiesProvider
     @Override public String getProperty(String propName)
     {
 	NullCheck.notNull(propName, "propName");
-	switch(propName)
-	{
-	case "luwrain.dir.userhome":
-	    return userHomeDir.getAbsolutePath();
-	case "luwrain.dir.data":
-	    return dataDir.getAbsolutePath();
-	case "luwrain.dir.scripts":
-	    return new File(dataDir, "scripts").getAbsolutePath();
-	case "luwrain.dir.js":
-	    return new File(dataDir, "js").getAbsolutePath();
-	    	case "luwrain.dir.textext":
-		    return new File(dataDir, "text").getAbsolutePath();
-	case "luwrain.dir.properties":
-	    return new File(dataDir, "properties").getAbsolutePath();
-	case "luwrain.dir.sounds":
-	    return new File(dataDir, "sounds").getAbsolutePath();
-	case "luwrain.dir.userdata":
-	    return userDataDir.getAbsolutePath();
-	case "luwrain.dir.appdata":
-	    return new File(userDataDir, "app").getAbsolutePath();
-	    	case "luwrain.dir.packs":
-		    return new File(userDataDir, "extensions").getAbsolutePath();
-	default:
 	    return null;
-	}
     }
 
     @Override public boolean setProperty(String propName, String value)
@@ -103,4 +68,26 @@ public final class Basic implements PropertiesProvider
     {
 	this.listener = listener;
     }
+
+        @Override public void onNewPlaylist(Playlist playlist)
+    {
+    }
+    
+    @Override public void onNewTrack(Playlist playlist, int trackNum)
+    {
+    }
+    
+    @Override public void onTrackTime(Playlist playlist, int trackNum,  long msec)
+    {
+    }
+    
+    @Override public void onNewState(Playlist playlist, org.luwrain.player.Player.State state)
+    {
+    }
+    
+    @Override public void onPlayingError(Playlist playlist, Exception e)
+    {
+    }
+    
+
 }
