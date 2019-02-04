@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -24,88 +24,49 @@ import org.luwrain.core.*;
 
 public final class Playlist
 {
-    static final public class ExtInfo
-    {
-	private final Map<String, String> props = new HashMap<String, String>();
-
-	public ExtInfo(Map<String, String> props)
-	{
-	    NullCheck.notNull(props, "props");
-	    for(Map.Entry<String, String> e: props.entrySet())
-	    {
-		if (e.getKey() != null && e.getValue() != null)
-		    this.props.put(e.getKey(), e.getValue());
-	    }
-	}
-
-	public String getProp(String propName)
-	{
-	    NullCheck.notEmpty(propName, "propName");
-	    if (!props.containsKey(propName))
-		return "";
-	    return props.get(propName);
-	}
-    }
-
+    static private final String TITLE = "title";
+    
     private final String[] urls;
-    private final ExtInfo extInfo;
+    private final Map<String, String> props;
+
+        public Playlist(String[] urls, Map<String, String> props)
+    {
+	NullCheck.notNullItems(urls, "urls");
+	NullCheck.notNull(props, "props");
+	this.urls = urls.clone();
+	this.props = props;
+    }
 
     public Playlist(String[] urls)
     {
-	NullCheck.notNullItems(urls, "urls");
-	this.urls = urls;
-	this.extInfo = null;
-    }
-
-    public Playlist(String title, String[] urls)
-    {
-	NullCheck.notNull(title, "title");
-	NullCheck.notNullItems(urls, "urls");
-	this.urls = urls;
-	final Map<String, String> props = new HashMap<String, String>();
-	props.put("title", title);
-	this.extInfo = new ExtInfo(props);
+	this(urls, new HashMap());
     }
 
     public Playlist(String url)
     {
-	NullCheck.notNull(url, "url");
-	this.urls = new String[]{url};
-	this.extInfo = null;
-    }
-
-    public Playlist(String title, String url)
-    {
-	NullCheck.notNull(title, "title");
-	NullCheck.notNull(url, "url");
-	this.urls = new String[]{url};
-	final Map<String, String> props = new HashMap<String, String>();
-	props.put("title", title);
-	this.extInfo = new ExtInfo(props);
-    }
-
-    public Playlist(String[] urls, ExtInfo extInfo)
-    {
-	NullCheck.notNullItems(urls, "urls");
-	this.urls = urls;
-	this.extInfo = extInfo;
+	this(new String[]{url}, new HashMap());
     }
 
     public String getPlaylistTitle()
     {
-	return extInfo != null?extInfo.getProp("title"):"";
+	if (!props.containsKey(TITLE))
+	    return "";
+	final String res = props.get(TITLE);
+	return res != null?res:"";
     }
 
     public String[] getPlaylistUrls()
     {
-	return urls;
+	return urls.clone();
     }
 
-    //May return null
-    public ExtInfo getExtInfo()
-    {
-	return extInfo;
-    }
+public Map<String, String> getProperties()
+{
+    final Map<String, String> res = new HashMap();
+    for(Map.Entry<String, String> e: props.entrySet())
+	res.put(e.getKey(), e.getValue());
+    return res;
+}
 
     @Override public String toString()
     {
