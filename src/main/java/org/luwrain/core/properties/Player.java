@@ -26,6 +26,7 @@ import org.luwrain.player.*;
 public final class Player implements PropertiesProvider, org.luwrain.player.Listener
 {
     private PropertiesProvider.Listener listener = null;
+    private long trackTimeMsec = 0;
 
     public Player()
     {
@@ -46,15 +47,20 @@ public final class Player implements PropertiesProvider, org.luwrain.player.List
 	NullCheck.notEmpty(propName, "propName");
 	final String value = getProperty(propName);
 	if (value != null)
-	    return EnumSet.of(PropertiesProvider.Flags.PUBLIC,
-			      PropertiesProvider.Flags.FILE);
+	    return EnumSet.of(PropertiesProvider.Flags.PUBLIC);
 	return null;
     }
 
     @Override public String getProperty(String propName)
     {
-	NullCheck.notNull(propName, "propName");
-	    return null;
+	NullCheck.notEmpty(propName, "propName");
+	switch(propName)
+	{
+	case "luwrain.player.track.sec":
+	    return new Long(trackTimeMsec / 1000).toString();
+	default:
+	    	    return null;
+	}
     }
 
     @Override public boolean setProperty(String propName, String value)
@@ -79,6 +85,11 @@ public final class Player implements PropertiesProvider, org.luwrain.player.List
     
     @Override public void onTrackTime(Playlist playlist, int trackNum,  long msec)
     {
+	if (msec >= trackTimeMsec && msec < trackTimeMsec + 1000)
+	    return;
+	this.trackTimeMsec = msec - (msec % 1000);
+	if (listener != null)
+	    listener.onNewPropertyValue("luwrain.player.track.sec", getProperty("luwrain.player.track.sec"));
     }
     
     @Override public void onNewState(Playlist playlist, org.luwrain.player.Player.State state)
@@ -88,6 +99,4 @@ public final class Player implements PropertiesProvider, org.luwrain.player.List
     @Override public void onPlayingError(Playlist playlist, Exception e)
     {
     }
-    
-
 }

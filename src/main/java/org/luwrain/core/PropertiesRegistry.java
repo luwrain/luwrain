@@ -7,12 +7,16 @@ import java.util.regex.*;
 
 import org.luwrain.base.*;
 
-final class PropertiesRegistry implements PropertiesBase
+final class PropertiesRegistry implements PropertiesBase, PropertiesProvider.Listener
 {
+    static private final String HOOK_PREFIX = "luwrain.prop.";
+
+    private Luwrain luwrain = null;
     private final PropertiesProvider[] basicProviders;
     private Provider[] providers = new Provider[0];
     private final Map<String, Provider> propsCache = new HashMap();
         private final Map<String, Provider> filesPropsCache = new HashMap();
+    private final Map<String, List<String>> hooks = new HashMap();
 
     PropertiesRegistry(PropertiesProvider[] basicProviders)
     {
@@ -21,9 +25,49 @@ final class PropertiesRegistry implements PropertiesBase
 	setProviders(new PropertiesProvider[0]);//to apply the list of basic providers
     }
 
-    public PropertiesProvider[] getBasicProviders()
+    void setLuwrainObj(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	if (this.luwrain != null)
+	    throw new RuntimeException("Trying to set the Luwrain object twice");
+	this.luwrain = luwrain;
+    }
+
+PropertiesProvider[] getBasicProviders()
     {
 	return basicProviders.clone();
+    }
+
+    boolean createHook(String propName, String hookName)
+    {
+	NullCheck.notEmpty(propName, "propName");
+	NullCheck.notEmpty(hookName, "hookName");
+	if (!hookName.startsWith(HOOK_PREFIX) || hookName.length() <= HOOK_PREFIX.length())
+	    return false;
+	if (!hookName.equals(hookName.trim()) || !propName.equals(propName.trim()))
+	    return false;
+	if (!hooks.containsKey(propName))
+	    hooks.put(propName, new LinkedList());
+	final List<String> hooksList = hooks.get(propName);
+	for(String s: hooksList)
+	    if (s.equals(hookName))
+		return false;
+	hooksList.add(hookName);
+	return true;
+    }
+
+    @Override public void onNewPropertyValue(String propName, String propValue)
+    {
+	NullCheck.notEmpty(propName, "propName");
+	NullCheck.notNull(propValue, "propValue");
+	if (luwrain != null)
+	{
+	if (!hooks.containsKey(propName))
+	    return;
+	final List<String> hooksList = hooks.get(propName);
+	for(String h: hooksList)
+	    luwrain.xRunHooks(h, new Object[]{propName, propValue}, true);
+	}
     }
 
     /**
@@ -40,6 +84,8 @@ final class PropertiesRegistry implements PropertiesBase
 	    newProviders.add(new Provider(true, p));
 		for(PropertiesProvider p: providers)
 		    newProviders.add(new Provider(false, p));
+		for(Provider p: newProviders)
+		    p.provider.setListener(this);
 	this.providers = newProviders.toArray(new Provider[newProviders.size()]);
 	propsCache.clear();
 	filesPropsCache.clear();
@@ -128,7 +174,6 @@ final class PropertiesRegistry implements PropertiesBase
 	final boolean basic;
 	final PropertiesProvider provider;
 	final Pattern[] patterns;
-
 	Provider(boolean basic, PropertiesProvider provider)
 	{
 	    NullCheck.notNull(provider, "provider");
@@ -142,12 +187,10 @@ final class PropertiesRegistry implements PropertiesBase
 		    patterns.add(Pattern.compile(r));//Pattern.CASE_INSENSITIVE	    this.patterns = patterns.toArray(new Pattern[patterns.size()]);
 	    this.patterns = patterns.toArray(new Pattern[patterns.size()]);
 	}
-
 	boolean hasResponsibilitySpace()
 	{
 	    return patterns.length > 0;
 	}
-
 	boolean matches(String propName)
 	{
 	    NullCheck.notEmpty(propName, "propName");

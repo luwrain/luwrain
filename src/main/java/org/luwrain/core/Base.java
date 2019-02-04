@@ -73,6 +73,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	this.cmdLine = cmdLine;
 	this.registry = registry;
 	this.props = props;
+	this.props.setLuwrainObj(getObjForEnvironment());
 	this.lang = lang;
 	this.helpSects = new HelpSections(registry);
 	this.speech = new Speech(cmdLine, registry);

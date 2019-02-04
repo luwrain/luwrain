@@ -120,6 +120,7 @@ public final class Manager
 	return res.toArray(new LoadedExtension[res.size()]);
     }
 
+    //From any thread
     public boolean runHooks(String hookName, Luwrain.HookRunner runner)
     {
 	NullCheck.notEmpty(hookName, "hookName");

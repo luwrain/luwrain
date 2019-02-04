@@ -272,6 +272,10 @@ public interface Luwrain extends PropertiesBase
     int xGetSpeechRate();
     int xGetSpeechPitch();
     void xSetSpeechPitch(int value);
+    //From any thread
     void xRunHooks(String hookName, HookRunner runner);
+    //From any thread
+    boolean xRunHooks(String hookName, Object[] args, boolean ignoreRes);
     OsInterface xGetOsInterface();
+    boolean xCreatePropertyHook(String propName, String hookName);
 }

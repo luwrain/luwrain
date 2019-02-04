@@ -69,6 +69,8 @@ public final class LuwrainObj extends AbstractJSObject
 	    return (Consumer)this::message;
 	case "addHook":
 	    return (BiPredicate)this::addHook;
+	    	case "createPropertyHook":
+	    return (BiPredicate)this::createPropertyHook;
 	case "addCommandLineTool":
 	    return (BiPredicate)this::addCommandLineTool;
 	case "addApp":
@@ -154,6 +156,15 @@ public final class LuwrainObj extends AbstractJSObject
 	return true;
     }
 
+    private boolean createPropertyHook(Object propName, Object hookName)
+    {
+	final String prop = org.luwrain.script.ScriptUtils.getStringValue(propName);
+		final String hook = org.luwrain.script.ScriptUtils.getStringValue(hookName);
+		if (prop == null || prop.trim().isEmpty() || !prop.equals(prop.trim()) ||
+		    hook == null || hook.trim().isEmpty() || !hook.equals(hook.trim()))
+		    return false;
+		return luwrain.xCreatePropertyHook(prop, hook);
+    }
 
             private boolean addTextEditing(Object name, Object obj)
     {
@@ -216,7 +227,6 @@ public final class LuwrainObj extends AbstractJSObject
     {
 	if (name == null || args == null || !(args instanceof JSObject))
 	    return false;
-
 	final JSObject jsArgs = (JSObject)args;
 	if (!jsArgs.isArray())
 	    return false;

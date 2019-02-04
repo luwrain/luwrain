@@ -722,12 +722,28 @@ final class LuwrainImpl implements Luwrain
 	core.extensions.runHooks(hookName, runner);
     }
 
+        @Override public boolean xRunHooks(String hookName, Object[] args, boolean ignoreRes)
+    {
+	NullCheck.notEmpty(hookName, "hookNam ");
+	NullCheck.notNullItems(args, "args");
+	xRunHooks(hookName, (hook)->{
+		hook.run(args);
+		return Luwrain.HookResult.CONTINUE;
+	    });
+	return true;
+    }
+
     @Override public OsInterface xGetOsInterface()
     {
 	return core.os.getInterface();
     }
 
-    
+            @Override public boolean xCreatePropertyHook(String propName, String hookName)
+    {
+	NullCheck.notEmpty(propName, "propName");
+	NullCheck.notEmpty(hookName, "hookName");
+	return core.props.createHook(propName, hookName);
+    }
 
     private void sayHint(Hint hint)
     {
