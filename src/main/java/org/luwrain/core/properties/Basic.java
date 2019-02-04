@@ -55,54 +55,41 @@ public final class Basic implements PropertiesProvider
     @Override public Set<org.luwrain.base.PropertiesProvider.Flags> getPropertyFlags(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
-	final File value = getFileProperty(propName);
+	final String value = getProperty(propName);
 	if (value != null)
 	    return EnumSet.of(PropertiesProvider.Flags.PUBLIC,
 			      PropertiesProvider.Flags.FILE);
 	return null;
     }
 
-    @Override public File getFileProperty(String propName)
+    @Override public String getProperty(String propName)
     {
 	NullCheck.notNull(propName, "propName");
 	switch(propName)
 	{
 	case "luwrain.dir.userhome":
-	    return userHomeDir;
+	    return userHomeDir.getAbsolutePath();
 	case "luwrain.dir.data":
-	    return dataDir;
+	    return dataDir.getAbsolutePath();
 	case "luwrain.dir.scripts":
-	    return new File(dataDir, "scripts");
+	    return new File(dataDir, "scripts").getAbsolutePath();
 	case "luwrain.dir.js":
-	    return new File(dataDir, "js");
+	    return new File(dataDir, "js").getAbsolutePath();
 	    	case "luwrain.dir.textext":
-	    return new File(dataDir, "text");
+		    return new File(dataDir, "text").getAbsolutePath();
 	case "luwrain.dir.properties":
-	    return new File(dataDir, "properties");
+	    return new File(dataDir, "properties").getAbsolutePath();
 	case "luwrain.dir.sounds":
-	    return new File(dataDir, "sounds");
+	    return new File(dataDir, "sounds").getAbsolutePath();
 	case "luwrain.dir.userdata":
-	    return userDataDir;
+	    return userDataDir.getAbsolutePath();
 	case "luwrain.dir.appdata":
-	    return new File(userDataDir, "app");
+	    return new File(userDataDir, "app").getAbsolutePath();
 	    	case "luwrain.dir.packs":
-	    return new File(userDataDir, "extensions");
+		    return new File(userDataDir, "extensions").getAbsolutePath();
 	default:
 	    return null;
 	}
-    }
-
-    @Override public boolean setFileProperty(String propName, File value)
-    {
-	NullCheck.notEmpty(propName, "propName");
-	NullCheck.notNull(value, "value");
-	return false;
-    }
-
-    @Override public String getProperty(String propName)
-    {
-	NullCheck.notEmpty(propName, "propName");
-	return null;
     }
 
     @Override public boolean setProperty(String propName, String value)

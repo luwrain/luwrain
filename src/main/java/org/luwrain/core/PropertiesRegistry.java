@@ -126,11 +126,10 @@ final class PropertiesRegistry implements PropertiesBase
 			for(Provider p: providers)
 		    if (!p.hasResponsibilitySpace())
 		    {
-			final File value = p.provider.getFileProperty(propName);
-			if (value != null)
-			    return value;
+			final String value = p.provider.getProperty(propName);
+			if (value != null && !value.isEmpty())
+			    return new File(value);
 		    }
-
 	return null;
     }
 

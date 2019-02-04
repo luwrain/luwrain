@@ -60,20 +60,7 @@ public final class PropertiesFiles implements PropertiesProvider
 return props.getProperty(propName);
     }
 
-    @Override public File getFileProperty(String propName)
-    {
-	NullCheck.notEmpty(propName, "propName");
-	return null;
-    }
-
     @Override public boolean setProperty(String propName, String value)
-    {
-	NullCheck.notEmpty(propName, "propName");
-	NullCheck.notNull(value, "value");
-	return false;
-    }
-
-    @Override public boolean setFileProperty(String propName, File value)
     {
 	NullCheck.notEmpty(propName, "propName");
 	NullCheck.notNull(value, "value");
