@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.util.concurrent.atomic.*;
 import java.util.concurrent.*;
 import java.io.*;
 import java.nio.file.*;
@@ -722,15 +723,62 @@ final class LuwrainImpl implements Luwrain
 	core.extensions.runHooks(hookName, runner);
     }
 
-        @Override public boolean xRunHooks(String hookName, Object[] args, boolean ignoreRes)
+        @Override public boolean xRunHooks(String hookName, Object[] args, HookStrategy strategy)
     {
-	NullCheck.notEmpty(hookName, "hookNam ");
+	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
+	NullCheck.notNull(strategy, "strategy");
+	final AtomicBoolean execRes = new AtomicBoolean(false);
+	final AtomicReference<RuntimeException> error = new AtomicReference();
 	xRunHooks(hookName, (hook)->{
-		hook.run(args);
-		return Luwrain.HookResult.CONTINUE;
+		try {
+		final Object res = hook.run(args);
+		switch(strategy)
+		{
+		case CHAIN_OF_RESPONSIBILITY:
+		    if (res == null)
+					    		return Luwrain.HookResult.CONTINUE;
+		    if (!(res instanceof Boolean))
+					    		return Luwrain.HookResult.CONTINUE;
+		    if (((Boolean)res).booleanValue())
+		    {
+			execRes.set(true);
+			return Luwrain.HookResult.BREAK;
+		    }
+		case ALL:
+		default:
+		    		return Luwrain.HookResult.CONTINUE;
+		}
+		}
+		catch(Throwable e)
+		{
+		    if (!(e instanceof RuntimeException))
+		    {
+			Log.error("core", "throwable during hook execution:" + e.getClass().getName() + ":" + e.getMessage());
+			return HookResult.CONTINUE;
+		    }
+		    final RuntimeException runtimeEx = (RuntimeException)e;
+		    error.set(runtimeEx);
+		    switch(strategy)
+		    {
+		    case CHAIN_OF_RESPONSIBILITY:
+			return HookResult.BREAK;
+		    case ALL:
+		    default:
+			return HookResult.CONTINUE;
+		    }
+		}
 	    });
-	return true;
+	switch(strategy)
+	{
+	case CHAIN_OF_RESPONSIBILITY:
+	    	if (error.get() != null)
+	    throw error.get();
+	    return execRes.get();
+	case ALL:
+	default:
+	    return error.get() == null;
+    }
     }
 
     @Override public OsInterface xGetOsInterface()

@@ -66,7 +66,7 @@ PropertiesProvider[] getBasicProviders()
 	    return;
 	final List<String> hooksList = hooks.get(propName);
 	for(String h: hooksList)
-	    luwrain.xRunHooks(h, new Object[]{propName, propValue}, true);
+	    luwrain.xRunHooks(h, new Object[]{propName, propValue}, Luwrain.HookStrategy.ALL);
 	}
     }
 

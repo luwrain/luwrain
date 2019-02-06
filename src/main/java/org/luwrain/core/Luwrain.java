@@ -93,6 +93,11 @@ public interface Luwrain extends PropertiesBase
 	BREAK,
     };
 
+    public enum HookStrategy {
+	ALL,
+	CHAIN_OF_RESPONSIBILITY,
+    };
+
     public interface Hook
     {
 	Object run(Object[] args);
@@ -275,7 +280,10 @@ public interface Luwrain extends PropertiesBase
     //From any thread
     void xRunHooks(String hookName, HookRunner runner);
     //From any thread
-    boolean xRunHooks(String hookName, Object[] args, boolean ignoreRes);
+
+    //if chain of responsibility: true if was one true returned, if RuntimeException it will be thrown
+    // If all, return value always ignored, true if there were no exceptions
+    boolean xRunHooks(String hookName, Object[] args, HookStrategy strategy);
     OsInterface xGetOsInterface();
     boolean xCreatePropertyHook(String propName, String hookName);
 }
