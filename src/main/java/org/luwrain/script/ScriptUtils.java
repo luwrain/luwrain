@@ -22,6 +22,7 @@ import java.util.*;
 import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 
 public final class ScriptUtils
 {
@@ -123,6 +124,32 @@ public final class ScriptUtils
 		{
 		    return true;
 		}
+	};
+    }
+
+    static public HookObject createInputEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	return new EmptyHookObject(){
+	    @Override public Object getMember(String name)
+	    {
+		NullCheck.notNull(name, "name");
+		switch(name)
+		{
+		case "special":
+		    return event.isSpecial()?event.getSpecial().toString().toLowerCase():null;
+		case "ch":
+		    return event.isSpecial()?null:new Character(event.getChar());
+		case "withAlt":
+		    return new Boolean(event.withAlt());
+		case "withControl":
+		    return new Boolean(event.withControl());
+		case "withShift":
+		    return new Boolean(event.withShift());
+		default:
+		    return super.getMember(name);
+		}
+	    }
 	};
     }
 }
