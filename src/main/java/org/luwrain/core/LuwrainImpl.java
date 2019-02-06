@@ -726,7 +726,7 @@ final class LuwrainImpl implements Luwrain
         @Override public boolean xRunHooks(String hookName, Object[] args, HookStrategy strategy)
     {
 	NullCheck.notEmpty(hookName, "hookName");
-	NullCheck.notNullItems(args, "args");
+	NullCheck.notNull(args, "args");
 	NullCheck.notNull(strategy, "strategy");
 	final AtomicBoolean execRes = new AtomicBoolean(false);
 	final AtomicReference<RuntimeException> error = new AtomicReference();
