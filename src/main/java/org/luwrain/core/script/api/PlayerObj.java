@@ -41,6 +41,19 @@ final class PlayerObj extends AbstractJSObject
 	{
 	case "play":
 	    return (BiPredicate)this::play;
+	case "pauseResume":
+	    	    return (Supplier)this::pauseResume;
+
+		    	case "stop":
+	    	    return (Supplier)this::stop;
+
+		    
+	case "jump":
+	    return (Predicate)this::jump;
+	case "setVolume":
+	    return (Consumer)this::setVolume;
+	case "getVolume":
+	    return (Supplier)this::getVolume;
 	default:
 	    return super.getMember(name);
 	}
@@ -56,4 +69,36 @@ final class PlayerObj extends AbstractJSObject
 	player.play(new Playlist(playlistItems.toArray(new String[playlistItems.size()])), 0, 0, Player.DEFAULT_FLAGS);
 	return true;
     }
+
+    private Object pauseResume()
+    {
+	return new Boolean(player.pauseResume());
+    }
+
+        private Object stop()
+    {
+	return new Boolean(player.stop());
+    }
+
+
+    private boolean jump(Object offset)
+    {
+	if (offset == null || !(offset instanceof Number))
+	    return false;
+	return player.jump(((Number)offset).longValue());
+    }
+
+    private Object getVolume()
+    {
+	return new Integer(player.getVolume());
+    }
+
+    private void setVolume(Object level)
+    {
+	if (level == null || !(level instanceof Number))
+	    return;
+player.setVolume(((Number)level).intValue());
+    }
+
+    
 }
