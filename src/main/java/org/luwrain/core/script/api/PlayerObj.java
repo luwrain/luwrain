@@ -54,6 +54,8 @@ final class PlayerObj extends AbstractJSObject
 	    return (Consumer)this::setVolume;
 	case "getVolume":
 	    return (Supplier)this::getVolume;
+	case "state":
+	    	return player.getState().toString().toLowerCase();
 	default:
 	    return super.getMember(name);
 	}
@@ -61,12 +63,17 @@ final class PlayerObj extends AbstractJSObject
 
     private boolean play(Object playlist, Object props)
     {
-	if (playlist == null || !(playlist instanceof JSObject))
+	final JSObject jsPlaylist = org.luwrain.script.ScriptUtils.toValidJsObject(playlist);
+	if (jsPlaylist == null)
 	    return false;
-	final List<String> playlistItems = org.luwrain.script.ScriptUtils.getStringArray((JSObject)playlist);
-	if (playlistItems == null || playlistItems.isEmpty())
+	final JSObject jsTracks = org.luwrain.script.ScriptUtils.toValidJsObject(jsPlaylist.getMember("tracks"));
+	final Object jsTracks = jsPlaylist.getMember("tracks");
+	if (jsTracks == null)
 	    return false;
-	player.play(new Playlist(playlistItems.toArray(new String[playlistItems.size()])), 0, 0, Player.DEFAULT_FLAGS);
+	final List<String> tracks = org.luwrain.script.ScriptUtils.getStringArray(jsTracks);
+	if (tracks == null || tracks.isEmpty())
+	    return false;
+	player.play(new Playlist(tracks.toArray(new String[tracks.size()])), 0, 0, Player.DEFAULT_FLAGS);
 	return true;
     }
 
@@ -99,6 +106,4 @@ final class PlayerObj extends AbstractJSObject
 	    return;
 player.setVolume(((Number)level).intValue());
     }
-
-    
 }
