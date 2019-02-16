@@ -26,6 +26,18 @@ import org.luwrain.core.events.*;
 
 public final class ScriptUtils
 {
+        static public JSObject toValidJsObject(Object obj)
+    {
+	if (obj == null)
+	    return null;
+	if (!(obj instanceof JSObject))
+	    return null;
+	final JSObject jsObj = (JSObject)obj;
+	if (ScriptObjectMirror.isUndefined(jsObj))
+	    return null;
+	return jsObj;
+    }
+
     static public String getStringValue(Object obj)
     {
 	if (obj == null)
@@ -37,6 +49,8 @@ public final class ScriptUtils
     static public List<String> getStringArray(JSObject obj)
     {
 	NullCheck.notNull(obj, "obj");
+	if (ScriptObjectMirror.isUndefined(obj))
+	    return null;
 	final List<String> res = new LinkedList();
 	if (!obj.isArray())
 	    return null;

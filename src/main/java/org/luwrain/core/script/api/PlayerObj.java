@@ -67,7 +67,6 @@ final class PlayerObj extends AbstractJSObject
 	if (jsPlaylist == null)
 	    return false;
 	final JSObject jsTracks = org.luwrain.script.ScriptUtils.toValidJsObject(jsPlaylist.getMember("tracks"));
-	final Object jsTracks = jsPlaylist.getMember("tracks");
 	if (jsTracks == null)
 	    return false;
 	final List<String> tracks = org.luwrain.script.ScriptUtils.getStringArray(jsTracks);
