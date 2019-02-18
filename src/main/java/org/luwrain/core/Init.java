@@ -47,12 +47,10 @@ public class Init
     private final File userDataDir;
     private final File userHomeDir;
     private final String lang;
-
     private final CmdLine cmdLine;
     private final boolean standaloneMode;
     private final Registry registry;
     private final PropertiesRegistry props;
-
     private OperatingSystem os = null;
     private org.luwrain.base.Interaction interaction = null;
 
@@ -90,6 +88,33 @@ public class Init
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
 	    this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(this.userDataDir, "registry").toPath());
+	}
+    }
+
+    private void start()
+    {
+	handleCmdLine();
+	try {
+	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
+	    if (standaloneMode)
+		UserProfile.createUserProfile(dataDir, userDataDir, lang); else
+		if (!Checks.isProfileInstalled(userDataDir))
+		{
+		    Log.debug(LOG_COMPONENT, "generating the initial content of the user data directory " + userDataDir.getAbsolutePath());
+		    UserProfile.createUserProfile(dataDir, userDataDir, lang);
+		} else
+		    Log.debug(LOG_COMPONENT, "the user data directory " + userDataDir.getAbsolutePath() + " considered properly prepared");
+	    init();
+	    new Core(cmdLine, registry, os, interaction, props, lang).run();
+	    interaction.close();
+	    Log.info(LOG_COMPONENT, "exiting LUWRAIN normally");
+	    System.exit(0);
+	}
+	catch(Throwable e)
+	{
+	    Log.fatal(LOG_COMPONENT, "terminating LUWRAIN very abnormally due to the unexpected exception: " + e.getClass().getName() + ":" + e.getMessage());
+	    e.printStackTrace();
+	    System.exit(1);
 	}
     }
 
@@ -166,52 +191,24 @@ public class Init
 	Log.debug(LOG_COMPONENT, "OS (" + osClass + ") initialized successfully");
     }
 
-    private void start()
-    {
-	handleCmdLine();
-
-	try {
-		    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
-		    if (standaloneMode)
-						UserProfile.createUserProfile(dataDir, userDataDir, lang); else
-		    if (!Checks.isProfileInstalled(userDataDir))
-		    {
-			Log.debug(LOG_COMPONENT, "generating the initial content of the user data directory " + userDataDir.getAbsolutePath());
-			UserProfile.createUserProfile(dataDir, userDataDir, lang);
-		    } else
-			Log.debug(LOG_COMPONENT, "the user data directory " + userDataDir.getAbsolutePath() + " considered properly prepared");
-		    init();
-		new Core(cmdLine, registry, os, interaction, props, lang).run();
-		interaction.close();
-		Log.info(LOG_COMPONENT, "exiting LUWRAIN normally");
-	    System.exit(0);
-	}
-	catch(Throwable e)
-	{
-	    Log.fatal(LOG_COMPONENT, "terminating LUWRAIN very abnormally due to the unexpected exception: " + e.getClass().getName() + ":" + e.getMessage());
-	    e.printStackTrace();
-	    System.exit(1);
-	}
-    }
-
     private void handleCmdLine()
     {
 	//Help
-		if (cmdLine.used(CMDARG_HELP))
+	if (cmdLine.used(CMDARG_HELP))
 	{
 	    System.out.println("Valid command line options are:");
 	    System.out.println(CMDARG_HELP + " - print this help info and exit");
 	    System.out.println(CMDARG_PRINT_LANG + " - print the chosen language and exit");
-	    	    System.out.println(Checks.CMDARG_LANG + " - set the language to use");
-		    	    System.out.println(CMDARG_PRINT_DIRS + " - print the detected values of the system directories and exit");
-			    if (!standaloneMode)
-			    {
-	    System.out.println(CMDARG_CREATE_PROFILE + " - generate the user profile directory in its default location and exit");
-	    System.out.println(CMDARG_CREATE_PROFILE_IN + "<DESTDIR> - generate the user profile directory in <DESTDIR> and exit");
-			    }
+	    System.out.println(Checks.CMDARG_LANG + " - set the language to use");
+	    System.out.println(CMDARG_PRINT_DIRS + " - print the detected values of the system directories and exit");
+	    if (!standaloneMode)
+	    {
+		System.out.println(CMDARG_CREATE_PROFILE + " - generate the user profile directory in its default location and exit");
+		System.out.println(CMDARG_CREATE_PROFILE_IN + "<DESTDIR> - generate the user profile directory in <DESTDIR> and exit");
+	    }
 	    System.exit(0);
 	}
-		//Print the lang
+	//Print the lang
 	if (cmdLine.used(CMDARG_PRINT_LANG))
 	{
 	    System.out.println("Chosen language: " + lang);
@@ -265,39 +262,38 @@ public class Init
 	NullCheck.notNull(dataDir, "dataDir");
 	NullCheck.notEmpty(lang, "lang");
 	NullCheck.notNull(dataDir, "dataDir");
-		    final org.luwrain.registry.mem.RegistryImpl reg = new org.luwrain.registry.mem.RegistryImpl();
-	    try {
-		reg.load(new File(dataDir, "registry.dat"));
-				reg.load(new File(dataDir, "registry." + lang + ".dat"));
-				return reg;
-	    }
-	    catch(IOException e)
-	    {
-		Log.fatal(LOG_COMPONENT, "unable to load initial registry data:" + e.getClass().getName() + ":" + e.getMessage());
-		System.exit(1);
-		return null;
-	    }
-
+	final org.luwrain.registry.mem.RegistryImpl reg = new org.luwrain.registry.mem.RegistryImpl();
+	try {
+	    reg.load(new File(dataDir, "registry.dat"));
+	    reg.load(new File(dataDir, "registry." + lang + ".dat"));
+	    return reg;
+	}
+	catch(IOException e)
+	{
+	    Log.fatal(LOG_COMPONENT, "unable to load initial registry data:" + e.getClass().getName() + ":" + e.getMessage());
+	    System.exit(1);
+	    return null;
+	}
     }
 
     static private File createTempDataDir()
     {
-		    try {
-		final File tmpDir = File.createTempFile("lwrtmpdatadir", "");
-		tmpDir.delete();
-		if (!tmpDir.mkdir())
-		{
-		    Log.fatal(LOG_COMPONENT, "unable to create temporary directory " + tmpDir.getAbsolutePath());
-		    System.exit(1);
-		}
-		return tmpDir;
-	    }
-	    catch(IOException e)
+	try {
+	    final File tmpDir = File.createTempFile("lwrtmpdatadir", "");
+	    tmpDir.delete();
+	    if (!tmpDir.mkdir())
 	    {
-		Log.fatal(LOG_COMPONENT, "unable to create the temporary user data directory:" + e.getClass().getName() + ":" + e.getMessage());
+		Log.fatal(LOG_COMPONENT, "unable to create temporary directory " + tmpDir.getAbsolutePath());
 		System.exit(1);
-		return null;
 	    }
+	    return tmpDir;
+	}
+	catch(IOException e)
+	{
+	    Log.fatal(LOG_COMPONENT, "unable to create the temporary user data directory:" + e.getClass().getName() + ":" + e.getMessage());
+	    System.exit(1);
+	    return null;
+	}
     }
 
     /**
