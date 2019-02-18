@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -19,7 +19,7 @@ package org.luwrain.core.init;
 import java.net.*;
 import java.lang.reflect.*;
 
-public class ClassPath
+public final class ClassPath
 {
     //Until the better days, when the guys from OpenJDK stop the mess with classpath manipulation
     static public boolean addUrl(URL url)

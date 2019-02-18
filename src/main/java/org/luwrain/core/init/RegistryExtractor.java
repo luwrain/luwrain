@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.core.init;
 
@@ -38,9 +53,9 @@ final class RegistryExtractor
 	    }
 	    if (line.startsWith(DIR_PREFIX))
 		onDir(line.substring(DIR_PREFIX.length()).trim()); else
-	    if (line.startsWith(FILE_PREFIX))
-		onFile(line.substring(FILE_PREFIX.length()).trim()); else
-		onValue(line);
+		if (line.startsWith(FILE_PREFIX))
+		    onFile(line.substring(FILE_PREFIX.length()).trim()); else
+		    onValue(line);
 	    line = reader.readLine();
 	}
 	saveLines();
@@ -83,7 +98,7 @@ final class RegistryExtractor
 
     private void saveLines() throws IOException
     {
-		if (currentDir == null || currentFile == null)
+	if (currentDir == null || currentFile == null)
 	    return;
 	final BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile, true));
 	try {

@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.core.init;
 
@@ -25,19 +40,17 @@ public final class UserProfile
 	this.lang = lang;
     }
 
-    
-    
-public void userProfileReady() throws IOException
+    public void userProfileReady() throws IOException
     {
 	mkDirIfNotExists(destDir);
 	mkDirIfNotExists(new File(destDir, "var"));
 	mkDirIfNotExists(new File(destDir, "extensions"));
 	mkDirIfNotExists(new File(destDir, "properties"));
-			 mkDirIfNotExists(new File(destDir, "sqlite"));
-			 }
+	mkDirIfNotExists(new File(destDir, "sqlite"));
+    }
 
-	public void registryDirReady() throws IOException
-	{
+    public void registryDirReady() throws IOException
+    {
 	final File registryDir = new File(destDir, "registry");
 	mkDirIfNotExists(registryDir);
 	final File target = new File(registryDir, regVersion);
@@ -64,15 +77,15 @@ public void userProfileReady() throws IOException
 	}
     }
 
-	static private void mkDirIfNotExists(File file) throws IOException
-	{
-	    if (file.isDirectory())
-		return;
-	    if (file.isFile())
-		throw new IOException(file.getAbsolutePath() + " exists, but is a regular file");
-	    if (file.exists())
-		throw new IOException(file.getAbsolutePath() + " exists, but not a directory");
-	    if (!file.mkdir())
-		throw new IOException("Unable to create " + file.getAbsolutePath());
-	}
+    static private void mkDirIfNotExists(File file) throws IOException
+    {
+	if (file.isDirectory())
+	    return;
+	if (file.isFile())
+	    throw new IOException(file.getAbsolutePath() + " exists, but is a regular file");
+	if (file.exists())
+	    throw new IOException(file.getAbsolutePath() + " exists, but not a directory");
+	if (!file.mkdir())
+	    throw new IOException("Unable to create " + file.getAbsolutePath());
+    }
 }
