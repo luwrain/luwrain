@@ -72,35 +72,10 @@ public class Init
 	{
 	    Log.info(LOG_COMPONENT, "enabling standalone mode");
 	    this.standaloneMode = true;
-	    File tmpDir = null;
-	    try {
-		tmpDir = File.createTempFile("lwrtmpdatadir", "");
-		tmpDir.delete();
-		if (!tmpDir.mkdir())
-		{
-		    Log.fatal(LOG_COMPONENT, "unable to create temporary directory " + tmpDir.getAbsolutePath());
-		    System.exit(1);
-		}
-	    }
-	    catch(IOException e)
-	    {
-		Log.fatal(LOG_COMPONENT, "unable to create the temporary user data directory:" + e.getClass().getName() + ":" + e.getMessage());
-		System.exit(1);
-	    }
-	    this.userDataDir = tmpDir;
+	    this.userDataDir = createTempDataDir();
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
-	    final org.luwrain.registry.mem.RegistryImpl reg = new org.luwrain.registry.mem.RegistryImpl();
-	    this.registry = reg;
-	    try {
-		reg.load(new File(dataDir, "registry.dat"));
-				reg.load(new File(dataDir, "registry." + lang + ".dat"));
-	    }
-	    catch(IOException e)
-	    {
-		Log.fatal(LOG_COMPONENT, "unable to load initial registry data:" + e.getClass().getName() + ":" + e.getMessage());
-		System.exit(1);
-	    }
+	    this.registry = loadMemRegistry(dataDir, lang);
 	} else
 	{
 	    this.standaloneMode = false;
@@ -118,7 +93,7 @@ public class Init
 	}
     }
 
-    private boolean init()
+    private void init()
     {
 	//time zone
 	{
@@ -135,29 +110,27 @@ public class Init
 		    Log.warning(LOG_COMPONENT, "time zone " + value.trim() + " is unknown");
 	    }
 	}
-
-	if (!initOs())
-	    return false;
+	initOs();
+	//Interaction
 	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();
 	interactionParams.loadFromRegistry(registry);
 	final String interactionClass = props.getProperty("luwrain.class.interaction");
 	if (interactionClass.isEmpty())
 	{
-	    Log.fatal(LOG_COMPONENT, "unable to load interaction:no luwrain.class.interaction property among loaded properties");
-	    return false;
+	    Log.fatal(LOG_COMPONENT, "unable to load the interaction:no luwrain.class.interaction property among loaded properties");
+	    System.exit(1);
 	}
 	interaction = (org.luwrain.base.Interaction)org.luwrain.util.ClassUtils.newInstanceOf(interactionClass, org.luwrain.base.Interaction.class);
 	if (interaction == null)
 	{
 	    Log.fatal(LOG_COMPONENT, "Unable to create an instance of  the interaction class " + interactionClass);
-	    return false;
+	    System.exit(1);
 	}
 	if (!interaction.init(interactionParams,os))
 	{
 	    Log.fatal(LOG_COMPONENT, "interaction initialization failed");
-	    return false;
+	    System.exit(1);
 	}
-
 	//network
 	final Settings.Network network = Settings.createNetwork(registry);
 	System.getProperties().put("socksProxyHost", network.getSocksProxyHost(""));
@@ -166,24 +139,21 @@ public class Init
 	System.getProperties().put("http.proxyPort", network.getHttpProxyPort(""));
 	System.getProperties().put("http.proxyUser", network.getHttpProxyUser(""));
 	System.getProperties().put("http.proxyPassword",network.getHttpProxyPassword("") );
-
-	//OK!
-	return true;
     }
 
-    private boolean initOs()
+    private void initOs()
     {
 	final String osClass = props.getProperty("luwrain.class.os");
 	if (osClass.isEmpty())
 	{
-	    Log.fatal(LOG_COMPONENT, "unable to load operating system interface:no luwrain.class.os property in loaded core properties");
-	    return false;
+	    Log.fatal(LOG_COMPONENT, "unable to load the operating system interface:no luwrain.class.os property in loaded core properties");
+	    System.exit(1);
 	}
 	os = (org.luwrain.base.OperatingSystem)org.luwrain.util.ClassUtils.newInstanceOf(osClass, org.luwrain.base.OperatingSystem.class);
 	if (os == null)
 	{
 	    Log.fatal(LOG_COMPONENT, "unable to create a new instance of the operating system class " + osClass);
-	    return false;
+	    System.exit(1);
 	}
 	final InitResult initRes = os.init(props);
 	if (initRes == null || !initRes.isOk())
@@ -191,20 +161,47 @@ public class Init
 	    if (initRes != null)
 		Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName() + ":" + initRes.toString()); else
 		Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName());
-	    return false;
+	    System.exit(1);
 	}
 	Log.debug(LOG_COMPONENT, "OS (" + osClass + ") initialized successfully");
-	return true;
     }
 
     private void start()
     {
-	if (cmdLine.used(CMDARG_HELP))
+	handleCmdLine();
+
+	try {
+		    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
+		    if (standaloneMode)
+						UserProfile.createUserProfile(dataDir, userDataDir, lang); else
+		    if (!Checks.isProfileInstalled(userDataDir))
+		    {
+			Log.debug(LOG_COMPONENT, "generating the initial content of the user data directory " + userDataDir.getAbsolutePath());
+			UserProfile.createUserProfile(dataDir, userDataDir, lang);
+		    } else
+			Log.debug(LOG_COMPONENT, "the user data directory " + userDataDir.getAbsolutePath() + " considered properly prepared");
+		    init();
+		new Core(cmdLine, registry, os, interaction, props, lang).run();
+		interaction.close();
+		Log.info(LOG_COMPONENT, "exiting LUWRAIN normally");
+	    System.exit(0);
+	}
+	catch(Throwable e)
+	{
+	    Log.fatal(LOG_COMPONENT, "terminating LUWRAIN very abnormally due to the unexpected exception: " + e.getClass().getName() + ":" + e.getMessage());
+	    e.printStackTrace();
+	    System.exit(1);
+	}
+    }
+
+    private void handleCmdLine()
+    {
+	//Help
+		if (cmdLine.used(CMDARG_HELP))
 	{
 	    System.out.println("Valid command line options are:");
 	    System.out.println(CMDARG_HELP + " - print this help info and exit");
 	    System.out.println(CMDARG_PRINT_LANG + " - print the chosen language and exit");
-
 	    	    System.out.println(Checks.CMDARG_LANG + " - set the language to use");
 		    	    System.out.println(CMDARG_PRINT_DIRS + " - print the detected values of the system directories and exit");
 			    if (!standaloneMode)
@@ -214,13 +211,13 @@ public class Init
 			    }
 	    System.exit(0);
 	}
-
+		//Print the lang
 	if (cmdLine.used(CMDARG_PRINT_LANG))
 	{
 	    System.out.println("Chosen language: " + lang);
 	    System.exit(0);
 	}
-
+	//Print the dirs
 	if (cmdLine.used(CMDARG_PRINT_DIRS))
 	{
 	    System.out.println("Data: " + dataDir.getAbsolutePath());
@@ -228,7 +225,7 @@ public class Init
 	    System.out.println("User home: " + userHomeDir.getAbsolutePath());
 	    System.exit(0);
 	}
-
+	//Create profile in
 	if (!standaloneMode && cmdLine.getArgs(CMDARG_CREATE_PROFILE_IN).length > 0)
 	{
 	    final String[] destDirs = cmdLine.getArgs((CMDARG_CREATE_PROFILE_IN));
@@ -247,7 +244,7 @@ public class Init
 		System.exit(1);
 	    }
 	}
-
+	//create profile
 	if (!standaloneMode && cmdLine.used(CMDARG_CREATE_PROFILE))
 	{
 	    try {
@@ -261,40 +258,46 @@ public class Init
 		System.exit(1);
 	    }
 	}
+    }
 
-	try {
-		    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
-		    if (standaloneMode)
-		    {
-
-						UserProfile.createUserProfile(dataDir, userDataDir, lang);
-		    } else 
-		    if (!Checks.isProfileInstalled(userDataDir))
-		    {
-			Log.debug(LOG_COMPONENT, "generating the initial content of the user data directory " + userDataDir.getAbsolutePath());
-			UserProfile.createUserProfile(dataDir, userDataDir, lang);
-		    } else
-			Log.debug(LOG_COMPONENT, "the user data directory " + userDataDir.getAbsolutePath() + " considered properly prepared");
-		    final boolean initRes = init();
-		    if (initRes)
-		new Core(
-				cmdLine, registry, os, interaction, 
-				props, lang).run();
-	    if (interaction != null)
-	    {
-		Log.debug(LOG_COMPONENT, "closing interaction");
-		interaction.close();
+    static private Registry loadMemRegistry(File dataDir, String lang)
+    {
+	NullCheck.notNull(dataDir, "dataDir");
+	NullCheck.notEmpty(lang, "lang");
+	NullCheck.notNull(dataDir, "dataDir");
+		    final org.luwrain.registry.mem.RegistryImpl reg = new org.luwrain.registry.mem.RegistryImpl();
+	    try {
+		reg.load(new File(dataDir, "registry.dat"));
+				reg.load(new File(dataDir, "registry." + lang + ".dat"));
+				return reg;
 	    }
-	    if (initRes)
-		Log.info(LOG_COMPONENT, "exiting LUWRAIN normally");
-	    System.exit(initRes?0:1);
-	}
-	catch(Throwable e)
-	{
-	    Log.fatal(LOG_COMPONENT, "terminating LUWRAIN very abnormally due to unexpected exception:" + e.getClass().getName() + ":" + e.getMessage());
-	    e.printStackTrace();
-	    System.exit(1);
-	}
+	    catch(IOException e)
+	    {
+		Log.fatal(LOG_COMPONENT, "unable to load initial registry data:" + e.getClass().getName() + ":" + e.getMessage());
+		System.exit(1);
+		return null;
+	    }
+
+    }
+
+    static private File createTempDataDir()
+    {
+		    try {
+		final File tmpDir = File.createTempFile("lwrtmpdatadir", "");
+		tmpDir.delete();
+		if (!tmpDir.mkdir())
+		{
+		    Log.fatal(LOG_COMPONENT, "unable to create temporary directory " + tmpDir.getAbsolutePath());
+		    System.exit(1);
+		}
+		return tmpDir;
+	    }
+	    catch(IOException e)
+	    {
+		Log.fatal(LOG_COMPONENT, "unable to create the temporary user data directory:" + e.getClass().getName() + ":" + e.getMessage());
+		System.exit(1);
+		return null;
+	    }
     }
 
     /**
