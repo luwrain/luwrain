@@ -96,14 +96,10 @@ public class Init
 	handleCmdLine();
 	try {
 	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
-	    if (standaloneMode)
-		UserProfile.createUserProfile(dataDir, userDataDir, lang); else
-		if (!Checks.isProfileInstalled(userDataDir))
-		{
-		    Log.debug(LOG_COMPONENT, "generating the initial content of the user data directory " + userDataDir.getAbsolutePath());
-		    UserProfile.createUserProfile(dataDir, userDataDir, lang);
-		} else
-		    Log.debug(LOG_COMPONENT, "the user data directory " + userDataDir.getAbsolutePath() + " considered properly prepared");
+	    final UserProfile userProfile = new UserProfile(dataDir, userDataDir, "default", lang);
+	    userProfile.userProfileReady();
+	    if (!standaloneMode)
+		userProfile.registryDirReady();
 	    init();
 	    new Core(cmdLine, registry, os, interaction, props, lang).run();
 	    interaction.close();
@@ -231,7 +227,9 @@ public class Init
 		{
 		    final File destDir = new File(d);
 		    System.out.println("Creating user profile in " + destDir.getAbsolutePath());
-		    UserProfile.createUserProfile(dataDir, destDir, lang);
+		    final UserProfile profile = new UserProfile(dataDir, destDir, getRegVersion(), lang);
+		    profile.userProfileReady();
+		    profile.registryDirReady();
 		}
 		System.exit(0);
 	    }
@@ -246,7 +244,9 @@ public class Init
 	{
 	    try {
 		System.out.println("Creating user profile in " + userDataDir.getAbsolutePath());
-		UserProfile.createUserProfile(dataDir, userDataDir, lang);
+		final UserProfile profile = new UserProfile(dataDir, userDataDir, getRegVersion(), lang);
+		profile.userProfileReady();
+		profile.registryDirReady();
 		System.exit(0);
 	    }
 	    catch(IOException e)
@@ -255,6 +255,14 @@ public class Init
 		System.exit(1);
 	    }
 	}
+    }
+
+    private String getRegVersion()
+    {
+	final String res = props.getProperty("luwrain.registry.version");
+	if (res == null || res.trim().isEmpty())
+	    return "default";
+	return res.toLowerCase();
     }
 
     static private Registry loadMemRegistry(File dataDir, String lang)
