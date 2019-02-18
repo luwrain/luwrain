@@ -87,7 +87,7 @@ public class Init
 	    filesProps.load(new File(userDataDir, "properties"));
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
-	    this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(this.userDataDir, "registry").toPath());
+	    this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(new File(this.userDataDir, "registry"), getRegVersion()).toPath());
 	}
     }
 
@@ -96,7 +96,7 @@ public class Init
 	handleCmdLine();
 	try {
 	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
-	    final UserProfile userProfile = new UserProfile(dataDir, userDataDir, "default", lang);
+	    final UserProfile userProfile = new UserProfile(dataDir, userDataDir, getRegVersion(), lang);
 	    userProfile.userProfileReady();
 	    if (!standaloneMode)
 		userProfile.registryDirReady();
