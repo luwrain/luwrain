@@ -26,6 +26,11 @@ import org.luwrain.core.events.*;
 
 public final class ScriptUtils
 {
+    static public boolean isValid(Object obj)
+    {
+	return obj != null && !ScriptObjectMirror.isUndefined(obj);
+    }
+
         static public JSObject toValidJsObject(Object obj)
     {
 	if (obj == null)
@@ -46,18 +51,21 @@ public final class ScriptUtils
     }
     
     //Returns null if the provided object isn't an array
-    static public List<String> getStringArray(JSObject obj)
+    static public List<String> getStringArray(Object obj)
     {
 	NullCheck.notNull(obj, "obj");
 	if (ScriptObjectMirror.isUndefined(obj))
 	    return null;
+	if (!(obj instanceof JSObject))
+	    return null;
+	final JSObject jsObj = (JSObject)obj;
 	final List<String> res = new LinkedList();
-	if (!obj.isArray())
+	if (!jsObj.isArray())
 	    return null;
 	int index = 0;
-	while (obj.hasSlot(index))
+	while (jsObj.hasSlot(index))
 	{
-	    final Object o = obj.getSlot(index);
+	    final Object o = jsObj.getSlot(index);
 	    if (o == null)
 		break;
 	    res.add(o.toString());
@@ -79,6 +87,8 @@ public final class ScriptUtils
 		    {
 		    case "items":
 			return items.clone();
+		    case "length":
+			return new Integer(items.length);
 		    default:
 			return null;//FIXME:undefined
 		    }
@@ -120,6 +130,8 @@ public final class ScriptUtils
 		    {
 		    case "items":
 			return items.clone();
+		    case "length":
+			return new Integer(items.length);
 		    default:
 			return null;//FIXME:undefined
 		    }
