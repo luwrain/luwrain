@@ -41,7 +41,7 @@ class UserInterface extends FormArea implements SectionArea
 
     private void fillForm()
     {
-	addEdit("launch-greeting", luwrain.i18n().getStaticStr("CpLaunchingGreetingText"), sett.getLaunchGreeting(""));
+	//addEdit("launch-greeting", luwrain.i18n().getStaticStr("CpLaunchingGreetingText"), sett.getLaunchGreeting(""));
 	//	addCheckbox("file-popup-skip-hidden", "Исключать скрытые файлы в о всплывающих окнах:", settings.getFilePopupSkipHidden(false));
 	//	addCheckbox("empty-line-under-regular-lists", "Добавлять пустую строку в конце списков:", settings.getEmptyLineUnderRegularLists(false));
 	//	addCheckbox("empty-line-above-popup-lists", "Добавлять пустую строку в начало всплывающих списков:", settings.getEmptyLineAbovePopupLists(false));
@@ -67,7 +67,7 @@ class UserInterface extends FormArea implements SectionArea
 
     @Override public boolean saveSectionData()
     {
-	sett.setLaunchGreeting(getEnteredText("launch-greeting"));
+	//sett.setLaunchGreeting(getEnteredText("launch-greeting"));
 	return true;
     }
 

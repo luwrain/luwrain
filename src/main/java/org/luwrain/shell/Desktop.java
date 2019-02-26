@@ -83,14 +83,23 @@ public class Desktop implements org.luwrain.core.Desktop
 			case ESCAPE:
 			    if (luwrain == null)
 				return false;
-			    luwrain.xQuit();
-			    return true;
+			    if (luwrain.xRunHooks("luwrain.desktop.escape", new Object[0], Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY))
+				return true;
+			    {
+				final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+				final String cmdName = sett.getDesktopEscapeCommand("");
+				if (cmdName.trim().isEmpty())
+				    return false;
+				return luwrain.runCommand(cmdName.trim());
+			    }
 			}
 		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
+		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
 		    case HELP:

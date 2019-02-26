@@ -33,13 +33,6 @@ public class Conversations
 		this.luwrain = luwrain;
     }
 
-    public boolean quitConfirmation()
-    {
-	final YesNoPopup popup = new YesNoPopup(luwrain, luwrain.i18n().getStaticStr("QuitPopupName"), luwrain.i18n().getStaticStr("QuitPopupText"), true, Popups.DEFAULT_POPUP_FLAGS);
-	luwrain.popup(popup);
-	return !popup.wasCancelled() && popup.result();
-    }
-
     public String commandPopup(String[] allCommands)
     {
 	NullCheck.notNullItems(allCommands, "allCommands");
