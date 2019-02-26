@@ -272,7 +272,7 @@ public interface Luwrain extends PropertiesBase
     String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType);
     boolean unloadDynamicExtension(String extId);
     void xExecScript(File dataDir, String text);
-    void xQuit();
+    boolean xQuit();
     void xSetSpeechRate(int value);
     int xGetSpeechRate();
     int xGetSpeechPitch();

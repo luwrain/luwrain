@@ -94,6 +94,8 @@ public final class LuwrainObj extends AbstractJSObject
 	    return (BiPredicate)this::launchApp;
 	case "runBkg":
 	    return (Predicate)this::runBkg;
+	case "quit":
+	    return (Supplier)this::quit;
 	default:
 	    return super.getMember(name);
 	}
@@ -244,5 +246,10 @@ public final class LuwrainObj extends AbstractJSObject
 	luwrain.launchApp(name.toString(), argsList.toArray(new String[argsList.size()]));
 //FIXME:proper return value
 return true;
+    }
+
+    private Object quit()
+    {
+	return new Boolean(luwrain.xQuit());
     }
 }

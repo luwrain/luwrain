@@ -120,10 +120,11 @@ final class LuwrainImpl implements Luwrain
 	core.enqueueEvent(e);
     }
 
-    @Override public void xQuit()
+    @Override public boolean xQuit()
     {
 	core.mainCoreThreadOnly();
 	core.quit();
+	return true;
     }
 
     @Override public Path getAppDataDir(String appName)

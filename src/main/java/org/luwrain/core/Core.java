@@ -399,7 +399,6 @@ final class Core extends EventDispatching
 
     public void quit()
     {
-	if (conversations.quitConfirmation())
 	    mainStopCondition.stop();
     }
 

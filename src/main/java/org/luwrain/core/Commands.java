@@ -60,18 +60,6 @@ class Commands
 		}
 	    },
 
-	    //Quit
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "quit";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.quit();
-		}
-	    },
-
 	    //search
 	    new Command() {
 		@Override public String getName()
