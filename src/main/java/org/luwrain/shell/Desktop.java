@@ -27,6 +27,7 @@ import org.luwrain.popups.Popups;
 public class Desktop implements org.luwrain.core.Desktop
 {
     private Luwrain luwrain = null;
+    private String name = "";
     private Storing storing = null;
     private EditableListArea area = null;
     private Conversations conversations = null;
@@ -42,7 +43,11 @@ public class Desktop implements org.luwrain.core.Desktop
     //Runs by the core when language extensions loaded 
     @Override public void ready()
     {
-	storing.load();
+	this.storing.load();
+	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+	this.name = sett.getDesktopTitle("");
+	if (this.name.trim().isEmpty())
+	    this.name = luwrain.i18n().getStaticStr("Desktop");
 	luwrain.onAreaNewName(area);
     }
 
@@ -118,7 +123,7 @@ public class Desktop implements org.luwrain.core.Desktop
 		}
 		@Override public String getAreaName()
 		{
-		    return luwrain.i18n().getStaticStr("Desktop");
+		    return name;
 		}
 	    };
 	area.setListClickHandler((area, index, obj)->{
@@ -143,7 +148,7 @@ public class Desktop implements org.luwrain.core.Desktop
 
     @Override public String getAppName()
     {
-	return luwrain.i18n().getStaticStr("Desktop");
+	return name;
     }
 
     @Override public AreaLayout getAreaLayout()
