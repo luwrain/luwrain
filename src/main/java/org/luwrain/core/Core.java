@@ -30,7 +30,6 @@ import org.luwrain.base.*;
 final class Core extends EventDispatching
 {
     static private final String DESKTOP_PROP_NAME = "luwrain.class.desktop";
-    static private final String STARTUP_PROP_NAME = "luwrain.func.startup";
     static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
 
     final OperatingSystem os;
@@ -68,11 +67,10 @@ final class Core extends EventDispatching
 	init();
     interaction.startInputEventsAccepting(this);
 	windowManager.redraw();
-	if (!props.getProperty(STARTUP_PROP_NAME).isEmpty())
-	    runFunc(getObjForEnvironment(), props.getProperty(STARTUP_PROP_NAME)); else
-	    Log.warning(LOG_COMPONENT, "no property " + STARTUP_PROP_NAME + ", skipping startup procedure");
 	soundManager.startingMode();
+	objRegistry.add(null, new CronWorker(getObjForEnvironment()));
 	workers.doWork(objRegistry.getWorkers());
+	getObjForEnvironment().xRunHooks("luwrain.startup", new Object[0], Luwrain.HookStrategy.ALL);
 	eventLoop(mainStopCondition);
 	workers.finish();
 	playSound(Sounds.SHUTDOWN);
