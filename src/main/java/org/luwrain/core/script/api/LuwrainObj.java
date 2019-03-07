@@ -96,6 +96,8 @@ public final class LuwrainObj extends AbstractJSObject
 	    return (Predicate)this::runBkg;
 	case "quit":
 	    return (Supplier)this::quit;
+	case "runWorker":
+	    return (Predicate)this::runWorker;
 	default:
 	    return super.getMember(name);
 	}
@@ -251,5 +253,13 @@ return true;
     private Object quit()
     {
 	return new Boolean(luwrain.xQuit());
+    }
+
+    private boolean runWorker(Object nameObj)
+    {
+	final String name = org.luwrain.script.ScriptUtils.getStringValue(nameObj);
+	if (name == null || name.trim().isEmpty())
+	    return false;
+	return luwrain.runWorker(name);
     }
 }
