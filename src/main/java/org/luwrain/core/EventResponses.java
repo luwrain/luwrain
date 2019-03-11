@@ -152,7 +152,16 @@ public final class  EventResponses
 	    NullCheck.notNull(speech, "speech");
 	    if (sound != null)
 		luwrain.playSound(sound); else
-		luwrain.playSound(Sounds.LIST_ITEM);
+		switch(type)
+		{
+		case COLLAPSED:
+		case EXPANDED:
+		luwrain.playSound(Sounds.DOC_SECTION);
+		break;
+		case LEAF:
+				luwrain.playSound(Sounds.LIST_ITEM);
+				break;
+		}
 	    final List<String> parts = new LinkedList();
 	    parts.add(text);
 	    switch(type)
@@ -201,7 +210,7 @@ public final class  EventResponses
 	switch(hint)
 	{
 	case TREE_BRANCH_EXPANDED:
-	    return "развёрнуто";
+	    return "Раскрыто";//FIXME:
 	case TREE_BRANCH_COLLAPSED:
 	    return "свёрнуто";
 	default:
