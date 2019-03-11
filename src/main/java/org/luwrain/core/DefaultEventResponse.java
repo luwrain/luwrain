@@ -75,4 +75,18 @@ static public EventResponse text(String text)
 	NullCheck.notNull(text, "text");
 	return new EventResponses.ListItem(sound, text, suggestion);
     }
+
+    static public EventResponse treeItem(EventResponses.TreeItem.Type type, String text, int level, Suggestions suggestion)
+    {
+	NullCheck.notNull(type, "type");
+	NullCheck.notNull(text, "text");
+	return new EventResponses.TreeItem(type, text, level, suggestion);
+    }
+
+        static public EventResponse treeItem(EventResponses.TreeItem.Type type, String text, int level)
+    {
+	NullCheck.notNull(type, "type");
+	NullCheck.notNull(text, "text");
+	return new EventResponses.TreeItem(type, text, level);
+    }
 }

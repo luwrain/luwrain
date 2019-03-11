@@ -147,6 +147,14 @@ public final class  EventResponses
 		throw new IllegalArgumentException("level (" + level + ") may not be less than one");
 	    this.suggestion = suggestion;
 	}
+		public TreeItem(Type type, String text, int level, Suggestions suggestion)
+	{
+	    this(type, null, text, level, suggestion);
+	}
+			public TreeItem(Type type, String text, int level)
+	{
+	    this(type, null, text, level, null);
+	}
 	@Override public void announce(Luwrain luwrain, Speech speech)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
@@ -166,7 +174,7 @@ public final class  EventResponses
 		break;
 	    }
 	    if (level > 1)
-		parts.add(luwrain.i18n().getStaticStr("Level") + String.valueOf(level));
+		parts.add(luwrain.i18n().getStaticStr("TreeLevel") + String.valueOf(level));
 	    if (suggestion != null)
 	    {
 		final String suggestionText = getSuggestionText(suggestion, luwrain.i18n());

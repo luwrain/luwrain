@@ -580,20 +580,23 @@ announce(items[hotPointY], briefAnnouncement);
 	}
 	if (briefAnnouncement)
 	{
-	    context.say(item.title);
+	    context.setEventResponse(DefaultEventResponse.text(item.title));
 	    return;
 	}
 	String res = item.title;
+	final EventResponses.TreeItem.Type type;
 	switch (item.type)
 	{
 	case OPENED:
-	    res = context.staticStr(LangStatic.TREE_EXPANDED) + " " + res;
+	    type = EventResponses.TreeItem.Type.EXPANDED;
 	    break;
 	case CLOSED:
-	    res = context.staticStr(LangStatic.TREE_COLLAPSED) + " " + res;
+	    type = EventResponses.TreeItem.Type.COLLAPSED;
 	    break;
+	default:
+	    	    type = EventResponses.TreeItem.Type.LEAF;
 	}
-	context.say(res + " " + context.staticStr(LangStatic.TREE_LEVEL) + " " + (item.level + 1));
+	context.setEventResponse(DefaultEventResponse.treeItem(type, item.title, item.level + 1));
 }
 
     protected String constructLineForScreen(VisibleItem item)
