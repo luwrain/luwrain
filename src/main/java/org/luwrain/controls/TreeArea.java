@@ -24,6 +24,52 @@ import java.util.*;
 
 public class TreeArea implements Area
 {
+    public interface ClickHandler
+    {
+	boolean onTreeClick(TreeArea area, Object obj);
+    }
+
+    public interface Model
+    {
+	Object getRoot();
+	void beginChildEnumeration(Object obj);
+	int getChildCount(Object parent);
+	Object getChild(Object parent, int index);
+	void endChildEnumeration(Object obj);
+    }
+
+    static public final class Params
+    {
+	public ControlEnvironment context;
+	public String name;
+	public Model model;
+	public ClickHandler clickHandler;
+    }
+
+    static protected class Node
+    {
+	Object obj = null;
+	Node parent = null;
+	Node children[] = null;//If children is null and node is not a leaf, it means this is a closed node without any info about its content
+	boolean leaf = true;
+	void makeLeaf()
+	{
+	    children = null;
+	    leaf = true;
+	} 
+	String title() { return obj != null?obj.toString():""; }
+    }
+
+    static protected class VisibleItem
+    {
+	enum Type {LEAF, CLOSED, OPENED};
+
+	Type type = Type.LEAF;
+	String title = "";
+	int level = 0;
+	Node node;
+    }
+
     protected final ControlEnvironment context;
     protected final Model model;
     protected String name = "";
@@ -401,8 +447,7 @@ public class TreeArea implements Area
 	case CLOSED:
 	    fillChildrenForNonLeaf(item.node);
 	    items = generateAllVisibleItems();
-	    //		context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_EXPANDED);
-	    context.say("Раскрыто");
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_EXPANDED));
 		context.onAreaNewContent(this);
 		return true;
 	default:
@@ -423,8 +468,7 @@ public class TreeArea implements Area
 	case OPENED:
 		item.node.children = null;
 		items = generateAllVisibleItems();
-		//		context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_COLLAPSED);
-		context.say("Свёрнуто");
+		context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_COLLAPSED));
 		context.onAreaNewContent(this);
 		return true;
 	default:
@@ -625,53 +669,5 @@ protected int getInitialHotPointX(int index)
 	if (items == null ||  index >= items.length)
 	    return 0;
 	return (items[index].level * 2) + 2;
-    }
-
-    public interface ClickHandler
-    {
-	boolean onTreeClick(TreeArea area, Object obj);
-    }
-
-    public interface Model
-    {
-	Object getRoot();
-	void beginChildEnumeration(Object obj);
-	int getChildCount(Object parent);
-	Object getChild(Object parent, int index);
-	void endChildEnumeration(Object obj);
-    }
-
-    static public final class Params
-    {
-	public ControlEnvironment context;
-	public String name;
-	public Model model;
-	public ClickHandler clickHandler;
-    }
-
-    static protected class Node
-    {
-	Object obj = null;
-	Node parent = null;
-	Node children[] = null;//If children is null and node is not a leaf, it means this is a closed node without any info about its content
-	boolean leaf = true;
-
-	void makeLeaf()
-	{
-	    children = null;
-	    leaf = true;
-	} 
-
-	String title() { return obj != null?obj.toString():""; }
-    }
-
-    static protected class VisibleItem
-    {
-	enum Type {LEAF, CLOSED, OPENED};
-
-	Type type = Type.LEAF;
-	String title = "";
-	int level = 0;
-	Node node;
     }
 }

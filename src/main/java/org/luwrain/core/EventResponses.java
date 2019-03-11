@@ -24,18 +24,15 @@ public final class  EventResponses
     {
 	protected final org.luwrain.core.Hint hint;
 	protected final String text;
-	public Hint(org.luwrain.core.Hint hint)
-	{
-	    NullCheck.notNull(hint, "hint");
-	    this.hint = hint;
-	    this.text = null;
-	}
 	public Hint(org.luwrain.core.Hint hint, String text)
 	{
 	    NullCheck.notNull(hint, "hint");
-	    NullCheck.notNull(text, "text");
 	    this.hint = hint;
 	    this.text = text;
+	}
+	public Hint(org.luwrain.core.Hint hint)
+	{
+	    this(hint, null);
 	}
 	@Override public void announce(Luwrain luwrain, Speech speech)
 	{
@@ -43,18 +40,12 @@ public final class  EventResponses
 	    NullCheck.notNull(speech, "speech");
 	    final String hintText;
 	    if (this.text == null)
-	    {
-	    	final LangStatic staticStrId = hintToStaticStrMap(hint);
-		if (staticStrId == null)
-		    return;
-		hintText = luwrain.i18n().staticStr(staticStrId);
-		if (hintText == null)
-		    return;
-	    } else
-		hintText = text;
-	    final Sounds sound = hintToSoundMap(hint);
+		hintText = getTextForHint(luwrain, hint); else
+		hintText = this.text;
+	    final Sounds sound = getSoundForHint(hint);
 	    if (sound != null)
 		luwrain.playSound(sound);
+	    if (hintText != null && !hintText.trim().isEmpty())
 	    luwrain.say(hintText, org.luwrain.core.Speech.PITCH_HINT);
 	}
     }
@@ -203,6 +194,21 @@ public final class  EventResponses
 	}
     }
 
+    static private String getTextForHint(Luwrain luwrain, org.luwrain.core.Hint hint)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(hint, "hint");
+	switch(hint)
+	{
+	case TREE_BRANCH_EXPANDED:
+	    return "развёрнуто";
+	case TREE_BRANCH_COLLAPSED:
+	    return "свёрнуто";
+	default:
+	    return luwrain.i18n().staticStr(hintToStaticStrMap(hint));
+	}
+    }
+
     static LangStatic hintToStaticStrMap(org.luwrain.core.Hint hint)
     {
 	switch (hint)
@@ -250,7 +256,7 @@ public final class  EventResponses
 	}
     }
 
-    static private Sounds hintToSoundMap(org.luwrain.core.Hint hint)
+    static private Sounds getSoundForHint(org.luwrain.core.Hint hint)
     {
 	switch (hint)
 	{
@@ -275,6 +281,10 @@ public final class  EventResponses
 	    return Sounds.NO_CONTENT;
 	case EMPTY_LINE:
 	    return Sounds.EMPTY_LINE;
+	case TREE_BRANCH_COLLAPSED:
+	    return Sounds.COLLAPSED;
+	case TREE_BRANCH_EXPANDED:
+	    return Sounds.EXPANDED;
 	default:
 	    return null;
 	}

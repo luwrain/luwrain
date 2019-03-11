@@ -187,6 +187,7 @@ public interface DateTime
 	String getBlocked(String defValue);
 	String getCancel(String defValue);
 	String getChatMessage(String defValue);
+	String getCollapsed(String defValue);
 	String getCommanderLocation(String defValue);
 	String getCopied(String defValue);
 	String getCut(String defValue);
@@ -197,6 +198,7 @@ public interface DateTime
 	String getEmptyLine(String defValue);
 	String getEndOfLine(String defValue);
 	String getError(String defValue);
+	String getExpanded(String defValue);
 	String getEventNotProcessed(String defValue);
 	String getFatal(String defValue);
 	String getGeneralTime(String defValue);
@@ -230,6 +232,7 @@ public interface DateTime
 	void setBlocked(String value);
 	void setCancel(String value);
 	void setChatMessage(String value);
+	void setCollapsed(String value);
 	void setCommanderLocation(String value);
 	void setCopied(String value);
 	void setCut(String value);
@@ -241,6 +244,7 @@ public interface DateTime
 	void setEndOfLine(String value);
 	void setError(String value);
 	void setEventNotProcessed(String value);
+	void setExpanded(String value);
 	void setFatal(String value);
 	void setGeneralTime(String value);
 	void setIntroApp(String value);
