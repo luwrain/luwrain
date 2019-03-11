@@ -24,7 +24,7 @@ import java.util.*;
 
 public class TreeArea implements Area
 {
-    protected final ControlEnvironment environment;
+    protected final ControlEnvironment context;
     protected final Model model;
     protected String name = "";
     protected Node root = null;
@@ -36,15 +36,15 @@ public class TreeArea implements Area
     public TreeArea(Params params)    
     {
 	NullCheck.notNull(params, "params");
-	NullCheck.notNull(params.environment, "params.environment");
+	NullCheck.notNull(params.context, "params.context");
 	NullCheck.notNull(params.model, "params.model");
 	NullCheck.notNull(params.name, "params.name");
-	environment = params.environment;
-	model = params.model;
-	name = params.name;
-	clickHandler = params.clickHandler;
-	root = constructNode(model.getRoot(), null, true);//true means children should be expanded
-	items = generateAllVisibleItems();
+	this.context = params.context;
+	this.model = params.model;
+	this.name = params.name;
+	this.clickHandler = params.clickHandler;
+	this.root = constructNode(model.getRoot(), null, true);//true means children should be expanded
+	this.items = generateAllVisibleItems();
     }
 
     public ClickHandler getClickHandler()
@@ -101,7 +101,7 @@ public class TreeArea implements Area
 	NullCheck.notNull(event, "event");
 	if (items == null || items.length < 1)
 	{
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.NO_CONTENT));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_CONTENT));
 	    return true;
 	}
 	//Space
@@ -184,7 +184,7 @@ public class TreeArea implements Area
 	} else
 	    root = constructNode(model.getRoot(), null, true); //true means expand children;
 	items = generateAllVisibleItems();
-	environment.onAreaNewContent(this);
+	context.onAreaNewContent(this);
 	if (oldSelected == null)
 		selectFirstItem(); else
 	{
@@ -193,7 +193,7 @@ public class TreeArea implements Area
 	    if (items != null && oldHotPointY < items.length)
 		hotPointY = oldHotPointY; else 
 	    selectEmptyLastLine();
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewHotPoint(this);
 	}
 	}
     }
@@ -217,7 +217,7 @@ public class TreeArea implements Area
 	    return false;
 	hotPointY = k;
 	hotPointX = getInitialHotPointX(hotPointY);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -227,14 +227,14 @@ public class TreeArea implements Area
 	    hotPointY = 0; else
 	    hotPointY = items.length;
 	hotPointX = 0;
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
     }
 
     public void selectFirstItem()
     {
 	hotPointY = 0;
 	hotPointX = getInitialHotPointX(0);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewHotPoint(this);
     }
 
     protected void onClick(Object obj)
@@ -373,16 +373,16 @@ public class TreeArea implements Area
 	{
 	    fillChildrenForNonLeaf(item.node);
 	    items = generateAllVisibleItems();
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_EXPANDED));
-		environment.onAreaNewContent(this);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_EXPANDED));
+		context.onAreaNewContent(this);
 		return true;
 	}
 	    if (item.type == VisibleItem.Type.OPENED)
 	    {
 		item.node.children = null;
 		items = generateAllVisibleItems();
-		environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_COLLAPSED));
-		environment.onAreaNewContent(this);
+		context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_COLLAPSED));
+		context.onAreaNewContent(this);
 		return true;
 	    }
 	    return false;
@@ -401,9 +401,9 @@ public class TreeArea implements Area
 	case CLOSED:
 	    fillChildrenForNonLeaf(item.node);
 	    items = generateAllVisibleItems();
-	    //		environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_EXPANDED);
-	    environment.say("Раскрыто");
-		environment.onAreaNewContent(this);
+	    //		context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_EXPANDED);
+	    context.say("Раскрыто");
+		context.onAreaNewContent(this);
 		return true;
 	default:
 	    return false;
@@ -423,9 +423,9 @@ public class TreeArea implements Area
 	case OPENED:
 		item.node.children = null;
 		items = generateAllVisibleItems();
-		//		environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_COLLAPSED);
-		environment.say("Свёрнуто");
-		environment.onAreaNewContent(this);
+		//		context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BRANCH_COLLAPSED);
+		context.say("Свёрнуто");
+		context.onAreaNewContent(this);
 		return true;
 	default:
 	    return false;
@@ -438,20 +438,20 @@ public class TreeArea implements Area
 	    return false;
 	if (hotPointY  >= items.length)
 	{
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_END));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_END));
 	    return true;
 	}
 	++hotPointY;
 	if (hotPointY >= items.length)
 	{
 	    hotPointX = 0;
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	} else
 	{
 	    hotPointX = getInitialHotPointX(hotPointY);
 announce(items[hotPointY], briefAnnouncement);
 	}
-	environment.onAreaNewHotPoint(this );
+	context.onAreaNewHotPoint(this );
 	return true;
     }
 
@@ -461,13 +461,13 @@ announce(items[hotPointY], briefAnnouncement);
 	    return false;
 	if (hotPointY  <= 0)
 	{
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BEGIN));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.TREE_BEGIN));
 	    return true;
 	}
 	--hotPointY;
 	hotPointX = getInitialHotPointX(hotPointY);
 announce(items[hotPointY], briefAnnouncement);
-	environment.onAreaNewHotPoint(this );
+	context.onAreaNewHotPoint(this );
 	return true;
     }
 
@@ -479,21 +479,21 @@ announce(items[hotPointY], briefAnnouncement);
 	final int offset = getInitialHotPointX(hotPointY);
 	if (value.isEmpty())
 	{
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	if (hotPointX >= value.length() + offset)
 	{
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
 	if (hotPointX < offset)
 	    hotPointX = offset; else
 	    hotPointX++;
 	if (hotPointX >= value.length() + offset)
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); else
-	    environment.sayLetter(value.charAt(hotPointX - offset));
-	environment.onAreaNewHotPoint(this);
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); else
+	    context.sayLetter(value.charAt(hotPointX - offset));
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -505,19 +505,19 @@ announce(items[hotPointY], briefAnnouncement);
 	final int offset = getInitialHotPointX(hotPointY);
 	if (value.isEmpty())
 	{
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
 	}
 	if (hotPointX <= offset)
 	{
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
 	}
 	if (hotPointX >= value.length() + offset)
 	    hotPointX = value.length() + offset - 1; else
 	    --hotPointX;
-	environment.sayLetter(value.charAt(hotPointX - offset));
-	environment.onAreaNewHotPoint(this);
+	context.sayLetter(value.charAt(hotPointX - offset));
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -575,25 +575,25 @@ announce(items[hotPointY], briefAnnouncement);
 	NullCheck.notNull(item, "item");
 	if (item.title.isEmpty())
 	{
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return;
 	}
 	if (briefAnnouncement)
 	{
-	    environment.say(item.title);
+	    context.say(item.title);
 	    return;
 	}
 	String res = item.title;
 	switch (item.type)
 	{
 	case OPENED:
-	    res = environment.staticStr(LangStatic.TREE_EXPANDED) + " " + res;
+	    res = context.staticStr(LangStatic.TREE_EXPANDED) + " " + res;
 	    break;
 	case CLOSED:
-	    res = environment.staticStr(LangStatic.TREE_COLLAPSED) + " " + res;
+	    res = context.staticStr(LangStatic.TREE_COLLAPSED) + " " + res;
 	    break;
 	}
-	environment.say(res + " " + environment.staticStr(LangStatic.TREE_LEVEL) + " " + (item.level + 1));
+	context.say(res + " " + context.staticStr(LangStatic.TREE_LEVEL) + " " + (item.level + 1));
 }
 
     protected String constructLineForScreen(VisibleItem item)
@@ -640,7 +640,7 @@ protected int getInitialHotPointX(int index)
 
     static public final class Params
     {
-	public ControlEnvironment environment;
+	public ControlEnvironment context;
 	public String name;
 	public Model model;
 	public ClickHandler clickHandler;
