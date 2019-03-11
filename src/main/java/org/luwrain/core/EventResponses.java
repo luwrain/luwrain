@@ -18,28 +18,25 @@ package org.luwrain.core;
 
 import java.util.*;
 
-final class  EventResponses
+public final class  EventResponses
 {
-    static final class Hint implements EventResponse
+    static public class Hint implements EventResponse
     {
-	final org.luwrain.core.Hint hint;
-	final String text;
-
-	Hint(org.luwrain.core.Hint hint)
+	protected final org.luwrain.core.Hint hint;
+	protected final String text;
+	public Hint(org.luwrain.core.Hint hint)
 	{
 	    NullCheck.notNull(hint, "hint");
 	    this.hint = hint;
 	    this.text = null;
 	}
-
-	Hint(org.luwrain.core.Hint hint, String text)
+	public Hint(org.luwrain.core.Hint hint, String text)
 	{
 	    NullCheck.notNull(hint, "hint");
 	    NullCheck.notNull(text, "text");
 	    this.hint = hint;
 	    this.text = text;
 	}
-
 	@Override public void announce(Luwrain luwrain, Speech speech)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
@@ -48,32 +45,30 @@ final class  EventResponses
 	    if (this.text == null)
 	    {
 	    	final LangStatic staticStrId = hintToStaticStrMap(hint);
-	if (staticStrId == null)
-	    return;
-	hintText = luwrain.i18n().staticStr(staticStrId);
-	if (hintText == null)
-	    return;
+		if (staticStrId == null)
+		    return;
+		hintText = luwrain.i18n().staticStr(staticStrId);
+		if (hintText == null)
+		    return;
 	    } else
 		hintText = text;
-	    	final Sounds sound = hintToSoundMap(hint);
-	if (sound != null)
-	    luwrain.playSound(sound);
-	luwrain.say(hintText, org.luwrain.core.Speech.PITCH_HINT);
-	    	}
+	    final Sounds sound = hintToSoundMap(hint);
+	    if (sound != null)
+		luwrain.playSound(sound);
+	    luwrain.say(hintText, org.luwrain.core.Speech.PITCH_HINT);
+	}
     }
 
-    static class Text implements EventResponse
+    static public class Text implements EventResponse
     {
-	final Sounds sound;
-	final String text;
-
-	Text(Sounds sound, String text)
+	protected final Sounds sound;
+	protected final String text;
+	public Text(Sounds sound, String text)
 	{
 	    NullCheck.notNull(text, "text");
 	    this.sound = sound;
 	    this.text = text;
 	}
-
 	@Override public void announce(Luwrain luwrain, Speech speech)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
@@ -82,19 +77,17 @@ final class  EventResponses
 	    if (sound != null)
 		luwrain.playSound(sound);
 	    if (!text.trim().isEmpty())
-	    speech.speak(new String[]{text});
+		speech.speak(new String[]{text});
 	}
     }
 
-        static class Letter implements EventResponse
+    static public class Letter implements EventResponse
     {
-	final char letter;
-
-	Letter(char letter)
+	protected final char letter;
+	public Letter(char letter)
 	{
 	    this.letter = letter;
 	}
-
 	@Override public void announce(Luwrain luwrain, Speech speech)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
@@ -103,21 +96,18 @@ final class  EventResponses
 	}
     }
 
-
-    static class ListItem implements EventResponse
+    static public class ListItem implements EventResponse
     {
-	final Sounds sound;
-	final String text;
-	final Suggestions suggestion;
-
-	ListItem(Sounds sound, String text, Suggestions suggestion)
+	protected final Sounds sound;
+	protected final String text;
+	protected final Suggestions suggestion;
+	public ListItem(Sounds sound, String text, Suggestions suggestion)
 	{
 	    NullCheck.notNull(text, "text");
 	    this.sound = sound;
 	    this.text = text;
 	    this.suggestion = suggestion;
 	}
-
 	@Override public void announce(Luwrain luwrain, Speech speech)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
@@ -134,10 +124,10 @@ final class  EventResponses
 	    if (suggestionText != null)
 		speech.speak(new String[]{text, suggestionText}); else
 		speech.speak(new String[]{text});
-	    	}
+	}
     }
 
-	    static public class TreeItem implements EventResponse
+    static public class TreeItem implements EventResponse
     {
 	public enum Type {LEAF, EXPANDED, COLLAPSED};
 	protected final Type type;
@@ -171,7 +161,7 @@ final class  EventResponses
 	    case EXPANDED:
 		parts.add(luwrain.i18n().getStaticStr("TreeExpanded"));
 		break;
-			    case COLLAPSED:
+	    case COLLAPSED:
 		parts.add(luwrain.i18n().getStaticStr("TreeCollapsed"));
 		break;
 	    }
@@ -179,12 +169,12 @@ final class  EventResponses
 		parts.add(luwrain.i18n().getStaticStr("Level") + String.valueOf(level));
 	    if (suggestion != null)
 	    {
-	    final String suggestionText = getSuggestionText(suggestion, luwrain.i18n());
-	    if (suggestionText != null)
-		parts.add(suggestionText);
+		final String suggestionText = getSuggestionText(suggestion, luwrain.i18n());
+		if (suggestionText != null)
+		    parts.add(suggestionText);
 	    }
 	    speech.speak(parts.toArray(new String[parts.size()]));
-	    	}
+	}
     }
 
     //May return null
@@ -192,20 +182,20 @@ final class  EventResponses
     {
 	NullCheck.notNull(suggestion, "suggestion");
 	NullCheck.notNull(i18n, "i18n");
-switch(suggestion)
-{
-case CLICKABLE_LIST_ITEM:
-    return i18n.getStaticStr("SuggestionClickableListItem");
-case LIST_ITEM:
-    return i18n.getStaticStr("SuggestionListItem");
-case POPUP_LIST_ITEM:
-    return i18n.getStaticStr("SuggestionPopupListItem");
-default:
-    return null;
-}
+	switch(suggestion)
+	{
+	case CLICKABLE_LIST_ITEM:
+	    return i18n.getStaticStr("SuggestionClickableListItem");
+	case LIST_ITEM:
+	    return i18n.getStaticStr("SuggestionListItem");
+	case POPUP_LIST_ITEM:
+	    return i18n.getStaticStr("SuggestionPopupListItem");
+	default:
+	    return null;
+	}
     }
 
-        static LangStatic hintToStaticStrMap(org.luwrain.core.Hint hint)
+    static LangStatic hintToStaticStrMap(org.luwrain.core.Hint hint)
     {
 	switch (hint)
 	{
@@ -281,4 +271,4 @@ default:
 	    return null;
 	}
     }
-    }
+}
