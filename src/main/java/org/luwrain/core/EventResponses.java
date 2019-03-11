@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import java.util.*;
+
 final class  EventResponses
 {
     static final class Hint implements EventResponse
@@ -135,6 +137,55 @@ final class  EventResponses
 	    	}
     }
 
+	    static public class TreeItem implements EventResponse
+    {
+	public enum Type {LEAF, EXPANDED, COLLAPSED};
+	protected final Type type;
+	protected final Sounds sound;
+	protected final String text;
+	protected final int level;
+	protected final Suggestions suggestion;
+	public TreeItem(Type type, Sounds sound, String text, int level, Suggestions suggestion)
+	{
+	    NullCheck.notNull(type, "type");
+	    NullCheck.notNull(text, "text");
+	    this.type = type;
+	    this.sound = sound;
+	    this.text = text;
+	    this.level = level;
+	    if (level < 1)
+		throw new IllegalArgumentException("level (" + level + ") may not be less than one");
+	    this.suggestion = suggestion;
+	}
+	@Override public void announce(Luwrain luwrain, Speech speech)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    NullCheck.notNull(speech, "speech");
+	    if (sound != null)
+		luwrain.playSound(sound); else
+		luwrain.playSound(Sounds.LIST_ITEM);
+	    final List<String> parts = new LinkedList();
+	    parts.add(text);
+	    switch(type)
+	    {
+	    case EXPANDED:
+		parts.add(luwrain.i18n().getStaticStr("TreeExpanded"));
+		break;
+			    case COLLAPSED:
+		parts.add(luwrain.i18n().getStaticStr("TreeCollapsed"));
+		break;
+	    }
+	    if (level > 1)
+		parts.add(luwrain.i18n().getStaticStr("Level") + String.valueOf(level));
+	    if (suggestion != null)
+	    {
+	    final String suggestionText = getSuggestionText(suggestion, luwrain.i18n());
+	    if (suggestionText != null)
+		parts.add(suggestionText);
+	    }
+	    speech.speak(parts.toArray(new String[parts.size()]));
+	    	}
+    }
 
     //May return null
     static private String getSuggestionText(Suggestions suggestion, I18n i18n)
