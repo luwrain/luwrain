@@ -43,12 +43,47 @@ public final class ScriptUtils
 	return jsObj;
     }
 
+    static public Object getMember(Object obj, String memberName)
+    {
+	NullCheck.notNull(obj, "obj");
+	NullCheck.notEmpty(memberName, "memberName");
+
+		if (ScriptObjectMirror.isUndefined(obj) || !(obj instanceof JSObject))
+	    return null;
+	final JSObject jsObj = (JSObject)obj;
+	return jsObj.getMember(memberName);
+    }
+
     static public String getStringValue(Object obj)
     {
 	if (obj == null)
 	    return null;
 	return obj.toString();
     }
+
+        static public List getArray(Object obj)
+    {
+	NullCheck.notNull(obj, "obj");
+	if (ScriptObjectMirror.isUndefined(obj))
+	    return null;
+	if (!(obj instanceof JSObject))
+	    return null;
+	final JSObject jsObj = (JSObject)obj;
+	if (!jsObj.isArray())
+	    return null;
+		final List res = new LinkedList();
+	int index = 0;
+	while (jsObj.hasSlot(index))
+	{
+	    final Object o = jsObj.getSlot(index);
+	    if (o == null)
+		break;
+	    res.add(o);
+	    ++index;
+	}
+	return res;
+    }
+
     
     //Returns null if the provided object isn't an array
     static public List<String> getStringArray(Object obj)
