@@ -29,12 +29,10 @@ import org.luwrain.base.*;
 
 final class Core extends EventDispatching
 {
-    static private final String DESKTOP_PROP_NAME = "luwrain.class.desktop";
     static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
 
     final OperatingSystem os;
     final Interaction interaction;
-    private final Desktop desktop;
     private final org.luwrain.shell.Conversations conversations;
     org.luwrain.player.Player player = null;
     final WavePlayers.Player wavePlayer = new WavePlayers.Player();
@@ -52,14 +50,6 @@ final class Core extends EventDispatching
 	this.os = os;
 	this.interaction = interaction;
 	this.conversations = new org.luwrain.shell.Conversations(getObjForEnvironment());
-	if (props.getProperty(DESKTOP_PROP_NAME).isEmpty())
-	{
-	    Log.error(LOG_COMPONENT, "no property " + DESKTOP_PROP_NAME + ", unable to create a desktop");
-	    throw new RuntimeException("unable to create a desktop");
-	}
-	this.desktop = (Desktop)org.luwrain.util.ClassUtils.newInstanceOf(props.getProperty(DESKTOP_PROP_NAME), Desktop.class);
-	if (this.desktop == null)
-	    throw new RuntimeException("unable to create a desktop");
     }
 
     void run()
