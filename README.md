@@ -1,23 +1,12 @@
 
-# Accessible environment LUWRAIN
+# LUWRAIN: a platform for the creation of apps for the blind and partially-sighted
 
-LUWRAIN is an implementation of special user interface for blind and visually impaired people.
-Its the most important distinguishes are:
+LUWRAIN is a platform for the creation of apps for the blind and partially-sighted.
+It provides the Java API for constructing applications with the user interface which is well suited for perception of blind people.
+Created applications are easily distributable on Microsoft Windows and GNU/LInux
+either as a LUWRAIN extensions or as a standalone executable.
+A lot of user customization can be done with our [Nashorn](https://en.wikipedia.org/wiki/Nashorn_%28JavaScript_engine%29)-based JavaScript  engine.
+LUWRAIN and all of its components are distributed under the terms of [GPL v.3 license](https://en.wikipedia.org/wiki/GNU_General_Public_License).
 
-* LUWRAIN tries to bring information from PC's to the users
-in a way adjusted to the perception
-of the blind as best as possible
-
-* Luwrrain allows creating and distributing applications
-specially  designed  for the blind
-
-* LUWRAIN guarantees solving the number of popular everyday tasks
-regardless what experience the user has
-or his/her financial circumstances (GPL)
-
-This repository contains main LUWRAIN core purely written on Java.
-
-See also
-
-* [Our website](http://luwrain.org/?lang=en)
-* [Our Twitter](http://twitter.com/luwrain)
+This repository contains the core purely written on Java.
+Please visit [luwrain.org](http://luwrain.org/?lang=en) for further information.
