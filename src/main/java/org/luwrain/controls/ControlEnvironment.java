@@ -46,4 +46,5 @@ int getAreaVisibleHeight(Area area);
     int getScreenHeight();
     void executeBkg(java.util.concurrent.FutureTask task);
     void onAreaNewBackgroundSound(Area area);
+    String getSpokenText(String text, Luwrain.SpokenTextType type);
 }

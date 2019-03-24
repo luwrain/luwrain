@@ -169,4 +169,11 @@ public class DefaultControlEnvironment implements ControlContext
 	NullCheck.notNull(area, "area");
 	luwrain.onAreaNewBackgroundSound(area);
     }
+
+    @Override public     String getSpokenText(String text, Luwrain.SpokenTextType type)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(type, "type");
+	return luwrain.getSpokenText(text, type);
+    }
 }
