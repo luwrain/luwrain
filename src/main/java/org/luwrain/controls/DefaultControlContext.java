@@ -22,11 +22,11 @@ import java.io.File;
 
 import org.luwrain.core.*;
 
-public class DefaultControlEnvironment implements ControlContext
+public class DefaultControlContext implements ControlContext
 {
-    private final Luwrain luwrain;
+    protected final Luwrain luwrain;
 
-    public DefaultControlEnvironment(Luwrain luwrain)
+    public DefaultControlContext(Luwrain luwrain)
     {
 	this.luwrain = luwrain;
     }
