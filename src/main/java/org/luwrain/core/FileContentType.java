@@ -46,7 +46,7 @@ final class FileContentType
 
 	contentTypes.put(".*\\.xhtml$", "application/xhtml");
 	contentTypes.put(".*\\.xhtm$", "application/xhtml");
-	contentTypes.put(".*\\.pdf$", "application/pdf");
+	contentTypes.put(".*\\.pdf$", ContentTypes.APP_PDF_DEFAULT);
 	contentTypes.put(".*\\.ps$", "application/postscript");
 	contentTypes.put(".*\\.zip$", "application/zip");
 	contentTypes.put(".*\\.fb2$", "application/fb2");

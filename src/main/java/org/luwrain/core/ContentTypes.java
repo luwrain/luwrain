@@ -48,6 +48,24 @@ public final class ContentTypes
     };
     static public final String TEXT_HTML_DEFAULT = "text/html";
 
+        static private final String[] APP_PDF = new String[]{
+	"application/pdf",
+    };
+    static public final String APP_PDF_DEFAULT = "application/pdf";
+    static public String[] getAppPdf()
+    {
+	return APP_PDF.clone();
+    }
+        static public boolean isAppPdf(String value)
+    {
+	NullCheck.notEmpty(value, "value");
+	final String v = value.trim().toLowerCase();
+	for(String s: APP_PDF)
+	    if (s.trim().toLowerCase().equals(v))
+		return true;
+	return false;
+    }
+
     static private final String[] APP_DOC = new String[]{
 	"application/msword",
     };
