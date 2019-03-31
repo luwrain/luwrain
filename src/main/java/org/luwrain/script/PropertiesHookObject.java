@@ -19,6 +19,11 @@ public class PropertiesHookObject extends EmptyHookObject
 	this.propName = propName;
     }
 
+    public PropertiesHookObject(Properties props)
+    {
+	this(props, "");
+    }
+
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
