@@ -57,4 +57,9 @@ public class PropertiesHookObject extends EmptyHookObject
     {
 	return getDefaultValue(String.class).toString();
     }
+
+    public Properties getProperties()
+    {
+	return props;
+    }
 }

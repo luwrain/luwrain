@@ -40,7 +40,16 @@ final class PlayerObj extends AbstractJSObject
 	switch(name)
 	{
 	case "play":
-	    return (BiPredicate)this::play;
+	    return new AbstractJSObject(){
+		@Override public Object call(Object th, Object[] args)
+		{
+		    return play(args);
+		}
+		@Override public boolean isFunction()
+		{
+		    return true;
+		}
+	    };
 	case "pauseResume":
 	    	    return (Supplier)this::pauseResume;
 
@@ -61,20 +70,47 @@ final class PlayerObj extends AbstractJSObject
 	}
     }
 
-    private boolean play(Object playlist, Object props)
+    private boolean play(Object[] args)
     {
-	final JSObject jsPlaylist = org.luwrain.script.ScriptUtils.toValidJsObject(playlist);
-	if (jsPlaylist == null)
+	NullCheck.notNullItems(args, "args");
+	if (args.length != 5)
 	    return false;
-	final JSObject jsTracks = org.luwrain.script.ScriptUtils.toValidJsObject(jsPlaylist.getMember("tracks"));
-	if (jsTracks == null)
-	    return false;
-	final List<String> tracks = org.luwrain.script.ScriptUtils.getStringArray(jsTracks);
+	final Object tracksObj = args[0];
+	final Object trackNumObj = args[1];
+	final Object fromMsecObj = args[2];
+	final Object flagsObj = args[3];
+	final Object propsObj = args[4];
+	final List<String> tracks = org.luwrain.script.ScriptUtils.getStringArray(tracksObj);
 	if (tracks == null || tracks.isEmpty())
 	    return false;
-	player.play(new Playlist(tracks.toArray(new String[tracks.size()])), 0, 0, Player.DEFAULT_FLAGS, null);
+	final Playlist playlist;
+	try {
+	    playlist = new Playlist(tracks.toArray(new String[tracks.size()]));
+	}
+	catch(IllegalArgumentException e)
+	{
+	    return false;
+	}
+	//FIXME:track num
+	//FIXME: from msec
+	final List<String> flagsList = org.luwrain.script.ScriptUtils.getStringArray(flagsObj);
+	if (flagsList == null)
+	    return false;
+	Set<Player.Flags> flags = EnumSet.noneOf(Player.Flags.class);
+	for(String f: flagsList)
+	    switch(f)
+	    {
+	    case "streaming":
+		flags.add(Player.Flags.STREAMING);
+	    }
+	final Properties props;
+	if (propsObj instanceof org.luwrain.script.PropertiesHookObject)
+	    props = ((org.luwrain.script.PropertiesHookObject)propsObj).getProperties();  else
+	    props = null;
+    	player.play(playlist, 0, 0, flags, props);
 	return true;
     }
+
 
     private Object pauseResume()
     {
