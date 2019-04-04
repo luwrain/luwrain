@@ -52,11 +52,12 @@ final class PlayerObj extends AbstractJSObject
 	    };
 	case "pauseResume":
 	    	    return (Supplier)this::pauseResume;
-
 		    	case "stop":
 	    	    return (Supplier)this::stop;
-
-		    
+	case "nextTrack":
+	    return (Supplier)()->{return new Boolean(player.nextTrack());};
+	    	case "prevTrack":
+	    return (Supplier)()->{return new Boolean(player.prevTrack());};
 	case "jump":
 	    return (Predicate)this::jump;
 	case "setVolume":
@@ -65,6 +66,15 @@ final class PlayerObj extends AbstractJSObject
 	    return (Supplier)this::getVolume;
 	case "state":
 	    	return player.getState().toString().toLowerCase();
+	case "flags":
+	    {
+		final Set<Player.Flags> flags = player.getFlags();
+		final List<String> res = new LinkedList();
+		if (flags != null)
+		for(Object o: flags)
+		res.add(o.toString().toLowerCase());
+		return org.luwrain.script.ScriptUtils.createReadOnlyArray(res.toArray(new String[res.size()]));
+	    }
 	default:
 	    return super.getMember(name);
 	}
