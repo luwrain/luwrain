@@ -171,7 +171,7 @@ public final class TextExtension implements DynamicExtension
 				return;
 			    }
 			    luwrain.playSound(Sounds.PLAYING);
-			    luwrain.getPlayer().play(new org.luwrain.player.Playlist(entry.arg), 0, 0, EnumSet.of(org.luwrain.player.Player.Flags.STREAMING));
+			    luwrain.getPlayer().play(new org.luwrain.player.Playlist(entry.arg), 0, 0, EnumSet.of(org.luwrain.player.Player.Flags.STREAMING), null);
 			    break;
 			case READER:
 			    luwrain.launchApp("reader", new String[]{entry.arg});

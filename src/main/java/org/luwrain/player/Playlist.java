@@ -24,52 +24,22 @@ import org.luwrain.core.*;
 
 public final class Playlist
 {
-    static private final String TITLE = "title";
-    
     private final String[] urls;
-    private final Map<String, String> props;
 
-        public Playlist(String[] urls, Map<String, String> props)
+    //The object will not be constructed unless all items are a valid URL
+        public Playlist(String[] urls)
     {
 	NullCheck.notNullItems(urls, "urls");
-	NullCheck.notNull(props, "props");
 	this.urls = urls.clone();
-	this.props = props;
-    }
-
-    public Playlist(String[] urls)
-    {
-	this(urls, new HashMap());
     }
 
     public Playlist(String url)
     {
-	this(new String[]{url}, new HashMap());
-    }
-
-    public String getPlaylistTitle()
-    {
-	if (!props.containsKey(TITLE))
-	    return "";
-	final String res = props.get(TITLE);
-	return res != null?res:"";
+	this(new String[]{url});
     }
 
     public String[] getPlaylistUrls()
     {
 	return urls.clone();
-    }
-
-public Map<String, String> getProperties()
-{
-    final Map<String, String> res = new HashMap();
-    for(Map.Entry<String, String> e: props.entrySet())
-	res.put(e.getKey(), e.getValue());
-    return res;
-}
-
-    @Override public String toString()
-    {
-	return getPlaylistTitle();
     }
 }

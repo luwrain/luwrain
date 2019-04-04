@@ -72,7 +72,7 @@ final class PlayerObj extends AbstractJSObject
 	final List<String> tracks = org.luwrain.script.ScriptUtils.getStringArray(jsTracks);
 	if (tracks == null || tracks.isEmpty())
 	    return false;
-	player.play(new Playlist(tracks.toArray(new String[tracks.size()])), 0, 0, Player.DEFAULT_FLAGS);
+	player.play(new Playlist(tracks.toArray(new String[tracks.size()])), 0, 0, Player.DEFAULT_FLAGS, null);
 	return true;
     }
 

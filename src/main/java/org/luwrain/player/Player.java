@@ -40,7 +40,7 @@ public interface Player
      * @param startingTrackNum A desired 0-based track number to play from
      * @param startingPosMsec A position in audio file in milliseconds to start playing from
      */
-    Result play(Playlist playlist, int startingTrackNum, long startingPosMsec, Set<Flags> flags);
+    Result play(Playlist playlist, int startingTrackNum, long startingPosMsec, Set<Flags> flags, Properties props);
     boolean stop();
     boolean pauseResume();
     boolean jump(long offsetMsec);
@@ -54,4 +54,6 @@ public interface Player
     void setVolume(int volume);
     void addListener(Listener listener);
     void removeListener(Listener listener);
+    Set<Flags> getFlags();
+    String getProperty(String propName);
 }
