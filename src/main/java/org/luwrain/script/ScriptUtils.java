@@ -200,13 +200,21 @@ public final class ScriptUtils
 		case "special":
 		    return event.isSpecial()?event.getSpecial().toString().toLowerCase():null;
 		case "ch":
-		    return event.isSpecial()?null:new Character(event.getChar());
+		    return event.isSpecial()?null:new String(new StringBuilder().append(event.getChar()));
 		case "withAlt":
 		    return new Boolean(event.withAlt());
+		case "withAltOnly":
+		    return new Boolean(event.withAltOnly());
 		case "withControl":
 		    return new Boolean(event.withControl());
+		case "withControlOnly":
+		    return new Boolean(event.withControlOnly());
 		case "withShift":
 		    return new Boolean(event.withShift());
+		case "withShiftOnly":
+		    return new Boolean(event.withShiftOnly());
+		case "modified":
+		    return new Boolean(event.isModified());
 		default:
 		    return super.getMember(name);
 		}
