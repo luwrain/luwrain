@@ -39,6 +39,7 @@ public final class LuwrainObj extends AbstractJSObject
 
     private final RegistryObj registryObj;
     private final PopupsObj popupsObj;
+    private final MessageObj messageObj;
     private final SoundsObj sounds;
 
     public LuwrainObj(Luwrain luwrain, File dataDir)
@@ -49,6 +50,7 @@ public final class LuwrainObj extends AbstractJSObject
 	this.dataDir = dataDir;
 	this.registryObj = new RegistryObj(luwrain.getRegistry(), "/");
 	this.popupsObj = new PopupsObj(luwrain);
+	this.messageObj = new MessageObj(luwrain);
 	this.sounds = new SoundsObj(luwrain);
     }
 
@@ -74,7 +76,7 @@ public final class LuwrainObj extends AbstractJSObject
 	case "sounds":
 	    return sounds;
 	case "message":
-	    return (Consumer)this::message;
+	    return messageObj;
 	case "addHook":
 	    return (BiPredicate)this::addHook;
 	    	case "createPropertyHook":
@@ -101,12 +103,6 @@ public final class LuwrainObj extends AbstractJSObject
 	default:
 	    return super.getMember(name);
 	}
-    }
-
-    private void message(Object b)
-    {
-	if (b != null && !b.toString().trim().isEmpty())
-	    luwrain.message(b.toString());
     }
 
     private boolean addCommandLineTool(Object name, Object obj)
