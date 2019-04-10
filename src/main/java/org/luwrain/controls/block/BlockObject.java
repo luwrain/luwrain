@@ -18,15 +18,7 @@
 
 package org.luwrain.controls.block;
 
-import java.util.*;
-import java.awt.Rectangle;
-
-import org.luwrain.core.*;
-import org.luwrain.browser.*;
-
 public interface BlockObject
 {
-    boolean isRun();
-    String getRun();
     String getText();
 }

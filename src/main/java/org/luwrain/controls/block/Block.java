@@ -26,26 +26,38 @@ import org.luwrain.browser.*;
 
 public class Block
 {
-    int textX = -1;
-    int textY = -1;
-    int textWidth = -1;
-    int textHeight = -1;
+    protected int textX = -1;
+    protected int textY = -1;
+    protected int textWidth = -1;
+protected int textHeight = -1;
 
     protected final BlockObject[] objs;
     protected BlockRow[] rows = new BlockRow[0];
 
-        final List<Block> vertDepOn = new LinkedList();
+    final List<Block> vertDepOn = new LinkedList();
     boolean actualTextY = false;
 
     public Block(BlockObject[] objs)
     {
 	NullCheck.notNullItems(objs, "objs");
+	if (objs.length == 0)
+	    throw new IllegalArgumentException("The block may not be without objects");
 	this.objs = objs;
     }
 
     public BlockObject[] getObjs()
     {
-	return objs;
+	return objs.clone();
+    }
+
+    public BlockRow[] getRows()
+    {
+	return rows.clone();
+    }
+
+        public int getRowCount()
+    {
+	return rows.length;
     }
 
     public void setRows(BlockRow[] rows)
@@ -55,22 +67,14 @@ public class Block
 	this.textHeight = rows.length;
     }
 
-    BlockRow[] getRows()
+    public BlockRowFragment[] getRow(int index)
     {
-	return rows.clone();
-    }
-
-    int getRowCount()
-    {
-	return rows.length;
-    }
-
-    BlockRowFragment[] getRow(int index)
-    {
+	if (rows == null)
+	    throw new RuntimeException("The block still does not have any rows");
 	return rows[index].getFragments();
     }
 
-        boolean intersectsText(Block c)
+        public boolean intersectsText(Block c)
     {
 	NullCheck.notNull(c, "c");
 	final int sq1 = getTextSquare();
@@ -112,6 +116,6 @@ public class Block
 	for(Block c: vertDepOn)
 	    maxPos = Math.max(maxPos, c.textY + c.textHeight);
 	this.textY = maxPos + 1;
-		actualTextY = true;
+	actualTextY = true;
     }
 }

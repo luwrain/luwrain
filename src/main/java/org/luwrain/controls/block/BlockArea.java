@@ -76,6 +76,12 @@ public class BlockArea implements Area
 	NullCheck.notNull(blocks, "blocks");
 	if (width < 0)
 	    throw new IllegalArgumentException("width (" + width + ") may not be negative");
+	if (blocks.length == 0)
+	{
+	    this.view = null;
+	    this.it = null;
+	    return;
+	}
 	final ViewBuilder builder = new ViewBuilder(blocks);
 	this.view = builder.build(appearance, width);
 	this.it = view.createIterator();
@@ -85,10 +91,6 @@ public class BlockArea implements Area
 	context.onAreaNewName(this);
     }
 
-    /**Checks if the browser has valid loaded page
-     *
-     * @return true if there is any successfully loaded page, false otherwise
-     */ 
     public boolean isEmpty()
     {
 	return view == null || it == null;
@@ -98,35 +100,35 @@ public class BlockArea implements Area
     {
 	if (isEmpty())
 	    return null;
-		final BlockRowFragment[] row = it.getRow(rowIndex);
-		int offset = 0;
-		for(int i = 0;i < row.length;++i)
-		{
-		    if (hotPointX >= offset && hotPointX < offset + row[i].getWidth())
-			return row[i].getBlockObj();
-		    offset += row[i].getWidth();
-		}
-		return null;
+	final BlockRowFragment[] row = it.getRow(rowIndex);
+	int offset = 0;
+	for(int i = 0;i < row.length;++i)
+	{
+	    if (hotPointX >= offset && hotPointX < offset + row[i].getWidth())
+		return row[i].getBlockObj();
+	    offset += row[i].getWidth();
+	}
+	return null;
     }
 
     @Override public int getHotPointX()
     {
 	if (isEmpty())
-	return 0;
+	    return 0;
 	return it.getX() + hotPointX;
     }
 
     @Override public int getHotPointY()
     {
 	if (isEmpty())
-	return 0;
+	    return 0;
 	return it.getY() + rowIndex;
     }
 
     @Override public int getLineCount()
     {
 	if (isEmpty())
-	return 1;
+	    return 1;
 	return view.getLineCount();
     }
 
@@ -166,9 +168,7 @@ public class BlockArea implements Area
 
     protected boolean onClick()
     {
-	if (noContent())
-	    return true;
-	if (clickHandler == null)
+	if (isEmpty() || clickHandler == null)
 	    return false;
 	final BlockObject blockObj = getSelectedObj();
 	if (blockObj == null)
@@ -186,19 +186,19 @@ public class BlockArea implements Area
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
-	    }
+	}
 	++hotPointX;
-		if (hotPointX >= text.length())
+	if (hotPointX >= text.length())
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
-	    }
-		context.onAreaNewHotPoint(this);
-		context.setEventResponse(DefaultEventResponse.letter(text.charAt(hotPointX)));
-		return true;
+	}
+	context.onAreaNewHotPoint(this);
+	context.setEventResponse(DefaultEventResponse.letter(text.charAt(hotPointX)));
+	return true;
     }
 
-		    protected boolean onMoveLeft(KeyboardEvent event)
+    protected boolean onMoveLeft(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (noContent())
@@ -208,19 +208,19 @@ public class BlockArea implements Area
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_LINE));
 	    return true;
-	    }
+	}
 	--hotPointX;
-		if (hotPointX >= text.length())
+	if (hotPointX >= text.length())
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
-	    }
-		context.onAreaNewHotPoint(this);
-		context.setEventResponse(DefaultEventResponse.letter(text.charAt(hotPointX)));
-		return true;
+	}
+	context.onAreaNewHotPoint(this);
+	context.setEventResponse(DefaultEventResponse.letter(text.charAt(hotPointX)));
+	return true;
     }
 
-        protected boolean onMoveUp(KeyboardEvent event)
+    protected boolean onMoveUp(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (noContent())
@@ -277,12 +277,12 @@ public class BlockArea implements Area
 	return false;
     }
 
-    		@Override public boolean onAreaQuery(AreaQuery query)
-		{
-		    NullCheck.notNull(query, "query");
-		    return false;
-		}
-    
+    @Override public boolean onAreaQuery(AreaQuery query)
+    {
+	NullCheck.notNull(query, "query");
+	return false;
+    }
+
     @Override public Action[] getAreaActions()
     {
 	return new Action[0];
@@ -292,14 +292,14 @@ public class BlockArea implements Area
     {
 	if (isEmpty())
 	    return;
-		if (rowIndex == 0)
-		    appearance.announceFirstRow(it.getBlock(), it.getRow(rowIndex)); else
-		    appearance.announceRow(it.getBlock(), it.getRow(rowIndex));
+	if (rowIndex == 0)
+	    appearance.announceFirstRow(it.getBlock(), it.getRow(rowIndex)); else
+	    appearance.announceRow(it.getBlock(), it.getRow(rowIndex));
     }
 
     protected String noContentStr()
     {
-	return "Содержимое веб-страницы отсутствует";
+	return context.getStaticStr("NoContent");
     }
 
     protected void noContentMsg()
