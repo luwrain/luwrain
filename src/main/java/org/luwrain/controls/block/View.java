@@ -26,8 +26,6 @@ import org.luwrain.browser.*;
 
 public final class View implements Lines
 {
-    static private final String LOG_COMPONENT = BlockArea.LOG_COMPONENT;
-
     private final Block[] blocks;
     private final String[] lines;
 
@@ -82,7 +80,7 @@ public final class View implements Lines
 	int lineCount = 0;
 	for(Block c: blocks)
 	    lineCount = Math.max(lineCount, c.textY + c.textHeight);
-	Log.debug(LOG_COMPONENT, "preparing " + lineCount + " lines");
+	//Log.debug(LOG_COMPONENT, "preparing " + lineCount + " lines");
 	final String[] lines = new String[lineCount];
 	for(int i = 0;i < lineCount;++i)
 	    lines[i] = "";
@@ -92,8 +90,8 @@ public final class View implements Lines
 	    {
 		final BlockRow row = c.rows[i];
 		final String text = appearance.getRowTextAppearance(row.getFragments());
-		if (text.length() > c.textWidth)
-		    Log.warning(LOG_COMPONENT, "row text \'" + text + "\' is longer than the width of the container (" + c.textWidth + ")");
+		//if (text.length() > c.textWidth)
+		    //Log.warning(LOG_COMPONENT, "row text \'" + text + "\' is longer than the width of the container (" + c.textWidth + ")");
 		final int lineIndex = c.textY + i;
 		lines[lineIndex] = putString(lines[lineIndex], text, c.textX);	
 	    }

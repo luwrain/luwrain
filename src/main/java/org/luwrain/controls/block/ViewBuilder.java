@@ -25,8 +25,6 @@ import org.luwrain.browser.*;
 
 final class ViewBuilder
 {
-    static private final String LOG_COMPONENT = BlockArea.LOG_COMPONENT;
-
     private final Block[] blocks;
 
     ViewBuilder(Block[] blocks)
@@ -49,9 +47,9 @@ final class ViewBuilder
 		if (i != j)
 		    if (blocks[i].intersectsText(blocks[j]))
 		{
-		    Log.warning(LOG_COMPONENT, "intersecting containers with numbers " + i + " and " + j);
-		    Log.warning(LOG_COMPONENT, "container #" + i + ":" + blocks[i].toString());
-		    		    Log.warning(LOG_COMPONENT, "container #" + j + ":" + blocks[j].toString());
+		    //		    Log.warning(LOG_COMPONENT, "intersecting containers with numbers " + i + " and " + j);
+		    //		    Log.warning(LOG_COMPONENT, "container #" + i + ":" + blocks[i].toString());
+		    //		    		    Log.warning(LOG_COMPONENT, "container #" + j + ":" + blocks[j].toString());
 		}
 	final List<Block> viewBlocks = new LinkedList();
 	for(Block c: blocks)

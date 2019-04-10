@@ -24,7 +24,7 @@ import org.luwrain.core.*;
 
 final class BlockRowsBuilder
 {
-    static private final String LOG_COMPONENT = BlockArea.LOG_COMPONENT;
+    //static private final String LOG_COMPONENT = BlockArea.LOG_COMPONENT;
 
     static private final int SPECIAL_MIN_WIDTH = 10;
         static private final int SPECIAL_MAX_WIDTH = 15;
@@ -40,8 +40,8 @@ final class BlockRowsBuilder
 
     BlockRowsBuilder(int rowLen)
     {
-	if (rowLen < 5)
-	    Log.warning(LOG_COMPONENT, "too short row:" + rowLen);
+	//	if (rowLen < 5)
+	//	    Log.warning(LOG_COMPONENT, "too short row:" + rowLen);
 	this.rowLen = rowLen;
     }
 

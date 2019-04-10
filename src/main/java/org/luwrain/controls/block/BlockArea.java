@@ -30,7 +30,6 @@ import org.luwrain.controls.*;
 
 public class BlockArea implements Area
 {
-    static final String LOG_COMPONENT = "web";
     static private final int MIN_VISIBLE_WIDTH = 20;
 
     interface Appearance
@@ -45,33 +44,14 @@ public class BlockArea implements Area
 	boolean onClick(BlockArea area, int rowIndex, BlockObject webObj);
     }
 
-
-    public interface BrowserFactory
-    {
-	Browser newBrowser(BrowserEvents events);
-    }
-
-    public interface Callback
-    {
-	public enum MessageType {PROGRESS, ALERT, ERROR
-	};
-
-	void onBrowserRunning();
-	void onBrowserSuccess(String title);
-	void onBrowserFailed();
-	boolean confirm(String text);
-	String prompt(String message, String text);
-	void message(String text, MessageType type);
-    }
-
     static public final class Params
     {
-	public ControlEnvironment context = null;
+	public ControlContext context = null;
 	public Appearance appearance;
 	public ClickHandler clickHandler = null;
     }
 
-    protected final ControlEnvironment context;
+    protected final ControlContext context;
     protected final Appearance appearance;
     protected ClickHandler clickHandler = null;
     protected View view = null;
@@ -91,68 +71,18 @@ public class BlockArea implements Area
 	this.clickHandler = params.clickHandler;
     }
 
-    /**
-     * Performs DOM scanning with updating the auxiliary structures used for
-     * user navigation. This method may be called only if the page is
-     * successfully loaded and the browser isn't busy with background work.
-     *
-     * @return true if the browser is free and able to do the refreshing, false otherwise
-     */
-    boolean refresh()
+    public void setBlocks(Block[] blocks, int width)
     {
-	//FIXME:if busy
-	final int areaWidth = context.getAreaVisibleWidth(this);
-	updateView(areaWidth);
-	return true;
-    }
-
-    public boolean updateView(int areaWidth)
-    {
-	final Object obj = null;//FIXME:
-		try {
-		    //final ContainersList containers = new ModelBuilder().build(browser);
-;//FIXME:new ViewBuilder(containers.getContainers()).build(appearance, Math.max(areaWidth, MIN_VISIBLE_WIDTH));
-		}
-		catch(Throwable e)
-		{
-		    Log.error(LOG_COMPONENT, "the construction of web view and model failed:" + e.getClass().getName() + ":" + e.getMessage());
-		    e.printStackTrace();
-		}
-	if (obj == null || !(obj instanceof View))
-	{
-	    Log.warning(LOG_COMPONENT, "unable to build a view");
-	    return false;
-	}
-	this.view = (View)obj;
-	/*
-	try {
-	    final String fileName = View.makeDumpFileName(browser.getUrl());
-	    final File structFile = new File(new File("/tmp"), fileName);
-	    final File textFile = new File(new File("/tmp"), fileName + ".txt");
-	    view.dumpToFile(structFile);
-	    final BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(textFile)));
-	    try {
-		for(int i = 0;i < view.getLineCount();++i)
-		{
-		    w.write(view.getLine(i));
-		    w.newLine();
-		}
-	    }
-	    finally {
-		w.close();
-	    }
-	}
-	catch(Exception e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to make a dump file:" + e.getClass().getName() + ":" + e.getMessage());
-	}
-	*/
+	NullCheck.notNull(blocks, "blocks");
+	if (width < 0)
+	    throw new IllegalArgumentException("width (" + width + ") may not be negative");
+	final ViewBuilder builder = new ViewBuilder(blocks);
+	this.view = builder.build(appearance, width);
 	this.it = view.createIterator();
 	this.rowIndex = 0;
 	context.onAreaNewContent(this);
 	context.onAreaNewHotPoint(this);
 	context.onAreaNewName(this);
-	return true;
     }
 
     /**Checks if the browser has valid loaded page
@@ -344,14 +274,7 @@ public class BlockArea implements Area
     @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	switch(event.getCode())
-	{
-	case REFRESH:
-	    refresh();
-	    return true;
-	default:
-	    return false;
-	}
+	return false;
     }
 
     		@Override public boolean onAreaQuery(AreaQuery query)
