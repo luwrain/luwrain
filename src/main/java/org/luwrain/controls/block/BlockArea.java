@@ -32,7 +32,7 @@ public class BlockArea implements Area
 {
     static private final int MIN_VISIBLE_WIDTH = 20;
 
-    interface Appearance
+    public interface Appearance
     {
 	void announceFirstRow(Block block, BlockRowFragment[] fragments);
 	void announceRow(Block block, BlockRowFragment[] fragments);
@@ -44,7 +44,7 @@ public class BlockArea implements Area
 	boolean onClick(BlockArea area, int rowIndex, BlockObject webObj);
     }
 
-    static public final class Params
+    static public class Params
     {
 	public ControlContext context = null;
 	public Appearance appearance;
@@ -69,6 +69,12 @@ public class BlockArea implements Area
 	this.context = params.context;
 	this.appearance = params.appearance;
 	this.clickHandler = params.clickHandler;
+    }
+
+    public void clear()
+    {
+	view = null;
+	it = null;
     }
 
     public void setBlocks(Block[] blocks, int width)

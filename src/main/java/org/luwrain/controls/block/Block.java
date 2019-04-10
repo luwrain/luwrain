@@ -50,31 +50,31 @@ protected int textHeight = -1;
 	return objs.clone();
     }
 
-    public BlockRow[] getRows()
+    public final BlockRow[] getRows()
     {
 	return rows.clone();
     }
 
-        public int getRowCount()
+        public final int getRowCount()
     {
 	return rows.length;
     }
 
-    public void setRows(BlockRow[] rows)
+    public final void setRows(BlockRow[] rows)
     {
 	NullCheck.notNullItems(rows, "rows");
 	this.rows = rows.clone();
 	this.textHeight = rows.length;
     }
 
-    public BlockRowFragment[] getRow(int index)
+    public final BlockRowFragment[] getRow(int index)
     {
 	if (rows == null)
 	    throw new RuntimeException("The block still does not have any rows");
 	return rows[index].getFragments();
     }
 
-        public boolean intersectsText(Block c)
+        public final boolean intersectsText(Block c)
     {
 	NullCheck.notNull(c, "c");
 	final int sq1 = getTextSquare();
@@ -101,12 +101,12 @@ protected int textHeight = -1;
 	    return start1 >= start2 && start1 < start2 + len2;
     }
 
-        public int getTextSquare()
+        public final int getTextSquare()
     {
 	return textWidth * textHeight;
     }
 
-    void calcActualTextY()
+    public final void calcActualTextY()
     {
 	if (actualTextY)
 	    return;

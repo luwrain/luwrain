@@ -44,10 +44,7 @@ public class Desktop implements org.luwrain.core.Desktop
     @Override public void ready()
     {
 	this.storing.load();
-	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
-	this.name = sett.getDesktopTitle("");
-	if (this.name.trim().isEmpty())
-	    this.name = luwrain.i18n().getStaticStr("Desktop");
+	this.name = luwrain.i18n().getStaticStr("Desktop");
 	luwrain.onAreaNewName(area);
     }
 

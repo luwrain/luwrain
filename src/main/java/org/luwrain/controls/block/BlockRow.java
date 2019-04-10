@@ -34,5 +34,4 @@ public final class BlockRow
     {
 	return fragments.clone();
     }
-
 }

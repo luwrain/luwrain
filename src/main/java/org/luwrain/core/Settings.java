@@ -46,10 +46,8 @@ public interface Settings
     public interface UserInterface
     {
 	String getDesktopEscapeCommand(String defValue);
-	String getDesktopTitle(String defValue);
+		void setDesktopEscapeCommand(String value);
 	boolean getFilePopupSkipHidden(boolean defValue);
-	void setDesktopEscapeCommand(String value);
-	void setDesktopTitle(String value);
 	void setFilePopupSkipHidden(boolean value);
     }
 
