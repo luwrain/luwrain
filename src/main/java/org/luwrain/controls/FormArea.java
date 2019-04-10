@@ -48,7 +48,7 @@ public class FormArea  extends NavigationArea
 {
     public enum Type { EDIT, CHECKBOX, LIST, STATIC, UNIREF, MULTILINE };
 
-    protected final ControlEnvironment environment;
+    protected final ControlContext environment;
     protected final Vector<Item> items = new Vector<Item>();
     protected String name = "";
 
@@ -59,7 +59,7 @@ public class FormArea  extends NavigationArea
     protected MultilineEdit multilineEdit = null;
     protected boolean multilineEditEnabled = true;//FIXME:
 
-    public FormArea(ControlEnvironment environment)
+    public FormArea(ControlContext environment)
     {
 	super(environment);
 	NullCheck.notNull(environment, "environment");
@@ -67,7 +67,7 @@ public class FormArea  extends NavigationArea
 	this.name = "";
     }
 
-    public FormArea(ControlEnvironment environment, String name)
+    public FormArea(ControlContext environment, String name)
     {
 	super(environment);
 	NullCheck.notNull(environment, "environment");

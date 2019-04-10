@@ -40,7 +40,7 @@ public class TreeArea implements Area
 
     static public final class Params
     {
-	public ControlEnvironment context;
+	public ControlContext context;
 	public String name;
 	public Model model;
 	public ClickHandler clickHandler;
@@ -70,7 +70,7 @@ public class TreeArea implements Area
 	Node node;
     }
 
-    protected final ControlEnvironment context;
+    protected final ControlContext context;
     protected final Model model;
     protected String name = "";
     protected Node root = null;
