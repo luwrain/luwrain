@@ -38,6 +38,7 @@ final class FileContentType
 	contentTypes.put(".*\\.html$", ContentTypes.TEXT_HTML_DEFAULT);
 	contentTypes.put(".*\\.doc$", ContentTypes.APP_DOC_DEFAULT);
 	contentTypes.put(".*\\.docx$", ContentTypes.APP_DOCX_DEFAULT);
+		contentTypes.put(".*\\.xlsx$", ContentTypes.APP_XLSX_DEFAULT);
 
 	//Audio
 	contentTypes.put(".*\\.wav$", ContentTypes.SOUND_WAVE_DEFAULT);

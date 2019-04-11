@@ -102,6 +102,25 @@ public final class ContentTypes
 	return false;
     }
 
+        static private final String[] APP_XLSX = new String[]{
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    };
+    static public final String APP_XLSX_DEFAULT = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    static public String[] getAppXlsX()
+    {
+	return APP_XLSX.clone();
+    }
+    static public boolean isAppXlsX(String value)
+    {
+	NullCheck.notNull(value, "value");
+	final String v = value.trim().toLowerCase();
+	for(String s: APP_XLSX)
+	    if (s.trim().toLowerCase().equals(v))
+		return true;
+	return false;
+    }
+
+
     static public final String[] SOUND_WAVE = new String[]{
 	"audio/vnd.wave",
     };
