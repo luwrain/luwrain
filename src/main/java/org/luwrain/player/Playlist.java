@@ -38,8 +38,18 @@ public final class Playlist
 	this(new String[]{url});
     }
 
-    public String[] getPlaylistUrls()
+    public String[] getTracks()
     {
 	return urls.clone();
+    }
+
+    public int getTrackCount()
+    {
+	return urls.length;
+    }
+
+    public String getTrack(int index)
+    {
+	return urls[index];
     }
 }
