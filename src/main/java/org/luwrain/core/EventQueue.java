@@ -18,8 +18,9 @@ package org.luwrain.core;
 
 import java.util.concurrent.*;
 
-class EventQueue
+final class EventQueue
 {
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     private final LinkedBlockingQueue<Event> events = new LinkedBlockingQueue<Event>(1024);
     private Event again = null;
 
@@ -45,7 +46,7 @@ class EventQueue
 	    throw new NullPointerException("event may not be null");
 	if (again != null)
 	{
-	    Log.warning("queue", "adding the event to try it once again but there is already one");
+	    Log.warning(LOG_COMPONENT, "adding the event to try it once again but there is already one");
 	    return;
 	}
 	again = event;
