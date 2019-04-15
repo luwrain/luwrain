@@ -658,7 +658,6 @@ final class LuwrainImpl implements Luwrain
     @Override public void executeBkg(java.util.concurrent.FutureTask task)
     {
 	NullCheck.notNull(task, "task");
-	core.mainCoreThreadOnly();
 	//FIXME:maintaining the registry of executed tasks with their associations to Luwrain objects
 	java.util.concurrent.Executors.newSingleThreadExecutor().execute(task);
     }
