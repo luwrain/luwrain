@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -25,7 +25,13 @@ import org.luwrain.player.*;
 
 public final class Player implements PropertiesProvider, org.luwrain.player.Listener
 {
+    static private final String PROP_TRACK_INDEX = "luwrain.player.track.index";
+    static private final String PROP_TRACK_URL = "luwrain.player.track.url";
+    static private final String PROP_TRACK_SEC = "luwrain.player.track.sec";
+
     private PropertiesProvider.Listener listener = null;
+    private int trackNum = 0;
+    private String trackUrl = "";
     private long trackTimeMsec = 0;
 
     public Player()
@@ -56,8 +62,12 @@ public final class Player implements PropertiesProvider, org.luwrain.player.List
 	NullCheck.notEmpty(propName, "propName");
 	switch(propName)
 	{
-	case "luwrain.player.track.sec":
-	    return new Long(trackTimeMsec / 1000).toString();
+	    	case PROP_TRACK_INDEX:
+		    	    return String.valueOf(trackNum);
+			    	    	case PROP_TRACK_URL:
+		    	    return trackUrl;
+	case PROP_TRACK_SEC:
+	    return String.valueOf(trackTimeMsec / 1000);
 	default:
 	    	    return null;
 	}
@@ -78,13 +88,22 @@ public final class Player implements PropertiesProvider, org.luwrain.player.List
         @Override public void onNewPlaylist(Playlist playlist)
     {
     }
-    
+
     @Override public void onNewTrack(Playlist playlist, int trackNum)
     {
+	NullCheck.notNull(playlist, "playlist");
+	this.trackNum = trackNum;
+	this.trackUrl = playlist.getTrack(trackNum);
+	if (listener != null)
+	{
+	listener.onNewPropertyValue(PROP_TRACK_INDEX, String.valueOf(trackNum));
+	listener.onNewPropertyValue(PROP_TRACK_URL, trackUrl);
+	}
     }
-    
+
     @Override public void onTrackTime(Playlist playlist, int trackNum,  long msec)
     {
+	NullCheck.notNull(playlist, "playlist");
 	if (msec >= trackTimeMsec && msec < trackTimeMsec + 1000)
 	    return;
 	this.trackTimeMsec = msec - (msec % 1000);
@@ -95,7 +114,7 @@ public final class Player implements PropertiesProvider, org.luwrain.player.List
     @Override public void onNewState(Playlist playlist, org.luwrain.player.Player.State state)
     {
     }
-    
+
     @Override public void onPlayingError(Playlist playlist, Exception e)
     {
     }

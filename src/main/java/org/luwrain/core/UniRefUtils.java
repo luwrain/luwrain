@@ -20,7 +20,22 @@ package org.luwrain.core;
 
 public final class UniRefUtils
 {
+    static public final String URL = "url";
     static public final String ALIAS = "link";
+
+    static public String makeAlias(String title, String uniRef)
+    {
+	NullCheck.notEmpty(title, "title");
+	NullCheck.notNull(uniRef, "uniRef");
+	return ALIAS + ":" + title.replaceAll(":", "\\\\:") + ":" + uniRef;
+    }
+
+    static public String makeUniRef(String component, String addr)
+    {
+	NullCheck.notEmpty(component, "component");
+	NullCheck.notNull(addr, "addr");
+	return component + ":" + addr;
+    }
 
     static boolean isAlias(String uniref)
     {
