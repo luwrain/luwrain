@@ -69,13 +69,13 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	case ALTERNATIVE_END:
 	    return onAltEnd(event);
 	case ARROW_DOWN:
-	    return onArrowDown(event);
+	    return onMoveDown(event);
 	case ARROW_UP:
-	    return onArrowUp(event);
+	    return onMoveUp(event);
 	case ARROW_RIGHT:
-	    return onArrowRight(event);
+	    return onMoveRight(event);
 	case ARROW_LEFT:
-	    return onArrowLeft(event);
+	    return onMoveLeft(event);
 	case ALTERNATIVE_ARROW_RIGHT:
 	    return onAltRight(event);
 	case ALTERNATIVE_ARROW_LEFT:
@@ -188,7 +188,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onArrowDown(KeyboardEvent event)
+    protected boolean onMoveDown(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -208,7 +208,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onArrowUp(KeyboardEvent event)
+    protected boolean onMoveUp(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -228,7 +228,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onArrowRight(KeyboardEvent event)
+    protected boolean onMoveRight(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -253,7 +253,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onArrowLeft(KeyboardEvent event )
+    protected boolean onMoveLeft(KeyboardEvent event )
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
