@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,13 +16,15 @@
 
 //LWR_API 1.0
 
+//LWR_API 1.0
+
 package org.luwrain.controls;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 
-public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
+public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 {
     public enum InputPos {TOP, BOTTOM};
 
@@ -40,19 +42,19 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
 
     public interface ClickHandler
     {
-	boolean onConsoleClick(ConsoleArea2 area, int index, Object obj);
+	boolean onConsoleClick(ConsoleArea area, int index, Object obj);
     }
 
     public interface InputHandler
     {
 	public enum Result {REJECTED, OK, CLEAR_INPUT};
 
-	Result onConsoleInput(ConsoleArea2 area, String text);
+	Result onConsoleInput(ConsoleArea area, String text);
     }
 
     static public class Params
     {
-	public ControlEnvironment context = null;
+	public ControlContext context = null;
 	public String areaName = "";
 	public Model model = null;
 	public Appearance appearance = null;
@@ -73,7 +75,7 @@ public class ConsoleArea2 extends NavigationArea implements  EmbeddedEditLines
     protected String enteringPrefix = "";
     protected String enteringText = "";
 
-    public ConsoleArea2(Params params)
+    public ConsoleArea(Params params)
     {
 	super(params.context);
 	NullCheck.notNull(params, "params");

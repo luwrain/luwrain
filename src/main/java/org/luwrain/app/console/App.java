@@ -26,7 +26,7 @@ public final class App implements Application, MonoApp
 {
     private Luwrain luwrain = null;
     private Base base = null;
-    private ConsoleArea2 area = null;
+    private ConsoleArea area = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
@@ -38,12 +38,12 @@ public final class App implements Application, MonoApp
 
     private void createArea()
     {
-	final ConsoleArea2.Params params = new ConsoleArea2.Params();
+	final ConsoleArea.Params params = new ConsoleArea.Params();
 
 	params.context = new DefaultControlEnvironment(luwrain);
 params.areaName = "LUWRAIN";
 params.model = base.createModel();
-params.appearance = new ConsoleArea2.Appearance()
+params.appearance = new ConsoleArea.Appearance()
     {
 	@Override public void announceItem(Object item)
 	{
@@ -68,10 +68,10 @@ params.clickHandler = (area,index,obj)->{
 params.inputHandler = (area,text)->{
     return base.onInput(text, ()->area.refresh());
 	};
-params.inputPos = ConsoleArea2.InputPos.BOTTOM;
+params.inputPos = ConsoleArea.InputPos.BOTTOM;
 params.inputPrefix = "LUWRAIN>";
 
-	area = new ConsoleArea2(params){
+	area = new ConsoleArea(params){
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");

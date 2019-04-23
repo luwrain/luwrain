@@ -20,7 +20,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.controls.ConsoleArea2.InputHandler;
+import org.luwrain.controls.ConsoleArea.InputHandler;
 
 final class Base
 {
@@ -92,7 +92,7 @@ interface ConsoleCommand
     boolean onCommand(String text, List messages);
 }
 
-    static private class Model implements ConsoleArea2.Model
+    static private class Model implements ConsoleArea.Model
     {
 	@Override public int getConsoleItemCount()
 	{
