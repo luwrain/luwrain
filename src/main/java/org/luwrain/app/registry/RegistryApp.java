@@ -106,7 +106,7 @@ public class RegistryApp implements Application, Actions
     {
 	final Actions actions = this;
 
-	final ListClickHandler valuesHandler = (area, index, item)->{
+	final ListArea.ClickHandler valuesHandler = (area, index, item)->{
 		return false;
 	    };
 

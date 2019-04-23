@@ -343,7 +343,7 @@ public class CommanderArea<E> extends ListArea
 	this.clickHandler = clickHandler;
     }
 
-    @Override public void setListClickHandler(ListClickHandler clickHandler)
+    @Override public void setListClickHandler(ListArea.ClickHandler clickHandler)
     {
 	throw new UnsupportedOperationException("Changing list click handler for commander areas not allowed, use setClickHandler(CommanderArea.ClickHandler)instead");
     }

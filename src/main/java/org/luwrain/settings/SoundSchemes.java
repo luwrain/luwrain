@@ -46,7 +46,7 @@ class SoundSchemes extends ListArea implements SectionArea
 	}
     }
 
-    static private class ClickHandler implements ListClickHandler
+    static private class ClickHandler implements ListArea.ClickHandler
     {
 	private Luwrain luwrain;
 

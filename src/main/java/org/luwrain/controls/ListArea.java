@@ -53,6 +53,11 @@ public class ListArea  implements Area, ClipboardTranslator.Provider, RegionText
 	int getObservableRightBound(Object item);
     }
 
+    public interface ClickHandler
+    {
+	boolean onListClick(ListArea area, int index, Object item);
+    }
+
 public interface ClipboardSaver
 {
     //Use this model only, MarkableListArea may provide another instances
@@ -95,7 +100,7 @@ public interface ClipboardSaver
 	public ControlEnvironment context;
 	public Model model;
 	public Appearance appearance;
-	public ListClickHandler clickHandler;
+	public ListArea.ClickHandler clickHandler;
 	public Transition transition = new ListUtils.DefaultTransition();
 	public ClipboardSaver clipboardSaver = new ListUtils.DefaultClipboardSaver();
 	public String name;
@@ -112,7 +117,7 @@ public interface ClipboardSaver
     protected final Transition listTransition;
     protected final ClipboardSaver listClipboardSaver;
     protected final Set<Flags> listFlags;
-    protected ListClickHandler listClickHandler;
+    protected ListArea.ClickHandler listClickHandler = null;
 
     protected int hotPointX = 0;
     protected int hotPointY = 0;
@@ -138,7 +143,7 @@ public interface ClipboardSaver
 	resetHotPoint();
     }
 
-    public void setListClickHandler(ListClickHandler clickHandler)
+    public void setListClickHandler(ListArea.ClickHandler clickHandler)
     {
 	this.listClickHandler = clickHandler;
     }

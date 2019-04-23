@@ -27,7 +27,7 @@ import org.luwrain.cpanel.*;
 import org.luwrain.player.*;
 import org.luwrain.util.*;
 
-final class SoundsList extends ListArea implements SectionArea, ListClickHandler
+final class SoundsList extends ListArea implements SectionArea, ListArea.ClickHandler
 {
     static private final Sounds[] allSounds = new Sounds[]{
 	Sounds.ANNOUNCEMENT,
