@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 //LWR_API 1.0
 
@@ -74,7 +59,7 @@ public class CommanderArea<E> extends ListArea
 
     static public class Params<E>
     {
-	public ControlEnvironment environment;
+	public ControlEnvironment context;
 	public CommanderArea.Model<E> model;
 	public CommanderArea.Appearance<E> appearance;
 	public CommanderArea.ClickHandler<E> clickHandler;
@@ -92,7 +77,7 @@ public class CommanderArea<E> extends ListArea
     protected Filter<E> filter = null;
     protected Comparator comparator = null;
     protected LoadingResultHandler<E> loadingResultHandler = null;
-    
+
     protected E currentLocation = null;
     protected FutureTask task = null;
     protected boolean closed = false;
@@ -500,13 +485,13 @@ public class CommanderArea<E> extends ListArea
     static protected ListArea.Params createListParams(CommanderArea.Params params)
     {
 	NullCheck.notNull(params, "params");
-	NullCheck.notNull(params.environment, "params.environment");
+	NullCheck.notNull(params.context, "params.context");
 	NullCheck.notNull(params.model, "params.model");
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.comparator, "params.comparator");
 	NullCheck.notNull(params.clipboardSaver, "params.clipboardSaver");
 	final ListArea.Params listParams = new ListArea.Params();
-	listParams.context = params.environment;
+	listParams.context = params.context;
 	listParams.model = new ListModelAdapter(params.model, params.filter, params.comparator);
 	listParams.appearance = new ListAppearanceImpl(params.appearance);
 	listParams.name = "";//Never used, getAreaName() overrides

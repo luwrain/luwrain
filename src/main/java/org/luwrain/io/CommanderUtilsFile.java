@@ -117,13 +117,13 @@ public class CommanderUtilsFile
     }
     }
 
-    static public CommanderArea.Params<File> createParams(ControlEnvironment environment)
+    static public CommanderArea.Params<File> createParams(ControlContext context)
     {
-	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(context, "context");
 	final CommanderArea.Params<File> params = new CommanderArea.Params<File>();
-	params.environment = environment;
+	params.context = context;
 	params.model = new Model();
-	params.appearance = new Appearance(environment);
+	params.appearance = new Appearance(context);
 	params.filter = new CommanderUtils.AllEntriesFilter();
 	params.comparator = new CommanderUtils.ByNameComparator();
 	return params;

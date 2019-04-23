@@ -173,14 +173,14 @@ public class CommanderUtilsVfs
     }
 
 
-    static public CommanderArea.Params<FileObject> createParams(ControlEnvironment environment) throws org.apache.commons.vfs2.FileSystemException
+    static public CommanderArea.Params<FileObject> createParams(ControlContext context) throws org.apache.commons.vfs2.FileSystemException
     {
-	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(context, "context");
 	final CommanderArea.Params<FileObject> params = new CommanderArea.Params<FileObject>();
 	final FileSystemManager manager = VFS.getManager();
-	params.environment = environment;
+	params.context = context;
 	params.model = new Model(manager);
-	params.appearance = new Appearance(environment, manager);
+	params.appearance = new Appearance(context, manager);
 	params.filter = new CommanderUtils.AllEntriesFilter();
 	params.comparator = new CommanderUtils.ByNameComparator();
 	return params;
