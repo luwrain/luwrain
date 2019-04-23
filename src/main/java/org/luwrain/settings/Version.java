@@ -28,7 +28,7 @@ final class Version extends SimpleArea implements SectionArea
 
     Version(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), controlPanel.getCoreInterface().i18n().getStaticStr("CpVersion"));
+	super(new DefaultControlContext(controlPanel.getCoreInterface()), controlPanel.getCoreInterface().i18n().getStaticStr("CpVersion"));
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();

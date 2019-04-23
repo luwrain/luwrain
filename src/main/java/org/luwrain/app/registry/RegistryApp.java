@@ -111,7 +111,7 @@ public class RegistryApp implements Application, Actions
 	    };
 
 	    final TreeArea.Params treeParams = new TreeArea.Params();
-	    treeParams.context = new DefaultControlEnvironment(luwrain);
+	    treeParams.context = new DefaultControlContext(luwrain);
 	    treeParams.model = base.getDirsModel();
 	    treeParams.name = strings.dirsAreaName();
 
@@ -158,7 +158,7 @@ return actions.insertDir();
 	    };
 
 	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.model = base.getValuesModel();
 	params.appearance = base.getValuesAppearance();
 	params.name = strings.valuesAreaName();

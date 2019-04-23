@@ -67,7 +67,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	this.text = text;
 	this.popupFlags = popupFlags;
 	this.pos = prefix.length() + text.length();
-	this.edit = new EmbeddedSingleLineEdit(new DefaultControlEnvironment(luwrain), this, this, regionPoint, prefix.length(), 0);
+	this.edit = new EmbeddedSingleLineEdit(new DefaultControlContext(luwrain), this, this, regionPoint, prefix.length(), 0);
 	this.acceptance = acceptance;
     }
 

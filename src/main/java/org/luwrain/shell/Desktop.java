@@ -57,7 +57,7 @@ public class Desktop implements org.luwrain.core.Desktop
     {
 	this.storing = new Storing(luwrain);
 	final EditableListArea.Params params = new EditableListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.model = new Model(storing);
 	params.appearance = new Appearance(luwrain);
 	params.name = luwrain.i18n().getStaticStr("Desktop");

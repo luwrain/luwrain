@@ -31,7 +31,7 @@ class UserInterface extends FormArea implements SectionArea
 
     UserInterface(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), controlPanel.getCoreInterface().i18n().getStaticStr("CpUserInterfaceGeneral"));
+	super(new DefaultControlContext(controlPanel.getCoreInterface()), controlPanel.getCoreInterface().i18n().getStaticStr("CpUserInterfaceGeneral"));
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();

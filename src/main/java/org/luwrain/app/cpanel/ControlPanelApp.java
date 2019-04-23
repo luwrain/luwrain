@@ -59,7 +59,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
     private void createArea()
     {
 	final TreeArea.Params treeParams = new TreeArea.Params();
-	treeParams.context = new DefaultControlEnvironment(luwrain);
+	treeParams.context = new DefaultControlContext(luwrain);
 	treeParams.model = base.getTreeModel();
 	treeParams.name = strings.sectionsAreaName();
 	treeParams.clickHandler = (area, obj)->openSection(obj);

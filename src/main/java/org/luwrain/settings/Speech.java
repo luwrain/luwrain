@@ -31,7 +31,7 @@ final class Speech extends FormArea implements SectionArea
 
     Speech(ControlPanel controlPanel, String name)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), name);
+	super(new DefaultControlContext(controlPanel.getCoreInterface()), name);
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();
 	this.sett = Settings.createSpeechParams(luwrain.getRegistry());

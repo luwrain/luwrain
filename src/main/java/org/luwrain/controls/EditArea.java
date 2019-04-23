@@ -35,7 +35,7 @@ public class EditArea extends NavigationArea
 
     static public final class Params
     {
-	public ControlEnvironment context = null;
+	public ControlContext context = null;
 	public String name = "";
 	public MutableLines content = null;
 	public ChangeListener changeListener = null;

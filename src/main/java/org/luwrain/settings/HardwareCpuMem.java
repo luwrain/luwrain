@@ -28,7 +28,7 @@ class HardwareCpuMem extends SimpleArea implements SectionArea
 
     HardwareCpuMem(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), "Процессор и память");
+	super(new DefaultControlContext(controlPanel.getCoreInterface()), "Процессор и память");
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();

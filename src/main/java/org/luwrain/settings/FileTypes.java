@@ -122,7 +122,7 @@ class FileTypes extends ListArea implements SectionArea
 	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.LIST_ITEM);
 	params.name = "Типы файлов";
 	params.model = new ListUtils.FixedModel(loadItems(luwrain.getRegistry()));

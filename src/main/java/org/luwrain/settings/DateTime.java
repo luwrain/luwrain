@@ -32,7 +32,7 @@ class DateTime extends FormArea implements SectionArea
 
     DateTime(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), "Дата и время");
+	super(new DefaultControlContext(controlPanel.getCoreInterface()), "Дата и время");
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();

@@ -67,7 +67,7 @@ final class MainMenu extends EditableListArea implements SectionArea
 	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final EditableListArea.Params params = new EditableListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.LIST_ITEM);
 	params.name = luwrain.i18n().getStaticStr("CpSoundsList");
 	params.model = new ListUtils.DefaultEditableModel();

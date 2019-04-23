@@ -162,7 +162,7 @@ open(file, null, false);
     static private CommanderArea.Params<File> constructParams(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	final CommanderArea.Params<File> params = CommanderUtilsFile.createParams(new DefaultControlEnvironment(luwrain));
+	final CommanderArea.Params<File> params = CommanderUtilsFile.createParams(new DefaultControlContext(luwrain));
 	params.filter = new CommanderUtils.AllEntriesFilter();
 	params.comparator = new CommanderUtils.ByNameComparator();
 	return params;

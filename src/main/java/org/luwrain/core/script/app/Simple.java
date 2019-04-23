@@ -53,7 +53,7 @@ public final class Simple implements Application
 	    this.lines = requestLines();
 	    if (this.lines == null)
 		this.lines = new String[0];
-	this.area = new NavigationArea(new DefaultControlEnvironment(luwrain)){
+	this.area = new NavigationArea(new DefaultControlContext(luwrain)){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");

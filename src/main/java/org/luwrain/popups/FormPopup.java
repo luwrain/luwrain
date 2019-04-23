@@ -31,7 +31,7 @@ public class FormPopup extends FormArea implements Popup, PopupClosingTranslator
 
     public FormPopup(Luwrain luwrain, String popupName, Set<Popup.Flags> popupFlags)
     {
-	super(new DefaultControlEnvironment(luwrain), popupName);
+	super(new DefaultControlContext(luwrain), popupName);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(popupFlags, "popupFlags");
 	this.luwrain = luwrain;

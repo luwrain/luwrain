@@ -164,7 +164,7 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 		objs.add(u);
 	}
 	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.model = new ListUtils.FixedModel(objs.toArray(new Object[objs.size()]));
 	params.appearance = new Appearance(luwrain);
 	params.transition = new Transition();

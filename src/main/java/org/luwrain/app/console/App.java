@@ -40,7 +40,7 @@ public final class App implements Application, MonoApp
     {
 	final ConsoleArea.Params params = new ConsoleArea.Params();
 
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 params.areaName = "LUWRAIN";
 params.model = base.createModel();
 params.appearance = new ConsoleArea.Appearance()

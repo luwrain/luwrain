@@ -31,7 +31,7 @@ class Braille extends FormArea implements SectionArea
 
     Braille(ControlPanel controlPanel)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), "Брайль");
+	super(new DefaultControlContext(controlPanel.getCoreInterface()), "Брайль");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();
 	this.settings = Settings.createBraille(luwrain.getRegistry());

@@ -115,7 +115,7 @@ name, prefix, text, popupFlags);
 		@Override public void refresh() {}
 	    };
 	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
 	params.model = model;
 	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.POPUP_LIST_ITEM);

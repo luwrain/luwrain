@@ -45,7 +45,7 @@ public class App implements Application
     private void createArea()
     {
 	final EditArea.Params params = new EditArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.name = strings.appName();
 	params.changeListener = ()->hotUpdate();
 	this.editArea = new EditArea(params){
