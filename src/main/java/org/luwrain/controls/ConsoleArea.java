@@ -262,6 +262,44 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	return super.onAreaQuery(query);
     }
 
+    @Override protected boolean onMoveDown(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	this.hotPointY = this.hotPointY < count?hotPointY:count - 1;
+	if (hotPointY + 1 >= count)
+	{
+	    if (count == 1)
+		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_BELOW, context.staticStr(LangStatic.NO_LINES_BELOW) + " " + getLineNotNull(0))); else
+		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_BELOW));
+	    return true;
+	}
+	++this.hotPointY;
+	final String nextLine = getLineNotNull(hotPointY);
+	this.hotPointX = 0;
+	context.onAreaNewHotPoint(this);
+	announceLine(hotPointY, nextLine);
+	return true;
+    }
+
+    @Override protected boolean onMoveUp(KeyboardEvent event)
+    {
+	final int count = getValidLineCount();
+	this.hotPointY = this.hotPointY < count?hotPointY:count - 1;
+	if (hotPointY == 0)
+	{
+	    if (count == 1)
+		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_ABOVE, context.staticStr(LangStatic.NO_LINES_ABOVE) + " " + getLineNotNull(0))); else
+		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_ABOVE));
+	    return true;
+	}
+	--this.hotPointY;
+	final String prevLine = getLineNotNull(hotPointY);
+	this.hotPointX = 0;
+	context.onAreaNewHotPoint(this);
+	announceLine(hotPointY, prevLine);
+	return true;
+    }
+
     @Override public void setEmbeddedEditLine(int x, int y, String line)
     {
 	NullCheck.notNull(line, "line");
