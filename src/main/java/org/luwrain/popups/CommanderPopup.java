@@ -97,7 +97,7 @@ open(file, null, false);
 	{
 	case INTRODUCE:
 	    luwrain.silence();
-	    luwrain.say(getAreaName(), Sounds.INTRO_POPUP);
+	    luwrain.speak(getAreaName(), Sounds.INTRO_POPUP);
 	    return true;
 	case PROPERTIES:
 	    openVolumes();

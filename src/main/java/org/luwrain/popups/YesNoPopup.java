@@ -100,7 +100,7 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	case ARROW_DOWN:
 	case ARROW_LEFT:
 	case ARROW_RIGHT:
-	    luwrain.say(text);
+	    luwrain.speak(text);
 	    return true;
 	default:
 	    return false;
@@ -121,7 +121,7 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	case INTRODUCE:
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.INTRO_POPUP);
-	    luwrain.say(text);
+	    luwrain.speak(text);
 	    return true;
 	default:
 	return closing.onSystemEvent(event);

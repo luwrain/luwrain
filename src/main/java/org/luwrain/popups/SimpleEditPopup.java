@@ -145,7 +145,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	switch(event.getCode())
 	{
 	case INTRODUCE:
-	    luwrain.say(prefix + getSpokenText(text), Sounds.INTRO_POPUP);
+	    luwrain.speak(prefix + getSpokenText(text), Sounds.INTRO_POPUP);
 	    return true;
 	}
 	if (edit.isPosCovered(pos, 0) && edit.onSystemEvent(event))
@@ -192,7 +192,7 @@ protected boolean onMoveLeft(KeyboardEvent event)
 	--pos;
 	final String line = prefix + text;
 	if (pos < line.length())
-	    luwrain.sayLetter(line.charAt(pos)); else
+	    luwrain.speakLetter(line.charAt(pos)); else
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
@@ -208,7 +208,7 @@ protected boolean onMoveRight(KeyboardEvent event)
 	}
 	++pos;
 	if (pos < line.length())
-	    luwrain.sayLetter(line.charAt(pos)); else
+	    luwrain.speakLetter(line.charAt(pos)); else
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
@@ -220,7 +220,7 @@ protected boolean onHome(KeyboardEvent event)
 	final String line = prefix + text;
 	if (line.isEmpty())
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    luwrain.sayLetter(line.charAt(pos));
+	    luwrain.speakLetter(line.charAt(pos));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
@@ -255,7 +255,7 @@ protected boolean onAltRight(KeyboardEvent event)
 	}
 	pos = it.pos();
 	if (it.announce().length() > 0)
-	    luwrain.say(getSpokenText(it.announce())); else
+	    luwrain.speak(getSpokenText(it.announce())); else
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
@@ -276,7 +276,7 @@ protected boolean onAltLeft(KeyboardEvent event)
 	    return true;
 	}
 	pos = it.pos();
-	luwrain.say(getSpokenText(it.announce()));
+	luwrain.speak(getSpokenText(it.announce()));
 	luwrain.onAreaNewHotPoint(this);
 	    return true;
     }

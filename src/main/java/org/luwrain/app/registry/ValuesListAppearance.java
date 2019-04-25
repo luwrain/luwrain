@@ -41,7 +41,7 @@ class ValuesListAppearance implements ListArea.Appearance
 	NullCheck.notNull(item, "item");
 	NullCheck.notNull(flags, "flags");
 	final Value value = (Value)item;
-	luwrain.say(value.name);
+	luwrain.speak(value.name);
     }
 
     @Override public String getScreenAppearance(Object item, Set<Flags> flags)

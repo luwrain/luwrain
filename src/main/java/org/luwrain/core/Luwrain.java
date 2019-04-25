@@ -238,12 +238,12 @@ public interface Luwrain extends PropertiesBase
     java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, File dataDir, String text);
     void runUiSafely(Runnable runnable);
     boolean runWorker(String workerName);
-    void say(String text);
-    void say(String text, Sounds sound);
-    void sayLetter(char letter);
-    void say(String text, int pitch);
-    void say(String text, int pitch, int rate);
-    void sayLetter(char letter, int pitch);
+    void speak(String text);
+    void speak(String text, Sounds sound);
+    void speakLetter(char letter);
+    void speak(String text, int pitch);
+    void speak(String text, int pitch, int rate);
+    void speakLetter(char letter, int pitch);
         void sendBroadcastEvent(EnvironmentEvent event);
     void sendInputEvent(KeyboardEvent event);
 

@@ -58,7 +58,7 @@ public class EditableListPopup extends EditableListArea implements Popup, PopupC
 	case INTRODUCE:
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.INTRO_POPUP);
-	    luwrain.say(getAreaName());
+	    luwrain.speak(getAreaName());
 	    return true;
 	default:
 	return super.onSystemEvent(event);

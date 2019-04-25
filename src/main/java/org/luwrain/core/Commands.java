@@ -658,7 +658,7 @@ class Commands
 		    final Calendar cal = GregorianCalendar.getInstance();
 		    cal.setTime(date);
 		    luwrain.silence();
-		    luwrain.say("Время" + 
+		    luwrain.speak("Время" + 
 				luwrain.i18n().getNumberStr(cal.get(Calendar.HOUR_OF_DAY), "hours") + " " + 
 				luwrain.i18n().getNumberStr(cal.get(Calendar.MINUTE), "minutes"));
 				luwrain.playSound(Sounds.GENERAL_TIME);

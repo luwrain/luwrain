@@ -46,7 +46,7 @@ public final class  EventResponses
 	    if (sound != null)
 		luwrain.playSound(sound);
 	    if (hintText != null && !hintText.trim().isEmpty())
-	    luwrain.say(hintText, org.luwrain.core.Speech.PITCH_HINT);
+	    luwrain.speak(hintText, org.luwrain.core.Speech.PITCH_HINT);
 	}
     }
 

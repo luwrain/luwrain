@@ -57,7 +57,7 @@ public class FormPopup extends FormArea implements Popup, PopupClosingTranslator
 	{
 	case INTRODUCE:
 	    luwrain.playSound(Sounds.INTRO_POPUP);
-	    luwrain.say(getAreaName());
+	    luwrain.speak(getAreaName());
 	    return true;
 	default:
 	return super.onSystemEvent(event);

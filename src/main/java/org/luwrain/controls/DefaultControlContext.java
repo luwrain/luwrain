@@ -33,14 +33,14 @@ public class DefaultControlContext implements ControlContext
 
     @Override public void say(String text)
     {
-	luwrain.say(text);
+	luwrain.speak(text);
     }
 
     @Override public void say(String text, Sounds sound)
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(sound, "sound");
-	luwrain.say(text, sound);
+	luwrain.speak(text, sound);
     }
 
 
@@ -52,7 +52,7 @@ public class DefaultControlContext implements ControlContext
 
     @Override public void sayLetter(char letter)
     {
-	luwrain.sayLetter(letter);
+	luwrain.speakLetter(letter);
     }
 
     @Override public void onAreaNewName(Area area)

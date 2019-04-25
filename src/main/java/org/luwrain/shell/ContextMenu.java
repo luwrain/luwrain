@@ -61,8 +61,8 @@ public class ContextMenu extends ListPopup
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.MAIN_MENU_ITEM);
 	    if (act.keyboardEvent() != null)
-		luwrain.say(act.title() + " " + act.keyboardEvent().toString()); else
-		luwrain.say(act.title());
+		luwrain.speak(act.title() + " " + act.keyboardEvent().toString()); else
+		luwrain.speak(act.title());
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)

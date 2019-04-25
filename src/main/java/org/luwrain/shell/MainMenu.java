@@ -92,7 +92,7 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	case INTRODUCE:
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.MAIN_MENU);
-	    luwrain.say(getAreaName());
+	    luwrain.speak(getAreaName());
 	    return true;
 	default:
 	    return super.onSystemEvent(event);
@@ -232,12 +232,12 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	    {
 		luwrain.silence();
 		luwrain.playSound(Sounds.DOC_SECTION);
-		luwrain.say(item.toString());
+		luwrain.speak(item.toString());
 		return;
 	    }
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.MAIN_MENU_ITEM);
-	    luwrain.say(item.toString());
+	    luwrain.speak(item.toString());
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)

@@ -365,7 +365,7 @@ final class LuwrainImpl implements Luwrain
 	return core.commandLineTools.run(name, args, listener);
     }
 
-    @Override public void say(String text)
+    @Override public void speak(String text)
     {
 	NullCheck.notNull(text, "text");
 	runUiSafely(()->{
@@ -374,17 +374,17 @@ final class LuwrainImpl implements Luwrain
 	    });
     }
 
-    @Override public void say(String text, Sounds sound)
+    @Override public void speak(String text, Sounds sound)
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(sound, "sound");
 	runUiSafely(()->{
 		playSound(sound);
-		say(text);
+		speak(text);
 	    });
     }
 
-    @Override public void say(String text, int pitch)
+    @Override public void speak(String text, int pitch)
     {
 	NullCheck.notNull(text, "text");
 	runUiSafely(()->{
@@ -393,13 +393,13 @@ final class LuwrainImpl implements Luwrain
 	    });
     }
 
-    @Override public void say(String text, int pitch, int rate)
+    @Override public void speak(String text, int pitch, int rate)
     {
 	NullCheck.notNull(text, "text");
 	runUiSafely(()->core.speech.speak(core.speakingText.processRegular(text), pitch, rate));
     }
 
-    @Override public void sayLetter(char letter)
+    @Override public void speakLetter(char letter)
     {
 	core.braille.textToSpeak("" + letter);
 	runUiSafely(()->{
@@ -415,11 +415,11 @@ final class LuwrainImpl implements Luwrain
 		final String value = i18n().hasSpecialNameOfChar(letter);
 		if (value == null)
 		    core.speech.speakLetter(letter, 0, 0); else
-		    say(value, Speech.PITCH_HINT);//FIXME:
+		    speak(value, Speech.PITCH_HINT);//FIXME:
 	    });
     }
 
-    @Override public void sayLetter(char letter, int pitch)
+    @Override public void speakLetter(char letter, int pitch)
     {
 	runUiSafely(()->{
 		switch(letter)
@@ -434,7 +434,7 @@ final class LuwrainImpl implements Luwrain
 		final String value = i18n().hasSpecialNameOfChar(letter);
 		if (value == null)
 		    core.speech.speakLetter(letter, pitch, 0); else
-		    say(value, Speech.PITCH_HINT);
+		    speak(value, Speech.PITCH_HINT);
 	    });
     }
 
@@ -454,7 +454,7 @@ final class LuwrainImpl implements Luwrain
 		final String value = i18n().hasSpecialNameOfChar(letter);
 		if (value == null)
 		    core.speech.speakLetter(letter, pitch, rate); else
-		    say(value, Speech.PITCH_HINT);
+		    speak(value, Speech.PITCH_HINT);
 	    });
     }
 
@@ -799,7 +799,7 @@ final class LuwrainImpl implements Luwrain
 	final LangStatic staticStrId = EventResponses.hintToStaticStrMap(hint);
 	if (staticStrId == null)
 	    return;
-	say(i18n().staticStr(staticStrId), Speech.PITCH_HINT);
+	speak(i18n().staticStr(staticStrId), Speech.PITCH_HINT);
     }
 
     private void runInMainThread(Runnable runnable)
