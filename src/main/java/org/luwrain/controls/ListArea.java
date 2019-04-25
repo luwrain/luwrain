@@ -97,7 +97,7 @@ public interface ClipboardSaver
 
     static public class Params
     {
-	public ControlEnvironment context;
+	public ControlContext context;
 	public Model model;
 	public Appearance appearance;
 	public ListArea.ClickHandler clickHandler;
@@ -107,7 +107,7 @@ public interface ClipboardSaver
 	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
     }
 
-    protected final ControlEnvironment context;
+    protected final ControlContext context;
     protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint, EnumSet.of(ClipboardTranslator.Flags.ALLOWED_EMPTY, ClipboardTranslator.Flags.ALLOWED_WITHOUT_REGION_POINT));
     protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));

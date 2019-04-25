@@ -53,7 +53,7 @@ public interface Appearance
 int getColWidth(TableArea.Model model, int  colIndex);
 }
 
-    protected final ControlEnvironment environment;
+    protected final ControlContext environment;
     protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator;
     protected String name = "";
@@ -67,7 +67,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
     private int[] colWidth;
     private int cellShift = 0;
 
-    public TableArea(ControlEnvironment environment, TableArea.Model model)
+    public TableArea(ControlContext environment, TableArea.Model model)
     {
 	NullCheck.notNull(environment, "environment");
 	NullCheck.notNull(model, "model");
@@ -79,7 +79,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	//	refresh();
     }
 
-    public TableArea(ControlEnvironment environment,
+    public TableArea(ControlContext environment,
 		     TableArea.Model model,
 		     String name)
     {
@@ -98,7 +98,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	//	refresh();
     }
 
-    public TableArea(ControlEnvironment environment,
+    public TableArea(ControlContext environment,
 		     TableArea.Model model,
 		    TableArea.Appearance appearance,
 		     TableClickHandler clickHandler,

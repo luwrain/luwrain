@@ -27,17 +27,17 @@ public class ListUtils
 {
     static public class DefaultAppearance implements ListArea.Appearance
     {
-	protected final ControlEnvironment environment;
+	protected final ControlContext environment;
 	protected final Suggestions suggestion;
 
-	public DefaultAppearance(ControlEnvironment environment, Suggestions suggestion)
+	public DefaultAppearance(ControlContext environment, Suggestions suggestion)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    this.environment = environment;
 	    this.suggestion = suggestion;
 	}
 
-	public DefaultAppearance(ControlEnvironment environment)
+	public DefaultAppearance(ControlContext environment)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    this.environment = environment;
@@ -74,9 +74,9 @@ public class ListUtils
 
     static abstract public class DoubleLevelAppearance implements ListArea.Appearance
     {
-	protected final ControlEnvironment environment;
+	protected final ControlContext environment;
 
-	public DoubleLevelAppearance(ControlEnvironment environment)
+	public DoubleLevelAppearance(ControlContext environment)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    this.environment = environment;
@@ -429,10 +429,10 @@ mark(o);
 
     public static class MarkableListAppearance implements ListArea.Appearance
     {
-	protected final ControlEnvironment context;
+	protected final ControlContext context;
 	protected final MarkableListArea.MarksInfo marksInfo;
 
-	public MarkableListAppearance(ControlEnvironment context, MarkableListArea.MarksInfo marksInfo)
+	public MarkableListAppearance(ControlContext context, MarkableListArea.MarksInfo marksInfo)
 	{
 	    NullCheck.notNull(context, "context");
 	    NullCheck.notNull(marksInfo, "marksInfo");

@@ -691,7 +691,7 @@ public class FormArea  extends NavigationArea
     protected MultilineEdit.Model wrapMultilineEditModel(MultilineEdit.Model model)
     {
 	NullCheck.notNull(model, "model");
-	final ControlEnvironment env = environment;
+	final ControlContext env = environment;
 	final Area thisArea = this;
 	return new MultilineEditModelChangeListener(model){
 	    @Override public void onMultilineEditChange()
@@ -721,7 +721,7 @@ public class FormArea  extends NavigationArea
 	boolean enabled = true;
 
 //A couple of variables needed for sending notifications about changing of text
-	protected final ControlEnvironment environment;
+	protected final ControlContext environment;
 	protected final Area area;
 
 	//For edits
@@ -737,7 +737,7 @@ protected ListChoosing listChoosing;
 	//For checkboxes
 	boolean checkboxState;
 
-	Item(ControlEnvironment environment, Area area, 
+	Item(ControlContext environment, Area area, 
 Type type, String name)
 	{
 	    NullCheck.notNull(environment, "environment");

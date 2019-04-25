@@ -25,7 +25,7 @@ import org.luwrain.core.events.*;
 
 public class CenteredArea implements org.luwrain.core.Area
 {
-    protected final ControlEnvironment context;
+    protected final ControlContext context;
     protected String areaName = "";
     protected int screenWidth;
     protected int screenHeight;
@@ -34,7 +34,7 @@ public class CenteredArea implements org.luwrain.core.Area
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
-    public CenteredArea(ControlEnvironment context)
+    public CenteredArea(ControlContext context)
     {
 	NullCheck.notNull(context, "context");
 	this.context = context;
@@ -42,7 +42,7 @@ public class CenteredArea implements org.luwrain.core.Area
 	this.screenHeight = context.getScreenHeight();
     }
 
-    public CenteredArea(ControlEnvironment context, String areaName)
+    public CenteredArea(ControlContext context, String areaName)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notNull(areaName, "areaName");

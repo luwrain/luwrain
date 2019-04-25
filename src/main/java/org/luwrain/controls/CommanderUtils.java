@@ -58,7 +58,7 @@ public class CommanderUtils
 	}
     }
 
-    static public void defaultEntryAnnouncement(ControlEnvironment context, String name, CommanderArea.EntryType type, boolean marked)
+    static public void defaultEntryAnnouncement(ControlContext context, String name, CommanderArea.EntryType type, boolean marked)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notNull(name, "name");

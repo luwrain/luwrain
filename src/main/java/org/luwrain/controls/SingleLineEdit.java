@@ -44,13 +44,13 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	String getTabSeq();
     }
 
-    protected final ControlEnvironment context;
+    protected final ControlContext context;
         protected final Model model;
     protected final AbstractRegionPoint regionPoint;
     protected final RegionTextQueryTranslator regionTextQueryTranslator;
     protected final ClipboardTranslator clipboardTranslator;
 
-    public SingleLineEdit(ControlEnvironment context, Model model, AbstractRegionPoint regionPoint)
+    public SingleLineEdit(ControlContext context, Model model, AbstractRegionPoint regionPoint)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notNull(model, "model");

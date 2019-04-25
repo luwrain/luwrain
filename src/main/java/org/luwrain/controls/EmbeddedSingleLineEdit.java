@@ -23,7 +23,7 @@ import org.luwrain.core.events.*;
 
 public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 {
-    protected final ControlEnvironment context;
+    protected final ControlContext context;
     protected final SingleLineEdit edit;
     protected final EmbeddedEditLines lines;
     protected final HotPointControl hotPoint;
@@ -39,7 +39,7 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
      * @param offsetX The X position of this edit in the area
      * @param offsetY The Y position of this edit in the area
      */
-    public EmbeddedSingleLineEdit(ControlEnvironment context, EmbeddedEditLines lines,
+    public EmbeddedSingleLineEdit(ControlContext context, EmbeddedEditLines lines,
 				  HotPointControl hotPoint,  AbstractRegionPoint regionPoint,
 				  int offsetX, int offsetY)
     {

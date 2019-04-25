@@ -75,9 +75,9 @@ public class CommanderUtilsFile
 
     static public class Appearance implements CommanderArea.Appearance<File>
     {
-	protected final ControlEnvironment environment;
+	protected final ControlContext environment;
 
-	public Appearance(ControlEnvironment environment)
+	public Appearance(ControlContext environment)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    this.environment = environment;

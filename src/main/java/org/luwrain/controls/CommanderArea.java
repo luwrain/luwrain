@@ -59,7 +59,7 @@ public class CommanderArea<E> extends ListArea
 
     static public class Params<E>
     {
-	public ControlEnvironment context;
+	public ControlContext context;
 	public CommanderArea.Model<E> model;
 	public CommanderArea.Appearance<E> appearance;
 	public CommanderArea.ClickHandler<E> clickHandler;

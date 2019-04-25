@@ -111,10 +111,10 @@ public class CommanderUtilsVfs
 
     static public class Appearance implements CommanderArea.Appearance<FileObject>
     {
-	protected final ControlEnvironment environment;
+	protected final ControlContext environment;
 	protected final FileSystemManager manager;
 
-	public Appearance(ControlEnvironment environment, FileSystemManager manager)
+	public Appearance(ControlContext environment, FileSystemManager manager)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    NullCheck.notNull(manager, "manager");

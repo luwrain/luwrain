@@ -40,14 +40,14 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 {
     static private final String LOG_COMPONENT = "core";
 
-    protected final ControlEnvironment context;
+    protected final ControlContext context;
     protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint, EnumSet.noneOf(ClipboardTranslator.Flags.class));
     protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
-    public NavigationArea(ControlEnvironment context)
+    public NavigationArea(ControlContext context)
     {
 	NullCheck.notNull(context, "context");
 	this.context = context;

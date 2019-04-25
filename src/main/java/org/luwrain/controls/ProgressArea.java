@@ -23,17 +23,17 @@ import org.luwrain.core.events.*;
 
 public class ProgressArea extends SimpleArea
 {
-    public ProgressArea(ControlEnvironment environment)
+    public ProgressArea(ControlContext environment)
     {
 	super(environment);
     }
 
-    public ProgressArea(ControlEnvironment environment, String name)
+    public ProgressArea(ControlContext environment, String name)
     {
 	super(environment, name);
     }
 
-    public ProgressArea(ControlEnvironment environment, String name,
+    public ProgressArea(ControlContext environment, String name,
 			String[] lines)
     {
 	super(environment, name, lines);

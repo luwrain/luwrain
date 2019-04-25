@@ -22,9 +22,9 @@ import org.luwrain.core.*;
 
 public class DefaultTableAppearance implements TableArea.Appearance
 {
-    private ControlEnvironment environment = null;
+    private ControlContext environment = null;
 
-    public DefaultTableAppearance(ControlEnvironment environment)
+    public DefaultTableAppearance(ControlContext environment)
     {
 	this.environment = environment;
     }

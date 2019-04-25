@@ -75,13 +75,13 @@ public class MultilineEdit
 	String splitLine(int pos, int lineIndex);
     }
 
-    protected final ControlEnvironment environment;
+    protected final ControlContext environment;
     protected final AbstractRegionPoint regionPoint;
     protected final ClipboardTranslator clipboardTranslator;
     protected final RegionTextQueryTranslator regionTextQueryTranslator;
     protected final Model model;
 
-    public MultilineEdit(ControlEnvironment environment, Model model, AbstractRegionPoint regionPoint)
+    public MultilineEdit(ControlContext environment, Model model, AbstractRegionPoint regionPoint)
     {
 	NullCheck.notNull(environment, "environment");
 	NullCheck.notNull(model, "model");

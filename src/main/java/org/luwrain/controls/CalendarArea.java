@@ -24,13 +24,13 @@ import org.luwrain.core.events.*;
 
 public class CalendarArea implements Area
 {
-    private ControlEnvironment environment;
+    private ControlContext environment;
     private Calendar calendar;
     private int[][] table;
     private int tableX = 0;
     private int tableY = 0;
 
-    public CalendarArea(ControlEnvironment environment, Calendar calendar)
+    public CalendarArea(ControlContext environment, Calendar calendar)
     {
 	this.environment = environment;
 	this.calendar = calendar;
