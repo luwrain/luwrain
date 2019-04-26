@@ -62,6 +62,14 @@ final class MessageObj extends AbstractJSObject
 		luwrain.message(text, Sounds.CHAT_MESSAGE);
 		return new Boolean(true);
 	    };
+	    	case "done":
+	    return (Predicate)(textObj)->{
+		final String text = org.luwrain.script.ScriptUtils.getStringValue(textObj);
+		if (text == null || text.trim().isEmpty())
+		    return new Boolean(false);
+		luwrain.message(text, Luwrain.MessageType.DONE);
+		return new Boolean(true);
+	    };
 	default:
 	    return super.getMember(name);
 	}
