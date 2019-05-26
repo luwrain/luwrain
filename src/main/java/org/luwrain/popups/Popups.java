@@ -288,7 +288,7 @@ name, prefix, text, popupFlags);
 	final String className = luwrain.getProperty("luwrain.class.disksvolumespopupfactory");
 	if (className.isEmpty())
 	    return null;
-	final DisksVolumesPopupFactory factory = (DisksVolumesPopupFactory)org.luwrain.util.ClassUtils.newInstanceOf(className, DisksVolumesPopupFactory.class);
+	final DisksVolumesPopupFactory factory = (DisksVolumesPopupFactory)org.luwrain.util.ClassUtils.newInstanceOf(Thread.currentThread().getContextClassLoader(), className, DisksVolumesPopupFactory.class);
 	if (factory == null)
 	    return null;
 	final DisksVolumesPopup popup = factory.newDisksVolumesPopup(luwrain, name, popupFlags);

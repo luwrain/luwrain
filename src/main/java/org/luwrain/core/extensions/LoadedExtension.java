@@ -25,7 +25,7 @@ public final class LoadedExtension
     public final Luwrain luwrain;
     public final String id;
     public final ExtensionObject[] extObjects;
-    
+
     public Command[] commands;
     //    public Shortcut[] shortcuts;
     public UniRefProc[] uniRefProcs;

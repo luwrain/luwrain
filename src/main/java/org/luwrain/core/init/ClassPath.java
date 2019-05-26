@@ -16,14 +16,19 @@
 
 package org.luwrain.core.init;
 
+import java.util.*;
 import java.net.*;
 import java.lang.reflect.*;
 
 public final class ClassPath
 {
+    static public List<URL> urls = new LinkedList();
+    
     //Until the better days, when the guys from OpenJDK stop the mess with classpath manipulation
     static public boolean addUrl(URL url)
     {
+	urls.add(url);
+	/*
 	try {
 	    final URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 	    final Class c = URLClassLoader.class;
@@ -37,5 +42,7 @@ public final class ClassPath
 	    e.printStackTrace();
 	    return false;
 	}
+	*/
+	return true;
     }
 }

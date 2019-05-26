@@ -31,6 +31,7 @@ final class Core extends EventDispatching
 {
     static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
 
+    private final ClassLoader classLoader;
     final OperatingSystem os;
     final Interaction interaction;
     private final org.luwrain.shell.Conversations conversations;
@@ -40,13 +41,15 @@ final class Core extends EventDispatching
     private volatile boolean wasInputEvents = false;
     final UniRefProcManager uniRefProcs = new UniRefProcManager();//FIXME:
 
-    Core(CmdLine cmdLine, Registry registry,
+    Core(CmdLine cmdLine, ClassLoader classLoader, Registry registry,
 	 OperatingSystem os, Interaction interaction, 
 	 PropertiesRegistry props, String lang)
     {
 	super(cmdLine, registry, props, lang, interaction);
+	NullCheck.notNull(classLoader, "classLoader");
 	NullCheck.notNull(os, "os");
 	NullCheck.notNull(interaction, "interaction");
+	this.classLoader = classLoader;
 	this.os = os;
 	this.interaction = interaction;
 	this.conversations = new org.luwrain.shell.Conversations(getObjForEnvironment());
@@ -165,7 +168,7 @@ final class Core extends EventDispatching
 	desktop.onLaunchApp(interfaces.requestNew(desktop));
 	desktop.setConversations(conversations);
 	apps.setDefaultApp(desktop);
-	extensions.load((ext)->interfaces.requestNew(ext), cmdLine);
+	extensions.load((ext)->interfaces.requestNew(ext), cmdLine, this.classLoader);
 				initObjects();
 	initDynamicExtensions();
 	initI18n();
@@ -361,7 +364,8 @@ final class Core extends EventDispatching
 	    return;
 	}
 	final String playerFactoryName = props.getProperty(PLAYER_FACTORY_PROP_NAME);
-	final Object o = org.luwrain.util.ClassUtils.newInstanceOf(playerFactoryName, org.luwrain.player.Factory.class);		    final org.luwrain.player.Factory factory = (org.luwrain.player.Factory)o;
+	final Object o = org.luwrain.util.ClassUtils.newInstanceOf(classLoader, playerFactoryName, org.luwrain.player.Factory.class);
+	final org.luwrain.player.Factory factory = (org.luwrain.player.Factory)o;
 	try {
 	    final org.luwrain.player.Factory.Params params = new org.luwrain.player.Factory.Params();
 	    params.luwrain = getObjForEnvironment();

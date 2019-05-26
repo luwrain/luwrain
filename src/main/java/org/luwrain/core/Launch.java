@@ -31,11 +31,11 @@ import org.luwrain.core.init.*;
  * contains {@code main()} static method which should be used to launch
  * Java virtual machine with LUWRAIN.
  */
-public class Init
+public class Launch implements Runnable
 {
     static public final String LOG_COMPONENT = "init";
     static private final String GREETING = "LUWRAIN (visit http://luwrain.org/doc/legal/ for legal notes)";
-    static private final File DEBUG_FILE = new File(new File(System.getProperty("user.home")), "luwrain-debug.txt");
+
 
     static private final String  CMDARG_HELP = "--help";
     static private final String  CMDARG_PRINT_LANG = "--print-lang";
@@ -43,6 +43,7 @@ public class Init
     static private final String  CMDARG_CREATE_PROFILE = "--create-profile";
     static private final String  CMDARG_CREATE_PROFILE_IN = "--create-profile-in=";
 
+    private final ClassLoader classLoader;
     private final File dataDir;
     private final File userDataDir;
     private final File userHomeDir;
@@ -54,13 +55,19 @@ public class Init
     private OperatingSystem os = null;
     private org.luwrain.base.Interaction interaction = null;
 
-    private Init(String[] cmdLine, String lang, File dataDir)
+    Launch(String[] cmdLine, File dataDir)
     {
 	NullCheck.notNullItems(cmdLine, "cmdLine");
-	NullCheck.notEmpty(lang, "lang");
+	//	NullCheck.notEmpty(lang, "lang");
 	NullCheck.notNull(dataDir, "dataDir");
 	this.cmdLine = new CmdLine(cmdLine);
-	this.lang = lang;
+this.lang = Checks.detectLang(this.cmdLine);
+	if (lang.isEmpty())
+	{
+	    Log.fatal(LOG_COMPONENT, "unable to select a language to use");
+	    System.exit(1);
+	}
+
 	this.dataDir = dataDir;
 	this.userHomeDir = new File(System.getProperty("user.home"));
 	final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
@@ -89,9 +96,15 @@ public class Init
 	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
 	    this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(new File(this.userDataDir, "registry"), getRegVersion()).toPath());
 	}
+	//		    this.classLoader = new java.net.URLClassLoader(org.luwrain.core.init.ClassPath.urls.toArray(new java.net.URL[org.luwrain.core.init.ClassPath.urls.size()]), this.getClass().getClassLoader());
+	this.classLoader = this.getClass().getClassLoader();
+	Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+	System.out.println(this.classLoader.toString());
+	System.out.println(ClassLoader.getSystemClassLoader().toString());
+	System.out.println("" + Thread.currentThread().getContextClassLoader());
     }
 
-    private void start()
+    @Override public void run()
     {
 	handleCmdLine();
 	try {
@@ -101,7 +114,7 @@ public class Init
 	    if (!standaloneMode)
 		userProfile.registryDirReady();
 	    init();
-	    new Core(cmdLine, registry, os, interaction, props, lang).run();
+	    new Core(cmdLine, classLoader, registry, os, interaction, props, lang).run();
 	    interaction.close();
 	    Log.info(LOG_COMPONENT, "exiting LUWRAIN normally");
 	    System.exit(0);
@@ -141,7 +154,7 @@ public class Init
 	    Log.fatal(LOG_COMPONENT, "unable to load the interaction:no luwrain.class.interaction property among loaded properties");
 	    System.exit(1);
 	}
-	interaction = (org.luwrain.base.Interaction)org.luwrain.util.ClassUtils.newInstanceOf(interactionClass, org.luwrain.base.Interaction.class);
+	interaction = (org.luwrain.base.Interaction)org.luwrain.util.ClassUtils.newInstanceOf(this.classLoader, interactionClass, org.luwrain.base.Interaction.class);
 	if (interaction == null)
 	{
 	    Log.fatal(LOG_COMPONENT, "Unable to create an instance of  the interaction class " + interactionClass);
@@ -170,7 +183,7 @@ public class Init
 	    Log.fatal(LOG_COMPONENT, "unable to load the operating system interface:no luwrain.class.os property in loaded core properties");
 	    System.exit(1);
 	}
-	os = (org.luwrain.base.OperatingSystem)org.luwrain.util.ClassUtils.newInstanceOf(osClass, org.luwrain.base.OperatingSystem.class);
+	os = (org.luwrain.base.OperatingSystem)org.luwrain.util.ClassUtils.newInstanceOf(classLoader, osClass, org.luwrain.base.OperatingSystem.class);
 	if (os == null)
 	{
 	    Log.fatal(LOG_COMPONENT, "unable to create a new instance of the operating system class " + osClass);
@@ -309,6 +322,7 @@ public class Init
      *
      * @param args The command line arguments mentioned by user on virtual machine launch
      */
+    /*
     static public void main(String[] args) throws IOException
     {
 	org.luwrain.app.console.App.installListener();
@@ -323,8 +337,8 @@ public class Init
 	System.out.println();
 	setUtf8();
 	addJarsToClassPath(new File("jar"));
-	addJarsToClassPath(new File("lib"));
-	final String lang = Checks.detectLang(new CmdLine(args));
+	//		addJarsToClassPath(new File("lib"));
+		final String lang = Checks.detectLang(new CmdLine(args));
 	if (lang.isEmpty())
 	{
 	    Log.fatal(LOG_COMPONENT, "unable to select a language to use");
@@ -332,6 +346,7 @@ public class Init
 	}
 	new Init(args, lang, new File("data")).start();
     }
+    */
 
     static private void addExtensionsJarsToClassPath(File extensionsDir)
     {

@@ -334,7 +334,7 @@ public void playSound(Sounds sound)
 	    }
 	    return true;
 	}
-	final java.util.function.Consumer func = (java.util.function.Consumer)ClassUtils.newInstanceOf(name, java.util.function.Consumer.class);
+	final java.util.function.Consumer func = (java.util.function.Consumer)ClassUtils.newInstanceOf(this.getClass().getClassLoader(), name, java.util.function.Consumer.class);
 	if (func == null)
 	    return false;
 	try {

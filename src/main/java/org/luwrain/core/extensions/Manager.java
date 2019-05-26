@@ -43,11 +43,12 @@ public final class Manager
 	this.interfaces = interfaces;
     }
 
-    public void load(InterfaceRequest interfaceRequest, CmdLine cmdLine)
+    public void load(InterfaceRequest interfaceRequest, CmdLine cmdLine, ClassLoader classLoader)
     {
 	NullCheck.notNull(interfaceRequest, "interfaceRequest");
 	NullCheck.notNull(cmdLine, "cmdLine");
-	final String[] extensionsList = getExtensionsList(cmdLine);
+	NullCheck.notNull(classLoader, "classLoader");
+	final String[] extensionsList = getExtensionsList(cmdLine, classLoader);
 	if (extensionsList == null || extensionsList.length < 1)
 	    return;
 	final List<LoadedExtension> res = new LinkedList();
@@ -58,7 +59,7 @@ public final class Manager
 	    Log.debug(LOG_COMPONENT, "loading extension " + s);
 	    final Object o;
 	    try {
-		o = Class.forName(s).newInstance();
+		o = Class.forName(s, true, classLoader).newInstance();
 	    }
 	    catch (Throwable e)
 	    {
@@ -246,11 +247,12 @@ public final class Manager
 	}
     }
 
-    private String[] getExtensionsListFromManifest()
+    private String[] getExtensionsListFromManifest(ClassLoader classLoader)
     {
+	NullCheck.notNull(classLoader, "classLoader");
 	Vector<String> res = new Vector<String>();
 	try {
-	    Enumeration<java.net.URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+	    Enumeration<java.net.URL> resources = classLoader.getResources("META-INF/MANIFEST.MF");
 	    while (resources.hasMoreElements())
 	    {                                                                                                         
 		try {
@@ -275,9 +277,10 @@ public final class Manager
 	return res.toArray(new String[res.size()]);
     }
 
-    private String[] getExtensionsList(CmdLine cmdLine)
+    private String[] getExtensionsList(CmdLine cmdLine, ClassLoader classLoader)
     {
 	NullCheck.notNull(cmdLine, "cmdLine");
+	NullCheck.notNull(classLoader, "classLoader");
 	final String[] cmdlineExtList = cmdLine.getArgs(EXTENSIONS_LIST_PREFIX);
 	if(cmdlineExtList.length > 0)
 	{
@@ -285,6 +288,6 @@ public final class Manager
 		return s.split(":",-1);
 	    return new String[0];
 	}
-	return getExtensionsListFromManifest();
+	return getExtensionsListFromManifest(classLoader);
     }
 }

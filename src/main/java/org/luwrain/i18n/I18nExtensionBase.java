@@ -32,13 +32,19 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
     protected final Map<String, String> staticStrings = new HashMap<String, String>();
     protected final Map<String, String> chars = new HashMap<String, String>();
 
-    protected void loadProperties(String resourcePath, String langName, I18nExtension ext) throws IOException
+    protected void loadProperties(String langName, ClassLoader classLoader, String resourcePath, I18nExtension ext) throws IOException
     {
-	NullCheck.notEmpty(resourcePath, "resourcePath");
-	NullCheck.notNull(langName, "langName");
+	NullCheck.notEmpty(langName, "langName");
+	NullCheck.notNull(classLoader, "classLoader");
+		NullCheck.notEmpty(resourcePath, "resourcePath");
 	NullCheck.notNull(ext, "ext");
 	final Properties props = new Properties();
-	final URL url = ClassLoader.getSystemResource(resourcePath);
+	final URL url = classLoader.getResource(resourcePath);
+	if (url == null)
+	{
+	    Log.error(langName, "No resource " + resourcePath);
+	    return;
+	}
 	props.load(new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8")));
 	final Enumeration e = props.propertyNames();
 	while(e.hasMoreElements())
@@ -99,24 +105,25 @@ chars.put(c.trim(), v.trim());
 		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
 		continue;
 	    }
-	    if (!addProxyByClassName(langName, c.trim(), v.trim(), resourcePath, ext))
+	    if (!addProxyByClassName(langName, classLoader, c.trim(), v.trim(), resourcePath, ext))
 	Log.warning(langName, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
 	continue;
 	    }
 	}
     }
 
-    protected boolean addProxyByClass(String langName, String name, Class stringsClass, 
+    protected boolean addProxyByClass(String langName, ClassLoader classLoader, String name, Class stringsClass, 
 				      String propertiesResourceName, I18nExtension ext)
     {
 	NullCheck.notNull(langName, "langName");
+	NullCheck.notNull(classLoader, "classLoader");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(stringsClass, "stringsClass");
 	NullCheck.notEmpty(propertiesResourceName, "propertiesResourceName");
 	NullCheck.notNull(ext, "ext");
 	final Object strings;
 	try {
-	    strings = PropertiesProxy.create(ClassLoader.getSystemResource(propertiesResourceName), name + ".", stringsClass);
+	    strings = PropertiesProxy.create(classLoader.getResource(propertiesResourceName), name + ".", stringsClass);
 	}
 	catch(java.io.IOException e)
 	{
@@ -127,22 +134,23 @@ chars.put(c.trim(), v.trim());
 	return true;
 	}
 
-    protected boolean addProxyByClassName(String langName, String name, String className, 
+    protected boolean addProxyByClassName(String langName, ClassLoader classLoader, String name, String className, 
 					  String propertiesResourceName, I18nExtension ext)
     {
 	NullCheck.notNull(langName, "langName");
+	NullCheck.notNull(classLoader, "classLoader");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(className, "className");
 	NullCheck.notEmpty(propertiesResourceName, "propertiesResourceName");
 	NullCheck.notNull(ext, "ext");
 	final Class cl;
 	try {
-	    cl = Class.forName(className);
+	    cl = Class.forName(className, true, classLoader);
 	}
 	catch (ClassNotFoundException e)
 	{
 	    return false;
 	}
-	return addProxyByClass(langName, name, cl, propertiesResourceName, ext);
+	return addProxyByClass(langName, classLoader, name, cl, propertiesResourceName, ext);
     }
 }
