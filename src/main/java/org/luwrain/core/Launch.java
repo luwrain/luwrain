@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -18,25 +18,13 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 
 import org.luwrain.base.OperatingSystem;
 import org.luwrain.core.init.*;
 
-/**
- * The main class to launch LUWRAIN. All basic initialization is
- * implemented here (interaction, registry, operating system etc),
- * including first processing of command line options. This class
- * contains {@code main()} static method which should be used to launch
- * Java virtual machine with LUWRAIN.
- */
-public class Launch implements Runnable
+public final class Launch implements Runnable
 {
     static public final String LOG_COMPONENT = "init";
-    static private final String GREETING = "LUWRAIN (visit http://luwrain.org/doc/legal/ for legal notes)";
-
-
     static private final String  CMDARG_HELP = "--help";
     static private final String  CMDARG_PRINT_LANG = "--print-lang";
     static private final String  CMDARG_PRINT_DIRS = "--print-dirs";
@@ -55,21 +43,23 @@ public class Launch implements Runnable
     private OperatingSystem os = null;
     private org.luwrain.base.Interaction interaction = null;
 
-    Launch(String[] cmdLine, File dataDir)
+    Launch(String[] cmdLine, File dataDir, File userDataDir, File userHomeDir)
     {
 	NullCheck.notNullItems(cmdLine, "cmdLine");
-	//	NullCheck.notEmpty(lang, "lang");
 	NullCheck.notNull(dataDir, "dataDir");
+	NullCheck.notNull(userDataDir, "userDataDir");
+	NullCheck.notNull(userHomeDir, "userHomeDir");
+		org.luwrain.app.console.App.installListener();
 	this.cmdLine = new CmdLine(cmdLine);
-this.lang = Checks.detectLang(this.cmdLine);
+	this.dataDir = dataDir;
+	this.userDataDir = userDataDir;
+	this.userHomeDir = userHomeDir;
+	this.lang = Checks.detectLang(this.cmdLine);
 	if (lang.isEmpty())
 	{
 	    Log.fatal(LOG_COMPONENT, "unable to select a language to use");
 	    System.exit(1);
 	}
-
-	this.dataDir = dataDir;
-	this.userHomeDir = new File(System.getProperty("user.home"));
 	final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
 	filesProps.load(new File(dataDir, "properties"));
 	final String standaloneValue = filesProps.getProperty("luwrain.standalone.enabled");
@@ -77,31 +67,18 @@ this.lang = Checks.detectLang(this.cmdLine);
 	{
 	    Log.info(LOG_COMPONENT, "enabling standalone mode");
 	    this.standaloneMode = true;
-	    this.userDataDir = createTempDataDir();
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
 	    this.registry = loadMemRegistry(dataDir, lang);
 	} else
 	{
 	    this.standaloneMode = false;
-	    this.userDataDir = Checks.detectUserDataDir();
-	    if (userDataDir == null)
-	    {
-		Log.fatal(LOG_COMPONENT, "unable to detect the user data directory");
-		System.exit(1);
-	    }
-	    addExtensionsJarsToClassPath(new File(userDataDir, "extensions"));
 	    filesProps.load(new File(userDataDir, "properties"));
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
 	    this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(new File(this.userDataDir, "registry"), getRegVersion()).toPath());
 	}
-	//		    this.classLoader = new java.net.URLClassLoader(org.luwrain.core.init.ClassPath.urls.toArray(new java.net.URL[org.luwrain.core.init.ClassPath.urls.size()]), this.getClass().getClassLoader());
 	this.classLoader = this.getClass().getClassLoader();
-	Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-	System.out.println(this.classLoader.toString());
-	System.out.println(ClassLoader.getSystemClassLoader().toString());
-	System.out.println("" + Thread.currentThread().getContextClassLoader());
     }
 
     @Override public void run()
@@ -278,7 +255,7 @@ this.lang = Checks.detectLang(this.cmdLine);
 	return res.toLowerCase();
     }
 
-    static private Registry loadMemRegistry(File dataDir, String lang)
+    private Registry loadMemRegistry(File dataDir, String lang)
     {
 	NullCheck.notNull(dataDir, "dataDir");
 	NullCheck.notEmpty(lang, "lang");
@@ -294,110 +271,6 @@ this.lang = Checks.detectLang(this.cmdLine);
 	    Log.fatal(LOG_COMPONENT, "unable to load initial registry data:" + e.getClass().getName() + ":" + e.getMessage());
 	    System.exit(1);
 	    return null;
-	}
-    }
-
-    static private File createTempDataDir()
-    {
-	try {
-	    final File tmpDir = File.createTempFile("lwrtmpdatadir", "");
-	    tmpDir.delete();
-	    if (!tmpDir.mkdir())
-	    {
-		Log.fatal(LOG_COMPONENT, "unable to create temporary directory " + tmpDir.getAbsolutePath());
-		System.exit(1);
-	    }
-	    return tmpDir;
-	}
-	catch(IOException e)
-	{
-	    Log.fatal(LOG_COMPONENT, "unable to create the temporary user data directory:" + e.getClass().getName() + ":" + e.getMessage());
-	    System.exit(1);
-	    return null;
-	}
-    }
-
-    /**
-     * The main entry point to launch LUWRAIN.
-     *
-     * @param args The command line arguments mentioned by user on virtual machine launch
-     */
-    /*
-    static public void main(String[] args) throws IOException
-    {
-	org.luwrain.app.console.App.installListener();
-	if (DEBUG_FILE.exists() && !DEBUG_FILE.isDirectory())
-	{
-	    final PrintStream log = new PrintStream(new BufferedOutputStream(new FileOutputStream(DEBUG_FILE)), true);
-	    System.setOut(log);
-	    System.setErr(log);
-	} else
-	    Log.enableBriefMode();
-	System.out.println(GREETING);
-	System.out.println();
-	setUtf8();
-	addJarsToClassPath(new File("jar"));
-	//		addJarsToClassPath(new File("lib"));
-		final String lang = Checks.detectLang(new CmdLine(args));
-	if (lang.isEmpty())
-	{
-	    Log.fatal(LOG_COMPONENT, "unable to select a language to use");
-	    System.exit(1);
-	}
-	new Init(args, lang, new File("data")).start();
-    }
-    */
-
-    static private void addExtensionsJarsToClassPath(File extensionsDir)
-    {
-	NullCheck.notNull(extensionsDir, "extensionsDir");
-	final File[] subdirs = extensionsDir.listFiles();
-	if (subdirs == null)
-	    return;
-	for(File s: subdirs)
-	{
-	    if (!s.isDirectory())
-		continue;
-	    final File jarsDir = new File(s, "jar");
-	    if (!jarsDir.isDirectory())
-		continue;
-	    Log.debug(LOG_COMPONENT, "registering extension jars from the directory " + jarsDir.getAbsolutePath());
-	    addJarsToClassPath(jarsDir);
-	}
-    }
-
-    static private void addJarsToClassPath(File file)
-    {
-	NullCheck.notNull(file, "file");
-	try {
-	    final File[] files = file.listFiles();
-	    if (files == null)
-		return;
-	    for(File f: files)
-		if (!f.isDirectory() && f.getName().toLowerCase().trim().endsWith(".jar"))
-		{
-		    final java.net.URL url = f.toURI().toURL();
-		    ClassPath.addUrl(url);
-		}
-	}
-	catch(IOException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to add to the classpath the directory " + file.getAbsolutePath() + ":" + e.getClass().getName() + ":" + e.getMessage());
-	}
-    }
-
-    static private void setUtf8()
-    {
-	Log.debug("init", "using UTF-8, while default system charset was " + System.getProperty("file.encoding"));
-	System.setProperty("file.encoding","UTF-8");
-	Field charset;
-	try {
-	    charset=Charset.class.getDeclaredField("defaultCharset");
-	    charset.setAccessible(true);
-	    charset.set(null,null);
-	} catch(Exception e)
-	{
-	    e.printStackTrace();
 	}
     }
 }

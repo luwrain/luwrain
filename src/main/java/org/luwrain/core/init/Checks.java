@@ -26,32 +26,8 @@ public final class Checks
     static private final String LOG_COMPONENT = Init.LOG_COMPONENT;
 
     static private final String DEFAULT_LANG = "en";
-
     static private final String ENV_LANG = "LUWRAIN_LANG";
     static public final String CMDARG_LANG = "--lang=";
-
-    static private final String ENV_APP_DATA = "APPDATA";
-    static private final String ENV_USER_PROFILE = "USERPROFILE";
-    static private final String DEFAULT_USER_DATA_DIR_WINDOWS = "Luwrain";
-    static private final String DEFAULT_USER_DATA_DIR_LINUX = ".luwrain";
-
-    static public File detectUserDataDir()
-    {
-	//Windows: in Application Data
-	if(System.getenv().containsKey(ENV_APP_DATA) && !System.getenv().get(ENV_APP_DATA).trim().isEmpty())
-	{
-	    final File appData = new File(System.getenv().get(ENV_APP_DATA));
-	    return new File(appData, DEFAULT_USER_DATA_DIR_WINDOWS);
-	}
-	if(System.getenv().containsKey(ENV_USER_PROFILE) && !System.getenv().get(ENV_USER_PROFILE).trim().isEmpty())
-	{
-	    final File userProfile = new File(System.getenv().get(ENV_USER_PROFILE));
-	    return new File(new File(new File(userProfile, "Local Settings"), "Application Data"), DEFAULT_USER_DATA_DIR_WINDOWS);
-	}
-	//We are likely on Linux
-	final File f = new File(System.getProperty("user.home"));
-	return new File(f, DEFAULT_USER_DATA_DIR_LINUX);
-    }
 
     static public String detectLang(CmdLine cmdLine)
     {
