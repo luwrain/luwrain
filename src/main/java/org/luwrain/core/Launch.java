@@ -31,25 +31,26 @@ public final class Launch implements Runnable
     static private final String  CMDARG_CREATE_PROFILE = "--create-profile";
     static private final String  CMDARG_CREATE_PROFILE_IN = "--create-profile-in=";
 
+    private final boolean standalone;
     private final ClassLoader classLoader;
     private final File dataDir;
     private final File userDataDir;
     private final File userHomeDir;
     private final String lang;
     private final CmdLine cmdLine;
-    private final boolean standaloneMode;
     private final Registry registry;
     private final PropertiesRegistry props;
     private OperatingSystem os = null;
     private org.luwrain.base.Interaction interaction = null;
 
-    Launch(String[] cmdLine, File dataDir, File userDataDir, File userHomeDir)
+    Launch(boolean standalone, String[] cmdLine, File dataDir, File userDataDir, File userHomeDir)
     {
 	NullCheck.notNullItems(cmdLine, "cmdLine");
 	NullCheck.notNull(dataDir, "dataDir");
 	NullCheck.notNull(userDataDir, "userDataDir");
 	NullCheck.notNull(userHomeDir, "userHomeDir");
 		org.luwrain.app.console.App.installListener();
+		this.standalone = standalone;
 	this.cmdLine = new CmdLine(cmdLine);
 	this.dataDir = dataDir;
 	this.userDataDir = userDataDir;
@@ -62,17 +63,13 @@ public final class Launch implements Runnable
 	}
 	final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
 	filesProps.load(new File(dataDir, "properties"));
-	final String standaloneValue = filesProps.getProperty("luwrain.standalone.enabled");
-	if (standaloneValue != null && standaloneValue.trim().toLowerCase().equals("true"))
+	if (standalone)
 	{
-	    Log.info(LOG_COMPONENT, "enabling standalone mode");
-	    this.standaloneMode = true;
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
 	    this.registry = loadMemRegistry(dataDir, lang);
 	} else
 	{
-	    this.standaloneMode = false;
 	    filesProps.load(new File(userDataDir, "properties"));
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
 	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
@@ -88,7 +85,7 @@ public final class Launch implements Runnable
 	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
 	    final UserProfile userProfile = new UserProfile(dataDir, userDataDir, getRegVersion(), lang);
 	    userProfile.userProfileReady();
-	    if (!standaloneMode)
+	    if (!standalone)
 		userProfile.registryDirReady();
 	    init();
 	    new Core(cmdLine, classLoader, registry, os, interaction, props, lang).run();
@@ -187,7 +184,7 @@ public final class Launch implements Runnable
 	    System.out.println(CMDARG_PRINT_LANG + " - print the chosen language and exit");
 	    System.out.println(Checks.CMDARG_LANG + " - set the language to use");
 	    System.out.println(CMDARG_PRINT_DIRS + " - print the detected values of the system directories and exit");
-	    if (!standaloneMode)
+	    if (!standalone)
 	    {
 		System.out.println(CMDARG_CREATE_PROFILE + " - generate the user profile directory in its default location and exit");
 		System.out.println(CMDARG_CREATE_PROFILE_IN + "<DESTDIR> - generate the user profile directory in <DESTDIR> and exit");
@@ -209,7 +206,7 @@ public final class Launch implements Runnable
 	    System.exit(0);
 	}
 	//Create profile in
-	if (!standaloneMode && cmdLine.getArgs(CMDARG_CREATE_PROFILE_IN).length > 0)
+	if (!standalone && cmdLine.getArgs(CMDARG_CREATE_PROFILE_IN).length > 0)
 	{
 	    final String[] destDirs = cmdLine.getArgs((CMDARG_CREATE_PROFILE_IN));
 	    try {
@@ -230,7 +227,7 @@ public final class Launch implements Runnable
 	    }
 	}
 	//create profile
-	if (!standaloneMode && cmdLine.used(CMDARG_CREATE_PROFILE))
+	if (!standalone && cmdLine.used(CMDARG_CREATE_PROFILE))
 	{
 	    try {
 		System.out.println("Creating user profile in " + userDataDir.getAbsolutePath());
