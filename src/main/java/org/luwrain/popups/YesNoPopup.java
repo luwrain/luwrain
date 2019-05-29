@@ -77,13 +77,13 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	if (!event.isSpecial())
 	{
 	    final char c = event.getChar();
-	    if (EqualKeys.equalKeys(c, 'y'))
+	    if (KeyboardEvent.getKeyboardLayout().onSameButton(c, 'y'))
 	    {
 		res = true;
 		closing.doOk();
 		return true;
 	    }
-	    if (EqualKeys.equalKeys(c, 'n'))
+	    if (KeyboardEvent.getKeyboardLayout().onSameButton(c, 'n'))
 	    {
 		res = false;
 		closing.doOk();

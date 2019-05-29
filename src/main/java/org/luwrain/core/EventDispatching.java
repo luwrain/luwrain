@@ -231,7 +231,7 @@ abstract class EventDispatching extends EnvironmentAreas
 		return true;
 	}
 	if (!event.isSpecial() &&
-	    EqualKeys.equalKeys(event.getChar(), 'x') &&
+	    KeyboardEvent.getKeyboardLayout().onSameButton(event.getChar(), 'x') &&
 	    event.withAltOnly())
 	{
 	    onAltX();
