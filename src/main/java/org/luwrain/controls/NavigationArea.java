@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 //LWR_API 1.0
 
@@ -155,7 +140,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    hotPointX = line.length();
 	    context.onAreaNewHotPoint(this);
 	} 
-	context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
+	context.setEventResponse(DefaultEventResponse.hint(Hint.LINE_BOUND));
 	return true;
     }
 
@@ -248,7 +233,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	context.onAreaNewHotPoint(this);
 	final 	    String newLine = getLineNotNull(hotPointY);
 	if (hotPointX == newLine.length())
-	    context.setEventResponse(DefaultEventResponse.hint(hotPointY + 1 >= count?Hint.END_OF_TEXT:Hint.END_OF_LINE)); else
+	    context.setEventResponse(DefaultEventResponse.hint(hotPointY + 1 >= count?Hint.LINE_BOUND:Hint.LINE_BOUND)); else
 	    context.sayLetter(newLine.charAt(hotPointX));
 	return true;
     }
@@ -274,7 +259,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	context.onAreaNewHotPoint(this);
 	final String newLine = getLineNotNull(hotPointY);
 	if (hotPointX == newLine.length())
-	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); else
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.LINE_BOUND)); else
 	    context.sayLetter(newLine.charAt(hotPointX));
 	return true;
     }

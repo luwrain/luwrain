@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.core;
 
@@ -233,6 +218,7 @@ public final class  EventResponses
 	case BEGIN_OF_LINE:
 	    return LangStatic.BEGIN_OF_LINE;
 	case END_OF_LINE:
+	case LINE_BOUND:
 	    return LangStatic.END_OF_LINE;
 	case BEGIN_OF_TEXT:
 	    return LangStatic.BEGIN_OF_TEXT;
@@ -288,6 +274,7 @@ public final class  EventResponses
 	    return Sounds.NO_LINES_BELOW;
 	case NO_CONTENT:
 	    return Sounds.NO_CONTENT;
+	case LINE_BOUND:
 	case EMPTY_LINE:
 	    return Sounds.EMPTY_LINE;
 	case TREE_BRANCH_COLLAPSED:
