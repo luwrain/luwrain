@@ -1,9 +1,9 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
-c   LUWRAIN is free software; you can redistribute it and/or
+   LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
    License as published by the Free Software Foundation; either
    version 3 of the License, or (at your option) any later version.

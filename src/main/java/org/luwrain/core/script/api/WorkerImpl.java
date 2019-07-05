@@ -18,44 +18,45 @@ package org.luwrain.core.script.api;
 
 import java.io.*;
 import java.util.*;
-import java.util.function.*;
-import java.util.concurrent.*;
-import javax.script.*;
-import jdk.nashorn.api.*;
 import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-public final class MutableLinesWrapper extends AbstractJSObject
+final class WorkerImpl implements Worker
 {
-    private final MutableLines lines;
+    private final String name;
+    private final int firstLaunchDelay;
+    private final int launchPeriod;
+    private final JSObject func;
 
-    MutableLinesWrapper(MutableLines lines)
+    WorkerImpl(String name, int firstLaunchDelay, int launchPeriod, JSObject func)
     {
-	NullCheck.notNull(lines, "lines");
-	this.lines = lines;
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(func, "func");
+	this.name = name;
+	this.firstLaunchDelay = firstLaunchDelay;
+	this.launchPeriod = launchPeriod;
+	this.func = func;
     }
 
-    @Override public Object newObject(Object... args)
+    @Override public void run()
     {
-	return new MutableLinesWrapper(lines);
+	func.call(null, new Object[0]);
     }
 
-    @Override public Object getMember(String name)
+    @Override public int getFirstLaunchDelay()
     {
-	NullCheck.notNull(name, "name");
-	switch(name)
-	{
-	case "getLine":
-	    return (Consumer)this::getLine;
-	default:
-	    return null;
-	}
+	return firstLaunchDelay;
     }
 
-    private void getLine(Object b)
+    @Override public int getLaunchPeriod()
     {
-	if (b != null && !b.toString().trim().isEmpty());
+	return launchPeriod;
+    }
+
+    @Override public String getExtObjName()
+    {
+	return name;
     }
 }

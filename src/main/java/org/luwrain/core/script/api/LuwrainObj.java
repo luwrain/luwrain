@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -34,6 +34,7 @@ public final class LuwrainObj extends AbstractJSObject
     public final List<CommandLineTool> cmdLineTools = new LinkedList();
     public final List<Shortcut> shortcuts = new LinkedList();
     public final List<Command> commands = new LinkedList();
+        public final List<Worker> workers = new LinkedList();
     public final List<TextEditingExtension> textEdits = new LinkedList();
     public final Map<String, List<Hook>> hooks = new HashMap();
 
@@ -83,6 +84,8 @@ public final class LuwrainObj extends AbstractJSObject
 	    return (BiPredicate)this::createPropertyHook;
 	case "addCommandLineTool":
 	    return (BiPredicate)this::addCommandLineTool;
+	    	case "addWorker":
+		    return createAddWorker();
 	case "addApp":
 	case "addShortcut":
 	    return (BiPredicate)this::addShortcut;
@@ -147,6 +150,35 @@ public final class LuwrainObj extends AbstractJSObject
 	final JSObject func = (JSObject)obj;
 	commands.add(new org.luwrain.core.script.api.CommandImpl(name.toString(), func));
 	return true;
+    }
+
+    private Object createAddWorker()
+    {
+	return new org.luwrain.script.EmptyHookObject(){
+	    @Override public boolean isFunction()
+	    {
+		return true;
+	    }
+	    @Override public Object call(Object thiz, Object[] args)
+	    {
+		if (args == null || args.length != 4)
+		    return new Boolean(false);
+		final String name = org.luwrain.script.ScriptUtils.getStringValue(args[0]);
+		final Integer firstLaunchDelay = org.luwrain.script.ScriptUtils.getIntegerValue(args[1]);
+		final Integer launchPeriod = org.luwrain.script.ScriptUtils.getIntegerValue(args[2]);
+		final JSObject func = org.luwrain.script.ScriptUtils.toValidJsObject(args[4]);
+		if (name == null || name.isEmpty())
+		    return new Boolean(false);
+		if (firstLaunchDelay == null || firstLaunchDelay.intValue() < 0)
+		    return new Boolean(false);
+		if (launchPeriod == null || launchPeriod.intValue() < 0)
+		    return new Boolean(false);
+		if (func == null || !func.isFunction())
+		    return new Boolean(false);
+		workers.add(new WorkerImpl(name, firstLaunchDelay.intValue(), launchPeriod.intValue(), func));
+		return new Boolean(true);
+	    }
+	};
     }
 
             private boolean addHook(Object name, Object func)

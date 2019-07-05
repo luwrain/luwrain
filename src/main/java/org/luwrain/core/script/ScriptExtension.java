@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -86,6 +86,8 @@ class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension, o
 	final List<ExtensionObject> res = new LinkedList();
 	for(Shortcut s: instance.luwrainObj.shortcuts )
 	    res.add(s);
+	for(Worker w: instance.luwrainObj.workers)
+	    res.add(w);
 	for(CommandLineTool t: instance.luwrainObj.cmdLineTools)
 	    res.add(t);
 	return res.toArray(new ExtensionObject[res.size()]);
