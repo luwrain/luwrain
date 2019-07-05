@@ -166,12 +166,12 @@ public final class LuwrainObj extends AbstractJSObject
 		final String name = org.luwrain.script.ScriptUtils.getStringValue(args[0]);
 		final Integer firstLaunchDelay = org.luwrain.script.ScriptUtils.getIntegerValue(args[1]);
 		final Integer launchPeriod = org.luwrain.script.ScriptUtils.getIntegerValue(args[2]);
-		final JSObject func = org.luwrain.script.ScriptUtils.toValidJsObject(args[4]);
+		final JSObject func = org.luwrain.script.ScriptUtils.toValidJsObject(args[3]);
 		if (name == null || name.isEmpty())
 		    return new Boolean(false);
 		if (firstLaunchDelay == null || firstLaunchDelay.intValue() < 0)
 		    return new Boolean(false);
-		if (launchPeriod == null || launchPeriod.intValue() < 0)
+		if (launchPeriod == null || launchPeriod.intValue() < 1)
 		    return new Boolean(false);
 		if (func == null || !func.isFunction())
 		    return new Boolean(false);
