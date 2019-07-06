@@ -236,7 +236,7 @@ class Commands
 				}
 			    }
 			};
-		    if (!core.hookChainWithCustom("luwrain.area.rpoint.set", new Object[]{argObj}))
+		    if (!core.hookChainWithCustom("luwrain.area.region.point.set", new Object[]{argObj}))
 			core.eventNotProcessedMessage();
 		}
 	    },
@@ -359,8 +359,27 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)))
-			core.playSound(Sounds.DELETED); else
+		    final AtomicReference res = new AtomicReference();
+		    core.unsafeAreaOperation(()->{
+			    res.set(new Boolean(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR))));
+			});
+		    if (res.get() == null || !((Boolean)res.get()).booleanValue())
+		    {
+						core.eventNotProcessedMessage();
+						return;
+		    }
+		    final EmptyHookObject argObj = new EmptyHookObject(){
+			    @Override public Object getMember(String name)
+			    {
+				NullCheck.notEmpty(name, "name");
+				switch(name)
+				{
+				default:
+				    return super.getMember(name);
+				}
+			    }
+			};
+		    if (!core.hookChainWithCustom("luwrain.area.clear", new Object[]{argObj}))
 			core.eventNotProcessedMessage();
 		}
 	    },
