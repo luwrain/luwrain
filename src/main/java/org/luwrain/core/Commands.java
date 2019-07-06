@@ -1,29 +1,16 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.core;
 
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.atomic.*;
 
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.OperatingSystem;
+import org.luwrain.script.*;
 
 /**
  * The set of standard commands. The commands provided by this class are
@@ -216,8 +203,40 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
-			core.playSound(Sounds.REGION_POINT); else
+		    final AtomicReference res = new AtomicReference();
+		    final AtomicReference x = new AtomicReference();
+		    final AtomicReference y = new AtomicReference();
+		    core.unsafeAreaOperation(()->{
+			    if (!area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
+			    {
+				res.set(new Boolean(false));
+				return;
+			    }
+			    x.set(new Integer(area.getHotPointX()));
+			    y.set(new Integer(area.getHotPointY()));
+			    res.set(new Boolean(true));
+			});
+		    if (res.get() == null || !((Boolean)res.get()).booleanValue())
+		    {
+			core.eventNotProcessedMessage();
+			return;
+		    }
+		    final EmptyHookObject argObj = new EmptyHookObject(){
+			    @Override public Object getMember(String name)
+			    {
+				NullCheck.notEmpty(name, "name");
+				switch(name)
+				{
+				case "x":
+				    return x.get();
+				case "y":
+				    return y.get();
+				default:
+				    return super.getMember(name);
+				}
+			    }
+			};
+		    if (!core.hookChainWithCustom("luwrain.area.rpoint.set", new Object[]{argObj}))
 			core.eventNotProcessedMessage();
 		}
 	    },
@@ -250,8 +269,25 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)))
-			core.playSound(Sounds.COPIED); else
+		    final AtomicReference res = new AtomicReference();
+		    core.unsafeAreaOperation(()->res.set(new Boolean(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)))));
+		    if (res.get() == null || !((Boolean)res.get()).booleanValue())
+		    {
+			core.eventNotProcessedMessage();
+			return;
+		    }
+		    final EmptyHookObject argObj = new EmptyHookObject(){
+			    @Override public Object getMember(String name)
+			    {
+				NullCheck.notEmpty(name, "name");
+				switch(name)
+				{
+				default:
+				    return super.getMember(name);
+				}
+			    }
+			};
+		    if (!core.hookChainWithCustom("luwrain.clipboard.copy.all", new Object[]{argObj}))
 			core.eventNotProcessedMessage();
 		}
 	    },

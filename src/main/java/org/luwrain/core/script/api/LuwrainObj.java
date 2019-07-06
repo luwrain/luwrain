@@ -78,6 +78,8 @@ public final class LuwrainObj extends AbstractJSObject
 	    return sounds;
 	case "message":
 	    return messageObj;
+	case "speak":
+	    return (Consumer)this::speak;
 	case "addHook":
 	    return (BiPredicate)this::addHook;
 	    	case "createPropertyHook":
@@ -106,6 +108,13 @@ public final class LuwrainObj extends AbstractJSObject
 	default:
 	    return super.getMember(name);
 	}
+    }
+
+    private void speak(Object arg)
+    {
+	final String text = org.luwrain.script.ScriptUtils.getStringValue(arg);
+	if (text != null && !text.trim().isEmpty())
+	    luwrain.speak(text);
     }
 
     private boolean addCommandLineTool(Object name, Object obj)

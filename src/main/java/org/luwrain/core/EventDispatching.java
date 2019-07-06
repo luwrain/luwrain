@@ -26,7 +26,7 @@ import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
 
-abstract class EventDispatching extends EnvironmentAreas
+abstract class EventDispatching extends Areas
 {
     static private final String DESKTOP_PROP_NAME = "luwrain.class.desktop";
     static private final int POPUP_BLOCKING_MAY_PROCESS = 0;

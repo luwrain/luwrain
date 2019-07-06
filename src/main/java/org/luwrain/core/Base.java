@@ -376,6 +376,35 @@ public void playSound(Sounds sound)
 	return extensions.unloadDynamicExtension(ext.ext);
     }
 
+    boolean hookChainWithCustom(String hookName, Object[] args)
+    {
+	NullCheck.notEmpty(hookName, "hookName");
+	NullCheck.notNullItems(args, "args");
+	try {
+	    if (getObjForEnvironment().xRunHooks(hookName + ".custom", args, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY))
+		return true;
+	}
+	catch(RuntimeException e)
+	{
+	    Log.error(LOG_COMPONENT, "failed hook " + hookName + ".custom:" + e.getClass().getName() + ":" + e.getMessage());
+	    return false;
+	}
+	try {
+	    return getObjForEnvironment().xRunHooks(hookName, args, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
+	}
+	catch(RuntimeException e)
+	{
+	    Log.error(LOG_COMPONENT, "failed hook " + hookName + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    return false;
+	}
+    }
+
+    void unsafeAreaOperation(Runnable runnable)
+    {
+	NullCheck.notNull(runnable, "runnable");
+	runnable.run();
+    }
+
     static protected final class MainStopCondition implements StopCondition
     {
 	private boolean shouldContinue = true;//FIXME:No static members
