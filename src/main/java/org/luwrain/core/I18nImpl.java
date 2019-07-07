@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.core;
 
@@ -29,7 +14,18 @@ final class I18nImpl implements I18n, I18nExtension
 
     private final List<CommandTitle> commandTitles = new LinkedList();
     private final List<StringsObj> stringsObjs = new LinkedList();
-    private final List<LangObj> langObjs = new LinkedList();
+    private final Map<String, Lang> langs = new HashMap();
+
+    @Override public Lang getActiveLang()
+    {
+	return chosenLang;
+    }
+
+    @Override public Lang getLang(String langName)
+    {
+	NullCheck.notEmpty(langName, "langName");
+	return langs.containsKey(langName)?langs.get(langName):null;
+	    }
 
     String getSpokenText(String text, Luwrain.SpokenTextType spokenTextType)
     {
@@ -173,55 +169,65 @@ final class I18nImpl implements I18n, I18nExtension
 	stringsObjs.add(new StringsObj(lang, component, obj));
     }
 
-    @Override public void addLang(String name, Lang lang)
+    @Override public boolean addLang(String name, Lang lang)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(lang, "lang");
-	for(LangObj l: langObjs)
-	    if (l.name.equals(name))
-		return;
-	langObjs.add(new LangObj(name, lang));
+	if (langs.containsKey(name))
+	    return false;
+	langs.put(name, lang);
+	return true;
     }
 
     boolean chooseLang(String name)
     {
 	NullCheck.notEmpty(name, "name");
-	if (langObjs.isEmpty())
+	if (langs.isEmpty())
 	{
 	    Log.error(LOG_COMPONENT, "no langs registered, unable to choose the default");
 	    return false;
 	}
-	for(LangObj l: langObjs)
-	    Log.debug(LOG_COMPONENT, "lang \'" + l.name + "\' loaded");
-	LangObj desiredLang = null;
-	LangObj enLang = null;
-	for(LangObj l: langObjs)
+	for(Map.Entry<String, Lang> l: langs.entrySet())
+	    Log.debug(LOG_COMPONENT, "lang \'" + l.getKey() + "\' loaded");
+	Lang desiredLang = null;
+	String desiredLangName = "";
+	Lang anyLang = null;
+	String anyLangName = "";
+	Lang enLang = null;
+	for(Map.Entry<String, Lang> l: langs.entrySet())
 	{
-	    if (l.name.equals(name))
-		desiredLang = l;
-	    if (l.name.equals(EN_LANG))
-		enLang = l;
+	    if (anyLang == null)//Preferably taking the first one
+	    {
+		anyLang = l.getValue();
+		anyLangName = l.getKey();
+	    }
+	    if (l.getKey().equals(name))
+	    {
+		desiredLang = l.getValue();
+		desiredLangName = name;
+	    }
+	    if (l.getKey().equals(EN_LANG))
+		enLang = l.getValue();
 	}
 	if (desiredLang == null)
-	    Log.warning(LOG_COMPONENT, "desired lang \'" + name + "\' not found");
+	    Log.warning(LOG_COMPONENT, "the desired language \'" + name + "\' not found");
 	if (enLang == null)
-	    Log.warning(LOG_COMPONENT, "English lang not found");
+	    Log.warning(LOG_COMPONENT, "English language not found");
 	if (desiredLang != null)
 	{
-	    chosenLang = desiredLang.lang;
-	    chosenLangName = desiredLang.name;
+	    chosenLang = desiredLang;
+	    chosenLangName = desiredLangName;
 	} else
 	    if (enLang != null)
 	    {
-		chosenLang = enLang.lang;
-		chosenLangName = enLang.name;
+		chosenLang = enLang;
+		chosenLangName = EN_LANG;
 	    } else
 	    {
-		final LangObj l = langObjs.get(0);
-		chosenLang = l.lang;
-		chosenLangName = l.name;
+		chosenLang = anyLang;
+		chosenLangName = anyLangName;
 	    }
-	Log.debug("core", "chosen lang is \'" + chosenLangName + "\'");
+	Log.debug("core", "the chosen language is \'" + chosenLangName + "\'");
 	return true;
     }
 
@@ -281,17 +287,4 @@ final class I18nImpl implements I18n, I18nExtension
 	    this.obj = obj;
 	}
     };
-
-    static private final class LangObj
-    {
-	final String name;
-	final Lang lang;
-	LangObj(String name, Lang lang)
-	{
-	    NullCheck.notEmpty(name, "name");
-	    NullCheck.notNull(lang, "lang");
-	    this.name = name;
-	    this.lang = lang;
-	}
-    }
 }
