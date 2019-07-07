@@ -31,7 +31,6 @@ public final class LuwrainObj extends AbstractJSObject
 {
     private final Luwrain luwrain;
     private final File dataDir;
-    public final List<CommandLineTool> cmdLineTools = new LinkedList();
     public final List<Shortcut> shortcuts = new LinkedList();
     public final List<Command> commands = new LinkedList();
         public final List<Worker> workers = new LinkedList();
@@ -84,8 +83,6 @@ public final class LuwrainObj extends AbstractJSObject
 	    return (BiPredicate)this::addHook;
 	    	case "createPropertyHook":
 	    return (BiPredicate)this::createPropertyHook;
-	case "addCommandLineTool":
-	    return (BiPredicate)this::addCommandLineTool;
 	    	case "addWorker":
 		    return createAddWorker();
 	case "addApp":
@@ -115,20 +112,6 @@ public final class LuwrainObj extends AbstractJSObject
 	final String text = org.luwrain.script.ScriptUtils.getStringValue(arg);
 	if (text != null && !text.trim().isEmpty())
 	    luwrain.speak(text);
-    }
-
-    private boolean addCommandLineTool(Object name, Object obj)
-    {
-	if (name == null || obj == null)
-	    return false;
-	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
-	    return false;
-	final JSObject cons = (JSObject)obj;
-	final Object newObj = cons.newObject();
-	final ScriptObjectMirror newJsObj = (ScriptObjectMirror)newObj;
-	luwrain.message(newJsObj.get("name").toString());
-	//	luwrain.message(o2.getClass().getName());
-	return true;
     }
 
     private boolean addShortcut(Object name, Object obj)

@@ -88,8 +88,6 @@ class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension, o
 	    res.add(s);
 	for(Worker w: instance.luwrainObj.workers)
 	    res.add(w);
-	for(CommandLineTool t: instance.luwrainObj.cmdLineTools)
-	    res.add(t);
 	return res.toArray(new ExtensionObject[res.size()]);
     }
 
