@@ -47,7 +47,7 @@ final class ObjRegistry
     private Map<String, Entry<org.luwrain.speech.Engine>> speechEngines = new HashMap();
     private Map<String, Entry<MediaResourcePlayer>> players = new HashMap();
         private Map<String, Entry<PropertiesProvider>> propsProviders = new HashMap();
-            private Map<String, Entry<TextEditingExtension>> textEditingExts = new HashMap();
+    //private Map<String, Entry<TextEditingExtension>> textEditingExts = new HashMap();
 
     boolean add(Extension ext, ExtensionObject obj)
     {
@@ -117,6 +117,7 @@ final class ObjRegistry
 	    }
 	}
 
+																/*
 																																if (obj instanceof TextEditingExtension)
 	{
 	    final TextEditingExtension textEditing = (TextEditingExtension)obj;
@@ -126,6 +127,7 @@ final class ObjRegistry
 		res = true;
 	    }
 	}
+																*/
 
 																if (!res)
 	    Log.warning(LOG_COMPONENT, "failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
@@ -226,6 +228,7 @@ final class ObjRegistry
 	return res.toArray(new PropertiesProvider[res.size()]);
     }
 
+    /*
                     TextEditingExtension[] getTextEditingExtensions()
     {
 	final List<TextEditingExtension> res = new LinkedList();
@@ -233,6 +236,7 @@ final class ObjRegistry
 	    res.add(e.getValue().obj);
 	return res.toArray(new TextEditingExtension[res.size()]);
     }
+    */
 
 
     static void issueResultingMessage(Luwrain luwrain, int exitCode, String[] lines)

@@ -34,7 +34,6 @@ public final class LuwrainObj extends AbstractJSObject
     public final List<Shortcut> shortcuts = new LinkedList();
     public final List<Command> commands = new LinkedList();
         public final List<Worker> workers = new LinkedList();
-    public final List<TextEditingExtension> textEdits = new LinkedList();
     public final Map<String, List<Hook>> hooks = new HashMap();
 
     private final RegistryObj registryObj;
@@ -90,8 +89,6 @@ public final class LuwrainObj extends AbstractJSObject
 	    return (BiPredicate)this::addShortcut;
 	case "addCommand":
 	    return (BiPredicate)this::addCommand;
-	case "addTextEditing":
-	    return (BiPredicate)this::addTextEditing;
 	case "getActiveAreaText":
 	    return (Function)this::getActiveAreaText;
 	case "launchApp":
@@ -196,20 +193,6 @@ public final class LuwrainObj extends AbstractJSObject
 		    hook == null || hook.trim().isEmpty() || !hook.equals(hook.trim()))
 		    return false;
 		return luwrain.xCreatePropertyHook(prop, hook);
-    }
-
-            private boolean addTextEditing(Object name, Object obj)
-    {
-	if (name == null || obj == null)
-	    return false;
-	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
-	    return false;
-	for(TextEditingExtension t: textEdits)
-	    if (t.getExtObjName().equals(name.toString()))
-		return false;
-	final JSObject func = (JSObject)obj;
-	//textEdits.add(new TextEditingAdapter(name.toString(), func));
-	return true;
     }
 
     private boolean runBkg(Object obj)
