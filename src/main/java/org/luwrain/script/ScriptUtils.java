@@ -69,6 +69,16 @@ public final class ScriptUtils
 	    return (Integer)obj;
     }
 
+             static public Boolean getBooleanValue(Object obj)
+    {
+	if (!isValid(obj))
+	    return null;
+	if (!(obj instanceof Boolean))
+	    return null;
+	    return (Boolean)obj;
+    }
+
+
 
         static public List getArray(Object obj)
     {
@@ -229,5 +239,85 @@ public final class ScriptUtils
 		}
 	    }
 	};
+    }
+
+    static public KeyboardEvent getInputEvent(Object obj)
+    {
+	if (!isValid(obj))
+	    return null;
+
+	    final Object chObj = getMember(obj, "ch");
+	    	    final Object specialObj = getMember(obj, "special");
+		    	    	    final Object withAltObj = getMember(obj, "withAlt");
+				    		    	    	    final Object withShiftObj = getMember(obj, "withShift");
+								    		    	    	    final Object withControlObj = getMember(obj, "withControl");
+
+												    												    final String ch;
+												    if (chObj != null)
+												    {
+													final String value = getStringValue(chObj);
+													ch = value != null?value:"";
+												    } else
+													ch = "";
+
+												    												    												    final String special;
+												    if (specialObj != null)
+												    {
+													final String value = getStringValue(specialObj);
+													special = value != null?value:"";
+												    } else
+													special = "";
+
+												    final KeyboardEvent.Special sp;
+												    if (!special.isEmpty())
+												    {
+													KeyboardEvent.Special s = null;
+												    	    final EnumSet<KeyboardEvent.Special> allSpecials = EnumSet.allOf(KeyboardEvent.Special.class);
+													    for(KeyboardEvent.Special ss: allSpecials)
+														if (ss.toString().toUpperCase().equals(special))
+														    s = ss;
+													    if (s == null)
+														return null;
+													    sp = s;
+												    } else
+													sp = null;
+
+												    if (ch.isEmpty() && sp == null)
+													return null;
+
+												    final Boolean withAlt;
+												    final Boolean withControl;
+												    final Boolean withShift;
+
+												    if (withAltObj != null)
+												    {
+													final Boolean value = getBooleanValue(withAltObj);
+													withAlt = value != null?value:new Boolean(false);
+												    } else
+													withAlt = new Boolean(false);
+
+												    												    if (withShiftObj != null)
+												    {
+													final Boolean value = getBooleanValue(withShiftObj);
+													withShift = value != null?value:new Boolean(false);
+												    } else
+																									withShift = new Boolean(false);
+
+																								    
+												    												    if (withControlObj != null)
+												    {
+													final Boolean value = getBooleanValue(withControlObj);
+													withControl = value != null?value:new Boolean(false);
+												    } else
+																									withControl = new Boolean(false);
+
+																								    if (sp != null)
+																									return new KeyboardEvent(sp, withShift.booleanValue(), withControl.booleanValue(), withAlt.booleanValue());
+
+																								    return new KeyboardEvent(ch.charAt(0), withShift.booleanValue(), withControl.booleanValue(), withAlt.booleanValue());
+																									
+
+
+
     }
 }
