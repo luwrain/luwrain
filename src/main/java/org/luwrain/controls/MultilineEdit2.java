@@ -27,7 +27,7 @@ import org.luwrain.util.*;
 //Completely skips EnvironmentEvent.CLEAR
 public class MultilineEdit2
 {
-    public class ModificationResult
+    static public class ModificationResult
     {
 	protected final boolean performed;
 	protected final String stringArg;

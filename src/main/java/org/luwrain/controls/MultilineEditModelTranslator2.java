@@ -19,12 +19,13 @@
 package org.luwrain.controls;
 
 import org.luwrain.core.*;
+import org.luwrain.controls.MultilineEdit2.ModificationResult;
 
 // Expects that hot point is not related to the content 
 // Hot point position may be adjusted to the content changes only on endEditTrans 
 
 //Keeps lines empty if it is possible providing a fake  first line to be consistent, as it is required by MultilineEdit.Model
-public class MultilineEditModelTranslator2 implements MultilineEditCorrector
+public class MultilineEditModelTranslator2 implements MultilineEditCorrector2
 {
     protected final MutableLines lines;
     protected final HotPointControl hotPoint;
@@ -79,7 +80,7 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 	return tabSeq;
     }
 
-    @Override public char deleteChar(int pos, int lineIndex)
+    @Override public ModificationResult deleteChar(int pos, int lineIndex)
     {
 	if (pos < 0 || lineIndex < 0)
 	    throw new IllegalArgumentException("pos (" + pos + ") and lineIndex (" + lineIndex + ") may not be negative");
@@ -95,26 +96,26 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() > pos)
 	    hotPoint.setHotPointX(hotPoint.getHotPointX() - 1);
 	endEditTrans(true);
-	return line.charAt(pos);
+	return new ModificationResult(true, line.charAt(pos));
     }
 
-    @Override public boolean deleteRegion(int fromX, int fromY,
+    @Override public ModificationResult deleteRegion(int fromX, int fromY,
 					  int toX, int toY)
     {
 	if (lines.getLineCount() < 1 || fromY > toY ||
 	    (fromY == toY && fromX > toX) ||
 	    toY >= lines.getLineCount())
-	    return false;
+	    return new ModificationResult(false);
 	if (fromY == toY)
 	{
 	    final String line = lines.getLine(fromY);
 	    NullCheck.notNull(line, "line");
 	    if (line.isEmpty())
-		return false;
+		return new ModificationResult(false);
 	    final int fromPos = Math.min(fromX, line.length());
 	    final int toPos = Math.min(toX, line.length());
 	    if (fromPos >= toPos)
-		return false;
+		return new ModificationResult(false);
 	    beginEditTrans();
 	    lines.setLine(fromY, line.substring(0, fromPos) + line.substring(toPos));
 	    if (hotPoint.getHotPointY() == fromY)
@@ -125,7 +126,7 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 			hotPoint.setHotPointX(hotPoint.getHotPointX() - (toPos - fromPos));
 	    }
 	    endEditTrans(true);
-	    return true;
+	    return new ModificationResult(true);
 	}
 	final String firstLine = lines.getLine(fromY);
 					 NullCheck.notNull(firstLine, "firstLine");
@@ -152,15 +153,15 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 		if (hotPoint.getHotPointY() > toY)
 		    hotPoint.setHotPointY(hotPoint.getHotPointY() - toY + fromY);
 	endEditTrans(true);
-	return true;
+	return new ModificationResult(true);
     }
 
-    @Override public boolean insertRegion(int x, int y, String[] text)
+    @Override public ModificationResult insertRegion(int x, int y, String[] text)
     {
 	NullCheck.notNullItems(text, "text");
 	checkPos(x, y);
 	if (text.length == 0)
-	    return true;
+	    return new ModificationResult(true);
 	final String firstLine = text[0];
 	final String lastLine = text[text.length - 1];
 	if (y == 0 && x == 0 && lines.getLineCount() == 0)
@@ -171,7 +172,7 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 	    hotPoint.setHotPointX(text[text.length - 1].length());
 	    hotPoint.setHotPointY(lines.getLineCount() - 1);
 	    endEditTrans(false);
-	    return true;
+	    return new ModificationResult(true);
 	} //no previous content
 	//Checking if there is no need to split the line
 	if (text.length == 1)
@@ -184,7 +185,7 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 	    if (needToMoveHotPoint)
 		hotPoint.setHotPointX(hotPoint.getHotPointX() + firstLine.length());
 	    endEditTrans(false);
-	    return true;
+	    return new ModificationResult(true);
 	}
 	//The new text has multiple lines
 	final String line = lines.getLine(y);
@@ -201,11 +202,11 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 		hotPoint.setHotPointX(hotPoint.getHotPointX() - x + lastLine.length());
 	    }
 	endEditTrans(false);
-	return true;
+	return new ModificationResult(true);
     }
 
     //??Adds empty line with pos=0 and line=0 if previously there were no lines at all
-    @Override public boolean insertChars(int pos, int lineIndex, String str)
+    @Override public ModificationResult putChars(int pos, int lineIndex, String str)
     {
 	NullCheck.notNull(str, "str");
 	checkPos(pos, lineIndex);
@@ -223,10 +224,10 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
 	    hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
 	endEditTrans(false);
-	return true;
+	return new ModificationResult(true);
     }
 
-    @Override public boolean mergeLines(int firstLineIndex)
+    @Override public ModificationResult mergeLines(int firstLineIndex)
     {
 	if (firstLineIndex < 0)
 	    throw new IllegalArgumentException("firstLineIndex (" + firstLineIndex + ") may not be negative");
@@ -247,10 +248,10 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 	    if (hotPoint.getHotPointY() > firstLineIndex + 1)
 		hotPoint.setHotPointY(hotPoint.getHotPointY() - 1);
 	endEditTrans(true);
-	return true;
+	return new ModificationResult(true);
     }
 
-    @Override public String splitLine(int pos, int lineIndex)
+    @Override public ModificationResult splitLine(int pos, int lineIndex)
     {
 	checkPos(pos, lineIndex);
 	beginEditTrans();
@@ -273,13 +274,14 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector
 	    if (hotPoint.getHotPointY() > lineIndex)
 		hotPoint.setHotPointY(hotPoint.getHotPointY() + 1);
 	endEditTrans(false);
-	return lines.getLine(lineIndex + 1);
+	return new ModificationResult(true, lines.getLine(lineIndex + 1));
     }
 
-    @Override public void doDirectAccessAction(DirectAccessAction action)
+    @Override public ModificationResult doEditAction(TextEditAction action)
     {
 	NullCheck.notNull(action, "action");
-	action.directAccessAction(lines, hotPoint);
+	action.doTextEdit(lines, hotPoint);
+	return new ModificationResult(true);
     }
 
     protected void checkPos(int pos, int lineIndex)
