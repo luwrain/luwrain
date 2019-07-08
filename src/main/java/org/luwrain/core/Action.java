@@ -20,29 +20,29 @@ package org.luwrain.core;
 
 import org.luwrain.core.events.KeyboardEvent;
 
-public class Action
+public final class Action
 {
-    private String name;
-    private String title;
-    private KeyboardEvent event = null;
+    private final String name;
+    private final String title;
+    private final KeyboardEvent event;
 
     public Action(String name, String title)
     {
+		NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(title, "title");
 	this.name = name;
 	this.title = title;
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(title, "title");
+	this.event = null;
     }
 
-    public Action(String name, String title,
-		  KeyboardEvent event)
+    public Action(String name, String title, KeyboardEvent event)
     {
+		NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(title, "title");
+	NullCheck.notEmpty(event, "event");
 	this.name = name;
 	this.title = title;
 	this.event = event;
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(title, "title");
-	NullCheck.notNull(event, "event");
     }
 
     public String name() {return name;}
