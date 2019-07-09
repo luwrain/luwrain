@@ -30,7 +30,7 @@ public class EditArea2 extends NavigationArea
 
     public interface MultilineEditFactory
     {
-	MultilineEdit newMultilineEdit(MultilineEdit.Model model, MutableLines lines, HotPointControl hotPoint);
+	MultilineEdit2 newMultilineEdit(MultilineEditCorrector2 corrector, MutableLines lines, HotPointControl hotPoint);
     }
 
     static public final class Params
@@ -43,9 +43,10 @@ public class EditArea2 extends NavigationArea
     }
 
     protected final MutableLines content;
+    protected final MultilineEditCorrector2 basicCorrector;
     protected String areaName = "";
     protected final ChangeListener changeListener;
-    protected final MultilineEdit edit;
+    protected final MultilineEdit2 edit;
 
     public EditArea2(Params params)
     {
@@ -55,21 +56,19 @@ public class EditArea2 extends NavigationArea
 	this.areaName = params.name;
 	this.content = params.content != null?params.content:new MutableLinesImpl();
 	this.changeListener = params.changeListener;
-	/*
-	final MultilineEdit.Model createBasicModel
-	MultilineEdit e = null;
+this.basicCorrector = createBasicCorrector();
+	MultilineEdit2 e = null;
 	if (params.multilineEditFactory != null)
-	{
-	}
-	edit = new MultilineEdit(context, createMultilineEditModel(params.correctorFactory), regionPoint);
-	*/
-	edit = null;
+	    e = params.multilineEditFactory.newMultilineEdit(basicCorrector, content, this);
+	if (e != null)
+	    this.edit = e; else
+	    this.edit = new MultilineEdit2(context, basicCorrector, regionPoint);
     }
 
-    protected MultilineEdit.Model createBasicModel()
+    protected MultilineEditCorrector2 createBasicCorrector()
     {
-	MultilineEditCorrector corrector = new MultilineEditModelTranslator(content, this);
-	return new MultilineEditModelChangeListener(corrector){
+	final MultilineEditCorrector2 corrector = new MultilineEditModelTranslator2(content, this);
+	return new EditUtils2.CorrectorChangeListener(corrector){
 	    @Override public void onMultilineEditChange()
 	    {
 		if (changeListener != null)
