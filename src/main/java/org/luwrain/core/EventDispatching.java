@@ -18,6 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.nio.file.*;
 
 import org.luwrain.core.events.*;
@@ -126,8 +127,8 @@ abstract class EventDispatching extends Areas
 	if (needForIntroduction && stopCondition.continueEventLoop() && listening == null)
 	{
 	    if (introduceApp)
-		introduceActiveApp(); else
-		introduceActiveArea();
+		announceActiveApp(); else
+		announceActiveArea();
 	}
 	needForIntroduction = false;
 	introduceApp = false;
@@ -281,7 +282,7 @@ abstract class EventDispatching extends Areas
 	return true;
     }
 
-    private void introduceActiveApp()
+    private void announceActiveApp()
     {
 	final Application app = apps.getActiveApp();
 	if (app == null)
@@ -298,14 +299,26 @@ abstract class EventDispatching extends Areas
 	    {
 		Log.error(LOG_COMPONENT, "the luwrain.desktop.announce hook has thrown the runtime exception:" + e.getClass().getName() + ":" + e.getMessage());
 	    }
-	final String name = app.getAppName();
+	final AtomicReference res = new AtomicReference();
+	unsafeAreaOperation(()->{
+		final String value = app.getAppName();
+		if (value != null)
+		    res.set(value);
+	    });
+	final String name;
+	if (res.get() != null)
+	{
+	    final String value = res.get().toString();
+	    if (value != null && !value.trim().isEmpty())
+		name = value; else
+		name = app.getClass().getName();
+	} else
+	    name = app.getClass().getName();
 	playSound(Sounds.INTRO_APP);
-	if (name != null && !name.trim().isEmpty())
-	    speech.speak(name, 0, 0); else
-	    speech.speak(app.getClass().getName(), 0, 0);
+	speech.speak(name, 0, 0);
     }
 
-    void introduceActiveArea()
+    void announceActiveArea()
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)
@@ -313,12 +326,31 @@ abstract class EventDispatching extends Areas
 	    noAppsMessage();
 	    return;
 	}
-	if (!isActiveAreaBlockedByPopup() && !isAreaBlockedBySecurity(activeArea) &&
-	    activeArea.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.INTRODUCE)))
+	if (isActiveAreaBlockedByPopup() || isAreaBlockedBySecurity(activeArea))
+	    return;
+	final AtomicReference res = new AtomicReference();
+	unsafeAreaOperation(()->{
+		res.set(new Boolean(activeArea.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.INTRODUCE))));
+	    });
+	if (res.get() != null && ((Boolean)res.get()).booleanValue())
 	    return;
 	speech.silence();
 	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
-	speech.speak(activeArea.getAreaName(), 0, 0);
+	unsafeAreaOperation(()->{
+		final String value = activeArea.getAreaName();
+		if (value != null)
+		    res.set(value);
+	    });
+	final String name;
+	if (res != null)
+	{
+	    final String value = res.get().toString();
+	    if (value != null && !value.trim().isEmpty())
+		name = value; else
+		name = activeArea.getClass().getName();
+	} else
+	    name = activeArea.getClass().getName();
+	speech.speak(name, 0, 0);
     }
 
     static class RunnableEvent extends Event

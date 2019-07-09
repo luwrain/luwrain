@@ -159,7 +159,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.introduceActiveArea();
+		    core.announceActiveArea();
 		}
 	    },
 

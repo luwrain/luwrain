@@ -305,7 +305,7 @@ public final class ScriptUtils
 	return new KeyboardEvent(ch.charAt(0), withShift.booleanValue(), withControl.booleanValue(), withAlt.booleanValue());
     }
 
-    static public Action (Object obj)
+    static public Action getAction(Object obj)
     {
 	if (!isValid(obj))
 	    return null;

@@ -402,7 +402,15 @@ public void playSound(Sounds sound)
     void unsafeAreaOperation(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
-	runnable.run();
+	try {
+	    runnable.run();
+	}
+	catch(Throwable e)
+	{
+	    if (e instanceof Exception)
+		getObjForEnvironment().crash((Exception)e); else
+		Log.error(LOG_COMPONENT, "unexpected exception in applications:" + e.getClass().getName() + ":" + e.getMessage());
+	}
     }
 
     static protected final class MainStopCondition implements StopCondition

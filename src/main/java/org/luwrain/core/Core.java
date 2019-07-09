@@ -555,7 +555,7 @@ Luwrain toRelease = o;//Must be cleaned to null when we sure the app is complete
 
     void announceActiveAreaIface()
     {
-	introduceActiveArea();
+	announceActiveArea();
     }
 
     void onNewAreaLayoutIface(Luwrain instance)
@@ -577,7 +577,7 @@ Luwrain toRelease = o;//Must be cleaned to null when we sure the app is complete
 	mainCoreThreadOnly();
 	screenContentManager.activateNextArea();
 	onNewAreasLayout();
-	introduceActiveArea();
+	announceActiveArea();
     }
 
     public void popup(Application app, Area area,
@@ -594,7 +594,7 @@ Luwrain toRelease = o;//Must be cleaned to null when we sure the app is complete
 	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies, isWeakPopup);
 	screenContentManager.setPopupActive();
 	onNewAreasLayout();
-	introduceActiveArea();
+	announceActiveArea();
 	eventLoop(popupStopCondition);
 	apps.closeLastPopup();
 onNewAreasLayout();
