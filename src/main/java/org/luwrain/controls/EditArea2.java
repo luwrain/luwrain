@@ -18,8 +18,11 @@
 
 package org.luwrain.controls;
 
+import java.util.concurrent.atomic.*; 
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.script.*;
 
 public class EditArea2 extends NavigationArea
 {
@@ -141,9 +144,36 @@ this.basicCorrector = createBasicCorrector();
     @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (runInputEventHook(event))
+	    return true;
 	if (edit.onInputEvent(event))
 	    return true;
 	return super.onInputEvent(event);
+    }
+
+    protected boolean runInputEventHook(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	final MultilineEdit2.Model model = edit.getMultilineEditModel();
+	if (model == null || !(model instanceof MultilineEditCorrector2))
+	    return false;
+	final MultilineEditCorrector2 corrector = (MultilineEditCorrector2)model;
+	final AtomicReference res = new AtomicReference();
+	corrector.doEditAction((lines, hotPoint)->{
+		try {
+		    res.set(new Boolean(context.runHooks("luwrain.edit.multiline.input", new Object[]{
+				    ScriptUtils.createInputEvent(event),
+				    createHookObject(EditArea2.this, lines, hotPoint)
+				}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY)));
+		}
+		catch(RuntimeException e)
+		{
+		    Log.error(LOG_COMPONENT, "the luwrain.edit.multiline.input hook failed:" + e.getClass().getName() + ":" + e.getMessage());
+		}
+	    });
+	if (res.get() == null)
+	    return false;
+	return ((Boolean)res.get()).booleanValue();
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)
@@ -165,5 +195,27 @@ this.basicCorrector = createBasicCorrector();
     protected String getTabSeq()
     {
 	return "\t";
+    }
+
+    static public Object createHookObject(EditArea2 area, MutableLines lines, HotPointControl hotPoint)
+    {
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(lines, "lines");
+	NullCheck.notNull(hotPoint, "hotPoint");
+	return new EmptyHookObject(){
+	    @Override public Object getMember(String name)
+	    {
+		NullCheck.notNull(name, "name");
+		switch(name)
+		{
+		case "lines":
+		    return new MutableLinesHookObject(lines);
+		case "hotPoint":
+		    return new HotPointControlHookObject(hotPoint);
+		default:
+		    return super.getMember(name);
+		}
+	    }
+	};
     }
 }

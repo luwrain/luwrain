@@ -171,6 +171,16 @@ public class MultilineEdit2
 	this.regionTextQueryTranslator = new RegionTextQueryTranslator(new LinesRegionTextQueryProvider(model), regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));
     }
 
+    public Model getMultilineEditModel()
+    {
+	return model;
+    }
+
+    public Appearance getMultilineEditAppearance()
+    {
+	return appearance;
+    }
+
     public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");

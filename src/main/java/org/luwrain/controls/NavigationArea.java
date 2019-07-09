@@ -38,7 +38,8 @@ import org.luwrain .util.*;
  */
 public abstract class NavigationArea implements Area, HotPointControl, ClipboardTranslator.Provider, RegionTextQueryTranslator.Provider
 {
-    static private final String LOG_COMPONENT = "core";
+    static final String LOG_COMPONENT = "core";
+    
 
     protected final ControlContext context;
     protected final RegionPoint regionPoint = new RegionPoint();

@@ -47,4 +47,5 @@ int getAreaVisibleHeight(Area area);
     void executeBkg(java.util.concurrent.FutureTask task);
     void onAreaNewBackgroundSound(Area area);
     String getSpokenText(String text, Luwrain.SpokenTextType type);
+        boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy);
 }

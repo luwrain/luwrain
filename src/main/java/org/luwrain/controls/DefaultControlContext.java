@@ -177,6 +177,14 @@ public class DefaultControlContext implements ControlContext
 	return luwrain.getSpokenText(text, type);
     }
 
+            @Override public boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy)
+    {
+	NullCheck.notEmpty(hookName, "hookName");
+	NullCheck.notNullItems(args, "args");
+	NullCheck.notNull(strategy, "strategy");
+	return luwrain.xRunHooks(hookName, args, strategy);
+    }
+
 
     
 }
