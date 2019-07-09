@@ -143,10 +143,7 @@ class Commands
 		@Override public void onCommand(Luwrain luwrainArg)
 		{
 		    final File res = conversations.openPopup();
-		    if (res == null)
-			return;
-		    final Area area = core.getValidActiveArea(false);
-		    if (area == null || !area.onSystemEvent(new OpenEvent(res.getAbsolutePath())))
+		    if (res != null)
 			core.openFiles(new String[]{res.getAbsolutePath()});
 		}
 	    },

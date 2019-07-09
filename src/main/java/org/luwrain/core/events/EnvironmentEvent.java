@@ -80,7 +80,6 @@ public class EnvironmentEvent extends Event
 	LISTENING_FINISHED,
 	MOVE_HOT_POINT,
 	OK,
-	OPEN,
 	PROPERTIES,
 	REFRESH,
 	REGION_POINT,
