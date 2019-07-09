@@ -18,6 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.io.*;
 import java.nio.file.*;
 
@@ -426,13 +427,21 @@ final class Core extends EventDispatching
 		if (a instanceof MonoApp && a.getClass().equals(app.getClass()))
 		{
 		    final MonoApp ma = (MonoApp)a;
-		    final MonoApp.Result res = ma.onMonoAppSecondInstance(app);
+		    final AtomicReference ref = new AtomicReference();
+		    unsafeAreaOperation(()->{
+			    final MonoApp.Result value = ma.onMonoAppSecondInstance(app);
+			    if (value != null)
+				ref.set(value);
+			});
+		    if (ref.get() == null)
+			continue;
+		    final MonoApp.Result res = (MonoApp.Result)ref.get();
 		    Log.debug(LOG_COMPONENT, "already launched instance found, result is " + res);
-		    NullCheck.notNull(res, "res");
-		    if (res == MonoApp.Result.SECOND_INSTANCE_PERMITTED)
-			break;
-		    if (res == MonoApp.Result.BRING_FOREGROUND)
+		    switch(res)
 		    {
+		    case SECOND_INSTANCE_PERMITTED:
+			break;
+		    case BRING_FOREGROUND:
 			apps.setActiveApp(a);
 			onNewAreasLayout();
 			needForIntroduction = true;
@@ -441,8 +450,8 @@ final class Core extends EventDispatching
 		    }
 		}
 	}
-final Luwrain o = interfaces.requestNew(app);
-Luwrain toRelease = o;//Must be cleaned to null when we sure the app is completely acceptable
+	final Luwrain o = interfaces.requestNew(app);
+	Luwrain toRelease = o;//Must be cleaned to null when we sure the app is completely acceptable
 	final InitResult initResult;
 	try {
 	    try {
