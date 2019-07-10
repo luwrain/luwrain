@@ -26,27 +26,39 @@ import org.luwrain.script.*;
 
 public class EditArea2 extends NavigationArea
 {
+public interface Appearance extends MultilineEdit2.Appearance
+{
+}
+
     public interface ChangeListener
     {
 	void onEditChange();
     }
 
-    public interface MultilineEditFactory
+    public interface EditFactory
     {
 	MultilineEdit2 newMultilineEdit(MultilineEditCorrector2 corrector, MutableLines lines, HotPointControl hotPoint);
     }
 
     static public final class Params
     {
+	public Params(ControlContext context)
+	{
+	    NullCheck.notNull(context, "context");
+	    this.context = context;
+	    this.appearance = new EditUtils2.DefaultEditAreaAppearance(context);
+	}
 	public ControlContext context = null;
+	public Appearance appearance = null;
 	public String name = "";
 	public MutableLines content = null;
 	public ChangeListener changeListener = null;
-	public MultilineEditFactory multilineEditFactory = null;
+	public EditFactory editFactory = null;
     }
 
     protected final MutableLines content;
     protected final MultilineEditCorrector2 basicCorrector;
+    protected final Appearance appearance;
     protected String areaName = "";
     protected final ChangeListener changeListener;
     protected final MultilineEdit2 edit;
@@ -55,17 +67,19 @@ public class EditArea2 extends NavigationArea
     {
 	super(params.context);
 	NullCheck.notNull(params, "params");
+	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.name, "params.name");
 	this.areaName = params.name;
 	this.content = params.content != null?params.content:new MutableLinesImpl();
+	this.appearance = params.appearance;
 	this.changeListener = params.changeListener;
 this.basicCorrector = createBasicCorrector();
 	MultilineEdit2 e = null;
-	if (params.multilineEditFactory != null)
-	    e = params.multilineEditFactory.newMultilineEdit(basicCorrector, content, this);
+	if (params.editFactory != null)
+	    e = params.editFactory.newMultilineEdit(basicCorrector, content, this);
 	if (e != null)
 	    this.edit = e; else
-	    this.edit = new MultilineEdit2(context, basicCorrector, regionPoint);
+	    this.edit = createEdit();
     }
 
     protected MultilineEditCorrector2 createBasicCorrector()
@@ -77,6 +91,16 @@ this.basicCorrector = createBasicCorrector();
 		if (changeListener != null)
 		    changeListener.onEditChange();
 	    }};
+    }
+
+    protected MultilineEdit2 createEdit()
+    {
+	final MultilineEdit2.Params params = new MultilineEdit2.Params();
+	params.context = context;
+	params.model = basicCorrector;
+	params.appearance = appearance;
+	params.regionPoint = regionPoint;
+	return new MultilineEdit2(params);
     }
 
     @Override public int getLineCount()

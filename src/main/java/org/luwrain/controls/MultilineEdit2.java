@@ -136,6 +136,14 @@ public class MultilineEdit2
 	boolean onTab(ModificationResult result);
     }
 
+    static public final class Params
+    {
+	public ControlContext context = null;
+	public Model model = null;
+	public Appearance appearance = null;
+	public AbstractRegionPoint regionPoint = null;
+    }
+
     protected final ControlContext context;
     protected final Model model;
     protected final Appearance appearance;
@@ -143,16 +151,17 @@ public class MultilineEdit2
     protected final ClipboardTranslator clipboardTranslator;
     protected final RegionTextQueryTranslator regionTextQueryTranslator;
 
-    public MultilineEdit2(ControlContext environment, Model model, AbstractRegionPoint regionPoint)
+    public MultilineEdit2(Params params)
     {
-	NullCheck.notNull(environment, "environment");
-	NullCheck.notNull(model, "model");
-	NullCheck.notNull(regionPoint, "regionPoint");
-	this.context = environment;
-	this.regionPoint = regionPoint;
-	this.model = model;
-	this.appearance = null;
-	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(model, ()->environment.getClipboard()){
+	NullCheck.notNull(params, "params");
+	NullCheck.notNull(params.model, "params.model");
+			  NullCheck.notNull(params.appearance, "params.appearance");
+	NullCheck.notNull(params.regionPoint, "params.regionPoint");
+	this.context = params.context;
+	this.regionPoint = params.regionPoint;
+	this.model = params.model;
+	this.appearance = params.appearance;
+	this.clipboardTranslator = new ClipboardTranslator(new LinesClipboardProvider(model, ()->context.getClipboard()){
 		@Override public boolean onClipboardCopy(int fromX, int fromY, int toX, int toY, boolean withDeleting)
 		{
 		    if (!super.onClipboardCopy(fromX, fromY, toX, toY, false))

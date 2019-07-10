@@ -24,19 +24,16 @@ public final class EditUtils2
     static public class DefaultMultilineEditAppearance implements MultilineEdit2.Appearance
     {
 	protected final ControlContext context;
-
 	public DefaultMultilineEditAppearance(ControlContext context)
 	{
 	    NullCheck.notNull(context, "context");
 	    this.context = context;
 	}
-
 	@Override public boolean onBackspaceTextBegin()
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_TEXT));
 	    return true;
 	}
-
 	@Override public boolean onBackspaceMergeLines(ModificationResult res)
 	{
 	    NullCheck.notNull(res, "res");
@@ -45,7 +42,6 @@ public final class EditUtils2
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	    return true;
 	}
-
 	@Override public boolean onBackspaceDeleteChar(ModificationResult res)
 	{
 	    NullCheck.notNull(res, "res");
@@ -54,7 +50,6 @@ public final class EditUtils2
 	    context.setEventResponse(DefaultEventResponse.letter(res.getCharArg()));
 	    return true;
 	}
-
 	@Override public boolean onDeleteChar(ModificationResult res)
 	{
 	    NullCheck.notNull(res, "res");
@@ -63,13 +58,11 @@ public final class EditUtils2
 	    context.setEventResponse(DefaultEventResponse.letter(res.getCharArg()));
 	    return true;
 	}
-
 	@Override public boolean onDeleteCharTextEnd()
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_TEXT));
 	    return true;
 	}
-
 	@Override public boolean onDeleteCharMergeLines(ModificationResult res)
 	{
 	    NullCheck.notNull(res, "res");
@@ -78,7 +71,6 @@ public final class EditUtils2
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); 
 	    return true;
 	}
-
 	@Override public boolean onTab(ModificationResult res)
 	{
 	    NullCheck.notNull(res, "res");
@@ -87,7 +79,6 @@ public final class EditUtils2
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.TAB));
 	    return true;
 	}
-
 	@Override public boolean onSplitLines(ModificationResult res)
 	{
 	    /*
@@ -99,8 +90,6 @@ public final class EditUtils2
     */
 	    return true;
 	}
-
-
 	@Override public boolean onChar(ModificationResult res)
 	{
 	    /*
@@ -120,6 +109,14 @@ public final class EditUtils2
 	    return true;
 	    */
 	    return true;
+	}
+    }
+
+    static public class DefaultEditAreaAppearance extends DefaultMultilineEditAppearance implements EditArea2.Appearance
+    {
+	public DefaultEditAreaAppearance(ControlContext context)
+	{
+	    super(context);
 	}
     }
 
