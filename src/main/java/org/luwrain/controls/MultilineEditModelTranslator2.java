@@ -224,7 +224,9 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector2
 	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
 	    hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
 	endEditTrans(false);
-	return new ModificationResult(true);
+	if (str.length() == 1)
+	    return new ModificationResult(true,str.charAt(0));
+	return new ModificationResult(true, str);
     }
 
     @Override public ModificationResult mergeLines(int firstLineIndex)

@@ -728,6 +728,11 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(args, "args");
 	NullCheck.notNull(strategy, "strategy");
+	switch(strategy)
+	{
+	case CHAIN_OF_RESPONSIBILITY:
+	    return new org.luwrain.script.hooks.ChainOfResponsibilityHook(this).run(hookName, args);
+	}
 	final AtomicBoolean execRes = new AtomicBoolean(false);
 	final AtomicReference<RuntimeException> error = new AtomicReference();
 	xRunHooks(hookName, (hook)->{

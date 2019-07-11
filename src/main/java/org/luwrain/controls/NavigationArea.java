@@ -380,7 +380,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     {
 	if (line == null || line.isEmpty())
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    context.say(line);
+	    context.setEventResponse(DefaultEventResponse.text(line));
     }
 
     public void reset(boolean announce)

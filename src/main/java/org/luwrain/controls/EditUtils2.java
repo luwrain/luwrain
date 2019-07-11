@@ -92,6 +92,11 @@ public final class EditUtils2
 	}
 	@Override public boolean onChar(ModificationResult res)
 	{
+
+	    	    NullCheck.notNull(res, "res");
+	    if (!res.isPerformed())
+		return false;
+	    context.setEventResponse(DefaultEventResponse.letter(res.getCharArg()));
 	    /*
 	if (!done)
 	    return false;
@@ -118,6 +123,12 @@ public final class EditUtils2
 	{
 	    super(context);
 	}
+	    @Override public void announceLine(int index, String line)
+    {
+	if (line == null || line.isEmpty())
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
+	    context.setEventResponse(DefaultEventResponse.text(line));
+    }
     }
 
     /**

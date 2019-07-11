@@ -28,6 +28,7 @@ public class EditArea2 extends NavigationArea
 {
 public interface Appearance extends MultilineEdit2.Appearance
 {
+    void announceLine(int index, String line);
 }
 
     public interface ChangeListener
@@ -42,12 +43,17 @@ public interface Appearance extends MultilineEdit2.Appearance
 
     static public final class Params
     {
+	public Params()
+	{
+	}
+
 	public Params(ControlContext context)
 	{
 	    NullCheck.notNull(context, "context");
 	    this.context = context;
 	    this.appearance = new EditUtils2.DefaultEditAreaAppearance(context);
 	}
+
 	public ControlContext context = null;
 	public Appearance appearance = null;
 	public String name = "";
@@ -214,6 +220,12 @@ this.basicCorrector = createBasicCorrector();
 	if (edit.onAreaQuery(query))
 	    return true;
 	return super.onAreaQuery(query);
+    }
+
+        @Override public void announceLine(int index, String line)
+    {
+	NullCheck.notNull(line, "line");
+	appearance.announceLine(index, line);
     }
 
     protected String getTabSeq()
