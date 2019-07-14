@@ -40,6 +40,7 @@ public final class LuwrainObj extends AbstractJSObject
     private final PopupsObj popupsObj;
     private final MessageObj messageObj;
     private final SoundsObj sounds;
+    private final SpokenTextObj spokenText;
 
     public LuwrainObj(Luwrain luwrain, File dataDir)
     {
@@ -51,6 +52,7 @@ public final class LuwrainObj extends AbstractJSObject
 	this.popupsObj = new PopupsObj(luwrain);
 	this.messageObj = new MessageObj(luwrain);
 	this.sounds = new SoundsObj(luwrain);
+	this.spokenText = new SpokenTextObj(luwrain);
     }
 
     @Override public Object getMember(String name)
@@ -74,6 +76,8 @@ public final class LuwrainObj extends AbstractJSObject
 	    return luwrain.xGetOsInterface();
 	case "sounds":
 	    return sounds;
+	case "spokenText":
+	    return spokenText;
 	case "message":
 	    return messageObj;
 	case "speak":

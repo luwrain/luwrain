@@ -109,6 +109,11 @@ this.basicCorrector = createBasicCorrector();
 	return new MultilineEdit2(params);
     }
 
+    public MultilineEdit2 getEdit()
+    {
+	return edit;
+    }
+
     @Override public int getLineCount()
     {
 	final int value = content.getLineCount();
