@@ -78,6 +78,7 @@ public class PopupClosingTranslator
 
     public boolean onInputEvent(KeyboardEvent event)
     {
+	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.ESCAPE)
 	{
 	    doCancel();
@@ -88,16 +89,20 @@ public class PopupClosingTranslator
 
     public boolean onSystemEvent(EnvironmentEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.Code.CANCEL || event.getCode() == EnvironmentEvent.Code.CLOSE)
+	NullCheck.notNull(event, "event");
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return false;
+	switch(event.getCode())
 	{
+	case CANCEL:
+	case CLOSE:
 	    doCancel();
 	    return true;
-	}
-	if (event.getCode() == EnvironmentEvent.Code.OK)
-	{
+	case OK:
 	    doOk();
 	    return true;
-	}
+	default:
 	return false;
+	}
     }
 }

@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.popups;
 
@@ -9,14 +24,16 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.script.*;
 
-public class DisksVolumePopup extends ListPopupBase
+public class DisksPopup extends ListPopupBase
 {
-    static private final String LIST_HOOK = "luwrain.popups.disks.list";
-        static private final String CLICK_HOOK = "luwrain.popups.disks.click";
+    static private final String LOG_COMPONENT = Popups.LOG_COMPONENT;
+    
+    static public final String LIST_HOOK = "luwrain.popups.disks.list";
+    static public final String CLICK_HOOK = "luwrain.popups.disks.click";
 
-protected File result = null;
+    protected File result = null;
 
-    public DisksVolumePopup(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
+    public DisksPopup(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
     {
 	super(luwrain, constructParams(luwrain, name), popupFlags);
     }
@@ -33,10 +50,13 @@ protected File result = null;
 	    switch(event.getSpecial())
 	    {
 	    case ENTER:
-		return closing.doOk();
+		if (selected() == null)
+		    return false;
+		closing.doOk();
+		return true;
 		/*
-	    case INSERT:
-	    case DELETE:
+		  case INSERT:
+		  case DELETE:
 		*/
 	    }
 	return super.onInputEvent(event);
@@ -60,6 +80,25 @@ protected File result = null;
 
     @Override public boolean onOk()
     {
+	final Object sel = selected();
+	if (sel == null)
+	    return false;
+	final Object obj;
+	try {
+	    obj = new org.luwrain.script.hooks.ProviderHook(luwrain).run(CLICK_HOOK, new Object[]{sel});
+	}
+	catch(RuntimeException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to run the " + CLICK_HOOK + " hook:" + e.getClass().getName() + ":" + e.getMessage());
+	    luwrain.message(luwrain.i18n().getExceptionDescr(e), Luwrain.MessageType.ERROR);
+	    return false;
+	}
+	if (obj == null || !(obj instanceof String))
+	    return false;
+	final String str = (String)obj;
+	if (str.isEmpty())
+	    return false;
+	this.result = new File(str);
 	return true;
     }
 
@@ -71,6 +110,7 @@ protected File result = null;
 	}
 	catch(RuntimeException e)
 	{
+	    Log.error(LOG_COMPONENT, "unable to run " + LIST_HOOK + " hook:" + e.getClass().getName() + ":" + e.getMessage());
 	    luwrain.message(luwrain.i18n().getExceptionDescr(e), Luwrain.MessageType.ERROR);
 	    return new Object[0];
 	}
@@ -94,7 +134,7 @@ protected File result = null;
 	}
 	return res.toArray(new Item[res.size()]);
     }
-    
+
     static private ListArea.Params constructParams(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -113,8 +153,8 @@ protected File result = null;
 
     static public final class Item
     {
-private final String name;
-private final Object obj;
+	private final String name;
+	private final Object obj;
 	public Item(String name, Object obj)
 	{
 	    NullCheck.notEmpty(name, "name");
@@ -130,10 +170,8 @@ private final Object obj;
 	{
 	    return name;
 	}
-	    public Object getObj()
+	public Object getObj()
 	{
 	    return obj;
 	}
-    }
-
-}
+    }}

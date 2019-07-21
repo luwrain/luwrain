@@ -26,6 +26,7 @@ import org.luwrain.controls.*;
 
 public final class Popups
 {
+    static final String LOG_COMPONENT = "popups";
     static public final Set<Popup.Flags> DEFAULT_POPUP_FLAGS = EnumSet.noneOf(Popup.Flags.class);
 
     static public String simple(Luwrain luwrain,
@@ -285,15 +286,7 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(popupFlags, "popupFlags");
-	final String className = luwrain.getProperty("luwrain.class.disksvolumespopupfactory");
-	if (className.isEmpty())
-	    return null;
-	final DisksVolumesPopupFactory factory = (DisksVolumesPopupFactory)org.luwrain.util.ClassUtils.newInstanceOf(Thread.currentThread().getContextClassLoader(), className, DisksVolumesPopupFactory.class);
-	if (factory == null)
-	    return null;
-	final DisksVolumesPopup popup = factory.newDisksVolumesPopup(luwrain, name, popupFlags);
-	if (popup == null)
-	    return null;
+	final DisksPopup popup = new DisksPopup(luwrain, name, popupFlags);
 	luwrain.popup(popup);
 	if (popup.wasCancelled())
 	    return null;
