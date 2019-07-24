@@ -29,6 +29,11 @@ import org.luwrain.speech.Channel;
 
 final class LuwrainImpl implements Luwrain
 {
+    static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
+
+    static private String OPEN_URL_CUSTOM_HOOK = "luwrain.url.open.custom";
+        static private String OPEN_URL_DEFAULT_HOOK = "luwrain.url.open.default";
+    
     private final Core core;
 
     LuwrainImpl(Core core)
@@ -498,6 +503,21 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(uniRefInfo, "uniRefInfo");
 	core.mainCoreThreadOnly();
 	return core.uniRefProcs.open(uniRefInfo.getValue());
+    }
+
+    @Override public boolean openUrl(String url)
+    {
+	NullCheck.notEmpty(url, "url");
+	try {
+	    if (xRunHooks(OPEN_URL_CUSTOM_HOOK, new Object[]{url}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY))
+		return true;
+	    return xRunHooks(OPEN_URL_DEFAULT_HOOK, new Object[]{url}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
+	}
+	catch(RuntimeException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to open the url \'" + url + "\':" + e.getClass().getName() + ":" + e.getMessage());
+	    return false;
+	}
     }
 
     @Override public org.luwrain.browser.Browser createBrowser()

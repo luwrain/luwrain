@@ -206,6 +206,8 @@ public interface Luwrain extends PropertiesBase
     boolean openUniRef(String uniRef);
     boolean openUniRef(UniRefInfo uniRefInfo);
 
+    boolean openUrl(String url);
+
     /**
        /**
        * Plays one of the system sounds.  This method takes an identifier of

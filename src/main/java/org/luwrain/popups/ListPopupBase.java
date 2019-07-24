@@ -31,8 +31,7 @@ public class ListPopupBase extends ListArea implements Popup, PopupClosingTransl
     protected final Luwrain luwrain;
     protected final Set<Popup.Flags> popupFlags;
 
-    public ListPopupBase(Luwrain luwrain, ListArea.Params params, 
-			 Set<Popup.Flags> popupFlags)
+    public ListPopupBase(Luwrain luwrain, ListArea.Params params, Set<Popup.Flags> popupFlags)
     {
 	super(params);
 	NullCheck.notNull(luwrain, "luwrain");
@@ -57,9 +56,7 @@ public class ListPopupBase extends ListArea implements Popup, PopupClosingTransl
 	switch(event.getCode())
 	{
 	case INTRODUCE:
-	    luwrain.silence();
-	    luwrain.playSound(Sounds.INTRO_POPUP);
-	    luwrain.speak(getAreaName());
+	    luwrain.speak(getAreaName(), Sounds.INTRO_POPUP);
 	    return true;
 	default:
 	return super.onSystemEvent(event);
