@@ -43,6 +43,8 @@ final class PopupsObj extends AbstractJSObject
 	    return (BiPredicate)this::confirmDefaultYes;
 	case "confirmDefaultNo":
 	    return (BiPredicate)this::confirmDefaultNo;
+	case "simple":
+	    return simple();
 	default:
 	    return super.getMember(name);
 	}
@@ -64,5 +66,26 @@ final class PopupsObj extends AbstractJSObject
 	if (nameStr == null || textStr == null)
 	    return false;
 	return Popups.confirmDefaultNo(luwrain, nameStr, textStr);
+    }
+
+    private org.luwrain.script.HookObject simple()
+    {
+	return new org.luwrain.script.EmptyHookObject(){
+	    @Override public Object call(Object th, Object[] args)
+	    {
+		if (args == null || args.length != 3)
+		    return null;
+		final String name = org.luwrain.script.ScriptUtils.getStringValue(args[0]);
+				final String text = org.luwrain.script.ScriptUtils.getStringValue(args[1]);
+						final String defaultValue = org.luwrain.script.ScriptUtils.getStringValue(args[2]);
+						if (name == null || text == null || defaultValue == null)
+						    return null;
+						return org.luwrain.popups.Popups.simple(luwrain, name, text, defaultValue);
+	    }
+	    @Override public boolean isFunction()
+	    {
+		return true;
+	    }
+	};
     }
 }
