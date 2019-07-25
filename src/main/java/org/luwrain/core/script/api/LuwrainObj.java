@@ -84,6 +84,8 @@ public final class LuwrainObj extends AbstractJSObject
 	    return (Consumer)this::speak;
 	case "addHook":
 	    return (BiPredicate)this::addHook;
+	case "openUrl":
+	    return (Predicate)this::openUrl;
 	    	case "createPropertyHook":
 	    return (BiPredicate)this::createPropertyHook;
 	    	case "addWorker":
@@ -260,6 +262,16 @@ return true;
     private Object quit()
     {
 	return new Boolean(luwrain.xQuit());
+    }
+
+    private boolean openUrl(Object obj)
+    {
+	if (obj == null)
+	    return false;
+	final String  url = org.luwrain.script.ScriptUtils.getStringValue(obj);
+	if (url == null || url.isEmpty())
+	    return false;
+	return luwrain.openUrl(url);
     }
 
     private boolean runWorker(Object nameObj)
