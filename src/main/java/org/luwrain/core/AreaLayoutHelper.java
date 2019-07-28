@@ -22,10 +22,10 @@ public class AreaLayoutHelper
 {
     public enum Position {LEFT, RIGHT, TOP, BOTTOM};
 
-public interface UpdateNotification
-{
-    void onLayoutUpdate();
-}
+    public interface UpdateNotification
+    {
+	void onLayoutUpdate();
+    }
 
     protected final UpdateNotification notification;
     protected Area basicArea = null;
@@ -60,7 +60,7 @@ public interface UpdateNotification
     public void setBasicArea(Area area)
     {
 	NullCheck.notNull(area, "area");
-	this.basicArea = basicArea;
+	this.basicArea = area;
 	this.basicLayout = null;
 	notification.onLayoutUpdate();
     }
@@ -146,8 +146,9 @@ public interface UpdateNotification
 	    return basicLayout;
 	if (basicArea == null)
 	    return null;
-	if (additionalArea != null && additionalAreaPos != null)
-	    switch(additionalAreaPos)
+	if (additionalArea == null || additionalAreaPos == null)
+	    	    	return new AreaLayout(basicArea);
+			    switch(additionalAreaPos)
 	    {
 	    case RIGHT:
 		return new AreaLayout(AreaLayout.LEFT_RIGHT, basicArea, additionalArea);
@@ -160,6 +161,5 @@ public interface UpdateNotification
 	    default:
 		return null;
 	    }
-	return new AreaLayout(basicArea);
     }
 }

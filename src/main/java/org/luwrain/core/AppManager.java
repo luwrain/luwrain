@@ -62,7 +62,7 @@ final class AppManager
     boolean isAppActive(Application app)
     {
 	NullCheck.notNull(app, "app");
-	if (app == defaultApp && activeAppIndex < 0)
+	if (app == defaultApp.app && activeAppIndex < 0)
 	    return true;
 	if (activeAppIndex < 0)
 	    return false;

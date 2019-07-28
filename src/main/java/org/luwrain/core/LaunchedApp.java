@@ -16,8 +16,10 @@
 
 package org.luwrain.core;
 
-class LaunchedApp extends LaunchedAppBase
+final class LaunchedApp extends LaunchedAppBase
 {
+    static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
+
 final Application app;
     int layoutType;
     Area[] areas;
@@ -38,7 +40,7 @@ final Application app;
 	areas = layout.getAreas();
 	if (areas == null)
 	{
-	    Log.info("core", "application " + app.getClass().getName() + " has area layout without areas");
+	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has area layout without areas");
 	    return false;
 	}
 	areaWrappings = new OpenedArea[areas.length];
@@ -46,7 +48,7 @@ final Application app;
 	{
 	    if (areas[i] == null)
 	    {
-		Log.info("core", "application " + app.getClass().getName() + " has a null area");
+		Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has a null area");
 		return false;
 	    }
 	    areaWrappings[i] = new OpenedArea(areas[i]);
@@ -62,7 +64,7 @@ final Application app;
 	final Area[] newAreas = newLayout.getAreas();
 	if (newAreas == null)
 	{
-	    Log.info("core", "application " + app.getClass().getName() + " has area layout without areas");
+	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has area layout without areas");
 	    return false;
 	}
 	final OpenedArea[] newAreaWrappings = new OpenedArea[newAreas.length];
@@ -70,7 +72,7 @@ final Application app;
 	{
 	    if (newAreas[i] == null)
 	    {
-		Log.info("core", "application " + app.getClass().getName() + " has a null area");
+		Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has a null area");
 		return false;
 	    }
 	    newAreaWrappings[i] = new OpenedArea(newAreas[i]);
@@ -95,18 +97,18 @@ final Application app;
 	}
 	catch (Throwable e)
 	{
-	    Log.info("core", "application " + app.getClass().getName() + " has thrown an exception on getAreaLayout():" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has thrown an exception on getAreaLayout():" + e.getMessage());
 	    e.printStackTrace();
 	    return null;
 	}
 	if (layout == null)
 	{
-	    Log.info("core", "application " + app.getClass().getName() + " has returned an empty area layout");
+	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has returned an empty area layout");
 	    return null;
 	}
 	if (!layout.isValid())
 	{
-	    Log.info("core", "application " + app.getClass().getName() + " has returned an invalid area layout");
+	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has returned an invalid area layout");
 	    return null;
 	}
 	return layout;
