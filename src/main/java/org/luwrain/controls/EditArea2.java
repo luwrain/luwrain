@@ -38,7 +38,7 @@ public interface Appearance extends MultilineEdit2.Appearance
 
     public interface EditFactory
     {
-	MultilineEdit2 newMultilineEdit(MultilineEditCorrector2 corrector, MutableLines lines, HotPointControl hotPoint);
+	MultilineEdit2 newMultilineEdit(MultilineEdit2.Params params, MultilineEditCorrector2 corrector);
     }
 
     static public final class Params
@@ -80,12 +80,7 @@ public interface Appearance extends MultilineEdit2.Appearance
 	this.appearance = params.appearance;
 	this.changeListener = params.changeListener;
 this.basicCorrector = createBasicCorrector();
-	MultilineEdit2 e = null;
-	if (params.editFactory != null)
-	    e = params.editFactory.newMultilineEdit(basicCorrector, content, this);
-	if (e != null)
-	    this.edit = e; else
-	    this.edit = createEdit();
+	    this.edit = createEdit(params);
     }
 
     protected MultilineEditCorrector2 createBasicCorrector()
@@ -99,13 +94,20 @@ this.basicCorrector = createBasicCorrector();
 	    }};
     }
 
-    protected MultilineEdit2 createEdit()
+    protected MultilineEdit2 createEdit(Params areaParams)
     {
+	NullCheck.notNull(areaParams, "areaParams");
 	final MultilineEdit2.Params params = new MultilineEdit2.Params();
 	params.context = context;
 	params.model = basicCorrector;
 	params.appearance = appearance;
 	params.regionPoint = regionPoint;
+	if (areaParams.editFactory != null)
+	{
+	final MultilineEdit2 edit = areaParams.editFactory.newMultilineEdit(params, basicCorrector);
+	if (edit != null)
+	    return edit;
+    }
 	return new MultilineEdit2(params);
     }
 
