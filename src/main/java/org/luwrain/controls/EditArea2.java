@@ -100,7 +100,7 @@ this.basicCorrector = createBasicCorrector();
 	final MultilineEdit2.Params params = new MultilineEdit2.Params();
 	params.context = context;
 	params.model = basicCorrector;
-	params.appearance = appearance;
+	params.appearance = areaParams.appearance;
 	params.regionPoint = regionPoint;
 	if (areaParams.editFactory != null)
 	{

@@ -44,7 +44,7 @@ public class CollectorHook
 		    if (obj == null)
 			return Luwrain.HookResult.CONTINUE;
 		    res.add(obj);
-		    return Luwrain.HookResult.BREAK;
+		    return Luwrain.HookResult.CONTINUE;
 		}
 		catch(RuntimeException e)
 		{
