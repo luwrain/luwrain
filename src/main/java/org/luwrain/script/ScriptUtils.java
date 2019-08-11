@@ -69,6 +69,16 @@ public final class ScriptUtils
 	    return (Integer)obj;
     }
 
+             static public Number getNumberValue(Object obj)
+    {
+	if (!isValid(obj))
+	    return null;
+	if (!(obj instanceof Number))
+	    return null;
+	    return (Number)obj;
+    }
+
+
              static public Boolean getBooleanValue(Object obj)
     {
 	if (!isValid(obj))

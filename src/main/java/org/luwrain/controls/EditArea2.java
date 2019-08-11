@@ -85,7 +85,7 @@ this.basicCorrector = createBasicCorrector();
 
     protected MultilineEditCorrector2 createBasicCorrector()
     {
-	final MultilineEditCorrector2 corrector = new MultilineEditModelTranslator2(content, this);
+	final MultilineEditCorrector2 corrector = new MultilineEditCorrectorTranslator(content, this);
 	return new EditUtils2.CorrectorChangeListener(corrector){
 	    @Override public void onMultilineEditChange()
 	    {

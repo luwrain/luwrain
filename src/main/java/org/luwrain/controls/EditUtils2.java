@@ -226,121 +226,102 @@ public final class EditUtils2
 	    return res;
 	}
     }
-
-final class ActiveCorrector implements MultilineEditCorrector2
-{
-protected MultilineEditCorrector2 activatedCorrector = null;
-protected MultilineEditCorrector2 wrappedCorrector = null;
-
-    void setActivatedCorrector(MultilineEditCorrector2 corrector)
-    {
-	NullCheck.notNull(corrector, "corrector");
-	this.activatedCorrector = corrector;
-    }
-
-    void deactivateCorrector()
-    {
-	this.activatedCorrector = null;
-    }
-
-    void setWrappedCorrector(MultilineEditCorrector2 corrector)
-    {
-	NullCheck.notNull(corrector, "corrector");
-	this.wrappedCorrector = corrector;
-    }
-
-    MultilineEditCorrector2 getWrappedCorrector()
-    {
-	return wrappedCorrector;
-    }
-
-    @Override public int getLineCount()
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.getLineCount();
-	return wrappedCorrector.getLineCount();
-    }
-
-    @Override public String getLine(int index)
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.getLine(index);
-	return wrappedCorrector.getLine(index);
-    }
-
-    @Override public int getHotPointX()
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.getHotPointX();
-	return wrappedCorrector.getHotPointX();
-    }
-
-    @Override public int getHotPointY()
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.getHotPointY();
-	return wrappedCorrector.getHotPointY();
-    }
-
-    @Override public String getTabSeq()
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.getTabSeq();
-	return wrappedCorrector.getTabSeq();
-    }
-
-    @Override public ModificationResult deleteChar(int pos, int lineIndex)
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.deleteChar(pos, lineIndex);
-	return wrappedCorrector.deleteChar(pos, lineIndex);
-    }
-
-    @Override public ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY)
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.deleteRegion(fromX, fromY, toX, toY);
-	return wrappedCorrector.deleteRegion(fromX, fromY, toX, toY);
-    }
-
-    @Override public ModificationResult insertRegion(int x, int y, String[] lines)
-    {
-	NullCheck.notNullItems(lines, "lines");
-	if (activatedCorrector != null)
-	    return activatedCorrector.insertRegion(x, y, lines);
-	return wrappedCorrector.insertRegion(x, y, lines);
-    }
-
-    @Override public ModificationResult putChars(int pos, int lineIndex, String str)
-    {
-	NullCheck.notNull(str, "str");
-	if (activatedCorrector != null)
-	    return activatedCorrector.putChars(pos, lineIndex, str);
-	    return wrappedCorrector.putChars(pos, lineIndex, str);
-    }
-
-    @Override public ModificationResult mergeLines(int firstLineIndex)
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.mergeLines(firstLineIndex);
-	    return wrappedCorrector.mergeLines(firstLineIndex);
-    }
-
-    @Override public ModificationResult splitLine(int pos, int lineIndex)
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.splitLine(pos, lineIndex);
-	return wrappedCorrector.splitLine(pos, lineIndex);
-    }
-
-    @Override public ModificationResult doEditAction(TextEditAction action)
-    {
-	if (activatedCorrector != null)
-	    return activatedCorrector.doEditAction(action); else
-	    return wrappedCorrector.doEditAction(action);
-    }
-}
-
-
     
+    static public class ActiveCorrector implements MultilineEditCorrector2
+    {
+	protected MultilineEditCorrector2 activatedCorrector = null;
+	protected MultilineEditCorrector2 wrappedCorrector = null;
+	public void setActivatedCorrector(MultilineEditCorrector2 corrector)
+	{
+	    NullCheck.notNull(corrector, "corrector");
+	    this.activatedCorrector = corrector;
+	}
+	public void deactivateCorrector()
+	{
+	    this.activatedCorrector = null;
+	}
+	public void setWrappedCorrector(MultilineEditCorrector2 corrector)
+	{
+	    NullCheck.notNull(corrector, "corrector");
+	    this.wrappedCorrector = corrector;
+	}
+	public MultilineEditCorrector2 getWrappedCorrector()
+	{
+	    return wrappedCorrector;
+	}
+	@Override public int getLineCount()
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getLineCount();
+	    return wrappedCorrector.getLineCount();
+	}
+	@Override public String getLine(int index)
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getLine(index);
+	    return wrappedCorrector.getLine(index);
+	}
+	@Override public int getHotPointX()
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getHotPointX();
+	    return wrappedCorrector.getHotPointX();
+	}
+	@Override public int getHotPointY()
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getHotPointY();
+	    return wrappedCorrector.getHotPointY();
+	}
+	@Override public String getTabSeq()
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getTabSeq();
+	    return wrappedCorrector.getTabSeq();
+	}
+	@Override public ModificationResult deleteChar(int pos, int lineIndex)
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.deleteChar(pos, lineIndex);
+	    return wrappedCorrector.deleteChar(pos, lineIndex);
+	}
+	@Override public ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY)
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.deleteRegion(fromX, fromY, toX, toY);
+	    return wrappedCorrector.deleteRegion(fromX, fromY, toX, toY);
+	}
+	@Override public ModificationResult insertRegion(int x, int y, String[] lines)
+	{
+	    NullCheck.notNullItems(lines, "lines");
+	    if (activatedCorrector != null)
+		return activatedCorrector.insertRegion(x, y, lines);
+	    return wrappedCorrector.insertRegion(x, y, lines);
+	}
+	@Override public ModificationResult putChars(int pos, int lineIndex, String str)
+	{
+	    NullCheck.notNull(str, "str");
+	    if (activatedCorrector != null)
+		return activatedCorrector.putChars(pos, lineIndex, str);
+	    return wrappedCorrector.putChars(pos, lineIndex, str);
+	}
+	@Override public ModificationResult mergeLines(int firstLineIndex)
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.mergeLines(firstLineIndex);
+	    return wrappedCorrector.mergeLines(firstLineIndex);
+	}
+	@Override public ModificationResult splitLine(int pos, int lineIndex)
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.splitLine(pos, lineIndex);
+	    return wrappedCorrector.splitLine(pos, lineIndex);
+	}
+	@Override public ModificationResult doEditAction(TextEditAction action)
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.doEditAction(action); else
+		return wrappedCorrector.doEditAction(action);
+	}
+    }
 }

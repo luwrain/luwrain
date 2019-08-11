@@ -101,7 +101,12 @@ return res;
     @Override public ModificationResult putChars(int pos, int lineIndex, String str)
     {
 	NullCheck.notNull(str, "str");
-	return base.putChars(pos, lineIndex, str);
+	if (!runPreHook(hookNameBase + ".chars.pre"))
+	    return new ModificationResult(false);
+	final ModificationResult res = base.putChars(pos, lineIndex, str);
+	if (!res.isPerformed())
+	    return res;
+	return res;
     }
 
     @Override public ModificationResult mergeLines(int firstLineIndex)
@@ -111,7 +116,13 @@ return res;
 
     @Override public ModificationResult splitLine(int pos, int lineIndex)
     {
-	return base.splitLine(pos, lineIndex);
+			if (!runPreHook(hookNameBase + ".split.pre"))
+		    return new ModificationResult(false);
+	final ModificationResult res = base.splitLine(pos, lineIndex);
+	if (!res.isPerformed())
+	return res;
+	runPostHook(hookNameBase + ".split.post");
+	return res;
     }
 
     @Override public ModificationResult doEditAction(TextEditAction action)
@@ -123,7 +134,7 @@ return res;
     protected boolean runPreHook(String hookName)
     {
 	NullCheck.notEmpty(hookName, "hookName");
-	final AtomicBoolean mayContinue = new AtomicBoolean();
+	final AtomicBoolean mayContinue = new AtomicBoolean(true);
 	doEditAction((lines, hotPoint)->{
 		final HookObject linesObj = new MutableLinesHookObject(lines);
 		final HookObject hotPointObj = new HotPointControlHookObject(hotPoint);
@@ -144,11 +155,24 @@ return res;
 		    };
 		final AtomicReference ex = new AtomicReference();
 		context.runHooks(hookName, (hook)->{
-			final Object res = hook.run(new Object[0]);
+			final Object res;
+			try {
+			    res = hook.run(new Object[]{arg});
+			}
+			catch(RuntimeException e)
+			{
+			    ex.set(e);
+			    return Luwrain.HookResult.BREAK;
+			}
 			if (res == null || !(res instanceof Boolean))
 			    return Luwrain.HookResult.CONTINUE;
 			final Boolean b = (Boolean)res;
-			return b.booleanValue()?Luwrain.HookResult.CONTINUE:Luwrain.HookResult.BREAK;
+			if (!b.booleanValue())
+			{
+			    mayContinue.set(false);
+			    return Luwrain.HookResult.BREAK;
+			}
+			return Luwrain.HookResult.CONTINUE;
 		    });
 		if (ex.get() != null)
 		{
@@ -157,8 +181,52 @@ return res;
 		    mayContinue.set(false);
 		    return;
 		}
-		mayContinue.set(true);
 	    });
 	return mayContinue.get();
+    }
+
+        protected boolean runPostHook(String hookName)
+    {
+	NullCheck.notEmpty(hookName, "hookName");
+	final AtomicBoolean success = new AtomicBoolean(true);
+	doEditAction((lines, hotPoint)->{
+		final HookObject linesObj = new MutableLinesHookObject(lines);
+		final HookObject hotPointObj = new HotPointControlHookObject(hotPoint);
+		final HookObject arg = new EmptyHookObject(){
+			@Override public Object getMember(String name)
+			{
+			    NullCheck.notNull(name, "name");
+			    switch(name)
+			    {
+			    case "lines":
+				return linesObj;
+			    case "hotPoint":
+				return hotPointObj;
+			    default:
+				return super.getMember(name);
+			    }
+			}
+		    };
+		final AtomicReference ex = new AtomicReference();
+		context.runHooks(hookName, (hook)->{
+			try {
+hook.run(new Object[]{arg});
+			}
+			catch(RuntimeException e)
+			{
+			    ex.set(e);
+			    return Luwrain.HookResult.BREAK;
+			}
+			    return Luwrain.HookResult.CONTINUE;
+		    });
+		if (ex.get() != null)
+		{
+		    final RuntimeException e = (RuntimeException)ex.get();
+		    Log.error(LOG_COMPONENT, "unable to run the hook " + hookName + ":" + e.getClass().getName() + ":" + e.getMessage());
+		    success.set(false);
+		    return;
+		}
+	    });
+	return success.get();
     }
 }

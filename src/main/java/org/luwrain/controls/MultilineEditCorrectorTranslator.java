@@ -1,6 +1,6 @@
 /*
    Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
-
+clas
    This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
@@ -25,13 +25,13 @@ import org.luwrain.controls.MultilineEdit2.ModificationResult;
 // Hot point position may be adjusted to the content changes only on endEditTrans 
 
 //Keeps lines empty if it is possible providing a fake  first line to be consistent, as it is required by MultilineEdit.Model
-public class MultilineEditModelTranslator2 implements MultilineEditCorrector2
+public class MultilineEditCorrectorTranslator implements MultilineEditCorrector2
 {
     protected final MutableLines lines;
     protected final HotPointControl hotPoint;
     protected String tabSeq = "\t";
 
-    public MultilineEditModelTranslator2(MutableLines lines, HotPointControl hotPoint)
+    public MultilineEditCorrectorTranslator(MutableLines lines, HotPointControl hotPoint)
     {
 	NullCheck.notNull(lines, "lines");
 	NullCheck.notNull(hotPoint, "hotPoint");
@@ -39,7 +39,7 @@ public class MultilineEditModelTranslator2 implements MultilineEditCorrector2
 	this.hotPoint = hotPoint;
     }
 
-    public MultilineEditModelTranslator2(MutableLines lines, HotPointControl hotPoint,
+    public MultilineEditCorrectorTranslator(MutableLines lines, HotPointControl hotPoint,
 					String tabSeq)
     {
 	NullCheck.notNull(lines, "lines");
