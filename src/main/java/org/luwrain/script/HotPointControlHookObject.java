@@ -55,18 +55,18 @@ public class HotPointControlHookObject extends EmptyHookObject
 	{
 	case "x":
 	    {
-			final Integer intValue = ScriptUtils.getIntegerValue(value);
-	if (intValue == null || intValue.intValue() < 0)
+			final Number numValue = ScriptUtils.getNumberValue(value);
+	if (numValue == null || numValue.intValue() < 0)
 	    return;
-	    hotPoint.setHotPointX(intValue.intValue());
+	    hotPoint.setHotPointX(numValue.intValue());
 	    }
 	    return;
 	case "y":
 	    {
-			final Integer intValue = ScriptUtils.getIntegerValue(value);
-	if (intValue == null || intValue.intValue() < 0)
+			final Number numValue = ScriptUtils.getNumberValue(value);
+	if (numValue == null || numValue.intValue() < 0)
 	    return;
-	    hotPoint.setHotPointY(intValue.intValue());
+	    hotPoint.setHotPointY(numValue.intValue());
 	    }
 	    return;
 	default:
