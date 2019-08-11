@@ -156,32 +156,26 @@ public final class EditUtils2
 	 * is invoked strictly after the changes in the model.
 	 */
 	abstract public void onMultilineEditChange();
-
 	@Override public int getLineCount()
 	{
 	    return corrector.getLineCount();
 	}
-
 	@Override public String getLine(int index)
 	{
 	    return corrector.getLine(index);
 	}
-
 	@Override public int getHotPointX()
 	{
 	    return corrector.getHotPointX();
 	}
-
 	@Override public int getHotPointY()
 	{
 	    return corrector.getHotPointY();
 	}
-
 	@Override public String getTabSeq()
 	{
 	    return corrector.getTabSeq();
 	}
-
 	@Override public ModificationResult deleteChar(int pos, int lineIndex)
 	{
 	    final ModificationResult res = corrector.deleteChar(pos, lineIndex);
@@ -189,7 +183,6 @@ public final class EditUtils2
 		onMultilineEditChange();
 	    return res;
 	}
-
 	@Override public ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY)
 	{
 	    final ModificationResult res = corrector.deleteRegion(fromX, fromY, toX, toY);
@@ -197,7 +190,6 @@ public final class EditUtils2
 		onMultilineEditChange();
 	    return res;
 	}
-
 	@Override public ModificationResult insertRegion(int x, int y, String[] lines)
 	{
 	    final ModificationResult res = corrector.insertRegion(x, y, lines);
@@ -205,7 +197,6 @@ public final class EditUtils2
 		onMultilineEditChange();
 	    return res;
 	}
-
 	@Override public ModificationResult putChars(int pos, int lineIndex, String str)
 	{
 	    final ModificationResult res = corrector.putChars(pos, lineIndex, str);
@@ -213,7 +204,6 @@ public final class EditUtils2
 		onMultilineEditChange();
 	    return res;
 	}
-
 	@Override public ModificationResult mergeLines(int firstLineIndex)
 	{
 	    final ModificationResult res = corrector.mergeLines(firstLineIndex);
@@ -221,7 +211,6 @@ public final class EditUtils2
 		onMultilineEditChange();
 	    return  res;
 	}
-
 	@Override public ModificationResult splitLine(int pos, int lineIndex)
 	{
 	    final ModificationResult res = corrector.splitLine(pos, lineIndex);
@@ -229,7 +218,6 @@ public final class EditUtils2
 		onMultilineEditChange();
 	    return res;
 	}
-
         @Override public ModificationResult doEditAction(TextEditAction action)
 	{
 	    final ModificationResult res = corrector.doEditAction(action);
@@ -238,4 +226,121 @@ public final class EditUtils2
 	    return res;
 	}
     }
+
+final class ActiveCorrector implements MultilineEditCorrector2
+{
+protected MultilineEditCorrector2 activatedCorrector = null;
+protected MultilineEditCorrector2 wrappedCorrector = null;
+
+    void setActivatedCorrector(MultilineEditCorrector2 corrector)
+    {
+	NullCheck.notNull(corrector, "corrector");
+	this.activatedCorrector = corrector;
+    }
+
+    void deactivateCorrector()
+    {
+	this.activatedCorrector = null;
+    }
+
+    void setWrappedCorrector(MultilineEditCorrector2 corrector)
+    {
+	NullCheck.notNull(corrector, "corrector");
+	this.wrappedCorrector = corrector;
+    }
+
+    MultilineEditCorrector2 getWrappedCorrector()
+    {
+	return wrappedCorrector;
+    }
+
+    @Override public int getLineCount()
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.getLineCount();
+	return wrappedCorrector.getLineCount();
+    }
+
+    @Override public String getLine(int index)
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.getLine(index);
+	return wrappedCorrector.getLine(index);
+    }
+
+    @Override public int getHotPointX()
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.getHotPointX();
+	return wrappedCorrector.getHotPointX();
+    }
+
+    @Override public int getHotPointY()
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.getHotPointY();
+	return wrappedCorrector.getHotPointY();
+    }
+
+    @Override public String getTabSeq()
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.getTabSeq();
+	return wrappedCorrector.getTabSeq();
+    }
+
+    @Override public ModificationResult deleteChar(int pos, int lineIndex)
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.deleteChar(pos, lineIndex);
+	return wrappedCorrector.deleteChar(pos, lineIndex);
+    }
+
+    @Override public ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY)
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.deleteRegion(fromX, fromY, toX, toY);
+	return wrappedCorrector.deleteRegion(fromX, fromY, toX, toY);
+    }
+
+    @Override public ModificationResult insertRegion(int x, int y, String[] lines)
+    {
+	NullCheck.notNullItems(lines, "lines");
+	if (activatedCorrector != null)
+	    return activatedCorrector.insertRegion(x, y, lines);
+	return wrappedCorrector.insertRegion(x, y, lines);
+    }
+
+    @Override public ModificationResult putChars(int pos, int lineIndex, String str)
+    {
+	NullCheck.notNull(str, "str");
+	if (activatedCorrector != null)
+	    return activatedCorrector.putChars(pos, lineIndex, str);
+	    return wrappedCorrector.putChars(pos, lineIndex, str);
+    }
+
+    @Override public ModificationResult mergeLines(int firstLineIndex)
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.mergeLines(firstLineIndex);
+	    return wrappedCorrector.mergeLines(firstLineIndex);
+    }
+
+    @Override public ModificationResult splitLine(int pos, int lineIndex)
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.splitLine(pos, lineIndex);
+	return wrappedCorrector.splitLine(pos, lineIndex);
+    }
+
+    @Override public ModificationResult doEditAction(TextEditAction action)
+    {
+	if (activatedCorrector != null)
+	    return activatedCorrector.doEditAction(action); else
+	    return wrappedCorrector.doEditAction(action);
+    }
+}
+
+
+    
 }

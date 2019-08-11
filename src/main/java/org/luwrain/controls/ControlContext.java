@@ -48,4 +48,5 @@ int getAreaVisibleHeight(Area area);
     void onAreaNewBackgroundSound(Area area);
     String getSpokenText(String text, Luwrain.SpokenTextType type);
         boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy);
+    void runHooks(String hookName, Luwrain.HookRunner runner);
 }

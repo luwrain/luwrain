@@ -185,6 +185,9 @@ public class DefaultControlContext implements ControlContext
 	return luwrain.xRunHooks(hookName, args, strategy);
     }
 
-
-    
+    @Override public     void runHooks(String hookName, Luwrain.HookRunner runner)
+    {
+	NullCheck.notEmpty(hookName, "hookName");
+	luwrain.xRunHooks(hookName, runner);
+    }
 }
