@@ -77,6 +77,7 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 final ModificationResult res = base.deleteChar(pos, lineIndex);
 if (!res.isPerformed())
     return res;
+runPostHook(hookNameBase + ".delete.char.post");
 return res;
     }
 
@@ -87,6 +88,7 @@ return res;
 final ModificationResult res = base.deleteRegion(fromX, fromY, toX, toY);
 if (!res.isPerformed())
     return res;
+runPostHook(hookNameBase + ".delete.region.post");
 return res;
     }
 
@@ -95,28 +97,36 @@ return res;
 		NullCheck.notNullItems(lines, "lines");
 		if (!runPreHook(hookNameBase + ".insert.region.pre"))
 		    return new ModificationResult(false);
-	return base.insertRegion(x, y, lines);
+final ModificationResult res = base.insertRegion(x, y, lines);
+runPostHook(hookNameBase + ".insert.region.post");
+		    return res;
     }
 
     @Override public ModificationResult putChars(int pos, int lineIndex, String str)
     {
 	NullCheck.notNull(str, "str");
-	if (!runPreHook(hookNameBase + ".chars.pre"))
+	if (!runPreHook(hookNameBase + ".insert.chars.pre"))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.putChars(pos, lineIndex, str);
-	if (!res.isPerformed())
-	    return res;
+	if (res.isPerformed())
+	runPostHook(hookNameBase + ".insert.chars.post");
 	return res;
     }
 
     @Override public ModificationResult mergeLines(int firstLineIndex)
     {
-	return base.mergeLines(firstLineIndex);
+				if (!runPreHook(hookNameBase + ".merge.lines.pre"))
+		    return new ModificationResult(false);
+final ModificationResult res = base.mergeLines(firstLineIndex);
+if (!res.isPerformed())
+    return res;
+runPostHook(hookNameBase + ".merge.lines.post");
+				    return res;
     }
 
     @Override public ModificationResult splitLine(int pos, int lineIndex)
     {
-			if (!runPreHook(hookNameBase + ".split.pre"))
+			if (!runPreHook(hookNameBase + ".split.lines.pre"))
 		    return new ModificationResult(false);
 	final ModificationResult res = base.splitLine(pos, lineIndex);
 	if (!res.isPerformed())
