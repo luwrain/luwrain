@@ -200,7 +200,7 @@ this.basicCorrector = createBasicCorrector();
 		try {
 		    res.set(new Boolean(context.runHooks("luwrain.edit.multiline.input", new Object[]{
 				    ScriptUtils.createInputEvent(event),
-				    createHookObject(EditArea2.this, lines, hotPoint)
+				    EditUtils2.createHookObject(EditArea2.this, lines, hotPoint, regionPoint)
 				}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY)));
 		}
 		catch(RuntimeException e)
@@ -240,25 +240,4 @@ this.basicCorrector = createBasicCorrector();
 	return "\t";
     }
 
-    static public Object createHookObject(EditArea2 area, MutableLines lines, HotPointControl hotPoint)
-    {
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(lines, "lines");
-	NullCheck.notNull(hotPoint, "hotPoint");
-	return new EmptyHookObject(){
-	    @Override public Object getMember(String name)
-	    {
-		NullCheck.notNull(name, "name");
-		switch(name)
-		{
-		case "lines":
-		    return new MutableLinesHookObject(lines);
-		case "hotPoint":
-		    return new HotPointControlHookObject(hotPoint);
-		default:
-		    return super.getMember(name);
-		}
-	    }
-	};
-    }
 }
