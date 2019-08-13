@@ -14,245 +14,399 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.controls;
 
-import java.util.*;
-
 import org.luwrain.core.*;
-import org.luwrain.util.*;
+import org.luwrain.script.*;
+import org.luwrain.controls.MultilineEdit2.ModificationResult;
 
 public final class EditUtils
 {
-    static public class DefaultCorrector implements MultilineEditCorrector
+    static public class DefaultMultilineEditAppearance implements MultilineEdit2.Appearance
     {
-	protected final MultilineEditCorrector wrappedCorrector;
-
-	public DefaultCorrector(MultilineEditCorrector wrappedCorrector)
+	protected final ControlContext context;
+	public DefaultMultilineEditAppearance(ControlContext context)
 	{
-	    NullCheck.notNull(wrappedCorrector, "wrappedCorrector");
-	    this.wrappedCorrector = wrappedCorrector;
+	    NullCheck.notNull(context, "context");
+	    this.context = context;
+	}
+	@Override public boolean onBackspaceTextBegin()
+	{
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.BEGIN_OF_TEXT));
+	    return true;
+	}
+	@Override public boolean onBackspaceMergeLines(ModificationResult res)
+	{
+	    NullCheck.notNull(res, "res");
+	    if (!res.isPerformed())
+		return false;
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
+	    return true;
+	}
+	@Override public boolean onBackspaceDeleteChar(ModificationResult res)
+	{
+	    NullCheck.notNull(res, "res");
+	    if (!res.isPerformed() || res.getCharArg() == '\0')
+		return false;
+	    context.setEventResponse(DefaultEventResponse.letter(res.getCharArg()));
+	    return true;
+	}
+	@Override public boolean onDeleteChar(ModificationResult res)
+	{
+	    NullCheck.notNull(res, "res");
+	    if (!res.isPerformed() || res.getCharArg() == '\0')
+		return false;
+	    context.setEventResponse(DefaultEventResponse.letter(res.getCharArg()));
+	    return true;
+	}
+	@Override public boolean onDeleteCharTextEnd()
+	{
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_TEXT));
+	    return true;
+	}
+	@Override public boolean onDeleteCharMergeLines(ModificationResult res)
+	{
+	    NullCheck.notNull(res, "res");
+	    if (!res.isPerformed())
+		return false;
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); 
+	    return true;
+	}
+	@Override public boolean onTab(ModificationResult res)
+	{
+	    NullCheck.notNull(res, "res");
+	    if (!res.isPerformed())
+		return false;
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.TAB));
+	    return true;
+	}
+	@Override public boolean onSplitLines(ModificationResult res)
+	{
+	    /*
+	      if (line == null)
+	    return false;
+	if (line.isEmpty())
+	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
+	    environment.say(line);
+    */
+	    return true;
+	}
+	@Override public boolean onChar(ModificationResult res)
+	{
+
+	    	    NullCheck.notNull(res, "res");
+	    if (!res.isPerformed())
+		return false;
+	    context.setEventResponse(DefaultEventResponse.letter(res.getCharArg()));
+	    /*
+	if (!done)
+	    return false;
+	if (Character.isSpace(c))
+	{
+	    final String newLine = model.getLine(model.getHotPointY());
+	    final int pos = Math.min(model.getHotPointX(), newLine.length());
+	    final String lastWord = TextUtils.getLastWord(newLine, pos);
+	    NullCheck.notNull(lastWord, "lastWord");
+		if (!lastWord.isEmpty())
+		    environment.say(lastWord); else
+		    environment.setEventResponse(DefaultEventResponse.hint(Hint.SPACE));
+	} else
+		environment.sayLetter(c);
+	    return true;
+	    */
+	    return true;
+	}
+    }
+
+    static public class DefaultEditAreaAppearance extends DefaultMultilineEditAppearance implements EditArea2.Appearance
+    {
+	public DefaultEditAreaAppearance(ControlContext context)
+	{
+	    super(context);
+	}
+	    @Override public void announceLine(int index, String line)
+    {
+	if (line == null || line.isEmpty())
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
+	    context.setEventResponse(DefaultEventResponse.text(line));
+    }
+    }
+
+    /**
+     * Implements a listener of all changes in 
+     * {@link MultilineEdit.Model}. This class contains the abstract method 
+     * {@code onMultilineEditChange} called each time when any changes occurred in
+     * the state of the model.  This allows users to implement any necessary
+     * actions, which should have effect if and only if something was changed
+     * in the model and this class guarantees that {@code
+     * onMultilineEditChange} is called strictly after changes in the model.
+     *
+     * @see MultilineEdit
+     */
+    static abstract public class CorrectorChangeListener implements MultilineEditCorrector2
+    {
+	protected final MultilineEditCorrector2 corrector;
+
+	public CorrectorChangeListener(MultilineEditCorrector2 corrector)
+	{
+	    NullCheck.notNull(corrector, "corrector");
+	    this.corrector = corrector;
 	}
 
+	/** Called if the model gets some changes. There is a guarantee that this method
+	 * is invoked strictly after the changes in the model.
+	 */
+	abstract public void onMultilineEditChange();
 	@Override public int getLineCount()
 	{
-	    return wrappedCorrector.getLineCount();
+	    return corrector.getLineCount();
 	}
-
 	@Override public String getLine(int index)
 	{
-	    return wrappedCorrector.getLine(index);
+	    return corrector.getLine(index);
 	}
-
 	@Override public int getHotPointX()
 	{
-	    return wrappedCorrector.getHotPointX();
+	    return corrector.getHotPointX();
 	}
-
 	@Override public int getHotPointY()
 	{
-	    return wrappedCorrector.getHotPointY();
+	    return corrector.getHotPointY();
 	}
-
 	@Override public String getTabSeq()
 	{
-	    return wrappedCorrector.getTabSeq();
+	    return corrector.getTabSeq();
 	}
-
-	@Override public char deleteChar(int pos, int lineIndex)
+	@Override public ModificationResult deleteChar(int pos, int lineIndex)
 	{
-	    return wrappedCorrector.deleteChar(pos, lineIndex);
+	    final ModificationResult res = corrector.deleteChar(pos, lineIndex);
+	    if (res.isPerformed())
+		onMultilineEditChange();
+	    return res;
 	}
-
-	@Override public boolean deleteRegion(int fromX, int fromY, int toX, int toY)
+	@Override public ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY)
 	{
-	    return wrappedCorrector.deleteRegion(fromX, fromY, toX, toY);
+	    final ModificationResult res = corrector.deleteRegion(fromX, fromY, toX, toY);
+	    if (res.isPerformed())
+		onMultilineEditChange();
+	    return res;
 	}
+	@Override public ModificationResult insertRegion(int x, int y, String[] lines)
+	{
+	    final ModificationResult res = corrector.insertRegion(x, y, lines);
+	    if (res.isPerformed())
+		onMultilineEditChange();
+	    return res;
+	}
+	@Override public ModificationResult putChars(int pos, int lineIndex, String str)
+	{
+	    final ModificationResult res = corrector.putChars(pos, lineIndex, str);
+	    if (res.isPerformed())
+		onMultilineEditChange();
+	    return res;
+	}
+	@Override public ModificationResult mergeLines(int firstLineIndex)
+	{
+	    final ModificationResult res = corrector.mergeLines(firstLineIndex);
+	    if (res.isPerformed())
+		onMultilineEditChange();
+	    return  res;
+	}
+	@Override public ModificationResult splitLine(int pos, int lineIndex)
+	{
+	    final ModificationResult res = corrector.splitLine(pos, lineIndex);
+	    if (res.isPerformed())
+		onMultilineEditChange();
+	    return res;
+	}
+        @Override public ModificationResult doEditAction(TextEditAction action)
+	{
+	    final ModificationResult res = corrector.doEditAction(action);
+	    if (res.isPerformed())
+		onMultilineEditChange();
+	    return res;
+	}
+    }
 
-	@Override public boolean insertRegion(int x, int y, String[] lines)
+    static public class ActiveCorrector implements MultilineEditCorrector2
+    {
+	protected MultilineEditCorrector2 activatedCorrector = null;
+	protected MultilineEditCorrector2 defaultCorrector = null;
+	public void setActivatedCorrector(MultilineEditCorrector2 corrector)
+	{
+	    NullCheck.notNull(corrector, "corrector");
+	    this.activatedCorrector = corrector;
+	}
+	public void deactivateCorrector()
+	{
+	    this.activatedCorrector = null;
+	}
+	public void setDefaultCorrector(MultilineEditCorrector2 corrector)
+	{
+	    NullCheck.notNull(corrector, "corrector");
+	    this.defaultCorrector = corrector;
+	}
+	public MultilineEditCorrector2 getDefaultCorrector()
+	{
+	    return defaultCorrector;
+	}
+	@Override public int getLineCount()
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getLineCount();
+	    return defaultCorrector.getLineCount();
+	}
+	@Override public String getLine(int index)
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getLine(index);
+	    return defaultCorrector.getLine(index);
+	}
+	@Override public int getHotPointX()
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getHotPointX();
+	    return defaultCorrector.getHotPointX();
+	}
+	@Override public int getHotPointY()
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getHotPointY();
+	    return defaultCorrector.getHotPointY();
+	}
+	@Override public String getTabSeq()
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.getTabSeq();
+	    return defaultCorrector.getTabSeq();
+	}
+	@Override public ModificationResult deleteChar(int pos, int lineIndex)
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.deleteChar(pos, lineIndex);
+	    return defaultCorrector.deleteChar(pos, lineIndex);
+	}
+	@Override public ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY)
+	{
+	    if (activatedCorrector != null)
+		return activatedCorrector.deleteRegion(fromX, fromY, toX, toY);
+	    return defaultCorrector.deleteRegion(fromX, fromY, toX, toY);
+	}
+	@Override public ModificationResult insertRegion(int x, int y, String[] lines)
 	{
 	    NullCheck.notNullItems(lines, "lines");
-	    return wrappedCorrector.insertRegion(x, y, lines);
+	    if (activatedCorrector != null)
+		return activatedCorrector.insertRegion(x, y, lines);
+	    return defaultCorrector.insertRegion(x, y, lines);
 	}
-
-	@Override public boolean insertChars(int pos, int lineIndex, String str)
+	@Override public ModificationResult putChars(int pos, int lineIndex, String str)
 	{
 	    NullCheck.notNull(str, "str");
-	    return wrappedCorrector.insertChars(pos, lineIndex, str);
+	    if (activatedCorrector != null)
+		return activatedCorrector.putChars(pos, lineIndex, str);
+	    return defaultCorrector.putChars(pos, lineIndex, str);
 	}
-
-	@Override public boolean mergeLines(int firstLineIndex)
+	@Override public ModificationResult mergeLines(int firstLineIndex)
 	{
-	    return wrappedCorrector.mergeLines(firstLineIndex);
+	    if (activatedCorrector != null)
+		return activatedCorrector.mergeLines(firstLineIndex);
+	    return defaultCorrector.mergeLines(firstLineIndex);
 	}
-
-	@Override public String splitLine(int pos, int lineIndex)
+	@Override public ModificationResult splitLine(int pos, int lineIndex)
 	{
-	    return wrappedCorrector.splitLine(pos, lineIndex);
+	    if (activatedCorrector != null)
+		return activatedCorrector.splitLine(pos, lineIndex);
+	    return defaultCorrector.splitLine(pos, lineIndex);
 	}
-
-	@Override public void doDirectAccessAction(DirectAccessAction action)
+	@Override public ModificationResult doEditAction(TextEditAction action)
 	{
-	    wrappedCorrector.doDirectAccessAction(action);
+	    if (activatedCorrector != null)
+		return activatedCorrector.doEditAction(action); else
+		return defaultCorrector.doEditAction(action);
 	}
     }
 
-    static public class TextAlignCorrector extends DefaultCorrector
+    static public Object createHookObject(NavigationArea area, MutableLines lines, HotPointControl hotPoint, AbstractRegionPoint regionPoint)
     {
-        static private final int ALIGNING_LINE_LEN = 60;
-
-	public TextAlignCorrector(MultilineEditCorrector wrappedCorrector)
-	{
-	    super(wrappedCorrector);
-	}
-
-	@Override public boolean insertChars(int pos, int lineIndex, String str)
-	{
-	    NullCheck.notNull(str, "str");
-	    if (!wrappedCorrector.insertChars(pos, lineIndex, str))
-		return false;
-	    if (str.equals(" "))
-		alignParagraph(pos, lineIndex);
-	    return true;
-	}
-
-	protected void alignParagraph(int pos, int lineIndex)
-	{
-	    doDirectAccessAction((lines,hotPoint)->{
-		    //Doing nothing on empty line
-		    if (lines.getLine(lineIndex).trim().isEmpty())
-			return;
-		    //Searching paragraph bounds
-		    int paraBegin = lineIndex;
-		    int paraEnd = lineIndex;
-		    while (paraBegin > 0 && !lines.getLine(paraBegin).trim().isEmpty())
-			--paraBegin;
-		    if (lines.getLine(paraBegin).trim().isEmpty())
-			++paraBegin;
-		    while (paraEnd < lines.getLineCount() && !lines.getLine(paraEnd).trim().isEmpty())
-			++paraEnd;
-		    //Looking for the first line where it's necessary to do correction from
-		    int startingLine = 0;
-		    for(startingLine = paraBegin;startingLine < paraEnd;++startingLine)
-			if (lines.getLine(startingLine).length() > ALIGNING_LINE_LEN)
-			    break;
-		    //Stopping, if there are no long lines at all
-		    if (startingLine == paraEnd)
-			return;
-		    doAligning(lines, hotPoint, startingLine, paraEnd);
-		});
-	}
-
-	//The fragment of lines between lineFrom and lineTo may not contain empty strings
-	protected void doAligning(MutableLines lines, HotPointControl hotPoint, int lineFrom, int lineTo)
-	{
-	    Log.debug("proba", "doAligning(" + lineFrom + "," + lineTo + ")");
-	    NullCheck.notNull(lines, "lines");
-	    NullCheck.notNull(hotPoint, "hotPoint");
-	    if (lineFrom < 0 || lineFrom >= lines.getLineCount())
-		throw new IllegalArgumentException("lineFrom (" + lineFrom + ") must be less than " + lines.getLineCount() + " and non-negative");
-	    if (lineTo < 0 || lineTo > lines.getLineCount())
-		throw new IllegalArgumentException("lineTo (" + lineTo + ") must be less than " + lines.getLineCount() + " and non-negative");
-	    if (lineFrom >= lineTo)
-		throw new IllegalArgumentException("lineFrom (" + lineFrom + ") must be less than lineTo (" + lineTo + ")");
-	    final int hotPointX = hotPoint.getHotPointX();
-	    final int hotPointY = hotPoint.getHotPointY();
-	    if (hotPointY < lineFrom || hotPointY >= lineTo)
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(lines, "lines");
+	NullCheck.notNull(hotPoint, "hotPoint");
+	NullCheck.notNull(regionPoint, "regionPoint");
+	final HookObject regionObj = createRegionHookObject(hotPoint, regionPoint);
+	return new EmptyHookObject(){
+	    @Override public Object getMember(String name)
 	    {
-		final TextAligning t = new TextAligning(ALIGNING_LINE_LEN);
-		t.origLines = new String[lineTo - lineFrom];
-		for(int i = lineFrom;i < lineTo;++i)
-		    t.origLines[i - lineFrom] = lines.getLine(i);
-		t.align();
-		//FIXME:do it more effectively
-		for(int i = lineFrom;i < lineTo;++i)
-		    lines.removeLine(lineFrom);
-		int k = 0;
-		for(String s: t.res)
-		    lines.insertLine(lineFrom + (k++), s);
-	    } else
-	    {
-		final TextAligning t = new TextAligning(ALIGNING_LINE_LEN);
-		t.origLines = new String[lineTo - lineFrom];
-		for(int i = lineFrom;i < lineTo;++i)
-		    t.origLines[i - lineFrom] = lines.getLine(i);
-		t.origHotPointX = hotPointX;
-		t.origHotPointY = hotPointY - lineFrom;
-		Log.debug("proba", "before " + t.origHotPointX + " " + t.origHotPointY);
-		//Taking care of positioning of the hot point outsite of line bounds, may be on one character on the right
-		final boolean hotPointXShifted;
-		if (t.origHotPointX >= t.origLines[t.origHotPointY].length())
+		NullCheck.notNull(name, "name");
+		switch(name)
 		{
-		    if (t.origLines[t.origHotPointY].isEmpty())
-			throw new IllegalArgumentException("lines array contains the empty string at position " + (t.origHotPointY + lineFrom));
-		    --t.origHotPointX;
-		    hotPointXShifted = true; 
-		} else
-		    hotPointXShifted = false;
-		//	    Log.debug("shifted=" + hotPointXShifted);
-		t.align();
-		Log.debug("proba", "after " + t.hotPointX + " " + t.hotPointY);
-		//FIXME:do it more effectively
-		for(int i = lineFrom;i < lineTo;++i)
-		    lines.removeLine(lineFrom);
-		int k = 0;
-		for(String s: t.res)
-		    lines.insertLine(lineFrom + (k++), s);
-		if (t.hotPointX >= 0 && t.hotPointY >= 0)
-		{
-		    hotPoint.setHotPointY(t.hotPointY + lineFrom);
-		    hotPoint.setHotPointX(t.hotPointX + (hotPointXShifted?1:0));
+		case "lines":
+		    return new MutableLinesHookObject(lines);
+		case "hotPoint":
+		    return new HotPointControlHookObject(hotPoint);
+		case "regionPoint":
+		    return new RegionPointHookObject(regionPoint);
+		case "region":
+		    return regionObj;
+		default:
+		    return super.getMember(name);
 		}
 	    }
-	}
+	};
     }
-
-    static public class WordWrapCorrector extends DefaultCorrector
+    
+    static public HookObject createRegionHookObject(HotPoint p1, HotPoint p2)
     {
-	private final int maxLineLen = 60;
-
-	public WordWrapCorrector(MultilineEditCorrector wrappedCorrector)
+	final int fromX;
+	final int fromY;
+	final int toX;
+	final int toY;
+	if (p1.getHotPointX() < 0 || p1.getHotPointY() < 0 ||
+	    p2.getHotPointX() < 0 || p2.getHotPointY() < 0)
 	{
-	    super(wrappedCorrector);
-	}
-
-	@Override public  boolean insertChars(int pos , int lineIndex, String str)
-	{
-	    if (!super.insertChars(pos, lineIndex, str))
-		return false;
-	    processLine(lineIndex);
-	    return true;
-	}
-
-	protected void processLine(int index)
-	{
-	    final String line = getLine(index);
-	    if (line == null || line.length() <= maxLineLen)
-		return;
-	    int pos = maxLineLen;
-	    while(pos >= 0 && !Character.isSpace(line.charAt(pos)))
-		--pos;
-	    if (pos < 0)
+	    fromX = -1;
+	    fromY = -1;
+	    toX = -1;
+	    toY = -1;
+	} else
+	    if (p1.getHotPointY() < p2.getHotPointY())
 	    {
-		pos = maxLineLen;
-		while (pos < line.length() && !Character.isSpace(line.charAt(pos)))
-		    ++pos;
-		if (pos >= line.length())//There are no spaces in the line at all
-		    return;
-	    }
-	    if (pos + 1 >= line.length())
-		return;
-	    if (splitLine(pos, index) == null)
-		return;
-	    while(true)
+		fromX = p1.getHotPointX();
+		fromY = p1.getHotPointY();
+		toX = p2.getHotPointX();
+		toY = p2.getHotPointY();
+	    } else
+	    	if (p2.getHotPointY() < p1.getHotPointY())
+		{
+		    fromX = p2.getHotPointX();
+		    fromY = p2.getHotPointY();
+		    toX = p1.getHotPointX();
+		    toY = p1.getHotPointY();
+		} else
+		{
+		    //p1.y == p2.y
+		    fromY = p1.getHotPointY();
+		    toY = p1.getHotPointY();
+		    fromX = Math.min(p1.getHotPointX(), p2.getHotPointX());
+		    toX = Math.max(p1.getHotPointX(), p2.getHotPointX());
+		}
+	return new EmptyHookObject(){
+	    @Override public Object getMember(String name)
 	    {
-		final String newLine = getLine(index + 1);
-		if (newLine.isEmpty() || !Character.isSpace(newLine.charAt(0)))
-		    break;
-		deleteChar(0, index + 1);
+		NullCheck.notNull(name, "name");
+		switch(name)
+		{
+		case "fromX":
+		    return new Integer(fromX);
+		case "fromY":
+		    return new Integer(fromY);
+		case "toX":
+		    return new Integer(toX);
+		case "toY":
+		    return new Integer(toY);
+		default:
+		    return super.getMember(name);
+		}
 	    }
-	    processLine(index + 1);
-	}
+	};
     }
 }

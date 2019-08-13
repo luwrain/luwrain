@@ -51,7 +51,7 @@ public interface Appearance extends MultilineEdit2.Appearance
 	{
 	    NullCheck.notNull(context, "context");
 	    this.context = context;
-	    this.appearance = new EditUtils2.DefaultEditAreaAppearance(context);
+	    this.appearance = new EditUtils.DefaultEditAreaAppearance(context);
 	}
 
 	public ControlContext context = null;
@@ -86,7 +86,7 @@ this.basicCorrector = createBasicCorrector();
     protected MultilineEditCorrector2 createBasicCorrector()
     {
 	final MultilineEditCorrector2 corrector = new MultilineEditCorrectorTranslator(content, this);
-	return new EditUtils2.CorrectorChangeListener(corrector){
+	return new EditUtils.CorrectorChangeListener(corrector){
 	    @Override public void onMultilineEditChange()
 	    {
 		if (changeListener != null)
@@ -200,7 +200,7 @@ this.basicCorrector = createBasicCorrector();
 		try {
 		    res.set(new Boolean(context.runHooks("luwrain.edit.multiline.input", new Object[]{
 				    ScriptUtils.createInputEvent(event),
-				    EditUtils2.createHookObject(EditArea2.this, lines, hotPoint, regionPoint)
+				    EditUtils.createHookObject(EditArea2.this, lines, hotPoint, regionPoint)
 				}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY)));
 		}
 		catch(RuntimeException e)
