@@ -48,7 +48,7 @@ public class FormArea  extends NavigationArea
 {
     public enum Type { EDIT, CHECKBOX, LIST, STATIC, UNIREF, MULTILINE };
 
-    protected final ControlContext environment;
+    protected final ControlContext context;
     protected final Vector<Item> items = new Vector<Item>();
     protected String name = "";
 
@@ -59,20 +59,20 @@ public class FormArea  extends NavigationArea
     protected MultilineEdit multilineEdit = null;
     protected boolean multilineEditEnabled = true;//FIXME:
 
-    public FormArea(ControlContext environment)
+    public FormArea(ControlContext context)
     {
-	super(environment);
-	NullCheck.notNull(environment, "environment");
-	this.environment = environment;
+	super(context);
+	NullCheck.notNull(context, "context");
+	this.context = context;
 	this.name = "";
     }
 
-    public FormArea(ControlContext environment, String name)
+    public FormArea(ControlContext context, String name)
     {
-	super(environment);
-	NullCheck.notNull(environment, "environment");
+	super(context);
+	NullCheck.notNull(context, "context");
 	NullCheck.notNull(name, "name");
-	this.environment = environment;
+	this.context = context;
 	this.name = name;
     }
 
@@ -83,7 +83,7 @@ public class FormArea  extends NavigationArea
 	multilineEditModel = null;
 	multilineEdit = null;
 	multilineEditEnabled = true;
-	environment.onAreaNewContent(this);
+	context.onAreaNewContent(this);
 	setHotPoint(0, 0);
     }
 
@@ -159,18 +159,18 @@ public class FormArea  extends NavigationArea
 	NullCheck.notEmpty(itemName, "itemName");
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(initialText, "initialText");
-	final Item item = new Item(environment, this, Type.EDIT, itemName);
+	final Item item = new Item(context, this, Type.EDIT, itemName);
 	item.caption = caption;
 	item.enteredText = initialText;
 	item.obj = obj;
 	item.enabled = enabled;
-	item.edit = new EmbeddedSingleLineEdit(environment, item, this, regionPoint,
+	item.edit = new EmbeddedSingleLineEdit(context, item, this, regionPoint,
 					       item.caption.length(), //offsetX
 					       items.size()); //offsetY
 	items.add(item);
 	updateControlsPos();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -183,7 +183,7 @@ public class FormArea  extends NavigationArea
 	for(Item i: items)
 	    if (i.type == Type.EDIT && i.name.equals(itemName))
 		i.enteredText = newText;
-	environment.onAreaNewContent(this);
+	context.onAreaNewContent(this);
 	//FIXME:Check if the old hot point position is still valid
     }
 
@@ -213,11 +213,11 @@ public class FormArea  extends NavigationArea
     {
 	NullCheck.notEmpty(itemName, "itemName");
 	NullCheck.notNull(caption, "caption");
-	final Item item = new Item(environment, this, Type.UNIREF, itemName);
+	final Item item = new Item(context, this, Type.UNIREF, itemName);
 	item.caption = caption;
 	if (initialUniRef != null && !initialUniRef.trim().isEmpty())
 	{
-	    item.uniRefInfo = environment.getUniRefInfo(initialUniRef);
+	    item.uniRefInfo = context.getUniRefInfo(initialUniRef);
 	    if (item.uniRefInfo == null)
 		return false;
 	} else
@@ -226,8 +226,8 @@ public class FormArea  extends NavigationArea
 	item.enabled = enabled;
 	items.add(item);
 	updateControlsPos();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -261,7 +261,7 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(listChoosing, "listChoosing");
 	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
 	    return false;
-	final Item item = new Item(environment, this, Type.LIST, itemName);
+	final Item item = new Item(context, this, Type.LIST, itemName);
 	item.caption = caption;
 	item.selectedListItem = initialSelectedItem;
 	item.listChoosing = listChoosing;
@@ -269,8 +269,8 @@ public class FormArea  extends NavigationArea
 	item.enabled = enabled;
 	items.add(item);
 	updateControlsPos();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -292,15 +292,15 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(caption, "caption");
 	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
 	    return false;
-	final Item item = new Item(environment, this, Type.CHECKBOX, itemName);
+	final Item item = new Item(context, this, Type.CHECKBOX, itemName);
 	item.caption = caption;
 	item.checkboxState = initialState;
 	item.obj = obj;
 	item.enabled = enabled;
 	items.add(item);
 	updateControlsPos();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -329,13 +329,13 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(caption, "caption");
 	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
 	    return false;
-	final Item item = new Item(environment, this, Type.STATIC, itemName);
+	final Item item = new Item(context, this, Type.STATIC, itemName);
 	    item.caption = caption;
 	    item.obj = obj;
 	    items.add(item);
 	    updateControlsPos();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -385,11 +385,11 @@ public class FormArea  extends NavigationArea
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = null;
 	this.multilineEditModel = wrapMultilineEditModel(model);
-	this.multilineEdit = new MultilineEdit(environment, model, regionPoint);
+	this.multilineEdit = new MultilineEdit(context, model, regionPoint);
 	multilineEditEnabled = enabled;
 	updateControlsPos();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -402,11 +402,11 @@ public class FormArea  extends NavigationArea
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = new MutableLinesImpl(lines);
 	this.multilineEditModel = wrapMultilineEditModel(new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint));
-	this.multilineEdit = new MultilineEdit(environment, multilineEditModel, regionPoint);
+	this.multilineEdit = new MultilineEdit(context, multilineEditModel, regionPoint);
 	multilineEditEnabled = enabled;
 	updateControlsPos();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -419,11 +419,11 @@ public class FormArea  extends NavigationArea
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = new MutableLinesImpl(lines);
 	this.multilineEditModel = wrapMultilineEditModel(new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint));
-	this.multilineEdit = new MultilineEdit(environment, multilineEditModel, regionPoint);
+	this.multilineEdit = new MultilineEdit(context, multilineEditModel, regionPoint);
 	multilineEditEnabled = enabled;
 	updateControlsPos();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -450,8 +450,8 @@ public class FormArea  extends NavigationArea
 	    return false;
 	items.remove(index);
 	updateControlsPos();
-	environment.onAreaNewContent(this);
-	environment.onAreaNewHotPoint(this);
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
 	return true;
     }
 
@@ -465,8 +465,8 @@ public class FormArea  extends NavigationArea
 	    {
 		items.remove(i);
 		updateControlsPos();
-		environment.onAreaNewContent(this);
-		environment.onAreaNewHotPoint(this);
+		context.onAreaNewContent(this);
+		context.onAreaNewHotPoint(this);
 		return true;
 	    }
 	return false;
@@ -483,7 +483,7 @@ public class FormArea  extends NavigationArea
 		items.get(index).type == Type.UNIREF)
 	    {
 		items.get(index).uniRefInfo = null;
-		environment.onAreaNewContent(this);
+		context.onAreaNewContent(this);
 		return true;
 	    }
 	}
@@ -498,8 +498,8 @@ public class FormArea  extends NavigationArea
 	    if (newSelectedItem == null)
 		return true;
 	    item.selectedListItem = newSelectedItem;
-	    environment.onAreaNewContent(this);
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewContent(this);
+	    context.onAreaNewHotPoint(this);
 	    return true;
 	}
 	    //If the user is pressing Enter on the checkbox;
@@ -509,14 +509,14 @@ public class FormArea  extends NavigationArea
 	    if (item.checkboxState)
 	    {
 		item.checkboxState = false;
-		environment.say(environment.staticStr(LangStatic.NO));
+		context.say(context.staticStr(LangStatic.NO));
 	    } else
 	    {
 		item.checkboxState = true;
-		environment.say(environment.staticStr(LangStatic.YES));
+		context.say(context.staticStr(LangStatic.YES));
 	    }
-	    environment.onAreaNewContent(this);
-	    environment.onAreaNewHotPoint(this);
+	    context.onAreaNewContent(this);
+	    context.onAreaNewHotPoint(this);
 	    return true;
 	    }
 	}
@@ -557,11 +557,11 @@ public class FormArea  extends NavigationArea
 		final RegionContent data = insertEvent.getData();
 		if (data.isEmpty())
 		    return false;
-		final UniRefInfo uniRefInfo = environment.getUniRefInfo(data.strings()[0]);
+		final UniRefInfo uniRefInfo = context.getUniRefInfo(data.strings()[0]);
 		if (uniRefInfo == null)
 		    return false;
 		items.get(index).uniRefInfo = uniRefInfo;
-		environment.onAreaNewContent(this);
+		context.onAreaNewContent(this);
 		return true;
 	    }
 	}
@@ -620,7 +620,7 @@ public class FormArea  extends NavigationArea
 	    case LIST:
 		return item.caption + (item.selectedListItem != null?item.selectedListItem.toString():"");
 	    case CHECKBOX:
-		return item.caption + (item.checkboxState?environment.staticStr(LangStatic.YES):environment.staticStr(LangStatic.NO));
+		return item.caption + (item.checkboxState?context.staticStr(LangStatic.YES):context.staticStr(LangStatic.NO));
 	    case STATIC:
 		return item.caption;
 	    default:
@@ -652,7 +652,7 @@ public class FormArea  extends NavigationArea
     {
 	NullCheck.notNull(name, "name");
 	this.name = name;
-	//FIXME:	environment.onNewAreaName(this);
+	//FIXME:	context.onNewAreaName(this);
     }
 
     protected Item findItemByIndex(int index)
@@ -691,7 +691,7 @@ public class FormArea  extends NavigationArea
     protected MultilineEdit.Model wrapMultilineEditModel(MultilineEdit.Model model)
     {
 	NullCheck.notNull(model, "model");
-	final ControlContext env = environment;
+	final ControlContext env = context;
 	final Area thisArea = this;
 	return new MultilineEditModelChangeListener(model){
 	    @Override public void onMultilineEditChange()
@@ -719,11 +719,9 @@ public class FormArea  extends NavigationArea
 	String caption;
 	Object obj;
 	boolean enabled = true;
-
 //A couple of variables needed for sending notifications about changing of text
-	protected final ControlContext environment;
+	protected final ControlContext context;
 	protected final Area area;
-
 	//For edits
 	protected String enteredText = "";
 	protected EmbeddedSingleLineEdit edit;
@@ -736,52 +734,44 @@ protected Object selectedListItem = null;
 protected ListChoosing listChoosing;
 	//For checkboxes
 	boolean checkboxState;
-
-	Item(ControlContext environment, Area area, 
-Type type, String name)
+	Item(ControlContext context, Area area, Type type, String name)
 	{
-	    NullCheck.notNull(environment, "environment");
+	    NullCheck.notNull(context, "context");
 	    NullCheck.notNull(area, "area");
 	    NullCheck.notNull(type, "type");
 	    NullCheck.notNull(name, "name");
-	    this.environment = environment;
+	    this.context = context;
 	    this.area = area;
 	    this.type = type;
 	    this.name = name;
 	}
-
 	boolean onInputEvent(KeyboardEvent event)
 	{
 	    return edit != null?edit.onInputEvent(event):false;
 	}
-
 	boolean onSystemEvent(EnvironmentEvent event)
 	{
 	    return edit != null?edit.onSystemEvent(event):false;
 	}
-
 	boolean onAreaQuery(AreaQuery query)
 	{
 	    return edit != null?edit.onAreaQuery(query):false;
 	}
-
 	boolean isEnabledEdit()
 	{
 	    return type == Type.EDIT && edit != null && enabled;
 	}
-
 	@Override public String getEmbeddedEditLine(int editPosX, int editPosY)
 	{
 	    //We may skip checking of editPosX and editPosY because there is only one edit to call this method;
 	    return enteredText;
 	}
-
 	@Override public void setEmbeddedEditLine(int editPosX, int editPosY,
 						  String value)
 	{
 	    //We may skip checking of editPosX and editPosY because there is only one edit to call this method;
 	    enteredText = value != null?value:"";
-	    environment.onAreaNewContent(area);
+	    context.onAreaNewContent(area);
 	}
     }
 }
