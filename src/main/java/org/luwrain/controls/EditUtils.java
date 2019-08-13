@@ -118,7 +118,7 @@ public final class EditUtils
 	}
     }
 
-    static public class DefaultEditAreaAppearance extends DefaultMultilineEditAppearance implements EditArea2.Appearance
+    static public class DefaultEditAreaAppearance extends DefaultMultilineEditAppearance implements EditArea.Appearance
     {
 	public DefaultEditAreaAppearance(ControlContext context)
 	{

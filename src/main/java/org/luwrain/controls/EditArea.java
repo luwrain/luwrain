@@ -18,61 +18,102 @@
 
 package org.luwrain.controls;
 
+import java.util.concurrent.atomic.*; 
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.script.*;
 
 public class EditArea extends NavigationArea
 {
+public interface Appearance extends MultilineEdit2.Appearance
+{
+    void announceLine(int index, String line);
+}
+
     public interface ChangeListener
     {
 	void onEditChange();
     }
 
-    public interface CorrectorFactory
+    public interface EditFactory
     {
-	MultilineEditCorrector newCorrector(MultilineEditCorrector corrector);
+	MultilineEdit2 newMultilineEdit(MultilineEdit2.Params params, MultilineEditCorrector2 corrector);
     }
 
     static public final class Params
     {
+	public Params()
+	{
+	}
+
+	public Params(ControlContext context)
+	{
+	    NullCheck.notNull(context, "context");
+	    this.context = context;
+	    this.appearance = new EditUtils.DefaultEditAreaAppearance(context);
+	}
+
 	public ControlContext context = null;
+	public Appearance appearance = null;
 	public String name = "";
 	public MutableLines content = null;
 	public ChangeListener changeListener = null;
-	public CorrectorFactory correctorFactory = null;
+	public EditFactory editFactory = null;
     }
 
     protected final MutableLines content;
+    protected final MultilineEditCorrector2 basicCorrector;
+    protected final Appearance appearance;
     protected String areaName = "";
     protected final ChangeListener changeListener;
-    protected final MultilineEdit edit;
+    protected final MultilineEdit2 edit;
 
     public EditArea(Params params)
     {
 	super(params.context);
 	NullCheck.notNull(params, "params");
+	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.name, "params.name");
 	this.areaName = params.name;
 	this.content = params.content != null?params.content:new MutableLinesImpl();
+	this.appearance = params.appearance;
 	this.changeListener = params.changeListener;
-	edit = new MultilineEdit(context, createMultilineEditModel(params.correctorFactory), regionPoint);
+this.basicCorrector = createBasicCorrector();
+	    this.edit = createEdit(params);
     }
 
-    protected MultilineEdit.Model createMultilineEditModel(CorrectorFactory correctorFactory)
+    protected MultilineEditCorrector2 createBasicCorrector()
     {
-	MultilineEditCorrector corrector = new MultilineEditModelTranslator(content, this);
-	if (correctorFactory != null)
-	{
-	    final MultilineEditCorrector wrapped = correctorFactory.newCorrector(corrector);
-	    if (wrapped != null)
-		corrector = wrapped;
-	}
-	return new MultilineEditModelChangeListener(corrector){
+	final MultilineEditCorrector2 corrector = new MultilineEditCorrectorTranslator(content, this);
+	return new EditUtils.CorrectorChangeListener(corrector){
 	    @Override public void onMultilineEditChange()
 	    {
 		if (changeListener != null)
 		    changeListener.onEditChange();
 	    }};
+    }
+
+    protected MultilineEdit2 createEdit(Params areaParams)
+    {
+	NullCheck.notNull(areaParams, "areaParams");
+	final MultilineEdit2.Params params = new MultilineEdit2.Params();
+	params.context = context;
+	params.model = basicCorrector;
+	params.appearance = areaParams.appearance;
+	params.regionPoint = regionPoint;
+	if (areaParams.editFactory != null)
+	{
+	final MultilineEdit2 edit = areaParams.editFactory.newMultilineEdit(params, basicCorrector);
+	if (edit != null)
+	    return edit;
+    }
+	return new MultilineEdit2(params);
+    }
+
+    public MultilineEdit2 getEdit()
+    {
+	return edit;
     }
 
     @Override public int getLineCount()
@@ -140,9 +181,36 @@ public class EditArea extends NavigationArea
     @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (runInputEventHook(event))
+	    return true;
 	if (edit.onInputEvent(event))
 	    return true;
 	return super.onInputEvent(event);
+    }
+
+    protected boolean runInputEventHook(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	final MultilineEdit2.Model model = edit.getMultilineEditModel();
+	if (model == null || !(model instanceof MultilineEditCorrector2))
+	    return false;
+	final MultilineEditCorrector2 corrector = (MultilineEditCorrector2)model;
+	final AtomicReference res = new AtomicReference();
+	corrector.doEditAction((lines, hotPoint)->{
+		try {
+		    res.set(new Boolean(context.runHooks("luwrain.edit.multiline.input", new Object[]{
+				    ScriptUtils.createInputEvent(event),
+				    EditUtils.createHookObject(EditArea.this, lines, hotPoint, regionPoint)
+				}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY)));
+		}
+		catch(RuntimeException e)
+		{
+		    Log.error(LOG_COMPONENT, "the luwrain.edit.multiline.input hook failed:" + e.getClass().getName() + ":" + e.getMessage());
+		}
+	    });
+	if (res.get() == null)
+	    return false;
+	return ((Boolean)res.get()).booleanValue();
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)
@@ -161,8 +229,15 @@ public class EditArea extends NavigationArea
 	return super.onAreaQuery(query);
     }
 
+        @Override public void announceLine(int index, String line)
+    {
+	NullCheck.notNull(line, "line");
+	appearance.announceLine(index, line);
+    }
+
     protected String getTabSeq()
     {
 	return "\t";
     }
+
 }

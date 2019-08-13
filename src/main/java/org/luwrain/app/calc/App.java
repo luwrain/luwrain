@@ -28,7 +28,7 @@ public class App implements Application
     private Luwrain luwrain = null;
     private Strings strings = null;
     private Base base = null;
-    private EditArea editArea = null;
+    private EditAreaOld editArea = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
@@ -44,11 +44,11 @@ public class App implements Application
 
     private void createArea()
     {
-	final EditArea.Params params = new EditArea.Params();
+	final EditAreaOld.Params params = new EditAreaOld.Params();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = strings.appName();
 	params.changeListener = ()->hotUpdate();
-	this.editArea = new EditArea(params){
+	this.editArea = new EditAreaOld(params){
 		@Override public MultilineEdit.Model createMultilineEditModel(CorrectorFactory correctorFactory)
 		{
 		    final MultilineEdit.Model model = super.createMultilineEditModel(correctorFactory);
