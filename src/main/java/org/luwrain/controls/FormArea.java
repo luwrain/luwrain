@@ -52,11 +52,10 @@ public class FormArea  extends NavigationArea
     protected final Vector<Item> items = new Vector<Item>();
     protected String name = "";
 
-    protected MutableLinesImpl multilineEditLines = null;
+    protected MutableLines multilineEditLines = null;
+        protected MultilineEdit2 multilineEdit = null;
     protected final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
-    protected String multilineEditCaption = null;
-    protected MultilineEdit.Model multilineEditModel = null;
-    protected MultilineEdit multilineEdit = null;
+    protected String multilineEditCaption = "";
     protected boolean multilineEditEnabled = true;//FIXME:
 
     public FormArea(ControlContext context)
@@ -79,8 +78,7 @@ public class FormArea  extends NavigationArea
     public void clear()
     {
 	items.clear();
-	multilineEditCaption = null;
-	multilineEditModel = null;
+	multilineEditCaption = "";
 	multilineEdit = null;
 	multilineEditEnabled = true;
 	context.onAreaNewContent(this);
@@ -348,7 +346,7 @@ public class FormArea  extends NavigationArea
 
     public boolean isMultilineEditActivated()
     {
-	return multilineEdit != null && multilineEditModel != null && multilineEditCaption != null;
+	return multilineEdit != null;
     }
 
     public boolean isMultilineEditEnabled()
@@ -376,16 +374,34 @@ public class FormArea  extends NavigationArea
 	return multilineEditHotPoint;
     }
 
-    public boolean activateMultilineEdit(String caption, MultilineEdit.Model model, boolean enabled)
+    public MultilineEdit2.Params createMultilineEditParams(ControlContext context, MutableLines lines)
+    {
+	NullCheck.notNull(context, "context");
+	NullCheck.notNull(lines, "lines");
+	final MultilineEdit2.Params params = new MultilineEdit2.Params();
+	params.context = context;
+	params.model = new EditUtils.CorrectorChangeListener(new MultilineEditCorrectorTranslator(lines, getMultilineEditHotPointControl())){
+		@Override public void onMultilineEditChange()
+		{
+		    context.onAreaNewContent(FormArea.this);
+		    context.onAreaNewHotPoint(FormArea.this);
+		}
+	    };
+	params.appearance = new EditUtils.DefaultMultilineEditAppearance(context);
+	params.regionPoint = regionPoint;
+	return params;
+    }
+
+    public boolean activateMultilineEdit(String caption, MutableLines lines, MultilineEdit2.Params params, boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
-	NullCheck.notNull(model, "model");
+	NullCheck.notNull(lines, "lines");
+	NullCheck.notNull(params, "params");
 	if (isMultilineEditActivated())
 	    return false;
 	this.multilineEditCaption = caption;
-	this.multilineEditLines = null;
-	this.multilineEditModel = wrapMultilineEditModel(model);
-	this.multilineEdit = new MultilineEdit(context, model, regionPoint);
+	this.multilineEditLines = lines;
+	this.multilineEdit = new MultilineEdit2(params);
 	multilineEditEnabled = enabled;
 	updateControlsPos();
 	context.onAreaNewContent(this);
@@ -397,37 +413,21 @@ public class FormArea  extends NavigationArea
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(lines, "lines");
-	if (isMultilineEditActivated())
-	    return false;
-	this.multilineEditCaption = caption;
-	this.multilineEditLines = new MutableLinesImpl(lines);
-	this.multilineEditModel = wrapMultilineEditModel(new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint));
-	this.multilineEdit = new MultilineEdit(context, multilineEditModel, regionPoint);
-	multilineEditEnabled = enabled;
-	updateControlsPos();
-	context.onAreaNewContent(this);
-	context.onAreaNewHotPoint(this);
-	return true;
+final MutableLines linesImpl = new MutableLinesImpl(lines);
+final MultilineEdit2.Params params = createMultilineEditParams(context, linesImpl);
+return activateMultilineEdit(caption, linesImpl, params, enabled);
     }
 
-        public boolean activateMultilineEdit(String caption, String lines[], boolean enabled)
+        public boolean activateMultilineEdit(String caption, String[] lines, boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNullItems(lines, "lines");
-	if (isMultilineEditActivated())
-	    return false;
-	this.multilineEditCaption = caption;
-	this.multilineEditLines = new MutableLinesImpl(lines);
-	this.multilineEditModel = wrapMultilineEditModel(new MultilineEditModelTranslator(multilineEditLines, multilineEditHotPoint));
-	this.multilineEdit = new MultilineEdit(context, multilineEditModel, regionPoint);
-	multilineEditEnabled = enabled;
-	updateControlsPos();
-	context.onAreaNewContent(this);
-	context.onAreaNewHotPoint(this);
-	return true;
+final MutableLines linesImpl = new MutableLinesImpl(lines);
+final MultilineEdit2.Params params = createMultilineEditParams(context, linesImpl);
+return activateMultilineEdit(caption, linesImpl, params, enabled);
     }
 
-    public boolean activateMultilineEdit(String caption, String lines)//FIXME:to delete
+    public boolean activateMultilineEdit(String caption, String lines)
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(lines, "lines");
@@ -436,10 +436,20 @@ public class FormArea  extends NavigationArea
 
     public String getMultilineEditText()
     {
-	return multilineEditLines != null?multilineEditLines.getWholeText():"";
+	if (multilineEditLines  == null)
+	    return null;
+final int count = multilineEditLines.getLineCount();
+	if (count == 0)
+	    return "";
+		final String lineSep = System.lineSeparator();
+	final StringBuilder b = new StringBuilder();
+	b.append(multilineEditLines.getLine(0));
+	for(int i = 1; i < count;i++)
+	    b.append(lineSep).append(multilineEditLines.getLine(i));
+	return new String(b);
     }
 
-        public String[] getMultilineEditTextVec()
+        public String[] getMultilineEditLines()
     {
 	return multilineEditLines != null?multilineEditLines.getLines():new String[0];
     }
@@ -595,7 +605,7 @@ public class FormArea  extends NavigationArea
 	int res = items.size();
 	if (!isMultilineEditActivated())
 	    return res + 1;
-	final int count = multilineEditModel.getLineCount();
+	final int count = multilineEditLines.getLineCount();
 	res += count;
 	if (count == 0)
 	    ++res;
@@ -634,12 +644,12 @@ public class FormArea  extends NavigationArea
 	{
 	    if (pos == 0)
 		return multilineEditCaption;
-	    if (pos < multilineEditModel.getLineCount() + 1)
-		return multilineEditModel.getLine(pos - 1);
+	    if (pos < multilineEditLines.getLineCount() + 1)
+		return multilineEditLines.getLine(pos - 1);
 	    return "";
 	}
-	if (pos < multilineEditModel.getLineCount())
-	    return multilineEditModel.getLine(pos);
+	if (pos < multilineEditLines.getLineCount())
+	    return multilineEditLines.getLine(pos);
 	return "";
     }
 
@@ -685,21 +695,6 @@ public class FormArea  extends NavigationArea
 	if (multilineEditHasCaption())
 	    ++offset;
 	multilineEditHotPoint.setOffsetY(offset);
-    }
-
-    //Adds listener to notify about multiline edit text or hot point changing
-    protected MultilineEdit.Model wrapMultilineEditModel(MultilineEdit.Model model)
-    {
-	NullCheck.notNull(model, "model");
-	final ControlContext env = context;
-	final Area thisArea = this;
-	return new MultilineEditModelChangeListener(model){
-	    @Override public void onMultilineEditChange()
-	    {
-		env.onAreaNewContent(thisArea);
-		env.onAreaNewHotPoint(thisArea);
-	    }
-	};
     }
 
     protected boolean isMultilineEditCovering(int x, int y)
