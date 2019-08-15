@@ -109,75 +109,94 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 
     @Override public ModificationResult deleteChar(int pos, int lineIndex)
     {
-	if (!runPreHook(hookNameBase + ".delete.char.pre"))
+	final Map readOnlyValues = new HashMap();
+	final Map values = new HashMap();
+	if (!runPreHook(hookNameBase + ".delete.char.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.deleteChar(pos, lineIndex);
 	if (res.isPerformed())
-	runPostHook(hookNameBase + ".delete.char.post");
+	    runPostHook(hookNameBase + ".delete.char.post", values, readOnlyValues);
 	return res;
     }
 
     @Override public ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY)
     {
-	if (!runPreHook(hookNameBase + ".delete.region.pre"))
+	final Map readOnlyValues = new HashMap();
+	final Map values = new HashMap();
+	if (!runPreHook(hookNameBase + ".delete.region.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.deleteRegion(fromX, fromY, toX, toY);
 	if (res.isPerformed())
-	runPostHook(hookNameBase + ".delete.region.post");
+	    runPostHook(hookNameBase + ".delete.region.post", values, readOnlyValues);
 	return res;
     }
 
     @Override public ModificationResult insertRegion(int x, int y, String[] lines)
     {
 	NullCheck.notNullItems(lines, "lines");
-	if (!runPreHook(hookNameBase + ".insert.region.pre"))
+	final Map readOnlyValues = new HashMap();
+	final Map values = new HashMap();
+	if (!runPreHook(hookNameBase + ".insert.region.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.insertRegion(x, y, lines);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".insert.region.post");
+	    runPostHook(hookNameBase + ".insert.region.post", values, readOnlyValues);
 	return res;
     }
 
     @Override public ModificationResult putChars(int pos, int lineIndex, String str)
     {
 	NullCheck.notNull(str, "str");
-	if (!runPreHook(hookNameBase + ".insert.chars.pre"))
+	final Map readOnlyValues = new HashMap();
+	final Map values = new HashMap();
+	readOnlyValues.put("chars", str);
+	values.put("x", new Integer(pos));
+	values.put("y", new Integer(lineIndex));
+	if (!runPreHook(hookNameBase + ".insert.chars.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.putChars(pos, lineIndex, str);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".insert.chars.post");
+	    runPostHook(hookNameBase + ".insert.chars.post", values, readOnlyValues);
 	return res;
     }
 
     @Override public ModificationResult mergeLines(int firstLineIndex)
     {
-	if (!runPreHook(hookNameBase + ".merge.lines.pre"))
+	final Map readOnlyValues = new HashMap();
+	final Map values = new HashMap();
+	if (!runPreHook(hookNameBase + ".merge.lines.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.mergeLines(firstLineIndex);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".merge.lines.post");
+	    runPostHook(hookNameBase + ".merge.lines.post", values, readOnlyValues);
 	return res;
     }
 
     @Override public ModificationResult splitLine(int pos, int lineIndex)
     {
-	if (!runPreHook(hookNameBase + ".split.lines.pre"))
+	final Map readOnlyValues = new HashMap();
+	final Map values = new HashMap();
+	if (!runPreHook(hookNameBase + ".split.lines.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.splitLine(pos, lineIndex);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".split.post");
+	    runPostHook(hookNameBase + ".split.post", values, readOnlyValues);
 	return res;
     }
 
     @Override public ModificationResult doEditAction(TextEditAction action)
     {
 	NullCheck.notNull(action, "action");
+	final Map readONlyValues = new HashMap();
+	final Map values = new HashMap();
 	return base.doEditAction(action);
     }
 
-    protected boolean runPreHook(String hookName)
+    protected boolean runPreHook(String hookName, Map values, Map readOnlyValues)
     {
 	NullCheck.notEmpty(hookName, "hookName");
+	NullCheck.notNull(values, "readOnlyValues");
+	NullCheck.notNull(readOnlyValues, "readOnlyValues");
 	final AtomicBoolean mayContinue = new AtomicBoolean(true);
 	doEditAction((lines, hotPoint)->{
 		final HookObject linesObj = new MutableLinesHookObject(lines);
@@ -193,6 +212,10 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 			    case "hotPoint":
 				return hotPointObj;
 			    default:
+				if (values.containsKey(name) &&  values.get(name) != null)
+				    return values.get(name);
+				if (readOnlyValues.containsKey(name) &&  readOnlyValues.get(name) != null)
+				    return readOnlyValues.get(name);
 				return super.getMember(name);
 			    }
 			}
@@ -229,9 +252,11 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 	return mayContinue.get();
     }
 
-    protected boolean runPostHook(String hookName)
+    protected boolean runPostHook(String hookName, Map values, Map readOnlyValues)
     {
 	NullCheck.notEmpty(hookName, "hookName");
+	NullCheck.notNull(values, "readOnlyValues");
+	NullCheck.notNull(readOnlyValues, "readOnlyValues");
 	final AtomicBoolean success = new AtomicBoolean(true);
 	doEditAction((lines, hotPoint)->{
 		final HookObject linesObj = new MutableLinesHookObject(lines);
@@ -247,6 +272,10 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 			    case "hotPoint":
 				return hotPointObj;
 			    default:
+				if (values.containsKey(name) &&  values.get(name) != null)
+				    return values.get(name);
+				if (readOnlyValues.containsKey(name) &&  readOnlyValues.get(name) != null)
+				    return readOnlyValues.get(name);
 				return super.getMember(name);
 			    }
 			}
