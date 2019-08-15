@@ -91,8 +91,10 @@ protected void remove(Object arg)
 
     protected void insert(Object arg1, Object arg2)
     {
+	final Number index = ScriptUtils.getNumberValue(arg1);
+	final String line = ScriptUtils.getStringValue(arg2);
+	if (index == null || index.intValue() < 0 || line == null)
+	    return;
+	lines.insertLine(index.intValue(), line);
     }
-
-
-    
 }
