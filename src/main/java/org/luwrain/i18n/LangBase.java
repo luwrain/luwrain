@@ -43,11 +43,12 @@ protected final Map<String, String> chars;
 
     @Override public String hasSpecialNameOfChar(char ch)
     {
-	if (Character.isDigit(ch) || Character.isLetter(ch))
+	if (Character.isLetterOrDigit(ch))
 	    return null;
 	final String name = Character.getName(ch);
 	if (name == null || name.isEmpty())
 	    return null;
-	return chars.containsKey(name)?chars.get(name):name;
+	final String newName = name.toLowerCase().replaceAll(" ", "_").replaceAll("-", "_");
+	return chars.containsKey(newName)?chars.get(newName):newName;
     }
 }
