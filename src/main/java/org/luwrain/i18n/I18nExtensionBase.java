@@ -1,7 +1,7 @@
 /*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
-   This file is part of the LUWRAIN.
+   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -13,6 +13,9 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
 */
+
+//LWR_API 2.0
+
 
 package org.luwrain.i18n;
 
@@ -29,12 +32,19 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
     static public final String STRINGS_PREFIX = "strings.";
     static public final String CHARS_PREFIX = "chars.";
 
+    protected final String langName;
+
     protected final Map<String, String> staticStrings = new HashMap<String, String>();
     protected final Map<String, String> chars = new HashMap<String, String>();
 
-    protected void loadProperties(String langName, ClassLoader classLoader, String resourcePath, I18nExtension ext) throws IOException
+    public I18nExtensionBase(String langName)
     {
 	NullCheck.notEmpty(langName, "langName");
+	this.langName = langName;
+    }
+
+    protected void loadProperties(ClassLoader classLoader, String resourcePath, I18nExtension ext) throws IOException
+    {
 	NullCheck.notNull(classLoader, "classLoader");
 		NullCheck.notEmpty(resourcePath, "resourcePath");
 	NullCheck.notNull(ext, "ext");
@@ -56,18 +66,28 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
 		Log.warning(langName, "key \'" + k + "\' in resource file " + resourcePath+ " doesn\'t have value");
 		continue;
 	    }
+	    processPropItem(k, v, classLoader, ext, resourcePath);
+	}
+    }
 
-	    //commands
+    protected void processPropItem(String k, String v, ClassLoader classLoader, I18nExtension ext, String resourcePath)
+    {
+	NullCheck.notEmpty(k, "k");
+	NullCheck.notNull(v, "v");
+	NullCheck.notNull(classLoader, "classLoader");
+	NullCheck.notNull(ext, "ext");
+	NullCheck.notNull(resourcePath, "resourcePath");
+		    //commands
 	    if (k.trim().startsWith(COMMAND_PREFIX))
 	    {
 		final String c = k.trim().substring(COMMAND_PREFIX.length());
 	    if (c.trim().isEmpty())
 	    {
 		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
-		continue;
+		return;
 	    }
 	    ext.addCommandTitle(langName, c.trim(), v.trim());
-	continue;
+	return;
 	    }
 
 	    //statics
@@ -77,10 +97,10 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
 	    if (c.trim().isEmpty())
 	    {
 		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
-		continue;
+		return;
 	    }
 	    staticStrings.put(c.trim(), v.trim());
-	continue;
+	return;
 	    }
 
 	    //chars
@@ -90,10 +110,10 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
 	    if (c.trim().isEmpty())
 	    {
 		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
-		continue;
+		return;
 	    }
 chars.put(c.trim(), v.trim());
-	continue;
+	return;
 	    }
 
 	    //strings
@@ -103,19 +123,18 @@ chars.put(c.trim(), v.trim());
 	    if (c.trim().isEmpty())
 	    {
 		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
-		continue;
+		return;
 	    }
-	    if (!addProxyByClassName(langName, classLoader, c.trim(), v.trim(), resourcePath, ext))
+	    if (!addProxyByClassName(classLoader, c.trim(), v.trim(), resourcePath, ext))
 	Log.warning(langName, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
-	continue;
+	return;
 	    }
-	}
+
     }
 
-    protected boolean addProxyByClass(String langName, ClassLoader classLoader, String name, Class stringsClass, 
+    protected boolean addProxyByClass(ClassLoader classLoader, String name, Class stringsClass, 
 				      String propertiesResourceName, I18nExtension ext)
     {
-	NullCheck.notNull(langName, "langName");
 	NullCheck.notNull(classLoader, "classLoader");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(stringsClass, "stringsClass");
@@ -134,10 +153,9 @@ chars.put(c.trim(), v.trim());
 	return true;
 	}
 
-    protected boolean addProxyByClassName(String langName, ClassLoader classLoader, String name, String className, 
+    protected boolean addProxyByClassName(ClassLoader classLoader, String name, String className, 
 					  String propertiesResourceName, I18nExtension ext)
     {
-	NullCheck.notNull(langName, "langName");
 	NullCheck.notNull(classLoader, "classLoader");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(className, "className");
@@ -151,6 +169,6 @@ chars.put(c.trim(), v.trim());
 	{
 	    return false;
 	}
-	return addProxyByClass(langName, classLoader, name, cl, propertiesResourceName, ext);
+	return addProxyByClass(classLoader, name, cl, propertiesResourceName, ext);
     }
 }

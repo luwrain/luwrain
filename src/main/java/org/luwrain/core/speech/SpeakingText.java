@@ -21,7 +21,7 @@ import org.luwrain.core.*;
 public class SpeakingText
 {
     private final org.luwrain.core.extensions.Manager extensions;
-    
+
     public SpeakingText(org.luwrain.core.extensions.Manager extensions)
     {
 	NullCheck.notNull(extensions, "extensions");
