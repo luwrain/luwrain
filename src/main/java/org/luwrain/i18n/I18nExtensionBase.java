@@ -33,9 +33,8 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
     static public final String CHARS_PREFIX = "chars.";
 
     protected final String langName;
-
-    protected final Map<String, String> staticStrings = new HashMap<String, String>();
-    protected final Map<String, String> chars = new HashMap<String, String>();
+    protected final Map<String, String> staticStrings = new HashMap();
+    protected final Map<String, String> chars = new HashMap();
 
     public I18nExtensionBase(String langName)
     {
@@ -46,7 +45,7 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
     protected void loadProperties(ClassLoader classLoader, String resourcePath, I18nExtension ext) throws IOException
     {
 	NullCheck.notNull(classLoader, "classLoader");
-		NullCheck.notEmpty(resourcePath, "resourcePath");
+	NullCheck.notEmpty(resourcePath, "resourcePath");
 	NullCheck.notNull(ext, "ext");
 	final Properties props = new Properties();
 	final URL url = classLoader.getResource(resourcePath);
@@ -77,63 +76,61 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
 	NullCheck.notNull(classLoader, "classLoader");
 	NullCheck.notNull(ext, "ext");
 	NullCheck.notNull(resourcePath, "resourcePath");
-		    //commands
-	    if (k.trim().startsWith(COMMAND_PREFIX))
-	    {
-		final String c = k.trim().substring(COMMAND_PREFIX.length());
+	//commands
+	if (k.trim().startsWith(COMMAND_PREFIX))
+	{
+	    final String c = k.trim().substring(COMMAND_PREFIX.length());
 	    if (c.trim().isEmpty())
 	    {
-		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
+		Log.warning(langName, "the illegal key \'" + k + "\' in resource file " + resourcePath);
 		return;
 	    }
 	    ext.addCommandTitle(langName, c.trim(), v.trim());
-	return;
-	    }
+	    return;
+	}
 
-	    //statics
-	    if (k.trim().startsWith(STATIC_PREFIX))
-	    {
-		final String c = k.trim().substring(STATIC_PREFIX.length());
+	//statics
+	if (k.trim().startsWith(STATIC_PREFIX))
+	{
+	    final String c = k.trim().substring(STATIC_PREFIX.length());
 	    if (c.trim().isEmpty())
 	    {
-		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
+		Log.warning(langName, "the illegal key \'" + k + "\' in resource file " + resourcePath);
 		return;
 	    }
 	    staticStrings.put(c.trim(), v.trim());
-	return;
-	    }
+	    return;
+	}
 
-	    //chars
-	    if (k.trim().startsWith(CHARS_PREFIX))
-	    {
-		final String c = k.trim().substring(CHARS_PREFIX.length());
+	//chars
+	if (k.trim().startsWith(CHARS_PREFIX))
+	{
+	    final String c = k.trim().substring(CHARS_PREFIX.length());
 	    if (c.trim().isEmpty())
 	    {
-		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
+		Log.warning(langName, "the illegal key \'" + k + "\' in resource file " + resourcePath);
 		return;
 	    }
-chars.put(c.trim(), v.trim());
-	return;
-	    }
+	    chars.put(c.trim(), v.trim());
+	    return;
+	}
 
-	    //strings
-	    if (k.trim().startsWith(STRINGS_PREFIX))
-	    {
-		final String c = k.trim().substring(STRINGS_PREFIX.length());
+	//strings
+	if (k.trim().startsWith(STRINGS_PREFIX))
+	{
+	    final String c = k.trim().substring(STRINGS_PREFIX.length());
 	    if (c.trim().isEmpty())
 	    {
-		Log.warning(langName, "illegal key \'" + k + "\' in resource file " + resourcePath);
+		Log.warning(langName, "the illegal key \'" + k + "\' in resource file " + resourcePath);
 		return;
 	    }
 	    if (!addProxyByClassName(classLoader, c.trim(), v.trim(), resourcePath, ext))
-	Log.warning(langName, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
-	return;
-	    }
-
+		Log.warning(langName, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
+	    return;
+	}
     }
 
-    protected boolean addProxyByClass(ClassLoader classLoader, String name, Class stringsClass, 
-				      String propertiesResourceName, I18nExtension ext)
+    protected boolean addProxyByClass(ClassLoader classLoader, String name, Class stringsClass, String propertiesResourceName, I18nExtension ext)
     {
 	NullCheck.notNull(classLoader, "classLoader");
 	NullCheck.notEmpty(name, "name");
@@ -151,10 +148,9 @@ chars.put(c.trim(), v.trim());
 	}
 	ext.addStrings(langName, "luwrain." + name, strings);
 	return true;
-	}
+    }
 
-    protected boolean addProxyByClassName(ClassLoader classLoader, String name, String className, 
-					  String propertiesResourceName, I18nExtension ext)
+    protected boolean addProxyByClassName(ClassLoader classLoader, String name, String className, String propertiesResourceName, I18nExtension ext)
     {
 	NullCheck.notNull(classLoader, "classLoader");
 	NullCheck.notEmpty(name, "name");
