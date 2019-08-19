@@ -51,4 +51,9 @@ protected final Map<String, String> chars;
 	final String newName = name.toLowerCase().replaceAll(" ", "_").replaceAll("-", "_");
 	return chars.containsKey(newName)?chars.get(newName):newName;
     }
+
+        @Override public String getNumberStr(Number num, GrammaticalAttr gramAttr, Word depWord)
+    {
+	return null;
+    }
 }

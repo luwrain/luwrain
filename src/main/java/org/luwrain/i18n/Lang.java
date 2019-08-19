@@ -52,7 +52,7 @@ public interface Lang
     //FIXME:
     String pastTimeBrief(java.util.Date date);
     String getNumberStr(int count, String entities);
-
+    String getNumberStr(Number num, GrammaticalAttr gramAttr, Word depWord);
     String getSpokenText(String text, SpokenTextType spokenTextType);
 
 }

@@ -17,6 +17,7 @@
 package org.luwrain.core.script.api;
 
 import jdk.nashorn.api.scripting.*;
+import java.util.function.*;
 
 import org.luwrain.core.*;
 import org.luwrain.i18n.*;
@@ -36,8 +37,15 @@ final class LangObj extends AbstractJSObject
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
+	    case "proba":
+	    return (Consumer)this::proba;
 	default:
 	    return super.getMember(name);
 	}
+    }
+
+    public void proba(Object obj)
+    {
+	Log.debug("proba", obj.toString());
     }
 }
