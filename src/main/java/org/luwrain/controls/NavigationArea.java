@@ -24,6 +24,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain .util.*;
+import org.luwrain.i18n.LangStatic;//FIXME:deleting
 
 /**
  * An area with basic navigation operations. This abstract class

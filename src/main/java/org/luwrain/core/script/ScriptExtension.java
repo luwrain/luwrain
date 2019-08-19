@@ -101,7 +101,7 @@ class ScriptExtension implements org.luwrain.core.extensions.DynamicExtension, o
 	return new Shortcut[0];
     }
 
-    @Override public void i18nExtension(Luwrain luwrain, I18nExtension i18nExt)
+    @Override public void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt)
     {
     }
 

@@ -21,6 +21,7 @@ package org.luwrain.controls;
 import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.i18n.LangStatic;//FIXME:deleting
 
 /**
  * The area with a set of controls. {@code FormArea} lets the user to

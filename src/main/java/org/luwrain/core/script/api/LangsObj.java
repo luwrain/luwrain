@@ -19,6 +19,7 @@ package org.luwrain.core.script.api;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.i18n.*;
 import org.luwrain.script.*;
 
 final class LangsObj extends EmptyHookObject

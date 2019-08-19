@@ -23,6 +23,7 @@ package org.luwrain.controls;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
+import org.luwrain.i18n.LangStatic;//FIXME:deleting
 
 public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 {

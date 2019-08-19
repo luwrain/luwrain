@@ -16,7 +16,7 @@
 
 //LWR_API 1.0
 
-package org.luwrain.core;
+package org.luwrain.i18n;
 
 import org.luwrain.core.Luwrain.SpokenTextType;
 

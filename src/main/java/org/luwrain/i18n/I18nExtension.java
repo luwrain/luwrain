@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.i18n;
 
 public interface I18nExtension
 {

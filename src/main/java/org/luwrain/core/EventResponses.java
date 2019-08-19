@@ -18,6 +18,8 @@ package org.luwrain.core;
 
 import java.util.*;
 
+import org.luwrain.i18n.*;
+
 public final class  EventResponses
 {
     static public class Hint implements EventResponse

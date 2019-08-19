@@ -16,7 +16,6 @@
 
 //LWR_API 2.0
 
-
 package org.luwrain.i18n;
 
 import java.net.*;

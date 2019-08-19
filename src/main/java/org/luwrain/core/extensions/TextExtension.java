@@ -189,7 +189,7 @@ public final class TextExtension implements DynamicExtension
 	return new Shortcut[0];
     }
 
-    @Override public void i18nExtension(Luwrain luwrain, I18nExtension i18nExt)
+    @Override public void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(i18nExt, "i18nExt");

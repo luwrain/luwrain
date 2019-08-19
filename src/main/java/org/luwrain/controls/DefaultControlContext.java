@@ -44,7 +44,7 @@ public class DefaultControlContext implements ControlContext
     }
 
 
-    @Override public void sayStaticStr(LangStatic id)
+    @Override public void sayStaticStr(org.luwrain.i18n.LangStatic id)
     {
 	NullCheck.notNull(id, "id");
 	say(staticStr(id));
@@ -104,7 +104,7 @@ public class DefaultControlContext implements ControlContext
     }
     **/
 
-    @Override public String staticStr(LangStatic id)
+    @Override public String staticStr(org.luwrain.i18n.LangStatic id)
     {
 	NullCheck.notNull(id, "id");
 	return luwrain.i18n().staticStr(id);
@@ -144,7 +144,7 @@ public class DefaultControlContext implements ControlContext
 	return luwrain.getClipboard();
     }
 
-    @Override public I18n getI18n()
+    @Override public org.luwrain.i18n.I18n getI18n()
     {
 	return luwrain.i18n();
     }

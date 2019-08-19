@@ -43,7 +43,7 @@ public class EmptyExtension implements Extension
 	return new ExtensionObject[0];
     }
 
-    @Override public void i18nExtension(Luwrain luwrain, I18nExtension i18nExt)
+    @Override public void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt)
     {
     }
 

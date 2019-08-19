@@ -154,7 +154,7 @@ public interface Luwrain extends PropertiesBase
     //Never returns null, doesn't take empty strings
     UniRefInfo getUniRefInfo(String uniRef);
     void executeBkg(java.util.concurrent.FutureTask task);
-    I18n i18n();//FIXME:
+    org.luwrain.i18n.I18n i18n();
     void launchApp(String shortcutName);
     void launchApp(String shortcutName, String[] args);
     String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException;
@@ -264,7 +264,7 @@ public interface Luwrain extends PropertiesBase
     void setEventResponse(EventResponse eventResponse);
     void silence();
     void speakLetter(char letter, int pitch, int rate);
-    String staticStr(LangStatic id);//FIXME:
+    String staticStr(org.luwrain.i18n.LangStatic id);//FIXME:
 
         //never returns null
     String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType);

@@ -25,6 +25,7 @@ import java.nio.file.*;
 import org.luwrain.base.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
+import org.luwrain.i18n.*;
 import org.luwrain.speech.Channel;
 
 final class LuwrainImpl implements Luwrain

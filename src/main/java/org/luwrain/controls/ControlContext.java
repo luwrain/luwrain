@@ -26,7 +26,7 @@ public interface ControlContext
 {
     void say(String text);
     void say(String text, Sounds sound);
-    void sayStaticStr(LangStatic id);
+    void sayStaticStr(org.luwrain.i18n.LangStatic id);
     void sayLetter(char letter);
     void onAreaNewContent(Area area);
     void onAreaNewName(Area area);
@@ -34,14 +34,14 @@ public interface ControlContext
 int getAreaVisibleHeight(Area area);
     int getAreaVisibleWidth(Area area);
     void popup(Popup popupObj);
-    String staticStr(LangStatic id);
+    String staticStr(org.luwrain.i18n.LangStatic id);
     String getStaticStr(String id);
     void playSound(Sounds sound);
     UniRefInfo getUniRefInfo(String uniRef);
     void silence();
     void setEventResponse(EventResponse eventResponse);
     Clipboard getClipboard();
-    I18n getI18n();
+    org.luwrain.i18n.I18n getI18n();
     int getScreenWidth();
     int getScreenHeight();
     void executeBkg(java.util.concurrent.FutureTask task);

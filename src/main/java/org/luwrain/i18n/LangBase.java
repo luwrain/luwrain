@@ -22,7 +22,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
-abstract public class LangBase implements org.luwrain.core.Lang
+abstract public class LangBase implements Lang
 {
 protected final Map<String, String> staticStrings;
 protected final Map<String, String> chars;

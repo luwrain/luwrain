@@ -18,6 +18,8 @@ package org.luwrain.core;
 
 import java.util.*;
 
+import org.luwrain.i18n.*;
+
 final class I18nImpl implements I18n, I18nExtension
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;

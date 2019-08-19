@@ -24,6 +24,7 @@ import java.nio.file.*;
 
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
+import org.luwrain.i18n.*;
 import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
