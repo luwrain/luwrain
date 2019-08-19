@@ -21,18 +21,14 @@ import jdk.nashorn.api.scripting.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-final class I18nObj extends AbstractJSObject
+final class LangObj extends AbstractJSObject
 {
-    private final Luwrain luwrain;
-    private final LangObj activeLangObj;
-    private final LangsObj langsObj;
+    private final Lang lang;
 
-    I18nObj(Luwrain luwrain)
+    LangObj(Lang lang)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	this.luwrain = luwrain;
-	this.activeLangObj = new LangObj(luwrain.i18n().getActiveLang());
-	this.langsObj = new LangsObj(luwrain.i18n());
+	NullCheck.notNull(lang, "lang");
+	this.lang = lang;
     }
 
     @Override public Object getMember(String name)
@@ -40,22 +36,6 @@ final class I18nObj extends AbstractJSObject
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
-	case "lang":
-	    return activeLangObj;
-	case "langs":
-	    return langsObj;
-	case "static":
-	    return new AbstractJSObject(){
-		    @Override public Object getMember(String name)
-		{
-		    NullCheck.notNull(name, "name");
-		    if (name.isEmpty())
-			return super.getMember(name);
-		    if (name.length() >= 2)
-			return luwrain.i18n().getStaticStr(Character.toUpperCase(name.charAt(0)) + name.substring(1));
-		    return luwrain.i18n().getStaticStr(name);
-		}
-	    };
 	default:
 	    return super.getMember(name);
 	}
