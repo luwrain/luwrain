@@ -268,26 +268,32 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector2
     {
 	checkPos(pos, lineIndex);
 	beginEditTrans();
-	if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
-	    lines.addLine("");
-	final int lineCount = lines.getLineCount();
-	if (lineIndex >= lineCount)
-	    throw new IllegalArgumentException("lineIndex (" + lineIndex + ") must be less than the number of lines (" + lineCount + ")");
-	final String line = lines.getLine(lineIndex);
-	NullCheck.notNull(line, "line");
-	if (pos > line.length())
-	    throw new IllegalArgumentException("pos (" + pos + ") may not be negative than the length of the line (" + line.length() + ")");
-	lines.setLine(lineIndex, line.substring(0, pos));
-	lines.insertLine(lineIndex + 1, line.substring(pos));
-	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
-	{
-	    hotPoint.setHotPointY(lineIndex + 1);
-	    hotPoint.setHotPointX(hotPoint.getHotPointX() - pos);
-	} else
-	    if (hotPoint.getHotPointY() > lineIndex)
-		hotPoint.setHotPointY(hotPoint.getHotPointY() + 1);
-	endEditTrans(false);
-	return new ModificationResult(true, lines.getLine(lineIndex + 1));
+	final String newLine;
+	try {
+	    if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
+		lines.addLine("");
+	    final int lineCount = lines.getLineCount();
+	    if (lineIndex >= lineCount)
+		throw new IllegalArgumentException("lineIndex (" + lineIndex + ") must be less than the number of lines (" + lineCount + ")");
+	    final String line = lines.getLine(lineIndex);
+	    NullCheck.notNull(line, "line");
+	    if (pos > line.length())
+		throw new IllegalArgumentException("pos (" + pos + ") may not be negative than the length of the line (" + line.length() + ")");
+	    lines.setLine(lineIndex, line.substring(0, pos));
+	    newLine = line.substring(pos);
+	    lines.insertLine(lineIndex + 1, newLine);
+	    if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
+	    {
+		hotPoint.setHotPointY(lineIndex + 1);
+		hotPoint.setHotPointX(hotPoint.getHotPointX() - pos);
+	    } else
+		if (hotPoint.getHotPointY() > lineIndex)
+		    hotPoint.setHotPointY(hotPoint.getHotPointY() + 1);
+	}
+	finally {
+	    endEditTrans(false);
+	}
+	return new ModificationResult(true, newLine);
     }
 
     @Override public ModificationResult doEditAction(TextEditAction action)

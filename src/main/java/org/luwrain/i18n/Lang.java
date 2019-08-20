@@ -53,6 +53,7 @@ public interface Lang
     String pastTimeBrief(java.util.Date date);
     String getNumberStr(int count, String entities);
     String getNumberStr(Number num, GrammaticalAttr gramAttr, Word depWord);
+    Word[] getWord(String word);
     String getSpokenText(String text, SpokenTextType spokenTextType);
 
 }

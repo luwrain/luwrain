@@ -56,4 +56,9 @@ protected final Map<String, String> chars;
     {
 	return null;
     }
+
+    @Override public Word[] getWord(String word)
+    {
+	return new Word[0];
+    }
 }
