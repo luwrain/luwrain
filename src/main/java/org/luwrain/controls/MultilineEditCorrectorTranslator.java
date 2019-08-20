@@ -211,21 +211,31 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector2
 	NullCheck.notNull(str, "str");
 	checkPos(pos, lineIndex);
 	beginEditTrans();
-	if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
-	    lines.addLine("");
-	final int count = lines.getLineCount();
-	if (lineIndex >= count)
-	    throw new IllegalArgumentException("lineIndex (" + lineIndex + ") must be less then the number of lines (" + count + ")");
-	final String line = lines.getLine(lineIndex);
-	if (pos > line.length())
-	    throw new IllegalArgumentException("pos (" + pos + ") may not be greater than the length of the line (" + line.length() + ")");
-	NullCheck.notNull(line, "line");
-	lines.setLine(lineIndex, line.substring(0, pos) + str + line.substring(pos));
-	if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
-	    hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
-	endEditTrans(false);
+	try {
+	    if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
+		lines.addLine("");
+	    final int count = lines.getLineCount();
+	    if (lineIndex >= count)
+		throw new IllegalArgumentException("lineIndex (" + lineIndex + ") must be less then the number of lines (" + count + ")");
+	    final String line = lines.getLine(lineIndex);
+	    if (pos > line.length())
+		throw new IllegalArgumentException("pos (" + pos + ") may not be greater than the length of the line (" + line.length() + ")");
+	    lines.setLine(lineIndex, line.substring(0, pos) + str + line.substring(pos));
+	    if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
+		hotPoint.setHotPointX(hotPoint.getHotPointX() + (str != null?str.length():0));
+	}
+	finally {
+	    endEditTrans(false);
+	}
+	if (str.length() == 1 && Character.isSpace(str.charAt(0)))
+	{
+	    final String word = getWordPriorTo(pos, lineIndex);
+	    if (!word.isEmpty())
+		return new ModificationResult(true, word, str.charAt(0));
+	    return new ModificationResult(true, str.charAt(0));
+	}
 	if (str.length() == 1)
-	    return new ModificationResult(true,str.charAt(0));
+	    return new ModificationResult(true, str.charAt(0));
 	return new ModificationResult(true, str);
     }
 
@@ -284,6 +294,23 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector2
 	NullCheck.notNull(action, "action");
 	action.doTextEdit(lines, hotPoint);
 	return new ModificationResult(true);
+    }
+
+    protected String getWordPriorTo(int pos, int lineIndex)
+    {
+String res = TextUtils.getLastWord(getLine(lineIndex), pos);
+if (!res.isEmpty())
+    return res;
+if (lineIndex == 0)
+    return "";
+for(int i = lineIndex - 1;i >= 0;i--)
+{
+    final String line = getLine(i);
+    res = TextUtils.getLastWord(line, line.length());
+    if (!res.isEmpty())
+	return res;
+}
+return ""; 
     }
 
     protected void checkPos(int pos, int lineIndex)

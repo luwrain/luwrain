@@ -104,8 +104,34 @@ public class MultilineEdit2
 
 	ModificationResult insertRegion(int x, int y, String[] lines);
 
-	//Adds empty line with pos=0 and line=0 if previously there were no lines at all
-	ModificationResult putChars(int pos, int lineIndex, String str);
+
+
+
+	/**
+	 * Puts one or several characters at some position. The position expects
+	 * to be valid in the content of the model, except of the case when there
+	 * are no lines at all, {@code lineIndex} equals to zero and {@code pos}
+	 * equals to zero. In this case the method must insert one empty line
+	 * prior to making any required changes.
+	 * <p>
+	 * After performing the operation, the method must prepare the {@link ModificationResult}
+	 * object. If the {@code chars} arguments has the
+	 * length greater than one, the string argument of the result must be set
+	 * to the value of {@code chars} argument.
+	 * <p>
+	 * If {@code chars } argument has the length equals to one, this single
+	 * character must be returned as the character argument of the result. If
+	 * the method is requested to insert a single spacing character, the
+	 * string argument of the result must contain the last word prior to the
+	 * inserting position. If there is no any word prior to the inserting
+	 * position, the result may have the string argument empty.
+	 *
+	 * @param pos The position on the line to put characters at
+	 * @param lineIndex The index of the line to put characters on
+	 * @param chars The characters to put
+	 * @return The {@link ModificationResult} object with the flag if the operation was performed and other corresponding information
+	 */
+	ModificationResult putChars(int pos, int lineIndex, String chars);
 
 	ModificationResult mergeLines(int firstLineIndex);
 

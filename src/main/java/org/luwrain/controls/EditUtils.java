@@ -93,27 +93,17 @@ public final class EditUtils
 	}
 	@Override public boolean onChar(ModificationResult res)
 	{
-
-	    	    NullCheck.notNull(res, "res");
+	    NullCheck.notNull(res, "res");
 	    if (!res.isPerformed())
 		return false;
-	    context.setEventResponse(DefaultEventResponse.letter(res.getCharArg()));
-	    /*
-	if (!done)
-	    return false;
-	if (Character.isSpace(c))
-	{
-	    final String newLine = model.getLine(model.getHotPointY());
-	    final int pos = Math.min(model.getHotPointX(), newLine.length());
-	    final String lastWord = TextUtils.getLastWord(newLine, pos);
-	    NullCheck.notNull(lastWord, "lastWord");
-		if (!lastWord.isEmpty())
-		    environment.say(lastWord); else
-		    environment.setEventResponse(DefaultEventResponse.hint(Hint.SPACE));
-	} else
-		environment.sayLetter(c);
-	    return true;
-	    */
+	    if (Character.isSpace(res.getCharArg()))
+	    {
+		final String word = res.getStringArg();
+		if (word != null && !word.trim().isEmpty())
+		    context.setEventResponse(DefaultEventResponse.text(word)); else
+		    context.setEventResponse(DefaultEventResponse.letter(res.getCharArg()));
+	    } else
+		context.setEventResponse(DefaultEventResponse.letter(res.getCharArg()));
 	    return true;
 	}
     }
