@@ -16,9 +16,11 @@
 
 //LWR_API 1.0
 
-package org.luwrain.core;
+package org.luwrain.util;
 
-public class TextUtils
+import org.luwrain.core.*;
+
+public final class TextUtils
 {
     static public String getLastWord(String text, int upToPos)
     {
