@@ -60,9 +60,12 @@ public final class SimpleCentered implements Application
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (super.onInputEvent(event))
+
+		    if (SimpleCentered.this.handleKeyboardEvent(event))
 			return true;
-		    return SimpleCentered.this.handleKeyboardEvent(event);
+				    		    if (super.onInputEvent(event))
+			return true;
+						    return false;
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
@@ -109,10 +112,15 @@ bkgSound = requestBkgSound();
 
     private boolean handleKeyboardEvent(KeyboardEvent event)
     {
-	if (jsObj.get("onInputEvent") == null || !(jsObj.get("onInputEvent") instanceof JSObject))
+	NullCheck.notNull(event, "event");
+	final Object funcObj = org.luwrain.script.ScriptUtils.getMember(jsObj, "onInputEvent");
+	if (funcObj == null || !(funcObj instanceof JSObject))
 	    return false;
-	final JSObject func = (JSObject)jsObj.get("onInputEvent");
-	final Object res = func.call(jsObj, new Object[]{makeInputEventName(event)});
+	final JSObject func = (JSObject)funcObj;
+	if (!func.isFunction())
+	    return false;
+	final Object arg = org.luwrain.script.ScriptUtils.createInputEvent(event);
+	final Object res = func.call(jsObj, new Object[]{arg});
 	if (res != null && (res instanceof java.lang.Boolean))
 	    if (((java.lang.Boolean)res).booleanValue())
 	{
@@ -205,14 +213,6 @@ private boolean theSameLines(String[] value)
 	    return false;
     return true;
 }
-
-    private String makeInputEventName(KeyboardEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	if (event.isSpecial())
-	    return event.getSpecial().toString();
-	return "" + event.getChar();
-    }
 
 @Override public AreaLayout getAreaLayout()
 {
