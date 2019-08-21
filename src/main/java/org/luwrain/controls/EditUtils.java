@@ -84,13 +84,13 @@ public final class EditUtils
 	}
 	@Override public boolean onSplitLines(ModificationResult res)
 	{
-	    /*
-	      if (line == null)
-	    return false;
-	if (line.isEmpty())
-	    environment.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    environment.say(line);
-    */
+	    NullCheck.notNull(res, "res");
+	    if (!res.isPerformed())
+		return false;
+	    final String line = res.getStringArg();
+	    if (line == null || line.isEmpty())
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
+		context.setEventResponse(DefaultEventResponse.text(line));
 	    return true;
 	}
 	@Override public boolean onChar(ModificationResult res)

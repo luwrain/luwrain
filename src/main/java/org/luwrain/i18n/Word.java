@@ -20,4 +20,5 @@ package org.luwrain.i18n;
 
 public interface Word
 {
+    POS getPos();
 }

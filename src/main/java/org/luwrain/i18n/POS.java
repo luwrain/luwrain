@@ -20,6 +20,7 @@ package org.luwrain.i18n;
 
 public enum POS
 {
+    UNKNOWN,
     NOUN,
     VERB,
     ADD,
