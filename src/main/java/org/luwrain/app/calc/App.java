@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -23,8 +23,10 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 
-public class App implements Application
+public final class App implements Application
 {
+    static private final String LOG_COMPONENT = "calc";
+
     private Luwrain luwrain = null;
     private Strings strings = null;
     private Base base = null;
@@ -56,26 +58,26 @@ public class App implements Application
 		}
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
-		     NullCheck.notNull(event, "event");
-		     if (!event.isSpecial())
-			 switch(event.getChar())
-			 {
-			     case '\'':
-			 case '\"':
-			 case ';':
-			     return false;
-			 case '=':
-			     return onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.OK));
-			 default:
-			     if (getContent().getLineCount() == 4 &&
-				 getContent().getLine(0).equals("0") &&
-				 getHotPointX() == 0 &&
-				 getHotPointY() == 0)
-				 getContent().setLine(0, "");
-			     		     return super.onInputEvent(event);
-			 }
-		     return super.onInputEvent(event);
-		     }
+		    NullCheck.notNull(event, "event");
+		    if (!event.isSpecial())
+			switch(event.getChar())
+			{
+			case '\'':
+			case '\"':
+			case ';':
+			    return false;
+			case '=':
+			    return onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.OK));
+			default:
+			    if (getContent().getLineCount() == 4 &&
+				getContent().getLine(0).equals("0") &&
+				getHotPointX() == 0 &&
+				getHotPointY() == 0)
+				getContent().setLine(0, "");
+			    return super.onInputEvent(event);
+			}
+		    return super.onInputEvent(event);
+		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -90,15 +92,17 @@ public class App implements Application
 			setHotPoint(0, 0);
 			return true;
 		    case OK:
-			    try {
-				final Number res = base.calculate(getLinesToEval());
-				if (res != null)
-				    luwrain.message(luwrain.getSpokenText(formatNum(res), Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK); else
+			try {
+			    final Number res = base.calculate(getLinesToEval());
+			    if (res != null)
+				luwrain.message(luwrain.getSpokenText(formatNum(res), Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK); else
 				luwrain.message("0", Luwrain.MessageType.OK);
-							    return true;
-			    }
-			    catch(Exception e)
-			    {
+			    return true;
+			}
+			catch(Exception e)
+			{
+			    Log.debug(LOG_COMPONENT, "calculation faild:" + e.getClass().getName() + ":" + e.getMessage());
+			    e.printStackTrace();
 				luwrain.playSound(Sounds.ERROR);
 				return true;
 			    }

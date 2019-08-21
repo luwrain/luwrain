@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -28,9 +28,9 @@ import org.luwrain.controls.*;
 final class Base
 {
     static private final String RESOURCE_PATH = "org/luwrain/app/calc/prescript.js";
-    
-    private final Luwrain luwrain;
-    private final Strings strings;
+
+    final Luwrain luwrain;
+    final Strings strings;
     final ScriptEngine engine;
 
     Base(Luwrain luwrain, Strings strings)
@@ -65,28 +65,27 @@ final class Base
     private String readPrescript()
     {
 	final StringBuilder b = new StringBuilder();
-
-		final URL url = ClassLoader.getSystemResource(RESOURCE_PATH);
-		try {
-		    		final InputStream is = url.openStream();
-		    try {
-			final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-			String line = reader.readLine();
-			while (line != null)
-			{
-			    b.append(line + "\n");
-			    line = reader.readLine();
-			}
-			return new String(b);
-		    }
-		    finally {
-			is.close();
-		    }
-		}
-		catch(IOException e)
+	final URL url = this.getClass().getClassLoader().getResource(RESOURCE_PATH);
+	try {
+	    final InputStream is = url.openStream();
+	    try {
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		String line = reader.readLine();
+		while (line != null)
 		{
-		    luwrain.crash(e);
-		    return "";
+		    b.append(line + "\n");
+		    line = reader.readLine();
 		}
+		return new String(b);
+	    }
+	    finally {
+		is.close();
+	    }
+	}
+	catch(IOException e)
+	{
+	    luwrain.crash(e);
+	    return "";
+	}
     }
 }
