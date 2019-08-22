@@ -177,7 +177,7 @@ bkgSound = requestBkgSound();
     {
 	final Object obj = org.luwrain.script.ScriptUtils.getMember(jsObj, "hotPointX");
 	final Integer value = org.luwrain.script.ScriptUtils.getIntegerValue(obj);
-	if (value == 0)
+	if (value == null)
 	    return -1;
 	return value.intValue() >= 0?value.intValue():-1;
     }
@@ -186,7 +186,7 @@ bkgSound = requestBkgSound();
     {
 		final Object obj = org.luwrain.script.ScriptUtils.getMember(jsObj, "hotPointY");
 	final Integer value = org.luwrain.script.ScriptUtils.getIntegerValue(obj);
-	if (value == 0)
+	if (value == null)
 	    return -1;
 	return value.intValue() >= 0?value.intValue():-1;
     }
