@@ -59,6 +59,13 @@ public final class Simple implements Application
 		    NullCheck.notNull(event, "event");
 		    if (Simple.this.handleInputEvent(event))
 			return true;
+		    		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
+			{
+			case ESCAPE:
+			    luwrain.closeApp();
+			    return true;
+			}
 				    		    if (super.onInputEvent(event))
 			return true;
 						    return false;

@@ -60,9 +60,15 @@ public final class SimpleCentered implements Application
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-
 		    if (SimpleCentered.this.handleInputEvent(event))
 			return true;
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
+			{
+			case ESCAPE:
+			    luwrain.closeApp();
+			    return true;
+			}
 				    		    if (super.onInputEvent(event))
 			return true;
 						    return false;
