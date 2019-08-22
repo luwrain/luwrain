@@ -57,8 +57,8 @@ public final class Simple implements Application
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (Simple.this.handleKeyboardEvent(event))
-			return false;
+		    if (Simple.this.handleInputEvent(event))
+			return true;
 				    		    if (super.onInputEvent(event))
 			return true;
 						    return false;
@@ -68,6 +68,8 @@ public final class Simple implements Application
 		    NullCheck.notNull(event, "event");
 		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
 			return super.onSystemEvent(event);
+		    		    if (Simple.this.handleSystemEvent(event))
+			return true;
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
@@ -97,27 +99,50 @@ public final class Simple implements Application
 	area.setHotPoint(hotPointX >= 0?hotPointX:0, hotPointY >= 0?hotPointY:0);
     }
 
-    private boolean handleKeyboardEvent(KeyboardEvent event)
+        private boolean handleInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	final Object funcObj = org.luwrain.script.ScriptUtils.getMember(jsObj, "onInputEvent");
 	if (funcObj == null || !(funcObj instanceof JSObject))
 	    return false;
 	final JSObject func = (JSObject)funcObj;
-	if (!func.isFunction())
+		if (!org.luwrain.script.ScriptUtils.isValid(func) || !func.isFunction())
 	    return false;
 	final Object arg = org.luwrain.script.ScriptUtils.createInputEvent(event);
 	final Object res = func.call(jsObj, new Object[]{arg});
 	if (res != null && (res instanceof java.lang.Boolean))
 	    if (((java.lang.Boolean)res).booleanValue())
-	    {
-		updateLines();
-		updateHotPoint();
-		//FIXME:updateBkgSound();
-		return true;
-	    }
+	{
+	    updateLines();
+	    updateHotPoint();
+	    //	    updateBkgSound();
+	    return true;
+	}
 	return false;
     }
+
+            private boolean handleSystemEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	final Object funcObj = org.luwrain.script.ScriptUtils.getMember(jsObj, "onSystemEvent");
+	if (funcObj == null || !(funcObj instanceof JSObject))
+	    return false;
+	final JSObject func = (JSObject)funcObj;
+		if (!org.luwrain.script.ScriptUtils.isValid(func) || !func.isFunction())
+	    return false;
+	final Object arg = org.luwrain.script.ScriptUtils.createSystemEvent(event);
+	final Object res = func.call(jsObj, new Object[]{arg});
+	if (res != null && (res instanceof java.lang.Boolean))
+	    if (((java.lang.Boolean)res).booleanValue())
+	{
+	    updateLines();
+	    updateHotPoint();
+	    //	    updateBkgSound();
+	    return true;
+	}
+	return false;
+    }
+
 
     private String[] requestLines()
     {

@@ -259,6 +259,27 @@ public final class ScriptUtils
 	};
     }
 
+	    static public HookObject createSystemEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	return new EmptyHookObject(){
+	    @Override public Object getMember(String name)
+	    {
+		NullCheck.notNull(name, "name");
+		switch(name)
+		{
+		case "code":
+		    return event.getCode().toString().toLowerCase();
+		case "type":
+		    return event.getType().toString().toLowerCase();
+		default:
+		    return super.getMember(name);
+		}
+	    }
+	};
+    }
+
+
     static public KeyboardEvent getInputEvent(Object obj)
     {
 	if (!isValid(obj))
