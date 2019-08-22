@@ -730,11 +730,11 @@ final class LuwrainImpl implements Luwrain
 	core.script.exec(dataDir, text);
     }
 
-        @Override public String getSpokenText(String text, SpokenTextType type)
+        @Override public String getSpeakableText(String text, SpeakableTextType type)
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(type, "type");
-	return core.i18n.getSpokenText(text, type);
+	return core.i18n.getSpeakableText(text, type);
     }
 
         @Override public void xRunHooks(String hookName, HookRunner runner)

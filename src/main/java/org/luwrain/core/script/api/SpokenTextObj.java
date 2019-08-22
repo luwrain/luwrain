@@ -52,7 +52,7 @@ final class SpokenTextObj extends AbstractJSObject
 	final String text = org.luwrain.script.ScriptUtils.getStringValue(arg);
 	if (text == null)
 	    return null;
-	return luwrain.getSpokenText(text, Luwrain.SpokenTextType.NATURAL);
+	return luwrain.getSpeakableText(text, Luwrain.SpeakableTextType.NATURAL);
     }
 
     private Object programming(Object arg)
@@ -60,6 +60,6 @@ final class SpokenTextObj extends AbstractJSObject
 	final String text = org.luwrain.script.ScriptUtils.getStringValue(arg);
 	if (text == null)
 	    return null;
-	return luwrain.getSpokenText(text, Luwrain.SpokenTextType.PROGRAMMING);
+	return luwrain.getSpeakableText(text, Luwrain.SpeakableTextType.PROGRAMMING);
     }
     }

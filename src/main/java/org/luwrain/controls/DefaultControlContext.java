@@ -170,11 +170,11 @@ public class DefaultControlContext implements ControlContext
 	luwrain.onAreaNewBackgroundSound(area);
     }
 
-        @Override public     String getSpokenText(String text, Luwrain.SpokenTextType type)
+        @Override public     String getSpeakableText(String text, Luwrain.SpeakableTextType type)
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(type, "type");
-	return luwrain.getSpokenText(text, type);
+	return luwrain.getSpeakableText(text, type);
     }
 
             @Override public boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy)

@@ -588,7 +588,7 @@ class Commands
 			core.eventNotProcessedMessage();
 			return;
 		    }
-		    core.message(luwrain.getSpokenText(res, Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK);
+		    core.message(luwrain.getSpeakableText(res, Luwrain.SpeakableTextType.PROGRAMMING), Luwrain.MessageType.OK);
 		    core.getClipboard().set(res);
 		}
 	    },
@@ -608,7 +608,7 @@ class Commands
 			core.eventNotProcessedMessage();
 			return;
 		    }
-		    core.message(luwrain.getSpokenText(res, Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK);
+		    core.message(luwrain.getSpeakableText(res, Luwrain.SpeakableTextType.PROGRAMMING), Luwrain.MessageType.OK);
 		    core.getClipboard().set(res);
 		}
 	    },

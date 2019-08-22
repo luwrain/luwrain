@@ -44,13 +44,13 @@ final class I18nImpl implements I18n, I18nExtension
 	return langs.containsKey(langName)?langs.get(langName):null;
 	    }
 
-    String getSpokenText(String text, Luwrain.SpokenTextType spokenTextType)
+    String getSpeakableText(String text, Luwrain.SpeakableTextType speakableTextType)
     {
 	NullCheck.notNull(text, "text");
-	NullCheck.notNull(spokenTextType, "spokenTextType");
+	NullCheck.notNull(speakableTextType, "speakableTextType");
 	if (chosenLang == null)
 	    return NO_CHOSEN_LANG;
-	final String value = chosenLang.getSpokenText(text, spokenTextType);
+	final String value = chosenLang.getSpeakableText(text, speakableTextType);
 	return value != null?value:"";
     }
 

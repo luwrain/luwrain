@@ -83,7 +83,7 @@ final class Listening
 		{
 		    luwrain.runUiSafely(()->onFinish(text, extraInfo));
 		}};
-	channel .speak(luwrain.getSpokenText(text, Luwrain.SpokenTextType.NATURAL), listener, sett.getListeningPitch(50) - 50, 50 - sett.getListeningRate(50), false);
+	channel .speak(luwrain.getSpeakableText(text, Luwrain.SpeakableTextType.NATURAL), listener, sett.getListeningPitch(50) - 50, 50 - sett.getListeningRate(50), false);
     }
 
     private void startGeneral()

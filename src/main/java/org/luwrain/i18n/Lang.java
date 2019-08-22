@@ -18,7 +18,7 @@
 
 package org.luwrain.i18n;
 
-import org.luwrain.core.Luwrain.SpokenTextType;
+import org.luwrain.core.Luwrain.SpeakableTextType;
 
 /**
  * The interface for classes implementing national languages. This
@@ -54,6 +54,6 @@ public interface Lang
     String getNumberStr(int count, String entities);
     String getNumberStr(Number num, GrammaticalAttr gramAttr, Word depWord);
     Word[] getWord(String word);
-    String getSpokenText(String text, SpokenTextType spokenTextType);
+    String getSpeakableText(String text, SpeakableTextType speakableTextType);
 
 }

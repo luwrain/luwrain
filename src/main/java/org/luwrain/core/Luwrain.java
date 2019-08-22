@@ -74,7 +74,7 @@ public interface Luwrain extends PropertiesBase
 	URL,
     };
 
-    public enum SpokenTextType {
+    public enum SpeakableTextType {
 	NONE,
 	NATURAL,
 	PROGRAMMING,
@@ -268,7 +268,7 @@ public interface Luwrain extends PropertiesBase
 
         //never returns null
     String suggestContentType(java.net.URL url, ContentTypes.ExpectedType expectedType);
-    String getSpokenText(String text, SpokenTextType type);
+    String getSpeakableText(String text, SpeakableTextType type);
 
         //never returns null
     String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType);

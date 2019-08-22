@@ -95,7 +95,7 @@ public final class App implements Application
 			try {
 			    final Number res = base.calculate(getLinesToEval());
 			    if (res != null)
-				luwrain.message(luwrain.getSpokenText(formatNum(res), Luwrain.SpokenTextType.PROGRAMMING), Luwrain.MessageType.OK); else
+				luwrain.message(luwrain.getSpeakableText(formatNum(res), Luwrain.SpeakableTextType.PROGRAMMING), Luwrain.MessageType.OK); else
 				luwrain.message("0", Luwrain.MessageType.OK);
 			    return true;
 			}
@@ -121,7 +121,7 @@ public final class App implements Application
 		luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 		return;
 	    }
-		luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpokenText(line, Luwrain.SpokenTextType.PROGRAMMING)));
+		luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING)));
 	}
 	    };
 	editArea.getContent().setLines(new String[]{
