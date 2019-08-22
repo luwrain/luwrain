@@ -131,22 +131,20 @@ public final class Simple implements Application
 
         private int requestHotPointX()
     {
-	    	    if (jsObj.get("hotPointX") == null || !(jsObj.get("hotPointX") instanceof java.lang.Number))
-		return -1;
-		    final java.lang.Number value = (java.lang.Number)jsObj.get("hotPointX");
-	    if (value.intValue() < 0)
-		return -1;
-	    return value.intValue();
+			final Object obj = org.luwrain.script.ScriptUtils.getMember(jsObj, "hotPointX");
+	final Integer value = org.luwrain.script.ScriptUtils.getIntegerValue(obj);
+	if (value == 0)
+	    return -1;
+	return value.intValue() >= 0?value.intValue():-1;
     }
 
 	        private int requestHotPointY()
     {
-	    if (jsObj.get("hotPointY") == null || !(jsObj.get("hotPointY") instanceof java.lang.Number))
-		return -1;
-	    final java.lang.Number value = (java.lang.Number)jsObj.get("hotPointY");
-	    if (value.intValue() < 0)
-		return -1;
-	    return value.intValue();
+			final Object obj = org.luwrain.script.ScriptUtils.getMember(jsObj, "hotPointY");
+	final Integer value = org.luwrain.script.ScriptUtils.getIntegerValue(obj);
+	if (value == 0)
+	    return -1;
+	return value.intValue() >= 0?value.intValue():-1;
     }
 
     private void updateLines()
