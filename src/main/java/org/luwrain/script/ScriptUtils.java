@@ -60,13 +60,21 @@ public final class ScriptUtils
 	return obj.toString();
     }
 
-         static public Integer getIntegerValue(Object obj)
+    static public Integer getIntegerValue(Object obj)
     {
 	if (!isValid(obj))
 	    return null;
-	if (!(obj instanceof Integer))
-	    return null;
-	    return (Integer)obj;
+	if (obj instanceof Number)
+	    return new Integer(((Number)obj).intValue());
+	if (obj instanceof String)
+	    try {
+		return new Integer(Integer.parseInt(obj.toString()));
+	    }
+	    catch(NumberFormatException e)
+	    {
+		return null;
+	    }
+	return null;
     }
 
              static public Number getNumberValue(Object obj)
