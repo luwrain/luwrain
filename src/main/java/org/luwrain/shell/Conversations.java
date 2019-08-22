@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
 
-public class Conversations
+public final class Conversations
 {
     private final Luwrain luwrain;
 
@@ -73,7 +73,7 @@ public class Conversations
 	return popup.result();
     }
 
-    boolean deleteDesktopItemConfirmation(String name)
+    public boolean deleteDesktopItemConfirmation(String name)
     {
 	NullCheck.notNull(name, "name");
 	final YesNoPopup popup = new YesNoPopup(luwrain, 
@@ -85,7 +85,7 @@ public class Conversations
 	return !popup.wasCancelled() && popup.result();
     }
 
-    boolean deleteDesktopItemsConfirmation(int count)
+    public boolean deleteDesktopItemsConfirmation(int count)
     {
 	final YesNoPopup popup = new YesNoPopup(luwrain, 
 						"Удаление элемента",//FIXME:
