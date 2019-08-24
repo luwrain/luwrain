@@ -140,7 +140,7 @@ name, prefix, text, popupFlags);
 	return fixedList(luwrain, name, items, DEFAULT_POPUP_FLAGS);
     }
 
-    static public File path(Luwrain luwrain,
+    static private File path(Luwrain luwrain,
 			    String name, String prefix,
 			    File startWith, File defaultPath,
 			    FilePopup.Acceptance acceptance, 
@@ -160,20 +160,7 @@ name, prefix, text, popupFlags);
 	return popup.closing.cancelled()?null:popup.result();
     }
 
-    static public File path(Luwrain luwrain, String name, String prefix, FilePopup.Acceptance acceptance)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notEmpty(prefix, "prefix");
-	NullCheck.notNull(acceptance, "acceptance");
-	return path(luwrain, name, prefix,
-		    luwrain.getFileProperty("luwrain.dir.userhome"), luwrain.getFileProperty("luwrain.dir.userhome"),
-		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
-    }
-
-    static public File path(Luwrain luwrain,
-			    String name, String prefix,
-			    File startWith, FilePopup.Acceptance acceptance)
+    static public File path(Luwrain luwrain, String name, String prefix, File startWith, FilePopup.Acceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -184,19 +171,7 @@ name, prefix, text, popupFlags);
 		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
 
-    static public File path(Luwrain luwrain,
-			    String name, String prefix,
-			    File startWith)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(prefix, "prefix");
-	return path(luwrain, name, prefix,
-		    startWith,  luwrain.getFileProperty("luwrain.dir.userhome"),
-		    (fileToCheck, announce)->{return true;}, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
-    }
-
-    static public File file(Luwrain luwrain, String name, String prefix, File startWith, String[] extensions)
+    static public File existingFile(Luwrain luwrain, String name, String prefix, File startWith, String[] extensions)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
@@ -227,16 +202,16 @@ name, prefix, text, popupFlags);
 	    });
     }
 
-    static public File file(Luwrain luwrain, String name, String prefix, String[] extensions)
+    static public File existingFile(Luwrain luwrain, String name, String prefix, String[] extensions)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNullItems(extensions, "extensions");
-	return file(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), extensions);
+	return existingFile(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), extensions);
     }
 
-    static public File directory(Luwrain luwrain, String name, String prefix, File startWith)
+    static public File existingDir(Luwrain luwrain, String name, String prefix, File startWith)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
@@ -245,15 +220,22 @@ name, prefix, text, popupFlags);
 		if (!fileToCheck.isDirectory())
 		{
 		    if (announce)
-			luwrain.message("Указанный путь не является каталогом", Luwrain.MessageType.ERROR);
+			luwrain.message("Указанный путь не является каталогом", Luwrain.MessageType.ERROR);//FIXME:
 		    return false;
 		}
 		return true;
 	    });
-	if (res == null)
-	    return null;
 	return res;
-    }
+	    }
+
+        static public File existingDir(Luwrain luwrain, String name, String prefix)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(prefix, "prefix");
+	return existingDir(luwrain, name, prefix);
+	    }
+
 
     static public File commanderSingle(Luwrain luwrain, String name,
 				       File path, FilePopup.Acceptance acceptance,
