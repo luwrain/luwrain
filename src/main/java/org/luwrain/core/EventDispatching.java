@@ -163,7 +163,7 @@ abstract class EventDispatching extends Areas
     private boolean onInputEvent(KeyboardEvent event)
     {
 	onBeforeEventProcessing();
-	if (keyboardEventForEnvironment(event))
+	if (systemHotKey(event))
 	    return true;
 	switch(popupBlocking())
 	{
@@ -174,39 +174,30 @@ abstract class EventDispatching extends Areas
 	    return true;
 	}
 	final Area activeArea = getActiveArea();
-	try {
-	    if (activeArea == null)
-	    {
-		noAppsMessage();
-		return true;
-	    }
-	    final Action[] actions = activeArea.getAreaActions();
-	    if (actions != null)
-		for(Action a: actions)
-		{
-		    final KeyboardEvent actionEvent = a.keyboardEvent();
-		    if (actionEvent == null || !actionEvent.equals(event))
-			continue;
-		    if (activeArea.onSystemEvent(new ActionEvent(a)))
-			return true;
-		    break;
-		}
-	    if (!activeArea.onInputEvent(event))
-		playSound(Sounds.EVENT_NOT_PROCESSED);
-	    return true;
-	}
-	catch (Exception e)
+	if (activeArea == null)
 	{
-	    Log.error(LOG_COMPONENT, "active area of class " + activeArea.getClass().getName() + " throws an exception on keyboard event processing:" + e.getMessage());
-	    e.printStackTrace();
-	    speech.silence();
-	    playSound(Sounds.EVENT_NOT_PROCESSED);
-	    speech.speak(e.getMessage(), 0, 0);
+	    noAppsMessage();
 	    return true;
 	}
+	unsafeAreaOperation(()->{
+		final Action[] actions = activeArea.getAreaActions();
+		if (actions != null)
+		    for(Action a: actions)
+		    {
+			final KeyboardEvent actionEvent = a.keyboardEvent();
+			if (actionEvent == null || !actionEvent.equals(event))
+			    continue;
+			if (activeArea.onSystemEvent(new ActionEvent(a)))
+			    return;
+			break;
+		    }
+		if (!activeArea.onInputEvent(event))
+		    playSound(Sounds.EVENT_NOT_PROCESSED);
+	    });
+	return true;
     }
 
-    private boolean keyboardEventForEnvironment(KeyboardEvent event)
+    private boolean systemHotKey(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	final String commandName = globalKeys.getCommandName(event);

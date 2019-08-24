@@ -409,7 +409,10 @@ public void playSound(Sounds sound)
 	{
 	    if (e instanceof Exception)
 		getObjForEnvironment().crash((Exception)e); else
+	    {
+		getObjForEnvironment().message(e.getClass().getName() + ":" + e.getMessage(), Luwrain.MessageType.ERROR);
 		Log.error(LOG_COMPONENT, "unexpected exception in applications:" + e.getClass().getName() + ":" + e.getMessage());
+	    }
 	}
     }
 
