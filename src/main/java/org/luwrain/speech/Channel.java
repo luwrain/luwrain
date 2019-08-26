@@ -22,10 +22,60 @@ import java.util.Set;
 import java.io.OutputStream;
 import javax.sound.sampled.AudioFormat;
 
-import org.luwrain.core.Registry;
+import org.luwrain.core.*;
 
 public interface Channel
 {
+    public enum Flags{
+    };
+
+    static public final class SyncParams
+    {
+	private int pitch = 0;
+	private int rate = 0;
+	public int getPitch()
+	{
+	    return pitch;
+	}
+	public int getRate()
+	{
+	    return rate;
+	}
+    }
+
+    static public final class Result
+    {
+	public enum Type {
+	    OK,
+	    FAILED,
+	    NOT_IMPLEMENTED,
+	};
+	private final Type type;
+	private final Exception exception;
+	public Result(Type type, Exception exception)
+	{
+	    NullCheck.notNull(type, "type");
+	    this.type = type;
+	    this.exception = exception;
+	}
+	public Result(Type type)
+	{
+	    this(type, null);
+	}
+	public Result()
+	{
+	    this(Type.OK);
+	}
+	public Type getType()
+	{
+	    return type;
+	}
+	public Exception getException()
+	{
+	    return exception;
+	}
+    }
+
     public interface Listener 
     {
 	//Called only on successful finishing, not on cancelling 
@@ -59,6 +109,8 @@ public interface Channel
 boolean cancelPrevious);
 
     long speakLetter(char letter, Listener listener, int relPitch, int relRate, boolean cancelPrevious);
+
+    Result synth(String text, OutputStream stream, AudioFormat format, SyncParams params, Set<Flags> flags);
 
     //Cancels speaking, listener will never get onFinished call
     void silence();
