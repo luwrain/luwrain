@@ -25,7 +25,7 @@ import org.luwrain.controls.*;
 import org.luwrain.popups.Popups;
 import org.luwrain.shell.*;
 
-public class Desktop implements org.luwrain.core.Desktop
+public final class Desktop implements org.luwrain.core.Desktop
 {
     private Luwrain luwrain = null;
     private String name = "";
@@ -44,9 +44,12 @@ public class Desktop implements org.luwrain.core.Desktop
     //Runs by the core when language extensions loaded 
     @Override public void ready()
     {
+	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
 	this.storing.load();
-	this.name = luwrain.i18n().getStaticStr("Desktop");
-	luwrain.onAreaNewName(area);
+	this.name = sett.getDesktopTitle("").trim();
+	if (this.name.isEmpty())
+	     this.name = luwrain.i18n().getStaticStr("Desktop");
+	area.setAreaName(this.name);
     }
 
     @Override public void setConversations(Conversations conversations)
@@ -76,7 +79,7 @@ public class Desktop implements org.luwrain.core.Desktop
 	    return true;
 	};
 	params.confirmation = (area,model,fromIndex,toIndex)->conversations.deleteDesktopItemsConfirmation(toIndex - fromIndex);
-	area = new EditableListArea(params) {
+	this.area = new EditableListArea(params) {
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -84,17 +87,7 @@ public class Desktop implements org.luwrain.core.Desktop
 			switch(event.getSpecial())
 			{ 
 			case ESCAPE:
-			    if (luwrain == null)
-				return false;
-			    if (luwrain.xRunHooks("luwrain.desktop.escape", new Object[0], Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY))
-				return true;
-			    {
-				final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
-				final String cmdName = sett.getDesktopEscapeCommand("");
-				if (cmdName.trim().isEmpty())
-				    return false;
-				return luwrain.runCommand(cmdName.trim());
-			    }
+			    return onEscape();
 			}
 		    return super.onInputEvent(event);
 		}
@@ -130,6 +123,17 @@ public class Desktop implements org.luwrain.core.Desktop
 		area.refresh();
 		return true;
 	    });
+    }
+
+    private boolean onEscape()
+    {
+	if (luwrain == null)
+	    return false;
+	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+	final String cmdName = sett.getDesktopEscapeCommand("");
+	if (cmdName.trim().isEmpty())
+	    return false;
+	return luwrain.runCommand(cmdName.trim());
     }
 
     private boolean onClick(int index, Object obj)
