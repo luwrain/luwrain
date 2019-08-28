@@ -37,9 +37,17 @@ public interface Channel
 	{
 	    return pitch;
 	}
+	public void setPitch(int pitch)
+	{
+	    this.pitch = pitch;
+	}
 	public int getRate()
 	{
 	    return rate;
+	}
+	public void setRate(int rate)
+	{
+	    this.rate = rate;
 	}
     }
 
