@@ -18,15 +18,14 @@ package org.luwrain.registry;
 
 import java.util.*;
 
-public class PathParser
+import org.luwrain.core.*;
+
+public final class PathParser
 {
-    public static Path parse(String str)
+    static public Path parse(String str)
     {
-	if (str == null)
-	    throw new NullPointerException("str may not be null");
-	if (str.isEmpty())
-	    throw new IllegalArgumentException();
-	ArrayList<String> items = new ArrayList<String>();
+	NullCheck.notEmpty(str, "str");
+	final List<String> items = new LinkedList();
 	String current = "";
 	for(int i = 0;i < str.length();++i)
 	{
@@ -47,13 +46,10 @@ public class PathParser
 	return new Path(str.charAt(0) == '/', items.toArray(new String[items.size()]), current);
     }
 
-    public static Path parseAsDirectory(String str)
+    static public Path parseAsDirectory(String str)
     {
-	if (str == null)
-	    throw new NullPointerException("str may not be null");
-	if (str.isEmpty())
-	    throw new IllegalArgumentException();
-	ArrayList<String> items = new ArrayList<String>();
+	NullCheck.notEmpty(str, "str");
+	final List<String> items = new LinkedList();
 	String current = "";
 	for(int i = 0;i < str.length();++i)
 	{
