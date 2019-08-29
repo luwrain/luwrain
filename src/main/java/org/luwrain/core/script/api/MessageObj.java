@@ -46,6 +46,14 @@ final class MessageObj extends AbstractJSObject
 		luwrain.message(text, Luwrain.MessageType.ANNOUNCEMENT);
 		return new Boolean(true);
 	    };
+	case "attention":
+	    return (Predicate)(textObj)->{
+		final String text = org.luwrain.script.ScriptUtils.getStringValue(textObj);
+		if (text == null || text.trim().isEmpty())
+		    return new Boolean(false);
+		luwrain.message(text, Luwrain.MessageType.ATTENTION);
+		return new Boolean(true);
+	    };
 	case "error":
 	    return (Predicate)(textObj)->{
 		final String text = org.luwrain.script.ScriptUtils.getStringValue(textObj);
@@ -62,7 +70,7 @@ final class MessageObj extends AbstractJSObject
 		luwrain.message(text, Sounds.CHAT_MESSAGE);
 		return new Boolean(true);
 	    };
-	    	case "done":
+	case "done":
 	    return (Predicate)(textObj)->{
 		final String text = org.luwrain.script.ScriptUtils.getStringValue(textObj);
 		if (text == null || text.trim().isEmpty())
@@ -70,7 +78,7 @@ final class MessageObj extends AbstractJSObject
 		luwrain.message(text, Luwrain.MessageType.DONE);
 		return new Boolean(true);
 	    };
-	    	    	case "ok":
+	case "ok":
 	    return (Predicate)(textObj)->{
 		final String text = org.luwrain.script.ScriptUtils.getStringValue(textObj);
 		if (text == null || text.trim().isEmpty())

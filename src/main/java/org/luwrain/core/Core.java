@@ -728,9 +728,9 @@ onNewAreasLayout();
 
     public void message(String text, Luwrain.MessageType messageType)
     {
-	mainCoreThreadOnly();
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(messageType, "messageType");
+	mainCoreThreadOnly();
 	switch(messageType)
 	{
 	case ERROR:
@@ -745,13 +745,16 @@ onNewAreasLayout();
 	case ANNOUNCEMENT:
 	    message(text, Sounds.ANNOUNCEMENT);
 	    break;
+	case ATTENTION:
+	    message(text, Sounds.ATTENTION);
+	    break;
 	case UNAVAILABLE:
 	    message(text, Sounds.BLOCKED);
 	    break;
 	case NONE:
 	    message(text, (Sounds)null);
 	    break;
-	    case REGULAR:
+	case REGULAR:
 	default:
 	    message(text,Sounds.MESSAGE);
 	}
