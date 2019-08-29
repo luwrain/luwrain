@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,6 +14,8 @@
    General Public License for more details.
 */
 
+//LWR_API 1.0
+
 package org.luwrain.settings;
 
 import java.util.*;
@@ -23,7 +25,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class Braille extends FormArea implements SectionArea
+final class Braille extends FormArea implements SectionArea
 {
     private ControlPanel controlPanel;
     private Luwrain luwrain;

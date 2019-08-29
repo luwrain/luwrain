@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-//Reads and saves
+//LWR_API 1.0
 
 package org.luwrain.settings;
 
@@ -23,7 +23,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class UserInterface extends FormArea implements SectionArea
+final class UserInterface extends FormArea implements SectionArea
 {
     private final ControlPanel controlPanel;
     private final Luwrain luwrain;
@@ -31,7 +31,8 @@ class UserInterface extends FormArea implements SectionArea
 
     UserInterface(ControlPanel controlPanel)
     {
-	super(new DefaultControlContext(controlPanel.getCoreInterface()), controlPanel.getCoreInterface().i18n().getStaticStr("CpUserInterfaceGeneral"));
+	super(new DefaultControlContext(controlPanel.getCoreInterface()),
+	      controlPanel.getCoreInterface().i18n().getStaticStr("CpUiGeneral"));
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();
@@ -41,12 +42,17 @@ class UserInterface extends FormArea implements SectionArea
 
     private void fillForm()
     {
-	//addEdit("launch-greeting", luwrain.i18n().getStaticStr("CpLaunchingGreetingText"), sett.getLaunchGreeting(""));
-	//	addCheckbox("file-popup-skip-hidden", "Исключать скрытые файлы в о всплывающих окнах:", settings.getFilePopupSkipHidden(false));
-	//	addCheckbox("empty-line-under-regular-lists", "Добавлять пустую строку в конце списков:", settings.getEmptyLineUnderRegularLists(false));
-	//	addCheckbox("empty-line-above-popup-lists", "Добавлять пустую строку в начало всплывающих списков:", settings.getEmptyLineAbovePopupLists(false));
-	//	addCheckbox("cycling-regular-lists", "Зацикливать навигацию по спискам:", settings.getCyclingRegularLists(false));
-	//	addCheckbox("cycling-popup-lists", "Зацикливать навигацию по всплывающим спискам:", settings.getCyclingPopupLists(false));
+	addEdit("desktop-title", luwrain.i18n().getStaticStr("CpUiDesktopTitle"), sett.getDesktopTitle(""));
+	addEdit("window-title", luwrain.i18n().getStaticStr("CpUiWindowTitle"), sett.getWindowTitle(""));
+	addEdit("desktop-escape-command", luwrain.i18n().getStaticStr("CpUiDesktopEscapeCommand"), sett.getDesktopEscapeCommand(""));
+    }
+
+    @Override public boolean saveSectionData()
+    {
+	sett.setDesktopTitle(getEnteredText("desktop-title"));
+	sett.setWindowTitle(getEnteredText("window-title"));
+	sett.setDesktopEscapeCommand(getEnteredText("desktop-escape-command"));
+	return true;
     }
 
     @Override public boolean onInputEvent(KeyboardEvent event)
@@ -63,26 +69,6 @@ class UserInterface extends FormArea implements SectionArea
 	if (controlPanel.onSystemEvent(event))
 	    return true;
 	return super.onSystemEvent(event);
-    }
-
-    @Override public boolean saveSectionData()
-    {
-	//sett.setLaunchGreeting(getEnteredText("launch-greeting"));
-	return true;
-    }
-
-    boolean save()
-    {
-/*
-	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final Registry registry = luwrain.getRegistry();
-	if (!registry.setString(registryKeys.desktopIntroductionFile(), getEnteredText("desktop-introduction-file")))
-	    return false;
-	if (!registry.setString(registryKeys.launchGreeting(), getEnteredText("launch-greeting")))
-	    return false;
-	return true;
-*/
-	return false;
     }
 
     static UserInterface create(ControlPanel controlPanel)

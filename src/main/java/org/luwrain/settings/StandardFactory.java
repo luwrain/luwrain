@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -13,6 +13,8 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
 */
+
+//LWR_API 1.0
 
 package org.luwrain.settings;
 
@@ -113,7 +115,7 @@ public final class StandardFactory implements Factory
 	if (el.equals(StandardElements.WORKERS))
 	    return new SimpleSection(StandardElements.WORKERS, "Фоновые задачи");
 	if (el.equals(uiGeneral))
-	    return new SimpleSection(uiGeneral, luwrain.i18n().getStaticStr("CpUserInterfaceGeneral"), (controlPanel)->UserInterface.create(controlPanel));
+	    return new SimpleSection(uiGeneral, luwrain.i18n().getStaticStr("CpUiGeneral"), (controlPanel)->UserInterface.create(controlPanel));
 	if (el.equals(hotKeys))
 	    return new SimpleSection(hotKeys, "Горячие клавиши", (controlPanel)->HotKeys.create(controlPanel));
 	if (el.equals(personalInfo))

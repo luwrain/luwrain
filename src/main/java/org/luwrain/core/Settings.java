@@ -23,10 +23,9 @@ import java.util.*;
 public interface Settings
 {
     static final String UI_PATH = "/org/luwrain/ui";
-        static final String HELP_SECTIONS_PATH = "/org/luwrain/help/sections";
+    static final String HELP_SECTIONS_PATH = "/org/luwrain/help/sections";
     static final String NETWORK_PATH = "/org/luwrain/network";
     static final String DATETIME_PATH = "/org/luwrain/date-time";
-
     static final String FILE_TYPES_APP_INFO_PATH = "/org/luwrain/file-types/app-info";
     static final String FILE_TYPES_PATH = "/org/luwrain/file-types";
     static final String GLOBAL_KEYS_PATH = "/org/luwrain/global-keys";
@@ -35,28 +34,31 @@ public interface Settings
     static final String BRAILLE_PATH = "/org/luwrain/braille";
     static public final String CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/scheme";
     static final String INTERACTION_PARAMS_PATH = "/org/luwrain/interaction";
-    static final String OS_COMMANDS_PATH = "/org/luwrain/os/commands";
-    static final String OS_SHORTCUTS_PATH = "/org/luwrain/os/shortcuts";
     static final String I18N_PATH = "/org/luwrain/i18n";
     static final String PERSONAL_INFO_PATH = "/org/luwrain/personal";
     static final String BACKGROUND_SOUNDS_PATH = "/org/luwrain/sounds/background";
-    static final String DESKTOP_PATH = "/org/luwrain/desktop";
     static public final String DESKTOP_UNIREFS_PATH = "/org/luwrain/desktop/unirefs";
 
     public interface UserInterface
     {
 	String getDesktopEscapeCommand(String defValue);
-		void setDesktopEscapeCommand(String value);
+	void setDesktopEscapeCommand(String value);
 	String getDesktopTitle(String defValue);
 	void setDesktopTitle(String value);
 	boolean getFilePopupSkipHidden(boolean defValue);
 	void setFilePopupSkipHidden(boolean value);
+	String getWindowTitle(String defValue);
+	void setWindowTitle(String value);
     }
 
-    public interface Desktop
+    public interface PersonalInfo
     {
-	String getIntroductionFile(String defValue);
-	void setIntroductionFile(String value);
+	String getFullName(String defValue);
+	String getDefaultMailAddress(String defValue);
+	String getSignature(String defValue);
+	void setFullName(String value);
+	void setDefaultMailAddress(String value);
+	void setSignature(String value);
     }
 
     public interface Network
@@ -75,26 +77,16 @@ public interface Settings
 	void setSocksPort(String value);
     }
 
-public interface DateTime
-{
-    String getTimeZone(String defValeu);
-    void setTimeZone(String value);
-}
+    public interface DateTime
+    {
+	String getTimeZone(String defValeu);
+	void setTimeZone(String value);
+    }
 
     public interface I18n
     {
 	String getCharsets(String defValue);
 	void setCharsets(String value);
-    }
-
-    public interface PersonalInfo
-    {
-	String getFullName(String defValue);
-	String getDefaultMailAddress(String defValue);
-	String getSignature(String defValue);
-	void setFullName(String value);
-	void setDefaultMailAddress(String value);
-	void setSignature(String value);
     }
 
     public interface FileTypeAppInfo
@@ -300,6 +292,18 @@ public interface DateTime
 	void setRate(int value);
     }
 
+    static public UserInterface createUserInterface(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, UI_PATH, UserInterface.class);
+    }
+
+    static public PersonalInfo createPersonalInfo(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, PERSONAL_INFO_PATH, PersonalInfo.class);
+    }
+
     static public InteractionParams createInteractionParams(Registry registry)
     {
 	return RegistryProxy.create(registry, INTERACTION_PARAMS_PATH, InteractionParams.class);
@@ -315,12 +319,6 @@ public interface DateTime
 	return RegistryProxy.create(registry, path, MainMenuSection.class);
     }
 
-    static public UserInterface createUserInterface(Registry registry)
-    {
-	NullCheck.notNull(registry, "registry");
-	return RegistryProxy.create(registry, UI_PATH, UserInterface.class);
-    }
-
     static public SoundScheme createCurrentSoundScheme(Registry registry)
     {
 	return RegistryProxy.create(registry, CURRENT_SOUND_SCHEME_PATH, SoundScheme.class);
@@ -331,7 +329,6 @@ public interface DateTime
 	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, BACKGROUND_SOUNDS_PATH, BackgroundSounds.class);
     }
-
 
     static public Braille createBraille(Registry registry)
     {
@@ -349,17 +346,11 @@ public interface DateTime
 	return RegistryProxy.create(registry, path, FileTypeAppInfo.class);
     }
 
-    static public PersonalInfo createPersonalInfo(Registry registry)
-    {
-	NullCheck.notNull(registry, "registry");
-	return RegistryProxy.create(registry, PERSONAL_INFO_PATH, PersonalInfo.class);
-    }
-
     static public OsCommand createOsCommand(Registry registry, String path)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notEmpty(path, "path");
-    return RegistryProxy.create(registry, path, OsCommand.class);
+	return RegistryProxy.create(registry, path, OsCommand.class);
     }
 
     static public I18n createI18n(Registry registry)
@@ -379,12 +370,6 @@ public interface DateTime
 	    if (!s.trim().isEmpty())
 		res.add(s.trim());
 	return res.toArray(new String[res.size()]);
-    }
-
-    static public Desktop createDesktop(Registry registry)
-    {
-	NullCheck.notNull(registry, "registry");
-	return RegistryProxy.create(registry, DESKTOP_PATH, Desktop.class);
     }
 
     static public Network createNetwork(Registry registry)
