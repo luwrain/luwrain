@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.registry;
 
@@ -6,38 +21,25 @@ import org.luwrain.core.NullCheck;
 //Root directory may not contain values;
 public final class Path
 {
-    private boolean absolute = true;
+    private final boolean absolute;
     private final String[] dirItems;
     private final String valueName;
 
-    public Path(boolean absolute,
-		String[] dirItems,
-		String valueName)
+    public Path(boolean absolute, String[] dirItems, String valueName)
     {
-	this.absolute = absolute;
-	this.dirItems = dirItems;
-	this.valueName = valueName;
 	NullCheck.notNullItems(dirItems, "dirItems");
 	NullCheck.notNull(valueName, "valueName");
+	this.absolute = absolute;
+	this.dirItems = dirItems.clone();
+	this.valueName = valueName;
 	for(int i = 0;i < dirItems.length;++i)	    
 	    if (dirItems[i].isEmpty())
-		throw new NullPointerException("dirItems[" + i + "] may not be empty");
+		throw new IllegalArgumentException("dirItems[" + String.valueOf(i) + "] may not be empty");
     }
 
     public Path(boolean absolute, String[] dirItems)
     {
-	this.absolute = absolute;
-	this.dirItems = dirItems;
-	if (dirItems == null)
-	    throw new NullPointerException("dirItems may not be null");
-	for(int i = 0;i < dirItems.length;++i)
-	{
-	    if (dirItems[i] == null)
-		throw new NullPointerException("dirItems[" + i + "] may not be null");
-	    if (dirItems[i].isEmpty())
-		throw new NullPointerException("dirItems[" + i + "] may not be empty");
-	}
-	this.valueName = "";
+	this(absolute, dirItems, "");
     }
 
     public boolean isAbsolute()
@@ -55,10 +57,9 @@ public final class Path
 	return absolute && dirItems.length < 1 && valueName.isEmpty();
     }
 
-
     public String[] dirItems()
     {
-	return dirItems;
+	return dirItems.clone();
     }
 
     public String valueName()
