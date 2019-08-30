@@ -171,6 +171,19 @@ name, prefix, text, popupFlags);
 		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
 
+        static public File path(Luwrain luwrain, String name, String prefix, FilePopup.Acceptance acceptance)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+		NullCheck.notNull(acceptance, "acceptance");
+	return path(luwrain, name, prefix,
+		    luwrain.getFileProperty("luwrain.dir.userhome"),
+		    		    luwrain.getFileProperty("luwrain.dir.userhome"),
+		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
+    }
+
+
     static public File existingFile(Luwrain luwrain, String name, String prefix, File startWith, String[] extensions)
     {
 	NullCheck.notNull(luwrain, "luwrain");
