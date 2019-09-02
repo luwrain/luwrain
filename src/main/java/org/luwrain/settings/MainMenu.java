@@ -24,7 +24,6 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 import org.luwrain.cpanel.*;
-import org.luwrain.player.*;
 import org.luwrain.util.*;
 
 final class MainMenu extends EditableListArea implements SectionArea
@@ -66,11 +65,12 @@ final class MainMenu extends EditableListArea implements SectionArea
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
+	luwrain.getRegistry().addDirectory(Settings.MAIN_MENU_UNIREFS_PATH);
 	final EditableListArea.Params params = new EditableListArea.Params();
 	params.context = new DefaultControlContext(luwrain);
 	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.LIST_ITEM);
 	params.name = luwrain.i18n().getStaticStr("CpSoundsList");
-	params.model = new ListUtils.DefaultEditableModel();
+	params.model = new ListUtils.DefaultEditableModel(RegistryUtils.getStringArray(luwrain.getRegistry(), Settings.MAIN_MENU_UNIREFS_PATH));
 	return new MainMenu(controlPanel, params);
     }
 }

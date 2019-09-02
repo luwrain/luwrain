@@ -370,7 +370,6 @@ public class ListUtils
 	}
     }
 
-
     static public class DefaultMarksInfo implements MarkableListArea.MarksInfo
     {
 	protected final Set items = new HashSet();

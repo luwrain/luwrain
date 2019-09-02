@@ -366,4 +366,37 @@ public final class ScriptUtils
 	    return new Action(name, title, inputEvent);
 	return new Action(name, title);
     }
+
+    static public Object getEnumItemByStr(Class enumClass, String itemName)
+    {
+	NullCheck.notNull(enumClass, "enumClass");
+	NullCheck.notEmpty(itemName, "itemName");
+	final EnumSet allItems = EnumSet.allOf(enumClass);
+	for(Object s: allItems)
+	    if (s.toString().equals(itemName))
+		return s;
+	return null;
+    }
+
+    static public Set getEnumByArrayObj(Class enumClass, Object arrayObj)
+    {
+	NullCheck.notNull(enumClass, "enumClass");
+	NullCheck.notNull(arrayObj, "arrayObj");
+	final List items = getArray(arrayObj);
+	if (items == null)
+	    return null;
+	final Set res = EnumSet.noneOf(enumClass);
+	for(Object o: items)
+	{
+	    if (o == null)
+		continue;
+	    final String str = getStringValue(o);
+	    if (str == null)
+		continue;
+	    final Object enumItem = getEnumItemByStr(enumClass, str);
+	    if (enumItem != null)
+		res.add(enumItem);
+	}
+	return res;
+    }
 }

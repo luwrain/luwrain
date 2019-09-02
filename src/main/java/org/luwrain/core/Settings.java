@@ -30,6 +30,7 @@ public interface Settings
     static final String FILE_TYPES_PATH = "/org/luwrain/file-types";
     static final String GLOBAL_KEYS_PATH = "/org/luwrain/global-keys";
     static final String MAIN_MENU_SECTIONS_PATH = "/org/luwrain/main-menu/sections";
+        static final String MAIN_MENU_UNIREFS_PATH = "/org/luwrain/main-menu/unirefs";
     static final String SPEECH_PATH = "/org/luwrain/speech";
     static final String BRAILLE_PATH = "/org/luwrain/braille";
     static public final String CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/scheme";
