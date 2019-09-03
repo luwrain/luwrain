@@ -49,6 +49,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	    {
 	    case PAGE_DOWN:
 	    case ALTERNATIVE_PAGE_DOWN:
+		/*
 		if (selectedIndex() + 1 >= listModel.getItemCount())
 		{
 		    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_BELOW));
@@ -61,9 +62,11 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 			return true;
 		    }
 		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_BELOW));
+		*/
 		return true;
 	    case PAGE_UP:
 	    case ALTERNATIVE_PAGE_UP:
+		/*
 		if (selectedIndex() < 1)
 		{
 		    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
@@ -76,6 +79,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 			return true;
 		    }
 context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
+		*/
 		return true;
 	    }
 	return super.onInputEvent(event);
@@ -84,7 +88,7 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
     @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-		if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	if (event.getType() != EnvironmentEvent.Type.REGULAR)
 	    return super.onSystemEvent(event);
 	if (closing.onSystemEvent(event))
 	    return true;
@@ -152,46 +156,6 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	return mainMenu;
     }
 
-    static private Section loadSection(Luwrain luwrain, Settings.MainMenuSection proxy)
-    {
-	final String title = sectionName(proxy.getTitle(""));
-	final String[] refs = proxy.getUniRefs("").split("\\\\:", -1);
-	final LinkedList<UniRefInfo> uniRefs = new LinkedList<UniRefInfo>();
-	for(String s: refs)
-	{
-	    if (s == null || s.trim().isEmpty())
-		continue;
-	    final UniRefInfo uniRef = luwrain.getUniRefInfo(s);
-	    if (uniRef != null)
-		uniRefs.add(uniRef);
-	}
-	return new Section(title, uniRefs.toArray(new UniRefInfo[uniRefs.size()]));
-    }
-
-    static private String sectionName(String name)
-    {
-	return name;
-    }
-
-    static private class Section
-    {
-	final String title;
-	final UniRefInfo[] uniRefs;
-
-	Section(String title, UniRefInfo[] uniRefs)
-	{
-	    NullCheck.notNull(title, "title");
-	    NullCheck.notNullItems(uniRefs, "uniRefs");
-	    this.title = title;
-	    this.uniRefs = uniRefs;
-	}
-
-	@Override public String toString() 
-	{
-	    return title;
-	}
-    }
-
     static private class Transition extends ListUtils.DefaultTransition
     {
 	@Override public State transition(Type type, State fromState, int itemCount,
@@ -217,11 +181,12 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	}
     }
 
-	    static private final class Appearance extends ListUtils.DoubleLevelAppearance
+    //Also used in the control panel section for editing
+    static public final class Appearance extends ListUtils.DoubleLevelAppearance
     {
 	static private final String STATIC_PREFIX = "static:";
 	private final Map<String, UniRefInfo> uniRefCache = new HashMap();
-	Appearance(ControlContext context)
+	public Appearance(ControlContext context)
 	{
 	    super(context);
 	}
@@ -244,7 +209,7 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	{
 	    NullCheck.notNull(item, "item");
 	    final UniRefInfo info = getUniRefInfo(item);
-	    	    final String title = info.getTitle();
+	    final String title = info.getTitle();
 	    if (!title.startsWith(STATIC_PREFIX))
 		return title;
 	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
