@@ -58,7 +58,23 @@ final class MainMenu extends EditableListArea implements SectionArea
 
     @Override public boolean saveSectionData()
     {
+	if (!(getListModel() instanceof List))
+	    return false;
+	final List model = (List)getListModel();
+	final List<String> res = new LinkedList();
+	for(Object o: model)
+	{
+	    if (o instanceof UniRefInfo)
+	    {
+		final UniRefInfo info = (UniRefInfo)o;
+		res.add(info.getValue());
+		continue;
+	    }
+	    res.add(o.toString());
+	}
+	RegistryUtils.setStringArray(luwrain.getRegistry(), Settings.MAIN_MENU_UNIREFS_PATH, res.toArray(new String[res.size()]));
 	return true;
+	
     }
 
     static MainMenu create(ControlPanel controlPanel)
@@ -69,53 +85,59 @@ final class MainMenu extends EditableListArea implements SectionArea
 	final EditableListArea.Params params = new EditableListArea.Params();
 	params.context = new DefaultControlContext(luwrain);
 	params.appearance = new Appearance(params.context);
-	params.name = luwrain.i18n().getStaticStr("CpSoundsList");
+	params.name = luwrain.i18n().getStaticStr("CpMainMenu");
 	params.model = new ListUtils.DefaultEditableModel(RegistryUtils.getStringArray(luwrain.getRegistry(), Settings.MAIN_MENU_UNIREFS_PATH));
 	return new MainMenu(controlPanel, params);
     }
 
-
-static private final class Appearance extends ListUtils.DoubleLevelAppearance
-{
-    private final Map<String, UniRefInfo> uniRefCache = new HashMap();
-					       Appearance(ControlContext context)
-					       {
-						   super(context);
-					       }
-					       @Override public boolean isSectionItem(Object obj)
-					       {
-						   NullCheck.notNull(obj, "obj");
-						   final UniRefInfo info = getUniRefInfo(obj);
-						   return info.getType().equals("section");
-					       }
-	@Override public String getSectionScreenAppearance(Object item)
+    static private final class Appearance extends ListUtils.DoubleLevelAppearance
     {
-	NullCheck.notNull(item, "item");
-	final UniRefInfo info = getUniRefInfo(item);
-	return info.getTitle();
-    }
-    	@Override public String getNonSectionScreenAppearance(Object item)
-    {
-	NullCheck.notNull(item, "item");
-	final UniRefInfo info = getUniRefInfo(item);
-	return info.getTitle();
-    }
-    private UniRefInfo getUniRefInfo(Object obj)
-    {
-	NullCheck.notNull(obj, "obj");
-	if (obj instanceof UniRefInfo)
-	    return (UniRefInfo)obj;
-	if (uniRefCache.containsKey(obj.toString()))
-	    return uniRefCache.get(obj.toString());
-	final UniRefInfo info = context.getUniRefInfo(obj.toString());
-	if (info != null)
+	static private final String STATIC_PREFIX = "static:";
+	private final Map<String, UniRefInfo> uniRefCache = new HashMap();
+	Appearance(ControlContext context)
 	{
-	    uniRefCache.put(obj.toString(), info);
-	    return info;
+	    super(context);
 	}
-final UniRefInfo info2 = new UniRefInfo(obj.toString());
-uniRefCache.put(obj.toString(), info2);
-return info2;
+	@Override public boolean isSectionItem(Object obj)
+	{
+	    NullCheck.notNull(obj, "obj");
+	    final UniRefInfo info = getUniRefInfo(obj);
+	    return info.getType().equals("section");
+	}
+	@Override public String getSectionScreenAppearance(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    final UniRefInfo info = getUniRefInfo(item);
+	    final String title = info.getTitle();
+	    if (!title.startsWith(STATIC_PREFIX))
+		return title;
+	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
+	}
+    	@Override public String getNonSectionScreenAppearance(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    final UniRefInfo info = getUniRefInfo(item);
+	    	    final String title = info.getTitle();
+	    if (!title.startsWith(STATIC_PREFIX))
+		return title;
+	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
+	}
+	private UniRefInfo getUniRefInfo(Object obj)
+	{
+	    NullCheck.notNull(obj, "obj");
+	    if (obj instanceof UniRefInfo)
+		return (UniRefInfo)obj;
+	    if (uniRefCache.containsKey(obj.toString()))
+		return uniRefCache.get(obj.toString());
+	    final UniRefInfo info = context.getUniRefInfo(obj.toString());
+	    if (info != null)
+	    {
+		uniRefCache.put(obj.toString(), info);
+		return info;
+	    }
+	    final UniRefInfo info2 = new UniRefInfo(obj.toString());
+	    uniRefCache.put(obj.toString(), info2);
+	    return info2;
+	}
     }
-}
 }

@@ -66,4 +66,21 @@ public final class RegistryUtils
 	    }
 	return res;
     }
+
+    static public void setStringArray(Registry registry, String path, String[] items)
+    {
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notEmpty(path, "path");
+	NullCheck.notNullItems(items, "items");
+	registry.addDirectory(path);
+	for(int i = 0;i < items.length;i++)
+	{
+	    String index = String.valueOf(i);
+	    while(index.length() < 3)
+		index = "0" + index;
+	    final String fullPath = Registry.join(path, index);
+	    registry.deleteValue(fullPath);
+	    registry.setString(fullPath, items[i]);
+	}
+    }
 }
