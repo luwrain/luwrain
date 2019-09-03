@@ -73,4 +73,6 @@ final class MainMenu extends EditableListArea implements SectionArea
 	params.model = new ListUtils.DefaultEditableModel(RegistryUtils.getStringArray(luwrain.getRegistry(), Settings.MAIN_MENU_UNIREFS_PATH));
 	return new MainMenu(controlPanel, params);
     }
+
+    
 }

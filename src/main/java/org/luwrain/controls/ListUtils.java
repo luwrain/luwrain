@@ -74,51 +74,50 @@ public class ListUtils
 
     static abstract public class DoubleLevelAppearance implements ListArea.Appearance
     {
-	protected final ControlContext environment;
-
-	public DoubleLevelAppearance(ControlContext environment)
+	protected final ControlContext context;
+	public DoubleLevelAppearance(ControlContext context)
 	{
-	    NullCheck.notNull(environment, "environment");
-	    this.environment = environment;
+	    NullCheck.notNull(context, "context");
+	    this.context = context;
 	}
-
 	abstract public boolean isSectionItem(Object item);
-
-		public void announceNonSection(Object item)
+	public void announceNonSection(Object item)
 	{
 	    NullCheck.notNull(item, "item");
-		environment.playSound(Sounds.LIST_ITEM);
-		environment.say(item.toString());
+	    context.setEventResponse(DefaultEventResponse.listItem(item.toString()));
 	}
-
 	public String getNonSectionScreenAppearance(Object item)
 	{
 	    NullCheck.notNull(item, "item");
 	    return item.toString();
 	}
-
+	public void announceSection(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    context.playSound(Sounds.DOC_SECTION);
+	    context.say(item.toString());
+	}
+	public String getSectionScreenAppearance(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    return item.toString();
+	}
 	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
-	    environment.silence();
 	    if (isSectionItem(item))
-	    {
-		environment.playSound(Sounds.DOC_SECTION);
-		environment.say(item.toString());
-	    } else
+		announceSection(item); else
 		announceNonSection(item);
 	}
-
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
 	    if (isSectionItem(item))
-		return item.toString();
+		return getSectionScreenAppearance(item);
 	    return "  " + getNonSectionScreenAppearance(item);
 	}
-
 	@Override public int getObservableLeftBound(Object item)
 	{
 	    NullCheck.notNull(item, "item");
@@ -126,7 +125,6 @@ public class ListUtils
 		return 0;
 	    return 2;
 	}
-
 	@Override public int getObservableRightBound(Object item)
 	{
 	    NullCheck.notNull(item, "item");
