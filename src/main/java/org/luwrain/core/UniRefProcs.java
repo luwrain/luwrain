@@ -20,7 +20,7 @@ import java.io.*;
 
 import org.luwrain.util.*;
 
-class UniRefProcs
+final class UniRefProcs
 {
     static UniRefProc[] createStandardUniRefProcs(Luwrain luwrain)
     {
@@ -110,7 +110,7 @@ class UniRefProcs
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    if (!uniRef.startsWith(PREFIX))
 			return null;
-		    return new UniRefInfo(uniRef, "", uniRef.substring(PREFIX.length()));
+		    return new UniRefInfo(uniRef, "section", "", uniRef.substring(PREFIX.length()));
 		}
 		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{

@@ -21,28 +21,38 @@ package org.luwrain.core;
 public final class UniRefInfo implements Comparable
 {
     private final boolean available;
-    private final String prefix;
-    private final String title;
     private final String value;
+    private final String type;
+    private final String addr;
+    private final String title;
 
     public UniRefInfo(String value)
     {
 	NullCheck.notNull(value, "value");
 	this.available = false;
 	this.value = value;
-	this.prefix = "";
+	this.type = "";
+	this.addr = "";
 	this.title = "";
     }
 
-    public UniRefInfo(String value, String prefix, String title)
+    public UniRefInfo(String value, String type, String addr, String title)
     {
 	NullCheck.notNull(value, "value");
-	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(type, "type");
+	NullCheck.notNull(addr, "addr");
 	NullCheck.notNull(title, "title");
 	this.available = true;
 	this.value = value;
-	this.prefix = prefix;
+	this.type = type;
+	this.addr = addr;
 	this.title = title;
+    }
+
+    //Will be removed
+    public UniRefInfo(String value, String prefix, String title)
+    {
+	this(value, "", "", title);
     }
 
     public boolean isAvailable()
@@ -55,9 +65,14 @@ public final class UniRefInfo implements Comparable
 	return value;
     }
 
-    public String getPrefix()
+    public String getType()
     {
-	return prefix;
+	return type;
+    }
+
+    public String getAddr()
+    {
+	return addr;
     }
 
     public String getTitle()
@@ -69,9 +84,7 @@ public final class UniRefInfo implements Comparable
     {
 	if (!available)
 	    return value;
-	if (prefix.isEmpty())
-	    return title;
-	return prefix + " " + title;
+	return title;
     }
 
     @Override public boolean equals(Object o)

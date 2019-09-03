@@ -84,7 +84,7 @@ public class ListUtils
 	public void announceNonSection(Object item)
 	{
 	    NullCheck.notNull(item, "item");
-	    context.setEventResponse(DefaultEventResponse.listItem(item.toString()));
+	    context.setEventResponse(DefaultEventResponse.listItem(getNonSectionScreenAppearance(item)));
 	}
 	public String getNonSectionScreenAppearance(Object item)
 	{
@@ -95,7 +95,7 @@ public class ListUtils
 	{
 	    NullCheck.notNull(item, "item");
 	    context.playSound(Sounds.DOC_SECTION);
-	    context.say(item.toString());
+	    context.say(getSectionScreenAppearance(item));
 	}
 	public String getSectionScreenAppearance(Object item)
 	{
