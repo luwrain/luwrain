@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.shell;
+package org.luwrain.core.shell;
 
 import java.util.*;
 
@@ -23,8 +23,9 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
+import org.luwrain.util.*;
 
-public class MainMenu extends ListArea implements PopupClosingTranslator.Provider
+public final class MainMenu extends ListArea implements PopupClosingTranslator.Provider
 {
     private final Luwrain luwrain;
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
@@ -83,10 +84,10 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
     @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
+		if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	    return super.onSystemEvent(event);
 	if (closing.onSystemEvent(event))
 	    return true;
-	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onSystemEvent(event);
 	switch(event.getCode())
 	{
 	case INTRODUCE:
@@ -140,35 +141,12 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	final Registry registry = luwrain.getRegistry();
-	final String[] dirs = registry.getDirectories(Settings.MAIN_MENU_SECTIONS_PATH);
-	if (dirs == null || dirs.length < 1)
-	{
-	    Log.warning("core", "no main menu sections in the registry");
-	    return null;
-	}
-	Arrays.sort(dirs);
-	final LinkedList<Section> sects = new LinkedList<Section>();
-	for(String s: dirs)
-	{
-	    final String path = Registry.join(Settings.MAIN_MENU_SECTIONS_PATH, s);
-	    final Settings.MainMenuSection proxy = Settings.createMainMenuSection(registry, path);
-	    final Section sect = loadSection(luwrain, proxy);
-	    if (sect != null)
-		sects.add(sect);
-	}
-	final LinkedList objs = new LinkedList();
-	for(Section s: sects)
-	{
-	    objs.add(s);
-	    for(UniRefInfo u: s.uniRefs)
-		objs.add(u);
-	}
 	final ListArea.Params params = new ListArea.Params();
 	params.context = new DefaultControlContext(luwrain);
-	params.model = new ListUtils.FixedModel(objs.toArray(new Object[objs.size()]));
-	params.appearance = new Appearance(luwrain);
+	params.model = new ListUtils.FixedModel(RegistryUtils.getStringArray(registry, Settings.MAIN_MENU_UNIREFS_PATH));
+	params.appearance = new Appearance(new DefaultControlContext(luwrain));
 	params.transition = new Transition();
-	params.flags = EnumSet.noneOf(ListArea.Flags.class);
+	//	params.flags = EnumSet.noneOf(ListArea.Flags.class);
 	params.name = luwrain.i18n().getStaticStr("MainMenuName");
 	final MainMenu mainMenu = new MainMenu(luwrain, params);
 	return mainMenu;
@@ -214,56 +192,6 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	}
     }
 
-    static private class Appearance implements ListArea.Appearance
-    {
-	private final Luwrain luwrain;
-
-	Appearance(Luwrain luwrain)
-	{
-	    NullCheck.notNull(luwrain, "luwrain");
-	    this.luwrain = luwrain;
-	}
-
-	@Override public void announceItem(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    if (item instanceof Section)
-	    {
-		luwrain.silence();
-		luwrain.playSound(Sounds.DOC_SECTION);
-		luwrain.speak(item.toString());
-		return;
-	    }
-	    luwrain.silence();
-	    luwrain.playSound(Sounds.MAIN_MENU_ITEM);
-	    luwrain.speak(item.toString());
-	}
-
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    if (item instanceof Section)
-		return item.toString();
-	    return "  " + item.toString();
-	}
-
-	@Override public int getObservableLeftBound(Object item)
-	{
-	    if (item == null)
-		return 0;
-	    if (item instanceof Section)
-		return 0;
-	    return 2;
-	}
-
-	@Override public int getObservableRightBound(Object item)
-	{
-	    return item != null?getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length():0;
-	}
-    }
-
     static private class Transition extends ListUtils.DefaultTransition
     {
 	@Override public State transition(Type type, State fromState, int itemCount,
@@ -286,6 +214,57 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	    default:
 		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
 	    }
+	}
+    }
+
+	    static private final class Appearance extends ListUtils.DoubleLevelAppearance
+    {
+	static private final String STATIC_PREFIX = "static:";
+	private final Map<String, UniRefInfo> uniRefCache = new HashMap();
+	Appearance(ControlContext context)
+	{
+	    super(context);
+	}
+	@Override public boolean isSectionItem(Object obj)
+	{
+	    NullCheck.notNull(obj, "obj");
+	    final UniRefInfo info = getUniRefInfo(obj);
+	    return info.getType().equals("section");
+	}
+	@Override public String getSectionScreenAppearance(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    final UniRefInfo info = getUniRefInfo(item);
+	    final String title = info.getTitle();
+	    if (!title.startsWith(STATIC_PREFIX))
+		return title;
+	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
+	}
+    	@Override public String getNonSectionScreenAppearance(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    final UniRefInfo info = getUniRefInfo(item);
+	    	    final String title = info.getTitle();
+	    if (!title.startsWith(STATIC_PREFIX))
+		return title;
+	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
+	}
+	private UniRefInfo getUniRefInfo(Object obj)
+	{
+	    NullCheck.notNull(obj, "obj");
+	    if (obj instanceof UniRefInfo)
+		return (UniRefInfo)obj;
+	    if (uniRefCache.containsKey(obj.toString()))
+		return uniRefCache.get(obj.toString());
+	    final UniRefInfo info = context.getUniRefInfo(obj.toString());
+	    if (info != null)
+	    {
+		uniRefCache.put(obj.toString(), info);
+		return info;
+	    }
+	    final UniRefInfo info2 = new UniRefInfo(obj.toString());
+	    uniRefCache.put(obj.toString(), info2);
+	    return info2;
 	}
     }
 }

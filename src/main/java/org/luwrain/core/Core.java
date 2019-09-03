@@ -842,7 +842,7 @@ onNewAreasLayout();
     void mainMenu()
     {
 	mainCoreThreadOnly();
-	final org.luwrain.shell.MainMenu mainMenu = org.luwrain.shell.MainMenu.newMainMenu(getObjForEnvironment());
+	final org.luwrain.core.shell.MainMenu mainMenu = org.luwrain.core.shell.MainMenu.newMainMenu(getObjForEnvironment());
 	if (mainMenu == null)
 	    return;
 	popup(null, mainMenu, Popup.Position.LEFT, ()->mainMenu.closing.continueEventLoop(), true, true);
