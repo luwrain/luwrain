@@ -38,6 +38,8 @@ public class MutableLinesHookObject extends EmptyHookObject
 	NullCheck.notEmpty(name, "name");
 	switch(name)
 	{
+	    case "length":
+	    return new Integer(lines.getLineCount());
 	case "add":
 	    return (Consumer)this::add;
 	case "remove":
