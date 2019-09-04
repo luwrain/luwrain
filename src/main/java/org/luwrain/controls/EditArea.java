@@ -76,7 +76,13 @@ public interface Appearance extends MultilineEdit2.Appearance
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.name, "params.name");
 	this.areaName = params.name;
-	this.content = params.content != null?params.content:new MutableLinesImpl();
+	this.content = new MutableLinesChangeListener(params.content != null?params.content:new MutableLinesImpl()){
+		@Override public void onMutableLinesChange()
+		{
+		    if (changeListener != null)
+			changeListener.onEditChange();
+		}
+	    };
 	this.appearance = params.appearance;
 	this.changeListener = params.changeListener;
 this.basicCorrector = createBasicCorrector();
@@ -85,13 +91,7 @@ this.basicCorrector = createBasicCorrector();
 
     protected MultilineEditCorrector2 createBasicCorrector()
     {
-	final MultilineEditCorrector2 corrector = new MultilineEditCorrectorTranslator(content, this);
-	return new EditUtils.CorrectorChangeListener(corrector){
-	    @Override public void onMultilineEditChange()
-	    {
-		if (changeListener != null)
-		    changeListener.onEditChange();
-	    }};
+return new MultilineEditCorrectorTranslator(content, this);
     }
 
     protected MultilineEdit2 createEdit(Params areaParams)
