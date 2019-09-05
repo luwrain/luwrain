@@ -65,40 +65,11 @@ public class FilePopup extends EditListPopup
 	return luwrain.getSpeakableText(text, Luwrain.SpeakableTextType.PROGRAMMING);
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	if (event.getType() != EnvironmentEvent.Type.REGULAR)
-	    return super.onSystemEvent(event);
-	switch(event.getCode())
-	{
-	case PROPERTIES:
-	    return openCommanderPopup();
-	default:
-	    return super.onSystemEvent(event);
-	}
-    }
-
     @Override public boolean onOk()
     {
 	if (result() == null)
 	    return false;
 	return acceptance != null?acceptance.isPathAcceptable(result(), true):true;
-    }
-
-    protected boolean openCommanderPopup()
-    {
-File file = result();
-	if (file == null)
-	    return false;
-	if (!file.isDirectory())
-	    file = file.getParentFile();
-	if (file == null || !file.isDirectory())
-	    return false;
-	final File res = Popups.commanderSingle(luwrain, getAreaName(), file, popupFlags);
-	if (res != null)
-	    setText(res.getAbsolutePath(), "");
-	return true;
     }
 
     static String getPathWithEndingSeparator(File file)

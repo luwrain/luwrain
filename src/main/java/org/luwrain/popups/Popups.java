@@ -276,33 +276,6 @@ name, prefix, text, popupFlags);
 	return existingDir(luwrain, name, prefix, null);
 	    }
 
-
-    static public File commanderSingle(Luwrain luwrain, String name,
-				       File path, FilePopup.Acceptance acceptance,
-				       CommanderArea.ClickHandler clickHandler, Set<Popup.Flags> popupFlags)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(path, "path");
-	NullCheck.notNull(popupFlags, "popupFlags");
-	luwrain.message(name);
-	final CommanderPopup popup = new CommanderPopup(luwrain, name, path, acceptance, clickHandler, popupFlags);
-	luwrain.popup(popup);
-	if (popup.closing.cancelled())
-	    return null;
-	return popup.result();
-    }
-
-    static public File commanderSingle(Luwrain luwrain, String name,
-				       File path, Set<Popup.Flags> popupFlags)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(path, "path");
-	NullCheck.notNull(popupFlags, "popupFlags");
-	return commanderSingle(luwrain, name, path, null, null, popupFlags);
-    }
-
     static public File disksVolumes(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
