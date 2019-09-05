@@ -22,6 +22,7 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 
 public final class Popups
@@ -227,17 +228,45 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
-	final File res = path(luwrain, name, prefix, startWith != null?startWith:null, (fileToCheck, announce)->{
-		if (!fileToCheck.isDirectory())
+	final CommanderArea.ClickHandler<File> clickHandler = (area, file, dir)->{
+	    if (dir)
+		return CommanderArea.ClickHandler.Result.OPEN_DIR;
+	    return CommanderArea.ClickHandler.Result.REJECTED;
+	};
+	final FilePopup.Acceptance acceptance = (file, announcement)->{
+	    return true;
+	};
+	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
+							luwrain.getFileProperty("luwrain.dir.userhome"), acceptance, clickHandler, DEFAULT_POPUP_FLAGS){
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
-		    if (announce)
-			luwrain.message("Указанный путь не является каталогом", Luwrain.MessageType.ERROR);//FIXME:
-		    return false;
+		    NullCheck.notNull(event, "event");
+		    if(event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
+			{
+			case INSERT:
+			    {
+				final FilePopup newDirPopup = new FilePopup(luwrain, "Новый каталог", "Имя нового каталога:",
+									    (file, announcement)->{
+										if (file.mkdir())
+										    return true;
+										if (announcement)
+										    luwrain.message("Каталог по указанному пути не может быть создан", Luwrain.MessageType.ERROR);
+										return false;
+									    },
+									    new File(""), opened(), loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
+				luwrain.popup(newDirPopup);
+				return true;
+			    }
+			}
+		    return super.onInputEvent(event);
 		}
-		return true;
-	    });
-	return res;
-	    }
+	    };
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.result();
+    }
 
         static public File existingDir(Luwrain luwrain, String name, String prefix)
     {
