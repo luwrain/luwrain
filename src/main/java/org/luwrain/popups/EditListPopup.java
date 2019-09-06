@@ -127,7 +127,7 @@ public class EditListPopup extends SimpleEditPopup
 	    final String completion = model.getCompletion(text);
 	    if (completion != null && !completion.isEmpty())
 	    {
-		luwrain.speak(getSpokenText(completion));
+		luwrain.speak(getSpeakableText("", completion));
 		setText(text + completion, after);
 		return;
 	    }
@@ -153,7 +153,7 @@ public class EditListPopup extends SimpleEditPopup
 	final String value = briefIntroduction?item.announcement:item.value;
 	if (value.isEmpty())
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    luwrain.speak(getSpokenText(value));
+	    luwrain.speak(getSpeakableText("", value));
 	setText(item.value, "");
     }
 
@@ -168,7 +168,7 @@ public class EditListPopup extends SimpleEditPopup
 	final String value = briefIntroduction?item.announcement:item.value;
 	if (value.isEmpty())
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    luwrain.speak(getSpokenText(value));
+	    luwrain.speak(getSpeakableText("", value));
 	setText(item.value, "");
     }
 }

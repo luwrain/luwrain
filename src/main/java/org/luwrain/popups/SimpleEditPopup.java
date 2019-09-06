@@ -102,10 +102,10 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return 0;
     }
 
-    protected String getSpokenText(String text)
+    protected String getSpeakableText(String prefix, String text)
     {
 	NullCheck.notNull(text, "text");
-	return text;
+	return prefix + text;
     }
 
     @Override public boolean onInputEvent(KeyboardEvent event)
@@ -147,7 +147,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	switch(event.getCode())
 	{
 	case INTRODUCE:
-	    luwrain.speak(prefix + getSpokenText(text), Sounds.INTRO_POPUP);
+	    luwrain.speak(getSpeakableText(prefix, text), Sounds.INTRO_POPUP);
 	    return true;
 	}
 	if (edit.isPosCovered(pos, 0) && edit.onSystemEvent(event))
@@ -257,7 +257,7 @@ protected boolean onAltRight(KeyboardEvent event)
 	}
 	pos = it.pos();
 	if (it.announce().length() > 0)
-	    luwrain.speak(getSpokenText(it.announce())); else
+	    luwrain.speak(getSpeakableText("", it.announce())); else
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
@@ -278,7 +278,7 @@ protected boolean onAltLeft(KeyboardEvent event)
 	    return true;
 	}
 	pos = it.pos();
-	luwrain.speak(getSpokenText(it.announce()));
+	luwrain.speak(getSpeakableText("", it.announce()));
 	luwrain.onAreaNewHotPoint(this);
 	    return true;
     }
