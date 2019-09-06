@@ -36,7 +36,7 @@ final class Core extends EventDispatching
     private final ClassLoader classLoader;
     final OperatingSystem os;
     final Interaction interaction;
-    private final org.luwrain.shell.Conversations conversations;
+    private final org.luwrain.core.shell.Conversations conversations;
     org.luwrain.player.Player player = null;
     final WavePlayers.Player wavePlayer = new WavePlayers.Player();
     Settings.UserInterface uiSettings;//FIXME:final 
@@ -54,7 +54,7 @@ final class Core extends EventDispatching
 	this.classLoader = classLoader;
 	this.os = os;
 	this.interaction = interaction;
-	this.conversations = new org.luwrain.shell.Conversations(getObjForEnvironment());
+	this.conversations = new org.luwrain.core.shell.Conversations(getObjForEnvironment());
     }
 
     void run()

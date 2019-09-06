@@ -44,7 +44,7 @@ class Commands
      * @param env The environment object to process commands on
      * @return The vector of created commands
      */
-    static Command[] createStandardCommands(Core core, org.luwrain.shell.Conversations conversations)
+    static Command[] createStandardCommands(Core core, org.luwrain.core.shell.Conversations conversations)
     {
 	NullCheck.notNull(core, "core");
 	NullCheck.notNull(conversations, "conversations");
@@ -142,7 +142,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrainArg)
 		{
-		    final File res = conversations.openPopup();
+		    final File res = conversations.open();
 		    if (res != null)
 			core.openFiles(new String[]{res.getAbsolutePath()});
 		}

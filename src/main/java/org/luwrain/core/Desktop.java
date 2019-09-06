@@ -20,6 +20,6 @@ package org.luwrain.core;
 
 public interface Desktop extends Application
 {
-    void setConversations(org.luwrain.shell.Conversations conv);
+    void setConversations(org.luwrain.core.shell.Conversations conv);
     void ready();
 }

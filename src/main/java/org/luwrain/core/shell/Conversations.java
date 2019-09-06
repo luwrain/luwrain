@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,12 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.shell;
+package org.luwrain.core.shell;
 
 import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
 
@@ -30,7 +31,47 @@ public final class Conversations
     public Conversations(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-		this.luwrain = luwrain;
+	this.luwrain = luwrain;
+    }
+
+    public File open()
+    {
+	final File current = new File(luwrain.getActiveAreaAttr(Luwrain.AreaAttr.DIRECTORY));
+	final FilePopup popup = new FilePopup(luwrain, 
+					      luwrain.i18n().getStaticStr("OpenPopupName"), luwrain.i18n().getStaticStr("OpenPopupPrefix"), 
+					      null, current, luwrain.getFileProperty("luwrain.dir.userhome"),
+					      Popups.loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS){
+		@Override public boolean onInputEvent(KeyboardEvent event)
+		{
+		    NullCheck.notNull(event, "event");
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
+			{
+			case INSERT:
+			    {
+				if (text().isEmpty())
+				    return false;
+				final File file = new File(luwrain.getFileProperty("luwrain.dir.userhome"), text());
+				if (file.exists())
+				{
+				    if (file.isDirectory())
+					luwrain.message(luwrain.i18n().getStaticStr("DirAlreadyExists"), Luwrain.MessageType.ERROR); else
+					luwrain.message(luwrain.i18n().getStaticStr("FileAlreadyExists"), Luwrain.MessageType.ERROR);
+				    return true;
+				}
+				if (file.mkdir())
+				    luwrain.message(luwrain.i18n().getStaticStr("DirCreated"), Luwrain.MessageType.OK); else
+				    luwrain.message(luwrain.i18n().getStaticStr("UnableToCreateDir"), Luwrain.MessageType.ERROR);
+			    }
+			    return true;
+			}
+		    return super.onInputEvent(event);
+		}
+	    };
+	luwrain.popup(popup);
+	if (popup.wasCancelled())
+	    return null;
+	return popup.result();
     }
 
     public String commandPopup(String[] allCommands)
@@ -59,19 +100,6 @@ public final class Conversations
 	return !popup.text().isEmpty()?popup.text():null;
     }
 
-    public File openPopup()
-    {
-	final File current = new File(luwrain.getActiveAreaAttr(Luwrain.AreaAttr.DIRECTORY));
-	final FilePopup popup = new FilePopup(luwrain, 
-					      luwrain.i18n().getStaticStr("OpenPopupName"),
-					      luwrain.i18n().getStaticStr("OpenPopupPrefix"), 
-					      null, current, current,
-					      Popups.loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS);
-	luwrain.popup(popup);
-	if (popup.wasCancelled())
-	    return null;
-	return popup.result();
-    }
 
     public boolean deleteDesktopItemConfirmation(String name)
     {

@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.Popups;
-import org.luwrain.shell.*;
+import org.luwrain.core.shell.*;
 
 public final class Desktop implements org.luwrain.core.Desktop
 {
