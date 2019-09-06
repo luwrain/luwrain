@@ -173,4 +173,14 @@ public final class FileUtils
 	res.add(new String(b));
 	return res.toArray(new String[res.size()]);
     }
+
+    static public File ifNotAbsolute(File baseDir, String path)
+    {
+	NullCheck.notNull(baseDir, "baseDir");
+	NullCheck.notEmpty(path, "path");
+	final File file = new File(path);
+	if (file.isAbsolute())
+	    return file;
+	return new File(baseDir, path);
+    }
 }

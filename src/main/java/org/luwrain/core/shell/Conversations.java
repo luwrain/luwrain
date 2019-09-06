@@ -23,6 +23,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
+import org.luwrain.util.*;
 
 public final class Conversations
 {
@@ -51,7 +52,7 @@ public final class Conversations
 			    {
 				if (text().isEmpty())
 				    return false;
-				final File file = new File(luwrain.getFileProperty("luwrain.dir.userhome"), text());
+				final File file = FileUtils.ifNotAbsolute(luwrain.getFileProperty("luwrain.dir.userhome"), text());
 				if (file.exists())
 				{
 				    if (file.isDirectory())
