@@ -48,14 +48,12 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
     protected final String prefix;
     protected String text;
     protected int pos;
-    protected final StringAcceptance acceptance;
     protected final Set<Popup.Flags> popupFlags;
 
     public SimpleEditPopup(Luwrain luwrain,
 			   String name,
 			   String prefix,
 			   String text,
-			   StringAcceptance acceptance,
 			   Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -70,16 +68,6 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	this.popupFlags = popupFlags;
 	this.pos = prefix.length() + text.length();
 	this.edit = new EmbeddedSingleLineEdit(new DefaultControlContext(luwrain), this, this, regionPoint, prefix.length(), 0);
-	this.acceptance = acceptance;
-    }
-
-    public SimpleEditPopup(Luwrain luwrain,
-			   String name,
-			   String prefix,
-			   String text,
-			   Set<Popup.Flags> popupFlags)
-    {
-	this(luwrain, name, prefix, text, null, popupFlags);
     }
 
     @Override public int getLineCount()
@@ -317,8 +305,6 @@ protected boolean onAltLeft(KeyboardEvent event)
 
     @Override public boolean onOk()
     {
-	if (acceptance != null && !acceptance.inputLineAcceptable(text))
-	    return false;
 	return true;
     }
 

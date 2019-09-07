@@ -31,18 +31,24 @@ public final class Popups
     static public final Set<Popup.Flags> DEFAULT_POPUP_FLAGS = EnumSet.noneOf(Popup.Flags.class);
 
     static public String simple(Luwrain luwrain,
-				String name,
-				String prefix,
-				String text,
-				StringAcceptance acceptance,
-				Set<Popup.Flags> popupFlags)
+				String name, String prefix, String text,
+				StringAcceptance acceptance, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(popupFlags, "popupFlags");
-	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, acceptance, popupFlags);
+	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, popupFlags){
+		@Override public boolean onOk()
+		{
+		    if (acceptance != null && !acceptance.acceptable(text))
+			return false;
+		    return true;
+				
+		    
+		}
+	    };
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;

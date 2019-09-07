@@ -24,5 +24,5 @@ public interface StringAcceptance
 {
     public enum Flags {};
 
-    boolean inputLineAcceptable(String inputLine);
+    boolean acceptable(String inputLine);
 }
