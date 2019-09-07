@@ -127,7 +127,7 @@ final class Core extends EventDispatching
 
     @Override public void onAltX()
     {
-	final String cmdName = conversations.commandPopup(commands.getCommandNames());
+	final String cmdName = conversations.command(commands.getCommandNames());
 	if (cmdName == null || cmdName.trim().isEmpty())
 	    return;
 	if (cmdName.trim().startsWith("app "))

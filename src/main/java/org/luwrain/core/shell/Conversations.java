@@ -75,11 +75,25 @@ public final class Conversations
 	return popup.result();
     }
 
-    public String commandPopup(String[] allCommands)
+    public String command(String[] allCommands)
     {
 	NullCheck.notNullItems(allCommands, "allCommands");
 	final EditListPopup popup = new EditListPopup(luwrain, new EditListPopupUtils.FixedModel(allCommands),
 						      luwrain.i18n().getStaticStr("CommandPopupName"), luwrain.i18n().getStaticStr("CommandPopupPrefix"), "", EnumSet.noneOf(Popup.Flags.class)){
+		@Override public boolean onOk()
+		{
+		    final String t = text.trim();
+		    if (t.isEmpty())
+		    {
+			luwrain.playSound(Sounds.EVENT_NOT_PROCESSED);
+			return false;
+		    }
+		    for(String c: allCommands)
+			if (t.equals(c))
+			    return true;
+		    luwrain.message(luwrain.i18n().getStaticStr("NoCommand"));
+		    return false;
+		}
 		@Override public boolean onAreaQuery(AreaQuery query)
 		{
 		    NullCheck.notNull(query, "query");
