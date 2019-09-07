@@ -34,7 +34,7 @@ public final class Popups
 				String name,
 				String prefix,
 				String text,
-				SimpleEditPopup.Acceptance acceptance,
+				StringAcceptance acceptance,
 				Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -52,7 +52,7 @@ public final class Popups
     static public String simple(Luwrain luwrain,
 				String name, String prefix,
 				String text,
-				SimpleEditPopup.Acceptance acceptance)
+				StringAcceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");

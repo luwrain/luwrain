@@ -48,14 +48,14 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
     protected final String prefix;
     protected String text;
     protected int pos;
-    protected final Acceptance acceptance;
+    protected final StringAcceptance acceptance;
     protected final Set<Popup.Flags> popupFlags;
 
     public SimpleEditPopup(Luwrain luwrain,
 			   String name,
 			   String prefix,
 			   String text,
-			   Acceptance acceptance,
+			   StringAcceptance acceptance,
 			   Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -414,10 +414,5 @@ protected boolean onAltLeft(KeyboardEvent event)
     public boolean wasCancelled()
     {
 	return closing.cancelled();
-    }
-
-    public interface Acceptance 
-    {
-	boolean inputLineAcceptable(String inputLine);
     }
 }
