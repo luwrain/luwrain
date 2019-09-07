@@ -68,6 +68,23 @@ public final class Conversations
 			}
 		    return super.onInputEvent(event);
 		}
+				@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    NullCheck.notNull(query, "query");
+		    switch(query.getQueryCode())
+		    {
+		    case AreaQuery.UNIREF_AREA:
+			{
+			    final File f = FileUtils.ifNotAbsolute(luwrain.getFileProperty("luwrain.dir.userhome"), text);
+			    if (f.getAbsolutePath().isEmpty())
+			    return false;
+			((UniRefAreaQuery)query).answer("file:" + f.getAbsolutePath());
+			return true;
+			}
+		    default:
+			return super.onAreaQuery(query);
+		    }
+		}
 	    };
 	luwrain.popup(popup);
 	if (popup.wasCancelled())
