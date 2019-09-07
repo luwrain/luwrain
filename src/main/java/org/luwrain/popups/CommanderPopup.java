@@ -31,12 +31,12 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final Luwrain luwrain;
     protected final String name;
-    protected final FilePopup.Acceptance acceptance;
+    protected final FileAcceptance acceptance;
     protected final Set<Popup.Flags> popupFlags;
     protected File result;
 
     public CommanderPopup(Luwrain luwrain, String name, File file,
-			  FilePopup.Acceptance acceptance, CommanderArea.ClickHandler<File> clickHandler, Set<Popup.Flags> popupFlags)
+			  FileAcceptance acceptance, CommanderArea.ClickHandler<File> clickHandler, Set<Popup.Flags> popupFlags)
     {
 	super(constructParams(luwrain));
 	NullCheck.notNull(luwrain, "luwrain");

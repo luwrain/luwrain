@@ -144,7 +144,7 @@ name, prefix, text, popupFlags);
     static private File path(Luwrain luwrain,
 			     String name, String prefix,
 			     File startWith, File defaultPath,
-			     FilePopup.Acceptance acceptance, 
+			     FileAcceptance acceptance, 
 			     Set<FilePopup.Flags> filePopupFlags, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -161,7 +161,7 @@ name, prefix, text, popupFlags);
 	return popup.closing.cancelled()?null:popup.result();
     }
 
-    static public File path(Luwrain luwrain, String name, String prefix, File startWith, FilePopup.Acceptance acceptance)
+    static public File path(Luwrain luwrain, String name, String prefix, File startWith, FileAcceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -172,7 +172,7 @@ name, prefix, text, popupFlags);
 		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
 
-    static public File path(Luwrain luwrain, String name, String prefix, FilePopup.Acceptance acceptance)
+    static public File path(Luwrain luwrain, String name, String prefix, FileAcceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -195,7 +195,7 @@ name, prefix, text, popupFlags);
 		return CommanderArea.ClickHandler.Result.OPEN_DIR;
 	    return CommanderArea.ClickHandler.Result.REJECTED;
 	};
-	final FilePopup.Acceptance acceptance = (file, announcement)->{
+	final FileAcceptance acceptance = (file, announcement)->{
 	    return true;
 	};
 	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
@@ -237,7 +237,7 @@ name, prefix, text, popupFlags);
 		return CommanderArea.ClickHandler.Result.OPEN_DIR;
 	    return CommanderArea.ClickHandler.Result.REJECTED;
 	};
-	final FilePopup.Acceptance acceptance = (file, announcement)->{
+	final FileAcceptance acceptance = (file, announcement)->{
 	    return true;
 	};
 	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,

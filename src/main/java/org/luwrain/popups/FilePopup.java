@@ -28,16 +28,11 @@ public class FilePopup extends EditListPopup
     public enum Flags { SKIP_HIDDEN };
     static final String SEPARATOR = System.getProperty("file.separator");
 
-    public interface Acceptance 
-    {
-	boolean isPathAcceptable(File file, boolean announce);
-    }
-
     protected final File defaultDir;
-    protected final Acceptance acceptance;
+    protected final FileAcceptance acceptance;
 
     public FilePopup(Luwrain luwrain, String name, String prefix,
-		     Acceptance acceptance, File startFrom, File defaultDir,
+		     FileAcceptance acceptance, File startFrom, File defaultDir,
 		     Set<Flags> flags, Set<Popup.Flags> popupFlags)
     {
 	super(luwrain,
