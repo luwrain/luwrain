@@ -190,28 +190,32 @@ name, prefix, text, popupFlags);
 	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNull(startWith, "startWith");
 	NullCheck.notNullItems(extensions, "extensions");
-	return path(luwrain, name, prefix, startWith, (fileToCheck, announce)->{
-		if (!fileToCheck.isFile())
+	final CommanderArea.ClickHandler<File> clickHandler = (area, file, dir)->{
+	    if (dir)
+		return CommanderArea.ClickHandler.Result.OPEN_DIR;
+	    return CommanderArea.ClickHandler.Result.REJECTED;
+	};
+	final FilePopup.Acceptance acceptance = (file, announcement)->{
+	    return true;
+	};
+	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
+							luwrain.getFileProperty("luwrain.dir.userhome"), acceptance, clickHandler, DEFAULT_POPUP_FLAGS){
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
-		    if (announce)
-			luwrain.message(fileToCheck.getName() + " не является файлом", Luwrain.MessageType.ERROR);
-		    return false;
+		    NullCheck.notNull(event, "event");
+		    if(event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
+			{
+			case INSERT:
+			    return mkdir(luwrain, opened());
+			}
+		    return super.onInputEvent(event);
 		}
-		if (extensions.length > 0)
-		{
-		    int i = 0;
-		    for(i = 0;i < extensions.length;++i)
-			if (!extensions[i].isEmpty() && fileToCheck.getName().toLowerCase().endsWith(extensions[i].toLowerCase()))
-			    break;
-		    if (i == extensions.length)
-		    {
-			if (announce)
-			    luwrain.message(fileToCheck.getName() + " неявляется файлом допустимого типа", Luwrain.MessageType.ERROR);
-			return false;
-		    }
-		}
-		return true;
-	    });
+	    };
+	luwrain.popup(popup);
+	if (popup.closing.cancelled())
+	    return null;
+	return popup.result();
     }
 
     static public File existingFile(Luwrain luwrain, String name, String prefix, String[] extensions)
@@ -245,19 +249,7 @@ name, prefix, text, popupFlags);
 			switch(event.getSpecial())
 			{
 			case INSERT:
-			    {
-				final FilePopup newDirPopup = new FilePopup(luwrain, "Новый каталог", "Имя нового каталога:",
-									    (file, announcement)->{
-										if (file.mkdir())
-										    return true;
-										if (announcement)
-										    luwrain.message("Каталог по указанному пути не может быть создан", Luwrain.MessageType.ERROR);
-										return false;
-									    },
-									    new File(""), opened(), loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
-				luwrain.popup(newDirPopup);
-				return true;
-			    }
+			    return mkdir(luwrain, opened());
 			}
 		    return super.onInputEvent(event);
 		}
@@ -275,6 +267,27 @@ name, prefix, text, popupFlags);
 	NullCheck.notEmpty(prefix, "prefix");
 	return existingDir(luwrain, name, prefix, null);
 	    }
+
+    static private boolean mkdir(Luwrain luwrain, File createIn)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(createIn, "createIn");
+	final FilePopup newDirPopup = new FilePopup(luwrain, "Новый каталог", "Имя нового каталога:",
+						    null, new File(""), createIn, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS){
+		@Override public boolean onOk()
+		{
+		    final File file = result();
+		    if (file == null)
+			return false;
+		    if (file.mkdir())
+			return true;
+		    luwrain.message(luwrain.i18n().getStaticStr("UnableToCreateDir"), Luwrain.MessageType.ERROR);
+		    return false;
+		}
+	    };
+	luwrain.popup(newDirPopup);
+	return true;
+    }
 
     static public File disksVolumes(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
     {
