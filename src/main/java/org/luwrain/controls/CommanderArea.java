@@ -635,7 +635,7 @@ final EntryType type;
 	}
     }
 
-    static public class ListModelAdapter<E> implements ListArea.Model
+    static protected class ListModelAdapter<E> implements ListArea.Model
     {
 	protected final CommanderArea.Model<E> model;
 	boolean marking = true;
