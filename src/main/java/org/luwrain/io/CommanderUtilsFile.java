@@ -26,7 +26,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.controls.CommanderArea.EntryType;
 
-public class CommanderUtilsFile
+public final class CommanderUtilsFile
 {
     static private final String LOG_COMPONENT = "commander-file";
 
@@ -46,7 +46,6 @@ public class CommanderUtilsFile
 			return EntryType.REGULAR;
 		    return EntryType.SPECIAL;
 	    }
-
 	@Override public File[] getEntryChildren(File entry)
 	{
 	    NullCheck.notNull(entry, "entry");
@@ -67,7 +66,6 @@ public class CommanderUtilsFile
 		return null;
 	    }
 	}
-
 	@Override public File getEntryParent(File entry)
 	{
 	    NullCheck.notNull(entry, "entry");
@@ -78,19 +76,16 @@ public class CommanderUtilsFile
     static public class Appearance implements CommanderArea.Appearance<File>
     {
 	protected final ControlContext environment;
-
 	public Appearance(ControlContext environment)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    this.environment = environment;
 	}
-
 	@Override public String getCommanderName(File entry)
 	{
 	    NullCheck.notNull(entry, "entry");
 	    return entry.getName();
 	}
-
 	@Override public void announceLocation(File entry)
 	{
 	    NullCheck.notNull(entry, "entry");
@@ -100,7 +95,6 @@ public class CommanderUtilsFile
 		environment.say(environment.getStaticStr("PartitionsPopupItemRoot")); else
 		environment.say(entry.getName());
 	}
-
 	@Override public String getEntryText(File entry, EntryType type, boolean marked)
 	{
 	    NullCheck.notNull(entry, "entry");
@@ -109,7 +103,6 @@ public class CommanderUtilsFile
 		return "..";
 	    return entry.getName();
 	}
-
 	@Override public void announceEntry(File entry, CommanderArea.EntryType type, boolean marked)
 	{
 	    NullCheck.notNull(entry, "entry");
@@ -117,6 +110,34 @@ public class CommanderUtilsFile
 	    final String name = entry.getName();
 	    CommanderUtils.defaultEntryAnnouncement(environment, name, type, marked);
     }
+    }
+
+static     public class Filter implements CommanderArea.Filter<File>
+    {
+	public enum Flags {NO_HIDDEN, NO_NON_DIREXCLUDE_HIDDEN, DIR_ONLY};
+
+	private final Set<Flags> flags;
+
+	public Filter()
+	{
+	    this.flags = EnumSet.noneOf(Flags.class);
+	}
+
+	public Filter(Set<Flags> flags)
+	{
+	    NullCheck.notNull(flags, "flags");
+	    this.flags = flags;
+	}
+
+		@Override public boolean commanderEntrySuits(File file)
+	{
+	    NullCheck.notNull(file, "file");
+	    if (flags.contains(Flags.NO_HIDDEN) && file.isHidden())
+		return false;
+	    if (flags.contains(Flags.DIR_ONLY) && file.isFile())
+		return false;
+	    return true;
+	    	}
     }
 
     static public CommanderArea.Params<File> createParams(ControlContext context)

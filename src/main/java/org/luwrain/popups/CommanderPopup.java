@@ -36,9 +36,9 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
     protected File result;
 
     public CommanderPopup(Luwrain luwrain, String name, File file,
-			  FileAcceptance acceptance, CommanderArea.ClickHandler<File> clickHandler, Set<Popup.Flags> popupFlags)
+			  FileAcceptance acceptance, CommanderArea.Filter<File> filter, Set<Popup.Flags> popupFlags)
     {
-	super(constructParams(luwrain));
+	super(constructParams(luwrain, filter));
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(file, "file");
@@ -47,7 +47,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	this.name = name;
 	this.popupFlags = popupFlags;
 	this.acceptance = acceptance;
-	setClickHandler(clickHandler != null?clickHandler:this);
+	setClickHandler(this);
 setLoadingResultHandler((location, data, selectedIndex, announce)->{
 		luwrain.runUiSafely(()->acceptNewLocation(location, data, selectedIndex, announce));
 	    });
@@ -61,8 +61,7 @@ open(file, null, false);
 	if (dir)
 	    return ClickHandler.Result.OPEN_DIR;
 	result = file;
-	closing.doOk();
-	return ClickHandler.Result.OK;
+	return closing.doOk()?ClickHandler.Result.OK:ClickHandler.Result.REJECTED;
     }
 
     public File result()
@@ -70,23 +69,11 @@ open(file, null, false);
 	return result;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+        @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (closing.onInputEvent(event))
 	    return true;
-	if (!event.isSpecial() && !event.isModified())
-	    switch(event.getChar())
-	    {
-	    case '=':
-		//		setCommanderFilter(new CommanderUtils.AllFilesFilter());
-		refresh();
-		return true;
-	    case '-':
-		//		setCommanderFilter(new CommanderUtils.NoHiddenFilter());
-		refresh();
-		return true;
-	    }
 	return super.onInputEvent(event);
     }
 
@@ -161,11 +148,11 @@ open(file, null, false);
 	open(res, null);
     }
 
-    static private CommanderArea.Params<File> constructParams(Luwrain luwrain)
+    static private CommanderArea.Params<File> constructParams(Luwrain luwrain, CommanderArea.Filter<File> filter)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	final CommanderArea.Params<File> params = CommanderUtilsFile.createParams(new DefaultControlContext(luwrain));
-	params.filter = new CommanderUtils.AllEntriesFilter();
+	params.filter = filter != null?filter:new CommanderUtils.AllEntriesFilter();
 	params.comparator = new CommanderUtils.ByNameComparator();
 	return params;
     }

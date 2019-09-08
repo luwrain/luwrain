@@ -24,6 +24,7 @@ import java.io.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.io.*;
 
 public final class Popups
 {
@@ -196,16 +197,11 @@ name, prefix, text, popupFlags);
 	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNull(startWith, "startWith");
 	NullCheck.notNullItems(extensions, "extensions");
-	final CommanderArea.ClickHandler<File> clickHandler = (area, file, dir)->{
-	    if (dir)
-		return CommanderArea.ClickHandler.Result.OPEN_DIR;
-	    return CommanderArea.ClickHandler.Result.REJECTED;
-	};
 	final FileAcceptance acceptance = (file, announcement)->{
 	    return true;
 	};
 	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
-							luwrain.getFileProperty("luwrain.dir.userhome"), acceptance, clickHandler, DEFAULT_POPUP_FLAGS){
+							luwrain.getFileProperty("luwrain.dir.userhome"), acceptance, null, DEFAULT_POPUP_FLAGS){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -238,16 +234,13 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
-	final CommanderArea.ClickHandler<File> clickHandler = (area, file, dir)->{
-	    if (dir)
-		return CommanderArea.ClickHandler.Result.OPEN_DIR;
-	    return CommanderArea.ClickHandler.Result.REJECTED;
-	};
+	final CommanderArea.Filter<File> filter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.NO_HIDDEN, CommanderUtilsFile.Filter.Flags.DIR_ONLY));
+	final CommanderArea.Filter<File> extendedFilter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.DIR_ONLY));
 	final FileAcceptance acceptance = (file, announcement)->{
 	    return true;
 	};
 	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
-							luwrain.getFileProperty("luwrain.dir.userhome"), acceptance, clickHandler, DEFAULT_POPUP_FLAGS){
+							luwrain.getFileProperty("luwrain.dir.userhome"), acceptance, filter, DEFAULT_POPUP_FLAGS){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -256,6 +249,20 @@ name, prefix, text, popupFlags);
 			{
 			case INSERT:
 			    return mkdir(luwrain, opened());
+			}
+		    if (!event.isSpecial() && !event.isModified())
+			switch(event.getChar())
+			{
+			case '=':
+			    setCommanderFilter(extendedFilter);
+			    reread(true);
+			    //						luwrain.playSound(Sounds.OK);
+			    return true;
+			case '-':
+			    setCommanderFilter(filter);
+			    reread(false);
+			    luwrain.playSound(Sounds.OK);
+			    return true;
 			}
 		    return super.onInputEvent(event);
 		}

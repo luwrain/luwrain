@@ -224,10 +224,10 @@ public class CommanderArea<E> extends ListArea
 	return res.toArray(new Wrapper[res.size()]);
     }
 
-    public void open(E entry)
+    public boolean open(E entry)
     {
 	NullCheck.notNull(entry, "entry");
-	open(entry, null, true);
+	return open(entry, null, true);
     }
 
     //If no desiredSelected found, area tries to leave selection unchanged
@@ -266,7 +266,7 @@ public class CommanderArea<E> extends ListArea
 		    final E[] res = model.getEntryChildren(newCurrent);
 		    if (res != null)
 		    {
-			final Vector<E> filtered = new Vector<E>();
+			final Vector<E> filtered = new Vector();
 			for(E e: res)
 			    if (filter == null || filter.commanderEntrySuits(e))
 				filtered.add(e);

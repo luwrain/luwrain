@@ -71,7 +71,7 @@ public class CommanderUtils
 	final StringBuilder b = new StringBuilder();
 	if (marked)
 	    b.append(context.getStaticStr("CommanderSelected") + " ");
-	b.append(name);
+	b.append(context.getSpeakableText(name, Luwrain.SpeakableTextType.PROGRAMMING));
 	switch(type)
 	{
 	case PARENT:
