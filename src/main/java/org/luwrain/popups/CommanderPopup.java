@@ -48,10 +48,10 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	this.popupFlags = popupFlags;
 	this.acceptance = acceptance;
 	setClickHandler(this);
-setLoadingResultHandler((location, data, selectedIndex, announce)->{
+	setLoadingResultHandler((location, data, selectedIndex, announce)->{
 		luwrain.runUiSafely(()->acceptNewLocation(location, data, selectedIndex, announce));
 	    });
-open(file, null, false);
+	open(file, null, false);
     }
 
     @Override public CommanderArea.ClickHandler.Result onCommanderClick(CommanderArea area, File file, boolean dir)
@@ -69,7 +69,7 @@ open(file, null, false);
 	return result;
     }
 
-        @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (closing.onInputEvent(event))
@@ -87,9 +87,6 @@ open(file, null, false);
 	case INTRODUCE:
 	    luwrain.silence();
 	    luwrain.speak(getAreaName(), Sounds.INTRO_POPUP);
-	    return true;
-	case PROPERTIES:
-	    openVolumes();
 	    return true;
 	case OK:
 	    if (getSelectedEntry() != null)
@@ -138,14 +135,6 @@ open(file, null, false);
     public boolean wasCancelled()
     {
 	return closing.cancelled();
-    }
-
-    protected void openVolumes()
-    {
-	final File res = Popups.disksVolumes(luwrain, "Выберите раздел:", popupFlags);
-	if (res == null)
-	    return;
-	open(res, null);
     }
 
     static private CommanderArea.Params<File> constructParams(Luwrain luwrain, CommanderArea.Filter<File> filter)
