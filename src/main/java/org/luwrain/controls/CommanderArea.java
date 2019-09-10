@@ -640,23 +640,19 @@ final EntryType type;
 	protected final CommanderArea.Model<E> model;
 	boolean marking = true;
 	Wrapper<E>[] wrappers;//null means the content is inaccessible
-
 	public ListModelAdapter(CommanderArea.Model<E> model, Filter<E> filter, Comparator comparator)
 	{
 	    NullCheck.notNull(model, "model");
 	    this.model = model;
 	}
-
 	@Override public int getItemCount()
 	{
 	    return wrappers != null?wrappers.length:0;
 	}
-
 	@Override public Object getItem(int index)
 	{
 	    return (wrappers != null && index < wrappers.length)?wrappers[index]:null;
 	}
-
 	@Override public void refresh()
 	{
 	}
