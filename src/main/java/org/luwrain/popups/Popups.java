@@ -23,8 +23,10 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.controls.*;
 import org.luwrain.io.*;
+import org.luwrain.util.*;
 
 public final class Popups
 {
@@ -148,6 +150,81 @@ name, prefix, text, popupFlags);
 	return fixedList(luwrain, name, items, DEFAULT_POPUP_FLAGS);
     }
 
+    static public File flexiblePath(Luwrain luwrain, String name, String prefix, File startFrom, FileAcceptance acceptance)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(prefix, "prefix");
+	NullCheck.notNull(startFrom, "startFrom");
+	final FilePopup popup = new FilePopup(luwrain, name, prefix,
+					      acceptance, startFrom, luwrain.getFileProperty("luwrain.dir.userhome"),
+					      loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS){
+		@Override public boolean onInputEvent(KeyboardEvent event)
+		{
+		    NullCheck.notNull(event, "event");
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
+			{
+			case INSERT:
+			    {
+				if (text().isEmpty())
+				    return false;
+				final File file = FileUtils.ifNotAbsolute(luwrain.getFileProperty("luwrain.dir.userhome"), text());
+				if (file.exists())
+				{
+				    if (file.isDirectory())
+					luwrain.message(luwrain.i18n().getStaticStr("DirAlreadyExists"), Luwrain.MessageType.ERROR); else
+					luwrain.message(luwrain.i18n().getStaticStr("FileAlreadyExists"), Luwrain.MessageType.ERROR);
+				    return true;
+				}
+				if (file.mkdir())
+				    luwrain.message(luwrain.i18n().getStaticStr("DirCreated"), Luwrain.MessageType.OK); else
+				    luwrain.message(luwrain.i18n().getStaticStr("UnableToCreateDir"), Luwrain.MessageType.ERROR);
+			    }
+			    return true;
+			}
+		    return super.onInputEvent(event);
+		}
+		@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    NullCheck.notNull(query, "query");
+		    switch(query.getQueryCode())
+		    {
+		    case AreaQuery.UNIREF_AREA:
+			{
+			    final File f = FileUtils.ifNotAbsolute(luwrain.getFileProperty("luwrain.dir.userhome"), text);
+			    if (f.getAbsolutePath().isEmpty())
+				return false;
+			    ((UniRefAreaQuery)query).answer("file:" + f.getAbsolutePath());
+			    return true;
+			}
+		    default:
+			return super.onAreaQuery(query);
+		    }
+		}
+	    };
+	luwrain.popup(popup);
+	if (popup.wasCancelled())
+	    return null;
+	return popup.result();
+    }
+
+    static public File flexiblePath(Luwrain luwrain, String name, String prefix, FileAcceptance acceptance)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+		return flexiblePath(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), acceptance);
+    }
+
+    static public File flexiblePath(Luwrain luwrain, String name, String prefix)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(prefix, "prefix");
+	return flexiblePath(luwrain, name, prefix, null);
+    }
+
     static private File path(Luwrain luwrain,
 			     String name, String prefix,
 			     File startWith, File defaultPath,
@@ -227,6 +304,14 @@ name, prefix, text, popupFlags);
 	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNullItems(extensions, "extensions");
 	return existingFile(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), extensions);
+    }
+
+        static public File existingFile(Luwrain luwrain, String name, String prefix)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(prefix, "prefix");
+	return existingFile(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), new String[0]);
     }
 
     static public File existingDir(Luwrain luwrain, String name, String prefix, File startWith)
