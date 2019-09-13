@@ -701,6 +701,16 @@ final class LuwrainImpl implements Luwrain
 	return core.script.execFuture(this, dataDir, context, text);
     }
 
+    @Override public ScriptCallable createScriptCallable(String text, Map<String, Object> objs, String dataDir)
+    {
+		NullCheck.notNull(text, "text");
+		NullCheck.notNull(objs, "objs");
+	NullCheck.notNull(dataDir, "dataDir");
+	core.mainCoreThreadOnly();
+	return core.script.createCallable(this, text, objs, new File(dataDir));
+    }
+
+
     @Override public String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
     {
 	NullCheck.notNull(text, "text");

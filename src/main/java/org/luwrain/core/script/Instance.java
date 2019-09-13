@@ -24,7 +24,7 @@ import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.core.*;
 
-class Instance
+final class Instance
 {
     static private final String LOG_COMPONENT = "script";
 
@@ -32,7 +32,7 @@ class Instance
     private final Luwrain luwrain;
     final org.luwrain.core.script.api.LuwrainObj luwrainObj;
 
-    Instance(Luwrain luwrain, File dataDir, Map<String, JSObject> objs)
+    Instance(Luwrain luwrain, File dataDir, Map<String, Object> objs)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(dataDir, "dataDir");
@@ -42,13 +42,13 @@ class Instance
 	    this.engine = manager.getEngineByName("nashorn");
 	    this.luwrainObj = new org.luwrain.core.script.api.LuwrainObj(luwrain, dataDir);
 	    this.engine.put("Luwrain", this.luwrainObj);
-	    for(Map.Entry<String, JSObject> e: objs.entrySet())
+	    for(Map.Entry<String, Object> e: objs.entrySet())
 		this.engine.put(e.getKey(), e.getValue());
     }
 
-        void exec(String text) throws ScriptException
+        Object exec(String text) throws ScriptException
     {
 	NullCheck.notNull(text, "text");
-	engine.eval(text);
+	return engine.eval(text);
     }
 }

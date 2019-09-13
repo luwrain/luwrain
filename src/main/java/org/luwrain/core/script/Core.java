@@ -77,7 +77,7 @@ public final class Core
 	    NullCheck.notNull(dataDir, "dataDir");
 	    NullCheck.notNull(context, "context");
 	    NullCheck.notNull(text, "text");
-	    final Map<String, JSObject> objs = new HashMap();
+	    final Map<String, Object> objs = new HashMap();
 	    if (context.output != null)
 		objs.put("Output", new Wrappers.Output(context.output));
 	    final Instance instance = new Instance(luwrain, dataDir, objs);
@@ -86,6 +86,23 @@ public final class Core
 		return null;
 	    };
 	}
+
+	public ScriptCallable createCallable(Luwrain luwrain, String text, Map<String, Object> objs, File dataDir)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    NullCheck.notNull(text, "text");
+	    NullCheck.notNull(objs, "objs");
+	    NullCheck.notNull(dataDir, "dataDir");
+	    final Instance instance = new Instance(luwrain, dataDir, objs);
+	    return new ScriptCallable(){
+		@Override public Object call() throws Exception
+		{
+		instance.exec(text);
+		return null;
+	    }
+	    };
+	}
+
 
 	public ExecResult exec(File dataDir, String text)
 	{

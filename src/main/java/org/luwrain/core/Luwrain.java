@@ -18,7 +18,7 @@
 
 package org.luwrain.core;
 
-import java.util.Set;
+import java.util.*;
 import java.io.File;
 import java.nio.file.*;//FIXME:
 
@@ -239,6 +239,7 @@ public interface Luwrain extends PropertiesBase
     Object runLaterSync(java.util.concurrent.Callable callable);
     OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);
     java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, File dataDir, String text);
+    ScriptCallable createScriptCallable(String text, Map<String, Object> objs, String dataDir);
     void runUiSafely(Runnable runnable);
     boolean runWorker(String workerName);
     void speak(String text);
