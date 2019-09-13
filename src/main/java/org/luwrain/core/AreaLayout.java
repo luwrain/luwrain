@@ -20,7 +20,7 @@ package org.luwrain.core;
 
 import org.luwrain.util.*;
 
-public class AreaLayout
+public final class AreaLayout
 {
     public static final int SINGLE = 0;
     public static final int LEFT_RIGHT = 1;
@@ -28,13 +28,14 @@ public class AreaLayout
     public static final int LEFT_TOP_BOTTOM = 3;
     public static final int LEFT_RIGHT_BOTTOM = 4;
 
-    private int layoutType = SINGLE;
+    private final int layoutType;
     private Area area1 = null;
     private Area area2 = null;
     private Area area3 = null;
 
     public AreaLayout()
     {
+	this.layoutType = SINGLE;
     }
 
     public AreaLayout(Area area)
@@ -180,5 +181,37 @@ public class AreaLayout
 	default:
 	    return false;
 	}
+    }
+
+    public Area getNextArea(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	final Area[] areas = getAreas();
+	if (areas.length == 0)
+	    return null;
+	if (areas.length == 1)
+	    return areas[0] == area?area:null;
+	if (areas[areas.length - 1] == area)
+	    return areas[0];
+	for(int i = 0;i < areas.length - 1;i++)
+	    if (areas[i] == area)
+		return areas[i + 1];
+	return null;
+    }
+
+        public Area getPrevArea(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	final Area[] areas = getAreas();
+	if (areas.length == 0)
+	    return null;
+	if (areas.length == 1)
+	    return areas[0] == area?area:null;
+	if (areas[0] == area)
+	    return areas[areas.length - 1];
+	for(int i = 0;i < areas.length - 1;i++)
+	    if (areas[i + 1] == area)
+		return areas[i];
+	return null;
     }
 }
