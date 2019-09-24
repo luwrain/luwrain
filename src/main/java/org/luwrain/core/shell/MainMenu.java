@@ -44,6 +44,12 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	NullCheck.notNull(event, "event");
 	if (closing.onInputEvent(event))
 	    return true;
+	if (event.isSpecial() && !event.isModified())
+	    switch(event.getSpecial())
+	    {
+	    case ENTER:
+		return closing.doOk();
+	    }
 	return super.onInputEvent(event);
     }
 
@@ -56,10 +62,11 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	    return true;
 	switch(event.getCode())
 	{
+	case OK:
+	    return closing.doOk();
 	case INTRODUCE:
 	    luwrain.silence();
-	    luwrain.playSound(Sounds.MAIN_MENU);
-	    luwrain.speak(getAreaName());
+	    luwrain.speak(getAreaName(), Sounds.MAIN_MENU);
 	    return true;
 	default:
 	    return super.onSystemEvent(event);
@@ -87,10 +94,11 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
     @Override public boolean onOk()
     {
 	final Object o = selected();
-	if (o == null || !(o instanceof UniRefInfo))
+	if (o == null)
 	    return false;
-	result = (UniRefInfo)o;
-	return true;
+	final Appearance appearance = (Appearance)getListAppearance();
+	result = appearance.getUniRefInfo(o.toString());
+	return result != null;
     }
 
     @Override public boolean onCancel()
@@ -112,13 +120,11 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	params.model = new ListUtils.FixedModel(RegistryUtils.getStringArray(registry, Settings.MAIN_MENU_UNIREFS_PATH));
 	params.appearance = new Appearance(new DefaultControlContext(luwrain));
 	params.transition = new Transition(params.model, (Appearance)params.appearance);
-	//	params.flags = EnumSet.noneOf(ListArea.Flags.class);
 	params.name = luwrain.i18n().getStaticStr("MainMenuName");
 	final MainMenu mainMenu = new MainMenu(luwrain, params);
 	return mainMenu;
     }
 
-    //Also used in the control panel section for editing
     static public final class Appearance extends ListUtils.DoubleLevelAppearance
     {
 	static private final String STATIC_PREFIX = "static:";
@@ -151,7 +157,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 		return title;
 	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
 	}
-	private UniRefInfo getUniRefInfo(Object obj)
+	UniRefInfo getUniRefInfo(Object obj)
 	{
 	    NullCheck.notNull(obj, "obj");
 	    if (obj instanceof UniRefInfo)
