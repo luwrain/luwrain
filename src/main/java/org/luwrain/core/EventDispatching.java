@@ -70,7 +70,7 @@ abstract class EventDispatching extends Areas
 		final EnvironmentEvent environmentEvent = (EnvironmentEvent)event;
 		if (environmentEvent.getType() == null)
 		{
-		    Log.warning("core", "an environment event with null type in main event loop, skipping");
+		    Log.warning(LOG_COMPONENT, "the system event with null type in main event loop, skipping");
 		    return true;
 		}
 		switch(environmentEvent.getType())
@@ -83,7 +83,7 @@ abstract class EventDispatching extends Areas
 		    return true;
 		}
 	    }
-	    Log.warning("core", "unknown event class of the event in main event loop:" + event.getClass().getName());
+	    Log.warning(LOG_COMPONENT, "unknown event class of the event in main event loop:" + event.getClass().getName());
 	    return true;
 	}
 	catch (Exception e)
@@ -121,7 +121,7 @@ abstract class EventDispatching extends Areas
 	return POPUP_BLOCKING_MAY_PROCESS;
     }
 
-    @Override public void introduce(StopCondition stopCondition)
+    @Override public void announce(StopCondition stopCondition)
     {
 	NullCheck.notNull(stopCondition, "stopCondition");
 	if (needForIntroduction && stopCondition.continueEventLoop() && listening == null)
@@ -243,18 +243,12 @@ abstract class EventDispatching extends Areas
 	    //	    areaBlockedMessage();
 	    return true;
 	}
-	int res = ScreenContentManager.EVENT_NOT_PROCESSED;
-	try {
-	    res = screenContentManager.onSystemEvent(event);
-	}
-	catch (Throwable e)
-	{
-	    Log.error(LOG_COMPONENT, "environment event throws an exception:" + e.getMessage());
-	    e.printStackTrace();
-	    playSound(Sounds.EVENT_NOT_PROCESSED);
+	final AtomicReference res = new AtomicReference();
+	unsafeAreaOperation(()->res.set(new Integer(screenContentManager.onSystemEvent(event))));
+	if (res.get() == null || !(res.get() instanceof Integer))
 	    return true;
-	}
-	switch(res)
+	final int intRes = ((Integer)res.get()).intValue();
+	switch(intRes)
 	{
 	case ScreenContentManager.EVENT_NOT_PROCESSED:
 	    playSound(Sounds.EVENT_NOT_PROCESSED);

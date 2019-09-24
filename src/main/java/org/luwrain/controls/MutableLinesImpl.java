@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+w   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -118,8 +118,9 @@ public class MutableLinesImpl implements MutableLines
 	lines.clear();
     }
 
-    public String getWholeText()
+    public String getWholeText(String lineSep)
     {
+	final String s = lineSep != null?lineSep:System.lineSeparator();
 	if (lines.size() == 0)
 	    return "";
 	if (lines.size() == 1)
@@ -127,7 +128,12 @@ public class MutableLinesImpl implements MutableLines
 	final StringBuilder res = new StringBuilder();
 	res.append(lines.get(0));
 	for(int i = 1;i < lines.size();++i)
-	    res.append("\n" + lines.get(i));
+	    res.append(s).append(lines.get(i));
 	return new String(res);
+    }
+
+    public String getWholeText()
+    {
+	return getWholeText(null);
     }
 }

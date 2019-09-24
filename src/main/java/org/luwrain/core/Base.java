@@ -86,7 +86,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     abstract protected boolean onEvent(Event event);
         abstract protected void processEventResponse(EventResponse eventResponse);
         abstract void message(String text, Luwrain.MessageType messageType);
-    abstract protected void introduce(StopCondition stopCondition);
+    abstract protected void announce(StopCondition stopCondition);
 
 
     protected void eventLoop(StopCondition stopCondition)
@@ -113,7 +113,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 		    processEventResponse(eventResponse);
 		    eventResponse = null;
 		} else
-		    introduce(stopCondition);
+		    announce(stopCondition);
 	    }
 	}
     }
@@ -407,11 +407,12 @@ public void playSound(Sounds sound)
 	}
 	catch(Throwable e)
 	{
-	    if (e instanceof Exception)
-		getObjForEnvironment().crash((Exception)e); else
+	    //	    if (e instanceof Exception)
+	    //		getObjForEnvironment().crash((Exception)e); else
 	    {
 		getObjForEnvironment().message(e.getClass().getName() + ":" + e.getMessage(), Luwrain.MessageType.ERROR);
 		Log.error(LOG_COMPONENT, "unexpected exception in applications:" + e.getClass().getName() + ":" + e.getMessage());
+		e.printStackTrace();
 	    }
 	}
     }

@@ -62,7 +62,6 @@ class ScreenContentManager
 	if (isActiveAreaBlockedByPopup())
 	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
 	    return activeArea.onSystemEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
-
     }
 
     public boolean setPopupActive()

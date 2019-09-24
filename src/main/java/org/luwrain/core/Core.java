@@ -467,13 +467,12 @@ final class Core extends EventDispatching
 	    catch (Throwable e)
 	    {
 		Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
-		launchAppCrash(new org.luwrain.app.crash.App(org.luwrain.app.crash.App.Type.APP_EXCEPT, app, e));
+		launchAppCrash(new org.luwrain.app.crash.App(e, app, null));
 		return;
 	    }
-	    switch(initResult.getType())
-	    {
-	    case NETWORK_SERVICE_INACCESSIBLE:
-		launchAppCrash(new org.luwrain.app.crash.App(org.luwrain.app.crash.App.Type.NETWORK_SERVICE_INACCESSIBLE, app, null));
+if (initResult.getType() != InitResult.Type.OK)
+{
+		launchAppCrash(new org.luwrain.app.crash.App(initResult));
 		return;
 	    }
 	    if (initResult == null || !initResult.isOk())
@@ -501,7 +500,7 @@ final class Core extends EventDispatching
 	NullCheck.notNull(e, "e");
 	final Application app = interfaces.findApp(instance);
 	if (app != null)
-	    launchAppCrash(new org.luwrain.app.crash.App(org.luwrain.app.crash.App.Type.APP_EXCEPT, app, e));
+	    launchAppCrash(new org.luwrain.app.crash.App(e, app, null));
     }
 
     void launchAppCrash(org.luwrain.app.crash.App app)

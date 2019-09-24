@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -24,12 +24,12 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-public class App implements Application
+public final class App implements Application
 {
     public enum Type {
-	APP_EXCEPT,
-	AREA_EXCEPT,
-	NETWORK_SERVICE_INACCESSIBLE,
+	EXCEPTION,
+	INIT_RESULT,
+	INACCESSIBLE_NETWORK_SERVICE,
     };
 
     private Luwrain luwrain = null;
@@ -37,29 +37,29 @@ public class App implements Application
     private SimpleArea area = null;
 
     private final Type type;
-    private final Application app;
-    private final Throwable exception;
+    private final Application srcApp;
+    private final Area srcArea;
+    private final Throwable ex;
+    private final InitResult initRes;
 
-    public App(Type type, Application app, Throwable exception)
+    public App(Throwable ex, Application srcApp, Area srcArea)
     {
-	NullCheck.notNull(type, "type");
-	this.type = type;
-	switch(type)
-	{
-	case APP_EXCEPT:
-	NullCheck.notNull(app, "app");
-	NullCheck.notNull(exception, "exception");
-	this.app = app;
-	this.exception = exception;
-	break;
-	case NETWORK_SERVICE_INACCESSIBLE:
-	    NullCheck.notNull(app, "app");
-	    this.app = app;
-	    this.exception = exception;
-	    break;
-	default:
-	    throw new IllegalArgumentException("Unsupported type: " + type.toString());
-	}
+	NullCheck.notNull(ex, "ex");
+	this.type = Type.EXCEPTION;
+	this.ex = ex;
+	this.srcApp = srcApp;
+	this.srcArea = srcArea;
+	this.initRes = null;
+    }
+
+    public App(InitResult initRes)
+    {
+	NullCheck.notNull(initRes, "initRes");
+	this.type = Type.INIT_RESULT;
+	this.initRes = null;
+	this.srcApp = null;
+	this.srcArea = null;
+	this.ex = null;
     }
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -77,8 +77,8 @@ public class App implements Application
     {
 	switch(type)
 	{
-	case NETWORK_SERVICE_INACCESSIBLE:
-	    return "Сетевой сервис недоступен";
+	case INACCESSIBLE_NETWORK_SERVICE:
+	    return "Сетевой сервис недоступен";//FIXME:
 	default:
 	return strings.appName();
 	}
@@ -86,7 +86,7 @@ public class App implements Application
 
     private void createArea()
     {
-	area = new SimpleArea(new DefaultControlContext(luwrain), strings.appName()){
+	this.area = new SimpleArea(new DefaultControlContext(luwrain), strings.appName()){
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    switch (event.getCode())
@@ -97,24 +97,33 @@ public class App implements Application
 		    }
 		    return false;
 		}
+		@Override public void announceLine(int index, String line)
+		{
+		    NullCheck.notNull(line, "line");
+		    luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING)));
+		}
 	    };
 
 	area.beginLinesTrans();
 	switch(type)
 	{
-	case APP_EXCEPT:
+	case EXCEPTION:
 	    {
 	final String[] msg = strings.introMessage();
 	area.addLine("");
 	for(String s: msg)
 	    area.addLine(s);
 	area.addLine("");
-	area.addLine(strings.app(app.getClass().getName()));
+	if (srcApp != null)
+	    area.addLine(strings.app(srcApp.getClass().getName()));
+	if (srcArea != null)
+	    	    area.addLine(strings.area(srcArea.getClass().getName()));
+	if (srcApp != null || srcArea != null)
 	area.addLine("");
 	area.addLine(strings.stackTrace());
 	final StringWriter sw = new StringWriter();
 	final PrintWriter pw = new PrintWriter(sw);
-	exception.printStackTrace(pw);
+	ex.printStackTrace(pw);
 	pw.flush();
 	sw.flush();
 	final String[] trace = sw.toString().split("\n", -1);
@@ -122,7 +131,7 @@ public class App implements Application
 	area.addLine(s);
 	break;
 	    }
-	case NETWORK_SERVICE_INACCESSIBLE:
+	case INACCESSIBLE_NETWORK_SERVICE:
 	    {
 		area.addLine("Сетевой сервис недоступен");
 		break;

@@ -44,44 +44,6 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	NullCheck.notNull(event, "event");
 	if (closing.onInputEvent(event))
 	    return true;
-	if (event.isSpecial() && !event.isModified())
-	    switch(event.getSpecial())
-	    {
-	    case PAGE_DOWN:
-	    case ALTERNATIVE_PAGE_DOWN:
-		/*
-		if (selectedIndex() + 1 >= listModel.getItemCount())
-		{
-		    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_BELOW));
-		    return true;
-		}
-		for(int i = selectedIndex() + 1;i < listModel.getItemCount();++i)
-		    if (listModel.getItem(i) instanceof Section)
-		    {
-			select(i, true);
-			return true;
-		    }
-		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_BELOW));
-		*/
-		return true;
-	    case PAGE_UP:
-	    case ALTERNATIVE_PAGE_UP:
-		/*
-		if (selectedIndex() < 1)
-		{
-		    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
-		    return true;
-		}
-		for(int i = selectedIndex() - 1;i >= 0;--i)
-		    if (listModel.getItem(i) instanceof Section)
-		    {
-			select(i, true);
-			return true;
-		    }
-context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
-		*/
-		return true;
-	    }
 	return super.onInputEvent(event);
     }
 
@@ -149,36 +111,11 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	params.context = new DefaultControlContext(luwrain);
 	params.model = new ListUtils.FixedModel(RegistryUtils.getStringArray(registry, Settings.MAIN_MENU_UNIREFS_PATH));
 	params.appearance = new Appearance(new DefaultControlContext(luwrain));
-	params.transition = new Transition();
+	params.transition = new Transition(params.model, (Appearance)params.appearance);
 	//	params.flags = EnumSet.noneOf(ListArea.Flags.class);
 	params.name = luwrain.i18n().getStaticStr("MainMenuName");
 	final MainMenu mainMenu = new MainMenu(luwrain, params);
 	return mainMenu;
-    }
-
-    static private class Transition extends ListUtils.DefaultTransition
-    {
-	@Override public State transition(Type type, State fromState, int itemCount,
-					  boolean hasEmptyLineTop, boolean hasEmptyLineBottom)
-	{
-	    NullCheck.notNull(type, "type");
-	    NullCheck.notNull(fromState, "fromState");
-	    if (itemCount == 0)
-		throw new IllegalArgumentException("itemCount must be greater than zero");
-	    switch(type)
-	    {
-	    case SINGLE_DOWN:
-		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex + 1 != itemCount)
-		    return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
-		return new State(0);
-	    case SINGLE_UP:
-		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex != 0)
-		    return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
-		return new State(itemCount - 1);
-	    default:
-		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
-	    }
-	}
     }
 
     //Also used in the control panel section for editing
@@ -230,6 +167,42 @@ context.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	    final UniRefInfo info2 = new UniRefInfo(obj.toString());
 	    uniRefCache.put(obj.toString(), info2);
 	    return info2;
+	}
+    }
+
+    static private class Transition extends ListUtils.DoubleLevelTransition
+    {
+	private final Appearance appearance;
+	Transition(ListArea.Model model, Appearance appearance)
+	{
+	    super(model);
+	    NullCheck.notNull(appearance, "appearance");
+	    this.appearance = appearance;
+	}
+	@Override public boolean isSectionItem(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    return appearance.isSectionItem(item);
+	}
+	@Override public State transition(Type type, State fromState, int itemCount, boolean hasEmptyLineTop, boolean hasEmptyLineBottom)
+	{
+	    NullCheck.notNull(type, "type");
+	    NullCheck.notNull(fromState, "fromState");
+	    if (itemCount == 0)
+		throw new IllegalArgumentException("itemCount must be greater than zero");
+	    switch(type)
+	    {
+	    case SINGLE_DOWN:
+		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex + 1 != itemCount)
+		    return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+		return new State(0);
+	    case SINGLE_UP:
+		if (fromState.type != State.Type.ITEM_INDEX || fromState.itemIndex != 0)
+		    return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+		return new State(itemCount - 1);
+	    default:
+		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
+	    }
 	}
     }
 }

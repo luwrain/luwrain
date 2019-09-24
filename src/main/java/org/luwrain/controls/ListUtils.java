@@ -135,7 +135,6 @@ public class ListUtils
     static public class DefaultTransition implements ListArea.Transition
     {
 	static protected final int PAGE_SIZE = 20;
-
 	@Override public State transition(Type type, State fromState, int itemCount,
 					  boolean hasEmptyLineTop, boolean hasEmptyLineBottom)
 	{
@@ -202,61 +201,45 @@ public class ListUtils
 		    return new State(State.Type.NO_TRANSITION);
 		return new State(fromState.itemIndex - 1);
 	    default:
-		return new State(State.Type.NO_TRANSITION);
+		throw new IllegalArgumentException("Unknown transition type: " + type.toString());
 	    }
 	}
     }
 
-	    static abstract public class DoubleLevelTransition extends DefaultTransition
+    static abstract public class DoubleLevelTransition extends DefaultTransition
     {
 	protected final ListArea.Model model;
-
 	public DoubleLevelTransition(ListArea.Model model)
 	{
 	    NullCheck.notNull(model, "model");
 	    this.model = model;
 	}
-
 	abstract public boolean isSectionItem(Object item);
-
-	@Override public State transition(Type type, State fromState, int itemCount,
-					  boolean hasEmptyLineTop, boolean hasEmptyLineBottom)
+	@Override public State transition(Type type, State fromState, int itemCount, boolean hasEmptyLineTop, boolean hasEmptyLineBottom)
 	{
 	    NullCheck.notNull(type, "type");
 	    NullCheck.notNull(fromState, "fromState");
-	    if (itemCount <= 0)
-		throw new IllegalArgumentException("itemCount (" + itemCount + ") must be positive and greater than zero");
 	    switch(type)
 	    {
-	    case SINGLE_DOWN:
-	    case SINGLE_UP:
-			    case HOME:
-	    case END:
-				return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
-	    case PAGE_DOWN:
-		if (fromState.type == State.Type.EMPTY_LINE_TOP)
-		{
-		    for(int i = 0;i < itemCount;++i)
-			if (isSectionItem(model.getItem(i)))
-			    return new State(i);
-		    return new State(State.Type.NO_TRANSITION);
-		}
-		if (fromState.type == State.Type.EMPTY_LINE_BOTTOM)
-		    return new State(State.Type.NO_TRANSITION);
+	    case PAGE_UP:
 		if (fromState.type != State.Type.ITEM_INDEX)
 		    return new State(State.Type.NO_TRANSITION);
-		for(int i = fromState.itemIndex + 1;i < itemCount;++i)
+		for(int i = fromState.itemIndex - 1;i >= 0;i--)
 		    if (isSectionItem(model.getItem(i)))
 			return new State(i);
-		    return new State(State.Type.NO_TRANSITION);
-	    case PAGE_UP:
-		//FIXME:continue from here
-	    default:
 		return new State(State.Type.NO_TRANSITION);
+	    case PAGE_DOWN:
+		if (fromState.type != State.Type.ITEM_INDEX)
+		    return new State(State.Type.NO_TRANSITION);
+		for(int i = fromState.itemIndex + 1;i < model.getItemCount();i++)
+		    if (isSectionItem(model.getItem(i)))
+			return new State(i);
+		return new State(State.Type.NO_TRANSITION);
+	    default:
+		return super.transition(type, fromState, itemCount, hasEmptyLineTop, hasEmptyLineBottom);
 	    }
 	}
     }
-
 
     static public class FixedModel extends Vector implements ListArea.Model
     {
