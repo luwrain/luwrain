@@ -73,17 +73,14 @@ public interface ClipboardSaver
 	static public final class State
 	{
 	    public enum Type{EMPTY_LINE_TOP, EMPTY_LINE_BOTTOM, ITEM_INDEX, NO_TRANSITION};
-
 	    public final Type type;
 	    public final int itemIndex;
-
 	    public State(Type type)
 	    {
 		NullCheck.notNull(type, "type");
 		this.type = type;
 		this.itemIndex = -1;
 	    }
-
 	    public State(int itemIndex)
 	    {
 		this.type = Type.ITEM_INDEX;
@@ -746,14 +743,14 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	final int emptyCountTop = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	final Transition.State current;
 	if (index >= 0)
-current = new Transition.State(index); else
-	if (listFlags.contains(Flags.EMPTY_LINE_TOP) && hotPointY == 0)
-	    current = new Transition.State(Transition.State.Type.EMPTY_LINE_TOP); else
-	if (listFlags.contains(Flags.EMPTY_LINE_BOTTOM) && hotPointY == count + emptyCountTop)
-current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
-	    return false;
+	    current = new Transition.State(index); else
+	    if (listFlags.contains(Flags.EMPTY_LINE_TOP) && hotPointY == 0)
+		current = new Transition.State(Transition.State.Type.EMPTY_LINE_TOP); else
+		if (listFlags.contains(Flags.EMPTY_LINE_BOTTOM) && hotPointY == count + emptyCountTop)
+		    current = new Transition.State(Transition.State.Type.EMPTY_LINE_BOTTOM); else
+		    return false;
 	final Transition.State newState = listTransition.transition(type, current, count,
-								listFlags.contains(Flags.EMPTY_LINE_TOP), listFlags.contains(Flags.EMPTY_LINE_BOTTOM));
+								    listFlags.contains(Flags.EMPTY_LINE_TOP), listFlags.contains(Flags.EMPTY_LINE_BOTTOM));
 	NullCheck.notNull(newState, "newState");
 	switch(newState.type)
 	{

@@ -222,6 +222,13 @@ public class ListUtils
 	    switch(type)
 	    {
 	    case PAGE_UP:
+		if (fromState.type == State.Type.EMPTY_LINE_BOTTOM)
+		{
+		    for(int i = model.getItemCount() - 1;i >= 0;i--)
+			if (isSectionItem(model.getItem(i)))
+			    return new State(i);
+		    return new State(State.Type.NO_TRANSITION);
+		}
 		if (fromState.type != State.Type.ITEM_INDEX)
 		    return new State(State.Type.NO_TRANSITION);
 		for(int i = fromState.itemIndex - 1;i >= 0;i--)
@@ -229,6 +236,13 @@ public class ListUtils
 			return new State(i);
 		return new State(State.Type.NO_TRANSITION);
 	    case PAGE_DOWN:
+		if (fromState.type == State.Type.EMPTY_LINE_TOP)
+		{
+		    for(int i = 0;i < model.getItemCount();i++)
+			if (isSectionItem(model.getItem(i)))
+			    return new State(i);
+		    return new State(State.Type.NO_TRANSITION);
+		}
 		if (fromState.type != State.Type.ITEM_INDEX)
 		    return new State(State.Type.NO_TRANSITION);
 		for(int i = fromState.itemIndex + 1;i < model.getItemCount();i++)
