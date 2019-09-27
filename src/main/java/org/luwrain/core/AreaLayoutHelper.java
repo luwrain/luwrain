@@ -162,4 +162,28 @@ public class AreaLayoutHelper
 		return null;
 	    }
     }
+
+    static public boolean activateNextArea(Luwrain luwrain, AreaLayout layout, Area activeArea)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(layout, "layout");
+	NullCheck.notNull(activeArea, "activeArea");
+	final Area area = layout.getNextArea(activeArea);
+	if (area == null)
+	    return false;
+	luwrain.setActiveArea(area);
+	return true;
+    }
+
+    static public boolean activatePrevArea(Luwrain luwrain, AreaLayout layout, Area activeArea)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(layout, "layout");
+	NullCheck.notNull(activeArea, "activeArea");
+	final Area area = layout.getPrevArea(activeArea);
+	if (area == null)
+	    return false;
+	luwrain.setActiveArea(area);
+	return true;
+    }
 }

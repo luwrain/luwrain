@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.app.console;
 
@@ -22,7 +7,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.controls.ConsoleArea.InputHandler;
 
-final class Base
+final class Base extends Utils
 {
         static private final List messages = new LinkedList();
 
@@ -34,9 +19,7 @@ final class Base
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.commands = new ConsoleCommand[]{
-
 	    new Commands.Prop(luwrain),
-
 	};
     }
 
@@ -59,11 +42,6 @@ final class Base
 	return InputHandler.Result.CLEAR_INPUT;
     }
 
-    Model createModel()
-    {
-	return new Model();
-    }
-
     static void installListener()
     {
 	Log.addListener((message)->{
@@ -78,14 +56,22 @@ final class Base
 	//	Log.removeListener(listener);
     }
 
-    static String firstWord(String text)
+    ConsoleArea.Params createConsoleParams(ConsoleArea.ClickHandler clickHandler, ConsoleArea.InputHandler inputHandler)
     {
-	NullCheck.notNull(text, "text");
-	final int pos = text.indexOf(" ");
-	if (pos < 0)
-	    return text.trim();
-	return text.substring(0, pos).trim();
+	NullCheck.notNull(clickHandler, "clickHandler");
+	NullCheck.notNull(inputHandler, "inputHandler");
+		final ConsoleArea.Params params = new ConsoleArea.Params();
+	params.context = new DefaultControlContext(luwrain);
+params.areaName = "LUWRAIN";
+params.model = new Model();
+params.appearance = new Appearance();
+params.clickHandler = clickHandler;
+params.inputHandler = inputHandler;
+params.inputPos = ConsoleArea.InputPos.BOTTOM;
+params.inputPrefix = "LUWRAIN>";
+return params;
     }
+
 
 interface ConsoleCommand
 {
@@ -103,4 +89,24 @@ interface ConsoleCommand
 	    return messages.get(index);
 	}
     }
+
+private final class Appearance implements ConsoleArea.Appearance
+    {
+	@Override public void announceItem(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    if (!(item instanceof Log.Message))
+	    {
+		luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(item.toString(), Luwrain.SpeakableTextType.PROGRAMMING)));
+		return;
+	    }
+	    final Log.Message message = (Log.Message)item;
+	    luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(message.message, Luwrain.SpeakableTextType.PROGRAMMING)));
+	}
+	@Override public String getTextAppearance(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    return item.toString();
+	}
+    };
 }

@@ -38,40 +38,16 @@ public final class App implements Application, MonoApp
 
     private void createArea()
     {
-	final ConsoleArea.Params params = new ConsoleArea.Params();
-
-	params.context = new DefaultControlContext(luwrain);
-params.areaName = "LUWRAIN";
-params.model = base.createModel();
-params.appearance = new ConsoleArea.Appearance()
-    {
-	@Override public void announceItem(Object item)
-	{
-	    NullCheck.notNull(item, "item");
-	    if (!(item instanceof Log.Message))
-	    {
-		luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(item.toString(), Luwrain.SpeakableTextType.PROGRAMMING)));
-		return;
-	    }
-	    final Log.Message message = (Log.Message)item;
-	    luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(message.message, Luwrain.SpeakableTextType.PROGRAMMING)));
-	}
-	@Override public String getTextAppearance(Object item)
-	{
-	    NullCheck.notNull(item, "item");
-	    return item.toString();
-	}
-    };
-params.clickHandler = (area,index,obj)->{
+	final ConsoleArea.ClickHandler clickHandler = (area,index,obj)->{
 	    return false;
 	};
-params.inputHandler = (area,text)->{
+final ConsoleArea.InputHandler inputHandler = (area,text)->{
     return base.onInput(text, ()->area.refresh());
 	};
-params.inputPos = ConsoleArea.InputPos.BOTTOM;
-params.inputPrefix = "LUWRAIN>";
 
-	area = new ConsoleArea(params){
+
+	
+area = new ConsoleArea(base.createConsoleParams(clickHandler, inputHandler)){
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
