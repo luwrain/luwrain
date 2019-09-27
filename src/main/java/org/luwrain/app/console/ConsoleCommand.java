@@ -18,27 +18,7 @@ package org.luwrain.app.console;
 
 import java.util.*;
 
-import org.luwrain.core.*;
-import org.luwrain.controls.*;
-import org.luwrain.controls.ConsoleArea.InputHandler;
-
-class Utils
+interface ConsoleCommand
 {
-    static String firstWord(String text)
-    {
-	NullCheck.notNull(text, "text");
-	final int pos = text.indexOf(" ");
-	if (pos < 0)
-	    return text.trim();
-	return text.substring(0, pos).trim();
-    }
-
-    static void installListener()
-    {
-	Log.addListener((message)->{
-		NullCheck.notNull(message, "message");
-		Base.messages.add(message);
-		//	    onNewMessage(message);
-	    });
-    }
+    boolean onCommand(String text, List messages);
 }

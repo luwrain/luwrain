@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -41,13 +41,10 @@ public final class App implements Application, MonoApp
 	final ConsoleArea.ClickHandler clickHandler = (area,index,obj)->{
 	    return false;
 	};
-final ConsoleArea.InputHandler inputHandler = (area,text)->{
-    return base.onInput(text, ()->area.refresh());
+	final ConsoleArea.InputHandler inputHandler = (area,text)->{
+	    return base.onInput(text, ()->area.refresh());
 	};
-
-
-	
-area = new ConsoleArea(base.createConsoleParams(clickHandler, inputHandler)){
+	this.area = new ConsoleArea(base.createConsoleParams(clickHandler, inputHandler)){
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -87,6 +84,6 @@ area = new ConsoleArea(base.createConsoleParams(clickHandler, inputHandler)){
 
     static public void installListener()
     {
-	Base.installListener();
+	Utils.installListener();
     }
 }

@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.app.console;
 
@@ -9,9 +24,9 @@ import org.luwrain.controls.ConsoleArea.InputHandler;
 
 final class Base extends Utils
 {
-        static private final List messages = new LinkedList();
+        static final List messages = new LinkedList();
 
-    private final Luwrain luwrain;
+final Luwrain luwrain;
     private final ConsoleCommand[] commands;
 
     Base(Luwrain luwrain)
@@ -32,23 +47,14 @@ final class Base extends Utils
 	for(ConsoleCommand c: commands)
 	    if (c.onCommand(text, messages))
 	    {
-	updating.run();
-	luwrain.playSound(Sounds.OK);
+		updating.run();
+		luwrain.playSound(Sounds.OK);
 		return InputHandler.Result.CLEAR_INPUT;
 	    }
 	messages.add("Unknown command: " + firstWord(text));
 	updating.run();
 	luwrain.playSound(Sounds.ERROR);
 	return InputHandler.Result.CLEAR_INPUT;
-    }
-
-    static void installListener()
-    {
-	Log.addListener((message)->{
-	    NullCheck.notNull(message, "message");
-	    messages.add(message);
-	    //	    onNewMessage(message);
-	    });
     }
 
     void removeListener()
@@ -60,23 +66,17 @@ final class Base extends Utils
     {
 	NullCheck.notNull(clickHandler, "clickHandler");
 	NullCheck.notNull(inputHandler, "inputHandler");
-		final ConsoleArea.Params params = new ConsoleArea.Params();
+	final ConsoleArea.Params params = new ConsoleArea.Params();
 	params.context = new DefaultControlContext(luwrain);
-params.areaName = "LUWRAIN";
-params.model = new Model();
-params.appearance = new Appearance();
-params.clickHandler = clickHandler;
-params.inputHandler = inputHandler;
-params.inputPos = ConsoleArea.InputPos.BOTTOM;
-params.inputPrefix = "LUWRAIN>";
-return params;
+	params.areaName = "LUWRAIN";
+	params.model = new Model();
+	params.appearance = new Appearance();
+	params.clickHandler = clickHandler;
+	params.inputHandler = inputHandler;
+	params.inputPos = ConsoleArea.InputPos.BOTTOM;
+	params.inputPrefix = "LUWRAIN>";
+	return params;
     }
-
-
-interface ConsoleCommand
-{
-    boolean onCommand(String text, List messages);
-}
 
     static private class Model implements ConsoleArea.Model
     {
@@ -90,7 +90,7 @@ interface ConsoleCommand
 	}
     }
 
-private final class Appearance implements ConsoleArea.Appearance
+    private final class Appearance implements ConsoleArea.Appearance
     {
 	@Override public void announceItem(Object item)
 	{

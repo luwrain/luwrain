@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 
 final class Commands
 {
-    static final class Prop implements Base.ConsoleCommand
+    static final class Prop implements ConsoleCommand
     {
 	private final Luwrain luwrain;
 	Prop(Luwrain luwrain)
