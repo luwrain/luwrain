@@ -84,7 +84,7 @@ public final class Basic implements PropertiesProvider
 	case "luwrain.dir.userdata":
 	    return userDataDir.getAbsolutePath();
 	case "luwrain.dir.appdata":
-	    return new File(userDataDir, "app").getAbsolutePath();
+	    return new File(userDataDir, "var").getAbsolutePath();
 	    	case "luwrain.dir.packs":
 		    return new File(userDataDir, "extensions").getAbsolutePath();
 	default:

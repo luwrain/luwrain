@@ -97,11 +97,11 @@ final Luwrain luwrain;
 	    NullCheck.notNull(item, "item");
 	    if (!(item instanceof Log.Message))
 	    {
-		luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(item.toString(), Luwrain.SpeakableTextType.PROGRAMMING)));
+		luwrain.setEventResponse(DefaultEventResponse.text(Sounds.LIST_ITEM, luwrain.getSpeakableText(item.toString(), Luwrain.SpeakableTextType.PROGRAMMING)));
 		return;
 	    }
 	    final Log.Message message = (Log.Message)item;
-	    luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(message.message, Luwrain.SpeakableTextType.PROGRAMMING)));
+	    luwrain.setEventResponse(DefaultEventResponse.text(Sounds.LIST_ITEM, luwrain.getSpeakableText(message.message, Luwrain.SpeakableTextType.PROGRAMMING)));
 	}
 	@Override public String getTextAppearance(Object item)
 	{

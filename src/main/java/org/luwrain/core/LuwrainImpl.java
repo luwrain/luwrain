@@ -136,7 +136,6 @@ final class LuwrainImpl implements Luwrain
     @Override public Path getAppDataDir(String appName)
     {
 	NullCheck.notEmpty(appName, "appName");
-	core.mainCoreThreadOnly();
 	if (appName.indexOf("/") >= 0)
 	    throw new IllegalArgumentException("appName contains illegal characters");
 	final Path res = getFileProperty("luwrain.dir.appdata").toPath().resolve(appName);
