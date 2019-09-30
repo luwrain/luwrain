@@ -157,8 +157,10 @@ public final class  EventResponses
 		switch(type)
 		{
 		case COLLAPSED:
+		    		luwrain.playSound(Sounds.COLLAPSED);
+				break;
 		case EXPANDED:
-		luwrain.playSound(Sounds.DOC_SECTION);
+		luwrain.playSound(Sounds.EXPANDED);
 		break;
 		case LEAF:
 				luwrain.playSound(Sounds.LIST_ITEM);
