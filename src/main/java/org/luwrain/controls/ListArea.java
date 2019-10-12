@@ -415,17 +415,17 @@ public interface ClipboardSaver
 	switch(event.getSpecial())
 	{
 	case ARROW_DOWN:
-	    return onArrowDown(event, false);
+	    return onMoveDown(event, false);
 	case ARROW_UP:
-	    return onArrowUp(event, false);
+	    return onMoveUp(event, false);
 	case ARROW_RIGHT:
-	    return onArrowRight(event);
+	    return onMoveRight(event);
 	case ARROW_LEFT:
-	    return onArrowLeft(event);
+	    return onMoveLeft(event);
 	case ALTERNATIVE_ARROW_DOWN:
-	    return onArrowDown(event, true);
+	    return onMoveDown(event, true);
 	case ALTERNATIVE_ARROW_UP:
-	    return onArrowUp(event, true);
+	    return onMoveUp(event, true);
 	case ALTERNATIVE_ARROW_RIGHT:
 	    return onAltRight(event);
 	case ALTERNATIVE_ARROW_LEFT:
@@ -702,12 +702,12 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return false;
     }
 
-    protected boolean onArrowDown(KeyboardEvent event, boolean briefAnnouncement)
+    protected boolean onMoveDown(KeyboardEvent event, boolean briefAnnouncement)
     {
 	return onTransition(Transition.Type.SINGLE_DOWN, Hint.NO_ITEMS_BELOW, briefAnnouncement);
     }
 
-    protected boolean onArrowUp(KeyboardEvent event, boolean briefAnnouncement)
+    protected boolean onMoveUp(KeyboardEvent event, boolean briefAnnouncement)
     {
 	return onTransition(Transition.Type.SINGLE_UP, Hint.NO_ITEMS_ABOVE, briefAnnouncement);
     }
@@ -779,7 +779,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-protected boolean onArrowRight(KeyboardEvent event)
+protected boolean onMoveRight(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;
@@ -790,8 +790,7 @@ protected boolean onArrowRight(KeyboardEvent event)
 	    return true;
 	}
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
-	NullCheck.notNull(line, "line");
-	if (line.isEmpty())
+	if (line == null || line.isEmpty())
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
@@ -808,7 +807,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-    protected boolean onArrowLeft(KeyboardEvent event)
+    protected boolean onMoveLeft(KeyboardEvent event)
     {
 	if (noContent())
 	    return true;
@@ -819,8 +818,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	    return true;
 	}
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
-	NullCheck.notNull(line, "line");
-	if (line.isEmpty())
+	if (line == null || line.isEmpty())
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
@@ -871,7 +869,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	}
 	hotPointX = it.pos() + leftBound;
 	if (it.announce().length() > 0)
-	    context.say(it.announce()); else
+	    context.setEventResponse(DefaultEventResponse.text(it.announce())); else
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -888,8 +886,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	    return true;
 	}
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
-	NullCheck.notNull(line, "line");
-	if (line.isEmpty())
+	if (line == null || line.isEmpty())
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return true;
@@ -909,7 +906,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	    return true;
 	}
 	hotPointX = it.pos() + leftBound;
-	context.say(it.announce());
+	context.setEventResponse(DefaultEventResponse.text(it.announce()));
 	context.onAreaNewHotPoint(this);
 	return true;
     }
@@ -927,7 +924,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);
 	NullCheck.notNull(line, "line");
 	hotPointX = listAppearance.getObservableRightBound(item);
-	context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
+	context.setEventResponse(DefaultEventResponse.hint(Hint.LINE_BOUND));
 	context.onAreaNewHotPoint(this);
 	return true;
     }

@@ -367,6 +367,15 @@ public final class ScriptUtils
 	return new Action(name, title);
     }
 
+    static public Object createEnumSet(Set s)
+    {
+	NullCheck.notNull(s, "s");
+	final List<String> res = new LinkedList();
+	for(Object o: s)
+	    res.add(o.toString().toLowerCase());
+	return createReadOnlyArray(res.toArray(new String[res.size()]));
+    }
+
     static public Object getEnumItemByStr(Class enumClass, String itemName)
     {
 	NullCheck.notNull(enumClass, "enumClass");
@@ -393,7 +402,7 @@ public final class ScriptUtils
 	    final String str = getStringValue(o);
 	    if (str == null)
 		continue;
-	    final Object enumItem = getEnumItemByStr(enumClass, str);
+	    final Object enumItem = getEnumItemByStr(enumClass, str.toUpperCase());
 	    if (enumItem != null)
 		res.add(enumItem);
 	}
