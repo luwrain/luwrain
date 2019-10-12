@@ -28,6 +28,7 @@ import org.luwrain.i18n.*;
 import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
+import org.luwrain.core.listening.*;
 
 final class Core extends EventDispatching
 {

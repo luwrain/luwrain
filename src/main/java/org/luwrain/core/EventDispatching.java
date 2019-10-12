@@ -26,6 +26,7 @@ import org.luwrain.core.queries.*;
 import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
+import org.luwrain.core.listening.*;
 
 abstract class EventDispatching extends Areas
 {

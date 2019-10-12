@@ -14,13 +14,15 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.core.listening;
 
+import org.luwrain .core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.speech.*;
 
-final class Listening
+
+public final class Listening
 {
     private final Luwrain luwrain;
     private final Speech speech;
@@ -28,7 +30,7 @@ final class Listening
     private final Settings.SpeechParams sett;
     private Channel channel;
 
-    Listening(Luwrain luwrain, Speech speech, Area area)
+    public Listening(Luwrain luwrain, Speech speech, Area area)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(speech, "speech");
@@ -39,7 +41,7 @@ final class Listening
 	this.sett = Settings.createSpeechParams(luwrain.getRegistry());
     }
 
-    boolean start()
+    public boolean start()
     {
 	if (sett.getListeningEngineName("").isEmpty())
 	    return false;
@@ -53,7 +55,7 @@ final class Listening
 	return true;
     }
 
-    void cancel()
+    public void cancel()
     {
 	if (channel == null)
 	    return;

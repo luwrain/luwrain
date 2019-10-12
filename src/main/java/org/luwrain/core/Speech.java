@@ -97,7 +97,7 @@ public final class Speech
 	    Log.error(LOG_COMPONENT, "unable to load the default channel of the engine \'" + engineName + "\'");
     }
 
-        Channel loadChannel(String engineName, String paramsLine)
+        public Channel loadChannel(String engineName, String paramsLine)
     {
 	NullCheck.notEmpty(engineName, "engineName");
 	NullCheck.notNull(paramsLine, "paramsLine");
