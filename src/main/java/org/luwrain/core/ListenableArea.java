@@ -35,6 +35,10 @@ public interface ListenableArea
 	    this.posX = posX;
 	    this.posY = posY;
 	}
+	public ListeningInfo(String text)
+	{
+	    this(text, -1, -1);
+	}
 	public ListeningInfo()
 	{
 	    this("", -1, -1);

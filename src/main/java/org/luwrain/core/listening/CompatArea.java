@@ -31,12 +31,12 @@ final class CompatArea implements ListenableArea
     }
 
     @Override public ListeningInfo onListeningStart()
-	{
-	    	final BeginListeningQuery query = new BeginListeningQuery();
+    {
+	final BeginListeningQuery query = new BeginListeningQuery();
 	if (!AreaQuery.ask(area, query))
 	    return null;
 	return new Info(query.getAnswer().getText(), query.getAnswer().getExtraInfo(), -1, -1);
-	}
+    }
 
     @Override public void onListeningFinish(ListeningInfo listeningInfo)
     {
@@ -44,16 +44,16 @@ final class CompatArea implements ListenableArea
 	if (!(listeningInfo instanceof Info))
 	    return;
 	final Info info = (Info)listeningInfo;
-			area.onSystemEvent(new ListeningFinishedEvent(info.extraData));
-	}
-
-	    static private final class Info extends ListeningInfo
-	    {
-					    final Object extraData;
-    Info(String text, Object extraData, int posX, int posY)
-    {
-	super(text, posX, posY);
-	this.extraData = extraData;
+	area.onSystemEvent(new ListeningFinishedEvent(info.extraData));
     }
+
+    static private final class Info extends ListeningInfo
+    {
+	final Object extraData;
+	Info(String text, Object extraData, int posX, int posY)
+	{
+	    super(text, posX, posY);
+	    this.extraData = extraData;
+	}
     }
 }

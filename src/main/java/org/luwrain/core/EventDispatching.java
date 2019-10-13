@@ -138,13 +138,7 @@ abstract class EventDispatching extends Areas
     private boolean onRunnableEvent(RunnableEvent event)
     {
 	NullCheck.notNull(event, "event");
-	try {
-	    event.runnable.run();
-	}
-	catch(Throwable e)
-	{
-	    Log.error(LOG_COMPONENT, "exception on processing of RunnableEvent:" + e.getClass().getName() + ":" + e.getMessage());
-	}
+	unsafeAreaOperation(()->event.runnable.run());
 	return true;
     }
 

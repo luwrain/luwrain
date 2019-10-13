@@ -20,15 +20,17 @@ import org.luwrain .core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.speech.*;
+import org.luwrain.core.ListenableArea.ListeningInfo;
 
 
 public final class Listening
 {
     private final Luwrain luwrain;
     private final Speech speech;
-    private final Area area;
     private final Settings.SpeechParams sett;
-    private Channel channel;
+    private final Channel channel;
+        private final Area area;
+    private ListenableArea listenableArea = null;
 
     public Listening(Luwrain luwrain, Speech speech, Area area)
     {
@@ -39,113 +41,83 @@ public final class Listening
 	this.speech = speech;
 	this.area = area;
 	this.sett = Settings.createSpeechParams(luwrain.getRegistry());
+		if (sett.getListeningEngineName("").isEmpty())
+		{
+		    this.channel = null;
+	    return;
+		}
+	channel = speech.loadChannel(sett.getListeningEngineName(""), sett.getListeningEngineParams(""));
+		//channel.setDefaultRate(45);
+	//channel.setDefaultPitch(30);
     }
 
     public boolean start()
     {
-	if (sett.getListeningEngineName("").isEmpty())
-	    return false;
-	channel = speech.loadChannel(sett.getListeningEngineName(""), sett.getListeningEngineParams(""));
 	if (channel == null)
 	    return false;
-	//channel.setDefaultRate(45);
-	//channel.setDefaultPitch(30);
+	if (area instanceof ListenableArea)
+	{
+	    this.listenableArea = (ListenableArea)this.area;
+	    final ListeningInfo info = listenableArea.onListeningStart();
+	    if (info == null || info.noMore())
+	    {
+		this.listenableArea = null;
+		this.channel.close();
+		return false;
+	    }
 	luwrain.playSound(Sounds.PLAYING);
-	onFinish(null, null);
+	speak(info);
 	return true;
-    }
+	}
+	this.listenableArea = new CompatArea(area);
+	ListeningInfo info = listenableArea.onListeningStart();
+	if (info != null && !info.noMore())
+	{
+	    	luwrain.playSound(Sounds.PLAYING);
+		speak(info);
+		return true;
+	}
+	this.listenableArea = new PlainArea(area);
+	info = listenableArea.onListeningStart();
+	if (info != null && !info.noMore())
+	{
+	    	    	luwrain.playSound(Sounds.PLAYING);
+		speak(info);
+		return true;
+	}
+	this.listenableArea = null;
+	this.channel .close();
+	return false;
+	    }
 
     public void cancel()
     {
-	if (channel == null)
+	if (channel == null || listenableArea == null)
 	    return;
 	channel.silence();
 	channel.close();
-	channel = null;
+	listenableArea = null;
     }
 
-    private void onFinish(String text, Object extraInfo)
+    private void onFinish(ListeningInfo listeningInfo)
     {
-	if (text != null)
-	{
-	    if (extraInfo == null || !(extraInfo instanceof PositionInfo))
-		area.onSystemEvent(new ListeningFinishedEvent(extraInfo)); else
-		area.onSystemEvent(new MoveHotPointEvent(((PositionInfo)extraInfo).x, ((PositionInfo)extraInfo).y, false));
-	}
-	final BeginListeningQuery query = new BeginListeningQuery();
-	if (AreaQuery.ask(area, query))
-	    startNormal(query.getAnswer().getText(), query.getAnswer().getExtraInfo()); else
-	    startGeneral();
-    }
-
-    private void startNormal(String text, Object extraInfo)
-    {
-	final Channel.Listener listener = new Channel.Listener(){
-		@Override public void onFinished(long id)
-		{
-		    luwrain.runUiSafely(()->onFinish(text, extraInfo));
-		}};
-	channel .speak(luwrain.getSpeakableText(text, Luwrain.SpeakableTextType.NATURAL), listener, sett.getListeningPitch(50) - 50, 50 - sett.getListeningRate(50), false);
-    }
-
-    private void startGeneral()
-    {
-	final int fromPosX = area.getHotPointX(); 
-	final int fromPosY = area.getHotPointY();
-	final StringBuilder b = new StringBuilder();
-	final int count = area.getLineCount();
-	if (fromPosY >= count)
+	NullCheck.notNull(listeningInfo, "listeningInfo");
+	if (listenableArea == null)
 	    return;
-	int index = fromPosY;
-	String line = area.getLine(index);
-	if (line == null)
-	    line = "";
-	if (fromPosX < line.length())
-	    line = line.substring(fromPosX); else
-	    line = "";
-	int pos = 0;
-	while(true)
+	listenableArea.onListeningFinish(listeningInfo);
+	final ListeningInfo nextInfo = listenableArea.onListeningStart();
+	if (nextInfo == null || nextInfo.noMore())
 	{
-	    while (pos < line.length() && 
-		   line.charAt(pos) != '.' && line.charAt(pos) != '!' && line.charAt(pos) != '?')
-		++pos;
-	    if (pos >= line.length())
-	    {
-		b.append(line + " ");
-		pos = 0;
-		++index;
-		if (index >= count)
-		    break;
-		line = area.getLine(index);
-		if (line == null)
-		    line = "";
-		continue;
-	    }
-	    b.append(line.substring(0, pos + 1));
-	    break;
-	} //while(true)
-	int nextPosX = pos + 1;
-	int nextPosY = index;
-	if (nextPosX >= line.length())
-	{
-	    nextPosX = 0;
-	    //We may be careless that nextPosY is greater than number of lines, a corresponding check will be performed on next step
-	    ++nextPosY;
+	    listenableArea = null;
+	    return;
 	}
-	//If it is still a first line, we must restore a shift for the text prior to fromPosX
-	if (nextPosY == fromPosY)
-	    nextPosX += fromPosX;
-	startNormal(new String(b), new PositionInfo(nextPosX, nextPosY));
+	speak(nextInfo);
     }
 
-    static private final class PositionInfo
+    private void speak(ListeningInfo listeningInfo)
     {
-	final int x;
-	final int y;
-	PositionInfo(int x, int y)
-	{
-	    this.x = x;
-	    this.y = y;
-	}
+	NullCheck.notNull(listeningInfo, "listeningInfo");
+	final Channel.Listener listener = (id)->luwrain.runUiSafely(()->onFinish(listeningInfo));
+	channel .speak(luwrain.getSpeakableText(listeningInfo.getText(), Luwrain.SpeakableTextType.NATURAL), listener, sett.getListeningPitch(50) - 50, 50 - sett.getListeningRate(50), false);
     }
 }
