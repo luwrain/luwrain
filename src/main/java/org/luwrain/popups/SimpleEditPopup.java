@@ -182,7 +182,7 @@ protected boolean onMoveLeft(KeyboardEvent event)
 	--pos;
 	final String line = prefix + text;
 	if (pos < line.length())
-	    luwrain.speakLetter(line.charAt(pos)); else
+	    luwrain.setEventResponse(DefaultEventResponse.letter(line.charAt(pos))); else
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
@@ -198,7 +198,7 @@ protected boolean onMoveRight(KeyboardEvent event)
 	}
 	++pos;
 	if (pos < line.length())
-	    luwrain.speakLetter(line.charAt(pos)); else
+	    luwrain.setEventResponse(DefaultEventResponse.letter(line.charAt(pos))); else
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
@@ -210,7 +210,7 @@ protected boolean onHome(KeyboardEvent event)
 	final String line = prefix + text;
 	if (line.isEmpty())
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    luwrain.speakLetter(line.charAt(pos));
+	    luwrain.setEventResponse(DefaultEventResponse.letter(line.charAt(pos)));
 	luwrain.onAreaNewHotPoint(this);
 	return true;
     }
