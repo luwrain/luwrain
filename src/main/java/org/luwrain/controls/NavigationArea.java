@@ -284,16 +284,16 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     protected boolean onPageDown(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
-	hotPointY = hotPointY < count?hotPointY:count - 1;
+	hotPointY = Math.min(hotPointY, count - 1);
 	if (hotPointY + 1 >= count)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_BELOW));
 	    return true;
 	}
-	final int height = context.getAreaVisibleHeight(this);
-	if (hotPointY + height >= count)
-	    hotPointY = count - 1; else
-	    hotPointY  += height;
+	while(hotPointY < count - 1 && !getLineNotNull(hotPointY).isEmpty())
+	    hotPointY++;
+		while(hotPointY < count - 1 && getLineNotNull(hotPointY).isEmpty())
+	    hotPointY++;
 	hotPointX = 0;
 	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, getLineNotNull(hotPointY));
@@ -303,16 +303,16 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     protected boolean onPageUp(KeyboardEvent event)
     {
 	final int count = getValidLineCount();
-	hotPointY = hotPointY < count?hotPointY:count - 1;
+	hotPointY = Math.min(hotPointY, count - 1);
 	if (hotPointY == 0)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_ABOVE));
 	    return true;
 	}
-	final int height = context.getAreaVisibleHeight(this);
-	if (hotPointY > height)
-	    hotPointY -= height; else
-	    hotPointY = 0;
+	while(hotPointY > 0 && !getLineNotNull(hotPointY).isEmpty())
+	    hotPointY--;
+		while(hotPointY > 0 && getLineNotNull(hotPointY).isEmpty())
+	    hotPointY--;
 	hotPointX = 0;
 	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, getLineNotNull(hotPointY));
