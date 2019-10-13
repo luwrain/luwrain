@@ -109,7 +109,12 @@ final class Core extends EventDispatching
 				   }
 				   @Override public void speakLetter(char letter)
 				   {
-				       speech.speakLetter(letter, 0, 0);
+				       		final String value = i18n.hasSpecialNameOfChar(letter);
+		if (value == null)
+speech.speakLetter(letter, 0, 0); else
+		    speech.speak(value, 0, 0);
+		if (value != null)
+		    Log.debug(LOG_COMPONENT, "letter \'" + value + "\'");
 				   }
 			       });
     }
