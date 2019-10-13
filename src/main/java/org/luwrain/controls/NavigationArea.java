@@ -138,7 +138,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    hotPointX = 0;
 	    context.onAreaNewHotPoint(this);
 	} 
-	context.sayLetter(line.charAt(0));
+	context.setEventResponse(DefaultEventResponse.letter(line.charAt(0)));
 	return true;
     }
 
@@ -251,7 +251,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	final 	    String newLine = getLineNotNull(hotPointY);
 	if (hotPointX == newLine.length())
 	    context.setEventResponse(DefaultEventResponse.hint(hotPointY + 1 >= count?Hint.LINE_BOUND:Hint.LINE_BOUND)); else
-	    context.sayLetter(newLine.charAt(hotPointX));
+	    context.setEventResponse(DefaultEventResponse.letter(newLine.charAt(hotPointX)));
 	return true;
     }
 
@@ -277,7 +277,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	final String newLine = getLineNotNull(hotPointY);
 	if (hotPointX == newLine.length())
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.LINE_BOUND)); else
-	    context.sayLetter(newLine.charAt(hotPointX));
+	    context.setEventResponse(DefaultEventResponse.letter(newLine.charAt(hotPointX)));
 	return true;
     }
 
@@ -343,7 +343,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	}
 	hotPointX = it.pos();
 	if (it.announce().length() > 0)
-	    context.say(it.announce()); else
+	    context.setEventResponse(DefaultEventResponse.text(it.announce())); else
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -372,7 +372,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    return true;
 	}
 	hotPointX = it.pos();
-	context.say(it.announce());
+	context.setEventResponse(DefaultEventResponse.text(it.announce()));
 	context.onAreaNewHotPoint(this);
 	return true;
     }
