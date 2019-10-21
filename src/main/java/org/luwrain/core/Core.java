@@ -773,7 +773,7 @@ onNewAreasLayout();
 	needForIntroduction = false;
 	if (sound != null)
 	    playSound(sound);
-	speech.speak(text, Speech.PITCH_MESSAGE, 0);
+	speech.speak(i18n.getSpeakableText(text, Luwrain.SpeakableTextType.NATURAL), Speech.PITCH_MESSAGE, 0);
 	interaction.startDrawSession();
 	interaction.clearRect(0, interaction.getHeightInCharacters() - 1, interaction.getWidthInCharacters() - 1, interaction.getHeightInCharacters() - 1);
 	interaction.drawText(0, interaction.getHeightInCharacters() - 1, text, true);
