@@ -17,6 +17,7 @@
 package org.luwrain.core.script.api;
 
 import jdk.nashorn.api.scripting.*;
+import java.util.function.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
@@ -56,8 +57,48 @@ final class I18nObj extends AbstractJSObject
 		    return luwrain.i18n().getStaticStr(name);
 		}
 	    };
+	case "isLetter":
+	    return (Predicate)this::isLetter;
+	case "isDigit":
+	    return (Predicate)this::isDigit;
+	case "isLetterOrDigit":
+	    return (Predicate)this::isLetterOrDigit;
+	case "isSpace":
+	    return (Predicate)this::isSpace;
 	default:
 	    return super.getMember(name);
 	}
+    }
+
+    private boolean isLetter(Object obj)
+    {
+	final String value = org.luwrain.script.ScriptUtils.getStringValue(obj);
+	if (value == null || value.length() != 1)
+	    return false;
+	return Character.isLetter(value.charAt(0));
+    }
+
+    private boolean isDigit(Object obj)
+    {
+	final String value = org.luwrain.script.ScriptUtils.getStringValue(obj);
+	if (value == null || value.length() != 1)
+	    return false;
+	return Character.isDigit(value.charAt(0));
+    }
+
+    private boolean isLetterOrDigit(Object obj)
+    {
+	final String value = org.luwrain.script.ScriptUtils.getStringValue(obj);
+	if (value == null || value.length() != 1)
+	    return false;
+	return Character.isLetterOrDigit(value.charAt(0));
+    }
+
+    private boolean isSpace(Object obj)
+    {
+	final String value = org.luwrain.script.ScriptUtils.getStringValue(obj);
+	if (value == null || value.length() != 1)
+	    return false;
+	return Character.isSpaceChar(value.charAt(0));
     }
 }

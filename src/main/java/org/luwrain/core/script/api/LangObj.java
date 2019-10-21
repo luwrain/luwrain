@@ -37,15 +37,18 @@ final class LangObj extends AbstractJSObject
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
-	    case "proba":
-	    return (Consumer)this::proba;
+	    case "getSpecialNameOfChar":
+	    return (Function)this::getSpecialNameOfChar;
 	default:
 	    return super.getMember(name);
 	}
     }
 
-    public void proba(Object obj)
+private String getSpecialNameOfChar(Object obj)
     {
-	Log.debug("proba", obj.toString());
-    }
+	final String value = org.luwrain.script.ScriptUtils.getStringValue(obj);
+	if (value == null || value.length() != 1)
+	    return null;
+	return lang.hasSpecialNameOfChar(value.charAt(0));
+	    }
 }
