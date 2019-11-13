@@ -19,16 +19,17 @@
 package org.luwrain.popups;
 
 import java.util.*;
+
+import org.luwrain.core.*;
 import org.luwrain.popups.EditListPopup.Item;
 
-public class EditListPopupUtils
+public final class EditListPopupUtils
 {
     static public abstract class DynamicModel implements EditListPopup.Model
     {
 	//Items must be ordered and all of them should be greater than an empty item;
 	protected abstract Item[] getItems(String context);
 	protected abstract Item getEmptyItem(String context);
-
 	@Override public String getCompletion(String beginning)
 	{
 	    if (beginning == null)
@@ -64,7 +65,6 @@ public class EditListPopupUtils
 	    }
 	    return res;
 	}
-
 	@Override public String[] getAlternatives(String beginning)
 	{
 	    final Item[] fullItems = getItems(beginning);
@@ -81,7 +81,6 @@ public class EditListPopupUtils
 		    matching.add(s);
 	    return matching.toArray(new String[matching.size()]);
 	}
-
 	@Override public Item getListPopupPreviousItem(String text)
 	{
 	    if (text == null || text.isEmpty())
@@ -101,7 +100,6 @@ public class EditListPopupUtils
 		    return items[i - 1];
 	    return items[items.length - 1];
 	}
-
 	@Override public Item getListPopupNextItem(String text)
 	{
 	    final Item[] items = getItems(text);
@@ -120,28 +118,22 @@ public class EditListPopupUtils
 
     static public class FixedModel extends DynamicModel
     {
-	protected EditListPopup.Item[] fixedItems;
-
+	protected final EditListPopup.Item[] fixedItems;
 	public FixedModel(String[] items)
 	{
-	    if (items == null)
-		throw new NullPointerException("items may not be null");
-	    final Vector<Item> v = new Vector<Item>();
+	    NullCheck.notNullItems(items, "items");
+	    final List<Item> v = new LinkedList();
 	    for(String s: items)
-		if (s != null && !s.isEmpty())
+		if (!s.isEmpty())
 		    v.add(new Item(s));
-	    fixedItems = new Item[v.size()];
-	    for(int i = 0;i < v.size();++i)
-		fixedItems[i] = new Item(items[i]);
-	    Arrays.sort(fixedItems);
+	    this.fixedItems = v.toArray(new Item[v.size()]);
+	    Arrays.sort(this.fixedItems);
 	}
-
 	@Override protected Item[] getItems(String context)
 	{
 	    //Returning every time the same items regardless the context;
-	    return fixedItems;
+	    return fixedItems.clone();
 	}
-
 	@Override protected Item getEmptyItem(String context)
 	{
 	    return new Item();

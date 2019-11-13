@@ -52,16 +52,18 @@ public class EditListPopup extends SimpleEditPopup
 	    this.value = value;
 	    this.announcement = value;
 	}
-
-	/*
-	public String value() { return value; }
-	public String announcement() { return announcement; }
-	*/
+	public String getValue()
+	{
+	    return value;
+	}
+	public String getAnnouncement()
+	{
+	    return announcement;
+	}
 	@Override public String toString()
 	{
 	    return value;
 	}
-
 	@Override public int compareTo(Object o)
 	{
 	    return value.compareTo(o.toString());
@@ -101,16 +103,16 @@ public class EditListPopup extends SimpleEditPopup
 		onTab();
 		return true;
 	    case ARROW_DOWN:
-		onKeyDown(false);
+		onMoveDown(false);
 		return true;
 	    case ARROW_UP:
-		onKeyUp(false);
+		onMoveUp(false);
 		return true;
 	    case ALTERNATIVE_ARROW_DOWN:
-		onKeyDown(true);
+		onMoveDown(true);
 		return true;
 	    case ALTERNATIVE_ARROW_UP:
-		onKeyUp(true);
+		onMoveUp(true);
 		return true;
 	    default:
 		return super.onInputEvent(event);
@@ -118,7 +120,7 @@ public class EditListPopup extends SimpleEditPopup
 	return super.onInputEvent(event);
     }
 
-    private void onTab()
+    protected void onTab()
     {
 	final String text = getTextBeforeHotPoint();
 	final String after = getTextAfterHotPoint();
@@ -133,7 +135,7 @@ public class EditListPopup extends SimpleEditPopup
 	    }
 	}
 	String[] alternatives = model.getAlternatives(text);
-	if (alternatives == null || alternatives.length < 1)
+	if (alternatives == null || alternatives.length == 0)
 	    return;
 	final int count = alternatives.length <= MAX_ALTERNATIVES_TO_SAY?alternatives.length:MAX_ALTERNATIVES_TO_SAY;
 	String res = "";
@@ -142,7 +144,7 @@ public class EditListPopup extends SimpleEditPopup
 	luwrain.speak(res);
     }
 
-    private void onKeyUp(boolean briefIntroduction)
+    protected void onMoveUp(boolean briefIntroduction)
     {
 	final Item item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
 	if (item == null)
@@ -157,7 +159,7 @@ public class EditListPopup extends SimpleEditPopup
 	setText(item.value, "");
     }
 
-    private void onKeyDown(boolean briefIntroduction)
+    protected void onMoveDown(boolean briefIntroduction)
     {
 	final Item item = model.getListPopupNextItem(getTextBeforeHotPoint());
 	if (item == null)

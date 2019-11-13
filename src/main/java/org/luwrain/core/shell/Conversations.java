@@ -108,7 +108,7 @@ public final class Conversations
 		    for(String c: allCommands)
 			if (t.equals(c))
 			    return true;
-		    luwrain.message(luwrain.i18n().getStaticStr("NoCommand"));
+		    luwrain.message(luwrain.i18n().getStaticStr("NoCommand"), Luwrain.MessageType.ERROR);
 		    return false;
 		}
 		@Override public boolean onAreaQuery(AreaQuery query)
@@ -124,6 +124,10 @@ public final class Conversations
 		    default:
 			return super.onAreaQuery(query);
 		    }
+		}
+		@Override public String getSpeakableText(String prefix, String text)
+		{
+		    return prefix + " " + luwrain.getSpeakableText(text, Luwrain.SpeakableTextType.PROGRAMMING);
 		}
 	    };
 	luwrain.popup(popup);
