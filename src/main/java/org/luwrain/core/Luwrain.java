@@ -116,6 +116,7 @@ public interface Luwrain extends PropertiesBase
         void crash(Exception e);
     org.luwrain.browser.Browser createBrowser();
     org.luwrain.interaction.graphical.Pdf createPdfPreview(org.luwrain.interaction.graphical.Pdf.Listener listener, File file) throws Exception;
+    void announcement(String text, String announcementClass, String announcementSubclass);
 
 
     //Never returns null, returns user home dir if area doesn't speak about that

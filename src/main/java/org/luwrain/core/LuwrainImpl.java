@@ -114,6 +114,18 @@ final class LuwrainImpl implements Luwrain
 	}
     }
 
+    @Override public void announcement(String text, String announcementClass, String announcementSubclass)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(announcementClass, "announcementClass");
+	NullCheck.notNull(announcementSubclass, "announcementSubclass");
+	if (text.trim().isEmpty())
+	    return;
+	runUiSafely(()->{
+		new org.luwrain.script.hooks.NotificationHook(this).run("luwrain.announcement", new Object[]{text, announcementClass, announcementSubclass});
+	    });
+    }
+
     @Override public void sendBroadcastEvent(EnvironmentEvent e)
     {
 	NullCheck.notNull(e, "e");
