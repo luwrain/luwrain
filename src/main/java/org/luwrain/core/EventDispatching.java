@@ -157,6 +157,8 @@ abstract class EventDispatching extends Areas
 
     private boolean onInputEvent(KeyboardEvent event)
     {
+	NullCheck.notNull(event, "event");
+	new org.luwrain.script.hooks.NotificationHook(getObjForEnvironment()).run("luwrain.events.input", new Object[]{org.luwrain.script.ScriptUtils.createInputEvent(event)});
 	onBeforeEventProcessing();
 	if (systemHotKey(event))
 	    return true;
