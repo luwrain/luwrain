@@ -45,15 +45,31 @@ public class EditListPopup extends SimpleEditPopup
 	Item getListPopupNextItem(String text);
     }
 
-    protected final Model model;
+    public interface Appearance
+    {
+	public enum Flags {BRIEF};
 
-    public EditListPopup(Luwrain luwrain, EditListPopup.Model model,
-			 String name, String prefix,
-			 String text, Set<Popup.Flags> popupFlags)
+	void announceItem(Item item, Set<Flags> flags);
+	String getSpeakableText(String prefix, String text);
+    }
+
+    protected final Model model;
+    protected final Appearance appearance;
+
+    public EditListPopup(Luwrain luwrain, Model model, Appearance appearance,
+			 String name, String prefix, String text, Set<Popup.Flags> popupFlags)
     {
 	super(luwrain, name, prefix, text, popupFlags);
 	NullCheck.notNull(model, "model");
+	NullCheck.notNull(appearance, "appearance");
 	this.model = model;
+	this.appearance = appearance;
+    }
+
+    public EditListPopup(Luwrain luwrain, EditListPopup.Model model,
+			 String name, String prefix, String text, Set<Popup.Flags> popupFlags)
+    {
+	this(luwrain, model, new EditListPopupUtils.DefaultAppearance(luwrain), name, prefix, text, popupFlags);
     }
 
     @Override public boolean onInputEvent(KeyboardEvent event)
@@ -66,17 +82,13 @@ public class EditListPopup extends SimpleEditPopup
 		onTab();
 		return true;
 	    case ARROW_DOWN:
-		onMoveDown(false);
-		return true;
+		return onMoveDown(false);
 	    case ARROW_UP:
-		onMoveUp(false);
-		return true;
+		return onMoveUp(false);
 	    case ALTERNATIVE_ARROW_DOWN:
-		onMoveDown(true);
-		return true;
+		return onMoveDown(true);
 	    case ALTERNATIVE_ARROW_UP:
-		onMoveUp(true);
-		return true;
+		return onMoveUp(true);
 	    default:
 		return super.onInputEvent(event);
 	    }
@@ -107,33 +119,36 @@ public class EditListPopup extends SimpleEditPopup
 	luwrain.speak(res);
     }
 
-    protected void onMoveUp(boolean briefIntroduction)
+    protected boolean onMoveUp(boolean briefAnnouncement)
     {
 	final Item item = model.getListPopupPreviousItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
-	    return;
+	    return true;
 	}
-	final String value = briefIntroduction?item.getAnnouncement():item.getValue();
-	if (value.isEmpty())
-	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    luwrain.speak(getSpeakableText("", value));
+		this.appearance.announceItem(item, briefAnnouncement?EnumSet.of(Appearance.Flags.BRIEF):EnumSet.noneOf(Appearance.Flags.class));
 	setText(item.getValue(), "");
+	return true;
     }
 
-    protected void onMoveDown(boolean briefIntroduction)
+    protected boolean onMoveDown(boolean briefAnnouncement)
     {
 	final Item item = model.getListPopupNextItem(getTextBeforeHotPoint());
 	if (item == null)
 	{
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_BELOW));
-	    return;
+	    return true;
 	}
-	final String value = briefIntroduction?item.getAnnouncement():item.getValue();
-	if (value.isEmpty())
-	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    luwrain.speak(getSpeakableText("", value));
+	this.appearance.announceItem(item, briefAnnouncement?EnumSet.of(Appearance.Flags.BRIEF):EnumSet.noneOf(Appearance.Flags.class));
 	setText(item.getValue(), "");
+	return true;
     }
+
+    		@Override protected String getSpeakableText(String prefix, String text)
+		{
+		    NullCheck.notNull(prefix, "prefix");
+		    NullCheck.notNull(text, "text");
+		    return this.appearance.getSpeakableText(prefix, text);
+		}
 }

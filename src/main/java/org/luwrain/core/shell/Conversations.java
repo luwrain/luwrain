@@ -95,7 +95,7 @@ public final class Conversations
     public String command(String[] allCommands)
     {
 	NullCheck.notNullItems(allCommands, "allCommands");
-	final EditListPopup popup = new EditListPopup(luwrain, new EditListPopupUtils.FixedModel(allCommands),
+	final EditListPopup popup = new EditListPopup(luwrain, new EditListPopupUtils.FixedModel(allCommands), new EditListPopupUtils.DefaultAppearance(luwrain, Luwrain.SpeakableTextType.PROGRAMMING),
 						      luwrain.i18n().getStaticStr("CommandPopupName"), luwrain.i18n().getStaticStr("CommandPopupPrefix"), "", EnumSet.noneOf(Popup.Flags.class)){
 		@Override public boolean onOk()
 		{
@@ -124,10 +124,6 @@ public final class Conversations
 		    default:
 			return super.onAreaQuery(query);
 		    }
-		}
-		@Override public String getSpeakableText(String prefix, String text)
-		{
-		    return prefix + " " + luwrain.getSpeakableText(text, Luwrain.SpeakableTextType.PROGRAMMING);
 		}
 	    };
 	luwrain.popup(popup);

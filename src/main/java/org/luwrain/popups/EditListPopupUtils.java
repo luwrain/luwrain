@@ -25,8 +25,7 @@ import org.luwrain.popups.EditListPopup.Item;
 
 public final class EditListPopupUtils
 {
-
-        static public class DefaultItem implements EditListPopup.Item
+    static public class DefaultItem implements EditListPopup.Item
     {
 	protected final String value;
 	protected final String announcement;
@@ -64,7 +63,38 @@ public final class EditListPopupUtils
 	}
     }
 
-    
+    static public class DefaultAppearance implements EditListPopup.Appearance
+    {
+	protected final Luwrain luwrain;
+	protected Luwrain.SpeakableTextType speakableTextType;
+	public DefaultAppearance(Luwrain luwrain, Luwrain.SpeakableTextType speakableTextType)
+	{
+	    NullCheck.notNull(luwrain, "luwrain");
+	    NullCheck.notNull(speakableTextType, "speakableTextType");
+	    this.luwrain = luwrain;
+	    this.speakableTextType = speakableTextType;
+	}
+	public DefaultAppearance(Luwrain luwrain)
+	{
+	    this(luwrain, Luwrain.SpeakableTextType.NATURAL);
+	}
+	@Override public void announceItem(EditListPopup.Item item, Set<Flags> flags)
+	{
+	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(flags, "flags");
+	    final String value = item.getValue();
+	    if (!value.isEmpty())
+	    luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.getSpeakableText(value, speakableTextType))); else
+	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	}
+	@Override public String getSpeakableText(String prefix, String text)
+	{
+	    NullCheck.notNull(prefix, "prefix");
+	    NullCheck.notNull(text, "text");
+	    return text + luwrain.getSpeakableText(text, speakableTextType);
+	}
+    }
+
     static public abstract class DynamicModel implements EditListPopup.Model
     {
 	//Items must be ordered and all of them should be greater than an empty item;
