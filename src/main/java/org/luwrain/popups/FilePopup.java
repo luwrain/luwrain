@@ -122,7 +122,7 @@ public class FilePopup extends EditListPopup
 	{
 	    NullCheck.notNull(context, "context");
 	    if (context.isEmpty())
-		return new EditListPopup.Item();
+		return new EditListPopupUtils.DefaultItem();
 	    File base = null;
 	    File path = new File(context);
 	    if (!path.isAbsolute())
@@ -132,7 +132,7 @@ public class FilePopup extends EditListPopup
 	    }
 	    if (context.endsWith(SEPARATOR) &&
 path.exists() && path.isDirectory())
-		return new EditListPopup.Item(context);
+		return new EditListPopupUtils.DefaultItem(context);
 	    path = path.getParentFile();
 	    if (path != null)
 	    {
@@ -143,10 +143,10 @@ path.exists() && path.isDirectory())
 		    (base == null || !base.equals(path)))
 		    suffix = SEPARATOR;
 		if (base != null)
-		    return new EditListPopup.Item(relativize(path, base) + suffix);
-		return new EditListPopup.Item(path.toString() + suffix);
+		    return new EditListPopupUtils.DefaultItem(relativize(path, base) + suffix);
+		return new EditListPopupUtils.DefaultItem(path.toString() + suffix);
 	    }
-	    return new EditListPopup.Item(context);
+	    return new EditListPopupUtils.DefaultItem(context);
 	}
     
 	//Just adds ending slash, if necessary
@@ -181,8 +181,8 @@ protected Item[] readDirectory(File dir, File base)
 			if (!skipHidden || !pp.isHidden())
 			{
 			    if (base != null)
-				items.add(new Item(relativize(pp, base), pp.getName())); else
-				items.add(new Item(pp.toString(), pp.getName()));
+				items.add(new EditListPopupUtils.DefaultItem(relativize(pp, base), pp.getName())); else
+				items.add(new EditListPopupUtils.DefaultItem(pp.toString(), pp.getName()));
 			}
 		    final Item[] res = items.toArray(new Item[items.size()]);
 		    Arrays.sort(res);

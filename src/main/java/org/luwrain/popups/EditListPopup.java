@@ -27,47 +27,10 @@ public class EditListPopup extends SimpleEditPopup
 {
     static private final int MAX_ALTERNATIVES_TO_SAY = 100;
 
-    static public class Item implements Comparable
+    public interface Item extends Comparable
     {
-	public final String value;
-	public final String announcement;
-
-	public Item()
-	{
-	    value = "";
-	    announcement = "";
-	}
-
-	public Item(String value, String announcement)
-	{
-	    NullCheck.notNull(value, "value");
-	    NullCheck.notNull(announcement, "announcement");
-	    this.value = value;
-	    this.announcement = announcement;
-	}
-
-	public Item(String value)
-	{
-	    NullCheck.notNull(value, "value");
-	    this.value = value;
-	    this.announcement = value;
-	}
-	public String getValue()
-	{
-	    return value;
-	}
-	public String getAnnouncement()
-	{
-	    return announcement;
-	}
-	@Override public String toString()
-	{
-	    return value;
-	}
-	@Override public int compareTo(Object o)
-	{
-	    return value.compareTo(o.toString());
-	}
+	String getValue();
+	String getAnnouncement();
     }
 
     public interface Model
@@ -152,11 +115,11 @@ public class EditListPopup extends SimpleEditPopup
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	    return;
 	}
-	final String value = briefIntroduction?item.announcement:item.value;
+	final String value = briefIntroduction?item.getAnnouncement():item.getValue();
 	if (value.isEmpty())
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
 	    luwrain.speak(getSpeakableText("", value));
-	setText(item.value, "");
+	setText(item.getValue(), "");
     }
 
     protected void onMoveDown(boolean briefIntroduction)
@@ -167,10 +130,10 @@ public class EditListPopup extends SimpleEditPopup
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_BELOW));
 	    return;
 	}
-	final String value = briefIntroduction?item.announcement:item.value;
+	final String value = briefIntroduction?item.getAnnouncement():item.getValue();
 	if (value.isEmpty())
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
 	    luwrain.speak(getSpeakableText("", value));
-	setText(item.value, "");
+	setText(item.getValue(), "");
     }
 }
