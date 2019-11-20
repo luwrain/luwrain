@@ -29,7 +29,7 @@ import org.luwrain.controls.*;
 public final class TextScriptUtils
 {
     static final String LOG_COMPONENT = ScriptUtils.LOG_COMPONENT;
-    
+
     static public Object createTextEditHookObject(Area area, MutableLines lines, HotPointControl hotPoint, AbstractRegionPoint regionPoint)
     {
 	NullCheck.notNull(area, "area");
@@ -114,10 +114,10 @@ public final class TextScriptUtils
 	};
     }
 
-
-    static public boolean runMultilineEditInputEventHook(ControlContext context, Area area, MultilineEdit2 edit, KeyboardEvent event, AbstractRegionPoint regionPoint)
+    static public boolean runMultilineEditInputEventHook(ControlContext context, String hookName, Area area, MultilineEdit2 edit, KeyboardEvent event, AbstractRegionPoint regionPoint)
     {
 	NullCheck.notNull(context, "context");
+	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(edit, "edit");
 	NullCheck.notNull(event, "event");
@@ -129,14 +129,15 @@ public final class TextScriptUtils
 	final AtomicReference res = new AtomicReference();
 	corrector.doEditAction((lines, hotPoint)->{
 		try {
-		    res.set(new Boolean(context.runHooks("luwrain.edit.multiline.input", new Object[]{
+		    //FIXME: using ChainOfResponsibilityHook instead of context.runHooks()
+		    res.set(new Boolean(context.runHooks(hookName, new Object[]{
 				    ScriptUtils.createInputEvent(event),
 				    createTextEditHookObject(area, lines, hotPoint, regionPoint)
 				}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY)));
 		}
 		catch(RuntimeException e)
 		{
-		    Log.error(LOG_COMPONENT, "the luwrain.edit.multiline.input hook failed:" + e.getClass().getName() + ":" + e.getMessage());
+		    Log.error(LOG_COMPONENT, "the " + hookName + " hook failed:" + e.getClass().getName() + ":" + e.getMessage());
 		}
 	    });
 	if (res.get() == null)
