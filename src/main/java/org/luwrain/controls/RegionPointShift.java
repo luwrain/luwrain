@@ -30,6 +30,8 @@ public class RegionPointShift implements AbstractRegionPoint
     public RegionPointShift(AbstractRegionPoint regionPoint, int offsetX, int offsetY)
     {
 	NullCheck.notNull(regionPoint, "regionPoint");
+	if (offsetX < 0 || offsetY < 0)
+	    throw new IllegalArgumentException("offsetX (" + String.valueOf(offsetX) + ") and offsetY (" + String.valueOf(offsetY) + ") must be greater or equal to zero");
 	this.regionPoint = regionPoint;
 	this.offsetX = offsetX;
 	this.offsetY = offsetY;
@@ -41,13 +43,13 @@ public class RegionPointShift implements AbstractRegionPoint
 	return value >= offsetX?value - offsetX:0;
     }
 
-        @Override public int getHotPointY()
+    @Override public int getHotPointY()
     {
 	final int value = regionPoint.getHotPointY();
 	return value >= offsetY?value - offsetY:0;
     }
 
-        @Override public boolean onSystemEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
+    @Override public boolean onSystemEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
     {
 	NullCheck.notNull(event, "event");
 	return regionPoint.onSystemEvent(event, hotPointX + offsetX, hotPointY + offsetY);
@@ -55,7 +57,7 @@ public class RegionPointShift implements AbstractRegionPoint
 
     @Override public boolean isInitialized()
     {
-	return regionPoint.isInitialized();
+	return regionPoint.isInitialized() && regionPoint.getHotPointX() >= offsetX && regionPoint.getHotPointY() >= offsetY;
     }
 
     @Override public void set(int hotPointX, int hotPointY)
@@ -73,9 +75,11 @@ public class RegionPointShift implements AbstractRegionPoint
 	return offsetX;
     }
 
-    public void setOffsetX(int value)
+    public void setOffsetX(int offsetX)
     {
-	offsetX = value;
+		if (offsetX < 0)
+	    throw new IllegalArgumentException("offsetX (" + String.valueOf(offsetX) + ") may not be negative");
+	offsetX = offsetX;
     }
 
     public int getOffsetY()
@@ -83,18 +87,18 @@ public class RegionPointShift implements AbstractRegionPoint
 	return offsetY;
     }
 
-    public void setOffsetY(int value)
+    public void setOffsetY(int offsetY)
     {
-	offsetY = value;
+	if (offsetY < 0)
+	    throw new IllegalArgumentException("offsetY (" + String.valueOf(offsetY) + ") may not be negative");
+	this.offsetY = offsetY;
     }
 
-        public void setOffset(int hotPointX, int hotPointY)
+    public void setOffset(int offsetX, int offsetY)
     {
-	/*
-	if (hotPointX < 0 || hotPointY < 0)
-	    throw new IllegalArgumentException("hotPointX (" + String.valueOf(hotPoitX) ") and hotPointY (" + String.valueOf(hotPointY) + ") must be greater or equal to zero");
-	this.hotPointX = hotPointX;
-	this.hotPointY = hotPointY;
-	*/
+	if (offsetX < 0 || offsetY < 0)
+	    throw new IllegalArgumentException("offsetX (" + String.valueOf(offsetX) + ") and offsetY (" + String.valueOf(offsetY) + ") must be greater or equal to zero");
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
     }
 }
