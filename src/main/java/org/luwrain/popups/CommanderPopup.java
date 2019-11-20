@@ -31,12 +31,11 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final Luwrain luwrain;
     protected final String name;
-    protected final FileAcceptance acceptance;
     protected final Set<Popup.Flags> popupFlags;
     protected File result;
 
     public CommanderPopup(Luwrain luwrain, String name, File file,
-			  FileAcceptance acceptance, CommanderArea.Filter<File> filter, Set<Popup.Flags> popupFlags)
+			  CommanderArea.Filter<File> filter, Set<Popup.Flags> popupFlags)
     {
 	super(constructParams(luwrain, filter));
 	NullCheck.notNull(luwrain, "luwrain");
@@ -46,7 +45,6 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	this.luwrain = luwrain;
 	this.name = name;
 	this.popupFlags = popupFlags;
-	this.acceptance = acceptance;
 	setClickHandler(this);
 	setLoadingResultHandler((location, data, selectedIndex, announce)->{
 		luwrain.runUiSafely(()->acceptNewLocation(location, data, selectedIndex, announce));
@@ -62,11 +60,6 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	    return ClickHandler.Result.OPEN_DIR;
 	result = file;
 	return closing.doOk()?ClickHandler.Result.OK:ClickHandler.Result.REJECTED;
-    }
-
-    public File result()
-    {
-	return result;
     }
 
     @Override public boolean onInputEvent(KeyboardEvent event)
@@ -85,13 +78,8 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	switch(event.getCode())
 	{
 	case INTRODUCE:
-	    luwrain.silence();
+	    //	    luwrain.silence();
 	    luwrain.speak(getAreaName(), Sounds.INTRO_POPUP);
-	    return true;
-	case OK:
-	    if (getSelectedEntry() != null)
-		result = getSelectedEntry();
-	    closing.doOk();
 	    return true;
 	default:
 	    if (closing.onSystemEvent(event))
@@ -107,9 +95,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 
     @Override public boolean onOk()
     {
-	if (result() == null)
-	    return false;
-	return acceptance != null?acceptance.isPathAcceptable(result(), true):true;
+	return true;
     }
 
     @Override public boolean onCancel()
