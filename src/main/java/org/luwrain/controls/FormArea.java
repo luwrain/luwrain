@@ -497,10 +497,9 @@ final int count = multilineEditLines.getLineCount();
 		return true;
 	    }
 	}
-	if (	    event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.ENTER &&
-		    !event.isModified())
+		    //If the user is pressing Enter on the list;
+	if (	    event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.ENTER && !event.isModified())
 	{
-	    //If the user is pressing Enter on the list;
 	    if (getHotPointY() < items.size() && items.get(getHotPointY()).type == Type.LIST)
 	{
 	    final Item item = items.get(getHotPointY());
@@ -543,9 +542,13 @@ final int count = multilineEditLines.getLineCount();
 		i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		i.onInputEvent(event))
 		return true;
-	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
-	    multilineEdit.onInputEvent(event))
+	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()))
+	    {
+		if (org.luwrain.script.TextScriptUtils.runMultilineEditInputEventHook(context, EditArea.INPUT_EVENT_HOOK, this, multilineEdit, event, regionPoint))
+		    return true;
+		if (multilineEdit.onInputEvent(event))
 	    return true;
+	    }
 	return super.onInputEvent(event);
     }
 

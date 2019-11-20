@@ -26,6 +26,8 @@ import org.luwrain.script.*;
 
 public class EditArea extends NavigationArea
 {
+    static public final String INPUT_EVENT_HOOK = "luwrain.edit.multiline.input";
+
 public interface Appearance extends MultilineEdit2.Appearance
 {
     void announceLine(int index, String line);
