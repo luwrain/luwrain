@@ -56,6 +56,7 @@ public class FormArea  extends NavigationArea
     protected MutableLines multilineEditLines = null;
         protected MultilineEdit2 multilineEdit = null;
     protected final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
+    protected final RegionPointShift multilineEditRegionPoint = new RegionPointShift(regionPoint, 0, 0);
     protected String multilineEditCaption = "";
     protected boolean multilineEditEnabled = true;//FIXME:
 
@@ -359,28 +360,13 @@ public class FormArea  extends NavigationArea
 	return multilineEditCaption != null && !multilineEditCaption.isEmpty();
     }
 
-    /**
-     * Returns the {@link HotPointControl} object used in multiline edit
-     * operations. The object is an instance of {@link HotPointShift} class
-     * (because multiline edit is shifted vertically in the form) and can be
-     * directly provided to the constructor of 
-     * {@link MultilineEditModelTranslator} if necessary. This method returns the
-     * object regardless whether multiline edit activated or not.
-     *
-     * @return The hot point control object suitable for multiline edit operations
-     */
-    public HotPointControl getMultilineEditHotPointControl()
-    {
-	return multilineEditHotPoint;
-    }
-
     public MultilineEdit2.Params createMultilineEditParams(ControlContext context, MutableLines lines)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notNull(lines, "lines");
 	final MultilineEdit2.Params params = new MultilineEdit2.Params();
 	params.context = context;
-	params.model = new EditUtils.CorrectorChangeListener(new MultilineEditCorrectorTranslator(lines, getMultilineEditHotPointControl())){
+	params.model = new EditUtils.CorrectorChangeListener(new MultilineEditCorrectorTranslator(lines, multilineEditHotPoint)){
 		@Override public void onMultilineEditChange()
 		{
 		    context.onAreaNewContent(FormArea.this);
@@ -544,7 +530,7 @@ final int count = multilineEditLines.getLineCount();
 		return true;
 	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()))
 	    {
-		if (org.luwrain.script.TextScriptUtils.runMultilineEditInputEventHook(context, EditArea.INPUT_EVENT_HOOK, this, multilineEdit, event, regionPoint))
+		if (org.luwrain.script.TextScriptUtils.runMultilineEditInputEventHook(context, EditArea.INPUT_EVENT_HOOK, this, multilineEdit, event, multilineEditRegionPoint))
 		    return true;
 		if (multilineEdit.onInputEvent(event))
 	    return true;
