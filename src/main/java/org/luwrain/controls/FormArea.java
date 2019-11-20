@@ -168,7 +168,7 @@ public class FormArea  extends NavigationArea
 					       item.caption.length(), //offsetX
 					       items.size()); //offsetY
 	items.add(item);
-	updateControlsPos();
+	updateItems();
 	context.onAreaNewContent(this);
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -225,7 +225,7 @@ public class FormArea  extends NavigationArea
 	item.obj = obj;
 	item.enabled = enabled;
 	items.add(item);
-	updateControlsPos();
+	updateItems();
 	context.onAreaNewContent(this);
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -268,7 +268,7 @@ public class FormArea  extends NavigationArea
 	item.obj = obj;
 	item.enabled = enabled;
 	items.add(item);
-	updateControlsPos();
+	updateItems();
 	context.onAreaNewContent(this);
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -298,7 +298,7 @@ public class FormArea  extends NavigationArea
 	item.obj = obj;
 	item.enabled = enabled;
 	items.add(item);
-	updateControlsPos();
+	updateItems();
 	context.onAreaNewContent(this);
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -332,7 +332,7 @@ public class FormArea  extends NavigationArea
 	    item.caption = caption;
 	    item.obj = obj;
 	    items.add(item);
-	    updateControlsPos();
+	    updateItems();
 	context.onAreaNewContent(this);
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -389,7 +389,7 @@ public class FormArea  extends NavigationArea
 	this.multilineEditLines = lines;
 	this.multilineEdit = new MultilineEdit2(params);
 	multilineEditEnabled = enabled;
-	updateControlsPos();
+	updateItems();
 	context.onAreaNewContent(this);
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -445,7 +445,7 @@ final int count = multilineEditLines.getLineCount();
 	if (index < 0 || index >= items.size())
 	    return false;
 	items.remove(index);
-	updateControlsPos();
+	updateItems();
 	context.onAreaNewContent(this);
 	context.onAreaNewHotPoint(this);
 	return true;
@@ -460,7 +460,7 @@ final int count = multilineEditLines.getLineCount();
 	    if (items.get(i).name.equals(itemName))
 	    {
 		items.remove(i);
-		updateControlsPos();
+		updateItems();
 		context.onAreaNewContent(this);
 		context.onAreaNewHotPoint(this);
 		return true;
@@ -670,7 +670,7 @@ final int count = multilineEditLines.getLineCount();
 	return null;
     }
 
-    protected void updateControlsPos()
+    protected void updateItems()
     {
 	for(int i = 0;i < items.size();++i)
 	    if (items.get(i).type == Type.EDIT)
@@ -684,6 +684,7 @@ final int count = multilineEditLines.getLineCount();
 	if (multilineEditHasCaption())
 	    ++offset;
 	multilineEditHotPoint.setOffsetY(offset);
+		multilineEditRegionPoint.setOffsetY(offset);
     }
 
     protected boolean isMultilineEditCovering(int x, int y)
