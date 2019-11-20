@@ -200,7 +200,7 @@ return new MultilineEditCorrectorTranslator(content, this);
 		try {
 		    res.set(new Boolean(context.runHooks("luwrain.edit.multiline.input", new Object[]{
 				    ScriptUtils.createInputEvent(event),
-				    EditUtils.createHookObject(EditArea.this, lines, hotPoint, regionPoint)
+				    ScriptUtils.createTextEditHookObject(EditArea.this, lines, hotPoint, regionPoint)
 				}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY)));
 		}
 		catch(RuntimeException e)

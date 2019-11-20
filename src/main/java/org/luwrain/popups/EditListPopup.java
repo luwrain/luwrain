@@ -127,7 +127,7 @@ public class EditListPopup extends SimpleEditPopup
 	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.NO_ITEMS_ABOVE));
 	    return true;
 	}
-		this.appearance.announceItem(item, briefAnnouncement?EnumSet.of(Appearance.Flags.BRIEF):EnumSet.noneOf(Appearance.Flags.class));
+	this.appearance.announceItem(item, briefAnnouncement?EnumSet.of(Appearance.Flags.BRIEF):EnumSet.noneOf(Appearance.Flags.class));
 	setText(item.getValue(), "");
 	return true;
     }
@@ -145,10 +145,10 @@ public class EditListPopup extends SimpleEditPopup
 	return true;
     }
 
-    		@Override protected String getSpeakableText(String prefix, String text)
-		{
-		    NullCheck.notNull(prefix, "prefix");
-		    NullCheck.notNull(text, "text");
-		    return this.appearance.getSpeakableText(prefix, text);
-		}
+    @Override protected String getSpeakableText(String prefix, String text)
+    {
+	NullCheck.notNull(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	return this.appearance.getSpeakableText(prefix, text);
+    }
 }

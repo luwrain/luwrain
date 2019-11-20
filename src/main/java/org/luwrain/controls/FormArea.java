@@ -121,10 +121,10 @@ public class FormArea  extends NavigationArea
 	return items.get(index).name;
     }
 
-    public Object getItemObjOnLine(int index)
+    public Object getItemObj(int index)
     {
 	if (index < 0 || index >= items.size())
-	    return null;
+	    throw new IllegalArgumentException("index (" + String.valueOf(index) + ") is out of bounds");
 	return items.get(index).obj;
     }
 
@@ -321,8 +321,7 @@ public class FormArea  extends NavigationArea
 	return false;
     }
 
-    public boolean addStatic(String itemName, String caption,
-			     Object obj)
+    public boolean addStatic(String itemName, String caption, Object obj)
     {
 	NullCheck.notNull(itemName, "itemName");
 	NullCheck.notNull(caption, "caption");
