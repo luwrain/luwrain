@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.shell;
+package org.luwrain.core.shell;
 
 import java.util.*;
 
@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 
-public class ContextMenu extends ListPopup
+public final class ContextMenu extends ListPopup
 {
     public ContextMenu(Luwrain luwrain, Action[] actions)
     {
@@ -43,16 +43,14 @@ public class ContextMenu extends ListPopup
 	return params;
     }
 
-    static private class Appearance implements ListArea.Appearance
+    static private final class Appearance implements ListArea.Appearance
     {
 	private final Luwrain luwrain;
-
 	Appearance(Luwrain luwrain)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
 	    this.luwrain = luwrain;
 	}
-
 	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
@@ -61,10 +59,9 @@ public class ContextMenu extends ListPopup
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.MAIN_MENU_ITEM);
 	    if (act.keyboardEvent() != null)
-		luwrain.speak(act.title() + " " + act.keyboardEvent().toString()); else
+		luwrain.speak(act.title() + " " + luwrain.getSpeakableText(act.keyboardEvent().toString(), Luwrain.SpeakableTextType.PROGRAMMING)); else
 		luwrain.speak(act.title());
 	}
-
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
@@ -74,19 +71,17 @@ public class ContextMenu extends ListPopup
 		return act.title() + " (" + act.keyboardEvent() + ")"; else
 		return act.title();
 	}
-
 	@Override public int getObservableLeftBound(Object item)
 	{
 	    return 0;
 	}
-
 	@Override public int getObservableRightBound(Object item)
 	{
 	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
 	}
     }
 
-    static private class Transition extends ListUtils.DefaultTransition
+    static private final class Transition extends ListUtils.DefaultTransition
     {
 	@Override public State transition(Type type, State fromState, int itemCount,
 					  boolean hasEmptyLineTop, boolean hasEmptyLineBottom)

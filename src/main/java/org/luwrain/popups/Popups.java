@@ -307,6 +307,15 @@ name, prefix, text, popupFlags);
 			return super.onSystemEvent(event);
 		    }
 		}
+		@Override public Action[] getAreaActions()
+		{
+		    return new Action[]{
+			new Action("hidden-show", "Показать скрытые файлы", new KeyboardEvent('=')),
+						new Action("hidden-hide", "Убрать скрытые файлы", new KeyboardEvent('-')),
+									new Action("mkdir", "CСоздать каталог", new KeyboardEvent(KeyboardEvent.Special.INSERT)),
+			
+		    };
+		}
 		@Override public boolean onOk()
 		{
 		    final File file = opened();

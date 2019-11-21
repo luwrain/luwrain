@@ -517,7 +517,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.onContextMenuCommand();
+		    core.showContextMenu();
 		}
 	    },
 

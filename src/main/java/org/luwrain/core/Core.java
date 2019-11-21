@@ -899,25 +899,33 @@ onNewAreasLayout();
 	onNewAreasLayout();
     }
 
-    void onContextMenuCommand()
+    void showContextMenu()
     {
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
 	    return;
-	final Action[] actions = activeArea.getAreaActions();
-	if (actions == null || actions.length < 1)
+	final AtomicReference res = new AtomicReference();
+	unsafeAreaOperation(()->res.set(activeArea.getAreaActions()));
+	if (res.get() == null || !(res.get() instanceof Action[]))
 	{
 	    areaInaccessibleMessage();
 	    return;
 	}
-	final org.luwrain.shell.ContextMenu menu = new org.luwrain.shell.ContextMenu(getObjForEnvironment(), actions);
+	final Action[] actions = (Action[])res.get();
+	if (actions.length == 0)
+	{
+	    areaInaccessibleMessage();
+	    return;
+	}
+	final org.luwrain.core.shell.ContextMenu menu = new org.luwrain.core.shell.ContextMenu(getObjForEnvironment(), actions);
 	popup(null, menu, Popup.Position.RIGHT, ()->menu.isPopupActive(), true, true);
 	if (menu.wasCancelled())
 	    return;
 	final Object selected = menu.selected();
 	if (selected == null || !(selected instanceof Action))//Should never happen
 	    return;
-	if (!activeArea.onSystemEvent(new ActionEvent((Action)selected)))
+	unsafeAreaOperation(()->res.set(new Boolean(activeArea.onSystemEvent(new ActionEvent((Action)selected)))));
+	if (res.get() == null || !(res.get() instanceof Boolean) || !((Boolean)res.get()).booleanValue())
 	    areaInaccessibleMessage();
     }
 
