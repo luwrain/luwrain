@@ -520,7 +520,6 @@ public class CommanderArea<E> extends ListArea
 final EntryType type;
 	final String baseName;
 	boolean marked = false;
-
 	Wrapper(E obj, EntryType type, String baseName)
 	{
 	    NullCheck.notNull(obj, "obj");
@@ -530,32 +529,26 @@ final EntryType type;
 	    this.type = type;
 	    this.baseName = baseName;
 	}
-
 	@Override public E getNativeObj()
 	{
 	    return obj;
 	}
-
 	@Override public boolean isDirectory()
 	{
 	    return type == EntryType.DIR || type == EntryType.SYMLINK_DIR;
 	}
-
 	@Override public EntryType getEntryType()
 	{
 	    return type;
 	}
-
 	@Override public String getBaseName()
 	{
 	    return baseName;
 	}
-
 	public void toggleMark()
 	{
 	    marked = !marked;
 	}
-
 	@Override public boolean equals(Object o)
 	{
 	    if (o == null || !(o instanceof Wrapper))
@@ -568,13 +561,11 @@ final EntryType type;
     static public class ListAppearanceImpl<E> implements ListArea.Appearance
     {
 	protected final CommanderArea.Appearance appearance;
-
 	public ListAppearanceImpl(CommanderArea.Appearance<E> appearance)
 	{
 	    NullCheck.notNull(appearance, "appearance");
 	    this.appearance = appearance;
 	}
-
 	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
@@ -582,7 +573,6 @@ final EntryType type;
 	    final Wrapper<E> wrapper = (Wrapper<E>)item;
 	    appearance.announceEntry(wrapper.obj, wrapper.type, wrapper.marked);
 	}
-
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
@@ -621,12 +611,10 @@ final EntryType type;
 	    }
 	    return new String(b);
 	}
-
 	@Override public int getObservableLeftBound(Object item)
 	{
 	    return 2;
 	}
-
 	@Override public int getObservableRightBound(Object item)
 	{
 	    NullCheck.notNull(item, "item");

@@ -35,7 +35,7 @@ public final class CommanderUtilsFile
 	@Override public EntryType getEntryType(File currentLocation, File entry)
 	{
 	    NullCheck.notNull(entry, "entry");
-		if (currentLocation.getParent() != null && currentLocation.getParent().equals(entry))
+			if (currentLocation.getParentFile() != null && entry.getAbsolutePath().equals(currentLocation.getParentFile().getAbsolutePath()))
 		    return EntryType.PARENT;
 		final Path path = entry.toPath();
 		    if (Files.isSymbolicLink(path))

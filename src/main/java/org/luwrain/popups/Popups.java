@@ -210,7 +210,7 @@ name, prefix, text, popupFlags);
 	return popup.result();
     }
 
-        static public File existingFile(Luwrain luwrain, String name, String prefix, File startWith, String[] extensions)
+    static public File existingFile(Luwrain luwrain, String name, String prefix, File startWith, String[] extensions)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
@@ -231,7 +231,7 @@ name, prefix, text, popupFlags);
 			}
 		    return super.onInputEvent(event);
 		}
-				@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
@@ -246,8 +246,8 @@ name, prefix, text, popupFlags);
 		}
 		@Override public boolean onOk()
 		{
-		    final File file = opened();
-		    if (file == null)
+		    final File file = getSelectedEntry();
+		    if (file == null || !file.isFile())
 			return false;
 		    res.set(file);
 		    return true;
@@ -259,7 +259,7 @@ name, prefix, text, popupFlags);
 	return (File)res.get();
     }
 
-        static public File existingDir(Luwrain luwrain, String name, String prefix, File startWith)
+    static public File existingDir(Luwrain luwrain, String name, String prefix, File startWith)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
@@ -322,7 +322,7 @@ name, prefix, text, popupFlags);
 	return (File)res.get();
     }
 
-        static private boolean mkdir(Luwrain luwrain, File createIn)
+    static private boolean mkdir(Luwrain luwrain, File createIn)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(createIn, "createIn");
