@@ -217,9 +217,13 @@ name, prefix, text, popupFlags);
 	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNull(startWith, "startWith");
 	NullCheck.notNullItems(extensions, "extensions");
+	final CommanderArea.Filter<File> fullFilter = new CommanderUtilsFile.Filter(EnumSet.noneOf(CommanderUtilsFile.Filter.Flags.class));
+			final CommanderArea.Filter<File> noHiddenFilter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.NO_HIDDEN));
+	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+	final AtomicBoolean skipHidden = new AtomicBoolean(sett.getFilePopupSkipHidden(false));
 	final AtomicReference res = new AtomicReference(null);
 	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
-							luwrain.getFileProperty("luwrain.dir.userhome"), null, DEFAULT_POPUP_FLAGS){
+							luwrain.getFileProperty("luwrain.dir.userhome"), skipHidden.get()?noHiddenFilter:fullFilter, DEFAULT_POPUP_FLAGS){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -238,11 +242,21 @@ name, prefix, text, popupFlags);
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
+		    case ACTION:
+			return false;
 		    case OK:
 			return closing.doOk();
 		    default:
 			return super.onSystemEvent(event);
 		    }
+		}
+		@Override public Action[] getAreaActions()
+		{
+		    return new Action[]{
+			new Action("hidden-show", "Показать скрытые файлы", new KeyboardEvent('=')),
+			new Action("hidden-hide", "Убрать скрытые файлы", new KeyboardEvent('-')),
+			new Action("mkdir", "Создать каталог", new KeyboardEvent(KeyboardEvent.Special.INSERT)),
+		    };
 		}
 		@Override public boolean onOk()
 		{
@@ -264,36 +278,28 @@ name, prefix, text, popupFlags);
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
+	final CommanderArea.Filter<File> fullFilter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.DIR_ONLY));
+	final CommanderArea.Filter<File> noHiddenFilter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.NO_HIDDEN, CommanderUtilsFile.Filter.Flags.DIR_ONLY));
+	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+	final AtomicBoolean skipHidden = new AtomicBoolean(sett.getFilePopupSkipHidden(false));
 	final AtomicReference res = new AtomicReference(null);
-	final CommanderArea.Filter<File> filter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.NO_HIDDEN, CommanderUtilsFile.Filter.Flags.DIR_ONLY));
-	final CommanderArea.Filter<File> extendedFilter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.DIR_ONLY));
 	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
-							luwrain.getFileProperty("luwrain.dir.userhome"), filter, DEFAULT_POPUP_FLAGS){
-		@Override public boolean onInputEvent(KeyboardEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if(event.isSpecial() && !event.isModified())
-			switch(event.getSpecial())
-			{
-			case INSERT:
-			    return mkdir(luwrain, opened());
-			}
-		    if (!event.isSpecial() && !event.isModified())
-			switch(event.getChar())
-			{
-			case '=':
-			    setCommanderFilter(extendedFilter);
-			    reread(true);
-			    //						luwrain.playSound(Sounds.OK);
-			    return true;
-			case '-':
-			    setCommanderFilter(filter);
-			    reread(false);
-			    luwrain.playSound(Sounds.OK);
-			    return true;
-			}
-		    return super.onInputEvent(event);
-		}
+							luwrain.getFileProperty("luwrain.dir.userhome"), skipHidden.get()?noHiddenFilter:fullFilter, DEFAULT_POPUP_FLAGS){
+		/*
+		  @Override public boolean onInputEvent(KeyboardEvent event)
+		  {
+		  NullCheck.notNull(event, "event");
+		  if(event.isSpecial() && !event.isModified())
+		  switch(event.getSpecial())
+		  {
+		  }
+		  if (!event.isSpecial() && !event.isModified())
+		  switch(event.getChar())
+		  {
+		  }
+		  return super.onInputEvent(event);
+		  }
+		*/
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -301,6 +307,24 @@ name, prefix, text, popupFlags);
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
+		    case ACTION:
+			if (ActionEvent.isAction(event, "mkdir"))
+			    return mkdir(luwrain, opened());
+			if (ActionEvent.isAction(event, "show-hidden"))
+			{
+			    setCommanderFilter(fullFilter);
+			    reread(true);
+			    skipHidden.set(false);
+			    return true;
+			}
+			if (ActionEvent.isAction(event, "skip-hidden"))
+			{
+			    			    setCommanderFilter(noHiddenFilter);
+			    reread(true);
+			    skipHidden.set(true);
+			    return true;
+			}
+			return false;
 		    case OK:
 			return closing.doOk();
 		    default:
@@ -309,12 +333,12 @@ name, prefix, text, popupFlags);
 		}
 		@Override public Action[] getAreaActions()
 		{
-		    return new Action[]{
-			new Action("hidden-show", "Показать скрытые файлы", new KeyboardEvent('=')),
-						new Action("hidden-hide", "Убрать скрытые файлы", new KeyboardEvent('-')),
-									new Action("mkdir", "CСоздать каталог", new KeyboardEvent(KeyboardEvent.Special.INSERT)),
-			
-		    };
+		    final List<Action> res = new LinkedList();
+			if (skipHidden.get())
+			    res.add(new Action("show-hidden", "Показать скрытые файлы", new KeyboardEvent('='))); else
+			    res.add(new Action("skip-hidden", "Убрать скрытые файлы", new KeyboardEvent('-')));
+			res.add(new Action("mkdir", "Создать каталог", new KeyboardEvent(KeyboardEvent.Special.INSERT)));
+			return res.toArray(new Action[res.size()]);
 		}
 		@Override public boolean onOk()
 		{
