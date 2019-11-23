@@ -118,6 +118,16 @@ public class MutableLinesImpl implements MutableLines
 	lines.clear();
     }
 
+    @Override public LineMarks getLineMarks(int index)
+    {
+	return null;
+    }
+
+    @Override public void setLineMarks(int index, LineMarks lineMarks)
+    {
+	NullCheck.notNull(lineMarks, "lineMarks");
+    }
+
     public String getWholeText(String lineSep)
     {
 	final String s = lineSep != null?lineSep:System.lineSeparator();

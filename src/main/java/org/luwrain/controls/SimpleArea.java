@@ -131,9 +131,21 @@ public class SimpleArea extends NavigationArea implements MutableLines
 	afterChange();
     }
 
-    public void clear()
+    @Override public void clear()
     {
 	content.clear();
+	afterChange();
+    }
+
+    @Override public LineMarks getLineMarks(int index)
+    {
+	return content.getLineMarks(index);
+    }
+
+    @Override public void setLineMarks(int index, LineMarks lineMarks)
+    {
+	NullCheck.notNull(lineMarks, "lineMarks");
+	content.setLineMarks(index, lineMarks);
 	afterChange();
     }
 

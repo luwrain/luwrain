@@ -97,4 +97,16 @@ abstract public class MutableLinesChangeListener implements MutableLines
 	lines.clear();
 	onMutableLinesChange();
     }
+
+    @Override public LineMarks getLineMarks(int index)
+    {
+	return lines.getLineMarks(index);
+    }
+
+    @Override public void setLineMarks(int index, LineMarks lineMarks)
+    {
+	NullCheck.notNull(lineMarks, "lineMarks");
+	lines.setLineMarks(index, lineMarks);
+		onMutableLinesChange();
+    }
 }
