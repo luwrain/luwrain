@@ -49,6 +49,12 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	this.popupFlags = popupFlags;
     }
 
+    protected String getSpeakableText(String text)
+    {
+	NullCheck.notNull(text, "text");
+	return luwrain.getSpeakableText(text, Luwrain.SpeakableTextType.NATURAL);
+    }
+
     @Override public int getLineCount()
     {
 	return 1;
@@ -102,7 +108,7 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	case ARROW_DOWN:
 	case ARROW_LEFT:
 	case ARROW_RIGHT:
-	    luwrain.speak(text);
+	    luwrain.speak(getSpeakableText(text));
 	    return true;
 	default:
 	    return false;
@@ -121,9 +127,7 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	    luwrain.getClipboard().set(text);
 	    return true;
 	case INTRODUCE:
-	    luwrain.silence();
-	    luwrain.playSound(Sounds.INTRO_POPUP);
-	    luwrain.speak(text);
+	    luwrain.speak(getSpeakableText(text), Sounds.INTRO_POPUP);
 	    return true;
 	default:
 	return closing.onSystemEvent(event);

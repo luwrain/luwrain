@@ -157,6 +157,17 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 		return title;
 	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
 	}
+
+@Override public void announceNonSection(Object item)
+	{
+	    NullCheck.notNull(item, "item");
+	    context.setEventResponse(DefaultEventResponse.listItem(context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));
+	}
+	public void announceSection(Object item)
+	{
+	    	    NullCheck.notNull(item, "item");
+		    context.setEventResponse(DefaultEventResponse.text(Sounds.DOC_SECTION, context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));//FIXME:DefaultEventResponse.listItem()
+	}
 	UniRefInfo getUniRefInfo(Object obj)
 	{
 	    NullCheck.notNull(obj, "obj");
