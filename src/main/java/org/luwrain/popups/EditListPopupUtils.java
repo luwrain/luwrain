@@ -91,7 +91,7 @@ public final class EditListPopupUtils
 	{
 	    NullCheck.notNull(prefix, "prefix");
 	    NullCheck.notNull(text, "text");
-	    return text + luwrain.getSpeakableText(text, speakableTextType);
+	    return prefix + luwrain.getSpeakableText(text, speakableTextType);
 	}
     }
 

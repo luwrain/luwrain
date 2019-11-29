@@ -570,7 +570,7 @@ public interface ClipboardSaver
 	} else
 	    item = "";
 	if (!item.trim().isEmpty())
-	    context.say(item, Sounds.INTRO_REGULAR); else
+	    context.say(context.getSpeakableText(item, Luwrain.SpeakableTextType.NATURAL), Sounds.INTRO_REGULAR); else
 	    context.say(getAreaName(), Sounds.INTRO_REGULAR);
 	return true;
     }

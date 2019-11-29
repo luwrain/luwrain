@@ -77,7 +77,7 @@ public final class Manager
 	    try {
 		message = ext.init(iface);
 	    }
-	    catch (Exception ee)
+	    catch (Throwable ee)
 	    {
 		Log.error(LOG_COMPONENT, "loading of extension " + s + " failed:" + ee.getClass().getName() + ":" + ee.getMessage());
 		interfaces.release(iface);
