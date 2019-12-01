@@ -66,13 +66,23 @@ public final class Launch implements Runnable
 	if (standalone)
 	{
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
-	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
+	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{
+		    basicProps,
+		    filesProps,
+		    new org.luwrain.core.properties.Player(),
+		    new org.luwrain.core.properties.Listening(),
+		});
 	    this.registry = loadMemRegistry(dataDir, lang);
 	} else
 	{
 	    filesProps.load(new File(userDataDir, "properties"));
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
-	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{basicProps, filesProps, new org.luwrain.core.properties.Player()});
+	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{
+		    basicProps,
+		    filesProps,
+		    new org.luwrain.core.properties.Player(),
+		    new org.luwrain.core.properties.Listening(),
+		});
 	    this.registry = new org.luwrain.registry.fsdir.RegistryImpl(new File(new File(this.userDataDir, "registry"), getRegVersion()).toPath());
 	}
 	this.classLoader = this.getClass().getClassLoader();

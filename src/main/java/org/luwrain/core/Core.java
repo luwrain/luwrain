@@ -936,10 +936,11 @@ onNewAreasLayout();
 	    return;
 	stopAreaListening();
 	speech.silence();
-	this.listening = new Listening(getObjForEnvironment(), speech, activeArea);
+	this.listening = new Listening(getObjForEnvironment(), speech, activeArea, ()->listeningProp.setStatus(false));
 	final AtomicBoolean res = new AtomicBoolean();
 	unsafeAreaOperation(()->res.set(listening.start()));
-	if (!res.get())
+	if (res.get())
+	    listeningProp.setStatus(true); else
 	    eventNotProcessedMessage();
     }
 

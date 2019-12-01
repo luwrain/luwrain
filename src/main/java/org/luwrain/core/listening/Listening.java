@@ -27,19 +27,22 @@ public final class Listening
 {
     private final Luwrain luwrain;
     private final Speech speech;
+    private final Runnable completion;
     private final Settings.SpeechParams sett;
     private final Channel channel;
         private final Area area;
     private ListenableArea listenableArea = null;
 
-    public Listening(Luwrain luwrain, Speech speech, Area area)
+    public Listening(Luwrain luwrain, Speech speech, Area area, Runnable completion)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(speech, "speech");
 	NullCheck.notNull(area, "area");
+	NullCheck.notNull(completion, "completion");
 	this.luwrain = luwrain;
 	this.speech = speech;
 	this.area = area;
+	this.completion = completion;
 	this.sett = Settings.createSpeechParams(luwrain.getRegistry());
 		if (sett.getListeningEngineName("").isEmpty())
 		{
@@ -65,7 +68,6 @@ public final class Listening
 		this.channel.close();
 		return false;
 	    }
-	luwrain.playSound(Sounds.PLAYING);
 	speak(info);
 	return true;
 	}
@@ -73,7 +75,6 @@ public final class Listening
 	ListeningInfo info = listenableArea.onListeningStart();
 	if (info != null && !info.noMore())
 	{
-	    	luwrain.playSound(Sounds.PLAYING);
 		speak(info);
 		return true;
 	}
@@ -81,7 +82,6 @@ public final class Listening
 	info = listenableArea.onListeningStart();
 	if (info != null && !info.noMore())
 	{
-	    	    	luwrain.playSound(Sounds.PLAYING);
 		speak(info);
 		return true;
 	}
@@ -94,9 +94,10 @@ public final class Listening
     {
 	if (channel == null || listenableArea == null)
 	    return;
-	channel.silence();
-	channel.close();
-	listenableArea = null;
+	this.channel.silence();
+	this.channel.close();
+	this.listenableArea = null;
+	this.completion.run();
     }
 
     private void onFinish(ListeningInfo listeningInfo)
@@ -109,6 +110,8 @@ public final class Listening
 	if (nextInfo == null || nextInfo.noMore())
 	{
 	    listenableArea = null;
+	    channel.close();
+	    this.completion.run();
 	    return;
 	}
 	speak(nextInfo);

@@ -36,7 +36,7 @@ final class PropertiesRegistry implements PropertiesBase, PropertiesProvider.Lis
     PropertiesRegistry(PropertiesProvider[] basicProviders)
     {
 	NullCheck.notNullItems(basicProviders, "basicProviders");
-	this.basicProviders = basicProviders;
+	this.basicProviders = basicProviders.clone();
 	setProviders(new PropertiesProvider[0]);//to apply the list of basic providers
     }
 

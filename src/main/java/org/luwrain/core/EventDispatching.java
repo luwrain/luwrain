@@ -37,6 +37,7 @@ abstract class EventDispatching extends Areas
 
     protected final GlobalKeys globalKeys;
     protected Listening listening = null;
+    protected final org.luwrain.core.properties.Listening listeningProp;
     protected final Desktop desktop;
 
     protected EventDispatching(CmdLine cmdLine, Registry registry,
@@ -52,6 +53,16 @@ abstract class EventDispatching extends Areas
 	this.desktop = (Desktop)org.luwrain.util.ClassUtils.newInstanceOf(this.getClass().getClassLoader(), props.getProperty(DESKTOP_PROP_NAME), Desktop.class);
 	if (this.desktop == null)
 	    throw new RuntimeException("unable to create a desktop");
+	org.luwrain.core.properties.Listening l = null;
+	for (PropertiesProvider p: props.getBasicProviders())
+	    if (p instanceof org.luwrain.core.properties.Listening)
+	{
+	    l = (org.luwrain.core.properties.Listening)p;
+	    break;
+	}
+	if (l == null)
+	    throw new RuntimeException("No listening properties provider");
+	this.listeningProp = l;
     }
 
     abstract protected void onBeforeEventProcessing();
