@@ -155,14 +155,20 @@ public final class Launch implements Runnable
 	System.getProperties().put("socksProxyPort", network.getSocksProxyPort(""));
 	if (!network.getHttpProxyHost("").isEmpty())
 	{
-	    Log.info(LOG_COMPONENT, "setting HTTP proxy host to " + network.getHttpProxyHost(""));
-	    System.getProperties().put("http.proxyHost", network.getHttpProxyHost(""));
+	    System.setProperty("java.net.useSystemProxies", "true");
+	    System.setProperty("http.proxyHost", network.getHttpProxyHost(""));
+	    System.setProperty("https.proxyHost", network.getHttpProxyHost(""));
 	}
 	if (!network.getHttpProxyPort("").isEmpty())
 	{
-	    Log.info(LOG_COMPONENT, "setting HTTP proxy port to " + network.getHttpProxyPort(""));
-	    System.getProperties().put("http.proxyPort", network.getHttpProxyPort(""));
+	    System.setProperty("http.proxyPort", network.getHttpProxyPort(""));
+	    System.setProperty("https.proxyPort", network.getHttpProxyPort(""));
 	}
+	Log.debug(LOG_COMPONENT, "using system proxy: " + System.getProperty("java.net.useSystemProxies"));
+	Log.debug(LOG_COMPONENT, "HTTP proxy host is " + System.getProperty("http.proxyHost"));
+		Log.debug(LOG_COMPONENT, "HTTPS proxy host is " + System.getProperty("https.proxyHost"));
+			Log.debug(LOG_COMPONENT, "HTTP proxy port is " + System.getProperty("http.proxyPort"));
+		Log.debug(LOG_COMPONENT, "HTTPS proxy port is " + System.getProperty("https.proxyPort"));
 	System.getProperties().put("http.proxyUser", network.getHttpProxyUser(""));
 	System.getProperties().put("http.proxyPassword",network.getHttpProxyPassword("") );
     }
