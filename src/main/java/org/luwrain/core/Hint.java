@@ -32,6 +32,7 @@ public enum Hint
     NO_LINES_ABOVE,
     NO_LINES_BELOW,
     SPACE,
+    SPACES,
     TAB,
     TABLE_BEGIN_OF_ROW,
     TABLE_END_OF_COL,

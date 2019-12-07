@@ -151,8 +151,8 @@ public final class Launch implements Runnable
 	}
 	//network
 	final Settings.Network network = Settings.createNetwork(registry);
-	System.getProperties().put("socksProxyHost", network.getSocksProxyHost(""));
-	System.getProperties().put("socksProxyPort", network.getSocksProxyPort(""));
+	//	System.getProperties().put("socksProxyHost", network.getSocksProxyHost(""));
+	//	System.getProperties().put("socksProxyPort", network.getSocksProxyPort(""));
 	if (!network.getHttpProxyHost("").isEmpty())
 	{
 	    System.setProperty("java.net.useSystemProxies", "true");

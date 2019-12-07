@@ -213,6 +213,8 @@ public final class  EventResponses
 	NullCheck.notNull(hint, "hint");
 	switch(hint)
 	{
+	case SPACES:
+	    return luwrain.i18n().getStaticStr ("Spaces");
 	case TREE_BRANCH_EXPANDED:
 	    return "Раскрыто";//FIXME:
 	case TREE_BRANCH_COLLAPSED:
@@ -272,6 +274,7 @@ public final class  EventResponses
 
     static private Sounds getSoundForHint(org.luwrain.core.Hint hint)
     {
+	NullCheck.notNull(hint, "hint");
 	switch (hint)
 	{
 	case NO_ITEMS_ABOVE:
@@ -295,6 +298,7 @@ public final class  EventResponses
 	    return Sounds.NO_CONTENT;
 	case LINE_BOUND:
 	case EMPTY_LINE:
+	case SPACES:
 	    return Sounds.EMPTY_LINE;
 	case TREE_BRANCH_COLLAPSED:
 	    return Sounds.COLLAPSED;
