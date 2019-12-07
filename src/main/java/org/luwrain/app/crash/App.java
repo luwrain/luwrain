@@ -100,7 +100,7 @@ public final class App implements Application
 		@Override public void announceLine(int index, String line)
 		{
 		    NullCheck.notNull(line, "line");
-		    luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING)));
+		    defaultLineAnnouncement(context, index, luwrain.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
 		}
 	    };
 

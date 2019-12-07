@@ -379,9 +379,8 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 
     public void announceLine(int index, String line)
     {
-	if (line == null || line.isEmpty())
-	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    context.setEventResponse(DefaultEventResponse.text(line));
+	NullCheck.notNull(line, "line");
+	defaultLineAnnouncement(context, index, line);
     }
 
     public void reset(boolean announce)
@@ -522,5 +521,21 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     {
 	final String line = getLine(index);
 	return line != null?line:"";
+    }
+
+    static public void defaultLineAnnouncement(ControlContext context, int index, String line)
+    {
+	NullCheck.notNull(line, "line");
+	if (line.isEmpty())
+	{
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	    return;
+	}
+	if (line.trim().isEmpty())
+	{
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.SPACES));
+		    return;
+	}
+	context.setEventResponse(DefaultEventResponse.text(line));
     }
 }
