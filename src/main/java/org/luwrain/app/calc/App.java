@@ -30,7 +30,7 @@ public final class App implements Application
     private Luwrain luwrain = null;
     private Strings strings = null;
     private Base base = null;
-    private EditAreaOld editArea = null;
+    private EditArea editArea = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
@@ -46,16 +46,7 @@ public final class App implements Application
 
     private void createArea()
     {
-	final EditAreaOld.Params params = new EditAreaOld.Params();
-	params.context = new DefaultControlContext(luwrain);
-	params.name = strings.appName();
-	params.changeListener = ()->hotUpdate();
-	this.editArea = new EditAreaOld(params){
-		@Override public MultilineEdit.Model createMultilineEditModel(CorrectorFactory correctorFactory)
-		{
-		    final MultilineEdit.Model model = super.createMultilineEditModel(correctorFactory);
-		    return createBlockingModel(model);
-		}
+	this.editArea = new EditArea(base.createEditParams(()->hotUpdate())){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -113,16 +104,6 @@ public final class App implements Application
 			return super.onSystemEvent(event);
 		    }
 		}
-		@Override public void announceLine(int index, String line)
-	{
-	    NullCheck.notNull(line, "line");
-	    if (line.trim().isEmpty())
-	    {
-		luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
-		return;
-	    }
-		luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING)));
-	}
 	    };
 	editArea.getContent().setLines(new String[]{
 		"0",
@@ -149,7 +130,7 @@ public final class App implements Application
     private void putResLine(String text)
     {
 	NullCheck.notNull(text, "text");
-	editArea.setLine(editArea.getLineCount() - 2, text);
+	editArea.getDirectContent().setLine(editArea.getLineCount() - 2, text);
     }
 
     private String[] getLinesToEval()

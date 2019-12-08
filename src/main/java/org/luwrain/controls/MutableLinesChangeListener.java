@@ -109,4 +109,9 @@ abstract public class MutableLinesChangeListener implements MutableLines
 	lines.setLineMarks(index, lineMarks);
 		onMutableLinesChange();
     }
+
+    public MutableLines getDirectContent()
+    {
+	return lines;
+    }
 }

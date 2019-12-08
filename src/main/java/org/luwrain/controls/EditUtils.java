@@ -118,9 +118,8 @@ public final class EditUtils
 	}
 	    @Override public void announceLine(int index, String line)
     {
-	if (line == null || line.isEmpty())
-	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-	    context.setEventResponse(DefaultEventResponse.text(line));
+	NullCheck.notNull(line, "line");
+	NavigationArea.defaultLineAnnouncement(context, index, line);
     }
     }
 

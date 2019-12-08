@@ -64,7 +64,7 @@ public interface Appearance extends MultilineEdit2.Appearance
 	public EditFactory editFactory = null;
     }
 
-    protected final MutableLines content;
+    protected final MutableLinesChangeListener content;
     protected final MultilineEditCorrector2 basicCorrector;
     protected final Appearance appearance;
     protected String areaName = "";
@@ -178,6 +178,11 @@ return new MultilineEditCorrectorTranslator(content, this);
     public MutableLines getContent()
     {
 	return content;
+    }
+
+        public MutableLines getDirectContent()
+    {
+	return content.getDirectContent();
     }
 
     @Override public boolean onInputEvent(KeyboardEvent event)

@@ -69,7 +69,13 @@ final class Base
 	final EditArea.Params params = new EditArea.Params();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = strings.appName();
-	params.appearance = new EditUtils.DefaultEditAreaAppearance(params.context);
+	params.appearance = new EditUtils.DefaultEditAreaAppearance(params.context){
+		@Override public void announceLine(int index, String line)
+		{
+		    NullCheck.notNull(line, "line");
+		    NavigationArea.defaultLineAnnouncement(context, index, luwrain.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
+		}
+	    };
 	params.editFactory = (editParams, corrector)->{
 	    editParams.model = createBlockingModel(editParams.model);
 	    return new MultilineEdit2(editParams);
