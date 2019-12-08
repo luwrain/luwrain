@@ -42,7 +42,7 @@ public final class EditUtils
 	    NullCheck.notNull(res, "res");
 	    if (!res.isPerformed())
 		return false;
-	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE));
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.LINE_BOUND));
 	    return true;
 	}
 	@Override public boolean onBackspaceDeleteChar(ModificationResult res)
