@@ -543,7 +543,7 @@ class Commands
 			core.eventNotProcessedMessage();
 			return;
 		    }
-		    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), uniRefInfo.getValue(), Sounds.OK, null);
+		    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), uniRefInfo, Sounds.OK, null);
 		    core.getClipboard().set(res);
 		}
 	    },
@@ -569,7 +569,7 @@ class Commands
 			core.eventNotProcessedMessage();
 			return;
 		    }
-		    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), uniRefInfo.getValue(), Sounds.OK, null);
+		    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), uniRefInfo, Sounds.OK, null);
 		    core.getClipboard().set(res);
 		}
 	    },

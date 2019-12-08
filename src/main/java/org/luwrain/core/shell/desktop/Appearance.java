@@ -38,7 +38,7 @@ final class Appearance implements ListArea.Appearance
 	if (item instanceof UniRefInfo)
 	{
 	    final UniRefInfo info = (UniRefInfo)item;
-	    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), info.getValue(), Sounds.DESKTOP_ITEM, Suggestions.CLICKABLE_LIST_ITEM);
+	    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), info, Sounds.DESKTOP_ITEM, Suggestions.CLICKABLE_LIST_ITEM);
 	    return;
 	}
 	luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.DESKTOP_ITEM, luwrain.getSpeakableText(item.toString(), Luwrain.SpeakableTextType.NATURAL), null));

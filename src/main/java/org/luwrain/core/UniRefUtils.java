@@ -25,16 +25,10 @@ public final class UniRefUtils
     static public final String URL = "url";
     static public final String ALIAS = "link";
 
-    static public void defaultAnnouncement(ControlContext context, String uniRef, Sounds defaultSound, Suggestions clickableSuggestion)
+    static public void defaultAnnouncement(ControlContext context, UniRefInfo info, Sounds defaultSound, Suggestions clickableSuggestion)
     {
 	NullCheck.notNull(context, "context");
-	NullCheck.notNull(uniRef, "uniRef");
-	if (uniRef.isEmpty())
-	{
-	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
-	    return;
-	}
-	final UniRefInfo info = context.getUniRefInfo(uniRef);
+	NullCheck.notNull(info, "info");
 	if (!info.isAvailable())
 	{
 	    context.setEventResponse(DefaultEventResponse.listItem(defaultSound != null?defaultSound:Sounds.LIST_ITEM, getDefaultAnnouncementText(context, info), null));
