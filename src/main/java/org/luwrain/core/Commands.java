@@ -26,6 +26,7 @@ import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.OperatingSystem;
 import org.luwrain.script.*;
+import org.luwrain.controls.DefaultControlContext;
 
 /**
  * The set of standard commands. The commands provided by this class are
@@ -542,7 +543,7 @@ class Commands
 			core.eventNotProcessedMessage();
 			return;
 		    }
-		    core.message(uniRefInfo.toString(), Luwrain.MessageType.OK);
+		    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), uniRefInfo.getValue(), Sounds.OK, null);
 		    core.getClipboard().set(res);
 		}
 	    },
@@ -568,7 +569,7 @@ class Commands
 			core.eventNotProcessedMessage();
 			return;
 		    }
-		    core.message(uniRefInfo.toString(), Luwrain.MessageType.OK);
+		    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), uniRefInfo.getValue(), Sounds.OK, null);
 		    core.getClipboard().set(res);
 		}
 	    },

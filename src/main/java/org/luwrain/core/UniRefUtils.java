@@ -18,10 +18,56 @@
 
 package org.luwrain.core;
 
+import org.luwrain.controls.ControlContext;
+
 public final class UniRefUtils
 {
     static public final String URL = "url";
     static public final String ALIAS = "link";
+
+    static public void defaultAnnouncement(ControlContext context, String uniRef, Sounds defaultSound, Suggestions clickableSuggestion)
+    {
+	NullCheck.notNull(context, "context");
+	NullCheck.notNull(uniRef, "uniRef");
+	if (uniRef.isEmpty())
+	{
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	    return;
+	}
+	final UniRefInfo info = context.getUniRefInfo(uniRef);
+	if (!info.isAvailable())
+	{
+	    context.setEventResponse(DefaultEventResponse.listItem(defaultSound != null?defaultSound:Sounds.LIST_ITEM, getDefaultAnnouncementText(context, info), null));
+	    return;
+	}
+	switch(info.getType())
+	{
+	case "static":
+	    context.setEventResponse(DefaultEventResponse.listItem(defaultSound != null?defaultSound:Sounds.LIST_ITEM, getDefaultAnnouncementText(context, info), null));
+	    break;
+	    	case "section":
+		    context.setEventResponse(DefaultEventResponse.listItem(Sounds.DOC_SECTION, getDefaultAnnouncementText(context, info), null));
+	    break;
+	default:
+	    context.setEventResponse(DefaultEventResponse.listItem(defaultSound != null?defaultSound:Sounds.LIST_ITEM, getDefaultAnnouncementText(context, info), clickableSuggestion));
+	}
+    }
+
+    static public String getDefaultAnnouncementText(ControlContext context, UniRefInfo uniRefInfo)
+    {
+	NullCheck.notNull(context, "context");
+	NullCheck.notNull(uniRefInfo, "uniRefInfo");
+	if (!uniRefInfo.isAvailable())
+	    return context.getSpeakableText(uniRefInfo.getValue(), Luwrain.SpeakableTextType.NATURAL);
+	switch(uniRefInfo.getType())
+	{
+	case "file":
+	case "url":
+	    return context.getSpeakableText(uniRefInfo.getTitle(), Luwrain.SpeakableTextType.PROGRAMMING);
+	default:
+	    return context.getSpeakableText(uniRefInfo.getTitle(), Luwrain.SpeakableTextType.NATURAL);
+	}
+    }
 
     static public String makeAlias(String title, String uniRef)
     {
