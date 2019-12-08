@@ -39,7 +39,7 @@ final class UniRefProcs
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    if (!uniRef.startsWith(PREFIX))
 			return null;
-		    return new UniRefInfo(uniRef, luwrain.i18n().getStaticStr("UniRefPrefixFile"), uniRef.substring(5));
+		    return new UniRefInfo(uniRef, "file", uniRef.substring(5), uniRef.substring(5));
 		}
 		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
@@ -64,7 +64,7 @@ final class UniRefProcs
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    if (!uniRef.startsWith(PREFIX))
 			return null;
-		    return new UniRefInfo(uniRef, "", uniRef.substring(PREFIX.length()));
+		    return new UniRefInfo(uniRef, "url", uniRef.substring(PREFIX.length()), uniRef.substring(PREFIX.length()));
 		}
 		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{

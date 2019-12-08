@@ -38,10 +38,10 @@ final class Appearance implements ListArea.Appearance
 	if (item instanceof UniRefInfo)
 	{
 	    final UniRefInfo info = (UniRefInfo)item;
-	    announceUniRefInfo(info, flags.contains(Flags.BRIEF));
+	    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), info.getValue(), Sounds.DESKTOP_ITEM, Suggestions.CLICKABLE_LIST_ITEM);
 	    return;
 	}
-	luwrain.setEventResponse(DefaultEventResponse.text(luwrain.getSpeakableText(item.toString(), Luwrain.SpeakableTextType.NATURAL)));
+	luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.DESKTOP_ITEM, luwrain.getSpeakableText(item.toString(), Luwrain.SpeakableTextType.NATURAL), null));
     }
 
     @Override public String getScreenAppearance(Object item, Set<Flags> flags)
@@ -66,36 +66,5 @@ final class Appearance implements ListArea.Appearance
     @Override public int getObservableRightBound(Object item)
     {
 	return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
-    }
-
-    private void announceUniRefInfo(UniRefInfo uniRefInfo, boolean brief)
-    {
-	NullCheck.notNull(uniRefInfo, "uniRefInfo");
-	if (!uniRefInfo.isAvailable())
-	{
-	    luwrain.setEventResponse(DefaultEventResponse.text(uniRefInfo.getValue()));
-	    return;				    
-	}
-	if (brief)
-	{
-	    luwrain.setEventResponse(DefaultEventResponse.listItem(uniRefInfo.getTitle(), null));
-	    return;				    
-	}
-	final String type = uniRefInfo.getValue().substring(0, uniRefInfo.getValue().indexOf(":")).toLowerCase();
-	final String text = luwrain.getSpeakableText(uniRefInfo.getTitle(), Luwrain.SpeakableTextType.NATURAL);
-	switch(type)
-	{
-	case "static":
-	    luwrain.setEventResponse(DefaultEventResponse.text(text));
-	    break;
-	case "empty":
-	    luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
-	    break;
-	case "section":
-	    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.DOC_SECTION, text, null));
-	    break;
-	default:
-	    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.DESKTOP_ITEM, text, Suggestions.CLICKABLE_LIST_ITEM));
-	}
     }
 }

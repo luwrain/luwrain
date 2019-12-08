@@ -45,8 +45,8 @@ public final class UniRefUtils
 	case "static":
 	    context.setEventResponse(DefaultEventResponse.listItem(defaultSound != null?defaultSound:Sounds.LIST_ITEM, getDefaultAnnouncementText(context, info), null));
 	    break;
-	    	case "section":
-		    context.setEventResponse(DefaultEventResponse.listItem(Sounds.DOC_SECTION, getDefaultAnnouncementText(context, info), null));
+	case "section":
+	    context.setEventResponse(DefaultEventResponse.listItem(Sounds.DOC_SECTION, getDefaultAnnouncementText(context, info), null));
 	    break;
 	default:
 	    context.setEventResponse(DefaultEventResponse.listItem(defaultSound != null?defaultSound:Sounds.LIST_ITEM, getDefaultAnnouncementText(context, info), clickableSuggestion));
