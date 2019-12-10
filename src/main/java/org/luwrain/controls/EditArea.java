@@ -40,7 +40,7 @@ public interface Appearance extends MultilineEdit.Appearance
 
     public interface EditFactory
     {
-	MultilineEdit newMultilineEdit(MultilineEdit.Params params, MultilineEditCorrector2 corrector);
+	MultilineEdit newMultilineEdit(MultilineEdit.Params params, MultilineEditCorrector corrector);
     }
 
     static public final class Params
@@ -65,7 +65,7 @@ public interface Appearance extends MultilineEdit.Appearance
     }
 
     protected final MutableLinesChangeListener content;
-    protected final MultilineEditCorrector2 basicCorrector;
+    protected final MultilineEditCorrector basicCorrector;
     protected final Appearance appearance;
     protected String areaName = "";
     protected final ChangeListener changeListener;
@@ -91,7 +91,7 @@ this.basicCorrector = createBasicCorrector();
 	    this.edit = createEdit(params);
     }
 
-    protected MultilineEditCorrector2 createBasicCorrector()
+    protected MultilineEditCorrector createBasicCorrector()
     {
 return new MultilineEditCorrectorTranslator(content, this);
     }
@@ -199,9 +199,9 @@ return new MultilineEditCorrectorTranslator(content, this);
     {
 	NullCheck.notNull(event, "event");
 	final MultilineEdit.Model model = edit.getMultilineEditModel();
-	if (model == null || !(model instanceof MultilineEditCorrector2))
+	if (model == null || !(model instanceof MultilineEditCorrector))
 	    return false;
-	final MultilineEditCorrector2 corrector = (MultilineEditCorrector2)model;
+	final MultilineEditCorrector corrector = (MultilineEditCorrector)model;
 	final AtomicReference res = new AtomicReference();
 	corrector.doEditAction((lines, hotPoint)->{
 		try {

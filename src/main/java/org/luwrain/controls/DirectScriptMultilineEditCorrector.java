@@ -64,15 +64,15 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
  *   <li>{@code base.split.lines.post}</li>
  * </ul>
  */
-public class DirectScriptMultilineEditCorrector implements MultilineEditCorrector2
+public class DirectScriptMultilineEditCorrector implements MultilineEditCorrector
 {
     static protected final String LOG_COMPONENT = "controls";
 
     protected final ControlContext context;
-    protected final MultilineEditCorrector2 base;
+    protected final MultilineEditCorrector base;
     protected final String hookNameBase;
 
-    public DirectScriptMultilineEditCorrector(ControlContext context, MultilineEditCorrector2 base, String hookNameBase)
+    public DirectScriptMultilineEditCorrector(ControlContext context, MultilineEditCorrector base, String hookNameBase)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notNull(base, "base");

@@ -123,9 +123,9 @@ public final class TextScriptUtils
 	NullCheck.notNull(event, "event");
 	NullCheck.notNull(regionPoint, "regionPoint");
 	final MultilineEdit.Model model = edit.getMultilineEditModel();
-	if (model == null || !(model instanceof MultilineEditCorrector2))
+	if (model == null || !(model instanceof MultilineEditCorrector))
 	    return false;
-	final MultilineEditCorrector2 corrector = (MultilineEditCorrector2)model;
+	final MultilineEditCorrector corrector = (MultilineEditCorrector)model;
 	final AtomicReference res = new AtomicReference();
 	corrector.doEditAction((lines, hotPoint)->{
 		try {

@@ -134,11 +134,11 @@ public final class EditUtils
      *
      * @see MultilineEdit
      */
-    static abstract public class CorrectorChangeListener implements MultilineEditCorrector2
+    static abstract public class CorrectorChangeListener implements MultilineEditCorrector
     {
-	protected final MultilineEditCorrector2 corrector;
+	protected final MultilineEditCorrector corrector;
 
-	public CorrectorChangeListener(MultilineEditCorrector2 corrector)
+	public CorrectorChangeListener(MultilineEditCorrector corrector)
 	{
 	    NullCheck.notNull(corrector, "corrector");
 	    this.corrector = corrector;
@@ -219,11 +219,11 @@ public final class EditUtils
 	}
     }
 
-    static public class ActiveCorrector implements MultilineEditCorrector2
+    static public class ActiveCorrector implements MultilineEditCorrector
     {
-	protected MultilineEditCorrector2 activatedCorrector = null;
-	protected MultilineEditCorrector2 defaultCorrector = null;
-	public void setActivatedCorrector(MultilineEditCorrector2 corrector)
+	protected MultilineEditCorrector activatedCorrector = null;
+	protected MultilineEditCorrector defaultCorrector = null;
+	public void setActivatedCorrector(MultilineEditCorrector corrector)
 	{
 	    NullCheck.notNull(corrector, "corrector");
 	    this.activatedCorrector = corrector;
@@ -232,12 +232,12 @@ public final class EditUtils
 	{
 	    this.activatedCorrector = null;
 	}
-	public void setDefaultCorrector(MultilineEditCorrector2 corrector)
+	public void setDefaultCorrector(MultilineEditCorrector corrector)
 	{
 	    NullCheck.notNull(corrector, "corrector");
 	    this.defaultCorrector = corrector;
 	}
-	public MultilineEditCorrector2 getDefaultCorrector()
+	public MultilineEditCorrector getDefaultCorrector()
 	{
 	    return defaultCorrector;
 	}

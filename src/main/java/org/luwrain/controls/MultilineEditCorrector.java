@@ -20,7 +20,7 @@ package org.luwrain.controls;
 
 import org.luwrain.core.*;
 
-public interface MultilineEditCorrector2 extends MultilineEdit.Model
+public interface MultilineEditCorrector extends MultilineEdit.Model
 {
     MultilineEdit.ModificationResult doEditAction(TextEditAction action);
 }

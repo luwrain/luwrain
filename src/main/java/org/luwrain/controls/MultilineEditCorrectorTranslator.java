@@ -26,7 +26,7 @@ import org.luwrain.util.*;
 // Hot point position may be adjusted to the content changes only on endEditTrans 
 
 //Keeps lines empty if it is possible providing a fake  first line to be consistent, as it is required by MultilineEdit.Model
-public class MultilineEditCorrectorTranslator implements MultilineEditCorrector2
+public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
 {
     protected final MutableLines lines;
     protected final HotPointControl hotPoint;
