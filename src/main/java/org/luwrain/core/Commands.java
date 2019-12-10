@@ -322,11 +322,11 @@ class Commands
 		}
 	    },
 
-	    //delete-region
+	    //clear-region
 	    new Command() {
 		@Override public String getName()
 		{
-		    return "delete-region";
+		    return "clear-region";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
