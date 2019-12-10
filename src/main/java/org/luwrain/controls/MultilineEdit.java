@@ -25,7 +25,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
 //Completely skips EnvironmentEvent.CLEAR
-public class MultilineEdit
+class MultilineEdit
 {
     //FIXME:getLineCount() never returns zero
     /**

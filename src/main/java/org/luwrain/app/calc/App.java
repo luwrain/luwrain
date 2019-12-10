@@ -164,6 +164,7 @@ public final class App implements Application
 	luwrain.closeApp();
     }
 
+    /*
     static private MultilineEdit.Model createBlockingModel(MultilineEdit.Model origModel)
     {
 	return new MultilineEdit.Model(){
@@ -264,4 +265,5 @@ public final class App implements Application
 	    }
 	};
     }
+    */
 }
