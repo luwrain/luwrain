@@ -27,7 +27,7 @@ import org.luwrain.script.*;
 import org.luwrain.util.*;
 
 
-import org.luwrain.controls.MultilineEdit2.ModificationResult;
+import org.luwrain.controls.MultilineEdit.ModificationResult;
 
 /**
  * A translator of text correcting operations to hooks actions. This

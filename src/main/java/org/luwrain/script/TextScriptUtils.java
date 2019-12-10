@@ -114,7 +114,7 @@ public final class TextScriptUtils
 	};
     }
 
-    static public boolean runMultilineEditInputEventHook(ControlContext context, String hookName, Area area, MultilineEdit2 edit, KeyboardEvent event, AbstractRegionPoint regionPoint)
+    static public boolean runMultilineEditInputEventHook(ControlContext context, String hookName, Area area, MultilineEdit edit, KeyboardEvent event, AbstractRegionPoint regionPoint)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notEmpty(hookName, "hookName");
@@ -122,7 +122,7 @@ public final class TextScriptUtils
 	NullCheck.notNull(edit, "edit");
 	NullCheck.notNull(event, "event");
 	NullCheck.notNull(regionPoint, "regionPoint");
-	final MultilineEdit2.Model model = edit.getMultilineEditModel();
+	final MultilineEdit.Model model = edit.getMultilineEditModel();
 	if (model == null || !(model instanceof MultilineEditCorrector2))
 	    return false;
 	final MultilineEditCorrector2 corrector = (MultilineEditCorrector2)model;

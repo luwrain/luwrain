@@ -20,11 +20,11 @@ package org.luwrain.controls;
 
 import org.luwrain.core.*;
 import org.luwrain.script.*;
-import org.luwrain.controls.MultilineEdit2.ModificationResult;
+import org.luwrain.controls.MultilineEdit.ModificationResult;
 
 public final class EditUtils
 {
-    static public class DefaultMultilineEditAppearance implements MultilineEdit2.Appearance
+    static public class DefaultMultilineEditAppearance implements MultilineEdit.Appearance
     {
 	protected final ControlContext context;
 	public DefaultMultilineEditAppearance(ControlContext context)

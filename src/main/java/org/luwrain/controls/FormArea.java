@@ -54,7 +54,7 @@ public class FormArea  extends NavigationArea
     protected String name = "";
 
     protected MutableLines multilineEditLines = null;
-        protected MultilineEdit2 multilineEdit = null;
+        protected MultilineEdit multilineEdit = null;
     protected final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
     protected final RegionPointShift multilineEditRegionPoint = new RegionPointShift(regionPoint, 0, 0);
     protected String multilineEditCaption = "";
@@ -360,11 +360,11 @@ public class FormArea  extends NavigationArea
 	return multilineEditCaption != null && !multilineEditCaption.isEmpty();
     }
 
-    public MultilineEdit2.Params createMultilineEditParams(ControlContext context, MutableLines lines)
+    public MultilineEdit.Params createMultilineEditParams(ControlContext context, MutableLines lines)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notNull(lines, "lines");
-	final MultilineEdit2.Params params = new MultilineEdit2.Params();
+	final MultilineEdit.Params params = new MultilineEdit.Params();
 	params.context = context;
 	params.model = new EditUtils.CorrectorChangeListener(new MultilineEditCorrectorTranslator(lines, multilineEditHotPoint)){
 		@Override public void onMultilineEditChange()
@@ -378,7 +378,7 @@ public class FormArea  extends NavigationArea
 	return params;
     }
 
-    public boolean activateMultilineEdit(String caption, MutableLines lines, MultilineEdit2.Params params, boolean enabled)
+    public boolean activateMultilineEdit(String caption, MutableLines lines, MultilineEdit.Params params, boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(lines, "lines");
@@ -387,7 +387,7 @@ public class FormArea  extends NavigationArea
 	    return false;
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = lines;
-	this.multilineEdit = new MultilineEdit2(params);
+	this.multilineEdit = new MultilineEdit(params);
 	multilineEditEnabled = enabled;
 	updateItems();
 	context.onAreaNewContent(this);
@@ -400,7 +400,7 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNull(lines, "lines");
 final MutableLines linesImpl = new MutableLinesImpl(lines);
-final MultilineEdit2.Params params = createMultilineEditParams(context, linesImpl);
+final MultilineEdit.Params params = createMultilineEditParams(context, linesImpl);
 return activateMultilineEdit(caption, linesImpl, params, enabled);
     }
 
@@ -409,7 +409,7 @@ return activateMultilineEdit(caption, linesImpl, params, enabled);
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNullItems(lines, "lines");
 final MutableLines linesImpl = new MutableLinesImpl(lines);
-final MultilineEdit2.Params params = createMultilineEditParams(context, linesImpl);
+final MultilineEdit.Params params = createMultilineEditParams(context, linesImpl);
 return activateMultilineEdit(caption, linesImpl, params, enabled);
     }
 

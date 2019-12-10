@@ -28,7 +28,7 @@ public class EditArea extends NavigationArea
 {
     static public final String INPUT_EVENT_HOOK = "luwrain.edit.multiline.input";
 
-public interface Appearance extends MultilineEdit2.Appearance
+public interface Appearance extends MultilineEdit.Appearance
 {
     void announceLine(int index, String line);
 }
@@ -40,7 +40,7 @@ public interface Appearance extends MultilineEdit2.Appearance
 
     public interface EditFactory
     {
-	MultilineEdit2 newMultilineEdit(MultilineEdit2.Params params, MultilineEditCorrector2 corrector);
+	MultilineEdit newMultilineEdit(MultilineEdit.Params params, MultilineEditCorrector2 corrector);
     }
 
     static public final class Params
@@ -69,7 +69,7 @@ public interface Appearance extends MultilineEdit2.Appearance
     protected final Appearance appearance;
     protected String areaName = "";
     protected final ChangeListener changeListener;
-    protected final MultilineEdit2 edit;
+    protected final MultilineEdit edit;
 
     public EditArea(Params params)
     {
@@ -96,24 +96,24 @@ this.basicCorrector = createBasicCorrector();
 return new MultilineEditCorrectorTranslator(content, this);
     }
 
-    protected MultilineEdit2 createEdit(Params areaParams)
+    protected MultilineEdit createEdit(Params areaParams)
     {
 	NullCheck.notNull(areaParams, "areaParams");
-	final MultilineEdit2.Params params = new MultilineEdit2.Params();
+	final MultilineEdit.Params params = new MultilineEdit.Params();
 	params.context = context;
 	params.model = basicCorrector;
 	params.appearance = areaParams.appearance;
 	params.regionPoint = regionPoint;
 	if (areaParams.editFactory != null)
 	{
-	final MultilineEdit2 edit = areaParams.editFactory.newMultilineEdit(params, basicCorrector);
+	final MultilineEdit edit = areaParams.editFactory.newMultilineEdit(params, basicCorrector);
 	if (edit != null)
 	    return edit;
     }
-	return new MultilineEdit2(params);
+	return new MultilineEdit(params);
     }
 
-    public MultilineEdit2 getEdit()
+    public MultilineEdit getEdit()
     {
 	return edit;
     }
@@ -198,7 +198,7 @@ return new MultilineEditCorrectorTranslator(content, this);
     protected boolean runInputEventHook(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	final MultilineEdit2.Model model = edit.getMultilineEditModel();
+	final MultilineEdit.Model model = edit.getMultilineEditModel();
 	if (model == null || !(model instanceof MultilineEditCorrector2))
 	    return false;
 	final MultilineEditCorrector2 corrector = (MultilineEditCorrector2)model;

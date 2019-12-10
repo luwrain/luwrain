@@ -25,7 +25,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
 //Completely skips EnvironmentEvent.CLEAR
-public class MultilineEdit2
+public class MultilineEdit
 {
     static public class ModificationResult
     {
@@ -177,7 +177,7 @@ public class MultilineEdit2
     protected final ClipboardTranslator clipboardTranslator;
     protected final RegionTextQueryTranslator regionTextQueryTranslator;
 
-    public MultilineEdit2(Params params)
+    public MultilineEdit(Params params)
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.model, "params.model");

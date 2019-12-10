@@ -24,7 +24,7 @@ import javax.script.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-import org.luwrain.controls.MultilineEdit2.ModificationResult;
+import org.luwrain.controls.MultilineEdit.ModificationResult;
 
 final class Base
 {
@@ -78,7 +78,7 @@ final class Base
 	    };
 	params.editFactory = (editParams, corrector)->{
 	    editParams.model = createBlockingModel(editParams.model);
-	    return new MultilineEdit2(editParams);
+	    return new MultilineEdit(editParams);
 	};
 	params.changeListener = listener;
 		return params;
@@ -111,9 +111,9 @@ final class Base
 	}
     }
 
-    static private MultilineEdit2.Model createBlockingModel(MultilineEdit2.Model origModel)
+    static private MultilineEdit.Model createBlockingModel(MultilineEdit.Model origModel)
     {
-	return new MultilineEdit2.Model(){
+	return new MultilineEdit.Model(){
 	    @Override public int getLineCount()
 	    {
 		return origModel.getLineCount();
