@@ -71,7 +71,7 @@ public final class EditUtils
 	    NullCheck.notNull(res, "res");
 	    if (!res.isPerformed())
 		return false;
-	    context.setEventResponse(DefaultEventResponse.hint(Hint.END_OF_LINE)); 
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.LINE_BOUND)); 
 	    return true;
 	}
 	@Override public boolean onTab(ModificationResult res)
@@ -89,8 +89,10 @@ public final class EditUtils
 		return false;
 	    final String line = res.getStringArg();
 	    if (line == null || line.isEmpty())
-	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
-		context.setEventResponse(DefaultEventResponse.text(line));
+		context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
+		if (line.trim().isEmpty())
+		    context.setEventResponse(DefaultEventResponse.hint(Hint.SPACES)); else
+		    context.setEventResponse(DefaultEventResponse.text(line));
 	    return true;
 	}
 	@Override public boolean onChar(ModificationResult res)
