@@ -750,8 +750,8 @@ onNewAreasLayout();
 	case ANNOUNCEMENT:
 	    message(text, Sounds.ANNOUNCEMENT);
 	    break;
-	case ATTENTION:
-	    message(text, Sounds.ATTENTION);
+	case ALERT:
+	    message(text, Sounds.ALERT);
 	    break;
 	case UNAVAILABLE:
 	    message(text, Sounds.BLOCKED);

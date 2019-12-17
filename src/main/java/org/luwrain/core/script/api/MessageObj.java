@@ -46,12 +46,12 @@ final class MessageObj extends AbstractJSObject
 		luwrain.message(text, Luwrain.MessageType.ANNOUNCEMENT);
 		return new Boolean(true);
 	    };
-	case "attention":
+	case "alert":
 	    return (Predicate)(textObj)->{
 		final String text = org.luwrain.script.ScriptUtils.getStringValue(textObj);
 		if (text == null || text.trim().isEmpty())
 		    return new Boolean(false);
-		luwrain.message(text, Luwrain.MessageType.ATTENTION);
+		luwrain.message(text, Luwrain.MessageType.ALERT);
 		return new Boolean(true);
 	    };
 	case "error":

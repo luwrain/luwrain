@@ -18,6 +18,7 @@ package org.luwrain.core;
 
 public enum Sounds
 {
+    ALERT,
     ANNOUNCEMENT,
     ATTENTION,
     BLOCKED,

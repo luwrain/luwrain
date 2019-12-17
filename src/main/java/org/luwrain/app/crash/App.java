@@ -89,13 +89,16 @@ public final class App implements Application
 	this.area = new SimpleArea(new DefaultControlContext(luwrain), strings.appName()){
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
+		    NullCheck.notNull(event, "event");
+		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+			return super.onSystemEvent(event);
 		    switch (event.getCode())
 		    {
 		    case CLOSE:
 			closeApp();
 			return true;
 		    }
-		    return false;
+		    return super.onSystemEvent(event);
 		}
 		@Override public void announceLine(int index, String line)
 		{

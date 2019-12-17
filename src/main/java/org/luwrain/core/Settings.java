@@ -175,6 +175,7 @@ public interface Settings
 
     public interface SoundScheme 
     {
+	String getAlert(String defValue);
 	String getAnnouncement(String defValue);
 	String getAttention(String defValue);
 	String getBlocked(String defValue);
@@ -220,6 +221,7 @@ public interface Settings
 	String getTermBell(String defValue);
 	String getUnselected(String defValue);
 	String getTableCell(String defValue);
+		void setAlert(String defValue);
 	void setAnnouncement(String defValue);
 	void setAttention(String value);
 	void setBlocked(String value);

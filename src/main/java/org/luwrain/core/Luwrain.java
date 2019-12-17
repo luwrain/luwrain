@@ -57,7 +57,7 @@ import org.luwrain.speech.Channel;
 public interface Luwrain extends PropertiesBase
 {
     public enum MessageType {
-	ATTENTION,
+	ALERT,
 	ANNOUNCEMENT,
 	DONE,
 	ERROR,
