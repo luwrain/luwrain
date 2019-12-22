@@ -85,7 +85,10 @@ public class MutableLinesImpl implements MutableLines
     @Override public void setLine(int index, String line)
     {
 	NullCheck.notNull(line, "line");
-	if (index >= 0 && index < lines.size())
+	if (index < 0)
+	    throw new IllegalArgumentException("index (" + String.valueOf(index) + " can't be negative");
+	if (index >= lines.size())
+	    throw new IllegalArgumentException("index (" + String.valueOf(index) + ") can't be greater or equal to line count (" + String.valueOf(lines.size()) + ")");
 	lines.set(index, line);
     }
 
