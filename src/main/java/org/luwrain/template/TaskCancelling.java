@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,14 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.util;
+package org.luwrain.template;
 
 import java.util.*;
 import java.util.concurrent.*;
 
 import org.luwrain.core.*;
 
-public final class TaskCancelling
+public class TaskCancelling
 {
     static public final class TaskId
     {
@@ -48,7 +48,7 @@ public final class TaskCancelling
 	return new TaskId(this.id);
     }
 
-    synchronized public void cancel()
+    synchronized public void cancelTask()
     {
 	this.cancelled = true;
     }
