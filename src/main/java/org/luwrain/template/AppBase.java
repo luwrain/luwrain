@@ -20,6 +20,7 @@ import java.util.concurrent.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 
 abstract public class AppBase<S> extends TaskCancelling implements Application
 {
@@ -63,6 +64,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 		this.setVisibleAreas(layout.getLayout().getAreas());
 		luwrain.onNewAreaLayout();
 	    }, getDefaultAreaLayout());
+			this.setVisibleAreas(layout.getLayout().getAreas());
 	return new InitResult();
     }
 
@@ -127,6 +129,24 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	}
     }
 
+    public boolean onAreaQuery(Area area, AreaQuery query)
+    {
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(query, "query");
+			    switch(query.getQueryCode())
+		    {
+		    case AreaQuery.BACKGROUND_SOUND:
+			if (isBusy())
+			{
+			    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.FETCHING));
+			    return true;
+			}
+			return false;
+		    default:
+			return false;
+		    }
+    }
+
     void setVisibleAreas(Area[] visibleAreas)
     {
 	NullCheck.notNullItems(visibleAreas, "visibleAreas");
@@ -143,6 +163,25 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	for(Area a: visibleAreas)
 	    luwrain.onAreaNewBackgroundSound(a);
 	return true;
+    }
+
+    public boolean runTask(Runnable runnable)
+    {
+	NullCheck.notNull(runnable, "runnable");
+	return runTask(new FutureTask(runnable, null));
+    }
+
+    public void finishedTask(TaskId taskId, Runnable runnable)
+    {
+	NullCheck.notNull(taskId, "taskId");
+	NullCheck.notNull(runnable, "runnable");
+	if (!isValidTaskId(taskId))
+	    return;
+	luwrain.runUiSafely(()->{
+		runnable.run();
+			resetTask();
+		});
+
     }
 
     @Override public void cancelTask()
