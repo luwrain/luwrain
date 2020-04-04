@@ -76,6 +76,14 @@ protected interface ActionHandler
 		return a.handler.onAction();
 	    return false;
 	}
+	boolean onActionEvent(EnvironmentEvent event)
+	{
+	    NullCheck.notNull(event, "event");
+	    	    for(ActionInfo a: actions)
+			if (ActionEvent.isAction(event, a.name))
+			    return a.handler.onAction();
+		    return false;
+	}
     }
 
     protected Actions actions(ActionInfo ... a)

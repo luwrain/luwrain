@@ -93,7 +93,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(event, "event");
-	if (!event.isSpecial())
+	if (!event.isSpecial() || event.isModified())
 	    return false;
 	switch(event.getSpecial())
 	{
@@ -128,6 +128,20 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	    return false;
 	}
     }
+
+    public boolean onSystemEvent(Area area, EnvironmentEvent event, LayoutBase.Actions actions)
+    {
+	NullCheck.notNull(event, "event");
+	if (event.getType() == EnvironmentEvent.Type.REGULAR)
+	switch(event.getCode())
+	{
+	case ACTION:
+	    if (actions.onActionEvent(event))
+		return true;
+	}
+	return onSystemEvent(area, event);
+    }
+
 
     public boolean onAreaQuery(Area area, AreaQuery query)
     {
@@ -186,7 +200,11 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 
     @Override public void cancelTask()
     {
+	if (!isBusy())
+	    return;
+	task.cancel(true);
 	super.cancelTask();
+	luwrain.playSound(Sounds.ERROR);
 	resetTask();
     }
 
@@ -201,6 +219,13 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     {
 	return task != null && !task.isDone();
     }
+
+    protected AreaLayoutHelper getLayout()
+    {
+	return this.layout;
+    }
+
+    
 
     public Luwrain getLuwrain()
     {
