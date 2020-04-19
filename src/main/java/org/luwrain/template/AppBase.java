@@ -179,23 +179,36 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return true;
     }
 
-    public boolean runTask(Runnable runnable)
-    {
-	NullCheck.notNull(runnable, "runnable");
-	return runTask(new FutureTask(runnable, null));
-    }
-
-    public void finishedTask(TaskId taskId, Runnable runnable)
+    public boolean runTask(TaskId taskId, Runnable runnable)
     {
 	NullCheck.notNull(taskId, "taskId");
 	NullCheck.notNull(runnable, "runnable");
-	if (!isValidTaskId(taskId))
+	return runTask(new FutureTask(()->{
+		    try {
+			try {
+		    runnable.run();
+			}
+			catch(Exception e)
+			{
+			    luwrain.crash(e);
+			}
+		    }
+		    finally {
+			finishedTask(taskId, ()->{});
+		    }
+	}, null));
+    }
+
+    public synchronized void finishedTask(TaskId taskId, Runnable runnable)
+    {
+	NullCheck.notNull(taskId, "taskId");
+	NullCheck.notNull(runnable, "runnable");
+	if (!isBusy() || !isRunningTaskId(taskId))
 	    return;
 	luwrain.runUiSafely(()->{
 		runnable.run();
 			resetTask();
 		});
-
     }
 
     @Override public void cancelTask()
@@ -210,6 +223,8 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 
     public void resetTask()
     {
+	if (this.task == null)
+	    return;
 	this.task = null;
 	for(Area a: visibleAreas)
 	    luwrain.onAreaNewBackgroundSound(a);
@@ -230,6 +245,11 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     public Luwrain getLuwrain()
     {
 	return this.luwrain;
+    }
+
+    public org.luwrain.i18n.I18n getI18n()
+    {
+	return luwrain.i18n();
     }
 
     public S getStrings()

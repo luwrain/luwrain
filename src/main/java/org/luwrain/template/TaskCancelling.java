@@ -53,7 +53,7 @@ public class TaskCancelling
 	this.cancelled = true;
     }
 
-    synchronized public boolean isValidTaskId(TaskId taskId)
+    synchronized public boolean isRunningTaskId(TaskId taskId)
     {
 	NullCheck.notNull(taskId, "taskId");
 	return this.id == taskId.getId() && !this.cancelled;
