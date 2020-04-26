@@ -36,21 +36,23 @@ public final class Popups
 
     static public String simple(Luwrain luwrain,
 				String name, String prefix, String text,
-				StringAcceptance acceptance, Set<Popup.Flags> popupFlags)
+				StringAcceptance acceptance, Luwrain.SpeakableTextType speakableTextType)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(text, "text");
-	NullCheck.notNull(popupFlags, "popupFlags");
-	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, popupFlags){
+	NullCheck.notNull(speakableTextType, "speakableTextType");
+	final SimpleEditPopup popup = new SimpleEditPopup(luwrain, name, prefix, text, DEFAULT_POPUP_FLAGS){
+		@Override protected String getSpeakableText(String prefix, String text)
+		{
+		    return prefix + luwrain.getSpeakableText(text, speakableTextType);
+		}
 		@Override public boolean onOk()
 		{
 		    if (acceptance != null && !acceptance.acceptable(text))
 			return false;
 		    return true;
-				
-		    
 		}
 	    };
 	luwrain.popup(popup);
@@ -59,27 +61,39 @@ public final class Popups
 	return popup.text ();
     }
 
-    static public String simple(Luwrain luwrain,
-				String name, String prefix,
-				String text,
-				StringAcceptance acceptance)
+    static public String simple(Luwrain luwrain, String name, String prefix,
+				String text, StringAcceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(text, "text");
-	return simple(luwrain, name, prefix, text, acceptance, DEFAULT_POPUP_FLAGS);
+	return simple(luwrain, name, prefix, text, acceptance, Luwrain.SpeakableTextType.PROGRAMMING);
     }
 
-        static public String simple(Luwrain luwrain,
-				String name, String prefix,
-				String text)
+        static public String simple(Luwrain luwrain, String name, String prefix, String text)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(text, "text");
-	return simple(luwrain, name, prefix, text, null, DEFAULT_POPUP_FLAGS);
+	return simple(luwrain, name, prefix, text, null);
+    }
+
+    static public String textNotEmpty(Luwrain luwrain, String name, String prefix, String text)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(prefix, "prefix");
+	NullCheck.notNull(text, "text");
+	return simple(luwrain, name, prefix, text, (input)->{
+		if (input.isEmpty())
+		{
+		    luwrain.message("Значение не должно быть пустым", Luwrain.MessageType.ERROR);
+		    return false;
+		}
+		return true;
+	    });
     }
 
     static public String editWithHistory(Luwrain luwrain,
