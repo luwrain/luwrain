@@ -49,6 +49,7 @@ public final class Launch implements Runnable
 	NullCheck.notNull(dataDir, "dataDir");
 	NullCheck.notNull(userDataDir, "userDataDir");
 	NullCheck.notNull(userHomeDir, "userHomeDir");
+	new JniLoader().autoload(this.getClass().getClassLoader());
 		org.luwrain.app.console.App.installListener();
 		this.standalone = standalone;
 	this.cmdLine = new CmdLine(cmdLine);
