@@ -32,7 +32,6 @@ public class JniLoader
     public JniLoader()
     {
 	this.path = "org/luwrain/jni/" + os + "/" + arch + "/";
-	Log.debug("jni", arch + " " + os);
     }
 
     void autoload(ClassLoader classLoader)
@@ -45,6 +44,11 @@ public class JniLoader
 	final String[] libs = getAutoloadList(classLoader);
 	if (libs == null || libs.length == 0)
 	    return;
+	for(String l: libs)
+	{
+	    Log.debug(LOG_COMPONENT, "loading library " + l);
+	    load(classLoader, l);
+	}
     }
 
     private String[] getAutoloadList(ClassLoader classLoader)
@@ -78,4 +82,55 @@ public class JniLoader
 	    return null;
 	}
     }
-}
+
+    public boolean load(ClassLoader classLoader, String name)
+    {
+	if (classLoader == null || name == null || name.isEmpty())
+	    return false;
+	final String resName = path + name;
+	final URL url = classLoader.getResource(resName);
+	if (url == null)
+	{
+	    Log.error(LOG_COMPONENT, "unable to load JNI library: no such resource: " + resName);
+	    return false;
+	}
+	try {
+	    final InputStream is = url.openStream();
+	    	    final File tmpFile = File.createTempFile("tmp.lwr.jni.", "." + name);
+	    try {
+		java.nio.file.Files.copy(is, tmpFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+	    }
+	    finally {
+		is.close();
+	    }
+	    try {
+		System.load(tmpFile.getAbsolutePath());
+	    }
+	    catch(Throwable e)
+	    {
+		Log.error(LOG_COMPONENT, "unable to load JNI library " + name + ":" + e.getClass().getName() + ":" + e.getMessage());
+		return false;
+	    }
+	    return true;
+	}
+	catch(IOException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to load JNI library:" + e.getClass().getName() + ":" + e.getMessage());
+	    return false;
+	}
+	}
+
+    public boolean loadByShortName(ClassLoader classLoader, String name)
+    {
+	switch(os)
+	{
+	case "Linux":
+	    return load(classLoader, "lib" + name + ".so");
+	case "Windows":
+	    return load(classLoader, name + ".dll");
+	default:
+	    Log.warning(LOG_COMPONENT, "unknown OS name: " + os + ", loading JNI by the original name '" + name + "'" );
+	    return load(classLoader, name);
+	    	}
+    }
+    }
