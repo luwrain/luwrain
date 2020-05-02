@@ -353,7 +353,7 @@ speech.speakLetter(letter, 0, 0); else
 	    }
 	    catch (Exception ee)
 	    {
-		Log.error(LOG_COMPONENT, "extension " + e.getClass().getName() + " has thrown an exception on i18n:" + ee.getMessage());
+		Log.error(LOG_COMPONENT, "extension " + e.ext.getClass().getName() + " thrown an exception on i18n:" + ee.getMessage());
 	    }
 	if (!i18n.chooseLang(lang))
 	{
