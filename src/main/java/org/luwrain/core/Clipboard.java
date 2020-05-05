@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -20,92 +20,83 @@ package org.luwrain.core;
 
 import java.io.*;
 
+import com.google.gson.*;
+
 public final class Clipboard
 {
-    static private final String LOG_COMPONENT = "core";
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
-    private byte[][] objs = null;
-    private String[] strings = null;
+    private final Gson gson = new Gson();
+    private Obj[] objs = null;
 
-    public boolean set(Serializable[] objs)
+    public boolean set(Object[] o)
     {
-	NullCheck.notNullItems(objs, "objs");
-	final byte[][] newObjs = new byte[objs.length][];
-	final String[] newStrings = new String[objs.length];
-	for(int i = 0;i < objs.length;++i)
-	{
-	    newObjs[i] = serialize(objs[i]);
-	    if (newObjs[i] == null)
+	if (o == null)
+	    return false;
+	for(int i = 0;i < o.length;i++)
+	    if (o[i] == null || o[i].getClass().isArray())
 		return false;
-	    newStrings[i] = new String(objs[i].toString());
-	}
-	this.objs = newObjs;
-	this.strings = newStrings;
+		this.objs = new Obj[o.length];
+	for(int i = 0;i < o.length;i++)
+	    this.objs[i] = saveObj(o[i], o[i].toString());
 	return true;
     }
 
-    public boolean set(Serializable[] objs, String[] strings)
+    public boolean set(Object[] o, String[] s)
     {
-	NullCheck.notNullItems(objs, "objs");
-	NullCheck.notNullItems(strings, "strings");
-	if (objs.length != strings.length)
-	    throw new IllegalArgumentException("objs and strings arguments must have the same lenght");
-	final byte[][] newObjs = new byte[objs.length][];
-	final String[] newStrings = new String[objs.length];
-	for(int i = 0;i < objs.length;++i)
+	if (o == null || s == null)
+	    return false;
+	if (o.length != s.length)
+	    return false;
+	for(int i = 0;i < o.length;i++)
 	{
-	    newObjs[i] = serialize(objs[i]);
-	    if (newObjs[i] == null)
+	    if (o[i] == null || s[i] == null)
 		return false;
-	    newStrings[i] = strings[i];
+	    if (o[i].getClass().isArray())
+		return false;
 	}
-	this.objs = newObjs;
-	this.strings = newStrings;
+	this.objs = new Obj[o.length];
+	for(int i = 0;i < o.length;i++)
+	    this.objs[i] = saveObj(o[i], s[i]);
 	return true;
     }
 
-    public boolean set(Serializable obj)
+    public boolean set(Object o)
     {
-	NullCheck.notNull(obj, "obj");
-	return set(new Serializable[]{obj});
+	if (o == null || o.getClass().isArray())
+	    return false;
+	return set(new Object[]{o});
     }
 
     public Object[] get()
     {
-	if (objs == null || objs.length == 0)
+	if (this.objs == null)
 	    return new Object[0];
-	final Object[] res = new Object[objs.length];
-	for(int i = 0;i < objs.length;++i)
-	{
-	    res[i] = deserialize(objs[i]);
-	    if (res[i] == null)
-		return new Object[0];
-	}
+	final Object[] res = new Object[this.objs.length];
+	for(int i = 0;i < this.objs.length;i++)
+	    res[i] = restore(this.objs[i]);
 	return res;
     }
 
     public String[] getStrings()
     {
-	if (strings == null)
+	if (this.objs == null)
 	    return new String[0];
-	return strings;
-    }
+	final String[] res = new String[this.objs.length];
+	for(int i = 0;i < this.objs.length;i++)
+	    res[i] = this.objs[i].str;
+	return res;
+	    }
 
     public String getString(String lineSep)
     {
-	NullCheck.notEmpty(lineSep, "lineSep");
-	if (strings == null || strings.length == 0)
+	final String[] str = getStrings();
+	if (str.length == 0)
 	    return "";
-	if (strings.length == 1)
-	    return strings[0];
-	final StringBuilder b = new StringBuilder();
-	b.append(strings[0]);
-	for(int i = 1;i < strings.length;++i)
-	{
-	    b.append(lineSep);
-	    b.append(strings[i]);
-	}
-	return new String(b);
+		final StringBuilder b = new StringBuilder();
+		for(int i = 0;i < str.length;i++)
+		    b.append(str[i]).append(lineSep);
+		return new String(b);
     }
 
     public boolean isEmpty()
@@ -116,39 +107,46 @@ public final class Clipboard
     public void clear()
     {
 	this.objs = null;
-	this.strings = null;
+	    }
+
+    private Obj saveObj(Object o, String s)
+    {
+	NullCheck.notNull(o, "o");
+	NullCheck.notNull(s, "s");
+	if (o instanceof String)
+	    return new Obj(o.getClass(), null, o.toString(), o);
+	if (o instanceof java.net.URL || o instanceof java.io.File ||
+	    o instanceof java.net.URI)
+	    return new Obj(o.getClass(), null, s, o);
+	final StringWriter w = new StringWriter();
+	gson.toJson(o, w);
+	w.flush();
+	return new Obj(o.getClass(), w.toString(), s, null);
     }
 
-    private byte[] serialize(Serializable obj)
+    private Object restore(Obj obj)
     {
 	NullCheck.notNull(obj, "obj");
-	final ByteArrayOutputStream s = new ByteArrayOutputStream();
-	try {
-	    final ObjectOutputStream os = new ObjectOutputStream(s);
-	    os.writeObject(obj);
-	    os.flush();
-	    s.flush();
-	    return s.toByteArray();
-	}
-	catch(IOException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to save the object to clipboard:" + e.getClass().getName() + ":" + e.getMessage());
-	    return null;
-	}
+	if (obj.obj != null)
+	    return obj.obj;
+	NullCheck.notNull(obj.content, "obj.content");
+	return gson.fromJson(obj.content, obj.cl);
     }
 
-    private Object deserialize(byte[] bytes)
+static private final class Obj
+{
+    final Class cl;
+    final String content;
+        final String str;
+    final Object obj;
+    Obj(Class cl, String content, String str, Object obj)
     {
-	NullCheck.notNull(bytes, "bytes");
-	final ByteArrayInputStream s = new ByteArrayInputStream(bytes);
-	try {
-	    final ObjectInputStream is = new ObjectInputStream(s);
-	    return is.readObject();
-	}
-	catch(IOException | ClassNotFoundException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to read an object from clipboard data:" + e.getClass().getName() + ":" + e.getMessage());
-	    return null;
-	}
+	NullCheck.notNull(cl, "cl");
+	NullCheck.notNull(str, "str");
+	this.cl = cl;
+	this.content = content;
+		this.str = str;
+	this.obj = obj;
     }
+}
 }
