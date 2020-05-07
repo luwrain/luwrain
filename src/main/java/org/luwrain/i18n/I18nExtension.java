@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -13,6 +13,8 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
 */
+
+//LWR_API 1.0
 
 package org.luwrain.i18n;
 

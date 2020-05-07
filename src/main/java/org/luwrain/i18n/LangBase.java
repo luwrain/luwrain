@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,18 +19,23 @@
 package org.luwrain.i18n;
 
 import java.util.*;
+import java.net.*;
+import java.io.*;
 
 import org.luwrain.core.*;
 
 abstract public class LangBase implements Lang
 {
+    protected final String langName;
 protected final Map<String, String> staticStrings;
 protected final Map<String, String> chars;
 
-    public LangBase(Map<String, String> staticStrings, Map<String, String> chars)
+    public LangBase(String langName, Map<String, String> staticStrings, Map<String, String> chars)
     {
+	NullCheck.notEmpty(langName, "langName");
 	NullCheck.notNull(staticStrings, "staticStrings");
 	NullCheck.notNull(chars, "chars");
+	this.langName = langName;
 	this.staticStrings = staticStrings;
 	this.chars = chars;
     }
@@ -60,5 +65,21 @@ protected final Map<String, String> chars;
     @Override public Word[] getWord(String word)
     {
 	return new Word[0];
+    }
+
+    @Override public InputStream getResource(String resourceName)
+    {
+	NullCheck.notEmpty(resourceName, "resourceName");
+	final URL url = getClass().getClassLoader().getResource("org/luwrain/i18n/" + langName + "/" + resourceName);
+	if (url == null)
+	    return null;
+	try {
+	    return url.openStream();
+	}
+	catch(IOException e)
+	{
+	    Log.error(langName, "unable to open stream for the lang resource '" + resourceName + "\':" + e.getClass().getName() + ":" + e.getMessage());
+return null;
+	}
     }
 }

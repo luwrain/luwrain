@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -51,9 +51,11 @@ public interface Lang
 
     //FIXME:
     String pastTimeBrief(java.util.Date date);
+
     String getNumberStr(int count, String entities);
     String getNumberStr(Number num, GrammaticalAttr gramAttr, Word depWord);
     Word[] getWord(String word);
     String getSpeakableText(String text, SpeakableTextType speakableTextType);
+    java.io.InputStream getResource(String resourceName);
 
 }
