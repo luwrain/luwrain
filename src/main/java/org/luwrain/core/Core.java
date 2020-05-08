@@ -478,7 +478,7 @@ speech.speakLetter(letter, 0, 0); else
 	    }
 if (initResult.getType() != InitResult.Type.OK)
 {
-		launchAppCrash(new org.luwrain.app.crash.App(initResult));
+    launchAppCrash(new org.luwrain.app.crash.App(new org.luwrain.app.crash.InitResultException(initResult), app, null));
 		return;
 	    }
 	    if (initResult == null || !initResult.isOk())

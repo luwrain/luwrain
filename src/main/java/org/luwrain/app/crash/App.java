@@ -50,6 +50,7 @@ public final class App extends AppBase<Strings>
 	this.initRes = null;
     }
 
+    /*
     public App(InitResult initRes)
     {
 	super(Strings.NAME, Strings.class);
@@ -60,6 +61,7 @@ public final class App extends AppBase<Strings>
 	this.srcArea = null;
 	this.ex = null;
     }
+    */
 
     @Override public boolean onAppInit()
     {
