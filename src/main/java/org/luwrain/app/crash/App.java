@@ -26,42 +26,19 @@ import org.luwrain.template.*;
 
 public final class App extends AppBase<Strings>
 {
-    public enum Type {
-	EXCEPTION,
-	INIT_RESULT,
-	INACCESSIBLE_NETWORK_SERVICE,
-    };
-
-    final Type type;
     final Application srcApp;
     final Area srcArea;
     final Throwable ex;
-    final InitResult initRes;
     private MainLayout mainLayout = null;
 
     public App(Throwable ex, Application srcApp, Area srcArea)
     {
 	super(Strings.NAME, Strings.class);
 	NullCheck.notNull(ex, "ex");
-	this.type = Type.EXCEPTION;
 	this.ex = ex;
 	this.srcApp = srcApp;
 	this.srcArea = srcArea;
-	this.initRes = null;
     }
-
-    /*
-    public App(InitResult initRes)
-    {
-	super(Strings.NAME, Strings.class);
-	NullCheck.notNull(initRes, "initRes");
-	this.type = Type.INIT_RESULT;
-	this.initRes = null;
-	this.srcApp = null;
-	this.srcArea = null;
-	this.ex = null;
-    }
-    */
 
     @Override public boolean onAppInit()
     {

@@ -66,39 +66,38 @@ final class MainLayout extends LayoutBase
 
     private void fillText()
     {
-	simpleArea.beginLinesTrans();
-	switch(app.type)
+	if (app.ex instanceof CustomMessageException)
 	{
-	case EXCEPTION:
-	    {
-		final String[] msg = app.getStrings().introMessage();
-		simpleArea.addLine("");
-		for(String s: msg)
-		    simpleArea.addLine(s);
-		simpleArea.addLine("");
-		if (app.srcApp != null)
-		    simpleArea.addLine(app.getStrings().app(app.srcApp.getClass().getName()));
-		if (app.srcArea != null)
-		    simpleArea.addLine(app.getStrings().area(app.srcArea.getClass().getName()));
-		if (app.srcApp != null || app.srcArea != null)
-		    simpleArea.addLine("");
-		simpleArea.addLine(app.getStrings().stackTrace());
-		final StringWriter sw = new StringWriter();
-		final PrintWriter pw = new PrintWriter(sw);
-		app.ex.printStackTrace(pw);
-		pw.flush();
-		sw.flush();
-		final String[] trace = sw.toString().split("\n", -1);
-		for(String s: trace)
-		    simpleArea.addLine(s);
-		break;
-	    }
-	case INACCESSIBLE_NETWORK_SERVICE:
-	    {
-		simpleArea.addLine("Сетевой сервис недоступен");
-		break;
-	    }
+	    final CustomMessageException c = (CustomMessageException)app.ex;
+	    simpleArea.beginLinesTrans();
+	    final String[] message = c.getCustomMessage();
+	    for(String s: message)
+		simpleArea.addLine(s);
+	    simpleArea.addLine("");
+	    simpleArea.endLinesTrans();
+	    return;
 	}
+	simpleArea.beginLinesTrans();
+	final String[] msg = app.getStrings().introMessage();
+	simpleArea.addLine("");
+	for(String s: msg)
+	    simpleArea.addLine(s);
+	simpleArea.addLine("");
+	if (app.srcApp != null)
+	    simpleArea.addLine(app.getStrings().app(app.srcApp.getClass().getName()));
+	if (app.srcArea != null)
+	    simpleArea.addLine(app.getStrings().area(app.srcArea.getClass().getName()));
+	if (app.srcApp != null || app.srcArea != null)
+	    simpleArea.addLine("");
+	simpleArea.addLine(app.getStrings().stackTrace());
+	final StringWriter sw = new StringWriter();
+	final PrintWriter pw = new PrintWriter(sw);
+	app.ex.printStackTrace(pw);
+	pw.flush();
+	sw.flush();
+	final String[] trace = sw.toString().split("\n", -1);
+	for(String s: trace)
+	    simpleArea.addLine(s);
 	simpleArea.endLinesTrans();
     }
 
