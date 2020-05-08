@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,14 +17,14 @@
 package org.luwrain.app.crash;
 
 import java.util.*;
+
 import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.controls.*;
-import org.luwrain.cpanel.*;
+import org.luwrain.template.*;
 
-public final class App implements Application
+public final class App extends AppBase<Strings>
 {
     public enum Type {
 	EXCEPTION,
@@ -32,18 +32,16 @@ public final class App implements Application
 	INACCESSIBLE_NETWORK_SERVICE,
     };
 
-    private Luwrain luwrain = null;
-    private Strings strings = null;
-    private SimpleArea area = null;
-
-    private final Type type;
-    private final Application srcApp;
-    private final Area srcArea;
-    private final Throwable ex;
-    private final InitResult initRes;
+final Type type;
+final Application srcApp;
+final Area srcArea;
+final Throwable ex;
+final InitResult initRes;
+private MainLayout mainLayout = null;
 
     public App(Throwable ex, Application srcApp, Area srcArea)
     {
+super(Strings.NAME, Strings.class);
 	NullCheck.notNull(ex, "ex");
 	this.type = Type.EXCEPTION;
 	this.ex = ex;
@@ -54,6 +52,7 @@ public final class App implements Application
 
     public App(InitResult initRes)
     {
+super(Strings.NAME, Strings.class);
 	NullCheck.notNull(initRes, "initRes");
 	this.type = Type.INIT_RESULT;
 	this.initRes = null;
@@ -62,94 +61,15 @@ public final class App implements Application
 	this.ex = null;
     }
 
-    @Override public InitResult onLaunchApp(Luwrain luwrain)
+@Override public boolean onAppInit()
+{
+this.mainLayout = new MainLayout(this);
+return true;
+}
+
+    @Override public AreaLayout getDefaultAreaLayout()
     {
-	final Object o = luwrain.i18n().getStrings(Strings.NAME);
-	if (o == null || !(o instanceof Strings))
-	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
-	this.strings = (Strings)o;
-	this.luwrain = luwrain;
-	createArea();
-	return new InitResult();
+	return mainLayout.getLayout();
     }
 
-    @Override public String getAppName()
-    {
-	switch(type)
-	{
-	case INACCESSIBLE_NETWORK_SERVICE:
-	    return "Сетевой сервис недоступен";//FIXME:
-	default:
-	return strings.appName();
-	}
-    }
-
-    private void createArea()
-    {
-	this.area = new SimpleArea(new DefaultControlContext(luwrain), strings.appName()){
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
-			return super.onSystemEvent(event);
-		    switch (event.getCode())
-		    {
-		    case CLOSE:
-			closeApp();
-			return true;
-		    }
-		    return super.onSystemEvent(event);
-		}
-		@Override public void announceLine(int index, String line)
-		{
-		    NullCheck.notNull(line, "line");
-		    defaultLineAnnouncement(context, index, luwrain.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
-		}
-	    };
-
-	area.beginLinesTrans();
-	switch(type)
-	{
-	case EXCEPTION:
-	    {
-	final String[] msg = strings.introMessage();
-	area.addLine("");
-	for(String s: msg)
-	    area.addLine(s);
-	area.addLine("");
-	if (srcApp != null)
-	    area.addLine(strings.app(srcApp.getClass().getName()));
-	if (srcArea != null)
-	    	    area.addLine(strings.area(srcArea.getClass().getName()));
-	if (srcApp != null || srcArea != null)
-	area.addLine("");
-	area.addLine(strings.stackTrace());
-	final StringWriter sw = new StringWriter();
-	final PrintWriter pw = new PrintWriter(sw);
-	ex.printStackTrace(pw);
-	pw.flush();
-	sw.flush();
-	final String[] trace = sw.toString().split("\n", -1);
-	for(String s: trace)
-	area.addLine(s);
-	break;
-	    }
-	case INACCESSIBLE_NETWORK_SERVICE:
-	    {
-		area.addLine("Сетевой сервис недоступен");
-		break;
-	    }
-	}
-	area.endLinesTrans();
-    }
-
-    @Override public AreaLayout getAreaLayout()
-    {
-	return new AreaLayout(area);
-    }
-
-    @Override public void closeApp()
-    {
-	luwrain.closeApp();
-    }
 }
