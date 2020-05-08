@@ -24,23 +24,23 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.template.*;
 
-public final class MainLayout extends LayoutBase
+final class MainLayout extends LayoutBase
 {
     private final App app;
     private final SimpleArea simpleArea;
 
     MainLayout(App app)
     {
+	NullCheck.notNull(app, "app");
 	this.app = app;
-
 	this.simpleArea = new SimpleArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().appName()){
-			@Override public boolean onInputEvent(KeyboardEvent event)
-			{
-			    NullCheck.notNull(event, "event");
-			    if (app.onInputEvent(this, event))
-				return true;
-			    return super.onInputEvent(event);
-			}
+		@Override public boolean onInputEvent(KeyboardEvent event)
+		{
+		    NullCheck.notNull(event, "event");
+		    if (app.onInputEvent(this, event))
+			return true;
+		    return super.onInputEvent(event);
+		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -48,13 +48,20 @@ public final class MainLayout extends LayoutBase
 			return true;
 		    return super.onSystemEvent(event);
 		}
+		@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    NullCheck.notNull(query, "query");
+		    if (app.onAreaQuery(this, query))
+			return true;
+		    return super.onAreaQuery(query);
+		}
 		@Override public void announceLine(int index, String line)
 		{
 		    NullCheck.notNull(line, "line");
 		    defaultLineAnnouncement(context, index, app.getLuwrain().getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
 		}
 	    };
-		fillText();
+	fillText();
     }
 
     private void fillText()
@@ -65,26 +72,26 @@ public final class MainLayout extends LayoutBase
 	case EXCEPTION:
 	    {
 		final String[] msg = app.getStrings().introMessage();
-	simpleArea.addLine("");
-	for(String s: msg)
-	    simpleArea.addLine(s);
-	simpleArea.addLine("");
-	if (app.srcApp != null)
-	    simpleArea.addLine(app.getStrings().app(app.srcApp.getClass().getName()));
-	if (app.srcArea != null)
-	    simpleArea.addLine(app.getStrings().area(app.srcArea.getClass().getName()));
-	if (app.srcApp != null || app.srcArea != null)
-	simpleArea.addLine("");
-	simpleArea.addLine(app.getStrings().stackTrace());
-	final StringWriter sw = new StringWriter();
-	final PrintWriter pw = new PrintWriter(sw);
-	app.ex.printStackTrace(pw);
-	pw.flush();
-	sw.flush();
-	final String[] trace = sw.toString().split("\n", -1);
-	for(String s: trace)
-	simpleArea.addLine(s);
-	break;
+		simpleArea.addLine("");
+		for(String s: msg)
+		    simpleArea.addLine(s);
+		simpleArea.addLine("");
+		if (app.srcApp != null)
+		    simpleArea.addLine(app.getStrings().app(app.srcApp.getClass().getName()));
+		if (app.srcArea != null)
+		    simpleArea.addLine(app.getStrings().area(app.srcArea.getClass().getName()));
+		if (app.srcApp != null || app.srcArea != null)
+		    simpleArea.addLine("");
+		simpleArea.addLine(app.getStrings().stackTrace());
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw);
+		app.ex.printStackTrace(pw);
+		pw.flush();
+		sw.flush();
+		final String[] trace = sw.toString().split("\n", -1);
+		for(String s: trace)
+		    simpleArea.addLine(s);
+		break;
 	    }
 	case INACCESSIBLE_NETWORK_SERVICE:
 	    {
@@ -95,8 +102,8 @@ public final class MainLayout extends LayoutBase
 	simpleArea.endLinesTrans();
     }
 
-AreaLayout getLayout()
-{
+    AreaLayout getLayout()
+    {
     	return new AreaLayout(simpleArea);
-}
+    }
 }

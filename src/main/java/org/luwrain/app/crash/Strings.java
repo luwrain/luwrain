@@ -19,7 +19,7 @@ package org.luwrain.app.crash;
 public interface Strings
 {
     static public final String NAME = "luwrain.crash";
-    
+
     String appName();
     String[] introMessage();
     String app(String className);

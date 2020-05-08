@@ -32,16 +32,16 @@ public final class App extends AppBase<Strings>
 	INACCESSIBLE_NETWORK_SERVICE,
     };
 
-final Type type;
-final Application srcApp;
-final Area srcArea;
-final Throwable ex;
-final InitResult initRes;
-private MainLayout mainLayout = null;
+    final Type type;
+    final Application srcApp;
+    final Area srcArea;
+    final Throwable ex;
+    final InitResult initRes;
+    private MainLayout mainLayout = null;
 
     public App(Throwable ex, Application srcApp, Area srcArea)
     {
-super(Strings.NAME, Strings.class);
+	super(Strings.NAME, Strings.class);
 	NullCheck.notNull(ex, "ex");
 	this.type = Type.EXCEPTION;
 	this.ex = ex;
@@ -52,7 +52,7 @@ super(Strings.NAME, Strings.class);
 
     public App(InitResult initRes)
     {
-super(Strings.NAME, Strings.class);
+	super(Strings.NAME, Strings.class);
 	NullCheck.notNull(initRes, "initRes");
 	this.type = Type.INIT_RESULT;
 	this.initRes = null;
@@ -61,15 +61,14 @@ super(Strings.NAME, Strings.class);
 	this.ex = null;
     }
 
-@Override public boolean onAppInit()
-{
-this.mainLayout = new MainLayout(this);
-return true;
-}
+    @Override public boolean onAppInit()
+    {
+	this.mainLayout = new MainLayout(this);
+	return true;
+    }
 
     @Override public AreaLayout getDefaultAreaLayout()
     {
 	return mainLayout.getLayout();
     }
-
 }
