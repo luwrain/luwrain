@@ -43,11 +43,27 @@ public final class App extends AppBase<Strings>
     @Override public boolean onAppInit()
     {
 	this.mainLayout = new MainLayout(this);
+	setAppName(getStrings().appName());
 	return true;
     }
 
     @Override public AreaLayout getDefaultAreaLayout()
     {
 	return mainLayout.getLayout();
+    }
+
+        @Override public boolean onInputEvent(Area area, KeyboardEvent event)
+    {
+	NullCheck.notNull(area, "area");
+	if (super.onInputEvent(area, event))
+	    return true;
+	if (event.isSpecial())
+	    switch(event.getSpecial())
+	    {
+	    case ESCAPE:
+		closeApp();
+		return true;
+	    }
+	return false;
     }
 }

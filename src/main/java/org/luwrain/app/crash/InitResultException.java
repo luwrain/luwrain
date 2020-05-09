@@ -27,4 +27,9 @@ public class InitResultException extends CustomMessageException
 	super(new String[]{initRes.getType().toString()});
 	    this.initRes = initRes;
     }
+
+    public InitResult getInitResult()
+    {
+	return this.initRes;
+    }
 }

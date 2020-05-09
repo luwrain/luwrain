@@ -20,9 +20,10 @@ public interface Strings
 {
     static public final String NAME = "luwrain.crash";
 
-    String appName();
-    String[] introMessage();
     String app(String className);
-    String stackTrace();
+    String appName();
     String area(String areaName);
+    String intro();
+    String fileNotFound();
+    String stackTrace();
 }

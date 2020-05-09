@@ -66,6 +66,15 @@ final class MainLayout extends LayoutBase
 
     private void fillText()
     {
+	if (app.ex instanceof InitResultException)
+	{
+	    final InitResultException ex = (InitResultException)app.ex;
+	    if (ex.getInitResult().getType() == InitResult.Type.EXCEPTION)
+	    {
+		fillException(ex.getInitResult().getException());
+		return;
+	    }
+	}
 	if (app.ex instanceof CustomMessageException)
 	{
 	    final CustomMessageException c = (CustomMessageException)app.ex;
@@ -77,8 +86,21 @@ final class MainLayout extends LayoutBase
 	    simpleArea.endLinesTrans();
 	    return;
 	}
-	simpleArea.beginLinesTrans();
-	final String[] msg = app.getStrings().introMessage();
+	fillException(app.ex);
+    }
+
+    private void fillException(Throwable t)
+    {
+			simpleArea.beginLinesTrans();
+	NullCheck.notNull(t, "t");
+	if (t instanceof java.io.FileNotFoundException && t.getMessage() != null)
+	{
+	    simpleArea.beginLinesTrans();
+	    simpleArea.addLine("");
+	    simpleArea.addLine(app.getStrings().fileNotFound() + ": " + t.getMessage());
+	}
+
+	final String[] msg = app.getStrings().intro().split("\\n");
 	simpleArea.addLine("");
 	for(String s: msg)
 	    simpleArea.addLine(s);
@@ -92,7 +114,7 @@ final class MainLayout extends LayoutBase
 	simpleArea.addLine(app.getStrings().stackTrace());
 	final StringWriter sw = new StringWriter();
 	final PrintWriter pw = new PrintWriter(sw);
-	app.ex.printStackTrace(pw);
+	t.printStackTrace(pw);
 	pw.flush();
 	sw.flush();
 	final String[] trace = sw.toString().split("\n", -1);
