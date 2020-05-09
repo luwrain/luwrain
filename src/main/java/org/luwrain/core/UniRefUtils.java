@@ -42,8 +42,12 @@ public final class UniRefUtils
 	case "section":
 	    context.setEventResponse(DefaultEventResponse.listItem(Sounds.DOC_SECTION, getDefaultAnnouncementText(context, info), null));
 	    break;
+	    	case "empty":
+		    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	    break;
 	default:
 	    context.setEventResponse(DefaultEventResponse.listItem(defaultSound != null?defaultSound:Sounds.LIST_ITEM, getDefaultAnnouncementText(context, info), clickableSuggestion));
+	     return;
 	}
     }
 

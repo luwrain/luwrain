@@ -131,7 +131,7 @@ final class UniRefProcs
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    if (!uniRef.startsWith(PREFIX))
 			return null;
-		    return new UniRefInfo(uniRef, "", "");
+		    return new UniRefInfo(uniRef, "empty", "", "");
 		}
 		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
