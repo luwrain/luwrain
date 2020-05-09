@@ -96,7 +96,7 @@ public class JniLoader
 	}
 	try {
 	    final InputStream is = url.openStream();
-	    	    final File tmpFile = File.createTempFile("tmp.lwr.jni.", "." + name);
+	    	    final File tmpFile = File.createTempFile(".lwr.jni.", "." + name + ".tmp");
 	    try {
 		java.nio.file.Files.copy(is, tmpFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 	    }
