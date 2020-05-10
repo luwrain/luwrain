@@ -509,6 +509,11 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return new LinesClipboardProvider(this, ()->context.getClipboard()).onDeleteRegion(fromX, fromY, toX, toY);
     }
 
+    public AbstractRegionPoint getRegionPoint()
+    {
+	return this.regionPoint;
+    }
+
     protected int getValidLineCount()
     {
 	final int count = getLineCount();

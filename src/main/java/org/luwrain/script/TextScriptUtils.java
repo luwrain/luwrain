@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -29,6 +29,12 @@ import org.luwrain.controls.*;
 public final class TextScriptUtils
 {
     static final String LOG_COMPONENT = ScriptUtils.LOG_COMPONENT;
+
+        static public Object createTextEditHookObject(EditArea editArea)
+    {
+	NullCheck.notNull(editArea, "editArea");
+	return createTextEditHookObject(editArea, editArea.getContent(), editArea, editArea.getRegionPoint());
+    }
 
     static public Object createTextEditHookObject(Area area, MutableLines lines, HotPointControl hotPoint, AbstractRegionPoint regionPoint)
     {
