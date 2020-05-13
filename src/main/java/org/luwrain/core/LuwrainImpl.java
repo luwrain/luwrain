@@ -65,13 +65,13 @@ final class LuwrainImpl implements Luwrain
 	core.mainCoreThreadOnly();
 	final Area area = core.getValidActiveArea(false);
 	if (area == null)
-	    return attr == AreaAttr.DIRECTORY?getFileProperty("luwrain.dir.userhome").toString():null;
+	    return attr == AreaAttr.DIRECTORY?getFileProperty("luwrain.dir.userhome").getAbsolutePath():null;
 	switch(attr)
 	{
 	case DIRECTORY:
 	    {
 		final CurrentDirQuery query = new CurrentDirQuery();
-		if (!AreaQuery.ask(area, query))
+		if (!AreaQuery.ask(area, query))//FIXME:Security wrapper
 		    return getFileProperty("luwrain.dir.userhome").toString();
 		return query.getAnswer();
 	    }

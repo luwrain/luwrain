@@ -308,7 +308,9 @@ public class CommanderArea<E> extends ListArea
 		}
 		catch (Exception e)
 		{
-		    Log.error("core", "unexpected error on commander content reading:" + e.getClass().getName() + ":" + e.getMessage());
+		    //		    Log.error("core", "unexpected error on commander content reading:" + e.getClass().getName() + ":" + e.getMessage());
+		    //		    e.printStackTrace();
+		    throw new RuntimeException(e);
 		}
 	    }, null);
 	context.executeBkg(task);
