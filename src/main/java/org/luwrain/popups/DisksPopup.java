@@ -147,7 +147,14 @@ public class DisksPopup extends ListPopupBase
 		{
 		    setItems(prepareContent(luwrain));
 		}};
-	params.appearance = new ListUtils.DefaultAppearance(new DefaultControlContext(luwrain));
+	params.appearance = new ListUtils.DefaultAppearance(new DefaultControlContext(luwrain)){
+		@Override public void announceItem(Object obj, Set<Flags> flags)
+		{
+		    NullCheck.notNull(obj, "obj");
+		    luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.getSpeakableText(obj.toString(), Luwrain.SpeakableTextType.PROGRAMMING), Suggestions.CLICKABLE_LIST_ITEM));
+		}
+	    };
+	params.flags = EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP);
 	return params;
     }
 
