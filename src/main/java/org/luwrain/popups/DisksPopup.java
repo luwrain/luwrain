@@ -27,7 +27,7 @@ import org.luwrain.script.*;
 public class DisksPopup extends ListPopupBase
 {
     static private final String LOG_COMPONENT = Popups.LOG_COMPONENT;
-    
+
     static public final String LIST_HOOK = "luwrain.popups.disks.list";
     static public final String CLICK_HOOK = "luwrain.popups.disks.click";
 
@@ -35,7 +35,7 @@ public class DisksPopup extends ListPopupBase
 
     public DisksPopup(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
     {
-	super(luwrain, constructParams(luwrain, name), popupFlags);
+	super(luwrain, createParams(luwrain, name), popupFlags);
     }
 
     public File result()
@@ -135,7 +135,7 @@ public class DisksPopup extends ListPopupBase
 	return res.toArray(new Item[res.size()]);
     }
 
-    static private ListArea.Params constructParams(Luwrain luwrain, String name)
+    static protected ListArea.Params createParams(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");

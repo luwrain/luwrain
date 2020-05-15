@@ -469,23 +469,15 @@ name, prefix, text, popupFlags);
 	    }
 
 
-    static public File disksVolumes(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
+    static public File disksVolumes(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
-	NullCheck.notNull(popupFlags, "popupFlags");
-	final DisksPopup popup = new DisksPopup(luwrain, name, popupFlags);
+	final DisksPopup popup = new DisksPopup(luwrain, name, DEFAULT_POPUP_FLAGS);
 	luwrain.popup(popup);
 	if (popup.wasCancelled())
 	    return null;
 	return popup.result();
-    }
-
-        static public File disksVolumes(Luwrain luwrain, String name)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	return disksVolumes(luwrain, name, DEFAULT_POPUP_FLAGS);
     }
 
     static public String fixedEditList(Luwrain luwrain,
