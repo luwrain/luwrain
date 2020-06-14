@@ -318,4 +318,68 @@ public final class EditUtils
 		return defaultCorrector.doEditAction(action);
 	}
     }
+
+    static public class EmptyCorrector implements MultilineEditCorrector
+    {
+	protected final MultilineEditCorrector basicCorrector;
+	public EmptyCorrector(MultilineEditCorrector basicCorrector)
+	{
+	    NullCheck.notNull(basicCorrector, "basicCorrector");
+	    this.basicCorrector = basicCorrector;
+	}
+	public MultilineEditCorrector getBasicCorrector()
+	{
+	    return basicCorrector;
+	}
+	@Override public int getLineCount()
+	{
+	    return basicCorrector.getLineCount();
+	}
+	@Override public String getLine(int index)
+	{
+	    return basicCorrector.getLine(index);
+	}
+	@Override public int getHotPointX()
+	{
+	    return basicCorrector.getHotPointX();
+	}
+	@Override public int getHotPointY()
+	{
+	    return basicCorrector.getHotPointY();
+	}
+	@Override public String getTabSeq()
+	{
+	    return basicCorrector.getTabSeq();
+	}
+	@Override public ModificationResult deleteChar(int pos, int lineIndex)
+	{
+	    return basicCorrector.deleteChar(pos, lineIndex);
+	}
+	@Override public ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY)
+	{
+	    return basicCorrector.deleteRegion(fromX, fromY, toX, toY);
+	}
+	@Override public ModificationResult insertRegion(int x, int y, String[] lines)
+	{
+	    NullCheck.notNullItems(lines, "lines");
+	    return basicCorrector.insertRegion(x, y, lines);
+	}
+	@Override public ModificationResult putChars(int pos, int lineIndex, String str)
+	{
+	    NullCheck.notNull(str, "str");
+	    return basicCorrector.putChars(pos, lineIndex, str);
+	}
+	@Override public ModificationResult mergeLines(int firstLineIndex)
+	{
+	    return basicCorrector.mergeLines(firstLineIndex);
+	}
+	@Override public ModificationResult splitLine(int pos, int lineIndex)
+	{
+	    return basicCorrector.splitLine(pos, lineIndex);
+	}
+	@Override public ModificationResult doEditAction(TextEditAction action)
+	{
+	    return basicCorrector.doEditAction(action);
+	}
+    }
 }
