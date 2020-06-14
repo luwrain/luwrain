@@ -99,17 +99,22 @@ return new MultilineEditCorrectorTranslator(content, this);
     protected MultilineEdit createEdit(Params areaParams)
     {
 	NullCheck.notNull(areaParams, "areaParams");
+	if (areaParams.editFactory != null)
+	{
+	    final MultilineEdit.Params params = new MultilineEdit.Params();
+	    params.context = context;
+	    params.model = basicCorrector;
+	    params.appearance = areaParams.appearance;
+	    params.regionPoint = regionPoint;
+	    final MultilineEdit edit = areaParams.editFactory.newMultilineEdit(params, basicCorrector);
+	    if (edit != null)
+		return edit;
+	}
 	final MultilineEdit.Params params = new MultilineEdit.Params();
 	params.context = context;
 	params.model = basicCorrector;
 	params.appearance = areaParams.appearance;
 	params.regionPoint = regionPoint;
-	if (areaParams.editFactory != null)
-	{
-	final MultilineEdit edit = areaParams.editFactory.newMultilineEdit(params, basicCorrector);
-	if (edit != null)
-	    return edit;
-    }
 	return new MultilineEdit(params);
     }
 
