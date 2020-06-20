@@ -93,9 +93,9 @@ public class FileTypes
 	    if (!takesMultiple)
 	    {
 		for(String f: toOpen)
-		    core.launchAppIface(shortcut, new String[]{f});
+		    core.launchApp(shortcut, new String[]{f});
 	    } else
-		core.launchAppIface(shortcut, toOpen);
+		core.launchApp(shortcut, toOpen);
 	}
     }
 

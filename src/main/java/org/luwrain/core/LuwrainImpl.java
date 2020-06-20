@@ -195,14 +195,14 @@ final class LuwrainImpl implements Luwrain
     @Override public void launchApp(String shortcutName)
     {
 	NullCheck.notNull(shortcutName, "shortcutName");
-	runUiSafely(()->core.launchAppIface(shortcutName, new String[0]));
+	runUiSafely(()->core.launchApp(shortcutName, new String[0]));
     }
 
     @Override public void launchApp(String shortcutName, String[] args)
     {
 	NullCheck.notNull(shortcutName, "shortcutName");
 	NullCheck.notNullItems(args, "args");
-	runUiSafely(()->core.launchAppIface(shortcutName, args != null?args:new String[0]));
+	runUiSafely(()->core.launchApp(shortcutName, args != null?args:new String[0]));
     }
 
     @Override public void message(String text)

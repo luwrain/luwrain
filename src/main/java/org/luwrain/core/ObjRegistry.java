@@ -180,15 +180,17 @@ final class ObjRegistry
 	return str;
     }
 
+    /*
     Application[] prepareApp(String name, String[] args)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNullItems(args, "args");
-	final Shortcut shortcut = getShortcut(name);
+return 	final Shortcut shortcut = getShortcut(name);
 	if (shortcut == null)
 	    return null;
 	return shortcut.prepareApp(args);
     }
+    */
 
     MediaResourcePlayer[] getMediaResourcePlayers()
     {

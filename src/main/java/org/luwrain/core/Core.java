@@ -166,7 +166,7 @@ speech.speakLetter(letter, 0, 0); else
 	    }
 	if (shortcut == null)
 	    return false;
-	launchAppIface(shortcut, args.toArray(new String[args.size()]));
+	launchApp(shortcut, args.toArray(new String[args.size()]));
 	return true;
     }
 
@@ -404,21 +404,39 @@ speech.speakLetter(letter, 0, 0); else
     }
 
     //It is admissible situation if shortcut returns null
-    void launchAppIface(String shortcutName, String[] args)
+    void launchApp(String shortcutName, String[] args)
     {
 	NullCheck.notEmpty(shortcutName, "shortcutName");
 	NullCheck.notNullItems(args, "args");
-	Log.info("core", "launching application \'" + shortcutName + "\' with " + args.length + " argument(s)");
+	Log.debug("core", "launching application \'" + shortcutName + "\' with " + args.length + " argument(s)");
 	mainCoreThreadOnly();
 	for(int i = 0;i < args.length;++i)
-	    Log.info("core", "args[" + i + "]: " + args[i]);
-	final Application[] app = objRegistry.prepareApp(shortcutName, args);
-	if (app == null)
+	    Log.debug("core", "args[" + i + "]: " + args[i]);
+	final Shortcut shortcut = objRegistry.getShortcut(shortcutName);
+	if (shortcut == null)
+	{
+	    message("Нет приложения с именем " + shortcutName, Luwrain.MessageType.ERROR);//FIXME:
 	    return;
+	}
+	final AtomicReference<Application[]> appRef = new AtomicReference();
+	unsafeAreaOperation(()->{
+		appRef.set(shortcut.prepareApp(args));
+	    });
+	final Application[] app = appRef.get();
+	if (app == null || app.length == 0)
+	{
+	    message("Приложение " + shortcutName + " не готово к запуску", Luwrain.MessageType.ERROR);//FIXME:
+	    return;
+	}
+	for(Application a: app)
+	    if (a == null)
+	    {
+		message("Приложение " + shortcutName + " не готово к запуску", Luwrain.MessageType.ERROR);//FIXME:
+		return;
+	    }
 	soundManager.stopStartingMode();
 	for(Application a: app)
-	    if (a != null)
-		launchApp(a);
+	    launchApp(a);
     }
 
     void launchApp(Application app)
@@ -428,7 +446,6 @@ speech.speakLetter(letter, 0, 0); else
 	//Checking if it is a mono app
 	if (app instanceof MonoApp)
 	{
-	    Log.debug(LOG_COMPONENT, app.getClass().getName() + " is a mono app,  checking already launched instances");
 	    final Application[] launchedApps = apps.getLaunchedApps();
 	    for(Application a: launchedApps)
 		if (a instanceof MonoApp && a.getClass().equals(app.getClass()))
@@ -443,7 +460,6 @@ speech.speakLetter(letter, 0, 0); else
 		    if (ref.get() == null)
 			continue;
 		    final MonoApp.Result res = (MonoApp.Result)ref.get();
-		    Log.debug(LOG_COMPONENT, "already launched instance found, result is " + res);
 		    switch(res)
 		    {
 		    case SECOND_INSTANCE_PERMITTED:
