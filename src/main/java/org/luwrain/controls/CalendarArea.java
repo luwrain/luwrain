@@ -61,7 +61,7 @@ public class CalendarArea implements Area
 	return constructLine(index - 1);
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	if (!event.isSpecial() || event.isModified())
 	    return false;

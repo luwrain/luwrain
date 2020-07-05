@@ -63,7 +63,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
     }
 
 
-    public boolean onInputEvent(KeyboardEvent event)
+    public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.withControl() || event.withAlt())
@@ -113,7 +113,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	return false;
     }
 
-    protected boolean onHome(KeyboardEvent event)
+    protected boolean onHome(InputEvent event)
     {
 	final String line = model.getLine();
 	NullCheck.notNull(line, "line");
@@ -124,7 +124,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	return true;
     }
 
-    protected boolean onBackspace(KeyboardEvent event)
+    protected boolean onBackspace(InputEvent event)
     {
 	final String line = model.getLine();
 	NullCheck.notNull(line, "line");
@@ -143,7 +143,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	return true;
     }
 
-    protected boolean onDelete(KeyboardEvent event)
+    protected boolean onDelete(InputEvent event)
     {
 	final String line = model.getLine();
 	if (line == null)
@@ -168,7 +168,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	return true;
     }
 
-    protected boolean onTab(KeyboardEvent event)
+    protected boolean onTab(InputEvent event)
     {
 	final String line = model.getLine();
 	if (line == null)
@@ -190,7 +190,7 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	return true;
     }
 
-    protected boolean onCharacter(KeyboardEvent event)
+    protected boolean onCharacter(InputEvent event)
     {
 	String line = model.getLine();
 	if (line == null)

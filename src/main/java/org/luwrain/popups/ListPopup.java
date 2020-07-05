@@ -35,7 +35,7 @@ public class ListPopup extends ListPopupBase
 	super(luwrain, params, popupFlags);
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && !event.isModified())

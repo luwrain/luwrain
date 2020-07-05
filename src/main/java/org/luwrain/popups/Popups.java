@@ -174,7 +174,7 @@ name, prefix, text, popupFlags);
 	final FilePopup popup = new FilePopup(luwrain, name, prefix,
 					      acceptance, startFrom, luwrain.getFileProperty("luwrain.dir.userhome"),
 					      loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())
@@ -273,9 +273,9 @@ name, prefix, text, popupFlags);
 		{
 		    final List<Action> res = new LinkedList();
 		    if (skipHidden.get())
-			res.add(new Action("show-hidden", "Показать скрытые файлы", new KeyboardEvent('='))); else
-			res.add(new Action("skip-hidden", "Убрать скрытые файлы", new KeyboardEvent('-')));
-		    res.add(new Action("mkdir", "Создать каталог", new KeyboardEvent(KeyboardEvent.Special.INSERT)));
+			res.add(new Action("show-hidden", "Показать скрытые файлы", new InputEvent('='))); else
+			res.add(new Action("skip-hidden", "Убрать скрытые файлы", new InputEvent('-')));
+		    res.add(new Action("mkdir", "Создать каталог", new InputEvent(InputEvent.Special.INSERT)));
 		    return res.toArray(new Action[res.size()]);
 		}
 		@Override public boolean onOk()
@@ -340,9 +340,9 @@ name, prefix, text, popupFlags);
 		{
 		    final List<Action> res = new LinkedList();
 		    if (skipHidden.get())
-			res.add(new Action("show-hidden", "Показать скрытые файлы", new KeyboardEvent('='))); else
-			res.add(new Action("skip-hidden", "Убрать скрытые файлы", new KeyboardEvent('-')));
-		    res.add(new Action("mkdir", "Создать каталог", new KeyboardEvent(KeyboardEvent.Special.INSERT)));
+			res.add(new Action("show-hidden", "Показать скрытые файлы", new InputEvent('='))); else
+			res.add(new Action("skip-hidden", "Убрать скрытые файлы", new InputEvent('-')));
+		    res.add(new Action("mkdir", "Создать каталог", new InputEvent(InputEvent.Special.INSERT)));
 		    return res.toArray(new Action[res.size()]);
 		}
 		@Override public boolean onOk()

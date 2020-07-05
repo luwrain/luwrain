@@ -57,7 +57,7 @@ public final class SimpleCentered implements Application
     private void createArea()
     {
 	this.area = new CenteredArea(new DefaultControlContext(luwrain), name){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (SimpleCentered.this.handleInputEvent(event))
@@ -118,7 +118,7 @@ if (lines != null)
 bkgSound = requestBkgSound();
     }
 
-    private boolean handleInputEvent(KeyboardEvent event)
+    private boolean handleInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	final Object funcObj = org.luwrain.script.ScriptUtils.getMember(jsObj, "onInputEvent");

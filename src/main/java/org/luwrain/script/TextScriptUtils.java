@@ -120,7 +120,7 @@ public final class TextScriptUtils
 	};
     }
 
-    static public boolean runMultilineEditInputEventHook(ControlContext context, String hookName, Area area, MultilineEdit edit, KeyboardEvent event, AbstractRegionPoint regionPoint)
+    static public boolean runMultilineEditInputEventHook(ControlContext context, String hookName, Area area, MultilineEdit edit, InputEvent event, AbstractRegionPoint regionPoint)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notEmpty(hookName, "hookName");

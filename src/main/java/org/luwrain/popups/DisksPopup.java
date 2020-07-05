@@ -43,7 +43,7 @@ public class DisksPopup extends ListPopupBase
 	return this.result;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() || !event.isModified())

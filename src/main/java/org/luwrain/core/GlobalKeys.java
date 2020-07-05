@@ -30,7 +30,7 @@ final class GlobalKeys
 	this.registry = registry;
     }
 
-    String getCommandName(KeyboardEvent event )
+    String getCommandName(InputEvent event )
     {
 	NullCheck.notNull(event, "event");
 	for(int i = 0;i < items.size();i++)
@@ -49,13 +49,13 @@ final class GlobalKeys
 	if (dirs != null)
 	    for(String s: dirs)
 	    {
-		final KeyboardEvent event = getKeyboardEventFromRegistry(globalKeysDir + "/" + s);
+		final InputEvent event = getInputEventFromRegistry(globalKeysDir + "/" + s);
 		if (event != null)
 		    addMapping(event, s.trim());
 	    }
     }
 
-    private void addMapping(KeyboardEvent event, String actionName)
+    private void addMapping(InputEvent event, String actionName)
     {
 	NullCheck.notNull(event, "event");
 	NullCheck.notNull(actionName, "actionName");
@@ -64,16 +64,16 @@ final class GlobalKeys
 	items.add(new Item(event, actionName));
     }
 
-    private KeyboardEvent getKeyboardEventFromRegistry(String path)
+    private InputEvent getInputEventFromRegistry(String path)
     {
 	NullCheck.notNull(path, "path");
 	final Settings.HotKey proxy = Settings.createHotKey(registry, path);
-	KeyboardEvent.Special special = null;
+	InputEvent.Special special = null;
 	char c = ' ';
 	final String specialStr = proxy.getSpecial("");
 	if (!specialStr.trim().isEmpty())
 	{
-	    special = KeyboardEvent.translateSpecial(specialStr);
+	    special = InputEvent.translateSpecial(specialStr);
 	    if (special == null)
 	    {
 		Log.error("core", "registry path " + path + " tries to use an unknown special keyboard code \'" + specialStr + "\'");
@@ -92,15 +92,15 @@ final class GlobalKeys
 	final boolean withControl = proxy.getWithControl(false);
 	final boolean withShift = proxy.getWithShift(false);
 	final boolean withAlt = proxy.getWithAlt(false);
-	return new KeyboardEvent(special != null, special, c, withShift, withControl, withAlt); 
+	return new InputEvent(special != null, special, c, withShift, withControl, withAlt); 
     }
 
     static private class Item
     {
-	final KeyboardEvent event;
+	final InputEvent event;
 	final String actionName;
 
-	Item(KeyboardEvent event, String actionName)
+	Item(InputEvent event, String actionName)
 	{
 	    NullCheck.notNull(event, "event");
 	    NullCheck.notNull(actionName, "actionName");

@@ -62,7 +62,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	return closing.doOk()?ClickHandler.Result.OK:ClickHandler.Result.REJECTED;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (closing.onInputEvent(event))

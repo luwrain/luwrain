@@ -190,7 +190,7 @@ return new MultilineEditCorrectorTranslator(content, this);
 	return content.getDirectContent();
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (runInputEventHook(event))
@@ -200,7 +200,7 @@ return new MultilineEditCorrectorTranslator(content, this);
 	return super.onInputEvent(event);
     }
 
-    protected boolean runInputEventHook(KeyboardEvent event)
+    protected boolean runInputEventHook(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	final MultilineEdit.Model model = edit.getMultilineEditModel();

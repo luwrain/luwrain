@@ -216,7 +216,7 @@ public class MultilineEdit
 	return appearance;
     }
 
-    public boolean onInputEvent(KeyboardEvent event)
+    public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!event.isSpecial())//&&
@@ -262,7 +262,7 @@ public class MultilineEdit
 	return regionTextQueryTranslator.onAreaQuery(query, model.getHotPointX(), model.getHotPointY());
     }
 
-    protected boolean onBackspace(KeyboardEvent event)
+    protected boolean onBackspace(InputEvent event)
     {
 	if (model.getHotPointY() >= model.getLineCount())
 	    return false;
@@ -277,7 +277,7 @@ public class MultilineEdit
 	return appearance.onBackspaceDeleteChar(res);
     }
 
-    protected boolean onDelete(KeyboardEvent event)
+    protected boolean onDelete(InputEvent event)
     {
 	if (model.getHotPointY() >= model.getLineCount())
 	    return false;
@@ -295,7 +295,7 @@ public class MultilineEdit
 	return appearance.onDeleteCharMergeLines(res);
     }
 
-    protected boolean onTab(KeyboardEvent event)
+    protected boolean onTab(InputEvent event)
     {
 	final String tabSeq = model.getTabSeq();
 	if (tabSeq == null)
@@ -304,13 +304,13 @@ public class MultilineEdit
 	return appearance.onTab(res);
     }
 
-    protected boolean onEnter(KeyboardEvent event)
+    protected boolean onEnter(InputEvent event)
     {
 	final ModificationResult res = model.splitLine(model.getHotPointX(), model.getHotPointY());
 	return appearance.onSplitLines(res);
     }
 
-    protected boolean onChar(KeyboardEvent event)
+    protected boolean onChar(InputEvent event)
     {
 	final char c = event.getChar();
 	final String line = model.getLine(model.getHotPointY());

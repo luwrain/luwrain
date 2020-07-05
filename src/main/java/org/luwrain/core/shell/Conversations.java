@@ -42,7 +42,7 @@ public final class Conversations
 					      luwrain.i18n().getStaticStr("OpenPopupName"), luwrain.i18n().getStaticStr("OpenPopupPrefix"), 
 					      null, current, luwrain.getFileProperty("luwrain.dir.userhome"),
 					      Popups.loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())

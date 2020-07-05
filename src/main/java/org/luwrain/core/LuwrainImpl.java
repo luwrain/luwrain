@@ -132,7 +132,7 @@ final class LuwrainImpl implements Luwrain
 	core.enqueueEvent(e);
     }
 
-    @Override public void sendInputEvent(KeyboardEvent e)
+    @Override public void sendInputEvent(InputEvent e)
     {
 	NullCheck.notNull(e, "e");
 	core.enqueueEvent(e);
@@ -544,7 +544,7 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(file, "file");
 		core.mainCoreThreadOnly();
 		return core.interaction.createPdfPreview(new org.luwrain.interaction.graphical.Pdf.Listener(){
-			@Override public void onInputEvent(KeyboardEvent event)
+			@Override public void onInputEvent(InputEvent event)
 			{
 			    NullCheck.notNull(event, "event");
 			    runUiSafely(()->listener.onInputEvent(event));

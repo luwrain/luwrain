@@ -55,7 +55,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	this.context = context;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!event.isSpecial() || event.isModified())
@@ -123,7 +123,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return new Action[0];
     }
 
-    protected boolean onHome(KeyboardEvent event)
+    protected boolean onHome(InputEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -142,7 +142,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onEnd(KeyboardEvent event)
+    protected boolean onEnd(InputEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -161,7 +161,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onAltHome(KeyboardEvent event)
+    protected boolean onAltHome(InputEvent event)
     {
 	if (hotPointX >= 1 || hotPointY >= 1)
 	{
@@ -173,7 +173,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onAltEnd(KeyboardEvent event)
+    protected boolean onAltEnd(InputEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -190,7 +190,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onMoveDown(KeyboardEvent event)
+    protected boolean onMoveDown(InputEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -210,7 +210,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onMoveUp(KeyboardEvent event)
+    protected boolean onMoveUp(InputEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -230,7 +230,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onMoveRight(KeyboardEvent event)
+    protected boolean onMoveRight(InputEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -255,7 +255,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onMoveLeft(KeyboardEvent event )
+    protected boolean onMoveLeft(InputEvent event )
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -281,7 +281,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onPageDown(KeyboardEvent event)
+    protected boolean onPageDown(InputEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = Math.min(hotPointY, count - 1);
@@ -300,7 +300,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onPageUp(KeyboardEvent event)
+    protected boolean onPageUp(InputEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = Math.min(hotPointY, count - 1);
@@ -319,7 +319,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onAltRight(KeyboardEvent event)
+    protected boolean onAltRight(InputEvent event)
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;
@@ -349,7 +349,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
-    protected boolean onAltLeft(KeyboardEvent event )
+    protected boolean onAltLeft(InputEvent event )
     {
 	final int count = getValidLineCount();
 	hotPointY = hotPointY < count?hotPointY:count - 1;

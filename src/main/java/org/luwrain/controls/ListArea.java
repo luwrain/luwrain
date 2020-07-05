@@ -405,7 +405,7 @@ public interface ClipboardSaver
 	return listModel.getItemCount() <= 0;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!event.isSpecial() && (!event.isModified() || event.withShiftOnly()))
@@ -669,7 +669,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-    protected boolean onChar(KeyboardEvent event)
+    protected boolean onChar(InputEvent event)
     {
 	if (noContent())
 	    return true;
@@ -702,32 +702,32 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return false;
     }
 
-    protected boolean onMoveDown(KeyboardEvent event, boolean briefAnnouncement)
+    protected boolean onMoveDown(InputEvent event, boolean briefAnnouncement)
     {
 	return onTransition(Transition.Type.SINGLE_DOWN, Hint.NO_ITEMS_BELOW, briefAnnouncement);
     }
 
-    protected boolean onMoveUp(KeyboardEvent event, boolean briefAnnouncement)
+    protected boolean onMoveUp(InputEvent event, boolean briefAnnouncement)
     {
 	return onTransition(Transition.Type.SINGLE_UP, Hint.NO_ITEMS_ABOVE, briefAnnouncement);
     }
 
-    protected boolean onPageDown(KeyboardEvent event, boolean briefAnnouncement)
+    protected boolean onPageDown(InputEvent event, boolean briefAnnouncement)
     {
 	return onTransition(Transition.Type.PAGE_DOWN, Hint.NO_ITEMS_BELOW, briefAnnouncement);
     }
 
-    protected boolean onPageUp(KeyboardEvent event, boolean briefAnnouncement)
+    protected boolean onPageUp(InputEvent event, boolean briefAnnouncement)
     {
 	return onTransition(Transition.Type.PAGE_UP, Hint.NO_ITEMS_ABOVE, briefAnnouncement);
     }
 
-    protected boolean onEnd(KeyboardEvent event)
+    protected boolean onEnd(InputEvent event)
     {
 	return onTransition(Transition.Type.END, Hint.NO_ITEMS_BELOW, false);
     }
 
-    protected boolean onHome(KeyboardEvent event)
+    protected boolean onHome(InputEvent event)
     {
 	return onTransition(Transition.Type.HOME, Hint.NO_ITEMS_ABOVE, false);
     }
@@ -779,7 +779,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-protected boolean onMoveRight(KeyboardEvent event)
+protected boolean onMoveRight(InputEvent event)
     {
 	if (noContent())
 	    return true;
@@ -807,7 +807,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-    protected boolean onMoveLeft(KeyboardEvent event)
+    protected boolean onMoveLeft(InputEvent event)
     {
 	if (noContent())
 	    return true;
@@ -836,7 +836,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-    protected boolean onAltRight(KeyboardEvent event)
+    protected boolean onAltRight(InputEvent event)
     {
 	if (noContent())
 	    return true;
@@ -875,7 +875,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-    protected boolean onAltLeft(KeyboardEvent event)
+    protected boolean onAltLeft(InputEvent event)
     {
 	if (noContent())
 	    return true;
@@ -911,7 +911,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-    protected boolean onAltEnd(KeyboardEvent event)
+    protected boolean onAltEnd(InputEvent event)
     {
 	if (noContent())
 	    return true;
@@ -929,7 +929,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-    protected boolean onAltHome(KeyboardEvent event)
+    protected boolean onAltHome(InputEvent event)
     {
 	if (noContent())
     	    return true;
@@ -947,7 +947,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-    protected boolean onEnter(KeyboardEvent event)
+    protected boolean onEnter(InputEvent event)
     {
 	if (isEmpty() || listClickHandler == null)
 	    return false;

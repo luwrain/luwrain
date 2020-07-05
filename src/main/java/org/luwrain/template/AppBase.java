@@ -89,7 +89,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return this.layout.getLayout();
     }
 
-    public boolean onInputEvent(Area area, KeyboardEvent event)
+    public boolean onInputEvent(Area area, InputEvent event)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(event, "event");

@@ -201,7 +201,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	return areaName;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!edit.isPosCovered(getHotPointX(), getHotPointY()) && !event.isSpecial())
@@ -263,7 +263,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	return super.onAreaQuery(query);
     }
 
-    @Override protected boolean onMoveDown(KeyboardEvent event)
+    @Override protected boolean onMoveDown(InputEvent event)
     {
 	final int count = getValidLineCount();
 	this.hotPointY = this.hotPointY < count?hotPointY:count - 1;
@@ -282,7 +282,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	return true;
     }
 
-    @Override protected boolean onMoveUp(KeyboardEvent event)
+    @Override protected boolean onMoveUp(InputEvent event)
     {
 	final int count = getValidLineCount();
 	this.hotPointY = this.hotPointY < count?hotPointY:count - 1;

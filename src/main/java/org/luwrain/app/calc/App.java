@@ -47,7 +47,7 @@ public final class App implements Application
     private void createArea()
     {
 	this.editArea = new EditArea(base.createEditParams(()->hotUpdate())){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (!event.isSpecial())

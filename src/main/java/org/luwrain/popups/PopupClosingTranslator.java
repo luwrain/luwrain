@@ -76,10 +76,10 @@ public class PopupClosingTranslator
 	return shouldContinue;
     }
 
-    public boolean onInputEvent(KeyboardEvent event)
+    public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.ESCAPE)
+	if (event.isSpecial() && event.getSpecial() == InputEvent.Special.ESCAPE)
 	{
 	    doCancel();
 	    return true;

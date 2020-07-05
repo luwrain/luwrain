@@ -18,13 +18,13 @@
 
 package org.luwrain.core;
 
-import org.luwrain.core.events.KeyboardEvent;
+import org.luwrain.core.events.InputEvent;
 
 public final class Action
 {
     private final String name;
     private final String title;
-    private final KeyboardEvent event;
+    private final InputEvent event;
 
     public Action(String name, String title)
     {
@@ -35,7 +35,7 @@ public final class Action
 	this.event = null;
     }
 
-    public Action(String name, String title, KeyboardEvent event)
+    public Action(String name, String title, InputEvent event)
     {
 		NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(title, "title");
@@ -47,5 +47,5 @@ public final class Action
 
     public String name() {return name;}
     public String title() { return title; }
-    public KeyboardEvent keyboardEvent() { return event; }
+    public InputEvent inputEvent() { return event; }
 }

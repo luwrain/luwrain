@@ -228,7 +228,7 @@ public final class ScriptUtils
 	};
     }
 
-    static public HookObject createInputEvent(KeyboardEvent event)
+    static public HookObject createInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	return new EmptyHookObject(){
@@ -283,7 +283,7 @@ public final class ScriptUtils
     }
 
 
-    static public KeyboardEvent getInputEvent(Object obj)
+    static public InputEvent getInputEvent(Object obj)
     {
 	if (!isValid(obj))
 	    return null;
@@ -306,12 +306,12 @@ public final class ScriptUtils
 	    special = value != null?value:"";
 	} else
 	    special = "";
-	final KeyboardEvent.Special sp;
+	final InputEvent.Special sp;
 	if (!special.isEmpty())
 	{
-	    KeyboardEvent.Special s = null;
-	    final EnumSet<KeyboardEvent.Special> allSpecials = EnumSet.allOf(KeyboardEvent.Special.class);
-	    for(KeyboardEvent.Special ss: allSpecials)
+	    InputEvent.Special s = null;
+	    final EnumSet<InputEvent.Special> allSpecials = EnumSet.allOf(InputEvent.Special.class);
+	    for(InputEvent.Special ss: allSpecials)
 		if (ss.toString().toUpperCase().equals(special))
 		    s = ss;
 	    if (s == null)
@@ -343,8 +343,8 @@ public final class ScriptUtils
 	} else
 	    withControl = new Boolean(false);
 	if (sp != null)
-	    return new KeyboardEvent(sp, withShift.booleanValue(), withControl.booleanValue(), withAlt.booleanValue());
-	return new KeyboardEvent(ch.charAt(0), withShift.booleanValue(), withControl.booleanValue(), withAlt.booleanValue());
+	    return new InputEvent(sp, withShift.booleanValue(), withControl.booleanValue(), withAlt.booleanValue());
+	return new InputEvent(ch.charAt(0), withShift.booleanValue(), withControl.booleanValue(), withAlt.booleanValue());
     }
 
     static public Action getAction(Object obj)
@@ -361,7 +361,7 @@ public final class ScriptUtils
 	if (name == null || name.isEmpty() ||
 	    title == null || title.isEmpty())
 	    return null;
-	final KeyboardEvent inputEvent;
+	final InputEvent inputEvent;
 	if (inputEventObj != null)
 	    inputEvent = getInputEvent(inputEventObj); else
 	    inputEvent = null;

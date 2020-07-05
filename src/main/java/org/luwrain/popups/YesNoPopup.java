@@ -75,7 +75,7 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	return 0;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (closing.onInputEvent(event))
@@ -83,13 +83,13 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	if (!event.isSpecial())
 	{
 	    final char c = event.getChar();
-	    if (KeyboardEvent.getKeyboardLayout().onSameButton(c, 'y'))
+	    if (InputEvent.getKeyboardLayout().onSameButton(c, 'y'))
 	    {
 		res = true;
 		closing.doOk();
 		return true;
 	    }
-	    if (KeyboardEvent.getKeyboardLayout().onSameButton(c, 'n'))
+	    if (InputEvent.getKeyboardLayout().onSameButton(c, 'n'))
 	    {
 		res = false;
 		closing.doOk();

@@ -20,16 +20,16 @@ import org.luwrain.core.events.*;
 
 class Keyboard
 {
-    static KeyboardEvent translate(KeyboardEvent event)
+    static InputEvent translate(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
-	KeyboardEvent e = event;
+	InputEvent e = event;
 e = translateControl(e);
 e = translateAlternative(e);
 return e;
     }
 
-    static KeyboardEvent translateAlternative(KeyboardEvent event)
+    static InputEvent translateAlternative(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!event.isSpecial() || !event.withControlOnly())
@@ -37,33 +37,33 @@ return e;
 	switch (event.getSpecial())
 	{
 	case ARROW_UP:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_UP, ' ');
+	    return new InputEvent(true, InputEvent.Special.ALTERNATIVE_ARROW_UP, ' ');
 	case ARROW_DOWN:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_DOWN, ' ');
+	    return new InputEvent(true, InputEvent.Special.ALTERNATIVE_ARROW_DOWN, ' ');
 	case ARROW_LEFT:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_LEFT, ' ');
+	    return new InputEvent(true, InputEvent.Special.ALTERNATIVE_ARROW_LEFT, ' ');
 	case ARROW_RIGHT:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_ARROW_RIGHT, ' ');
+	    return new InputEvent(true, InputEvent.Special.ALTERNATIVE_ARROW_RIGHT, ' ');
 	case PAGE_DOWN:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_PAGE_DOWN, ' ');
+	    return new InputEvent(true, InputEvent.Special.ALTERNATIVE_PAGE_DOWN, ' ');
 	case PAGE_UP:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_PAGE_UP, ' ');
+	    return new InputEvent(true, InputEvent.Special.ALTERNATIVE_PAGE_UP, ' ');
 	case HOME:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_HOME, ' ');
+	    return new InputEvent(true, InputEvent.Special.ALTERNATIVE_HOME, ' ');
 	case END:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_END, ' ');
+	    return new InputEvent(true, InputEvent.Special.ALTERNATIVE_END, ' ');
 	case DELETE:
-	    return new KeyboardEvent(true, KeyboardEvent.Special.ALTERNATIVE_DELETE, ' ');
+	    return new InputEvent(true, InputEvent.Special.ALTERNATIVE_DELETE, ' ');
 	default:
 	    return event;
 	}
     }
 
-	static private KeyboardEvent translateControl(KeyboardEvent event)
+	static private InputEvent translateControl(InputEvent event)
 	{
 	    if (event.isSpecial())
 		return event;
-	    return new KeyboardEvent(translateControlChar(event.getChar()), event.withShift(), event.withControl(), event.withAlt());
+	    return new InputEvent(translateControlChar(event.getChar()), event.withShift(), event.withControl(), event.withAlt());
 	}
 
     static private char translateControlChar(char c)

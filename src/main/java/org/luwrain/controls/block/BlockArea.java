@@ -152,7 +152,7 @@ public class BlockArea implements Area
 	return "FIXME";
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && !event.isModified())
@@ -182,7 +182,7 @@ public class BlockArea implements Area
 	return clickHandler.onClick(this, rowIndex, blockObj);
     }
 
-    protected boolean onMoveRight(KeyboardEvent event)
+    protected boolean onMoveRight(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (noContent())
@@ -204,7 +204,7 @@ public class BlockArea implements Area
 	return true;
     }
 
-    protected boolean onMoveLeft(KeyboardEvent event)
+    protected boolean onMoveLeft(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (noContent())
@@ -226,7 +226,7 @@ public class BlockArea implements Area
 	return true;
     }
 
-    protected boolean onMoveUp(KeyboardEvent event)
+    protected boolean onMoveUp(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (noContent())
@@ -252,7 +252,7 @@ public class BlockArea implements Area
 	return true;
     }
 
-    protected boolean onMoveDown(KeyboardEvent event)
+    protected boolean onMoveDown(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (noContent())

@@ -365,7 +365,7 @@ public class CommanderArea<E> extends ListArea
 	throw new UnsupportedOperationException("Changing list click handler for commander areas not allowed, use setClickHandler(CommanderArea.ClickHandler)instead");
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && !event.isModified())
@@ -422,7 +422,7 @@ public class CommanderArea<E> extends ListArea
 	return super.onClipboardCopy(fromX, fromY, toX, toY, withDeleting);
     }
 
-    protected boolean onBackspace(KeyboardEvent event)
+    protected boolean onBackspace(InputEvent event)
     {
 	//noContent() isn't applicable here, we should be able to leave the directory, even if it doesn't have any content
 	if (currentLocation == null)
@@ -434,7 +434,7 @@ public class CommanderArea<E> extends ListArea
 	return true;
     }
 
-    protected boolean onMarking(KeyboardEvent event)
+    protected boolean onMarking(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (!flags.contains(Flags.MARKING))

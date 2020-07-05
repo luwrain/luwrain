@@ -54,7 +54,7 @@ public final class Simple implements Application
 	    if (this.lines == null)
 		this.lines = new String[0];
 	this.area = new NavigationArea(new DefaultControlContext(luwrain)){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (Simple.this.handleInputEvent(event))
@@ -106,7 +106,7 @@ public final class Simple implements Application
 	area.setHotPoint(hotPointX >= 0?hotPointX:0, hotPointY >= 0?hotPointY:0);
     }
 
-        private boolean handleInputEvent(KeyboardEvent event)
+        private boolean handleInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	final Object funcObj = org.luwrain.script.ScriptUtils.getMember(jsObj, "onInputEvent");

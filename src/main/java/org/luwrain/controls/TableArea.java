@@ -209,7 +209,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	this.clickHandler = clickHandler;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");
@@ -339,7 +339,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	environment.onAreaNewName(this);
     }
 
-    private boolean onArrowDown(KeyboardEvent event, boolean briefIntroduction)
+    private boolean onArrowDown(InputEvent event, boolean briefIntroduction)
     {
 	if (noContentCheck())
 	    return true;
@@ -354,7 +354,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	return true;
     }
 
-    private boolean onArrowUp(KeyboardEvent event, boolean briefIntroduction)
+    private boolean onArrowUp(InputEvent event, boolean briefIntroduction)
     {
 	if (noContentCheck())
 	    return true;
@@ -371,7 +371,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	return true;
     }
 
-    private boolean onPageDown(KeyboardEvent event, boolean briefIntroduction)
+    private boolean onPageDown(InputEvent event, boolean briefIntroduction)
     {
 	if (noContentCheck())
 	    return true;
@@ -388,7 +388,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	return true;
     }
 
-    private boolean onPageUp(KeyboardEvent event, boolean briefIntroduction)
+    private boolean onPageUp(InputEvent event, boolean briefIntroduction)
     {
 	if (noContentCheck())
 	    return true;
@@ -404,7 +404,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	return true;
     }
 
-    private boolean onEnd(KeyboardEvent event)
+    private boolean onEnd(InputEvent event)
     {
 	if (noContentCheck())
 	    return true;
@@ -414,7 +414,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	return true;
     }
 
-    private boolean onHome(KeyboardEvent event)
+    private boolean onHome(InputEvent event)
     {
 	if (noContentCheck())
 	    return true;
@@ -423,7 +423,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	return true;
     }
 
-    private boolean onArrowRight(KeyboardEvent event)
+    private boolean onArrowRight(InputEvent event)
     {
 	if (noContentCheck())
 	    return true;
@@ -470,7 +470,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 		    return true;
 	    }
 
-    private boolean onArrowLeft(KeyboardEvent event)
+    private boolean onArrowLeft(InputEvent event)
     {
 	if (noContentCheck())
 	    return true;
@@ -522,7 +522,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 		    return true;
     }
 
-    private boolean onLineEnd(KeyboardEvent event)
+    private boolean onLineEnd(InputEvent event)
     {
 	if (noContentCheck())
 	    return true;
@@ -530,7 +530,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	return false;
     }
 
-    private boolean onLineHome(KeyboardEvent event)
+    private boolean onLineHome(InputEvent event)
     {
 	if (noContentCheck())
 	    return true;

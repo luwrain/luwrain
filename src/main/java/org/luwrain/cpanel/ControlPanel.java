@@ -26,7 +26,7 @@ public interface ControlPanel
     void close();
     void gotoSectionsTree();
     boolean onSystemEvent(EnvironmentEvent event);
-    boolean onInputEvent(KeyboardEvent event);
+    boolean onInputEvent(InputEvent event);
     void refreshSectionsTree();
     Luwrain getCoreInterface();
 }

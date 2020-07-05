@@ -40,7 +40,7 @@ public class FormPopup extends FormArea implements Popup, PopupClosingTranslator
 	this.popupFlags = popupFlags;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (closing.onInputEvent(event))

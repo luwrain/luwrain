@@ -116,7 +116,7 @@ public class RegistryApp implements Application, Actions
 	    treeParams.name = strings.dirsAreaName();
 
 	    dirsArea = new TreeArea(treeParams){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -166,7 +166,7 @@ return actions.insertDir();
 
 	valuesArea = new ListArea(params)
 	    {
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");

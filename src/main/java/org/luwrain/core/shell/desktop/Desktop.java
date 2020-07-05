@@ -80,7 +80,7 @@ public final class Desktop implements org.luwrain.core.Desktop
 	};
 	params.confirmation = (area,model,fromIndex,toIndex)->conversations.deleteDesktopItemsConfirmation(toIndex - fromIndex);
 	this.area = new EditableListArea(params) {
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())

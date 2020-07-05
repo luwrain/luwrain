@@ -142,7 +142,7 @@ public class TreeArea implements Area
 	return hotPointY >= 0?hotPointY:0;
     }
 
-    public boolean onInputEvent(KeyboardEvent event)
+    public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (items == null || items.length < 1)
@@ -393,7 +393,7 @@ public class TreeArea implements Area
 	    refreshNode(n);
     }
 
-    protected boolean onKeySpace(KeyboardEvent event)
+    protected boolean onKeySpace(InputEvent event)
     {
 	if (items == null)
 	    return false;
@@ -405,7 +405,7 @@ public class TreeArea implements Area
 	return true;
     }
 
-    protected boolean onKeyEnter(KeyboardEvent event)
+    protected boolean onKeyEnter(InputEvent event)
     {
 	if (event.isModified() || items == null || hotPointY >= items.length)
 	    return false;
@@ -434,7 +434,7 @@ public class TreeArea implements Area
 	    return false;
     }
 
-    protected boolean onExpand(KeyboardEvent event)
+    protected boolean onExpand(InputEvent event)
     {
 	if (event.isModified() || items == null || hotPointY >= items.length)
 	    return false;
@@ -455,7 +455,7 @@ public class TreeArea implements Area
 	}
     }
 
-    protected boolean onCollapse(KeyboardEvent event)
+    protected boolean onCollapse(InputEvent event)
     {
 	if (event.isModified() || items == null || hotPointY >= items.length)
 	    return false;
@@ -476,7 +476,7 @@ public class TreeArea implements Area
 	}
     }
 
-    protected boolean onKeyDown(KeyboardEvent event, boolean briefAnnouncement)
+    protected boolean onKeyDown(InputEvent event, boolean briefAnnouncement)
     {
 	if (event.isModified() || items == null)
 	    return false;
@@ -499,7 +499,7 @@ announce(items[hotPointY], briefAnnouncement);
 	return true;
     }
 
-    protected boolean onKeyUp(KeyboardEvent event, boolean briefAnnouncement)
+    protected boolean onKeyUp(InputEvent event, boolean briefAnnouncement)
     {
 	if (event.isModified() || items == null)
 	    return false;
@@ -515,7 +515,7 @@ announce(items[hotPointY], briefAnnouncement);
 	return true;
     }
 
-    protected boolean onKeyRight(KeyboardEvent event)
+    protected boolean onKeyRight(InputEvent event)
     {
 	if (items == null || hotPointY >= items.length)
 	    return false;
@@ -541,7 +541,7 @@ announce(items[hotPointY], briefAnnouncement);
 	return true;
     }
 
-    protected boolean onKeyLeft(KeyboardEvent event)
+    protected boolean onKeyLeft(InputEvent event)
     {
 	if (items == null || hotPointY >= items.length)
 	    return false;

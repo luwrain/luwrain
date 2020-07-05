@@ -66,7 +66,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 
 	sectionsArea = new TreeArea(treeParams){
 
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())

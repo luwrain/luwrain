@@ -34,7 +34,7 @@ final class MainLayout extends LayoutBase
 	NullCheck.notNull(app, "app");
 	this.app = app;
 	this.simpleArea = new SimpleArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().appName()){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (app.onInputEvent(this, event))

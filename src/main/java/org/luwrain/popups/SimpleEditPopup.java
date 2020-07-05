@@ -96,7 +96,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return prefix + text;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (closing.onInputEvent(event))
@@ -172,7 +172,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	return text;
     }
 
-protected boolean onMoveLeft(KeyboardEvent event)
+protected boolean onMoveLeft(InputEvent event)
     {
 	if (pos == 0)
 	{
@@ -188,7 +188,7 @@ protected boolean onMoveLeft(KeyboardEvent event)
 	return true;
     }
 
-protected boolean onMoveRight(KeyboardEvent event)
+protected boolean onMoveRight(InputEvent event)
     {
 	final String line = prefix + text;
 	if (pos >= line.length())
@@ -204,7 +204,7 @@ protected boolean onMoveRight(KeyboardEvent event)
 	return true;
     }
 
-protected boolean onHome(KeyboardEvent event)
+protected boolean onHome(InputEvent event)
     {
 	pos = 0;
 	final String line = prefix + text;
@@ -215,7 +215,7 @@ protected boolean onHome(KeyboardEvent event)
 	return true;
     }
 
-protected boolean onEnd(KeyboardEvent event)
+protected boolean onEnd(InputEvent event)
     {
 	final String line = prefix + text;
 	pos = line.length();
@@ -224,7 +224,7 @@ protected boolean onEnd(KeyboardEvent event)
 	return true;
     }
 
-protected boolean onAltRight(KeyboardEvent event)
+protected boolean onAltRight(InputEvent event)
     {
 	final String line = prefix + text;
 	if (line.isEmpty())
@@ -251,7 +251,7 @@ protected boolean onAltRight(KeyboardEvent event)
 	return true;
     }
 
-protected boolean onAltLeft(KeyboardEvent event)
+protected boolean onAltLeft(InputEvent event)
     {
 	final String line = prefix + text;
 	if (line.isEmpty())

@@ -77,7 +77,7 @@ public class EmbeddedSingleLineEdit implements SingleLineEdit.Model
 	    this.regionPoint.setOffset(x, y);
     }
 
-    public boolean onInputEvent(KeyboardEvent event)
+    public boolean onInputEvent(InputEvent event)
     {
 	return edit.onInputEvent(event);
     }

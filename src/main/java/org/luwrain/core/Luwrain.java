@@ -250,7 +250,7 @@ public interface Luwrain extends PropertiesBase
     void speak(String text, int pitch, int rate);
     void speakLetter(char letter, int pitch);
         void sendBroadcastEvent(EnvironmentEvent event);
-    void sendInputEvent(KeyboardEvent event);
+    void sendInputEvent(InputEvent event);
 
     /**
      * Sets the new active area of the application. This method asks the

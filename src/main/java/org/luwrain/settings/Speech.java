@@ -82,7 +82,7 @@ final class Speech extends FormArea implements SectionArea
 	return true;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	if (controlPanel.onInputEvent(event))
 	    return true;

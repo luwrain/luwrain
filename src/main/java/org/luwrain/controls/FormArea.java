@@ -468,10 +468,10 @@ final int count = multilineEditLines.getLineCount();
 	return false;
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	//Delete on a uniref;
-	if (event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.DELETE &&
+	if (event.isSpecial() && event.getSpecial() == InputEvent.Special.DELETE &&
 	    !event.isModified()) 
 	{
 	    final int index = getHotPointY();
@@ -484,7 +484,7 @@ final int count = multilineEditLines.getLineCount();
 	    }
 	}
 		    //If the user is pressing Enter on the list;
-	if (	    event.isSpecial() && event.getSpecial() == KeyboardEvent.Special.ENTER && !event.isModified())
+	if (	    event.isSpecial() && event.getSpecial() == InputEvent.Special.ENTER && !event.isModified())
 	{
 	    if (getHotPointY() < items.size() && items.get(getHotPointY()).type == Type.LIST)
 	{
@@ -730,7 +730,7 @@ protected ListChoosing listChoosing;
 	    this.type = type;
 	    this.name = name;
 	}
-	boolean onInputEvent(KeyboardEvent event)
+	boolean onInputEvent(InputEvent event)
 	{
 	    return edit != null?edit.onInputEvent(event):false;
 	}

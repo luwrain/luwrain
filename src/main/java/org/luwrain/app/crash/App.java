@@ -52,7 +52,7 @@ public final class App extends AppBase<Strings>
 	return mainLayout.getLayout();
     }
 
-        @Override public boolean onInputEvent(Area area, KeyboardEvent event)
+        @Override public boolean onInputEvent(Area area, InputEvent event)
     {
 	NullCheck.notNull(area, "area");
 	if (super.onInputEvent(area, event))

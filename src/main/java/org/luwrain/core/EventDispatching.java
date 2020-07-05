@@ -75,8 +75,8 @@ abstract class EventDispatching extends Areas
 		return onRunnableEvent((RunnableEvent)event);
 	    if (event instanceof CallableEvent)
 		return onCallableEvent((CallableEvent)event);
-	    if (event instanceof KeyboardEvent)
-		return onInputEvent(Keyboard.translate((KeyboardEvent)event));
+	    if (event instanceof InputEvent)
+		return onInputEvent(Keyboard.translate((InputEvent)event));
 	    if (event instanceof EnvironmentEvent)
 	    {
 		final EnvironmentEvent environmentEvent = (EnvironmentEvent)event;
@@ -166,7 +166,7 @@ abstract class EventDispatching extends Areas
 	return true;
     }
 
-    private boolean onInputEvent(KeyboardEvent event)
+    private boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	new org.luwrain.script.hooks.NotificationHook(getObjForEnvironment()).run("luwrain.events.input", new Object[]{org.luwrain.script.ScriptUtils.createInputEvent(event)});
@@ -192,7 +192,7 @@ abstract class EventDispatching extends Areas
 		if (actions != null)
 		    for(Action a: actions)
 		    {
-			final KeyboardEvent actionEvent = a.keyboardEvent();
+			final InputEvent actionEvent = a.inputEvent();
 			if (actionEvent == null || !actionEvent.equals(event))
 			    continue;
 			if (activeArea.onSystemEvent(new ActionEvent(a)))
@@ -205,7 +205,7 @@ abstract class EventDispatching extends Areas
 	return true;
     }
 
-    private boolean systemHotKey(KeyboardEvent event)
+    private boolean systemHotKey(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	final String commandName = globalKeys.getCommandName(event);
@@ -217,21 +217,21 @@ abstract class EventDispatching extends Areas
 	}
 	if (event.isSpecial())
 	{
-	    final KeyboardEvent.Special code = event.getSpecial();
-	    if (code == KeyboardEvent.Special.CONTROL)
+	    final InputEvent.Special code = event.getSpecial();
+	    if (code == InputEvent.Special.CONTROL)
 	    {
 		speech.silence();
 		soundManager.stopStartingMode();
 		return true;
 	    }
-	    if (code == KeyboardEvent.Special.SHIFT ||
-		code == KeyboardEvent.Special.CONTROL ||
-		code == KeyboardEvent.Special.LEFT_ALT ||
-		code == KeyboardEvent.Special.RIGHT_ALT)
+	    if (code == InputEvent.Special.SHIFT ||
+		code == InputEvent.Special.CONTROL ||
+		code == InputEvent.Special.LEFT_ALT ||
+		code == InputEvent.Special.RIGHT_ALT)
 		return true;
 	}
 	if (!event.isSpecial() &&
-	    KeyboardEvent.getKeyboardLayout().onSameButton(event.getChar(), 'x') &&
+	    InputEvent.getKeyboardLayout().onSameButton(event.getChar(), 'x') &&
 	    event.withAltOnly())
 	{
 	    onAltX();

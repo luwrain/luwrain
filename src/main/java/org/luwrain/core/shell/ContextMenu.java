@@ -58,8 +58,8 @@ public final class ContextMenu extends ListPopup
 	    final Action act = (Action)item;
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.MAIN_MENU_ITEM);
-	    if (act.keyboardEvent() != null)
-		luwrain.speak(act.title() + " " + luwrain.getSpeakableText(act.keyboardEvent().toString(), Luwrain.SpeakableTextType.PROGRAMMING)); else
+	    if (act.inputEvent() != null)
+		luwrain.speak(act.title() + " " + luwrain.getSpeakableText(act.inputEvent().toString(), Luwrain.SpeakableTextType.PROGRAMMING)); else
 		luwrain.speak(act.title());
 	}
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
@@ -67,8 +67,8 @@ public final class ContextMenu extends ListPopup
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
 	    final Action act = (Action)item;
-	    if (act.keyboardEvent() != null)
-		return act.title() + " (" + act.keyboardEvent() + ")"; else
+	    if (act.inputEvent() != null)
+		return act.title() + " (" + act.inputEvent() + ")"; else
 		return act.title();
 	}
 	@Override public int getObservableLeftBound(Object item)

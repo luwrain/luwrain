@@ -23,7 +23,7 @@ public interface Pdf
 {
     public interface Listener
     {
-	void onInputEvent(KeyboardEvent event);
+	void onInputEvent(InputEvent event);
     }
 
     boolean init();

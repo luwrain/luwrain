@@ -97,7 +97,7 @@ public class CenteredArea implements org.luwrain.core.Area
 	context.onAreaNewName(this);
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	return false;

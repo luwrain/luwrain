@@ -33,9 +33,9 @@ protected interface ActionHandler
     {
 	final String name;
 	final String title;
-	final KeyboardEvent inputEvent;
+	final InputEvent inputEvent;
 	final ActionHandler handler;
-	public ActionInfo(String name, String title, KeyboardEvent inputEvent, ActionHandler handler)
+	public ActionInfo(String name, String title, InputEvent inputEvent, ActionHandler handler)
 	{
 	    NullCheck.notEmpty(name, "name");
 	    NullCheck.notEmpty(title, "title");
@@ -93,7 +93,7 @@ protected interface ActionHandler
 
     
 
-    protected ActionInfo action(String name, String title, KeyboardEvent inputEvent, ActionHandler handler)
+    protected ActionInfo action(String name, String title, InputEvent inputEvent, ActionHandler handler)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(title, "title");

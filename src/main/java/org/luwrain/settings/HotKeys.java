@@ -27,7 +27,7 @@ class HotKeys extends ListArea implements SectionArea
 {
     private static class Item implements Comparable
     {
-	KeyboardEvent event;
+	InputEvent event;
 	Settings.HotKey settings;
 	String command;
 
@@ -36,7 +36,7 @@ class HotKeys extends ListArea implements SectionArea
 	    NullCheck.notNull(settings, "settings");
 	    NullCheck.notNull(command, "command");
 	    this.settings = settings;
-	    this.event = new KeyboardEvent(KeyboardEvent.Special.ENTER);
+	    this.event = new InputEvent(InputEvent.Special.ENTER);
 	    this.command = command;
 	}
 
@@ -68,7 +68,7 @@ class HotKeys extends ListArea implements SectionArea
 	setListClickHandler((area, index, obj)->editItem(obj));
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (controlPanel.onInputEvent(event))
