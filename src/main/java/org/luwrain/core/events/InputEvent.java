@@ -23,7 +23,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.interaction.*;
 
-public final class KeyboardEvent extends Event
+public final class InputEvent extends Event
 {
     public enum Modifiers {ALT, SHIFT, CONTROL};
 
@@ -47,7 +47,7 @@ public final class KeyboardEvent extends Event
     protected boolean controlPressed = false;
     protected boolean altPressed = false;
 
-    public KeyboardEvent(Special special)
+    public InputEvent(Special special)
     {
 	NullCheck.notNull(special, "special");
 	this.isSpecial = true;
@@ -58,7 +58,7 @@ public final class KeyboardEvent extends Event
 	this.altPressed = false;
     }
 
-    public KeyboardEvent(Special special, Set<Modifiers> modifiers)
+    public InputEvent(Special special, Set<Modifiers> modifiers)
     {
 	NullCheck.notNull(special, "special");
 	NullCheck.notNull(modifiers, "modifiers");
@@ -70,7 +70,7 @@ public final class KeyboardEvent extends Event
 	this.controlPressed = modifiers.contains(Modifiers.CONTROL);
     }
 
-    public KeyboardEvent(Special special,
+    public InputEvent(Special special,
 			 boolean shiftPressed, boolean controlPressed,
 			 boolean altPressed)
     {
@@ -83,7 +83,7 @@ public final class KeyboardEvent extends Event
 	this.altPressed = altPressed;
     }
 
-    public KeyboardEvent(char nonSpecialChar)
+    public InputEvent(char nonSpecialChar)
     {
 	this.isSpecial = false;
 	this.special = null;
@@ -93,7 +93,7 @@ public final class KeyboardEvent extends Event
 	this.altPressed = false;
     }
 
-    public KeyboardEvent(char nonSpecialChar, Set<Modifiers> modifiers)
+    public InputEvent(char nonSpecialChar, Set<Modifiers> modifiers)
     {
 	NullCheck.notNull(modifiers, "modifiers");
 	this.isSpecial = false;
@@ -104,7 +104,7 @@ public final class KeyboardEvent extends Event
 	this.controlPressed = modifiers.contains(Modifiers.CONTROL);
     }
 
-    public KeyboardEvent(char nonSpecialChar,
+    public InputEvent(char nonSpecialChar,
 			 boolean shiftPressed, boolean controlPressed,
 			 boolean altPressed)
     {
@@ -116,7 +116,7 @@ public final class KeyboardEvent extends Event
 	this.altPressed = altPressed;
     }
 
-    public KeyboardEvent(boolean isSpecial,
+    public InputEvent(boolean isSpecial,
 			 Special special, char nonSpecialChar,
 			 boolean shiftPressed, boolean controlPressed,
 			 boolean altPressed)
@@ -129,7 +129,7 @@ public final class KeyboardEvent extends Event
 	this.altPressed = altPressed;
     }
 
-    public KeyboardEvent(boolean isSpecial,
+    public InputEvent(boolean isSpecial,
 			 Special special, char nonSpecialChar)
     {
 	this.isSpecial = isSpecial;
@@ -141,7 +141,7 @@ public final class KeyboardEvent extends Event
     }
 
     /*FIXME:It is better to rename it to equalKeysOnKeyboard()*/
-    public boolean equals(KeyboardEvent event)
+    public boolean equals(InputEvent event)
     {
 	return (isSpecial == event.isSpecial &&
 		(!isSpecial || special == event.special) &&
