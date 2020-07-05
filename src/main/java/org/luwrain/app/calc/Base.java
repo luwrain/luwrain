@@ -76,7 +76,7 @@ final class Base
 		    NavigationArea.defaultLineAnnouncement(context, index, luwrain.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
 		}
 	    };
-	params.editFactory = (editParams, corrector)->{
+	params.editFactory = (editParams)->{
 	    editParams.model = createBlockingModel(editParams.model);
 	    return new MultilineEdit(editParams);
 	};

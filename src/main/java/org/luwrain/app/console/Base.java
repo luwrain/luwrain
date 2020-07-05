@@ -68,7 +68,7 @@ final Luwrain luwrain;
 	NullCheck.notNull(inputHandler, "inputHandler");
 	final ConsoleArea.Params params = new ConsoleArea.Params();
 	params.context = new DefaultControlContext(luwrain);
-	params.areaName = "LUWRAIN";
+	params.name = "LUWRAIN";
 	params.model = new Model();
 	params.appearance = new Appearance();
 	params.clickHandler = clickHandler;
@@ -80,11 +80,11 @@ final Luwrain luwrain;
 
     static private class Model implements ConsoleArea.Model
     {
-	@Override public int getConsoleItemCount()
+	@Override public int getItemCount()
 	{
 	    return messages.size();
 	}
-	@Override public Object getConsoleItem(int index)
+	@Override public Object getItem(int index)
 	{
 	    return messages.get(index);
 	}

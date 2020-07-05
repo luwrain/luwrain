@@ -40,7 +40,7 @@ public interface Appearance extends MultilineEdit.Appearance
 
     public interface EditFactory
     {
-	MultilineEdit newMultilineEdit(MultilineEdit.Params params, MultilineEditCorrector corrector);
+	MultilineEdit newMultilineEdit(MultilineEdit.Params params);
     }
 
     static public final class Params
@@ -106,7 +106,7 @@ return new MultilineEditCorrectorTranslator(content, this);
 	    params.model = basicCorrector;
 	    params.appearance = areaParams.appearance;
 	    params.regionPoint = regionPoint;
-	    final MultilineEdit edit = areaParams.editFactory.newMultilineEdit(params, basicCorrector);
+	    final MultilineEdit edit = areaParams.editFactory.newMultilineEdit(params);
 	    if (edit != null)
 		return edit;
 	}

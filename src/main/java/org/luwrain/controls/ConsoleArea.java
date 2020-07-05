@@ -31,8 +31,8 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 
     public interface Model
     {
-	int getConsoleItemCount();
-	Object getConsoleItem(int index);
+	int getItemCount();
+	Object getItem(int index);
     }
 
     public interface Appearance 
@@ -56,7 +56,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
     static public class Params
     {
 	public ControlContext context = null;
-	public String areaName = "";
+	public String name = "";
 	public Model model = null;
 	public Appearance appearance = null;
 	public ClickHandler clickHandler = null;
@@ -82,7 +82,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.model, "params.model");
 	NullCheck.notNull(params.appearance, "params.appearance");
-	NullCheck.notNull(params.areaName, "params.areaName");
+	NullCheck.notNull(params.name, "params.name");
 	NullCheck.notNull(params.inputPos, "params.inputPos");
 	NullCheck.notNull(params.inputPrefix, "params.inputPrefix");
 	this.inputPos = params.inputPos;
@@ -91,7 +91,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	this.consoleClickHandler = params.clickHandler;
 	this.consoleInputHandler = params.inputHandler;
 	this.enteringPrefix = params.inputPrefix;
-	this.areaName = params.areaName;
+	this.areaName = params.name;
 	this.edit = new EmbeddedSingleLineEdit(context, this, this, regionPoint, 0, 0);
 	refresh();
     }
@@ -144,7 +144,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
     public Object selected()
     {
 	final int index = getSelectedIndex();
-	return index >= 0?consoleModel.getConsoleItem(index):null;
+	return index >= 0?consoleModel.getItem(index):null;
     }
 
     public int getExistingItemIndexOnLine(int lineIndex)
@@ -156,11 +156,11 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	case TOP:
 	    if (lineIndex == 0)
 		return -1;
-	    if (lineIndex - 1 < consoleModel.getConsoleItemCount())
+	    if (lineIndex - 1 < consoleModel.getItemCount())
 		return lineIndex - 1;
 	    return -1;
 	case BOTTOM:
-	    if (lineIndex < consoleModel.getConsoleItemCount())
+	    if (lineIndex < consoleModel.getItemCount())
 		return lineIndex;
 	    return -1;
 	default:
@@ -170,25 +170,25 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 
     @Override public int getLineCount()
     {
-	return consoleModel.getConsoleItemCount() + 2;
+	return consoleModel.getItemCount() + 2;
     }
 
     @Override public String getLine(int index)
     {
-	if (index < 0 || index >= consoleModel.getConsoleItemCount() + 1)
+	if (index < 0 || index >= consoleModel.getItemCount() + 1)
 	    return "";
 	switch(inputPos)
 	{
 	case TOP:
 	    if (index == 0)
 		return enteringPrefix + enteringText;
-	    if (index - 1< consoleModel.getConsoleItemCount())
-		return consoleAppearance.getTextAppearance(consoleModel.getConsoleItem(index - 1));
+	    if (index - 1< consoleModel.getItemCount())
+		return consoleAppearance.getTextAppearance(consoleModel.getItem(index - 1));
 	    return "";
 	case BOTTOM:
-	    if (index < consoleModel.getConsoleItemCount())
-		return consoleAppearance.getTextAppearance(consoleModel.getConsoleItem(index));
-	    if (index == consoleModel.getConsoleItemCount())
+	    if (index < consoleModel.getItemCount())
+		return consoleAppearance.getTextAppearance(consoleModel.getItem(index));
+	    if (index == consoleModel.getItemCount())
 		return enteringPrefix + enteringText;
 	    return "";
 	default:
@@ -228,7 +228,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 		{
 		    if (consoleClickHandler == null)
 			return false;
-		    return consoleClickHandler.onConsoleClick(this, index, consoleModel.getConsoleItem(index));
+		    return consoleClickHandler.onConsoleClick(this, index, consoleModel.getItem(index));
 		}
 	    }
 	    break;
@@ -319,9 +319,9 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	switch(inputPos)
 	{
 	case BOTTOM:
-	    if (index < consoleModel.getConsoleItemCount())
+	    if (index < consoleModel.getItemCount())
 	    {
-		consoleAppearance.announceItem(consoleModel.getConsoleItem(index));
+		consoleAppearance.announceItem(consoleModel.getItem(index));
 		return;
 	    }
 	    if (!line.isEmpty())
@@ -329,9 +329,9 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 		context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 	    return;
 	case TOP:
-	    if (index > 0 && index - 1 < consoleModel.getConsoleItemCount())
+	    if (index > 0 && index - 1 < consoleModel.getItemCount())
 	    {
-		consoleAppearance.announceItem(consoleModel.getConsoleItem(index - 1));
+		consoleAppearance.announceItem(consoleModel.getItem(index - 1));
 		return;
 	    }
 	    if (!line.isEmpty())
@@ -346,7 +346,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	switch(inputPos)
 	{
 	case BOTTOM:
-	    return consoleModel.getConsoleItemCount();
+	    return consoleModel.getItemCount();
 	case TOP:
 	    return 0;
 	default:
