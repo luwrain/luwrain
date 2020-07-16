@@ -29,7 +29,7 @@ public class ListAreaTest extends Assert
 	final ListUtils.FixedModel model = new ListUtils.FixedModel(new String[]{"123", "456", "789"});
 	RegionTextQuery query = new RegionTextQuery();
 	final ListArea.Params params = new ListArea.Params();
-	params.context = new TestingControlEnvironment();
+	params.context = new TestingControlContext();
 	params.name = "test";
 	params.model = model;
 	params.appearance = new ListUtils.DefaultAppearance(params.context);
@@ -42,7 +42,7 @@ public class ListAreaTest extends Assert
 	assertFalse(area.onAreaQuery(query));
 	//Moving hot point right on three positions
 	for(int i = 0;i < 3;++i)
-	    assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT)));
+	    assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_RIGHT)));
 	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)));
 	query = new RegionTextQuery();
 	//With the region point shift on three positions right
@@ -53,7 +53,7 @@ public class ListAreaTest extends Assert
     {
 	final ListUtils.FixedModel model = new ListUtils.FixedModel(new String[]{"123", "456", "789"});
 final ListArea.Params params = new ListArea.Params();
-params.context = new TestingControlEnvironment();
+params.context = new TestingControlContext();
 params.name = "test";
 params.model = model;
 params.appearance = new ListUtils.DefaultAppearance(params.context);
@@ -61,7 +61,7 @@ final ListArea area = new ListArea(params);
 assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)));
 for(int i = 1;i <= 3;++i)
 {
-        assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT)));
+        assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_RIGHT)));
 	final RegionTextQuery query = new RegionTextQuery();
     assertTrue(area.onAreaQuery(query));
     final String res = query.getAnswer();
@@ -76,7 +76,7 @@ for(int i = 1;i <= 3;++i)
     {
 	final ListUtils.FixedModel model = new ListUtils.FixedModel(new String[]{"0123456789", "9876543210"});
 	final ListArea.Params params = new ListArea.Params();
-	params.context = new TestingControlEnvironment();
+	params.context = new TestingControlContext();
 	params.name = "test";
 	params.model = model;
 	params.appearance = new ListUtils.DefaultAppearance(params.context);
@@ -87,9 +87,9 @@ for(int i = 1;i <= 3;++i)
 	    assertTrue(area.onAreaQuery(query));
 	    assertTrue(query.hasAnswer());
 	    assertTrue(query.getAnswer().getText().equals("0123456789".substring(i)));
-	    assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT)));
+	    assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_RIGHT)));
 	}
-	assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
+	assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_DOWN)));
 	//This time query must fail on last position, because it's the last non-empty line
 	for(int i = 0;i < 10;++i)
 	{
@@ -97,7 +97,7 @@ for(int i = 1;i <= 3;++i)
 	    assertTrue(area.onAreaQuery(query));
 	    assertTrue(query.hasAnswer());
 	    assertTrue(query.getAnswer().getText().equals("9876543210".substring(i)));
-	    assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT)));
+	    assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_RIGHT)));
 	}
 	//Testing last position of the last non-empty line
 	{
@@ -107,7 +107,7 @@ for(int i = 1;i <= 3;++i)
 	    assertFalse(area.onAreaQuery(query));
 	}
 	//Testing the empty line, appears with default list settings
-	assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
+	assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_DOWN)));
 	{
 	    assertTrue(area.getHotPointX() == 0);
 	    assertTrue(area.getHotPointY() == 2);

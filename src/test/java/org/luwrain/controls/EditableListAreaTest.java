@@ -28,7 +28,7 @@ public class EditableListAreaTest extends Assert
     {
 	final EditableListArea.Model model = new ListUtils.DefaultEditableModel(new String[]{"1", "2", "3"});
 	final EditableListArea.Params params = new EditableListArea.Params();
-	params.context = new TestingControlEnvironment();
+	params.context = new TestingControlContext();
 	params.model = model;
 	params.appearance = new ListUtils.DefaultAppearance(params.context);
 	params.name = "test";
@@ -43,14 +43,14 @@ public class EditableListAreaTest extends Assert
 	{
 	    final EditableListArea.Model model = new ListUtils.DefaultEditableModel(new String[]{"0", "1", "2", "3", "4"});
 	final EditableListArea.Params params = new EditableListArea.Params();
-	final TestingControlEnvironment context = new TestingControlEnvironment();
+	final TestingControlContext context = new TestingControlContext();
 	params.context = context;
 	params.model = model;
 	params.appearance = new ListUtils.DefaultAppearance(params.context);
 	params.name = "test";
 	final EditableListArea area = new EditableListArea(params);
 	for(int k = 0;k < i;++k)
-	    assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
+	    assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_DOWN)));
 	assertTrue(area.selected().equals("" + i));
 	assertTrue(area.selectedIndex() == i);
 	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
@@ -68,14 +68,14 @@ public class EditableListAreaTest extends Assert
 	{
 	    final EditableListArea.Model model = new ListUtils.DefaultEditableModel(new String[]{"0", "1", "2", "3", "4"});
 	final EditableListArea.Params params = new EditableListArea.Params();
-	final TestingControlEnvironment context = new TestingControlEnvironment();
+	final TestingControlContext context = new TestingControlContext();
 	params.context = context;
 	params.model = model;
 	params.appearance = new ListUtils.DefaultAppearance(params.context);
 	params.name = "test";
 	final EditableListArea area = new EditableListArea(params);
 	for(int k = 0;k < i;++k)
-	    assertTrue(area.onInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN)));
+	    assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_DOWN)));
 	assertTrue(area.selected().equals("" + i));
 	assertTrue(area.selectedIndex() == i);
 	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)));

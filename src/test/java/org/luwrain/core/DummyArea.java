@@ -38,7 +38,7 @@ class DummyArea implements Area
 	}
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event) 
+    @Override public boolean onInputEvent(InputEvent event) 
     {
 	return false;
     }

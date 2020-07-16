@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.controls;
 
@@ -21,25 +6,27 @@ import org.junit.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
+import org.luwrain.controls.MultilineEdit.ModificationResult;
 
-public class MultilineEditModelTranslatorTest extends Assert
+public class MultilineEditCorrectorTranslatorTest extends Assert
 {
     @Test public void emptyLines()
     {
 	final MutableLinesImpl lines = new MutableLinesImpl(new String[0]);
 	final TestingHotPointControl hotPoint = new TestingHotPointControl();
-	final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
+	final MultilineEditCorrectorTranslator translator = new MultilineEditCorrectorTranslator(lines, hotPoint);
 	assertTrue(lines.getLineCount() == 0);
 	assertTrue(translator.getLineCount() == 1);
 	assertTrue(lines.getLine(0).equals(""));
-	translator.insertChars(0, 0, "a");
+	translator.putChars(0, 0, "a");
 	assertTrue(lines.getLineCount() == 1);
 	assertTrue(lines.getLine(0).equals("a"));
 	assertTrue(translator.getLineCount() == 1);
 	assertTrue(translator.getLine(0).equals("a"));
 	assertTrue(hotPoint.x == 1);
 	assertTrue(hotPoint.y == 0);
-	final char deleted = translator.deleteChar(0, 0);
+	final ModificationResult res = translator.deleteChar(0, 0);
+	final char deleted = res.getCharArg();
 	assertTrue(deleted == 'a');
 	assertTrue(lines.getLineCount() == 0);
 	assertTrue(translator.getLineCount() == 1);
@@ -52,7 +39,7 @@ public class MultilineEditModelTranslatorTest extends Assert
     {
 	final MutableLinesImpl lines = new MutableLinesImpl(new String[0]);
 	final TestingHotPointControl hotPoint = new TestingHotPointControl();
-	final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
+	final MultilineEditCorrectorTranslator translator = new MultilineEditCorrectorTranslator(lines, hotPoint);
 	assertTrue(translator.splitLine(0, 0).equals(""));
 	assertTrue(lines.getLineCount() == 2);
 	assertTrue(translator.getLineCount() == 2);
@@ -79,8 +66,8 @@ public class MultilineEditModelTranslatorTest extends Assert
 			final TestingHotPointControl hotPoint = new TestingHotPointControl();
 			hotPoint.x = x;
 			hotPoint.y = y;
-			final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
-			final char res = translator.deleteChar(pos, lineIndex);
+			final MultilineEditCorrectorTranslator translator = new MultilineEditCorrectorTranslator(lines, hotPoint);
+			final char res = translator.deleteChar(pos, lineIndex).getCharArg();
 			assertTrue(res == initial[lineIndex].charAt(pos));
 			assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex].substring(0, pos) + initial[lineIndex].substring(pos + 1)));
 			if (y == lineIndex)
@@ -108,8 +95,8 @@ public class MultilineEditModelTranslatorTest extends Assert
 			final TestingHotPointControl hotPoint = new TestingHotPointControl();
 			hotPoint.x = x;
 			hotPoint.y = y;
-			final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
-			translator.insertChars(pos, lineIndex, " ");
+			final MultilineEditCorrectorTranslator translator = new MultilineEditCorrectorTranslator(lines, hotPoint);
+			translator.putChars(pos, lineIndex, " ");
 			assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex].substring(0, pos) + " " + initial[lineIndex].substring(pos)));
 			if (y == lineIndex)
 			{
@@ -135,7 +122,7 @@ public class MultilineEditModelTranslatorTest extends Assert
 		    final TestingHotPointControl hotPoint = new TestingHotPointControl();
 		    hotPoint.x = x;
 		    hotPoint.y = y;
-		    final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
+		    final MultilineEditCorrectorTranslator translator = new MultilineEditCorrectorTranslator(lines, hotPoint);
 		    translator.mergeLines(lineIndex);
 		    assertTrue(lines.getLineCount() == 2);
 		    assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex] + initial[lineIndex + 1]));
@@ -168,8 +155,8 @@ public class MultilineEditModelTranslatorTest extends Assert
 			final TestingHotPointControl hotPoint = new TestingHotPointControl();
 			hotPoint.x = x;
 			hotPoint.y = y;
-			final MultilineEditModelTranslator translator = new MultilineEditModelTranslator(lines, hotPoint);
-			final String res = translator.splitLine(pos, lineIndex);
+			final MultilineEditCorrectorTranslator translator = new MultilineEditCorrectorTranslator(lines, hotPoint);
+			final String res = translator.splitLine(pos, lineIndex).getStringArg();
 			assertNotNull(res);
 			assertTrue(lines.getLineCount() == 4);
 			assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex].substring(0, pos)));
