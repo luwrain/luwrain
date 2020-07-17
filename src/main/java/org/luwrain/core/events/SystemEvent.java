@@ -22,13 +22,13 @@ import org.luwrain.core.*;
 
 /**
  * An event addressed to one or several areas and not related to user
- * input. Environment events are delivered to areas through 
+ * input. System events are delivered to areas through 
  * {@code onSystemEvent()} method and notifies that area should do some
  * action which certainly not related to user input.  The area may decide
  * on its own whether it would like to perform the required action or to
- * ignore it. There can be both system-defined environment events and
+ * ignore it. There can be both system-defined system events and
  * extension-defined. Generally, there are three major types of
- * environment events:
+ * system events:
  * <ul>
  * <li>Regular events</li>
  * <li>Broadcast events</li>
@@ -55,11 +55,11 @@ import org.luwrain.core.*;
  * system thread while they can be issued in any thread. The only
  * restriction is that the application which has issued this event must
  * be still launched when the event is processed. All addressed events must be
- * derived from {@link AddressedEnvironmentEvent} class.
+ * derived from {@link AddressedSystemEvent} class.
  *
- * @see AddressedEnvironmentEvent
+ * @see AddressedSystemEvent
  */
-public class EnvironmentEvent extends Event
+public class SystemEvent extends Event
 {
     public enum Type {REGULAR, BROADCAST};
 
@@ -92,7 +92,7 @@ public class EnvironmentEvent extends Event
     protected final String broadcastFilterAreaClassName;
     protected final String broadcastFilterUniRef;
 
-    public EnvironmentEvent(Code code)
+    public SystemEvent(Code code)
     {
 	NullCheck.notNull(code, "code");
 	this.type = Type.REGULAR;
@@ -101,7 +101,7 @@ public class EnvironmentEvent extends Event
 	this.broadcastFilterUniRef = null;
     }
 
-    public EnvironmentEvent(Type type, Code code)
+    public SystemEvent(Type type, Code code)
     {
 	NullCheck.notNull(type, "type");
 	NullCheck.notNull(code, "code");
@@ -111,7 +111,7 @@ public class EnvironmentEvent extends Event
 	this.broadcastFilterUniRef = null;
     }
 
-    public EnvironmentEvent(Type type, Code code,
+    public SystemEvent(Type type, Code code,
 			    String broadcastFilterAreaClassName, String broadcastFilterUniRef)
     {
 	NullCheck.notNull(type, "type");
