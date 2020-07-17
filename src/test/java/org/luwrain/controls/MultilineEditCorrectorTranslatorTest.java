@@ -8,7 +8,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.controls.MultilineEdit.ModificationResult;
 
-public class MultilineEditCorrectorTranslatorTest extends Assert
+@Ignore public class MultilineEditCorrectorTranslatorTest extends Assert
 {
     @Test public void emptyLines()
     {
