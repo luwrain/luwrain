@@ -43,7 +43,7 @@ class DummyArea implements Area
 	return false;
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	return false;
     }

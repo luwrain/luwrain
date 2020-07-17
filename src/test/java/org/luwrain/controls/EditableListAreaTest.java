@@ -18,7 +18,7 @@ import org.luwrain.core.queries.*;
 	params.appearance = new ListUtils.DefaultAppearance(params.context);
 	params.name = "test";
 	final EditableListArea area = new EditableListArea(params);
-	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR)));
+	assertTrue(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR)));
 	assertTrue(model.getItemCount() == 0);
     }
 
@@ -38,7 +38,7 @@ import org.luwrain.core.queries.*;
 	    assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_DOWN)));
 	assertTrue(area.selected().equals("" + i));
 	assertTrue(area.selectedIndex() == i);
-	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)));
+	assertTrue(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR_REGION)));
 	assertTrue(model.getItemCount() == 4);
 	for(int k = 0;k < model.getItemCount();++k)
 	    assertTrue(!model.getItem(k).equals("" + i));
@@ -63,7 +63,7 @@ import org.luwrain.core.queries.*;
 	    assertTrue(area.onInputEvent(new InputEvent(InputEvent.Special.ARROW_DOWN)));
 	assertTrue(area.selected().equals("" + i));
 	assertTrue(area.selectedIndex() == i);
-	assertTrue(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)));
+	assertTrue(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_CUT)));
 	assertTrue(model.getItemCount() == 4);
 	for(int k = 0;k < model.getItemCount();++k)
 	    assertTrue(!model.getItem(k).equals("" + i));
