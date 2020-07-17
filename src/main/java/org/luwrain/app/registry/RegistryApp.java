@@ -133,7 +133,7 @@ return actions.insertDir();
 		    }
 			return super.onInputEvent(event);
 		}
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");
@@ -181,7 +181,7 @@ return actions.insertDir();
 		    }
 			return super.onInputEvent(event);
 		}
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    if (event == null)
 			throw new NullPointerException("event may not be null");

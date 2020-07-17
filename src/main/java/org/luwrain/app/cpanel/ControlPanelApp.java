@@ -81,10 +81,10 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 		    return super.onInputEvent(event);
 		}
 
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+		    if (event.getType() != SystemEvent.Type.REGULAR)
 			return super.onSystemEvent(event);
 		    switch (event.getCode())
 		    {
@@ -119,7 +119,7 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 		    return res != null?res:new Action[0];
     }
 
-    private boolean onTreeAction(EnvironmentEvent event)
+    private boolean onTreeAction(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 		    final Object selected = sectionsArea.selected();

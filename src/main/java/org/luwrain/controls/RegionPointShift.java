@@ -49,7 +49,7 @@ public class RegionPointShift implements AbstractRegionPoint
 	return value >= offsetY?value - offsetY:0;
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
+    @Override public boolean onSystemEvent(SystemEvent event, int hotPointX, int hotPointY)
     {
 	NullCheck.notNull(event, "event");
 	return regionPoint.onSystemEvent(event, hotPointX + offsetX, hotPointY + offsetY);

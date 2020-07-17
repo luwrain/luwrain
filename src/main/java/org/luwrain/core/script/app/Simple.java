@@ -70,10 +70,10 @@ public final class Simple implements Application
 			return true;
 						    return false;
 		}
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+		    if (event.getType() != SystemEvent.Type.REGULAR)
 			return super.onSystemEvent(event);
 		    		    if (Simple.this.handleSystemEvent(event))
 			return true;
@@ -128,7 +128,7 @@ public final class Simple implements Application
 	return false;
     }
 
-            private boolean handleSystemEvent(EnvironmentEvent event)
+            private boolean handleSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	final Object funcObj = org.luwrain.script.ScriptUtils.getMember(jsObj, "onSystemEvent");

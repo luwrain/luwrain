@@ -62,10 +62,10 @@ public class DisksPopup extends ListPopupBase
 	return super.onInputEvent(event);
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.getType() == EnvironmentEvent.Type.BROADCAST)
+	if (event.getType() == SystemEvent.Type.BROADCAST)
 	    switch(event.getCode())
 	    {
 	    case REFRESH:

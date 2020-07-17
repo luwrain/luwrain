@@ -114,10 +114,10 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return false;
     }
 
-    public boolean onSystemEvent(Area area, EnvironmentEvent event)
+    public boolean onSystemEvent(Area area, SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	if (event.getType() != SystemEvent.Type.REGULAR)
 	    return false;
 	switch(event.getCode())
 	{
@@ -129,10 +129,10 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	}
     }
 
-    public boolean onSystemEvent(Area area, EnvironmentEvent event, LayoutBase.Actions actions)
+    public boolean onSystemEvent(Area area, SystemEvent event, LayoutBase.Actions actions)
     {
 	NullCheck.notNull(event, "event");
-	if (event.getType() == EnvironmentEvent.Type.REGULAR)
+	if (event.getType() == SystemEvent.Type.REGULAR)
 	switch(event.getCode())
 	{
 	case ACTION:

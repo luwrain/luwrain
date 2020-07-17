@@ -83,7 +83,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.OK));
+		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.OK));
 		}
 	    },
 
@@ -95,7 +95,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CANCEL));
+		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.CANCEL));
 		}
 	    },
 
@@ -107,7 +107,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLOSE));
+		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.CLOSE));
 		}
 	    },
 
@@ -131,7 +131,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.SAVE));
+		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.SAVE));
 		}
 	    },
 
@@ -169,7 +169,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.REFRESH));
+		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.REFRESH));
 		}
 	    },
 
@@ -184,7 +184,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.ANNOUNCE_LINE)))
+		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.ANNOUNCE_LINE)))
 			return;
 		    final int hotPointY = area.getHotPointY();
 		    if (hotPointY >= area.getLineCount())
@@ -220,7 +220,7 @@ class Commands
 		    final AtomicReference x = new AtomicReference();
 		    final AtomicReference y = new AtomicReference();
 		    core.unsafeAreaOperation(()->{
-			    if (!area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.REGION_POINT)))
+			    if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.REGION_POINT)))
 			    {
 				res.set(new Boolean(false));
 				return;
@@ -265,7 +265,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY)))
+		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY)))
 			core.playSound(Sounds.COPIED); else
 			core.eventNotProcessedMessage();
 		}
@@ -283,7 +283,7 @@ class Commands
 		    if (area == null)
 			return;
 		    final AtomicReference res = new AtomicReference();
-		    core.unsafeAreaOperation(()->res.set(new Boolean(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_COPY_ALL)))));
+		    core.unsafeAreaOperation(()->res.set(new Boolean(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY_ALL)))));
 		    if (res.get() == null || !((Boolean)res.get()).booleanValue())
 		    {
 			core.eventNotProcessedMessage();
@@ -316,7 +316,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_CUT)))
+		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_CUT)))
 			core.playSound(Sounds.CUT);else
 			core.eventNotProcessedMessage();
 		}
@@ -333,7 +333,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR_REGION)))
+		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR_REGION)))
 			core.playSound(Sounds.DELETED); else
 			core.eventNotProcessedMessage();
 		}
@@ -355,7 +355,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLIPBOARD_PASTE)))
+		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_PASTE)))
 			core.playSound(Sounds.PASTE); else
 			core.eventNotProcessedMessage();
 		}
@@ -374,7 +374,7 @@ class Commands
 			return;
 		    final AtomicReference res = new AtomicReference();
 		    core.unsafeAreaOperation(()->{
-			    res.set(new Boolean(area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.CLEAR))));
+			    res.set(new Boolean(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR))));
 			});
 		    if (res.get() == null || !((Boolean)res.get()).booleanValue())
 		    {
@@ -405,7 +405,7 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    core.enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Code.HELP));
+		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.HELP));
 		}
 	    },
 
@@ -709,7 +709,7 @@ class Commands
 		    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
-		    if (!area.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.PROPERTIES)))
+		    if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.PROPERTIES)))
 			core.eventNotProcessedMessage();
 		}
 	    },

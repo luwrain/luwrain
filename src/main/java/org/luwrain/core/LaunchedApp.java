@@ -169,7 +169,7 @@ final Application app;
 	return new AreaLayout(layoutType, a);
     }
 
-    void sendBroadcastEvent(org.luwrain.core.events.EnvironmentEvent event)
+    void sendBroadcastEvent(org.luwrain.core.events.SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	//	super.sendBroadcastEvent(event);

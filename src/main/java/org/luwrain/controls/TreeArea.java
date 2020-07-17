@@ -186,9 +186,9 @@ public class TreeArea implements Area
 	return false;
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
-	if (event.getCode() == EnvironmentEvent.Code.REFRESH)
+	if (event.getCode() == SystemEvent.Code.REFRESH)
 	{
 	    refresh();
 	    return true;

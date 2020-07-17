@@ -453,10 +453,10 @@ public interface ClipboardSaver
 	}
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	if (event.getType() != SystemEvent.Type.REGULAR)
 	    return false;
 	switch (event.getCode())
 	{
@@ -959,7 +959,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	return true;
     }
 
-    protected boolean onOk(EnvironmentEvent event)
+    protected boolean onOk(SystemEvent event)
     {
 	if (listClickHandler == null)
 	    return false;

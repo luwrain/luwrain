@@ -452,7 +452,7 @@ final class AppManager
 	popups.lastElement().stopCondition.cancel();
     }
 
-    void sendBroadcastEvent(org.luwrain.core.events.EnvironmentEvent event)
+    void sendBroadcastEvent(org.luwrain.core.events.SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	//	shell.sendBroadcastEvent(event);

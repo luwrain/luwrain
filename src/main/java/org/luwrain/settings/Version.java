@@ -60,7 +60,7 @@ final class Version extends SimpleArea implements SectionArea
 	return super.onInputEvent(event);
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (controlPanel.onSystemEvent(event))

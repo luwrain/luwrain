@@ -249,7 +249,7 @@ public interface Luwrain extends PropertiesBase
     void speak(String text, int pitch);
     void speak(String text, int pitch, int rate);
     void speakLetter(char letter, int pitch);
-        void sendBroadcastEvent(EnvironmentEvent event);
+        void sendBroadcastEvent(SystemEvent event);
     void sendInputEvent(InputEvent event);
 
     /**

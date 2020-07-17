@@ -96,7 +96,7 @@ public class Search implements Area
 	return onNewChar(event.getChar());
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	return area.onSystemEvent(event);
     }

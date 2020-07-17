@@ -54,7 +54,7 @@ class ScreenContentManager
     }
     */
 
-    int onSystemEvent(EnvironmentEvent event)
+    int onSystemEvent(SystemEvent event)
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)

@@ -83,7 +83,7 @@ public interface Area extends Lines, HotPoint
     int getHotPointX();
     int getHotPointY();
     boolean onInputEvent(InputEvent event);
-    boolean onSystemEvent(EnvironmentEvent event);
+    boolean onSystemEvent(SystemEvent event);
     boolean onAreaQuery(AreaQuery areaQuery);
     Action[] getAreaActions();
 }

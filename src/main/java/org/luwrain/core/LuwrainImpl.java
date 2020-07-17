@@ -126,7 +126,7 @@ final class LuwrainImpl implements Luwrain
 	    });
     }
 
-    @Override public void sendBroadcastEvent(EnvironmentEvent e)
+    @Override public void sendBroadcastEvent(SystemEvent e)
     {
 	NullCheck.notNull(e, "e");
 	core.enqueueEvent(e);

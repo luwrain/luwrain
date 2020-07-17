@@ -45,7 +45,7 @@ public final class App implements Application, MonoApp
 	    return base.onInput(text, ()->area.refresh());
 	};
 	this.area = new ConsoleArea(base.createConsoleParams(clickHandler, inputHandler)){
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    switch(event.getCode())

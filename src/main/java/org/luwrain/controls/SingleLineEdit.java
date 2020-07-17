@@ -85,10 +85,10 @@ public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQ
 	return onCharacter(event);
     }
 
-    public boolean onSystemEvent(EnvironmentEvent event)
+    public boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.getType() !=EnvironmentEvent.Type.REGULAR)
+	if (event.getType() !=SystemEvent.Type.REGULAR)
 	    return false;
 	switch(event.getCode())
 	{

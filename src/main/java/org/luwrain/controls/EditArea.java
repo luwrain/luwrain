@@ -225,7 +225,7 @@ return new MultilineEditCorrectorTranslator(content, this);
 	return ((Boolean)res.get()).booleanValue();
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (edit.onSystemEvent(event))

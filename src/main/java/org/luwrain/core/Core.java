@@ -801,7 +801,7 @@ onNewAreasLayout();
 	mainCoreThreadOnly();
 	interaction.setDesirableFontSize(interaction.getFontSize() + 5); 
 	windowManager.redraw();
-	apps.sendBroadcastEvent(new EnvironmentEvent(EnvironmentEvent.Type.BROADCAST, EnvironmentEvent.Code.FONT_SIZE_CHANGED));
+	apps.sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.FONT_SIZE_CHANGED));
 	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MessageType.REGULAR);
     }
 
@@ -812,7 +812,7 @@ onNewAreasLayout();
 	    return;
 	interaction.setDesirableFontSize(interaction.getFontSize() - 5); 
 	windowManager.redraw();
-	apps.sendBroadcastEvent(new EnvironmentEvent(EnvironmentEvent.Type.BROADCAST, EnvironmentEvent.Code.FONT_SIZE_CHANGED));
+	apps.sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.FONT_SIZE_CHANGED));
 	message(i18n.getStaticStr("FontSize") + " " + interaction.getFontSize(), Luwrain.MessageType.REGULAR);
     }
 

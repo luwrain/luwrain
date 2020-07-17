@@ -20,7 +20,7 @@ package org.luwrain.core.events;
 
 import org.luwrain.core.*;
 
-public class MoveHotPointEvent extends EnvironmentEvent
+public class MoveHotPointEvent extends SystemEvent
 {
 protected final int newHotPointX;
     protected final int newHotPointY;

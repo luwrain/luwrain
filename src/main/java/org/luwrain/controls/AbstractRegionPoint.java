@@ -23,7 +23,7 @@ import org.luwrain.core.events.*;
 
 public interface AbstractRegionPoint extends HotPoint
 {
-    boolean onSystemEvent(EnvironmentEvent event, int hotPointX, int hotPointY);
+    boolean onSystemEvent(SystemEvent event, int hotPointX, int hotPointY);
     boolean isInitialized();
     void set(int hotPointX, int hotPointY);
     void reset();

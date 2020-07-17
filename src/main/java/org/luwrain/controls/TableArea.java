@@ -258,7 +258,7 @@ int getColWidth(TableArea.Model model, int  colIndex);
 	}
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	if (event == null)
 	    throw new NullPointerException("event may not be null");

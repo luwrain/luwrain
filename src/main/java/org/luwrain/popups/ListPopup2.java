@@ -56,7 +56,7 @@ public class ListPopup2 extends ListArea implements Popup, PopupClosingTranslato
 	return super.onInputEvent(event);
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (closing.onSystemEvent(event))

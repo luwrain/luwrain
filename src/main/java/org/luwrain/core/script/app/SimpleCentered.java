@@ -73,10 +73,10 @@ public final class SimpleCentered implements Application
 			return true;
 						    return false;
 		}
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+		    if (event.getType() != SystemEvent.Type.REGULAR)
 			return super.onSystemEvent(event);
 		    		    if (SimpleCentered.this.handleSystemEvent(event))
 			return true;
@@ -140,7 +140,7 @@ bkgSound = requestBkgSound();
 	return false;
     }
 
-        private boolean handleSystemEvent(EnvironmentEvent event)
+        private boolean handleSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	final Object funcObj = org.luwrain.script.ScriptUtils.getMember(jsObj, "onSystemEvent");

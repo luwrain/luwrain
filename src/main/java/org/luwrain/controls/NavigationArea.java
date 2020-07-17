@@ -90,10 +90,10 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return false;
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	if (event.getType() != SystemEvent.Type.REGULAR)
 	    return false;
 	switch(event.getCode())
 	{

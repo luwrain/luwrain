@@ -91,7 +91,7 @@ class LaunchedAppBase
 	return null;
     }
 
-        void sendBroadcastEvent(org.luwrain.core.events.EnvironmentEvent event)
+        void sendBroadcastEvent(org.luwrain.core.events.SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	for(Area area: popups)

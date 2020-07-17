@@ -48,10 +48,10 @@ public class RegionTextQueryTranslator
 	this.flags = flags;
     }
 
-    public boolean onSystemEvent(EnvironmentEvent event, int hotPointX, int hotPointY)
+    public boolean onSystemEvent(SystemEvent event, int hotPointX, int hotPointY)
     {
 	NullCheck.notNull(event, "event");
-	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	if (event.getType() != SystemEvent.Type.REGULAR)
 	    return false;
 	if (hotPointX < 0 || hotPointY < 0)
 	    throw new IllegalArgumentException("hotPointX and hotPointY must be greater or equal to zero (" + hotPointX + "," + hotPointY + ")");

@@ -262,7 +262,7 @@ public final class ScriptUtils
 	};
     }
 
-	    static public HookObject createSystemEvent(EnvironmentEvent event)
+	    static public HookObject createSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	return new EmptyHookObject(){

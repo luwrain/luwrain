@@ -76,7 +76,7 @@ protected interface ActionHandler
 		return a.handler.onAction();
 	    return false;
 	}
-	boolean onActionEvent(EnvironmentEvent event)
+	boolean onActionEvent(SystemEvent event)
 	{
 	    NullCheck.notNull(event, "event");
 	    	    for(ActionInfo a: actions)

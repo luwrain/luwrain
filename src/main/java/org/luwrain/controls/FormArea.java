@@ -538,10 +538,10 @@ final int count = multilineEditLines.getLineCount();
 	return super.onInputEvent(event);
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	if (event.getType() != SystemEvent.Type.REGULAR)
 	    return super.onSystemEvent(event);
 	//Insert command for a uniref
 
@@ -734,7 +734,7 @@ protected ListChoosing listChoosing;
 	{
 	    return edit != null?edit.onInputEvent(event):false;
 	}
-	boolean onSystemEvent(EnvironmentEvent event)
+	boolean onSystemEvent(SystemEvent event)
 	{
 	    return edit != null?edit.onSystemEvent(event):false;
 	}

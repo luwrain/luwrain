@@ -77,20 +77,20 @@ abstract class EventDispatching extends Areas
 		return onCallableEvent((CallableEvent)event);
 	    if (event instanceof InputEvent)
 		return onInputEvent(Keyboard.translate((InputEvent)event));
-	    if (event instanceof EnvironmentEvent)
+	    if (event instanceof SystemEvent)
 	    {
-		final EnvironmentEvent environmentEvent = (EnvironmentEvent)event;
-		if (environmentEvent.getType() == null)
+		final SystemEvent systemEvent = (SystemEvent)event;
+		if (systemEvent.getType() == null)
 		{
 		    Log.warning(LOG_COMPONENT, "the system event with null type in main event loop, skipping");
 		    return true;
 		}
-		switch(environmentEvent.getType())
+		switch(systemEvent.getType())
 		{
 		case REGULAR:
-		    return onSystemEvent(environmentEvent);
+		    return onSystemEvent(systemEvent);
 		case BROADCAST:
-		    return onBroadcastEnvironmentEvent(environmentEvent);
+		    return onBroadcastEnvironmentEvent(systemEvent);
 		default:
 		    return true;
 		}
@@ -240,7 +240,7 @@ abstract class EventDispatching extends Areas
 	return false;
     }
 
-    private boolean onSystemEvent(EnvironmentEvent event)
+    private boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	switch(popupBlocking())
@@ -268,7 +268,7 @@ abstract class EventDispatching extends Areas
 	return true;
     }
 
-    private boolean onBroadcastEnvironmentEvent(EnvironmentEvent event)
+    private boolean onBroadcastEnvironmentEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	apps.sendBroadcastEvent(event);
@@ -323,7 +323,7 @@ abstract class EventDispatching extends Areas
 	    return;
 	final AtomicReference res = new AtomicReference();
 	unsafeAreaOperation(()->{
-		res.set(new Boolean(activeArea.onSystemEvent(new EnvironmentEvent(EnvironmentEvent.Code.INTRODUCE))));
+		res.set(new Boolean(activeArea.onSystemEvent(new SystemEvent(SystemEvent.Code.INTRODUCE))));
 	    });
 	if (res.get() != null && ((Boolean)res.get()).booleanValue())
 	    return;

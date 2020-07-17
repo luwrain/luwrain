@@ -20,7 +20,7 @@ package org.luwrain.core.events;
 
 import org.luwrain.core.*;
 
-public class ListeningFinishedEvent extends EnvironmentEvent
+public class ListeningFinishedEvent extends SystemEvent
 {
     protected final Object extraInfo;
 

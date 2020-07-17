@@ -20,7 +20,7 @@ package org.luwrain.core.events;
 
 import org.luwrain.core.*;
 
-public class ActionEvent extends EnvironmentEvent
+public class ActionEvent extends SystemEvent
 {
     private Action action;
 

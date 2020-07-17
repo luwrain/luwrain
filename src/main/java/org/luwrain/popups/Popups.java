@@ -238,10 +238,10 @@ name, prefix, text, popupFlags);
 	final AtomicReference res = new AtomicReference(null);
 	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
 							luwrain.getFileProperty("luwrain.dir.userhome"), skipHidden.get()?noHiddenFilter:fullFilter, DEFAULT_POPUP_FLAGS){
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+		    if (event.getType() != SystemEvent.Type.REGULAR)
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
@@ -305,10 +305,10 @@ name, prefix, text, popupFlags);
 	final AtomicReference res = new AtomicReference(null);
 	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
 							luwrain.getFileProperty("luwrain.dir.userhome"), skipHidden.get()?noHiddenFilter:fullFilter, DEFAULT_POPUP_FLAGS){
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+		    if (event.getType() != SystemEvent.Type.REGULAR)
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {

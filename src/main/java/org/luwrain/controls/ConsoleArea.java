@@ -237,10 +237,10 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	return super.onInputEvent(event);
     }
 
-    @Override public boolean onSystemEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.getType() != EnvironmentEvent.Type.REGULAR)
+	if (event.getType() != SystemEvent.Type.REGULAR)
 	    return super.onSystemEvent(event);
 	if (edit.isPosCovered(getHotPointX(), getHotPointY()) && edit.onSystemEvent(event))
 	    return true;
