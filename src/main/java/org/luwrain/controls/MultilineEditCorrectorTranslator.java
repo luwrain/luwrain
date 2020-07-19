@@ -1,6 +1,6 @@
 /*
    Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
-clas
+
    This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
