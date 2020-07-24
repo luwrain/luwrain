@@ -21,7 +21,6 @@ package org.luwrain.controls.block;
 import java.util.*;
 
 import org.luwrain.core.*;
-import org.luwrain.browser.*;
 
 final class ViewBuilder
 {

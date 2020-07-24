@@ -22,7 +22,6 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
-import org.luwrain.browser.*;
 
 public final class View implements Lines
 {

@@ -532,24 +532,12 @@ final class LuwrainImpl implements Luwrain
 	}
     }
 
-    @Override public org.luwrain.browser.Browser createBrowser()
+    @Override public GraphicalMode openGraphicalMode(String modeName, GraphicalMode.Params params)
     {
+	NullCheck.notEmpty(modeName, "modeName");
+	NullCheck.notNull(params, "params");
 	core.mainCoreThreadOnly();
-	return core.interaction.createBrowser();
-    }
-
-        @Override public org.luwrain.interaction.graphical.Pdf createPdfPreview(org.luwrain.interaction.graphical.Pdf.Listener listener, File file) throws Exception
-    {
-	NullCheck.notNull(listener, "listener");
-	NullCheck.notNull(file, "file");
-		core.mainCoreThreadOnly();
-		return core.interaction.createPdfPreview(new org.luwrain.interaction.graphical.Pdf.Listener(){
-			@Override public void onInputEvent(InputEvent event)
-			{
-			    NullCheck.notNull(event, "event");
-			    runUiSafely(()->listener.onInputEvent(event));
-			}
-		    }, file);
+	return core.interaction.openGraphicalMode(modeName, params);
     }
 
     @Override public void runUiSafely(Runnable runnable)

@@ -36,6 +36,5 @@ public interface Interaction
     void setHotPoint(int x, int y);
     void drawVerticalLine(int top, int bottom, int x);
     void drawHorizontalLine(int left, int right, int y);
-    org.luwrain.browser.Browser createBrowser();
-    org.luwrain.interaction.graphical.Pdf createPdfPreview(org.luwrain.interaction.graphical.Pdf.Listener listener, java.io.File file) throws Exception;
+    GraphicalMode openGraphicalMode(String modeName, GraphicalMode.Params params);
 }

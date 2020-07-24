@@ -22,7 +22,6 @@ import java.util.*;
 import java.awt.Rectangle;
 
 import org.luwrain.core.*;
-import org.luwrain.browser.*;
 
 public class Block
 {

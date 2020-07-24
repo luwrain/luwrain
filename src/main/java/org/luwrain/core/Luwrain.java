@@ -114,8 +114,7 @@ public interface Luwrain extends PropertiesBase
     void closeApp();
     void crash(org.luwrain.app.crash.App app);
         void crash(Exception e);
-    org.luwrain.browser.Browser createBrowser();
-    org.luwrain.interaction.graphical.Pdf createPdfPreview(org.luwrain.interaction.graphical.Pdf.Listener listener, File file) throws Exception;
+    GraphicalMode openGraphicalMode(String modeName, GraphicalMode.Params params);
     void announcement(String text, String announcementClass, String announcementSubclass);
 
 
