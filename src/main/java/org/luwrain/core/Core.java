@@ -89,32 +89,8 @@ final class Core extends EventDispatching
     {
 	NullCheck.notNull(eventResponse, "eventResponse");
 	//FIXME:access level
-	eventResponse.announce(getObjForEnvironment(),
-			       new EventResponse.Speech(){
-				   @Override public void speak(String[] parts)
-				   {
-				       NullCheck.notNullItems(parts, "parts");
-				       if (parts.length == 0)
-					   return;
-				       if (parts.length == 1)
-				       {
-					   speech.speakEventResponse(speakingText.processEventResponse(parts[0]));
-					   return;
-				       }
-				       final StringBuilder b = new StringBuilder();
-				       b.append(parts[0]);
-				       for(int i = 1;i < parts.length;++i)
-					   b.append(", ").append(parts[i]);
-				       speech.speakEventResponse(speakingText.processEventResponse(new String(b)));
-				   }
-				   @Override public void speakLetter(char letter)
-				   {
-				       		final String value = i18n.hasSpecialNameOfChar(letter);
-		if (value == null)
-speech.speakLetter(letter, 0, 0); else
-		    speech.speak(value, 0, 0);
-				   }
-			       });
+	final EventResponse.Speech s = new org.luwrain.core.speech.EventResponseSpeech(speech, i18n, speakingText);
+	eventResponse.announce(getObjForEnvironment(), s);
     }
 
         @Override Area getValidActiveArea(boolean speakMessages)

@@ -120,7 +120,7 @@ public final class Speech
     }
 
     //Always cancels any previous text to speak
-    void speak(String text, int relPitch, int relRate)
+    public void speak(String text, int relPitch, int relRate)
     {
 	NullCheck.notNull(text, "text");
 	if (defaultChannel == null || text.isEmpty())
@@ -129,7 +129,7 @@ public final class Speech
     }
 
     //Always cancels any previous text to speak
-    void speakEventResponse(String text)
+    public void speakEventResponse(String text)
     {
 	NullCheck.notNull(text, "text");
 	if (defaultChannel == null || text.isEmpty())
@@ -138,7 +138,7 @@ public final class Speech
     }
 
     //Always cancels any previous text to speak
-    void speakLetter(char letter, int relPitch, int relRate)
+    public void speakLetter(char letter, int relPitch, int relRate)
     {
 	if (defaultChannel == null)
 	    return;
