@@ -491,11 +491,9 @@ class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Application app = new org.luwrain.app.console.App();
-		    core.launchApp(app);
+		    core.launchApp(new org.luwrain.app.console.App());
 		}
 	    },
-
 
 	    //registry
 	    new Command() {

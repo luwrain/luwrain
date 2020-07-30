@@ -25,8 +25,8 @@ import org.luwrain.template.*;
 
 public final class App extends AppBase<Strings> implements MonoApp
 {
-                static final List messages = new LinkedList();
-        private ConsoleCommand[] commands = new ConsoleCommand[0];
+    static final List messages = new LinkedList();
+    private ConsoleCommand[] commands = new ConsoleCommand[0];
     private MainLayout mainLayout = null;
 
     public App()
@@ -37,9 +37,9 @@ public final class App extends AppBase<Strings> implements MonoApp
     @Override public boolean onAppInit()
     {
 	this.mainLayout = new MainLayout(this);
-		this.commands = new ConsoleCommand[]{
-		    new Commands.Prop(getLuwrain()),
-		};
+	this.commands = new ConsoleCommand[]{
+	    new Commands.Prop(getLuwrain()),
+	};
 	setAppName(getStrings().appName());
 	return true;
     }
@@ -47,6 +47,31 @@ public final class App extends AppBase<Strings> implements MonoApp
     ConsoleCommand[] getCommands()
     {
 	return this.commands.clone();
+    }
+
+    boolean onInputEvent(Area area, InputEvent event, Runnable closing)
+    {
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(event, "event");
+	if (super.onInputEvent(area, event))
+	    return true;
+	if (event.isSpecial())
+	    switch(event.getSpecial())
+	    {
+	    case ESCAPE:
+		if (closing != null)
+		    closing.run(); else
+		    closeApp();
+		return true;
+	    }
+	return false;
+    }
+
+    @Override public boolean onInputEvent(Area area, InputEvent event)
+    {
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(event, "event");
+	return onInputEvent(area, event, null);
     }
 
     @Override public AreaLayout getDefaultAreaLayout()

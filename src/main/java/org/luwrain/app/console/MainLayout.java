@@ -33,11 +33,27 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 	NullCheck.notNull(app, "app");
 	this.app = app;
 	this.consoleArea = new ConsoleArea(createConsoleParams()){
+		@Override public boolean onInputEvent(InputEvent event)
+		{
+		    NullCheck.notNull(event, "event");
+		    if (app.onInputEvent(this, event))
+			return true;
+		    return super.onInputEvent(event);
+		}
 		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-			return super.onSystemEvent(event);
-		    }
+		    if (app.onSystemEvent(this, event))
+			return true;
+		    return super.onSystemEvent(event);
+		}
+		@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    NullCheck.notNull(query, "query");
+		    if (app.onAreaQuery(this, query))
+			return true;
+		    return super.onAreaQuery(query);
+		}
 	    };
     }
 
@@ -60,8 +76,6 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 	return Result.CLEAR_INPUT;
     }
 
-
-
     private ConsoleArea.Params createConsoleParams()
     {
 	final ConsoleArea.Params params = new ConsoleArea.Params();
@@ -70,7 +84,7 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 	params.model = new Model();
 	params.appearance = new Appearance();
 	//	params.clickHandler = clickHandler;
-		params.inputHandler = this;
+	params.inputHandler = this;
 	params.inputPos = ConsoleArea.InputPos.BOTTOM;
 	params.inputPrefix = "LUWRAIN>";
 	return params;
@@ -109,9 +123,11 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 	@Override public String getTextAppearance(Object item)
 	{
 	    NullCheck.notNull(item, "item");
-	    return item.toString();
-	}
+
+	    	    if (!(item instanceof Log.Message))
+			return item.toString();
+		    	    final Log.Message message = (Log.Message)item;
+			    return message.message;
+			    	}
     };
-
-
 }
