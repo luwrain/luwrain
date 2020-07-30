@@ -21,65 +21,43 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.template.*;
 
-public final class App implements Application, MonoApp
+public final class App extends AppBase<Strings> implements MonoApp
 {
-    private Luwrain luwrain = null;
-    private Base base = null;
-    private ConsoleArea area = null;
+                static final List messages = new LinkedList();
+        private ConsoleCommand[] commands = new ConsoleCommand[0];
+    private MainLayout mainLayout = null;
 
-    @Override public InitResult onLaunchApp(Luwrain luwrain)
+    public App()
     {
-	this.luwrain = luwrain;
-	this.base = new Base(luwrain);
-	createArea();
-	return new InitResult();
+	super(Strings.NAME, Strings.class);
     }
 
-    private void createArea()
+    @Override public boolean onAppInit()
     {
-	final ConsoleArea.ClickHandler clickHandler = (area,index,obj)->{
-	    return false;
-	};
-	final ConsoleArea.InputHandler inputHandler = (area,text)->{
-	    return base.onInput(text, ()->area.refresh());
-	};
-	this.area = new ConsoleArea(base.createConsoleParams(clickHandler, inputHandler)){
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    switch(event.getCode())
-		    {
-		    case CLOSE:
-			closeApp();
-			return true;
-		    default:
-			return super.onSystemEvent(event);
-		    }
-		}
-	    };
+	this.mainLayout = new MainLayout(this);
+		this.commands = new ConsoleCommand[]{
+		    new Commands.Prop(getLuwrain()),
+		};
+	setAppName(getStrings().appName());
+	return true;
     }
 
-    @Override public AreaLayout getAreaLayout()
+    ConsoleCommand[] getCommands()
     {
-	return new AreaLayout(area);
+	return this.commands.clone();
     }
 
-    @Override public String getAppName()
+    @Override public AreaLayout getDefaultAreaLayout()
     {
-	return "LUWRAIN";
+	return this.mainLayout.getLayout();
     }
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
     {
 	NullCheck.notNull(app, "app");
 	return MonoApp.Result.BRING_FOREGROUND;
-    }
-
-    @Override public void closeApp()
-    {
-	base.removeListener();
-	luwrain.closeApp();
     }
 
     static public void installListener()

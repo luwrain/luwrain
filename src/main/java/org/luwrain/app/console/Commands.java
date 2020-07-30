@@ -35,7 +35,7 @@ final class Commands
 	{
 	    NullCheck.notEmpty(text, "text");
 	    NullCheck.notNull(messages, "messages");
-	    if (!Base.firstWord(text).equals("prop"))
+	    if (!Utils.firstWord(text).equals("prop"))
 		return false;
 	    final int pos = text.indexOf(" ");
 	    if (pos < 0)
