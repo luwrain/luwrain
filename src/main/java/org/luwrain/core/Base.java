@@ -94,26 +94,32 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	NullCheck.notNull(stopCondition, "stopCondition");
 	while(stopCondition.continueEventLoop())
 	{
-	    needForIntroduction = false;
-	    introduceApp = false;
-	    eventResponse = null;
-	    final Event event = eventQueue.takeEvent();
-	    if (event == null)
-		continue;
-	    if (!onEvent(event))
-	    {
-		eventQueue.onceAgain(event);
-		continue;
-	    }
-	    event.markAsProcessed();
-	    if (!eventQueue.hasAgain())
-	    {
-		if (eventResponse != null)
+	    try {
+		needForIntroduction = false;
+		introduceApp = false;
+		eventResponse = null;
+		final Event event = eventQueue.takeEvent();
+		if (event == null)
+		    continue;
+		if (!onEvent(event))
 		{
-		    processEventResponse(eventResponse);
-		    eventResponse = null;
-		} else
-		    announce(stopCondition);
+		    eventQueue.onceAgain(event);
+		    continue;
+		}
+		event.markAsProcessed();
+		if (!eventQueue.hasAgain())
+		{
+		    if (eventResponse != null)
+		    {
+			processEventResponse(eventResponse);
+			eventResponse = null;
+		    } else
+			announce(stopCondition);
+		}
+	    }
+	    catch(Throwable e)
+	    {
+		Log.error(LOG_COMPONENT, "event processing failure: " + e.getClass().getName() + ":" + e.getMessage());
 	    }
 	}
     }
