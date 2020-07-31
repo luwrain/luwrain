@@ -201,7 +201,7 @@ class Commands
 		    if (!line.trim().isEmpty())
 			core.speech.speak(line, 0, 0); else
 			core.getObjForEnvironment().setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
-		    core.needForIntroduction = false;
+		    core.announcement = null;
 		}
 	    },
 

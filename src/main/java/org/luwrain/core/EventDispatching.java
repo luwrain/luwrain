@@ -136,14 +136,17 @@ abstract class EventDispatching extends Areas
     @Override public void announce(StopCondition stopCondition)
     {
 	NullCheck.notNull(stopCondition, "stopCondition");
-	if (needForIntroduction && stopCondition.continueEventLoop() && listening == null)
-	{
-	    if (introduceApp)
-		announceActiveApp(); else
+	if (this.announcement != null && stopCondition.continueEventLoop() && listening == null)
+	    switch(this.announcement)
+	    {
+	    case APP:
+				announceActiveApp();
+				break;
+	    case AREA:
 		announceActiveArea();
+		break;
 	}
-	needForIntroduction = false;
-	introduceApp = false;
+	this.announcement = null;
     }
 
     private boolean onRunnableEvent(RunnableEvent event)

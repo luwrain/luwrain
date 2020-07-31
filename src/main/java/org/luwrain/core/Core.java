@@ -441,9 +441,8 @@ final class Core extends EventDispatching
 		    case BRING_FOREGROUND:
 			apps.setActiveApp(a);
 			onNewAreasLayout();
-			needForIntroduction = true;
-			introduceApp = true;
-			return;
+			this.announcement = AnnouncementType.APP;
+						return;
 		    }
 		}
 	}
@@ -486,9 +485,8 @@ if (initResult.getType() != InitResult.Type.OK)
 	}
 	soundManager.stopStartingMode();
 	onNewAreasLayout();
-	needForIntroduction = true;
-	introduceApp = true;
-    }
+	this.announcement = AnnouncementType.APP;
+	    }
 
     void launchAppCrash(Luwrain instance, Throwable e)
     {
@@ -523,8 +521,7 @@ if (initResult.getType() != InitResult.Type.OK)
 	    return; 
 	}
 	onNewAreasLayout();
-	needForIntroduction = true;
-	introduceApp = true;
+	this.announcement = AnnouncementType.APP;
     }
 
     void closeAppIface(Luwrain instance)
@@ -554,9 +551,8 @@ if (initResult.getType() != InitResult.Type.OK)
 	mainCoreThreadOnly();
 	apps.switchNextApp();
 	onNewAreasLayout();
-	needForIntroduction = true;
-	introduceApp = true;
-    }
+	this.announcement = AnnouncementType.APP;
+	    }
 
     void announceActiveAreaIface()
     {
@@ -760,7 +756,7 @@ onNewAreasLayout();
 	mainCoreThreadOnly();
 	if (text == null || text.trim().isEmpty())
 	    return;
-	needForIntroduction = false;
+	this.announcement = null;
 	if (sound != null)
 	    playSound(sound);
 	speech.speak(i18n.getSpeakableText(text, Luwrain.SpeakableTextType.NATURAL), Speech.PITCH_MESSAGE, 0);

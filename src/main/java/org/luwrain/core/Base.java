@@ -32,6 +32,8 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	boolean continueEventLoop();
     }
 
+    enum AnnouncementType {AREA, APP};
+
     protected final CmdLine cmdLine;
     protected final  Registry registry;
     final PropertiesRegistry props;
@@ -60,8 +62,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     final FileTypes fileTypes = new FileTypes();
     final FileContentType contentTypes = new FileContentType();
     private final Clipboard clipboard = new Clipboard();
-    protected boolean needForIntroduction = false;
-    protected boolean introduceApp = false;
+    protected AnnouncementType announcement = null;
 
     protected Base(CmdLine cmdLine, Registry registry,
 			      PropertiesRegistry props, String lang)
@@ -95,9 +96,8 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	while(stopCondition.continueEventLoop())
 	{
 	    try {
-		needForIntroduction = false;
-		introduceApp = false;
-		eventResponse = null;
+		this.announcement = null;
+		this.eventResponse = null;
 		final Event event = eventQueue.takeEvent();
 		if (event == null)
 		    continue;
@@ -109,10 +109,10 @@ abstract class Base implements org.luwrain.base.EventConsumer
 		event.markAsProcessed();
 		if (!eventQueue.hasAgain())
 		{
-		    if (eventResponse != null)
+		    if (this.eventResponse != null)
 		    {
 			processEventResponse(eventResponse);
-			eventResponse = null;
+			this.eventResponse = null;
 		    } else
 			announce(stopCondition);
 		}
@@ -189,14 +189,13 @@ public void playSound(Sounds sound)
 
     public void setAreaIntroduction()
     {
-	needForIntroduction = true;
+	this.announcement = AnnouncementType.AREA;
     }
 
     protected void setAppIntroduction()
     {
-	needForIntroduction = true;
-	introduceApp = true;
-    }
+	this.announcement = AnnouncementType.APP;
+	    }
 
     String getLang()
     {
