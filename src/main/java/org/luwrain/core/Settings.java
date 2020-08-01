@@ -22,23 +22,24 @@ import java.util.*;
 
 public interface Settings
 {
-    static final String UI_PATH = "/org/luwrain/ui";
-    static final String HELP_SECTIONS_PATH = "/org/luwrain/help/sections";
-    static final String NETWORK_PATH = "/org/luwrain/network";
-    static final String DATETIME_PATH = "/org/luwrain/date-time";
-    static final String FILE_TYPES_APP_INFO_PATH = "/org/luwrain/file-types/app-info";
-    static final String FILE_TYPES_PATH = "/org/luwrain/file-types";
-    static final String GLOBAL_KEYS_PATH = "/org/luwrain/global-keys";
-    static final String MAIN_MENU_SECTIONS_PATH = "/org/luwrain/main-menu/sections";
-        static final String MAIN_MENU_UNIREFS_PATH = "/org/luwrain/main-menu/unirefs";
-    static final String SPEECH_PATH = "/org/luwrain/speech";
-    static final String BRAILLE_PATH = "/org/luwrain/braille";
-    static public final String CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/scheme";
-    static final String INTERACTION_PARAMS_PATH = "/org/luwrain/interaction";
-    static final String I18N_PATH = "/org/luwrain/i18n";
-    static final String PERSONAL_INFO_PATH = "/org/luwrain/personal";
-    static final String BACKGROUND_SOUNDS_PATH = "/org/luwrain/sounds/background";
-    static public final String DESKTOP_UNIREFS_PATH = "/org/luwrain/desktop/unirefs";
+    static final String
+	UI_PATH = "/org/luwrain/ui",
+	HELP_SECTIONS_PATH = "/org/luwrain/help/sections",
+	NETWORK_PATH = "/org/luwrain/network",
+	DATETIME_PATH = "/org/luwrain/date-time",
+	FILE_TYPES_APP_INFO_PATH = "/org/luwrain/file-types/app-info",
+	FILE_TYPES_PATH = "/org/luwrain/file-types",
+	GLOBAL_KEYS_PATH = "/org/luwrain/global-keys",
+	MAIN_MENU_SECTIONS_PATH = "/org/luwrain/main-menu/sections",
+	MAIN_MENU_UNIREFS_PATH = "/org/luwrain/main-menu/unirefs",
+	SPEECH_PATH = "/org/luwrain/speech",
+	BRAILLE_PATH = "/org/luwrain/braille",
+	CURRENT_SOUND_SCHEME_PATH = "/org/luwrain/sounds/scheme",
+	INTERACTION_PARAMS_PATH = "/org/luwrain/interaction",
+	I18N_PATH = "/org/luwrain/i18n",
+	PERSONAL_INFO_PATH = "/org/luwrain/personal",
+	BACKGROUND_SOUNDS_PATH = "/org/luwrain/sounds/background",
+	DESKTOP_UNIREFS_PATH = "/org/luwrain/desktop/unirefs";
 
     public interface UserInterface
     {
@@ -46,11 +47,20 @@ public interface Settings
 	void setDesktopEscapeCommand(String value);
 	String getDesktopTitle(String defValue);
 	void setDesktopTitle(String value);
+	String getDesktopContext(String defValue)
+	    void setDesktopContext(String defValue);
 	boolean getFilePopupSkipHidden(boolean defValue);
 	void setFilePopupSkipHidden(boolean value);
 	String getWindowTitle(String defValue);
 	void setWindowTitle(String value);
     }
+
+        static public UserInterface createUserInterface(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	return RegistryProxy.create(registry, UI_PATH, UserInterface.class);
+    }
+
 
     public interface PersonalInfo
     {
@@ -293,12 +303,6 @@ public interface Settings
 	void setListeningRate(int value);
 	void setPitch(int value);
 	void setRate(int value);
-    }
-
-    static public UserInterface createUserInterface(Registry registry)
-    {
-	NullCheck.notNull(registry, "registry");
-	return RegistryProxy.create(registry, UI_PATH, UserInterface.class);
     }
 
     static public PersonalInfo createPersonalInfo(Registry registry)
