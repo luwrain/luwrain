@@ -20,15 +20,13 @@ import java.util.*;
 
 final class AppManager
 {
-static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
     private LaunchedApp desktopApp = null;
     private final ArrayList<LaunchedApp> apps = new ArrayList<LaunchedApp>();
     private int activeAppIndex = -1;
     private final LaunchedAppPopups shell = new LaunchedAppPopups();
     private final Vector<OpenedPopup> popups = new Vector<OpenedPopup>();
-
-
 
     void setDefaultApp(Application app)
     {
@@ -224,10 +222,10 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	    if (isDesktopApp(app))
 		launchedApp = desktopApp; else
 	    {
-	    final int index = findApp(app);
-	    if (index < 0)
-		return;
-	    launchedApp = apps.get(index);
+		final int index = findApp(app);
+		if (index < 0)
+		    return;
+		launchedApp = apps.get(index);
 	    }
 	} else
 	    launchedApp = shell;
@@ -249,10 +247,10 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	    if (isDesktopApp(removedPopup.app))
 		this.desktopApp.closeLastPopup(); else
 	    {
-	    final int appIndex = findApp(removedPopup.app);
-	    if (appIndex >= 0)
-		apps.get(appIndex).closeLastPopup(); else
-		Log.warning("core", "the popup being closing is associated with the unknown application");
+		final int appIndex = findApp(removedPopup.app);
+		if (appIndex >= 0)
+		    apps.get(appIndex).closeLastPopup(); else
+		    Log.warning("core", "the popup being closing is associated with the unknown application");
 	    }
 	} else
 	    shell.closeLastPopup();
@@ -279,10 +277,10 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	    if (isDesktopApp(app))
 		launchedApp = desktopApp; else
 	    {
-	    final int index = findApp(app);
-	    if (index < 0)
-		return false;
-	    launchedApp = apps.get(index);
+		final int index = findApp(app);
+		if (index < 0)
+		    return false;
+		launchedApp = apps.get(index);
 	    }
 	} else
 	    launchedApp = shell;
@@ -305,13 +303,13 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	    if (isDesktopApp(popup.app))
 		launchedApp = this.desktopApp; else
 	    {
-	    final int appIndex = findApp(popup.app);
-	    if (appIndex < 0)
-	    {
-		Log.warning(LOG_COMPONENT, "last popup is associated with the unknown application");
-		return null;
-	    }
-	    launchedApp = apps.get(appIndex);
+		final int appIndex = findApp(popup.app);
+		if (appIndex < 0)
+		{
+		    Log.warning(LOG_COMPONENT, "last popup is associated with the unknown application");
+		    return null;
+		}
+		launchedApp = apps.get(appIndex);
 	    }
 	} else
 	    launchedApp = shell;
