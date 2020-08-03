@@ -40,7 +40,7 @@ final class Core extends EventDispatching
     final Interaction interaction;
     private final org.luwrain.core.shell.Conversations conversations;
     org.luwrain.player.Player player = null;
-        private Desktop desktop = null;
+        private Application desktop = null;
     final WavePlayers.Player wavePlayer = new WavePlayers.Player();
     Settings.UserInterface uiSettings;//FIXME:final 
     private volatile boolean wasInputEvents = false;
@@ -378,11 +378,11 @@ final class Core extends EventDispatching
 	    Log.error(LOG_COMPONENT, "no property " + DESKTOP_PROP_NAME + ", unable to create a desktop");
 	    throw new RuntimeException("unable to create a desktop");
 	}
-	this.desktop = (Desktop)org.luwrain.util.ClassUtils.newInstanceOf(this.getClass().getClassLoader(), props.getProperty(DESKTOP_PROP_NAME), Desktop.class);
+	this.desktop = (Application)org.luwrain.util.ClassUtils.newInstanceOf(this.getClass().getClassLoader(), props.getProperty(DESKTOP_PROP_NAME), Application.class);
 	if (this.desktop == null)
 	    throw new RuntimeException("unable to create a desktop");
 	desktop.onLaunchApp(interfaces.requestNew(desktop));
-	desktop.setConversations(conversations);
+	//	desktop.setConversations(conversations);
 	apps.setDefaultApp(desktop);
     }
 
@@ -595,9 +595,7 @@ if (initResult.getType() != InitResult.Type.OK)
 	announceActiveArea();
     }
 
-    public void popup(Application app, Area area,
-			   Popup.Position pos, StopCondition stopCondition,
-			   boolean noMultipleCopies, boolean isWeakPopup)
+    public void popup(Application app, Area area, Popup.Position pos, StopCondition stopCondition, boolean noMultipleCopies, boolean isWeakPopup)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(pos, "pos");

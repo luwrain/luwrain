@@ -21,7 +21,7 @@ import java.util.*;
 final class AppManager
 {
     private final Vector<LaunchedApp> apps = new Vector<LaunchedApp>();
-    private final LaunchedAppBase shell = new LaunchedAppBase();
+    private final LaunchedAppPopups shell = new LaunchedAppPopups();
     private final Vector<OpenedPopup> popups = new Vector<OpenedPopup>();
     private int activeAppIndex = -1;
     private LaunchedApp defaultApp = null;
@@ -216,7 +216,7 @@ final class AppManager
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(position, "position");
 	NullCheck.notNull(stopCondition, "stopCondition");
-	LaunchedAppBase launchedApp;
+	LaunchedAppPopups launchedApp;
 	if (app != null)
 	{
 	    //Desktop may not open popups;
@@ -264,7 +264,7 @@ final class AppManager
     //null is a valid argument;
     boolean hasPopupOfApp(Application app)
     {
-	LaunchedAppBase launchedApp;
+	LaunchedAppPopups launchedApp;
 	if (app != null)
 	{
 	    final int index = findApp(app);
@@ -273,7 +273,7 @@ final class AppManager
 	    launchedApp = apps.get(index);
 	} else
 	    launchedApp = shell;
-	return launchedApp.popups.size() > 0;
+	return launchedApp.popupWrappings.size() > 0;
     }
 
     Application getAppOfLastPopup()
@@ -286,7 +286,7 @@ final class AppManager
 	if (popups.isEmpty())
 	    return null;
 	final OpenedPopup popup = popups.lastElement();
-	LaunchedAppBase launchedApp;
+	LaunchedAppPopups launchedApp;
 	if (popup.app != null)
 	{
 	    final int appIndex = findApp(popup.app);

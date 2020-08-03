@@ -16,9 +16,9 @@
 
 package org.luwrain.core;
 
-final class LaunchedApp extends LaunchedAppBase
+final class LaunchedApp extends LaunchedAppPopups
 {
-    static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
 final Application app;
     int layoutType;

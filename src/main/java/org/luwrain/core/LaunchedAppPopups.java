@@ -18,25 +18,25 @@ package org.luwrain.core;
 
 import java.util.*;
 
-class LaunchedAppBase
+class LaunchedAppPopups
 {
-    final List<Area> popups = new Vector();
-    final List<OpenedArea> popupWrappings = new Vector();
+    //    final List<Area> popups = new ArrayList();
+    final List<OpenedArea> popupWrappings = new ArrayList();
 
     //Returns the index of the new popup
     int addPopup(Area popup)
     {
 	NullCheck.notNull(popup, "popup");
-	popups.add(popup);
+	//	popups.add(popup);
 	final OpenedArea wrapping = new OpenedArea(popup);
 	popupWrappings.add(wrapping);
-	return popups.size() - 1;
+	return popupWrappings.size() - 1;
     }
 
     void closeLastPopup()
     {
 	popupWrappings.remove(popupWrappings.size() - 1);
-	popups.remove(popups.size() - 1);
+	//	popups.remove(popups.size() - 1);
     }
 
     Area getNativeAreaOfPopup(int index)
@@ -94,7 +94,7 @@ class LaunchedAppBase
         void sendBroadcastEvent(org.luwrain.core.events.SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	for(Area area: popups)
-	    area.onSystemEvent(event);
+	for(OpenedArea area: popupWrappings)
+	    area.area.onSystemEvent(event);
     }
 }
