@@ -47,7 +47,7 @@ final class DesktopItem
     {
 	NullCheck.notNull(uniRefInfo, "uniRefInfo");
 	this.type = TYPE_UNIREF;
-	this.value = uniRefInfo.toString();
+	this.value = uniRefInfo.getValue();
 	this.title = null;
 	this.uniRefInfo = uniRefInfo;
     }

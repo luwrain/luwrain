@@ -227,6 +227,7 @@ setListClickHandler(this);
 		return;
 	    final List<DesktopItem> res = gson.fromJson(sett.getDesktopContent(""), DESKTOP_ITEM_LIST_TYPE);
 	    this.items = new ArrayList();
+	    if (res != null)
 	    items.addAll(res);
 	}
 	private void save()
