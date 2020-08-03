@@ -32,6 +32,7 @@ import org.luwrain.core.listening.*;
 
 final class Core extends EventDispatching
 {
+    static private final String DESKTOP_PROP_NAME = "luwrain.class.desktop";
     static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
 
     private final ClassLoader classLoader;
@@ -39,6 +40,7 @@ final class Core extends EventDispatching
     final Interaction interaction;
     private final org.luwrain.core.shell.Conversations conversations;
     org.luwrain.player.Player player = null;
+        private Desktop desktop = null;
     final WavePlayers.Player wavePlayer = new WavePlayers.Player();
     Settings.UserInterface uiSettings;//FIXME:final 
     private volatile boolean wasInputEvents = false;
@@ -156,9 +158,7 @@ final class Core extends EventDispatching
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
 	loadPlayer();
-	desktop.onLaunchApp(interfaces.requestNew(desktop));
-	desktop.setConversations(conversations);
-	apps.setDefaultApp(desktop);
+	loadDesktop();
 	props.setProviders(objRegistry.getPropertiesProviders());
 	uiSettings = Settings.createUserInterface(registry);
     }
@@ -371,6 +371,21 @@ final class Core extends EventDispatching
 	}
     }
 
+    private void loadDesktop()
+    {
+	if (props.getProperty(DESKTOP_PROP_NAME).isEmpty())
+	{
+	    Log.error(LOG_COMPONENT, "no property " + DESKTOP_PROP_NAME + ", unable to create a desktop");
+	    throw new RuntimeException("unable to create a desktop");
+	}
+	this.desktop = (Desktop)org.luwrain.util.ClassUtils.newInstanceOf(this.getClass().getClassLoader(), props.getProperty(DESKTOP_PROP_NAME), Desktop.class);
+	if (this.desktop == null)
+	    throw new RuntimeException("unable to create a desktop");
+	desktop.onLaunchApp(interfaces.requestNew(desktop));
+	desktop.setConversations(conversations);
+	apps.setDefaultApp(desktop);
+    }
+
     public void quit()
     {
 	    mainStopCondition.stop();
@@ -532,7 +547,7 @@ if (initResult.getType() != InitResult.Type.OK)
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
 	    throw new IllegalArgumentException("Trying to close an application through an unknown interface object or this object doesn\'t identify an application");
-	if (app == desktop)
+	if (desktop != null && app == desktop)
 	    throw new IllegalArgumentException("Trying to close a desktop");
 	if (apps.hasPopupOfApp(app))
 	{

@@ -30,7 +30,6 @@ import org.luwrain.core.listening.*;
 
 abstract class EventDispatching extends Areas
 {
-    static private final String DESKTOP_PROP_NAME = "luwrain.class.desktop";
     static private final int POPUP_BLOCKING_MAY_PROCESS = 0;
     static private final int POPUP_BLOCKING_EVENT_REJECTED = 1;
     static private final int POPUP_BLOCKING_TRY_AGAIN = 2;
@@ -38,21 +37,12 @@ abstract class EventDispatching extends Areas
     protected final GlobalKeys globalKeys;
     protected Listening listening = null;
     protected final org.luwrain.core.properties.Listening listeningProp;
-    protected final Desktop desktop;
 
     protected EventDispatching(CmdLine cmdLine, Registry registry,
 			       PropertiesRegistry props, String lang, org.luwrain.base.Interaction interaction)
     {
 	super(cmdLine, registry, props, lang, interaction);
 	this.globalKeys = new GlobalKeys(registry);
-	if (props.getProperty(DESKTOP_PROP_NAME).isEmpty())
-	{
-	    Log.error(LOG_COMPONENT, "no property " + DESKTOP_PROP_NAME + ", unable to create a desktop");
-	    throw new RuntimeException("unable to create a desktop");
-	}
-	this.desktop = (Desktop)org.luwrain.util.ClassUtils.newInstanceOf(this.getClass().getClassLoader(), props.getProperty(DESKTOP_PROP_NAME), Desktop.class);
-	if (this.desktop == null)
-	    throw new RuntimeException("unable to create a desktop");
 	org.luwrain.core.properties.Listening l = null;
 	for (PropertiesProvider p: props.getBasicProviders())
 	    if (p instanceof org.luwrain.core.properties.Listening)
@@ -286,15 +276,6 @@ abstract class EventDispatching extends Areas
 	    noAppsMessage();
 	    return;
 	}
-	if (app == desktop)
-	    try {
-	    	if (getObjForEnvironment().xRunHooks("luwrain.desktop.announce", new Object[0], Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY))
-		    return;
-	    }
-	    catch(RuntimeException e)
-	    {
-		Log.error(LOG_COMPONENT, "the luwrain.desktop.announce hook has thrown the runtime exception:" + e.getClass().getName() + ":" + e.getMessage());
-	    }
 	final AtomicReference res = new AtomicReference();
 	unsafeAreaOperation(()->{
 		final String value = app.getAppName();
