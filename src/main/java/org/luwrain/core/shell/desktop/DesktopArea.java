@@ -29,36 +29,27 @@ import org.luwrain.controls.*;
 import org.luwrain.popups.Popups;
 import org.luwrain.core.shell.*;
 
-class DesktopArea extends EditableListArea
+class DesktopArea extends EditableListArea implements EditableListArea.ClickHandler
 {
-    private final Luwrain luwrain;
     	static final Type DESKTOP_ITEM_LIST_TYPE = new TypeToken<List<DesktopItem>>(){}.getType();
 
-    private final Storing storing;
+        private final Luwrain luwrain;
 
-    DesktopArea(Luwrain luwrain, Storing storing, Conversations conv)
+    DesktopArea(Luwrain luwrain, Conversations conv)
     {
-	super(createParams(luwrain, storing, conv));
+	super(createParams(luwrain, conv));
 	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(storing, "storing");
 	this.luwrain = luwrain;
-	this.storing = storing;
-setListClickHandler((area, index, obj)->{
-		if (!onClick(index, obj))
-		    return false;
-refresh();
-		return true;
-	    });
+setListClickHandler(this);
     }
 
-    static EditableListArea.Params createParams(Luwrain luwrain, Storing storing, Conversations conv)
+    static EditableListArea.Params createParams(Luwrain luwrain, Conversations conv)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(conv, "conv");
 	final EditableListArea.Params params = new EditableListArea.Params();
 	params.context = new DefaultControlContext(luwrain);
-	params.model = new Model(luwrain, storing);
+	params.model = new Model(luwrain);
 	params.appearance = new org.luwrain.core.shell.desktop.Appearance(luwrain);
 	params.name = luwrain.i18n().getStaticStr("Desktop");
 	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
@@ -113,7 +104,7 @@ refresh();
 		    return "Рабочий стол пуст";//FIXME:
 		}
 
-        private boolean onClick(int index, Object obj)
+    @Override public boolean onListClick(ListArea area, int index, Object obj)
     {
 	if (obj == null)
 	    return false;
@@ -144,31 +135,30 @@ refresh();
     {
 	private final Luwrain luwrain;
 	private final Settings.UserInterface sett;
-	private final Storing storing;
 	private ArrayList<DesktopItem> items = null;
 	private final Gson gson = new Gson();
-	Model(Luwrain luwrain, Storing storing)
+	Model(Luwrain luwrain)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
-	    NullCheck.notNull(storing, "storing");
 	    this.luwrain = luwrain;
 	    this.sett = Settings.createUserInterface(luwrain.getRegistry());
-	    this.storing = storing;
 	}
 	@Override public boolean clearList()
 	{
-	    storing.clear();
-	    storing.save();
-	    return true;
+	    load();
+	    this.items.clear();
+	    save();
+	    	    return true;
 	}
 	@Override public boolean removeFromList(int index)
 	{
 	    if (index < 0)
 		throw new IllegalArgumentException("index may not be negative");
-	    if (index >= storing.size())
+	    load();
+	    if (index >= this.items.size())
 		return false;
-	    storing.remove(index);
-	    storing.save();
+	    this.items.remove(index);
+	    save();
 	    return true;
 	}
 	@Override public boolean addToList(int index, Clipboard clipboard)
@@ -176,40 +166,57 @@ refresh();
 	    NullCheck.notNull(clipboard, "clipboard");
 	    if (index < 0)
 		throw new IllegalArgumentException("index may not be negative");
+	    load();
 	    final Object[] objs = clipboard.get();
 	    if (objs == null || objs.length == 0)
 		return false;
-	    final List<UniRefInfo> items = new LinkedList<UniRefInfo>();
 	    for(Object o: objs)
 	    {
 		if (o instanceof java.io.File)
 		{
 		    final java.io.File file = (java.io.File)o;
-		    items.add(luwrain.getUniRefInfo("file:" + file.getAbsolutePath()));
+		    items.add(new DesktopItem(luwrain, file));
 		    continue;
 		}
+
+				if (o instanceof java.net.URL)
+		{
+		    final java.net.URL url = (java.net.URL)o;
+		    items.add(new DesktopItem(luwrain, url));
+		    continue;
+		}
+
+				if (o instanceof UniRefInfo)
+				     {
+					 final UniRefInfo info = (UniRefInfo)o;
+					 items.add(new DesktopItem(info));
+					 continue;
+				     }
+
+				
 		if (o instanceof String)
 		{
 		    final  String str = (String)o;
 		    final UniRefInfo info = luwrain.getUniRefInfo(str);
 		    if (info.isAvailable())
-			items.add(info); else
-			items.add(luwrain.getUniRefInfo("static:" + str));
+			items.add(new DesktopItem(info)); else
+			items.add(new DesktopItem(luwrain, str));
 		    continue;
 		}
-		//FIXME:url
+		
 	    }
-	    storing.addAll(index, items);
-	    storing.save();
+	    save();
 	    return true;
 	}
 	@Override public int getItemCount()
 	{
-	    return storing.size();
+	    load();
+	    return items.size();
 	}
 	@Override public Object getItem(int index)
 	{
-	    return storing.get(index);
+	    load();
+	    return items.get(index);
 	}
 	@Override public void refresh()
 	{

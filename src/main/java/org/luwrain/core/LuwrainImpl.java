@@ -499,7 +499,7 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(uniRef, "uniRef");
 	core.mainCoreThreadOnly();
 	if (uniRef.isEmpty())
-	    return null;
+	    return core.uniRefProcs.getInfo("empty:");
 	return core.uniRefProcs.getInfo(uniRef);
     }
 
