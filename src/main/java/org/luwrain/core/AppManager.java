@@ -21,26 +21,28 @@ import java.util.*;
 final class AppManager
 {
 static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-    
+
+    private LaunchedApp desktopApp = null;
     private final ArrayList<LaunchedApp> apps = new ArrayList<LaunchedApp>();
+    private int activeAppIndex = -1;
     private final LaunchedAppPopups shell = new LaunchedAppPopups();
     private final Vector<OpenedPopup> popups = new Vector<OpenedPopup>();
-    private int activeAppIndex = -1;
-    private LaunchedApp defaultApp = null;
+
+
 
     void setDefaultApp(Application app)
     {
 	NullCheck.notNull(app, "app");
-	this.defaultApp = new LaunchedApp(app);
-	if (!this.defaultApp.init())
-	    throw new IllegalStateException("Unable to initialize the default app");
+	this.desktopApp = new LaunchedApp(app);
+	if (!this.desktopApp.init())
+	    throw new IllegalStateException("Unable to initialize the desktop app");
     }
 
     Application getDefaultApp()
     {
-	if (defaultApp == null)
+	if (!hasDesktopApp())
 	    return null;
-	return defaultApp.app;
+	return desktopApp.app;
     }
 
     Application[] getLaunchedApps()
@@ -64,7 +66,7 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     boolean isAppActive(Application app)
     {
 	NullCheck.notNull(app, "app");
-	if (app == defaultApp.app && activeAppIndex < 0)
+	if (isDesktopApp(app) && activeAppIndex < 0)
 	    return true;
 	if (activeAppIndex < 0)
 	    return false;
@@ -76,7 +78,7 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     Application getActiveApp()
     {
 	if (activeAppIndex < 0)
-	    return defaultApp != null?defaultApp.app:null;
+	    return hasDesktopApp()?desktopApp.app:null;
 	return apps.get(activeAppIndex).app;
     }
 
@@ -137,7 +139,7 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	if (activeAppIndex < 0)//We are in desktop
 	{
 	    //FIXME:general preparing for switching;
-	    defaultApp.removeReviewWrappers();
+	    desktopApp.removeReviewWrappers();
 	    activeAppIndex = 0;
 	    return;
 	}
@@ -180,8 +182,8 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     Area getEffectiveActiveAreaOfApp(Application app)
     {
 	NullCheck.notNull(app, "app");
-	if (isDefaultApp(app))
-	    return defaultApp.getEffectiveActiveArea();
+	if (isDesktopApp(app))
+	    return this.desktopApp.getEffectiveActiveArea();
 	final int index = findApp(app);
 	if (index < 0)
 	    return null;
@@ -190,8 +192,8 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
     Area getEffectiveActiveAreaOfActiveApp()
     {
-	if (activeAppIndex < 0 && hasDefaultApp())
-	    return defaultApp.getEffectiveActiveArea();
+	if (activeAppIndex < 0 && hasDesktopApp())
+	    return this.desktopApp.getEffectiveActiveArea();
 	if (activeAppIndex >= 0)
 	    return apps.get(activeAppIndex).getEffectiveActiveArea();
 	return null;
@@ -219,8 +221,8 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	final LaunchedAppPopups launchedApp;
 	if (app != null)
 	{
-	    if (app == defaultApp.app)
-		launchedApp = defaultApp; else
+	    if (isDesktopApp(app))
+		launchedApp = desktopApp; else
 	    {
 	    final int index = findApp(app);
 	    if (index < 0)
@@ -244,8 +246,8 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	popups.remove(popups.size() - 1);
 	if (removedPopup.app != null)
 	{
-	    if (removedPopup.app == defaultApp.app)
-		defaultApp.closeLastPopup(); else
+	    if (isDesktopApp(removedPopup.app))
+		this.desktopApp.closeLastPopup(); else
 	    {
 	    final int appIndex = findApp(removedPopup.app);
 	    if (appIndex >= 0)
@@ -274,8 +276,8 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	final LaunchedAppPopups launchedApp;
 	if (app != null)
 	{
-	    if (app == defaultApp.app)
-		launchedApp = defaultApp; else
+	    if (isDesktopApp(app))
+		launchedApp = desktopApp; else
 	    {
 	    final int index = findApp(app);
 	    if (index < 0)
@@ -300,8 +302,8 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	final LaunchedAppPopups launchedApp;
 	if (popup.app != null)
 	{
-	    if (popup.app == defaultApp.app)
-		launchedApp = defaultApp; else
+	    if (isDesktopApp(popup.app))
+		launchedApp = this.desktopApp; else
 	    {
 	    final int appIndex = findApp(popup.app);
 	    if (appIndex < 0)
@@ -319,8 +321,8 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     AreaLayout getEffectiveAreaLayout(Application app)
     {
 	NullCheck.notNull(app, "app");
-	if (isDefaultApp(app))
-	    return defaultApp.getEffectiveAreaLayout();
+	if (isDesktopApp(app))
+	    return this.desktopApp.getEffectiveAreaLayout();
 	final int index = findApp(app);
 	if (index < 0)
 	    return null;
@@ -330,7 +332,7 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     boolean isAppLaunched(Application app)
     {
 	NullCheck.notNull(app, "app");
-	if (isDefaultApp(app))
+	if (isDesktopApp(app))
 	    return true;
 	return findApp(app) >= 0;
     }
@@ -341,8 +343,8 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     {
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(area, "area");
-	if (isDefaultApp(app))
-	    return defaultApp.getCorrespondingEffectiveArea(area);
+	if (isDesktopApp(app))
+	    return this.desktopApp.getCorrespondingEffectiveArea(area);
 	final int index = findApp(app);
 	if (index < 0)
 	    return null;
@@ -353,9 +355,9 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     Area getCorrespondingEffectiveArea(Area area)
     {
 	NullCheck.notNull(area, "area");
-	if (hasDefaultApp())
+	if (hasDesktopApp())
 	{
-	    final Area res = defaultApp.getCorrespondingEffectiveArea(area);
+	    final Area res = this.desktopApp.getCorrespondingEffectiveArea(area);
 	    if (res != null)
 		return res;
 	}
@@ -384,9 +386,9 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     OpenedArea getAreaWrapping(Area area)
     {
 	NullCheck.notNull(area, "area");
-	if (hasDefaultApp())
+	if (hasDesktopApp())
 	{
-	    final OpenedArea res = defaultApp.getAreaWrapping(area);
+	    final OpenedArea res = this.desktopApp.getAreaWrapping(area);
 	    if (res != null)
 		return res;
 	}
@@ -425,7 +427,7 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
     void onNewPopupOpening(Application app, Class newCopyClass)
     {
-	if (isDefaultApp(app))
+	if (isDesktopApp(app))
 	    return;
 	for(OpenedPopup p: popups)
 	{
@@ -475,15 +477,15 @@ static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 	    a.sendBroadcastEvent(event);
     }
 
-    private boolean isDefaultApp(Application app)
+    private boolean isDesktopApp(Application app)
     {
-	if (app == null || defaultApp == null)
+	if (app == null || this.desktopApp == null)
 	    return false;
-	return defaultApp.app == app;
+	return app == this.desktopApp.app;
     }
 
-    private boolean hasDefaultApp()
+    private boolean hasDesktopApp()
     {
-	return defaultApp != null;
+	return this.desktopApp != null;
     }
 }
