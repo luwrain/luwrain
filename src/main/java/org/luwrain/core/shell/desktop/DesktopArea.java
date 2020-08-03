@@ -33,23 +33,24 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 
     private final Luwrain luwrain;
 
-    DesktopArea(Luwrain luwrain, Conversations conv)
+    DesktopArea(Luwrain luwrain, String areaName, Conversations conv)
     {
-	super(createParams(luwrain, conv));
+	super(createParams(luwrain, areaName, conv));
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	setListClickHandler(this);
     }
 
-    static private EditableListArea.Params createParams(Luwrain luwrain, Conversations conv)
+    static private EditableListArea.Params createParams(Luwrain luwrain, String areaName, Conversations conv)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(areaName, "areaName");
 	NullCheck.notNull(conv, "conv");
 	final EditableListArea.Params params = new EditableListArea.Params();
 	params.context = new DefaultControlContext(luwrain);
 	params.model = new Model(luwrain);
 	params.appearance = new org.luwrain.core.shell.desktop.Appearance(luwrain);
-	params.name = luwrain.i18n().getStaticStr("Desktop");
+	params.name = areaName;
 	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
 	    final List<String> res = new LinkedList<String>();
 	    for(int i = fromIndex;i < toIndex;++i)

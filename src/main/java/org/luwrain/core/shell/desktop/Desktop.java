@@ -30,17 +30,12 @@ public final class Desktop implements org.luwrain.core.Desktop
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.desktopArea = new DesktopArea(luwrain, new Conversations(luwrain));
-	return new InitResult();
-    }
-
-    @Override public void ready()
-    {
 	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
 	this.name = sett.getDesktopTitle("").trim();
 	if (this.name.isEmpty())
 	    this.name = luwrain.i18n().getStaticStr("Desktop");
-	this.desktopArea.setAreaName(this.name);
+	this.desktopArea = new DesktopArea(luwrain, name, new Conversations(luwrain));
+	return new InitResult();
     }
 
     @Override public void setConversations(Conversations conversations)
@@ -50,7 +45,7 @@ public final class Desktop implements org.luwrain.core.Desktop
 
     @Override public String getAppName()
     {
-	return name;
+	return this.name;
     }
 
     @Override public AreaLayout getAreaLayout()

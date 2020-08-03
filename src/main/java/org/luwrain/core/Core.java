@@ -146,11 +146,8 @@ final class Core extends EventDispatching
 
     private void init()
     {
-	desktop.onLaunchApp(interfaces.requestNew(desktop));
-	desktop.setConversations(conversations);
-	apps.setDefaultApp(desktop);
 	extensions.load((ext)->interfaces.requestNew(ext), cmdLine, this.classLoader);
-				initObjects();
+	initObjects();
 	initDynamicExtensions();
 	initI18n();
 	objRegistry.add(null, new StartingModeProperty());
@@ -159,7 +156,9 @@ final class Core extends EventDispatching
 	globalKeys.loadFromRegistry();
 	fileTypes.load(registry);
 	loadPlayer();
-	desktop.ready();
+	desktop.onLaunchApp(interfaces.requestNew(desktop));
+	desktop.setConversations(conversations);
+	apps.setDefaultApp(desktop);
 	props.setProviders(objRegistry.getPropertiesProviders());
 	uiSettings = Settings.createUserInterface(registry);
     }
