@@ -20,7 +20,9 @@ import java.util.*;
 
 final class AppManager
 {
-    private final Vector<LaunchedApp> apps = new Vector<LaunchedApp>();
+static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
+    
+    private final ArrayList<LaunchedApp> apps = new ArrayList<LaunchedApp>();
     private final LaunchedAppPopups shell = new LaunchedAppPopups();
     private final Vector<OpenedPopup> popups = new Vector<OpenedPopup>();
     private int activeAppIndex = -1;
@@ -31,7 +33,7 @@ final class AppManager
 	NullCheck.notNull(app, "app");
 	this.defaultApp = new LaunchedApp(app);
 	if (!this.defaultApp.init())
-	    throw new IllegalArgumentException("Provided defaultApp does not suit for LaunchedApp.init() ");
+	    throw new IllegalStateException("Unable to initialize the default app");
     }
 
     Application getDefaultApp()
@@ -43,7 +45,7 @@ final class AppManager
 
     Application[] getLaunchedApps()
     {
-	final LinkedList<Application> res = new LinkedList<Application>();
+	final List<Application> res = new LinkedList();
 	for(LaunchedApp a: apps)
 	    res.add(a.app);
 	return res.toArray(new Application[res.size()]);
@@ -208,22 +210,23 @@ final class AppManager
 	return -1;
     }
 
-    //null app means environment popup;
-    void addNewPopup(Application app, Area area,
-			    Popup.Position position, Base.PopupStopCondition stopCondition,
-			    boolean noMultipleCopies, boolean isWeak)
+    //null app means system popup;
+    void addNewPopup(Application app, Area area, Popup.Position position, Base.PopupStopCondition stopCondition, boolean noMultipleCopies, boolean isWeak)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(position, "position");
 	NullCheck.notNull(stopCondition, "stopCondition");
-	LaunchedAppPopups launchedApp;
+	final LaunchedAppPopups launchedApp;
 	if (app != null)
 	{
-	    //Desktop may not open popups;
+	    if (app == defaultApp.app)
+		launchedApp = defaultApp; else
+	    {
 	    final int index = findApp(app);
 	    if (index < 0)
 		return;
 	    launchedApp = apps.get(index);
+	    }
 	} else
 	    launchedApp = shell;
 	final int popupIndex = 	launchedApp.addPopup(area);
@@ -234,17 +237,21 @@ final class AppManager
     {
 	if (popups.isEmpty())
 	{
-	    Log.warning("core", "trying to remove the last popup without having any popups at all");
+	    Log.warning(LOG_COMPONENT, "trying to remove the last popup without any opened popups at all");
 	    return;
 	}
 	final OpenedPopup removedPopup = popups.lastElement();
 	popups.remove(popups.size() - 1);
 	if (removedPopup.app != null)
 	{
+	    if (removedPopup.app == defaultApp.app)
+		defaultApp.closeLastPopup(); else
+	    {
 	    final int appIndex = findApp(removedPopup.app);
 	    if (appIndex >= 0)
 		apps.get(appIndex).closeLastPopup(); else
 		Log.warning("core", "the popup being closing is associated with the unknown application");
+	    }
 	} else
 	    shell.closeLastPopup();
     }
@@ -264,13 +271,17 @@ final class AppManager
     //null is a valid argument;
     boolean hasPopupOfApp(Application app)
     {
-	LaunchedAppPopups launchedApp;
+	final LaunchedAppPopups launchedApp;
 	if (app != null)
 	{
+	    if (app == defaultApp.app)
+		launchedApp = defaultApp; else
+	    {
 	    final int index = findApp(app);
 	    if (index < 0)
 		return false;
 	    launchedApp = apps.get(index);
+	    }
 	} else
 	    launchedApp = shell;
 	return launchedApp.popupWrappings.size() > 0;
@@ -286,16 +297,20 @@ final class AppManager
 	if (popups.isEmpty())
 	    return null;
 	final OpenedPopup popup = popups.lastElement();
-	LaunchedAppPopups launchedApp;
+	final LaunchedAppPopups launchedApp;
 	if (popup.app != null)
 	{
+	    if (popup.app == defaultApp.app)
+		launchedApp = defaultApp; else
+	    {
 	    final int appIndex = findApp(popup.app);
 	    if (appIndex < 0)
 	    {
-		Log.warning("core", "last popup is associated with the unknown application");
+		Log.warning(LOG_COMPONENT, "last popup is associated with the unknown application");
 		return null;
 	    }
 	    launchedApp = apps.get(appIndex);
+	    }
 	} else
 	    launchedApp = shell;
 	return launchedApp.getEffectiveAreaOfPopup(popup.index);
@@ -422,7 +437,7 @@ final class AppManager
 		final int index = findApp(app);
 		if (index < 0)
 		{
-		    Log.error("core", "popups contains a reference to the unregistered application " + app.getClass().getName());
+		    Log.error(LOG_COMPONENT, "popups contains a reference to the unregistered application " + app.getClass().getName());
 		    continue;
 		}
 		area = apps.get(index).getNativeAreaOfPopup(p.index);

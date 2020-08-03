@@ -20,7 +20,6 @@ import java.util.*;
 
 class LaunchedAppPopups
 {
-    //    final List<Area> popups = new ArrayList();
     final List<OpenedArea> popupWrappings = new ArrayList();
 
     //Returns the index of the new popup
