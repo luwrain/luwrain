@@ -16,13 +16,7 @@
 
 package org.luwrain.core.shell.desktop;
 
-import java.util.*;
-import java.io.*;
-
 import org.luwrain.core.*;
-import org.luwrain.core.events.*;
-import org.luwrain.controls.*;
-import org.luwrain.popups.Popups;
 import org.luwrain.core.shell.*;
 
 public final class Desktop implements org.luwrain.core.Desktop
@@ -40,13 +34,12 @@ public final class Desktop implements org.luwrain.core.Desktop
 	return new InitResult();
     }
 
-    //Runs by the core when language extensions loaded 
     @Override public void ready()
     {
 	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
 	this.name = sett.getDesktopTitle("").trim();
 	if (this.name.isEmpty())
-	     this.name = luwrain.i18n().getStaticStr("Desktop");
+	    this.name = luwrain.i18n().getStaticStr("Desktop");
 	this.desktopArea.setAreaName(this.name);
     }
 

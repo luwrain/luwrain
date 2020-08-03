@@ -17,7 +17,6 @@
 package org.luwrain.core.shell.desktop;
 
 import java.util.*;
-import java.io.*;
 import java.lang.reflect.*;
 
 import com.google.gson.*;
@@ -26,24 +25,23 @@ import com.google.gson.reflect.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-import org.luwrain.popups.Popups;
 import org.luwrain.core.shell.*;
 
-class DesktopArea extends EditableListArea implements EditableListArea.ClickHandler
+final class DesktopArea extends EditableListArea implements EditableListArea.ClickHandler
 {
-    	static final Type DESKTOP_ITEM_LIST_TYPE = new TypeToken<List<DesktopItem>>(){}.getType();
+    static final Type DESKTOP_ITEM_LIST_TYPE = new TypeToken<List<DesktopItem>>(){}.getType();
 
-        private final Luwrain luwrain;
+    private final Luwrain luwrain;
 
     DesktopArea(Luwrain luwrain, Conversations conv)
     {
 	super(createParams(luwrain, conv));
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-setListClickHandler(this);
+	setListClickHandler(this);
     }
 
-    static EditableListArea.Params createParams(Luwrain luwrain, Conversations conv)
+    static private EditableListArea.Params createParams(Luwrain luwrain, Conversations conv)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(conv, "conv");
@@ -65,58 +63,59 @@ setListClickHandler(this);
 	    clipboard.set(res.toArray(new String[res.size()]));
 	    return true;
 	};
-	params.confirmation = (area,model,fromIndex,toIndex)->conv.deleteDesktopItemsConfirmation(toIndex - fromIndex);
+	params.confirmation = (area,model,fromIndex,toIndex)->{return true;/*conv.deleteDesktopItemsConfirmation(toIndex - fromIndex);*/};
 	return params;
     }
 
-		@Override public boolean onInputEvent(InputEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.isSpecial() && !event.isModified())
-			switch(event.getSpecial())
-			{ 
-			case ESCAPE:
-			    return onEscape();
-			}
-		    return super.onInputEvent(event);
-		}
+    @Override public boolean onInputEvent(InputEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (event.isSpecial() && !event.isModified())
+	    switch(event.getSpecial())
+	    { 
+	    case ESCAPE:
+		return onEscape();
+	    }
+	return super.onInputEvent(event);
+    }
 
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.getType() != SystemEvent.Type.REGULAR)
-			return super.onSystemEvent(event);
-		    switch(event.getCode())
-		    {
-		    case HELP:
-			return luwrain.openHelp("luwrain.default");
-		    case CLOSE:
-			luwrain.silence();
-			luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"), Sounds.NO_APPLICATIONS);
-			return true;
-		    default:
-			return super.onSystemEvent(event);
-		    }
-		}
+    @Override public boolean onSystemEvent(SystemEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (event.getType() != SystemEvent.Type.REGULAR)
+	    return super.onSystemEvent(event);
+	switch(event.getCode())
+	{
+	case HELP:
+	    return luwrain.openHelp("luwrain.default");
+	case CLOSE:
+	    luwrain.silence();
+	    luwrain.message(luwrain.i18n().getStaticStr("DesktopNoApplication"), Sounds.NO_APPLICATIONS);
+	    return true;
+	default:
+	    return super.onSystemEvent(event);
+	}
+    }
 
-		@Override protected String noContentStr()
-		{
-		    return "Рабочий стол пуст";//FIXME:
-		}
+    @Override protected String noContentStr()
+    {
+	return "Рабочий стол пуст";//FIXME:
+    }
 
     @Override public boolean onListClick(ListArea area, int index, Object obj)
     {
 	if (obj == null)
 	    return false;
-	if (obj instanceof UniRefInfo)
+	if (obj instanceof DesktopItem)
 	{
-	    final UniRefInfo uniRefInfo = (UniRefInfo)obj;
+	    final DesktopItem item = (DesktopItem)obj;
+	    final UniRefInfo uniRefInfo = item.getUniRefInfo(luwrain);
 	    return luwrain.openUniRef(uniRefInfo.getValue());
 	}
 	return false;
     }
 
-        private boolean onEscape()
+    private boolean onEscape()
     {
 	if (luwrain == null)
 	    return false;
@@ -126,10 +125,6 @@ setListClickHandler(this);
 	    return false;
 	return luwrain.runCommand(cmdName.trim());
     }
-
-
-
-    
 
     static private final class Model implements EditableListArea.EditableModel
     {
@@ -148,7 +143,7 @@ setListClickHandler(this);
 	    load();
 	    this.items.clear();
 	    save();
-	    	    return true;
+	    return true;
 	}
 	@Override public boolean removeFromList(int index)
 	{
@@ -178,22 +173,18 @@ setListClickHandler(this);
 		    items.add(new DesktopItem(luwrain, file));
 		    continue;
 		}
-
-				if (o instanceof java.net.URL)
+		if (o instanceof java.net.URL)
 		{
 		    final java.net.URL url = (java.net.URL)o;
 		    items.add(new DesktopItem(luwrain, url));
 		    continue;
 		}
-
-				if (o instanceof UniRefInfo)
-				     {
-					 final UniRefInfo info = (UniRefInfo)o;
-					 items.add(new DesktopItem(info));
-					 continue;
-				     }
-
-				
+		if (o instanceof UniRefInfo)
+		{
+		    final UniRefInfo info = (UniRefInfo)o;
+		    items.add(new DesktopItem(info));
+		    continue;
+		}
 		if (o instanceof String)
 		{
 		    final  String str = (String)o;
@@ -203,7 +194,6 @@ setListClickHandler(this);
 			items.add(new DesktopItem(luwrain, str));
 		    continue;
 		}
-		
 	    }
 	    save();
 	    return true;
@@ -228,7 +218,7 @@ setListClickHandler(this);
 	    final List<DesktopItem> res = gson.fromJson(sett.getDesktopContent(""), DESKTOP_ITEM_LIST_TYPE);
 	    this.items = new ArrayList();
 	    if (res != null)
-	    items.addAll(res);
+		items.addAll(res);
 	}
 	private void save()
 	{
@@ -237,5 +227,4 @@ setListClickHandler(this);
 	    sett.setDesktopContent(gson.toJson(this.items));
 	}
     }
-
 }
