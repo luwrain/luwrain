@@ -35,9 +35,10 @@ final class Appearance implements ListArea.Appearance
     {
 	NullCheck.notNull(item, "item");
 	NullCheck.notNull(flags, "flags");
-	if (item instanceof UniRefInfo)
+	if (item instanceof DesktopItem)
 	{
-	    final UniRefInfo info = (UniRefInfo)item;
+	    final DesktopItem desktopItem = (DesktopItem)item;
+	    final UniRefInfo info = desktopItem.getUniRefInfo(luwrain);
 	    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), info, Sounds.DESKTOP_ITEM, Suggestions.CLICKABLE_LIST_ITEM);
 	    return;
 	}
@@ -50,10 +51,11 @@ final class Appearance implements ListArea.Appearance
 	    return "";
 	if (item instanceof String)
 	    return (String)item;
-	if (item instanceof UniRefInfo)
+	if (item instanceof DesktopItem)
 	{
-	    final UniRefInfo i = (UniRefInfo)item;
-	    return i.toString();
+	    final DesktopItem desktopItem = (DesktopItem)item;
+	    final UniRefInfo info = desktopItem.getUniRefInfo(luwrain);
+	    return info.toString();
 	}
 	return "";
     }

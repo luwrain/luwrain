@@ -48,7 +48,7 @@ public interface Settings
 	String getDesktopTitle(String defValue);
 	void setDesktopTitle(String value);
 	String getDesktopContent(String defValue);
-	    void setDesktopContext(String defValue);
+	    void setDesktopContent(String defValue);
 	boolean getFilePopupSkipHidden(boolean defValue);
 	void setFilePopupSkipHidden(boolean value);
 	String getWindowTitle(String defValue);
