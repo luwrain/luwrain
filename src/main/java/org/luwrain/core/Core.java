@@ -538,17 +538,20 @@ if (initResult.getType() != InitResult.Type.OK)
 	this.announcement = AnnouncementType.APP;
     }
 
-    void closeAppIface(Luwrain instance)
+    void closeApp(Luwrain instance)
     {
 	NullCheck.notNull(instance, "instance");
 	mainCoreThreadOnly();
 	if (instance == getObjForEnvironment())
-	    throw new IllegalArgumentException("Trying to close an application through the special interface object designed for environment operations");
+	    throw new IllegalArgumentException("Trying to close an application through the special interface object");
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
-	    throw new IllegalArgumentException("Trying to close an application through an unknown interface object or this object doesn\'t identify an application");
+	    throw new IllegalArgumentException("Trying to close an application through an illegal interface object");
 	if (desktop != null && app == desktop)
-	    throw new IllegalArgumentException("Trying to close a desktop");
+	{
+	    quit();
+	    return;
+	}
 	if (apps.hasPopupOfApp(app))
 	{
 	    message(i18n.getStaticStr("AppCloseHasPopup"), Luwrain.MessageType.ERROR);

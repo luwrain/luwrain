@@ -165,7 +165,7 @@ final class LuwrainImpl implements Luwrain
     @Override public     void closeApp()
     {
 	core.mainCoreThreadOnly();
-	core.closeAppIface(this);
+	core.closeApp(this);
     }
 
     @Override public Registry getRegistry()
