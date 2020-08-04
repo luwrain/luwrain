@@ -147,9 +147,11 @@ final class AppManager
 	    activeAppIndex = 0;
     }
 
-    boolean refreshAreaLayoutOfApp(Application app)
+    boolean updateAppAreaLayout(Application app)
     {
 	NullCheck.notNull(app, "app");
+	if (isDesktopApp(app))
+	    return this.desktopApp.refreshAreaLayout();
 	final int index = findApp(app);
 	if (index < 0)
 	    return false;
@@ -171,6 +173,8 @@ final class AppManager
     {
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(area, "area");
+	if (isDesktopApp(app))
+	    return this.desktopApp.setActiveArea(area);
 	final int index = findApp(app);
 	if (index < 0)
 	    return false;
@@ -200,14 +204,6 @@ final class AppManager
     boolean noEffectiveActiveArea()
     {
 	return getEffectiveActiveAreaOfActiveApp() == null;
-    }
-
-    private int findApp(Application app)
-    {
-	for(int i = 0;i < apps.size();i++)
-	    if (apps.get(i).app == app)
-		return i;
-	return -1;
     }
 
     //null app means system popup;
@@ -473,6 +469,14 @@ final class AppManager
 	//	shell.sendBroadcastEvent(event);
 	for(LaunchedApp a: apps)
 	    a.sendBroadcastEvent(event);
+    }
+
+        private int findApp(Application app)
+    {
+	for(int i = 0;i < apps.size();i++)
+	    if (apps.get(i).app == app)
+		return i;
+	return -1;
     }
 
     private boolean isDesktopApp(Application app)

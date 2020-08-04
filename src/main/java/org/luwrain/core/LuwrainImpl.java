@@ -308,7 +308,7 @@ final class LuwrainImpl implements Luwrain
     @Override public void onNewAreaLayout()
     {
 	core.mainCoreThreadOnly();
-	core.onNewAreaLayoutIface(this);
+	core.onNewAreaLayout(this);
     }
 
     @Override public void openFile(String fileName)

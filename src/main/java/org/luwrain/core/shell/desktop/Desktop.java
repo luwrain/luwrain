@@ -19,7 +19,7 @@ package org.luwrain.core.shell.desktop;
 import org.luwrain.core.*;
 import org.luwrain.core.shell.*;
 
-public final class Desktop implements org.luwrain.core.Desktop
+public final class Desktop implements Application
 {
     private Luwrain luwrain = null;
     private String name = "";
@@ -36,11 +36,6 @@ public final class Desktop implements org.luwrain.core.Desktop
 	    this.name = luwrain.i18n().getStaticStr("Desktop");
 	this.desktopArea = new DesktopArea(luwrain, name, new Conversations(luwrain));
 	return new InitResult();
-    }
-
-    @Override public void setConversations(Conversations conversations)
-    {
-	this.conversations = conversations;
     }
 
     @Override public String getAppName()

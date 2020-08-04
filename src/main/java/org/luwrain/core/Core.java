@@ -576,17 +576,17 @@ if (initResult.getType() != InitResult.Type.OK)
 	announceActiveArea();
     }
 
-    void onNewAreaLayoutIface(Luwrain instance)
+    void onNewAreaLayout(Luwrain instance)
     {
+		NullCheck.notNull(instance, "instance");
 	mainCoreThreadOnly();
-	NullCheck.notNull(instance, "instance");
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
 	{
-	    Log.info("core", "somebody is trying to change area layout using a fake instance object");
+	    Log.warning(LOG_COMPONENT, "trying to update area layout with a fake app instance");
 	    return;
 	}
-	apps.refreshAreaLayoutOfApp(app);
+	apps.updateAppAreaLayout(app);
 	onNewAreasLayout();
     }
 
