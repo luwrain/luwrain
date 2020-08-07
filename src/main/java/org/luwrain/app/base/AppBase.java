@@ -28,10 +28,10 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     private S strings = null;
     final String stringsName;
     final Class<S> stringsClass;
+    private final String helpSection;
     private AreaLayoutHelper layout = null;
     private String appName = "";
     private Area[] visibleAreas = new Area[0];
-
     private FutureTask task = null;
 
     public AppBase(String stringsName, Class stringsClass, String helpSection)
@@ -40,6 +40,12 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	NullCheck.notNull(stringsClass, "stringsClass");
 	this.stringsName = stringsName;
 	this.stringsClass = stringsClass;
+	this.helpSection = helpSection;
+    }
+
+        public AppBase(String stringsName, Class stringsClass)
+    {
+	this(stringsName, stringsClass, null);
     }
 
     abstract protected boolean onAppInit() throws Exception;
@@ -121,6 +127,10 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	    return false;
 	switch(event.getCode())
 	{
+	case HELP:
+	    if (helpSection == null || helpSection.isEmpty())
+		return false;
+	    return luwrain.openHelp(helpSection);
 	case CLOSE:
 	    closeApp();
 	    return true;
