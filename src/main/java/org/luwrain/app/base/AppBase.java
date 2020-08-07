@@ -177,7 +177,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	this.visibleAreas = visibleAreas.clone();
     }
 
-    public boolean runTask(FutureTask task)
+    private boolean runTask(FutureTask task)
     {
 	NullCheck.notNull(task, "task");
 	if (isBusy())
@@ -196,9 +196,9 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return runTask(new FutureTask(()->{
 		    try {
 			try {
-		    runnable.run();
+			    runnable.run();
 			}
-			catch(Exception e)
+			catch(Throwable e)
 			{
 			    luwrain.crash(e);
 			}
@@ -257,13 +257,32 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return this.luwrain;
     }
 
-    public org.luwrain.i18n.I18n getI18n()
+    public S getStrings()
+    {
+	return this.strings;
+    }
+
+    public void crash(Throwable t)
+    {
+	NullCheck.notNull(t, "t");
+	luwrain.crash(t);
+    }
+
+        public org.luwrain.i18n.I18n getI18n()
     {
 	return luwrain.i18n();
     }
 
-    public S getStrings()
+    public void message(String text, Luwrain.MessageType type)
     {
-	return this.strings;
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(type, "type");
+	luwrain.message(text, type);
+    }
+
+    public void message(String text)
+    {
+	NullCheck.notNull(text, "text");
+	luwrain.message(text);
     }
 }

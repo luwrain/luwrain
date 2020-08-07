@@ -184,7 +184,7 @@ final class LuwrainImpl implements Luwrain
 	runUiSafely(()->core.launchAppCrash(app));
     }
 
-        @Override public void crash(Exception e)
+        @Override public void crash(Throwable e)
     {
 	NullCheck.notNull(e, "e");
 	e.printStackTrace();

@@ -113,7 +113,7 @@ public interface Luwrain extends PropertiesBase
     Object callUiSafely(java.util.concurrent.Callable callable);
     void closeApp();
     void crash(org.luwrain.app.crash.App app);
-        void crash(Exception e);
+        void crash(Throwable e);
     GraphicalMode openGraphicalMode(String modeName, GraphicalMode.Params params);
     void announcement(String text, String announcementClass, String announcementSubclass);
 
