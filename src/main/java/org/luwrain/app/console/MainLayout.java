@@ -21,7 +21,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-import org.luwrain.template.*;
+import org.luwrain.app.base.*;
 
 final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 {

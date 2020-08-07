@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.template;
+package org.luwrain.app.base;
 
 import java.util.*;
 import java.util.concurrent.*;

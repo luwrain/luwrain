@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.template;
+package org.luwrain.app.base;
 
 import java.util.concurrent.*;
 
@@ -34,7 +34,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 
     private FutureTask task = null;
 
-    public AppBase(String stringsName, Class stringsClass)
+    public AppBase(String stringsName, Class stringsClass, String helpSection)
     {
 	NullCheck.notEmpty(stringsName, "stringsName");
 	NullCheck.notNull(stringsClass, "stringsClass");

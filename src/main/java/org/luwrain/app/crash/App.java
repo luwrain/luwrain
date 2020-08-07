@@ -22,7 +22,7 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.template.*;
+import org.luwrain.app.base.*;
 
 public final class App extends AppBase<Strings>
 {
@@ -33,7 +33,7 @@ public final class App extends AppBase<Strings>
 
     public App(Throwable ex, Application srcApp, Area srcArea)
     {
-	super(Strings.NAME, Strings.class);
+	super(Strings.NAME, Strings.class, "luwrain.crash");
 	NullCheck.notNull(ex, "ex");
 	this.ex = ex;
 	this.srcApp = srcApp;
