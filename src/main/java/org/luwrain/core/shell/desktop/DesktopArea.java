@@ -127,7 +127,7 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	return luwrain.runCommand(cmdName.trim());
     }
 
-    static private final class Model implements EditableListArea.EditableModel
+    static private final class Model implements EditableListArea.Model
     {
 	private final Luwrain luwrain;
 	private final Settings.UserInterface sett;

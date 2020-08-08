@@ -295,7 +295,7 @@ public class ListUtils
 	}
     }
 
-    static public class DefaultEditableModel extends ArrayList implements EditableListArea.EditableModel
+    static public class DefaultEditableModel extends ArrayList implements EditableListArea.Model
     {
 	public DefaultEditableModel()
 	{
