@@ -295,7 +295,7 @@ public class ListUtils
 	}
     }
 
-    static public class DefaultEditableModel extends Vector implements EditableListArea.EditableModel
+    static public class DefaultEditableModel extends ArrayList implements EditableListArea.EditableModel
     {
 	public DefaultEditableModel()
 	{
@@ -310,9 +310,8 @@ public class ListUtils
 	public void setItems(Object[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
-	    setSize(items.length);
-	    for(int i = 0;i < items.length;++i)
-		set(i, items[i]);
+	    clear();
+	    addAll(Arrays.asList(items));
 	}
 
 	public Object[] getItems()
@@ -320,27 +319,31 @@ public class ListUtils
 	    return toArray(new Object[size()]);
 	}
 
-	@Override public boolean clearList()
+	@Override public boolean clearModel()
 	{
 	    clear();
 	    return true;
 	}
 
-	@Override public boolean addToList(int pos, Clipboard clipboard)
+	@Override public boolean addToModel(int pos, java.util.function.Supplier supplier)
 	{
-	    NullCheck.notNull(clipboard, "clipboard");
+	    NullCheck.notNull(supplier, "supplier");
 	    if (pos < 0)
 		throw new IllegalArgumentException("pos may not be negative (" + pos + ")");
-	    if (clipboard.isEmpty())
+	    final Object value = supplier.get();
+	    if (value == null)
 		return false;
-	    final List toAdd = new LinkedList();
-	    for(Object o: clipboard.get())
-		toAdd.add(o);
-	    addAll(pos, toAdd);
+	    final Object[] values;
+	    if (value instanceof Object[])
+		values = (Object[])value; else
+		values = new Object[]{value};
+	    if (values.length == 0)
+		return false;
+	    addAll(pos, Arrays.asList(values));
 	    return true;
 	}
 
-	@Override public boolean removeFromList(int index)
+	@Override public boolean removeFromModel(int index)
 	{
 	    if (index < 0)
 		throw new IllegalArgumentException("index may not be negative (" + index + ")");

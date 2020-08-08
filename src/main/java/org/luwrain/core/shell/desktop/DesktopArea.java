@@ -139,14 +139,14 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	    this.luwrain = luwrain;
 	    this.sett = Settings.createUserInterface(luwrain.getRegistry());
 	}
-	@Override public boolean clearList()
+	@Override public boolean clearModel()
 	{
 	    load();
 	    this.items.clear();
 	    save();
 	    return true;
 	}
-	@Override public boolean removeFromList(int index)
+	@Override public boolean removeFromModel(int index)
 	{
 	    if (index < 0)
 		throw new IllegalArgumentException("index may not be negative");
@@ -157,14 +157,20 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	    save();
 	    return true;
 	}
-	@Override public boolean addToList(int index, Clipboard clipboard)
+	@Override public boolean addToModel(int index, java.util.function.Supplier supplier)
 	{
-	    NullCheck.notNull(clipboard, "clipboard");
+	    NullCheck.notNull(supplier, "supplier");
 	    if (index < 0)
 		throw new IllegalArgumentException("index may not be negative");
 	    load();
-	    final Object[] objs = clipboard.get();
-	    if (objs == null || objs.length == 0)
+	    final Object supplied = supplier.get();
+	    if (supplied == null)
+		return false;
+	    final Object[] objs;
+	    if (supplied instanceof Object[])
+		objs = (Object[])supplied; else
+		objs = new Object[]{supplied};
+	    if (objs.length == 0)
 		return false;
 	    for(Object o: objs)
 	    {

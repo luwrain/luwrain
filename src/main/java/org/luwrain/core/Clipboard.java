@@ -22,7 +22,7 @@ import java.io.*;
 
 import com.google.gson.*;
 
-public final class Clipboard
+public final class Clipboard implements java.util.function.Supplier
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
@@ -68,7 +68,7 @@ public final class Clipboard
 	return set(new Object[]{o});
     }
 
-    public Object[] get()
+    @Override public Object[] get()
     {
 	if (this.objs == null)
 	    return new Object[0];

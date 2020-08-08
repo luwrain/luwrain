@@ -27,9 +27,9 @@ public class EditableListArea extends ListArea
 {
     public interface EditableModel extends Model
     {
-	boolean clearList();
-	boolean addToList(int pos, Clipboard clipboard);
-	boolean removeFromList(int index);
+	boolean clearModel();
+	boolean addToModel(int pos, java.util.function.Supplier supplier);
+	boolean removeFromModel(int index);
     }
 
     public interface Confirmation
@@ -124,7 +124,7 @@ public class EditableListArea extends ListArea
 	final int pos = getItemIndexOnLine(getHotPointY());
 	if (pos < 0)
 	    return false;
-	if (!editableListModel.addToList(pos, context.getClipboard()))
+	if (!editableListModel.addToModel(pos, context.getClipboard()))
 	    return false;
 	refresh();
 	return true;
@@ -137,7 +137,7 @@ public class EditableListArea extends ListArea
 	    return false;
 	if (withConfirmation && confirmation != null && !confirmation.confirmDeleting(this, editableListModel, index, index + 1))
 	    return true;
-	if (!editableListModel.removeFromList(index))
+	if (!editableListModel.removeFromModel(index))
 	    return false;
 	refresh();
 	return true;
@@ -154,7 +154,7 @@ public class EditableListArea extends ListArea
 	if (withConfirmation && confirmation != null && !confirmation.confirmDeleting(this, editableListModel, fromIndex, toIndex))
 	    return true;
 	for(int i = fromIndex;i < toIndex;++i)
-	    if (!editableListModel.removeFromList(fromLineIndex))
+	    if (!editableListModel.removeFromModel(fromLineIndex))
 		return false;
 	refresh();
 	return true;
