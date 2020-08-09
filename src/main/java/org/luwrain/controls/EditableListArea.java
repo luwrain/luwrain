@@ -68,7 +68,7 @@ public class EditableListArea extends ListArea
 	    switch(event.getSpecial())
 	    { 
 	    case DELETE:
-		return onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR_REGION));
+		return onDeleteSingle(getHotPointY(), true);
 	    }
 	return super.onInputEvent(event);
     }
@@ -121,11 +121,22 @@ public class EditableListArea extends ListArea
     {
 	if (context.getClipboard().isEmpty())
 	    return false;
+	final int countBefore = listModel.getItemCount();
 	final int pos = getItemIndexOnLine(getHotPointY());
 	if (pos < 0)
 	    return false;
 	if (!editableListModel.addToModel(pos, context.getClipboard()))
 	    return false;
+	final int countAfter = listModel.getItemCount();
+	if (countAfter > countBefore)
+	{
+	    final int newSelected = pos + (countAfter - countBefore);
+	    if (newSelected < countAfter)
+		select(newSelected, false); else
+		if (listFlags.contains(Flags.EMPTY_LINE_BOTTOM))
+		    selectEmptyLineBottom(false); else
+		    select(countAfter - 1, false);
+	}
 	refresh();
 	return true;
     }
@@ -153,6 +164,7 @@ public class EditableListArea extends ListArea
 	    return false;
 	if (withConfirmation && confirmation != null && !confirmation.confirmDeleting(this, editableListModel, fromIndex, toIndex))
 	    return true;
+	//FIXME:complete entire region at once
 	for(int i = fromIndex;i < toIndex;++i)
 	    if (!editableListModel.removeFromModel(fromLineIndex))
 		return false;

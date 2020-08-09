@@ -247,6 +247,20 @@ public interface ClipboardSaver
 	return true;
     }
 
+        public boolean selectEmptyLineBottom(boolean announce)
+    {
+	if (!listFlags.contains(Flags.EMPTY_LINE_BOTTOM))
+	    return false;
+	final int emptyCountAbove = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
+	hotPointY = listModel.getItemCount() + emptyCountAbove;
+	    hotPointX = 0;
+	    if (announce)
+		context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+	context.onAreaNewHotPoint(this);
+	return true;
+    }
+
+
     public int getExistingItemIndexOnLine(int lineIndex)
     {
 	if (lineIndex < 0)
