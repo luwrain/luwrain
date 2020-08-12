@@ -30,8 +30,8 @@ public enum LangStatic
     NO_LINES_ABOVE,
     NO_LINES_BELOW,
     SPACE,
-    TAB,
-    YES,
+        TAB,
+        YES,
 
     BEGIN_OF_TREE,
     END_OF_TREE,

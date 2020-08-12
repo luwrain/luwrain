@@ -31,6 +31,8 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
     static public final String STRINGS_PREFIX = "strings.";
     static public final String CHARS_PREFIX = "chars.";
 
+    protected ClassLoader classLoader = null;
+    protected Luwrain luwrain = null;
     protected final String langName;
     protected final Map<String, String> staticStrings = new HashMap();
     protected final Map<String, String> chars = new HashMap();
@@ -38,12 +40,20 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
     public I18nExtensionBase(String langName)
     {
 	NullCheck.notEmpty(langName, "langName");
+	this.classLoader = classLoader;
 	this.langName = langName;
     }
 
-    protected void loadProperties(ClassLoader classLoader, String resourcePath, I18nExtension ext) throws IOException
+    protected void init(ClassLoader classLoader, Luwrain luwrain)
     {
 	NullCheck.notNull(classLoader, "classLoader");
+	NullCheck.notNull(luwrain, "luwrain");
+	this.classLoader = classLoader;
+	this.luwrain = luwrain;
+    }
+
+    protected void loadProperties(String resourcePath, I18nExtension ext) throws IOException
+    {
 	NullCheck.notEmpty(resourcePath, "resourcePath");
 	NullCheck.notNull(ext, "ext");
 	final Properties props = new Properties();
@@ -64,15 +74,14 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
 		Log.warning(langName, "key \'" + k + "\' in resource file " + resourcePath+ " doesn\'t have value");
 		continue;
 	    }
-	    processPropItem(k, v, classLoader, ext, resourcePath);
+	    processPropItem(k, v, ext, resourcePath);
 	}
     }
 
-    protected void processPropItem(String k, String v, ClassLoader classLoader, I18nExtension ext, String resourcePath)
+    protected void processPropItem(String k, String v, I18nExtension ext, String resourcePath)
     {
 	NullCheck.notEmpty(k, "k");
 	NullCheck.notNull(v, "v");
-	NullCheck.notNull(classLoader, "classLoader");
 	NullCheck.notNull(ext, "ext");
 	NullCheck.notNull(resourcePath, "resourcePath");
 	//commands
@@ -123,22 +132,22 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
 		Log.warning(langName, "the illegal key \'" + k + "\' in resource file " + resourcePath);
 		return;
 	    }
-	    if (!addProxyByClassName(classLoader, c.trim(), v.trim(), resourcePath, ext))
+	    if (!addProxyByClassName(c.trim(), v.trim(), resourcePath, ext))
 		Log.warning(langName, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
 	    return;
 	}
     }
 
-    protected boolean addProxyByClass(ClassLoader classLoader, String name, Class stringsClass, String propertiesResourceName, I18nExtension ext)
+    protected boolean addProxyByClass(String name, Class stringsClass, String propertiesResourceName, I18nExtension ext)
     {
-	NullCheck.notNull(classLoader, "classLoader");
+	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(stringsClass, "stringsClass");
 	NullCheck.notEmpty(propertiesResourceName, "propertiesResourceName");
 	NullCheck.notNull(ext, "ext");
 	final Object strings;
 	try {
-	    strings = PropertiesProxy.create(classLoader.getResource(propertiesResourceName), name + ".", stringsClass);
+	    strings = PropertiesProxy.create(luwrain, langName, classLoader.getResource(propertiesResourceName), name + ".", stringsClass);
 	}
 	catch(java.io.IOException e)
 	{
@@ -149,9 +158,9 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
 	return true;
     }
 
-    protected boolean addProxyByClassName(ClassLoader classLoader, String name, String className, String propertiesResourceName, I18nExtension ext)
+    protected boolean addProxyByClassName(String name, String className, String propertiesResourceName, I18nExtension ext)
     {
-	NullCheck.notNull(classLoader, "classLoader");
+	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(className, "className");
 	NullCheck.notEmpty(propertiesResourceName, "propertiesResourceName");
@@ -160,10 +169,11 @@ public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtensio
 	try {
 	    cl = Class.forName(className, true, classLoader);
 	}
-	catch (ClassNotFoundException e)
+	catch (Throwable e)
 	{
+	    Log.error(langName, "unable to find the class " + className + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;
 	}
-	return addProxyByClass(classLoader, name, cl, propertiesResourceName, ext);
+	return addProxyByClass(name, cl, propertiesResourceName, ext);
     }
 }
