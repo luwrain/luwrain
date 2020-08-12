@@ -411,7 +411,7 @@ final class Core extends EventDispatching
 		appRef.set(shortcut.prepareApp(args));
 	    });
 	final Application[] app = appRef.get();
-	if (app == null || app.length == 0)
+	if (app == null)
 	{
 	    message("Приложение " + shortcutName + " не готово к запуску", Luwrain.MessageType.ERROR);//FIXME:
 	    return;
