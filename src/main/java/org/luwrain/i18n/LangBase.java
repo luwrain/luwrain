@@ -23,6 +23,7 @@ import java.net.*;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.nlp.*;
 
 abstract public class LangBase implements Lang
 {

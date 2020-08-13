@@ -16,7 +16,7 @@
 
 //LWR_API 2.0
 
-package org.luwrain.i18n;
+package org.luwrain.nlp;
 
 public enum POS
 {

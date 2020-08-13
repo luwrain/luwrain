@@ -19,6 +19,7 @@
 package org.luwrain.i18n;
 
 import org.luwrain.core.Luwrain.SpeakableTextType;
+import org.luwrain.nlp.*;
 
 /**
  * The interface for classes implementing national languages. This
