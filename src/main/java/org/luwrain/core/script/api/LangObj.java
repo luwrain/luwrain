@@ -21,8 +21,9 @@ import java.util.function.*;
 
 import org.luwrain.core.*;
 import org.luwrain.i18n.*;
+import org.luwrain.script.*;
 
-final class LangObj extends AbstractJSObject
+final class LangObj extends EmptyHookObject
 {
     private final Lang lang;
 
@@ -37,11 +38,24 @@ final class LangObj extends AbstractJSObject
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
+	case "exp":
+	    return (BiFunction)this::exp;
 	    case "getSpecialNameOfChar":
 	    return (Function)this::getSpecialNameOfChar;
 	default:
 	    return super.getMember(name);
 	}
+    }
+
+    private Object exp(Object nameObj, Object argsObj)
+    {
+	final String name = org.luwrain.script.ScriptUtils.getStringValue(nameObj);
+	if (name == null || name.isEmpty())
+	    return null;
+	if (argsObj == null || !(argsObj instanceof JSObject))
+	    return null;
+	final JSObject args = (JSObject)argsObj;
+	return lang.getTextExp(name, (argName)->args.getMember(argName.toString()));
     }
 
 private String getSpecialNameOfChar(Object obj)

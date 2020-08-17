@@ -21,8 +21,9 @@ import java.util.function.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
+import org.luwrain.script.*;
 
-final class I18nObj extends AbstractJSObject
+final class I18nObj extends EmptyHookObject
 {
     private final Luwrain luwrain;
     private final LangObj activeLangObj;
