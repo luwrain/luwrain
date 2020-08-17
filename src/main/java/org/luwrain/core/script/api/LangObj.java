@@ -39,7 +39,14 @@ final class LangObj extends EmptyHookObject
 	switch(name)
 	{
 	case "exp":
-	    return (BiFunction)this::exp;
+	    return new EmptyHookObject(){
+		@Override public Object getMember(String name)
+		{
+		    NullCheck.notEmpty(name, "name");
+		    final String expName = Utils.buildNameWithDashes(name);
+		    return (Function)(args)->exp(expName, args);
+		}
+	    };
 	    case "getSpecialNameOfChar":
 	    return (Function)this::getSpecialNameOfChar;
 	default:
@@ -47,11 +54,8 @@ final class LangObj extends EmptyHookObject
 	}
     }
 
-    private Object exp(Object nameObj, Object argsObj)
+    private String exp(String name, Object argsObj)
     {
-	final String name = org.luwrain.script.ScriptUtils.getStringValue(nameObj);
-	if (name == null || name.isEmpty())
-	    return null;
 	if (argsObj == null || !(argsObj instanceof JSObject))
 	    return null;
 	final JSObject args = (JSObject)argsObj;

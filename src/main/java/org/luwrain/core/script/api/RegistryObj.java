@@ -20,8 +20,9 @@ import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
+import org.luwrain.script.*;
 
-final class RegistryObj extends AbstractJSObject
+final class RegistryObj extends EmptyHookObject
 {
     private final Registry registry;
     private final String path;
@@ -39,7 +40,7 @@ final class RegistryObj extends AbstractJSObject
 	NullCheck.notNull(name, "name");
 	if (name.isEmpty())
 	    return super.getMember(name);
-	final String fullPath = Registry.join(path, buildName(name));
+	final String fullPath = Registry.join(path, Utils.buildNameWithDashes(name));
 	if (registry.hasDirectory(fullPath))
 	    return new RegistryObj(registry, fullPath);
 	switch(registry.getTypeOf(fullPath))
@@ -55,22 +56,5 @@ final class RegistryObj extends AbstractJSObject
 	default:
 	    return null;
 	}
-    }
-
-    private String buildName(String name)
-    {
-	NullCheck.notNull(name, "name");
-	if (name.isEmpty())
-	    return "";
-						      final StringBuilder b = new StringBuilder();
-						      b.append(Character.toLowerCase(name.charAt(0)));
-					      for(int i = 1;i < name.length();++i)
-					      {
-						  final char c = name.charAt(i);
-						  if (Character.isUpperCase(c) && Character.isLowerCase(name.charAt(i - 1)))
-						      b.append("-").append(Character.toLowerCase(c)); else
-						      b.append(Character.toLowerCase(c));
-					      }
-					      return new String(b);
     }
 }
