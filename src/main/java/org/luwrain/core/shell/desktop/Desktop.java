@@ -24,17 +24,23 @@ public final class Desktop implements Application
     private Luwrain luwrain = null;
     private String name = "";
     private DesktopArea desktopArea = null;
-    private Conversations conversations = null;
+    private Strings strings = null;
+    private Conversations conv = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	final Object o = luwrain.i18n().getStrings(Strings.NAME);
+	if (o == null || !(o instanceof Strings))
+	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
+	this.strings = (Strings)o;
+	this.conv = new Conversations(luwrain, strings);
 	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
 	this.name = sett.getDesktopTitle("").trim();
 	if (this.name.isEmpty())
 	    this.name = luwrain.i18n().getStaticStr("Desktop");
-	this.desktopArea = new DesktopArea(luwrain, name, new Conversations(luwrain));
+	this.desktopArea = new DesktopArea(luwrain, name, conv);
 	return new InitResult();
     }
 

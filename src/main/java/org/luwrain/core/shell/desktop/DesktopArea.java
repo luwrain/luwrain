@@ -64,7 +64,11 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	    clipboard.set(res.toArray(new String[res.size()]));
 	    return true;
 	};
-	params.confirmation = (area,model,fromIndex,toIndex)->{return true;/*conv.deleteDesktopItemsConfirmation(toIndex - fromIndex);*/};
+	params.confirmation = (area,model,fromIndex,toIndex)->{
+	    if (fromIndex + 1== toIndex)
+		return conv.deleteItem(params.appearance.getScreenAppearance(model.getItem(fromIndex), EnumSet.noneOf(EditableListArea.Appearance.Flags.class)));
+		return conv.deleteItems(toIndex - fromIndex);
+    };
 	return params;
     }
 

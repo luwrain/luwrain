@@ -24,6 +24,7 @@ import java.util.*;
 import java.net.*;
 
 import org.luwrain.core.*;
+import org.luwrain.script.*;
 import org.luwrain.script.hooks.*;
 
 public final class PropertiesProxy
@@ -63,15 +64,22 @@ public final class PropertiesProxy
 		final String value = props.getProperty(prefix + name);
 		if (value == null)
 		{
-		    final String[] strArgs;
+final Object[] a;
 		    if (args != null)
 		    {
-			strArgs = new String[args.length];
+						a = new Object[args.length];
+
 			for(int i = 0;i < args.length;i++)
-			    strArgs[i] = args[i] != null?args[i].toString():null;
+			{
+			    if (args[i] == null)
+				a[i] = null; else
+				if (args[i] instanceof String || args[i] instanceof Number || args[i] instanceof Boolean)
+				    a[i] = args[i]; else
+				    a[i] = args[i].toString();
+			}
 		    } else
-			strArgs = new String[0];
-		    final String hookRes = runHook(luwrain, langName, cl.getClass().getName(), strArgs);
+			a = new Object[0];
+		    final String hookRes = runHook(luwrain, langName, cl.getName(), a);
 		    if (hookRes != null)
 			return hookRes;
 		    return "#No value: " + prefix + name + "#";
@@ -88,7 +96,7 @@ public final class PropertiesProxy
 	    });
     }
 
-    static public String runHook(Luwrain luwrain, String langName, String name, String[] args)
+    static public String runHook(Luwrain luwrain, String langName, String name, Object[] args)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(langName, "langName");
@@ -96,7 +104,7 @@ public final class PropertiesProxy
 	NullCheck.notNullItems(args, "args");
 	final ProviderHook hook = new ProviderHook(luwrain);
 	try {
-	    final Object res = hook.run("luwrain.i18n." + langName + ".strings", new Object[]{name, args});
+	    final Object res = hook.run("luwrain.i18n." + langName + ".strings", new Object[]{name, ScriptUtils.createArray(args)});
 	    if (res == null)
 		return null;
 	    return res.toString();
