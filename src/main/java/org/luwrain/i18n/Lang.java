@@ -18,6 +18,8 @@
 
 package org.luwrain.i18n;
 
+import java.util.*;
+
 import org.luwrain.core.Luwrain.SpeakableTextType;
 import org.luwrain.nlp.*;
 
@@ -59,4 +61,6 @@ public interface Lang
     String getSpeakableText(String text, SpeakableTextType speakableTextType);
     java.io.InputStream getResource(String resourceName);
 
+
+    String getTextExp(String expName, java.util.function.Function args);
 }
