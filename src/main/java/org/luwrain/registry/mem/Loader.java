@@ -24,7 +24,7 @@ import org.luwrain.core.*;
 final class Loader
 {
     static private final String LOG_COMPONENT = RegistryImpl.LOG_COMPONENT;
-    
+
     static private final String DIR_PREFIX = "DIR ";
     static private final String FILE_PREFIX = "FILE ";
 
@@ -44,7 +44,7 @@ final class Loader
     void load(InputStream is) throws IOException
     {
 	NullCheck.notNull(is, "is");
-	final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+	final BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 	String line = reader.readLine();
 	while(line != null)
 	{

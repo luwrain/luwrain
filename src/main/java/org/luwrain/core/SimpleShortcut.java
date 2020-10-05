@@ -21,7 +21,7 @@ package org.luwrain.core;
 public class SimpleShortcut implements Shortcut
 {
     static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
-    
+
     protected final String shortcutName;
     protected final Class appClass;
 
