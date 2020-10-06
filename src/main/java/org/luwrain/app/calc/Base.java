@@ -91,7 +91,7 @@ final class Base
 	try {
 	    final InputStream is = url.openStream();
 	    try {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		String line = reader.readLine();
 		while (line != null)
 		{

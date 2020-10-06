@@ -41,7 +41,7 @@ final class RegistryExtractor
     void extract(InputStream is) throws IOException
     {
 	NullCheck.notNull(is, "is");
-	final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+	final BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 	String line = reader.readLine();
 	while(line != null)
 	{

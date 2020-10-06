@@ -190,7 +190,7 @@ final class Core extends EventDispatching
 	    } else
 		Log.warning(LOG_COMPONENT, "the directory " + jsDir.getAbsolutePath() + " does not exist, skipping loading of script extensions");
 	}
-	
+
 	//Common text extensions
 	{
 	    final File textExtDir = props.getFileProperty("luwrain.dir.textext");

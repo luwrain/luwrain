@@ -61,7 +61,7 @@ public class JniLoader
 	    return null;
 	}
 	try {
-	    final BufferedReader r = new BufferedReader(new InputStreamReader(url.openStream()));
+	    final BufferedReader r = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
 	    try {
 		final List<String> res = new LinkedList();
 		String line = r.readLine();
