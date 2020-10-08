@@ -24,14 +24,17 @@ import org.luwrain.core.*;
 
 public final class Manager
 {
+    private final ExtObjects extObjs;
     private final Settings.BackgroundSounds sett;
     private final Path soundsDir;
     private BkgPlayer bkgPlayer = null;
     private boolean startingMode = false;
 
-    public Manager(Luwrain luwrain)
+    public Manager(ExtObjects extObjs, Luwrain luwrain)
     {
+	NullCheck.notNull(extObjs, "extObjs");
 	NullCheck.notNull(luwrain, "luwrain");
+	this.extObjs = extObjs;
 	this.sett = Settings.createBackgroundSounds(luwrain.getRegistry());
 	this.soundsDir = luwrain.getFileProperty("luwrain.dir.sounds").toPath();
     }
@@ -39,10 +42,10 @@ public final class Manager
     public void playBackground(String url)
     {
 	NullCheck.notNull(url, "url");
+		stopBackground();
 	if (url.isEmpty())
 	    return;
-	stopBackground();
-	this.bkgPlayer = new BkgPlayer(url);
+	this.bkgPlayer = new BkgPlayer(this.extObjs, url);
 	this.bkgPlayer.start();
     }
 

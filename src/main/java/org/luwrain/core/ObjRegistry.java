@@ -21,7 +21,7 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.extensions.*;
 
-final class ObjRegistry
+final class ObjRegistry implements ExtObjects
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
@@ -30,7 +30,6 @@ final class ObjRegistry
 	final Extension ext;
 	final String name;
 	final E obj;
-
 	Entry(Extension ext, String name, E obj)
 	{
 	    NullCheck.notEmpty(name, "name");
@@ -86,7 +85,7 @@ final class ObjRegistry
 		res = true;
 	    }
 	}
-
+		
 				if (obj instanceof org.luwrain.speech.Engine)
 	{
 	    final org.luwrain.speech.Engine engine = (org.luwrain.speech.Engine)obj;
@@ -116,18 +115,6 @@ final class ObjRegistry
 		res = true;
 	    }
 	}
-
-																/*
-																																if (obj instanceof TextEditingExtension)
-	{
-	    final TextEditingExtension textEditing = (TextEditingExtension)obj;
-	    if (!textEditingExts.containsKey(name))
-	    {
-		textEditingExts.put(name, new Entry(ext, name, textEditing));
-		res = true;
-	    }
-	}
-																*/
 
 																if (!res)
 	    Log.warning(LOG_COMPONENT, "failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
@@ -180,19 +167,7 @@ final class ObjRegistry
 	return str;
     }
 
-    /*
-    Application[] prepareApp(String name, String[] args)
-    {
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notNullItems(args, "args");
-return 	final Shortcut shortcut = getShortcut(name);
-	if (shortcut == null)
-	    return null;
-	return shortcut.prepareApp(args);
-    }
-    */
-
-    MediaResourcePlayer[] getMediaResourcePlayers()
+    @Override public MediaResourcePlayer[] getMediaResourcePlayers()
     {
 	final List<MediaResourcePlayer> res = new LinkedList();
 	for(Map.Entry<String, Entry<MediaResourcePlayer>> e: players.entrySet())

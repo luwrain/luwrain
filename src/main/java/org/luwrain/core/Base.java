@@ -79,7 +79,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	this.helpSects = new HelpSections(registry);
 	this.speech = new Speech(cmdLine, registry);
 	this.sounds = new org.luwrain.core.sound.EnvironmentSounds(registry, props.getFileProperty("luwrain.dir.sounds"));
-	this.soundManager = new org.luwrain.core.sound.Manager(getObjForEnvironment());
+	this.soundManager = new org.luwrain.core.sound.Manager(objRegistry, getObjForEnvironment());
 	this.mainCoreThread = Thread.currentThread();
     }
 

@@ -30,25 +30,20 @@ public interface MediaResourcePlayer extends ExtensionObject
     static public final class Result
     {
 	public enum Type {OK, INACCESSIBLE_SOURCE};
-
 	private final Type type;
-
 	public Result()
 	{
 	    this.type = Type.OK;
 	}
-
 		public Result(Type type)
 	{
 	    NullCheck.notNull(type, "type");
 	    this.type = Type.OK;
 	}
-
 	public Type  getType()
 	{
 	    return type;
 	}
-
 	public boolean isOk()
 	{
 	    return type == Type.OK;
