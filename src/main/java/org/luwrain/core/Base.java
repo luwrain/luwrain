@@ -57,7 +57,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     final org.luwrain.core.speech.SpeakingText speakingText = new org.luwrain.core.speech.SpeakingText(extensions);
     final Braille braille = new Braille();
     protected final org.luwrain.core.sound.EnvironmentSounds sounds;
-    protected final SoundManager soundManager;
+    protected final org.luwrain.core.sound.Manager soundManager;
 
     final FileTypes fileTypes = new FileTypes();
     final FileContentType contentTypes = new FileContentType();
@@ -79,7 +79,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	this.helpSects = new HelpSections(registry);
 	this.speech = new Speech(cmdLine, registry);
 	this.sounds = new org.luwrain.core.sound.EnvironmentSounds(registry, props.getFileProperty("luwrain.dir.sounds"));
-	this.soundManager = new SoundManager(registry, props);
+	this.soundManager = new org.luwrain.core.sound.Manager(getObjForEnvironment());
 	this.mainCoreThread = Thread.currentThread();
     }
 

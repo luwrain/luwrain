@@ -14,42 +14,39 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.core.sound;
 
 import java.net.*;
 import java.io.*;
 import java.nio.file.*;
 
-import org.luwrain.core.util.OggPlayer;
+import org.luwrain.core.*;
 
-class SoundManager
+public final class Manager
 {
     private final Settings.BackgroundSounds sett;
     private final Path soundsDir;
-    private OggPlayer bkgOggPlayer = null;
+    private BkgPlayer bkgPlayer = null;
     private boolean startingMode = false;
 
-    SoundManager(Registry registry, PropertiesRegistry props)
+    public Manager(Luwrain luwrain)
     {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(props, "props");
-	this.sett = Settings.createBackgroundSounds(registry);
-	this.soundsDir = props.getFileProperty("luwrain.dir.sounds").toPath();
+	NullCheck.notNull(luwrain, "luwrain");
+	this.sett = Settings.createBackgroundSounds(luwrain.getRegistry());
+	this.soundsDir = luwrain.getFileProperty("luwrain.dir.sounds").toPath();
     }
 
-
-
-    void playBackground(String url)
+    public void playBackground(String url)
     {
 	NullCheck.notNull(url, "url");
 	if (url.isEmpty())
 	    return;
 	stopBackground();
-	bkgOggPlayer = new OggPlayer(url);
-	bkgOggPlayer.start();
+	this.bkgPlayer = new BkgPlayer(url);
+	this.bkgPlayer.start();
     }
 
-    void playBackground(BkgSounds bkgSound)
+    public void playBackground(BkgSounds bkgSound)
     {
 	NullCheck.notNull(bkgSound, "bkgSound");
 	if (startingMode)
@@ -77,16 +74,16 @@ class SoundManager
 	}
     }
 
-    void stopBackground()
+    public void stopBackground()
     {
 	if (startingMode)
 	    return;
-	if (bkgOggPlayer != null)
-	    bkgOggPlayer.stopPlaying();
-	bkgOggPlayer = null;
+	if (bkgPlayer != null)
+	    bkgPlayer.stopPlaying();
+	bkgPlayer = null;
     }
 
-    void startingMode()
+    public void startingMode()
     {
 	if (startingMode)
 	    return;
@@ -94,7 +91,7 @@ class SoundManager
 	startingMode = true;
     }
 
-    void stopStartingMode()
+    public void stopStartingMode()
     {
 	if (!startingMode)
 	    return;
