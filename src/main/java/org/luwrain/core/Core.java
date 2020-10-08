@@ -65,7 +65,7 @@ final class Core extends EventDispatching
 	init();
     interaction.startInputEventsAccepting(this);
 	windowManager.redraw();
-	soundManager.startingMode();
+	//soundManager.startingMode();
 	workers.doWork(objRegistry.getWorkers());
 	getObjForEnvironment().xRunHooks("luwrain.startup", new Object[0], Luwrain.HookStrategy.ALL);
 	eventLoop(mainStopCondition);
