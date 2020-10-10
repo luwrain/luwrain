@@ -34,7 +34,7 @@ public final class StreamUtils
 	do {
 	    length = is.read(buf);
 	    if (length > 0)
-		FileUtils.writeAllBytes(os, buf);
+		FileUtils.writeAllBytes(os, buf, length);
 	} while(length >= 0);
 	return length;
     }

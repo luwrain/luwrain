@@ -43,13 +43,24 @@ public final class FileUtils
     {
 	NullCheck.notNull(os, "os");
 	NullCheck.notNull(bytes, "bytes");
+	writeAllBytes(os, bytes, bytes.length);
+    }
+
+    static public void writeAllBytes(OutputStream os, byte[] bytes, int numBytes) throws IOException
+    {
+	NullCheck.notNull(os, "os");
+	NullCheck.notNull(bytes, "bytes");
+	if (numBytes < 0)
+	    throw new IllegalArgumentException("numBytes (" + String.valueOf(numBytes) + ") can't be negative");
+	if (numBytes == 0)
+	    return;
 	int pos = 0;
 	do {
-	    final int remaining = bytes.length - pos;
+	    final int remaining = numBytes - pos;
 	    final int numToWrite = remaining > 2048?2048:remaining;
 	    os.write(bytes, pos, numToWrite);
 	    pos += numToWrite;
-	} while(pos < bytes.length);
+	} while(pos < numBytes);
     }
 
     static public String readTextFileSingleString(File file, String charset) throws IOException

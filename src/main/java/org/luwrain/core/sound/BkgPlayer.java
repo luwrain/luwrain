@@ -89,6 +89,7 @@ final class BkgPlayer
 	catch(Throwable e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to start playing of " + url.toString() + ": " + e.getClass().getName() + ":" + e.getMessage());
+	    e.printStackTrace();
 	}
     }
 }                                                                               

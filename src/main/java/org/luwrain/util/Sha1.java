@@ -66,4 +66,17 @@ public final class Sha1
 	    throw new RuntimeException(e);
 	}
     }
+
+        static public String getSha1(byte[] bytes)
+    {
+	NullCheck.notNull(bytes, "bytes");
+	try {
+	    final ByteArrayInputStream s = new ByteArrayInputStream(bytes);
+	    return getSha1(s);
+	}
+	catch(IOException | NoSuchAlgorithmException e)
+	{
+	    throw new RuntimeException(e);
+	}
+    }
 }
