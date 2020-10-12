@@ -49,4 +49,5 @@ int getAreaVisibleHeight(Area area);
     String getSpeakableText(String text, Luwrain.SpeakableTextType type);
         boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy);
     void runHooks(String hookName, Luwrain.HookRunner runner);
+    void message(String text, Luwrain.MessageType messageType);
 }

@@ -190,4 +190,11 @@ public class DefaultControlContext implements ControlContext
 	NullCheck.notEmpty(hookName, "hookName");
 	luwrain.xRunHooks(hookName, runner);
     }
+
+    @Override public void message(String text, Luwrain.MessageType messageType)
+    {
+	NullCheck.notNull(text, "text");
+	NullCheck.notNull(messageType, "messageType");
+	luwrain.message(text, messageType);
+    }
 }

@@ -18,10 +18,77 @@
 
 package org.luwrain.util;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 
 public final class TextUtils
 {
+        //On an empty line provided returns one empty line
+    static public String[] splitLinesAnySeparator(String text)
+    {
+	NullCheck.notNull(text, "text");
+	boolean wasBN = false;
+	boolean wasBR = false;
+	final List<String> res = new LinkedList();
+	StringBuilder b = new StringBuilder();
+	for(int i = 0;i < text.length();++i)
+	{
+	    final char c = text.charAt(i);
+	    switch(c)
+	    {
+	    case '\n':
+		if (wasBR)
+		{
+		    //Doing nothing
+		    wasBN = true;
+		    continue;
+		}
+		if (wasBN)
+		{
+		    //The second encountering, it means there was an empty line
+		    wasBN = false;
+		    wasBR = false;
+		    //b must be empty
+		    res.add("");
+		    continue;
+		}
+		//wasBR and wasBN are false
+		res.add(new String(b));
+		b = new StringBuilder();
+		wasBN = true;
+		break;
+	    case '\r':
+		if (wasBN)
+		{
+		    //Doing nothing
+		    wasBR = true;
+		    continue;
+		}
+		if (wasBR)
+		{
+		    //The second encountering, it means there was an empty line
+		    wasBN = false;
+		    wasBR = false;
+		    //b must be empty
+		    res.add("");
+		    continue;
+		}
+		//wasBR and wasBN are false
+		res.add(new String(b));
+		b = new StringBuilder();
+		wasBR = true;
+		break;
+	    default:
+		wasBR = false;
+		wasBN = false;
+		b.append("" + c);
+	    }
+	}
+	res.add(new String(b));
+	return res.toArray(new String[res.size()]);
+    }
+
     static public String getLastWord(String text, int upToPos)
     {
 	NullCheck.notNull(text, "text");
