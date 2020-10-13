@@ -40,7 +40,6 @@ final class BkgPlayer
 
     void start()
     {
-	Log.debug(LOG_COMPONENT, "starting playing the background sound " + url.toString());
 	MediaResourcePlayer player = null;
 	for(MediaResourcePlayer p: extObjs.getMediaResourcePlayers())
 	    if (p.getSupportedMimeType().equals(ContentTypes.SOUND_MP3_DEFAULT))
@@ -71,7 +70,6 @@ final class BkgPlayer
 
     synchronized void stopPlaying()
     {
-	Log.debug(LOG_COMPONENT, "stopping playing the background sound " + url.toString());
 	if (instance == null)
 	    return;
 	instance.stop();
