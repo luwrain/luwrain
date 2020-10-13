@@ -94,6 +94,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	this.areaName = params.name;
 	this.edit = new EmbeddedSingleLineEdit(context, this, this, regionPoint, 0, 0);
 	refresh();
+	moveHotPointToInput();
     }
 
     public void setConsoleClickHandler(ClickHandler clickHandler)
@@ -108,7 +109,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 
     public void moveHotPointToInput()
     {
-	setHotPoint(enteringPrefix.length(), getEnteringLineIndex());
+	setHotPoint(enteringPrefix.length() + enteringText.length(), getEnteringLineIndex());
     }
 
     public void setInputPrefix(String prefix)
@@ -166,6 +167,34 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	default:
 	    return -1;
 	}
+    }
+
+    @Override protected boolean onAltHome(InputEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (this.inputPos != InputPos.TOP)
+	    return super.onAltHome(event);
+	moveHotPointToInput();
+	if (enteringText.isEmpty())
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
+	    if (enteringText.trim().isEmpty())
+		context.setEventResponse(DefaultEventResponse.hint(Hint.SPACES)); else
+		context.setEventResponse(DefaultEventResponse.text(enteringText));
+	return true;
+    }
+
+        @Override protected boolean onAltEnd(InputEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (this.inputPos != InputPos.BOTTOM)
+	    return super.onAltEnd(event);
+	moveHotPointToInput();
+	if (enteringText.isEmpty())
+	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
+	    if (enteringText.trim().isEmpty())
+		context.setEventResponse(DefaultEventResponse.hint(Hint.SPACES)); else
+		context.setEventResponse(DefaultEventResponse.text(enteringText));
+	return true;
     }
 
     @Override public int getLineCount()
