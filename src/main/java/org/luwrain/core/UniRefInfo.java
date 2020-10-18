@@ -102,4 +102,15 @@ public final class UniRefInfo implements Comparable
 	final UniRefInfo uniRef = (UniRefInfo)o;
 	return value.compareTo(uniRef.getValue());
     }
+
+    static public String makeValue(String type, String addr)
+    {
+	NullCheck.notEmpty(type, "type");
+	NullCheck.notNull(addr, "addr");
+	if (type.indexOf(":") >= 0)
+	    throw new IllegalArgumentException("type (" + type + ") can't contain the ':' character");
+	final StringBuilder b = new StringBuilder();
+	b.append(type).append(":").append(addr);
+	return new String(b);
+    }
 }

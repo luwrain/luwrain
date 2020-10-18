@@ -18,12 +18,76 @@
 
 package org.luwrain.core;
 
+import java.util.*;
+
 import org.luwrain.controls.ControlContext;
 
 public final class UniRefUtils
 {
-    static public final String URL = "url";
     static public final String ALIAS = "link";
+
+        static public String makeUniRef(String component, String addr)
+    {
+	NullCheck.notEmpty(component, "component");
+	NullCheck.notNull(addr, "addr");
+	return component + ":" + addr;
+    }
+
+    static public UniRefInfo make(String str)
+    {
+	NullCheck.notNull(str, "str");
+	final String text = str.trim();
+	if (text.isEmpty())
+	    return new UniRefInfo(UniRefInfo.makeValue(UniRefProcs.TYPE_EMPTY, ""), UniRefProcs.TYPE_EMPTY, "", "");
+	return new UniRefInfo(UniRefInfo.makeValue(UniRefProcs.TYPE_STATIC, ""), UniRefProcs.TYPE_STATIC, text, text);
+    }
+
+    static public UniRefInfo make(java.io.File file)
+    {
+	NullCheck.notNull(file, "file");
+	final String path = file.getAbsolutePath();
+	return new UniRefInfo(UniRefInfo.makeValue(UniRefProcs.TYPE_FILE, path), UniRefProcs.TYPE_FILE, path, path);
+    }
+
+    static public UniRefInfo make(java.net.URL url)
+    {
+	NullCheck.notNull(url, "url");
+	final String addr = url.toString();
+	return new UniRefInfo(UniRefInfo.makeValue(UniRefProcs.TYPE_URL, addr), UniRefProcs.TYPE_URL, addr, addr);
+    }
+
+    static public UniRefInfo make(Luwrain luwrain, Object obj)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(obj, "obj");
+	if (obj instanceof UniRefInfo)
+	    return (UniRefInfo)obj;
+	if (obj instanceof java.io.File)
+	    return make((java.io.File)obj);
+	if (obj instanceof java.net.URL)
+	    return make((java.net.URL)obj);
+	if (!(obj instanceof String))
+	    return null;
+	final String value = (String)obj;
+	final UniRefInfo uniRefInfo = luwrain.getUniRefInfo(value);
+	if (uniRefInfo != null)
+	    return uniRefInfo;
+	return make(value);
+    }
+
+    static public UniRefInfo[] make(Luwrain luwrain, Object[] objs)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNullItems(objs, "objs");
+	final List<UniRefInfo> res = new LinkedList();
+	for(Object o: objs)
+	{
+	    final UniRefInfo info = make(luwrain, o);
+	    if (info != null)
+		res.add(info);
+	}
+	return res.toArray(new UniRefInfo[res.size()]);
+    }
 
     static public void defaultAnnouncement(ControlContext context, UniRefInfo info, Sounds defaultSound, Suggestions clickableSuggestion)
     {
@@ -74,12 +138,6 @@ public final class UniRefUtils
 	return ALIAS + ":" + title.replaceAll(":", "\\\\:") + ":" + uniRef;
     }
 
-    static public String makeUniRef(String component, String addr)
-    {
-	NullCheck.notEmpty(component, "component");
-	NullCheck.notNull(addr, "addr");
-	return component + ":" + addr;
-    }
 
     static boolean isAlias(String uniref)
     {

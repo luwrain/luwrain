@@ -16,8 +16,12 @@
 
 package org.luwrain.settings;
 
+import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
+
+import com.google.gson.*;
+import com.google.gson.reflect.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -25,11 +29,16 @@ import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.util.*;
+import org.luwrain.io.json.*;
 
 final class MainMenu extends EditableListArea implements SectionArea
 {
+    static final Type ITEM_LIST_TYPE = new TypeToken<List<MainMenuItem>>(){}.getType();
+
+    private final Gson gson = new Gson();
     private final ControlPanel controlPanel;
     private final Luwrain luwrain;
+    private final Settings.UserInterface sett;
 
     MainMenu(ControlPanel controlPanel, EditableListArea.Params params)
     {
@@ -38,7 +47,16 @@ final class MainMenu extends EditableListArea implements SectionArea
 	NullCheck.notNull(params, "params");
 	this.controlPanel = controlPanel;
 	this.luwrain = controlPanel.getCoreInterface();
+	this.sett = Settings.createUserInterface(luwrain.getRegistry());
     }
+
+        @Override public boolean saveSectionData()
+    {
+	final List model = (List)getListModel();
+	sett.setMainMenuContent(gson.toJson(model));
+	return true;
+    }
+
 
     @Override public boolean onInputEvent(InputEvent event)
     {
@@ -56,25 +74,6 @@ final class MainMenu extends EditableListArea implements SectionArea
 	return super.onSystemEvent(event);
     }
 
-    @Override public boolean saveSectionData()
-    {
-	if (!(getListModel() instanceof List))
-	    return false;
-	final List model = (List)getListModel();
-	final List<String> res = new LinkedList();
-	for(Object o: model)
-	{
-	    if (o instanceof UniRefInfo)
-	    {
-		final UniRefInfo info = (UniRefInfo)o;
-		res.add(info.getValue());
-		continue;
-	    }
-	    res.add(o.toString());
-	}
-	RegistryUtils.setStringArray(luwrain.getRegistry(), Settings.MAIN_MENU_UNIREFS_PATH, res.toArray(new String[res.size()]));
-	return true;
-    }
 
     static MainMenu create(ControlPanel controlPanel)
     {

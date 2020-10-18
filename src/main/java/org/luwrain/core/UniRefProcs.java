@@ -20,8 +20,14 @@ import java.io.*;
 
 import org.luwrain.util.*;
 
-final class UniRefProcs
+public final class UniRefProcs
 {
+    static public final String
+	TYPE_FILE = "file",
+	TYPE_URL = "url",
+	TYPE_STATIC = "static",
+	TYPE_EMPTY = "empty";
+
     static UniRefProc[] createStandardUniRefProcs(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");

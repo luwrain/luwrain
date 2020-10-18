@@ -51,6 +51,8 @@ public interface Settings
 	    void setDesktopContent(String defValue);
 	boolean getFilePopupSkipHidden(boolean defValue);
 	void setFilePopupSkipHidden(boolean value);
+	String getMainMenuContent(String defValue);
+	void setMainMenuContent(String value);
 	String getWindowTitle(String defValue);
 	void setWindowTitle(String value);
     }
