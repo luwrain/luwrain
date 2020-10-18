@@ -23,8 +23,7 @@ import com.google.gson.annotations.*;
 
 import org.luwrain.core.*;
 
-
-final class DesktopItem
+public final class DesktopItem
 {
     static final String TYPE_UNIREF = "uniref";
 
