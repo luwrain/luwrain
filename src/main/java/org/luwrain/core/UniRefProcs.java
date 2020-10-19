@@ -26,7 +26,9 @@ public final class UniRefProcs
 	TYPE_FILE = "file",
 	TYPE_URL = "url",
 	TYPE_STATIC = "static",
-	TYPE_EMPTY = "empty";
+	TYPE_EMPTY = "empty",
+	TYPE_SECTIOn = "section",
+	TYPE_COMMAND = "command";
 
     static UniRefProc[] createStandardUniRefProcs(Luwrain luwrain)
     {

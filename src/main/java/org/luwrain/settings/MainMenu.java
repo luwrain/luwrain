@@ -19,6 +19,7 @@ package org.luwrain.settings;
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import com.google.gson.*;
 import com.google.gson.reflect.*;
@@ -33,7 +34,7 @@ import org.luwrain.io.json.*;
 
 final class MainMenu extends EditableListArea implements SectionArea
 {
-    static final Type ITEM_LIST_TYPE = new TypeToken<List<MainMenuItem>>(){}.getType();
+    //    static final Type ITEM_LIST_TYPE = new TypeToken<List<MainMenuItem>>(){}.getType();
 
     private final Gson gson = new Gson();
     private final ControlPanel controlPanel;
@@ -52,11 +53,13 @@ final class MainMenu extends EditableListArea implements SectionArea
 
         @Override public boolean saveSectionData()
     {
-	final List model = (List)getListModel();
-	sett.setMainMenuContent(gson.toJson(model));
+	final List<UniRefInfo> model = (List)getListModel();
+	final List<MainMenuItem> items = new LinkedList();
+	for(UniRefInfo info: model)
+	    items.add(new MainMenuItem(MainMenuItem.TYPE_UNIREF, info.getValue()));
+	sett.setMainMenuContent(gson.toJson(items));
 	return true;
     }
-
 
     @Override public boolean onInputEvent(InputEvent event)
     {
@@ -79,12 +82,39 @@ final class MainMenu extends EditableListArea implements SectionArea
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
-	luwrain.getRegistry().addDirectory(Settings.MAIN_MENU_UNIREFS_PATH);
+	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+	final List<MainMenuItem> items = new Gson().fromJson(sett.getMainMenuContent(""), MainMenuItem.LIST_TYPE);
+	final List<UniRefInfo> uniRefs = new LinkedList();
+	if (items != null)
+	    for(MainMenuItem item: items)
+	    {
+		final UniRefInfo info = UniRefUtils.make(luwrain, item.getValueNotNull());
+		if (info != null)
+		    uniRefs.add(info);
+	    }
 	final EditableListArea.Params params = new EditableListArea.Params();
 	params.context = new DefaultControlContext(luwrain);
 	params.appearance = new org.luwrain.core.shell.MainMenu.Appearance(params.context);
 	params.name = luwrain.i18n().getStaticStr("CpMainMenu");
-	params.model = new ListUtils.DefaultEditableModel(RegistryUtils.getStringArray(luwrain.getRegistry(), Settings.MAIN_MENU_UNIREFS_PATH));
+	params.model = new ListUtils.DefaultEditableModel(uniRefs.toArray(new UniRefInfo[uniRefs.size()])){
+		@Override public boolean addToModel(int index, Supplier supplier)
+		{
+		    NullCheck.notNull(supplier, "supplier");
+		    if (index < 0 || index > size())
+			return false;
+		    final Object o = supplier.get();
+		    if (o == null)
+			return false;
+		    final Object[] objs;if (o instanceof Object[])
+					    objs = (Object[])o; else
+			objs = new Object[]{o};
+		    final UniRefInfo[] uniRefs = UniRefUtils.make(luwrain, objs);
+		    if (uniRefs.length == 0)
+			return false;
+		    addAll(index, Arrays.asList(uniRefs));
+		    return true;
+		}
+	    };
 	return new MainMenu(controlPanel, params);
     }
 }
