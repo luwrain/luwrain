@@ -95,7 +95,13 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return this.layout.getLayout();
     }
 
-    public boolean onInputEvent(Area area, InputEvent event)
+    public boolean onEscape(InputEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	return false;
+    }
+
+    public boolean onInputEvent(Area area, InputEvent event, Runnable closing)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(event, "event");
@@ -104,10 +110,17 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	switch(event.getSpecial())
 	{
 	case ESCAPE:
-	    if (!isBusy())
-		return false;
+	    if (isBusy())
+	    {
 	    cancelTask();
 	    return true;
+	    }
+	    if (closing != null)
+	    {
+		closing.run();
+		return true;
+	    }
+	    return onEscape(event);
 	case TAB:
 	    {
 		final Area nextArea = layout.getLayout().getNextArea(area);
@@ -118,6 +131,13 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	    }
 	}
 	return false;
+    }
+
+        public boolean onInputEvent(Area area, InputEvent event)
+    {
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(event, "event");
+	return onInputEvent(area, event, null);
     }
 
     public boolean onSystemEvent(Area area, SystemEvent event)

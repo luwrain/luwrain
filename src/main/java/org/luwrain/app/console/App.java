@@ -49,30 +49,13 @@ public final class App extends AppBase<Strings> implements MonoApp
 	return this.commands.clone();
     }
 
-    boolean onInputEvent(Area area, InputEvent event, Runnable closing)
+    @Override public boolean onEscape(InputEvent event)
     {
-	NullCheck.notNull(area, "area");
 	NullCheck.notNull(event, "event");
-	if (super.onInputEvent(area, event))
-	    return true;
-	if (event.isSpecial())
-	    switch(event.getSpecial())
-	    {
-	    case ESCAPE:
-		if (closing != null)
-		    closing.run(); else
-		    closeApp();
-		return true;
-	    }
-	return false;
+	closeApp();
+	return true;
     }
 
-    @Override public boolean onInputEvent(Area area, InputEvent event)
-    {
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(event, "event");
-	return onInputEvent(area, event, null);
-    }
 
     @Override public AreaLayout getDefaultAreaLayout()
     {
