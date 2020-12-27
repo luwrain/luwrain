@@ -50,7 +50,7 @@ public class FormArea  extends NavigationArea
     public enum Type { EDIT, CHECKBOX, LIST, STATIC, UNIREF, MULTILINE };
 
     protected final ControlContext context;
-    protected final Vector<Item> items = new Vector<Item>();
+    protected final List<Item> items = new ArrayList();
     protected String name = "";
     protected int nextAutoNameNum = 1;
 
@@ -655,6 +655,17 @@ final int count = multilineEditLines.getLineCount();
 	return "";
     }
 
+    @Override public void announceLine(int index, String line)
+    {
+	final Type type = getItemTypeOnLine(index);
+	if (type == Type.STATIC)
+	{
+	    defaultLineAnnouncement(context, index, context.getSpeakableText(line, Luwrain.SpeakableTextType.NATURAL));
+	    return;
+	}
+	defaultLineAnnouncement(context, index, context.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
+    }
+
     @Override public String getAreaName()
     {
 	return name;
@@ -664,7 +675,7 @@ final int count = multilineEditLines.getLineCount();
     {
 	NullCheck.notNull(name, "name");
 	this.name = name;
-	//FIXME:	context.onNewAreaName(this);
+	//context.onNewAreaName(this);
     }
 
     protected Item findItemByIndex(int index)
@@ -710,7 +721,7 @@ final int count = multilineEditLines.getLineCount();
 	Object chooseFormListItem(Area area, String formItemName, Object currentSelected);
     }
 
-    static protected class Item implements EmbeddedEditLines
+    static protected final class Item implements EmbeddedEditLines
     {
 	final Type type;
 	final String name;

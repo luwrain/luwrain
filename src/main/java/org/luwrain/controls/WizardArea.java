@@ -18,9 +18,10 @@
 
 package org.luwrain.controls;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import java.util.*;
 
 public class WizardArea extends FormArea
 {
@@ -42,13 +43,42 @@ public interface WizardItem
 	}
     }
 
-    public class WizardFrame
+        public final class WizardClickable implements WizardItem
+    {
+	private final String text;
+	private final Runnable handler;
+	public WizardClickable(String text, Runnable handler)
+	{
+	    NullCheck.notEmpty(text, "text");
+	    NullCheck.notNull(handler, "handler");
+	    this.text = text;
+	    this.handler = handler;
+	}
+	public String getText()
+	{
+	    return text;
+	}
+	public void click()
+	{
+	    handler.run();
+	}
+    }
+
+    public final class WizardFrame
     {
 	private final List<WizardItem> items = new ArrayList();
-	protected final void addText(String text)
+	public WizardFrame addText(String text)
 	{
 	    NullCheck.notEmpty(text, "text");
 	    items.add(new WizardText(text));
+	    return this;
+	}
+	public WizardFrame addClickable(String text, Runnable handler)
+	{
+	    NullCheck.notEmpty(text, "text");
+	    NullCheck.notNull(handler, "handler");
+	    items.add(new WizardClickable(text, handler));
+	    return this;
 	}
 	WizardItem[] getItems()
 	{
@@ -56,22 +86,84 @@ public interface WizardItem
 	}
     }
 
+    protected final List<WizardFrame> frames = new ArrayList();
+
     public WizardArea(ControlContext context)
     {
 	super(context);
+    }
+
+    public WizardFrame addFrame()
+    {
+	final WizardFrame frame = new WizardFrame();
+	this.frames.add(frame);
+	return frame;
+    }
+
+    public void start()
+    {
+	if (this.frames.isEmpty())
+	    throw new IllegalStateException("No frames to start the wizard");
+	fillForm(frames.get(0));
     }
 
     void fillForm(WizardFrame frame)
     {
 	NullCheck.notNull(frame, "frame");
 	clear();
+	if (frame.getItems().length == 0)
+	    return;
 	for(WizardItem i: frame.getItems())
 	{
+	    	addStatic("");
 	    if (i instanceof WizardText)
 	    {
 		final WizardText t = (WizardText)i;
 		addStatic(t.getText());
+		continue;
+	    }
+	    	    if (i instanceof WizardClickable)
+	    {
+		final WizardClickable c = (WizardClickable)i;
+		addStatic(getItemNewAutoName(), c.getText(), c);
+		continue;
 	    }
 	}
+    }
+
+    protected boolean onOk()
+    {
+	final String itemName = getItemNameOnLine(getHotPointY());
+	if (name == null || name.isEmpty())
+	    return false;
+	final Object obj = getItemObjByName(itemName);
+	if (obj == null)
+	    return false;
+	if (obj instanceof WizardClickable)
+	{
+	    final WizardClickable c = (WizardClickable)obj;
+	    c.click();
+	    return true;
+	}
+	return false;
+    }
+
+    @Override public boolean onInputEvent(InputEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (event.isSpecial() && !event.isModified())
+	    switch(event.getSpecial())
+	    {
+	    case ENTER:
+		if (onOk())
+		    return true;
+		return super.onInputEvent(event);
+	    }
+	return super.onInputEvent(event);
+    }
+
+    @Override public void announceLine(int index, String line)
+    {
+	super.announceLine(index, line);	
     }
 }
