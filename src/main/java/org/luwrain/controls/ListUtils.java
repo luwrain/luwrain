@@ -29,22 +29,18 @@ public class ListUtils
     {
 	protected final ControlContext environment;
 	protected final Suggestions suggestion;
-
 	public DefaultAppearance(ControlContext environment, Suggestions suggestion)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    this.environment = environment;
 	    this.suggestion = suggestion;
 	}
-
 	public DefaultAppearance(ControlContext environment)
 	{
 	    NullCheck.notNull(environment, "environment");
 	    this.environment = environment;
 	    this.suggestion = Suggestions.LIST_ITEM;
 	}
-
-
 	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
@@ -53,19 +49,16 @@ public class ListUtils
 	    //	    environment.say(item.toString());
 	    environment.setEventResponse(DefaultEventResponse.listItem(item.toString(), flags.contains(Flags.BRIEF)?null:suggestion));
 	}
-
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
 	    return item.toString();
 	}
-
 	@Override public int getObservableLeftBound(Object item)
 	{
 	    return 0;
 	}
-
 	@Override public int getObservableRightBound(Object item)
 	{
 	    return item != null?item.toString().length():0;
@@ -260,13 +253,11 @@ public class ListUtils
 	public FixedModel()
 	{
 	}
-
 	public FixedModel(Object[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
 	    setItems(items);
 	}
-
 	public void setItems(Object[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
@@ -274,22 +265,49 @@ public class ListUtils
 	    for(int i = 0;i < items.length;++i)
 		set(i, items[i]);
 	}
-
 	public Object[] getItems()
 	{
 	    return toArray(new Object[size()]);
 	}
-
 	@Override public int getItemCount()
 	{
 	    return size();
 	}
-
 	@Override public Object getItem(int index)
 	{
 	    return get(index);
 	}
+	@Override public void refresh()
+	{
+	}
+    }
 
+    static public class ArrayModel implements ListArea.Model
+    {
+	public interface Source
+	{
+	    Object[] getItems();
+	}
+	protected final Source source;
+	public ArrayModel(Source source)
+	{
+	    NullCheck.notNull(source, "source");
+	    this.source = source;
+	}
+	@Override public int getItemCount()
+	{
+	    final Object[] o = source.getItems();
+	    return o != null?o.length:0;
+	}
+	@Override public Object getItem(int index)
+	{
+	    final Object[] o = source.getItems();
+	    if (o == null)
+		return "#No items#";
+	    if (index < 0 || index >= o.length)
+		return "#Illegal index: " + String.valueOf(index) + "#";
+	    return o[index];
+	}
 	@Override public void refresh()
 	{
 	}
