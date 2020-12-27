@@ -22,6 +22,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.util.*;
 
 public class WizardArea extends FormArea
 {
@@ -119,7 +120,8 @@ public interface WizardItem
 	    if (i instanceof WizardText)
 	    {
 		final WizardText t = (WizardText)i;
-		addStatic(t.getText());
+		for(String l: TextUtils.wordWrap(t.getText(), 80))//FIXME: proper width
+		addStatic(l);
 		continue;
 	    }
 	    	    if (i instanceof WizardClickable)

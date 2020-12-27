@@ -143,4 +143,29 @@ public final class TextUtils
     {
 	return replaceIsoControlChars(value, ' ');
     }
+
+    static public String[] wordWrap(String line, int width)
+    {
+	if (width < 3)
+	    throw new IllegalArgumentException("width (" + String.valueOf(width) + ") can't be less than 3");
+	final List<String> res = new ArrayList();
+	final String[] words = line.split(" ", -1);
+	StringBuilder b = new StringBuilder();
+	for(String word: words)
+	{
+	    if (word.trim().isEmpty())
+		continue;
+	    if (b.length() + word.length() + 1 > width)
+	    {
+		res.add(new String(b));
+		b = new StringBuilder();
+	    }
+		if (b.length() > 0)
+		    b.append(" ");
+		b.append(word);
+	}
+	if (b.length() > 0)
+	    res.add(new String(b));
+	return res.toArray(new String[res.size()]);
+    }
 }
