@@ -52,6 +52,7 @@ public class FormArea  extends NavigationArea
     protected final ControlContext context;
     protected final Vector<Item> items = new Vector<Item>();
     protected String name = "";
+    protected int nextAutoNameNum = 1;
 
     protected MutableLines multilineEditLines = null;
         protected MultilineEdit multilineEdit = null;
@@ -96,6 +97,11 @@ public class FormArea  extends NavigationArea
 	    if (i.name.equals(itemName))
 		return true;
 	return false;
+    }
+
+    public String getItemNewAutoName()
+    {
+	return "form-auto-name-" + (nextAutoNameNum++);
     }
 
     //For multiline zone returns "MULTILINE" on multiline caption as well (the line above the multiline edit) 
@@ -324,9 +330,9 @@ public class FormArea  extends NavigationArea
 
     public boolean addStatic(String itemName, String caption, Object obj)
     {
-	NullCheck.notNull(itemName, "itemName");
+	NullCheck.notEmpty(itemName, "itemName");
 	NullCheck.notNull(caption, "caption");
-	if (itemName.trim().isEmpty() || hasItemWithName(itemName))
+	if (hasItemWithName(itemName))
 	    return false;
 	final Item item = new Item(context, this, Type.STATIC, itemName);
 	    item.caption = caption;
@@ -344,6 +350,13 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(caption, "caption");
 	return addStatic(itemName, caption, "");
     }
+
+        public boolean addStatic(String caption)
+    {
+	NullCheck.notNull(caption, "caption");
+	return addStatic(getItemNewAutoName(), caption, "");
+    }
+
 
     public boolean isMultilineEditActivated()
     {
