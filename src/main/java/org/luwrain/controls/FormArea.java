@@ -721,7 +721,7 @@ final int count = multilineEditLines.getLineCount();
 	Object chooseFormListItem(Area area, String formItemName, Object currentSelected);
     }
 
-    static protected final class Item implements EmbeddedEditLines
+    protected final class Item implements EmbeddedEditLines
     {
 	final Type type;
 	final String name;
@@ -729,7 +729,7 @@ final int count = multilineEditLines.getLineCount();
 	Object obj;
 	boolean enabled = true;
 //A couple of variables needed for sending notifications about changing of text
-	protected final ControlContext context;
+//	protected final ControlContext context;
 	protected final Area area;
 	//For edits
 	protected String enteredText = "";
@@ -749,7 +749,7 @@ protected ListChoosing listChoosing;
 	    NullCheck.notNull(area, "area");
 	    NullCheck.notNull(type, "type");
 	    NullCheck.notNull(name, "name");
-	    this.context = context;
+	    //	    this.context = context;
 	    this.area = area;
 	    this.type = type;
 	    this.name = name;

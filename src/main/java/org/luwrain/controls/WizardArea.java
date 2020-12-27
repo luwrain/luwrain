@@ -164,6 +164,24 @@ public interface WizardItem
 
     @Override public void announceLine(int index, String line)
     {
-	super.announceLine(index, line);	
+	NullCheck.notNull(line, "line");
+	if (line.trim().isEmpty())
+	{
+	    	super.announceLine(index, line);
+		return;
+	}
+		final String name = getItemNameOnLine(index);
+	if (name == null || name.isEmpty())
+	{
+	    	super.announceLine(index, line);
+		return;
+	}
+	final Object obj = getItemObjByName(name);
+	if (obj == null || !(obj instanceof WizardClickable))
+	{
+	    	    	super.announceLine(index, line);
+		return;
+	}
+	context.setEventResponse(DefaultEventResponse.text(Sounds.MAIN_MENU_ITEM, context.getSpeakableText(line, Luwrain.SpeakableTextType.NATURAL)));
     }
 }
