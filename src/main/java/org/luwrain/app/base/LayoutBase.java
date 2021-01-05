@@ -51,13 +51,17 @@ protected interface ActionHandler
 	}
     }
 
-    protected final class Actions
+    static public final class Actions
     {
 	private final ActionInfo[] actions;
 	public Actions(ActionInfo[] actions)
 	{
 	    NullCheck.notNullItems(actions, "actions");
 	    this.actions = actions.clone();
+	}
+	public Actions()
+	{
+	    this(new ActionInfo[0]);
 	}
 	public org.luwrain.core.Action[] getAreaActions()
 	{
