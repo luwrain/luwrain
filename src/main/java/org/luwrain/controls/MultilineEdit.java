@@ -22,6 +22,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
 //Completely skips EnvironmentEvent.CLEAR
@@ -32,39 +33,32 @@ public class MultilineEdit
 	protected final boolean performed;
 	protected final String stringArg;
 	protected final char charArg;
-
 	public ModificationResult(boolean performed, String stringArg, char charArg)
 	{
 	    this.performed = performed;
 	    this.stringArg = stringArg;
 	    this.charArg = charArg;
 	}
-
 	public ModificationResult(boolean performed)
 	{
 	    this(performed, null, '\0');
 	}
-
 	public ModificationResult(boolean performed, String stringArg)
 	{
 	    this(performed, stringArg, '\0');
 	}
-
 	public ModificationResult(boolean performed, char charArg)
 	{
 	    this(performed, null, charArg);
 	}
-
 	public final boolean isPerformed()
 	{
 	    return performed;
 	}
-
 	public final String getStringArg()
 	{
 	    return stringArg;
 	}
-
 	public final char getCharArg()
 	{
 	    return charArg;
@@ -103,9 +97,6 @@ public class MultilineEdit
 	ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY);
 
 	ModificationResult insertRegion(int x, int y, String[] lines);
-
-
-
 
 	/**
 	 * Puts one or several characters at some position. The position expects
@@ -214,6 +205,19 @@ public class MultilineEdit
     public Appearance getMultilineEditAppearance()
     {
 	return appearance;
+    }
+
+    public String[] getRegionText()
+    {
+	final RegionTextQuery query = new RegionTextQuery();
+	if (!regionTextQueryTranslator.onAreaQuery(query, model.getHotPointX(), model.getHotPointY()))
+	    return null;
+	final String res = query.getAnswer();
+	if (res == null)
+	    return null;
+	if (res.isEmpty())
+	    return new String[0];
+	return res.split("\n", -1);
     }
 
     public boolean onInputEvent(InputEvent event)
