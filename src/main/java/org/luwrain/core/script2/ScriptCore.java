@@ -12,11 +12,11 @@ import org.luwrain.util.*;
 public final class ScriptCore implements HookContainer, AutoCloseable
 {
     static private final String LOG_COMPONENT = "script2";
-    
+
     private final Luwrain luwrain;
     private final List<Module> modules = new ArrayList();
 
-        ScriptCore(Luwrain luwrain)
+        public ScriptCore(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
