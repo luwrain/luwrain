@@ -408,15 +408,6 @@ public class FormArea  extends NavigationArea
 	return true;
     }
 
-    public boolean activateMultilineEdit(String caption, String lines, boolean enabled)
-    {
-	NullCheck.notNull(caption, "caption");
-	NullCheck.notNull(lines, "lines");
-final MutableLines linesImpl = new MutableLinesImpl(lines);
-final MultilineEdit.Params params = createMultilineEditParams(context, linesImpl);
-return activateMultilineEdit(caption, linesImpl, params, enabled);
-    }
-
         public boolean activateMultilineEdit(String caption, String[] lines, boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
@@ -426,10 +417,10 @@ final MultilineEdit.Params params = createMultilineEditParams(context, linesImpl
 return activateMultilineEdit(caption, linesImpl, params, enabled);
     }
 
-    public boolean activateMultilineEdit(String caption, String lines)
+    public boolean activateMultilineEdit(String caption, String[] lines)
     {
 	NullCheck.notNull(caption, "caption");
-	NullCheck.notNull(lines, "lines");
+	NullCheck.notNullItems(lines, "lines");
 	return activateMultilineEdit(caption, lines, true);
     }
 

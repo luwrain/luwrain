@@ -24,7 +24,7 @@ import org.luwrain.core.*;
 
 public class MutableLinesImpl implements MutableLines
 {
-    protected final Vector<String> lines = new Vector<String>();
+    protected final ArrayList<String> lines = new ArrayList<String>();
 
     public MutableLinesImpl()
     {
@@ -33,20 +33,7 @@ public class MutableLinesImpl implements MutableLines
     public MutableLinesImpl(String[] lines)
     {
 	NullCheck.notNullItems(lines, "lines");
-	this.lines.setSize(lines.length);
-	for(int i = 0;i < lines.length;++i)
-	    this.lines.set(i, lines[i]);
-    }
-
-    public MutableLinesImpl(String lines)
-    {
-	NullCheck.notNull(lines, "lines");
-	if (lines.isEmpty())
-	    return;
-	final String[] l = lines.split("\n", -1);
-	this.lines.setSize(l.length);
-	for(int i = 0;i < l.length;++i)
-	    this.lines.set(i, l[i]);
+	this.lines.addAll(Arrays.asList(lines));
     }
 
     @Override public void beginLinesTrans()
@@ -72,9 +59,8 @@ public class MutableLinesImpl implements MutableLines
     @Override public void setLines(String[] lines)
     {
 	NullCheck.notNullItems(lines, "lines");
-	this.lines.setSize(lines.length);
-	for(int i = 0;i < lines.length;++i)
-	    this.lines.set(i, lines[i]);
+	this.lines.clear();
+	this.lines.addAll(Arrays.asList(lines));
     }
 
     @Override public String[] getLines()
@@ -105,7 +91,7 @@ public class MutableLinesImpl implements MutableLines
 	if (index < 0 || index > lines.size())
 	    throw new IllegalArgumentException("Illegal index value (" + index + ")");
 	if (index < lines.size())
-	    lines.insertElementAt(line, index); else
+	    lines.add(index, line); else
 	lines.add(line);
     }
 

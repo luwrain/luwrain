@@ -44,7 +44,7 @@ fillForm();
     {
 	addEdit("name", luwrain.i18n().getStaticStr("CpPersonalInfoFullName"), sett.getFullName(""), null, true);
 	addEdit("address", luwrain.i18n().getStaticStr("CpPersonalInfoMailAddress"), sett.getDefaultMailAddress(""), null, true);
-	activateMultilineEdit(luwrain.i18n().getStaticStr("CpPersonalInfoSignature"), sett.getSignature(""), true);
+	activateMultilineEdit(luwrain.i18n().getStaticStr("CpPersonalInfoSignature"), FileUtils.universalLineSplitting(sett.getSignature("")), true);
     }
 
     @Override public boolean saveSectionData()
