@@ -30,11 +30,13 @@ final class LuwrainObj implements ProxyObject
 {
     final Luwrain luwrain;
     final Map<String, List<Value> > hooks = new HashMap();
+    private final LogObj logObj;
 
     LuwrainObj(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	this.logObj = new LogObj(luwrain);
     }
 
     @Override public Object getMember(String name)
@@ -45,6 +47,10 @@ final class LuwrainObj implements ProxyObject
 	{
 	case "addHook":
 	    return(ProxyExecutable)this::addHook;
+	case "log":
+	    return logObj;
+	case "readTextFile":
+	    return (ProxyExecutable)this::readTextFile;
 	default:
 	    return null;
 	}
@@ -55,6 +61,8 @@ final class LuwrainObj implements ProxyObject
 	switch(name)
 	{
 	case "addHook":
+	    case "log":
+	    case "readTextFile":
 	    return true;
 	default:
 	    return false;
@@ -65,6 +73,8 @@ final class LuwrainObj implements ProxyObject
     {
 	return new String[]{
 	    "addHook",
+	    "log",
+	    "readTextFile",
 	};
     }
 
