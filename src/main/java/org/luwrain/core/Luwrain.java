@@ -144,7 +144,6 @@ public interface Luwrain extends PropertiesBase
     int getAreaVisibleWidth(Area area);
     Clipboard getClipboard();
     CmdLine getCmdLine();
-    FilesOperations getFilesOperations();
     String[] xGetLoadedSpeechFactories();
     org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers();
     org.luwrain.player.Player getPlayer();

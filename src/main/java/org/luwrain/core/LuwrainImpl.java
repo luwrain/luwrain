@@ -641,12 +641,6 @@ final class LuwrainImpl implements Luwrain
 	core.setEventResponse(eventResponse);
     }
 
-    @Override public FilesOperations getFilesOperations()
-    {
-	core.mainCoreThreadOnly();
-	return core.os.getFilesOperations();
-    }
-
     @Override public org.luwrain.player.Player getPlayer()
     {
 	return core.player;

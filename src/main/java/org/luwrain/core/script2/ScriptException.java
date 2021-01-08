@@ -14,15 +14,17 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
+package org.luwrain.core.script2;
 
-package org.luwrain.base;
-
-import java.io.*;
-
-public interface FilesOperations
+public final class ScriptException extends RuntimeException
 {
-    FilesOperation copy(FilesOperation.Listener listener, String name, File[] whatToCopy, File copyTo);
-    FilesOperation move(FilesOperation.Listener listener, String name, File[] whatToMove, File moveTo);
-    FilesOperation delete(FilesOperation.Listener listener, String name, File[] whatToDelete);
+    public ScriptException(String message)
+    {
+	super(message);
+    }
+
+    public ScriptException(Throwable e)
+    {
+	super(e);
+    }
 }
