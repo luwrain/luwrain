@@ -233,7 +233,7 @@ public interface Luwrain extends PropertiesBase
      */
     boolean registerExtObj(ExtensionObject extObj);
     boolean runCommand(String command);
-    CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener);
+    Job.Instance runJob(String name, String[] args, org.luwrain.base.Job.Listener listener);
     //    void runInMainThread(Runnable runnable);
     Object runLaterSync(java.util.concurrent.Callable callable);
     OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);

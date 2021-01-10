@@ -373,13 +373,13 @@ final class LuwrainImpl implements Luwrain
 	return core.runCommand(command);
     }
 
-    @Override public org.luwrain.base.CommandLineTool.Instance runCommandLineTool(String name, String[] args, org.luwrain.base.CommandLineTool.Listener listener)
+    @Override public org.luwrain.base.Job.Instance runJob(String name, String[] args, org.luwrain.base.Job.Listener listener)
     {
 	NullCheck.notNull(name, "name");
 	NullCheck.notNullItems(args, "args");
 	NullCheck.notNull(listener, "listener");
 	core.mainCoreThreadOnly();
-	return core.commandLineTools.run(name, args, listener);
+	return core.jobs.run(name, args, listener);
     }
 
     @Override public void speak(String text)

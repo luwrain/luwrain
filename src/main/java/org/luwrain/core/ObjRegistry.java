@@ -41,7 +41,7 @@ final class ObjRegistry implements ExtObjects
     }
 
     private Map<String, Entry<Shortcut>> shortcuts = new HashMap();
-    private Map<String, Entry<CommandLineTool>> cmdLineTools = new HashMap();
+    private Map<String, Entry<Job>> jobs = new HashMap();
     private Map<String, Entry<Worker>> workers = new HashMap();
     private Map<String, Entry<org.luwrain.speech.Engine>> speechEngines = new HashMap();
     private Map<String, Entry<MediaResourcePlayer>> players = new HashMap();
@@ -55,13 +55,13 @@ final class ObjRegistry implements ExtObjects
 	if (name == null || name.trim().isEmpty())
 	    return false;
 	boolean res = false;
-	if (obj instanceof CommandLineTool)
+	if (obj instanceof Job)
 	{
-	    final CommandLineTool tool = (CommandLineTool)obj;
+	    final Job job = (Job)obj;
 
-	    if (!cmdLineTools.containsKey(name))
+	    if (jobs.containsKey(name))
 	    {
-		cmdLineTools.put(name, new Entry(ext, name, tool));
+		jobs.put(name, new Entry(ext, name, job));
 		res = true;
 	    }
 	}
@@ -125,24 +125,24 @@ final class ObjRegistry implements ExtObjects
     {
 	NullCheck.notNull(ext, "ext");
 	removeEntriesByExt(shortcuts, ext);
-	removeEntriesByExt(cmdLineTools, ext);
+	removeEntriesByExt(jobs, ext);
 	removeEntriesByExt(workers, ext);
 	removeEntriesByExt(speechEngines, ext);
 	removeEntriesByExt(players, ext);
     }
 
-    CommandLineTool getCommandLineTool(String name)
+    Job getJob(String name)
     {
 	NullCheck.notEmpty(name, "name");
-	if (!cmdLineTools.containsKey(name))
+	if (!jobs.containsKey(name))
 	    return null;
-	return cmdLineTools.get(name).obj;
+	return jobs.get(name).obj;
     }
 
-    String[] getCmdLineToolNames()
+    String[] getJobNames()
     {
-	final List<String> res = new LinkedList();
-	for(Map.Entry<String, Entry<CommandLineTool>> e: cmdLineTools.entrySet())
+	final List<String> res = new ArrayList();
+	for(Map.Entry<String, Entry<Job>> e: jobs.entrySet())
 	    res.add(e.getKey());
 	final String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);
@@ -257,18 +257,18 @@ final class ObjRegistry implements ExtObjects
 	map.remove(s);
     }
 
-    static private final class CommandLineToolCommand implements Command
+    static private final class JobCommand implements Command
     {
 	private final String name;
-	private final CommandLineTool tool;
+	private final Job job;
 	private final boolean showResultMessage;
 
-	CommandLineToolCommand(String name, CommandLineTool tool, boolean showResultMessage)
+	JobCommand(String name, Job job, boolean showResultMessage)
 	{
 	    NullCheck.notEmpty(name, "name");
-	    NullCheck.notNull(tool, "tool");
+	    NullCheck.notNull(job, "job");
 	    this.name = name;
-	    this.tool = tool;
+	    this.job = job;
 	    this.showResultMessage = showResultMessage;
 	}
 
@@ -283,18 +283,18 @@ final class ObjRegistry implements ExtObjects
 	}
     }
 
-    static private final class CommandLineToolShortcut implements Shortcut
+    static private final class JobShortcut implements Shortcut
     {
 	private final String name;
-	private final CommandLineTool tool;
+	private final Job job;
 	private final boolean showResultMessage;
 
-	CommandLineToolShortcut(String name, CommandLineTool tool, boolean showResultMessage)
+	JobShortcut(String name, Job job, boolean showResultMessage)
 	{
 	    NullCheck.notEmpty(name, "name");
-	    NullCheck.notNull(tool, "tool");
+	    NullCheck.notNull(job, "job");
 	    this.name = name;
-	    this.tool = tool;
+	    this.job = job;
 	    this.showResultMessage = showResultMessage;
 	}
 

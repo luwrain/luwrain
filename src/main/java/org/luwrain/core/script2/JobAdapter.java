@@ -26,7 +26,7 @@ import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.script2.*;
 
-final class JobAdapter implements CommandLineTool
+final class JobAdapter implements Job
 {
     private final Luwrain luwrain;
     private final String name;
@@ -74,7 +74,7 @@ final class JobAdapter implements CommandLineTool
 	return EnumSet.noneOf(Flags.class);
     }
 
-    public final class Instance implements CommandLineTool.Instance, ProxyObject
+    public final class Instance implements Job.Instance, ProxyObject
     {
 	private final Listener listener;
 	private String name = "";

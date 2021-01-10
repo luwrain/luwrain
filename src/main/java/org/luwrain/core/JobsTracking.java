@@ -21,27 +21,27 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-class CommandLineToolsTracking 
+final class JobsTracking 
 {
     final ObjRegistry objRegistry;
     private final List<Entry> entries = new LinkedList();
 
-    CommandLineToolsTracking(ObjRegistry objRegistry)
+    JobsTracking(ObjRegistry objRegistry)
     {
 	NullCheck.notNull(objRegistry, "objRegistry");
 	this.objRegistry = objRegistry;
     }
 
-    CommandLineTool.Instance run(String name, String[] args, CommandLineTool.Listener listener)
+    Job.Instance run(String name, String[] args, Job.Listener listener)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNullItems(args, "args");
 	NullCheck.notNull(listener, "listener");
-	final CommandLineTool tool = objRegistry.getCommandLineTool(name);
-	if (tool == null)
+	final Job job = objRegistry.getJob(name);
+	if (job == null)
 	    return null;
 	final Entry entry = new Entry(listener);
-	final CommandLineTool.Instance instance = tool.launch(entry, args);
+	final Job.Instance instance = job.launch(entry, args);
 	if (instance == null)
 	    return null;
 	entry.setInstance(instance);
@@ -54,12 +54,12 @@ class CommandLineToolsTracking
 	NullCheck.notNull(entry, "entry");
     }
 
-private class Entry implements CommandLineTool.Listener, CommandLineTool.Instance
+private class Entry implements Job.Listener, Job.Instance
     {
-	private final CommandLineTool.Listener listener;
-	private CommandLineTool.Instance instance = null;
+	private final Job.Listener listener;
+	private Job.Instance instance = null;
 
-	Entry(CommandLineTool.Listener listener)
+	Entry(Job.Listener listener)
 	{
 	    NullCheck.notNull(listener, "listener");
 	    this.listener = listener;
@@ -72,10 +72,10 @@ private class Entry implements CommandLineTool.Listener, CommandLineTool.Instanc
 	    return instance.getInstanceName();
 	}
 
-	@Override public CommandLineTool.Status getStatus()
+	@Override public Job.Status getStatus()
 	{
 	    if (instance == null)
-		return CommandLineTool.Status.RUNNING;
+		return Job.Status.RUNNING;
 	    return instance.getStatus();
 	}
 
@@ -121,29 +121,29 @@ private class Entry implements CommandLineTool.Listener, CommandLineTool.Instanc
 	    instance.stop();
 	}
 
-	@Override public void onStatusChange(CommandLineTool.Instance instance)
+	@Override public void onStatusChange(Job.Instance instance)
 	{
 	    listener.onStatusChange(this);
-	    if (instance.getStatus() == CommandLineTool.Status.FINISHED)
+	    if (instance.getStatus() == Job.Status.FINISHED)
 		onFinish(this);
 	}
 
-	@Override public void onSingleLineStateChange(CommandLineTool.Instance instance)
+	@Override public void onSingleLineStateChange(Job.Instance instance)
 	{
 	    listener.onSingleLineStateChange(this);
 	}
 
-	@Override public void onMultilineStateChange(CommandLineTool.Instance instance)
+	@Override public void onMultilineStateChange(Job.Instance instance)
 	{
 	    listener.onMultilineStateChange(this);	    
 	}
 
-	@Override public void onNativeStateChange(CommandLineTool.Instance instance)
+	@Override public void onNativeStateChange(Job.Instance instance)
 	{
 	    listener.onNativeStateChange(this);
 	}
 
-	void setInstance(CommandLineTool.Instance instance)
+	void setInstance(Job.Instance instance)
 	{
 	    NullCheck.notNull(instance, "instance");
 	    if (this.instance == null)

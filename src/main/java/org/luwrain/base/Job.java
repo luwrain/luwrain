@@ -20,7 +20,7 @@ package org.luwrain.base;
 
 import java.util.*;
 
-public interface CommandLineTool extends ExtensionObject
+public interface Job extends ExtensionObject
 {
     public enum Flags {WITH_SHORTCUT, INTERACTIVE_SHORTCUT};
     public enum Status {RUNNING, FINISHED};
