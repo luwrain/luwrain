@@ -22,6 +22,7 @@ import java.util.*;
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.script2.*;
 import org.luwrain.util.*;
@@ -30,6 +31,7 @@ final class LuwrainObj implements ProxyObject
 {
     final Luwrain luwrain;
     final Map<String, List<Value> > hooks = new HashMap();
+    final List<ExtensionObject> extObjs = new ArrayList();
     private final LogObj logObj;
 
     LuwrainObj(Luwrain luwrain)
