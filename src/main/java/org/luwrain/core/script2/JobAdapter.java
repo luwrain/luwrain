@@ -26,13 +26,13 @@ import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.script2.*;
 
-final class CommandLineToolAdapter implements CommandLineTool
+final class JobAdapter implements CommandLineTool
 {
     private final Luwrain luwrain;
     private final String name;
     private final Value func;
 
-    CommandLineToolAdapter(Luwrain luwrain, String name, Value func)
+    JobAdapter(Luwrain luwrain, String name, Value func)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
