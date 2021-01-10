@@ -22,15 +22,22 @@ import org.luwrain.core.*;
 
 public final class Module implements AutoCloseable
 {
+    private final Bindings bindings;
     private final Luwrain luwrain;
     private Context context = null;
     final LuwrainObj luwrainObj;
 
-    Module(Luwrain luwrain)
+    Module(Luwrain luwrain, Bindings bindings)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.luwrainObj = new LuwrainObj(luwrain);
+	this.bindings = bindings;
+    }
+
+    Module(Luwrain luwrain )
+    {
+	this(luwrain, null);
     }
 
     public void run(String text)
@@ -41,6 +48,8 @@ public final class Module implements AutoCloseable
 	//.option("js.nashorn-compat", "true"
 	.build();
 	context.getBindings("js").putMember("Luwrain", this.luwrainObj);
+	if (bindings != null)
+	    bindings.onBindings(context.getBindings("js"));
 context.eval("js", text);
     }
 

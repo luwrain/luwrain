@@ -28,13 +28,20 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 {
     static private final String LOG_COMPONENT = "script2";
 
+    private final Bindings bindings;
     private final Luwrain luwrain;
     private final List<Module> modules = new ArrayList();
 
-        public ScriptCore(Luwrain luwrain)
+    public ScriptCore(Luwrain luwrain, Bindings bindings)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	this.bindings = bindings;
+    }
+
+    public ScriptCore(Luwrain luwrain)
+    {
+	this(luwrain, null);
     }
 
     @Override public void close()
@@ -46,7 +53,7 @@ public final class ScriptCore implements HookContainer, AutoCloseable
     public void load (File file) throws IOException
     {
 	NullCheck.notNull(file, "file");
-	final Module m = new Module(luwrain);
+	final Module m = new Module(luwrain, bindings);
 	m.run(FileUtils.readTextFileSingleString(file, "UTF-8"));
 	modules.add(m);
 	    }
