@@ -30,7 +30,7 @@ final class RegistryExtractor
 
     private File currentDir = null;
     private File currentFile = null;
-    private final List<String> lines = new LinkedList();
+    private final List<String> lines = new ArrayList();
 
     RegistryExtractor(File destDir)
     {
@@ -100,16 +100,12 @@ final class RegistryExtractor
     {
 	if (currentDir == null || currentFile == null)
 	    return;
-	final BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile, true));
-	try {
+	try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(currentFile, true), "UTF-8"))){
 	    for(String s: lines)
 	    {
 		writer.write(s);
 		writer.newLine();
 	    }
-	}
-	finally {
-	    writer.close();
 	}
 	lines.clear();
     }
