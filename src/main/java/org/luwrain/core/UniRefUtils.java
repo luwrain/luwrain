@@ -24,7 +24,11 @@ import org.luwrain.controls.ControlContext;
 
 public final class UniRefUtils
 {
-    static public final String ALIAS = "link";
+    static public final String
+	ALIAS = "link",
+	EMPTY = "empty",
+	SECTION = "section",
+	STATIC = "static";
 
         static public String makeUniRef(String component, String addr)
     {

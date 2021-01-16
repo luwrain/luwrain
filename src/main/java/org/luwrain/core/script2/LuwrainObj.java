@@ -113,7 +113,7 @@ final class LuwrainObj implements ProxyObject
 	    throw new ScriptException("readTextFile() takes a non-empty string with the name of the file as the furst argument");
 	try {
 	    final String text = FileUtils.readTextFileSingleString(new File(fileName), "UTF-8");
-	    return ProxyArray.fromArray(FileUtils.universalLineSplitting(text));
+	    return ProxyArray.fromArray((Object[])FileUtils.universalLineSplitting(text));
 	}
 	catch(IOException e)
 	{

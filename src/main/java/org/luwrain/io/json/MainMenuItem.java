@@ -30,6 +30,8 @@ public class MainMenuItem
     static public final String TYPE_UNIREF = "uniref";
         static public final Type LIST_TYPE = new TypeToken<List<MainMenuItem>>(){}.getType();
 
+    static private Gson gson = null;
+
     @SerializedName("type")
     private String type = null;
 
@@ -76,14 +78,19 @@ public class MainMenuItem
 	 this.value = value;
 	 }
 
-    public String toJson()
+    static public String toJson(MainMenuItem[] items)
     {
-	return new Gson().toJson(this);
+	if (gson == null)
+	    gson = new Gson();
+	return gson.toJson(items);
     }
 
-    static public DesktopItem fromJson(String s)
+    static public MainMenuItem[]  fromJson(String s)
     {
 	NullCheck.notNull(s, "s");
-	return new Gson().fromJson(s, DesktopItem.class);
+	if (gson == null)
+	    gson = new Gson();
+final List<MainMenuItem> res = new Gson().fromJson(s, LIST_TYPE);
+return res != null?res.toArray(new MainMenuItem[res.size()]):new MainMenuItem[0];
     }
 }

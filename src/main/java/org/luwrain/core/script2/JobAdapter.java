@@ -56,7 +56,7 @@ final class JobAdapter implements Job
 	    final Value res = func.execute(new Object[]{
 		    "RUN",
 		    instance,
-		    ProxyArray.fromArray(args)
+		    ProxyArray.fromArray((Object[])args)
 		});
 	    if (res != null && res.isBoolean() && res.asBoolean())
 		return instance;
