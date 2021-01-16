@@ -21,8 +21,10 @@ import java.util.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.extensions.*;
 
-class UniRefProcManager
+final class UniRefProcManager
 {
+    static private final UniRefInfo EMPTY = new UniRefInfo(UniRefProcs.TYPE_EMPTY + ":", UniRefProcs.TYPE_EMPTY, "", "");
+
     private final Map<String, Entry> uniRefProcs = new HashMap<String, Entry>();
 
     boolean add(Luwrain luwrain, UniRefProc uniRefProc)
@@ -40,16 +42,19 @@ class UniRefProcManager
 
     UniRefInfo getInfo(String uniRef)
     {
-	NullCheck.notEmpty(uniRef, "uniRef");
+	NullCheck.notNull(uniRef, "uniRef");
+	if (uniRef.trim().isEmpty())
+	    return EMPTY;
 	final String uniRefType = getUniRefType(uniRef);
-	if (uniRefType == null || uniRefType.trim().isEmpty() ||
-	    !uniRefProcs.containsKey(uniRefType))
+	if (uniRefType == null || uniRefType.trim().isEmpty())
+	    return new UniRefInfo(UniRefProcs.TYPE_STATIC + ":" + uniRef.trim(), UniRefProcs.TYPE_STATIC, "", uniRef.trim());
+	if (!uniRefProcs.containsKey(uniRefType))
 	    return new UniRefInfo(uniRef);
 	final Entry entry = uniRefProcs.get(uniRefType);
-final UniRefInfo res = entry.uniRefProc.getUniRefInfo(uniRef);
-if (res == null)
-    return new UniRefInfo(uniRef);
-return res;
+	final UniRefInfo res = entry.uniRefProc.getUniRefInfo(uniRef);
+	if (res == null)
+	    return new UniRefInfo(uniRef);
+	return res;
     }
 
     boolean open(String uniRef)
@@ -69,15 +74,17 @@ return res;
 	final int pos = uniRef.indexOf(':');
 	if (pos < 1)
 	    return null;
+	for(int i = 0;i < uniRef.charAt(i);i++)
+	    if (Character.isSpaceChar(i) || Character.isWhitespace(uniRef.charAt(i)) || Character.isISOControl(uniRef.charAt(i)))
+		return null;
 	return uniRef.substring(0, pos);
     }
 
-    static private class Entry 
+    static private final class Entry 
     {
 	final Luwrain luwrain;
 	final String uniRefType;
 	final UniRefProc uniRefProc;
-
 	Entry(Luwrain luwrain, 
 	      String uniRefType, UniRefProc uniRefProc)
 	{

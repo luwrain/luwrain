@@ -23,12 +23,12 @@ import org.luwrain.util.*;
 public final class UniRefProcs
 {
     static public final String
-	TYPE_FILE = "file",
-	TYPE_URL = "url",
-	TYPE_STATIC = "static",
+	TYPE_COMMAND = "command",
 	TYPE_EMPTY = "empty",
-	TYPE_SECTIOn = "section",
-	TYPE_COMMAND = "command";
+	TYPE_FILE = "file",
+	TYPE_SECTION = "section",
+	TYPE_STATIC = "static",
+	TYPE_URL = "url";
 
     static UniRefProc[] createStandardUniRefProcs(Luwrain luwrain)
     {
@@ -260,7 +260,5 @@ public final class UniRefProcs
 		}
 	    },
 	};
-
-    
     }
 }

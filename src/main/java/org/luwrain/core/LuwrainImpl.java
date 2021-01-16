@@ -497,9 +497,6 @@ final class LuwrainImpl implements Luwrain
     @Override public UniRefInfo getUniRefInfo(String uniRef)
     {
 	NullCheck.notNull(uniRef, "uniRef");
-	core.mainCoreThreadOnly();
-	if (uniRef.isEmpty())
-	    return core.uniRefProcs.getInfo("empty:");
 	return core.uniRefProcs.getInfo(uniRef);
     }
 

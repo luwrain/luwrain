@@ -248,7 +248,7 @@ public class ListUtils
 	}
     }
 
-    static public class FixedModel extends Vector implements ListArea.Model
+    static public class FixedModel extends ArrayList implements ListArea.Model
     {
 	public FixedModel()
 	{
@@ -256,14 +256,13 @@ public class ListUtils
 	public FixedModel(Object[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
-	    setItems(items);
+	    addAll(Arrays.asList(items));
 	}
 	public void setItems(Object[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
-	    setSize(items.length);
-	    for(int i = 0;i < items.length;++i)
-		set(i, items[i]);
+	    clear();
+	    addAll(Arrays.asList(items));
 	}
 	public Object[] getItems()
 	{

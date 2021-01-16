@@ -40,14 +40,13 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	setListClickHandler((area,index,obj)->closing.doOk());
     }
 
-        @Override public boolean onInputEvent(InputEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (closing.onInputEvent(event))
 	    return true;
 	return super.onInputEvent(event);
     }
-
 
     @Override public boolean onSystemEvent(SystemEvent event)
     {
@@ -134,7 +133,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	{
 	    NullCheck.notNull(obj, "obj");
 	    final UniRefInfo info = getUniRefInfo(obj);
-	    return info.getType().equals(UniRefUtils.SECTION);
+	    return info.getType().equals(UniRefProcs.TYPE_SECTION);
 	}
 	@Override public String getSectionScreenAppearance(Object item)
 	{
@@ -154,15 +153,15 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 		return title;
 	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
 	}
-@Override public void announceNonSection(Object item)
+	@Override public void announceNonSection(Object item)
 	{
 	    NullCheck.notNull(item, "item");
 	    context.setEventResponse(DefaultEventResponse.listItem(context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));
 	}
 	public void announceSection(Object item)
 	{
-	    	    NullCheck.notNull(item, "item");
-		    context.setEventResponse(DefaultEventResponse.text(Sounds.DOC_SECTION, context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));//FIXME:DefaultEventResponse.listItem()
+	    NullCheck.notNull(item, "item");
+	    context.setEventResponse(DefaultEventResponse.text(Sounds.DOC_SECTION, context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));//FIXME:DefaultEventResponse.listItem()
 	}
 	UniRefInfo getUniRefInfo(Object obj)
 	{
@@ -176,8 +175,8 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	    if (uniRefCache.containsKey(value))
 		return uniRefCache.get(value);
 	    final UniRefInfo info = context.getUniRefInfo(value);
-		uniRefCache.put(obj.toString(), info);
-		return info;
+	    uniRefCache.put(obj.toString(), info);
+	    return info;
 	}
     }
 
