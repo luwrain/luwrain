@@ -24,7 +24,7 @@ import org.luwrain.controls.ControlContext;
 
 public final class UniRefUtils
 {
-    static public final String ALIAS = "link";
+    static public final String ALIAS = "alias";
 
         static public String makeUniRef(String component, String addr)
     {

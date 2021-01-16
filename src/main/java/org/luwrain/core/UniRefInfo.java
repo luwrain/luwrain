@@ -49,12 +49,6 @@ public final class UniRefInfo implements Comparable
 	this.title = title;
     }
 
-    //Will be removed
-    public UniRefInfo(String value, String prefix, String title)
-    {
-	this(value, "", "", title);
-    }
-
     public boolean isAvailable()
     {
 	return available;

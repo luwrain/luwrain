@@ -92,8 +92,13 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	if (o == null)
 	    return false;
 	final Appearance appearance = (Appearance)getListAppearance();
-	result = appearance.getUniRefInfo(o.toString());
-	return result != null;
+	final UniRefInfo uniRefInfo = appearance.getUniRefInfo(o);
+	if (uniRefInfo == null)
+	    return false;
+	if (uniRefInfo.getAddr().isEmpty())
+	    return false;
+	result = uniRefInfo;
+	return true;
     }
 
     @Override public boolean onCancel()

@@ -23,6 +23,7 @@ import org.luwrain.util.*;
 public final class UniRefProcs
 {
     static public final String
+	TYPE_ALIAS = "alias",
 	TYPE_COMMAND = "command",
 	TYPE_EMPTY = "empty",
 	TYPE_FILE = "file",
@@ -90,14 +91,14 @@ public final class UniRefProcs
 		static private final String PREFIX = "static:";
 		@Override public String getUniRefType()
 		{
-		    return "static";
+		    return TYPE_STATIC;
 		}
 		@Override public UniRefInfo getUniRefInfo(String uniRef)
 		{
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    if (!uniRef.startsWith(PREFIX))
 			return null;
-		    return new UniRefInfo(uniRef, "", uniRef.substring(PREFIX.length()));
+		    return new UniRefInfo(uniRef, TYPE_STATIC, "", uniRef.substring(PREFIX.length()));
 		}
 		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
@@ -152,15 +153,16 @@ public final class UniRefProcs
 	    new UniRefProc() {
 		@Override public String getUniRefType()
 		{
-		    return "command";
+		    return TYPE_COMMAND;
 		}
 		@Override public UniRefInfo getUniRefInfo(String uniRef)
 		{
-		    if (uniRef == null || uniRef.isEmpty())
+		    NullCheck.notNull(uniRef, "uniRef");
+		    final String prefix = TYPE_COMMAND + ":";
+		    if (!uniRef.startsWith(prefix))
 			return null;
-		    if (!uniRef.startsWith("command:"))
-			return null;
-		    return new UniRefInfo(uniRef, "", luwrain.i18n().getCommandTitle(uniRef.substring(8)));
+		    final String command = uniRef.substring(prefix.length());
+		    return new UniRefInfo(uniRef, TYPE_COMMAND, command, luwrain.i18n().getCommandTitle(command));
 		}
 		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
@@ -175,31 +177,32 @@ public final class UniRefProcs
 
 	    //link
 	    new UniRefProc() {
-		static private final String PREFIX = "link:";
 		@Override public String getUniRefType()
 		{
-		    return "link";
+		    return TYPE_ALIAS;
 		}
 		@Override public UniRefInfo getUniRefInfo(String uniRef)
 		{
 		    NullCheck.notNull(uniRef, "uniRef");
-		    if (!uniRef.startsWith(PREFIX))
+		    		final String prefix = TYPE_ALIAS + ":";
+		    if (!uniRef.startsWith(prefix))
 			return null;
-		    final String body = uniRef.substring(PREFIX.length());
+		    final String body = uniRef.substring(prefix.length());
 		    if (body.isEmpty())
 			return null;
 		    final int delim = findDelim(body);
 		    if (delim < 0)
 			return null;
-		    return new UniRefInfo(uniRef, "", body.substring(0, delim).replaceAll("\\\\:", ":"));
+		    return new UniRefInfo(uniRef, TYPE_ALIAS, body.substring(delim + 1), body.substring(0, delim).replaceAll("\\\\:", ":"));
 		}
 		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
 		    NullCheck.notNull(uniRef, "uniRef");
 		    NullCheck.notNull(luwrain, "luwrain");
-		    if (!uniRef.startsWith(PREFIX))
+		    		    		final String prefix = TYPE_ALIAS + ":";
+		    if (!uniRef.startsWith(prefix))
 			return false;
-		    final String body = uniRef.substring(PREFIX.length());
+		    final String body = uniRef.substring(prefix.length());
 		    if (body.isEmpty())
 			return false;
 		    final int delim = findDelim(body);
@@ -221,44 +224,6 @@ public final class UniRefProcs
 		}
 	    },
 
-		    //script
-	    new UniRefProc() {
-		static private final String PREFIX = "script:";
-		@Override public String getUniRefType()
-		{
-		    return "script";
-		}
-		@Override public UniRefInfo getUniRefInfo(String uniRef)
-		{
-		    NullCheck.notNull(uniRef, "uniRef");
-		    if (!uniRef.startsWith(PREFIX))
-			return null;
-		    final String body = uniRef.substring(PREFIX.length());
-		    if (body.isEmpty())
-			return null;
-		    return new UniRefInfo(uniRef, "", body);
-		}
-		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
-		{
-		    NullCheck.notNull(uniRef, "uniRef");
-		    NullCheck.notNull(luwrain, "luwrain");
-		    if (!uniRef.startsWith(PREFIX))
-			return false;
-		    final String body = uniRef.substring(PREFIX.length());
-		    if (body.isEmpty())
-			return false;
-		    try {
-			final String text = FileUtils.readTextFileSingleString(new File(body), "UTF-8");
-			luwrain.xExecScript(luwrain.getFileProperty("luwrain.dir.data"), text);
-			return true;
-		    }
-		    catch(Exception e)
-		    {
-			luwrain.message(luwrain.i18n().getExceptionDescr(e), Luwrain.MessageType.ERROR);
-			return true;
-		    }
-		}
-	    },
 	};
     }
 }
