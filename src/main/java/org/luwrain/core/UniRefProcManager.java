@@ -74,7 +74,7 @@ final class UniRefProcManager
 	final int pos = uniRef.indexOf(':');
 	if (pos < 1)
 	    return null;
-	for(int i = 0;i < uniRef.charAt(i);i++)
+	for(int i = 0;i < pos;i++)
 	    if (Character.isSpaceChar(i) || Character.isWhitespace(uniRef.charAt(i)) || Character.isISOControl(uniRef.charAt(i)))
 		return null;
 	return uniRef.substring(0, pos);
