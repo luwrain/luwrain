@@ -16,20 +16,29 @@
 
 package org.luwrain.io.json;
 
+import java.util.*;
+import java.lang.reflect.*;
+
 import com.google.gson.*;
 import com.google.gson.annotations.*;
+import com.google.gson.reflect.*;
 
 import org.luwrain.core.*;
 
 public class DesktopItem
 {
     static public final String TYPE_UNIREF = "uniref";
+    static public final Type LIST_TYPE = new TypeToken<List<DesktopItem>>(){}.getType();
+
+    static private Gson gson = null;
 
     @SerializedName("type")
     private String type = null;
 
     @SerializedName("value")
     private String value = null;
+
+    private transient UniRefInfo uniRefInfo = null;
 
     public DesktopItem()
     {
@@ -39,6 +48,24 @@ public class DesktopItem
     {
 	this.type = type;
 	this.value = value;
+    }
+
+        public DesktopItem(UniRefInfo uniRefInfo)
+    {
+	NullCheck.notNull(uniRefInfo, "uniRefInfo");
+	this.type = TYPE_UNIREF;
+	this.value = uniRefInfo.getValue();
+	this.uniRefInfo = uniRefInfo;
+    }
+
+
+        public UniRefInfo getUniRefInfo(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	if (this.uniRefInfo != null)
+	    return this.uniRefInfo;
+	this.uniRefInfo = luwrain.getUniRefInfo(getValueNotNull());
+	return this.uniRefInfo;
     }
 
     public String getType()
@@ -71,14 +98,19 @@ public class DesktopItem
 	 this.value = value;
 	 }
 
-    public String toJson()
+    static public String toJson(DesktopItem[] items)
     {
-	return new Gson().toJson(this);
+	if (gson == null)
+	    gson = new Gson();
+	return gson.toJson(items);
     }
 
-    static public DesktopItem fromJson(String s)
+    static public DesktopItem[]  fromJson(String s)
     {
 	NullCheck.notNull(s, "s");
-	return new Gson().fromJson(s, DesktopItem.class);
+	if (gson == null)
+	    gson = new Gson();
+final List<DesktopItem> res = new Gson().fromJson(s, LIST_TYPE);
+return res != null?res.toArray(new DesktopItem[res.size()]):new DesktopItem[0];
     }
 }

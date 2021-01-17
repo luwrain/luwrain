@@ -17,20 +17,15 @@
 package org.luwrain.core.shell.desktop;
 
 import java.util.*;
-import java.lang.reflect.*;
-
-import com.google.gson.*;
-import com.google.gson.reflect.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.core.shell.*;
+import org.luwrain.io.json.*;
 
 final class DesktopArea extends EditableListArea implements EditableListArea.ClickHandler
 {
-    static final Type DESKTOP_ITEM_LIST_TYPE = new TypeToken<List<DesktopItem>>(){}.getType();
-
     private final Luwrain luwrain;
 
     DesktopArea(Luwrain luwrain, String areaName, Conversations conv)
@@ -135,17 +130,16 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
     {
 	private final Luwrain luwrain;
 	private final Settings.UserInterface sett;
-	private ArrayList<DesktopItem> items = null;
-	private final Gson gson = new Gson();
+	private ArrayList<DesktopItem> items = new ArrayList();
 	Model(Luwrain luwrain)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
 	    this.luwrain = luwrain;
 	    this.sett = Settings.createUserInterface(luwrain.getRegistry());
+	    this.items.addAll(Arrays.asList(DesktopItem.fromJson(sett.getDesktopContent(""))));
 	}
 	@Override public boolean clearModel()
 	{
-	    load();
 	    this.items.clear();
 	    save();
 	    return true;
@@ -154,7 +148,6 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	{
 	    if (index < 0)
 		throw new IllegalArgumentException("index may not be negative");
-	    load();
 	    if (index >= this.items.size())
 		return false;
 	    this.items.remove(index);
@@ -166,7 +159,6 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	    NullCheck.notNull(supplier, "supplier");
 	    if (index < 0)
 		throw new IllegalArgumentException("index may not be negative");
-	    load();
 	    final Object supplied = supplier.get();
 	    if (supplied == null)
 		return false;
@@ -178,64 +170,27 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 		return false;
 	    for(Object o: objs)
 	    {
-		if (o instanceof java.io.File)
-		{
-		    final java.io.File file = (java.io.File)o;
-		    items.add(new DesktopItem(luwrain, file));
-		    continue;
-		}
-		if (o instanceof java.net.URL)
-		{
-		    final java.net.URL url = (java.net.URL)o;
-		    items.add(new DesktopItem(luwrain, url));
-		    continue;
-		}
-		if (o instanceof UniRefInfo)
-		{
-		    final UniRefInfo info = (UniRefInfo)o;
+		final UniRefInfo info = UniRefUtils.make(luwrain, o);
+		if (info != null)
 		    items.add(new DesktopItem(info));
-		    continue;
-		}
-		if (o instanceof String)
-		{
-		    final  String str = (String)o;
-		    final UniRefInfo info = luwrain.getUniRefInfo(str);
-		    if (info.isAvailable())
-			items.add(new DesktopItem(info)); else
-			items.add(new DesktopItem(luwrain, str));
-		    continue;
-		}
 	    }
-	    save();
+	    	    save();
 	    return true;
 	}
 	@Override public int getItemCount()
 	{
-	    load();
 	    return items.size();
 	}
 	@Override public Object getItem(int index)
 	{
-	    load();
 	    return items.get(index);
 	}
 	@Override public void refresh()
 	{
 	}
-	private void load()
-	{
-	    if (items != null)
-		return;
-	    final List<DesktopItem> res = gson.fromJson(sett.getDesktopContent(""), DESKTOP_ITEM_LIST_TYPE);
-	    this.items = new ArrayList();
-	    if (res != null)
-		items.addAll(res);
-	}
 	private void save()
 	{
-	    if (this.items == null)
-		return;
-	    sett.setDesktopContent(gson.toJson(this.items));
+	    sett.setDesktopContent(DesktopItem.toJson(this.items.toArray(new DesktopItem[this.items.size()])));
 	}
     }
 }

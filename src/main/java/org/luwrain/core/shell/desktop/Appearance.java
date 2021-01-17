@@ -20,6 +20,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
+import org.luwrain.io.json.*;
 
 final class Appearance implements ListArea.Appearance
 {
