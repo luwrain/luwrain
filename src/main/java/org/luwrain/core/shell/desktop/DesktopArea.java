@@ -62,8 +62,8 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	params.confirmation = (area,model,fromIndex,toIndex)->{
 	    if (fromIndex + 1== toIndex)
 		return conv.deleteItem(params.appearance.getScreenAppearance(model.getItem(fromIndex), EnumSet.noneOf(EditableListArea.Appearance.Flags.class)));
-		return conv.deleteItems(toIndex - fromIndex);
-    };
+	    return conv.deleteItems(toIndex - fromIndex);
+	};
 	return params;
     }
 
@@ -168,13 +168,16 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 		objs = new Object[]{supplied};
 	    if (objs.length == 0)
 		return false;
+	    final List<DesktopItem> newItems = new ArrayList();
 	    for(Object o: objs)
 	    {
 		final UniRefInfo info = UniRefUtils.make(luwrain, o);
-		if (info != null)
-		    items.add(new DesktopItem(info));
+		if (info == null)
+		    return false;
+		    newItems.add(new DesktopItem(info));
 	    }
-	    	    save();
+	    items.addAll(index, newItems);
+	    save();
 	    return true;
 	}
 	@Override public int getItemCount()
