@@ -54,7 +54,7 @@ final class MainMenu extends EditableListArea implements SectionArea
         @Override public boolean saveSectionData()
     {
 	final List<UniRefInfo> model = (List)getListModel();
-	final List<MainMenuItem> items = new LinkedList();
+	final List<MainMenuItem> items = new ArrayList();
 	for(UniRefInfo info: model)
 	    items.add(new MainMenuItem(MainMenuItem.TYPE_UNIREF, info.getValue()));
 	sett.setMainMenuContent(gson.toJson(items));
@@ -115,6 +115,21 @@ final class MainMenu extends EditableListArea implements SectionArea
 		    return true;
 		}
 	    };
+	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
+	    final List<UniRefInfo> u = new ArrayList();
+	    final List<String> s = new ArrayList<String>();
+	    for(int i = fromIndex;i < toIndex;++i)
+	    {
+		final Object obj = model.getItem(i);
+		if (!(obj instanceof UniRefInfo))
+		    continue;
+		final UniRefInfo uniRefInfo = (UniRefInfo)obj;
+		u.add(uniRefInfo);
+		s.add(uniRefInfo.getTitle());
+	    }
+	    clipboard.set(u.toArray(new UniRefInfo[u.size()]), s.toArray(new String[s.size()]));
+	    return true;
+	};
 	return new MainMenu(controlPanel, params);
     }
 }

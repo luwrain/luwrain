@@ -47,16 +47,18 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	params.appearance = new org.luwrain.core.shell.desktop.Appearance(luwrain);
 	params.name = areaName;
 	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
-	    final List<String> res = new LinkedList<String>();
+	    final List<UniRefInfo> u = new ArrayList();
+	    final List<String> s = new ArrayList<String>();
 	    for(int i = fromIndex;i < toIndex;++i)
 	    {
 		final Object obj = model.getItem(i);
-		NullCheck.notNull(obj, "obj");
-		if (obj instanceof UniRefInfo)
-		    res.add(((UniRefInfo)obj).getValue()); else
-		    res.add(obj.toString());
+		if (!(obj instanceof DesktopItem))
+		    continue;
+		final UniRefInfo uniRefInfo = ((DesktopItem)obj).getUniRefInfo(luwrain);
+		u.add(uniRefInfo);
+		s.add(uniRefInfo.getTitle());
 	    }
-	    clipboard.set(res.toArray(new String[res.size()]));
+	    clipboard.set(u.toArray(new UniRefInfo[u.size()]), s.toArray(new String[s.size()]));
 	    return true;
 	};
 	params.confirmation = (area,model,fromIndex,toIndex)->{
