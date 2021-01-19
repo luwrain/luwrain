@@ -23,9 +23,9 @@ import java.util.*;
 
 import org.luwrain.core.NullCheck;
 
-class ValueLineParser
+final class ValueLineParser
 {
-    private Pattern pat = Pattern.compile("^\\s*(\"[^\"]*\"(\"[^\"]*\")*)\\s*=\\s*\"(.*)\"\\s*$", Pattern.CASE_INSENSITIVE);
+    static private final Pattern pat = Pattern.compile("^\\s*(\"[^\"]*\"(\"[^\"]*\")*)\\s*=\\s*\"(.*)\"\\s*$", Pattern.CASE_INSENSITIVE);
 
     String key = "";
     String value = "";
