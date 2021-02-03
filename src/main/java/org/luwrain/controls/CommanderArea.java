@@ -444,7 +444,7 @@ public class CommanderArea<E> extends ListArea
 	    return false;
 	wrapper.toggleMark(); 
 	if (wrapper.marked)
-	    context.say(context.getStaticStr("CommanderSelected") + getBaseName(wrapper), Sounds.SELECTED); else
+	    context.setEventResponse(DefaultEventResponse.text(Sounds.SELECTED, context.getStaticStr("CommanderSelected") + getBaseName(wrapper))); else
 	    context.say("не выделено" + getBaseName(wrapper), Sounds.UNSELECTED); //FIXME:
 	final int index = selectedIndex();
 	if (index >= 0 && index + 1 < getListItemCount())

@@ -69,8 +69,6 @@ public class CommanderUtils
 	    return;
 	}
 	final StringBuilder b = new StringBuilder();
-	if (marked)
-	    b.append(context.getStaticStr("CommanderSelected") + " ");
 	b.append(context.getSpeakableText(name, Luwrain.SpeakableTextType.PROGRAMMING));
 	switch(type)
 	{
@@ -88,7 +86,6 @@ public class CommanderUtils
 	    b.append(context.getStaticStr("CommanderSpecial"));
 	    break;
 	}
-	context.playSound(marked?Sounds.ATTENTION:Sounds.LIST_ITEM);
-	context.say(new String(b));
+	context.setEventResponse(DefaultEventResponse.text(marked?Sounds.SELECTED:Sounds.LIST_ITEM, new String(b)));
     }
 }
