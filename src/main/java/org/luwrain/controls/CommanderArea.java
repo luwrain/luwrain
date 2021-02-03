@@ -516,7 +516,7 @@ public class CommanderArea<E> extends ListArea
 	return listParams;
     }
 
-    static protected class Wrapper<E> implements NativeItem<E>
+    static private class Wrapper<E> implements NativeItem<E>
     {
 	final E obj;
 final EntryType type;
@@ -547,7 +547,7 @@ final EntryType type;
 	{
 	    return baseName;
 	}
-	public void toggleMark()
+	void toggleMark()
 	{
 	    marked = !marked;
 	}

@@ -87,7 +87,7 @@ public final class Popups
 	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNull(text, "text");
 	return simple(luwrain, name, prefix, text, (input)->{
-		if (input.isEmpty())
+		if (input.trim().isEmpty())
 		{
 		    luwrain.message("Значение не должно быть пустым", Luwrain.MessageType.ERROR);
 		    return false;

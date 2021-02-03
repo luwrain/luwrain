@@ -16,6 +16,16 @@
       <artifactId>luwrain-base</artifactId>
       <version>${project.version}</version>
     </dependency>
+        <!--<dependency>
+      <groupId>org.graalvm</groupId>
+      <artifactId>graal-sdk</artifactId>
+      <version>20.1.0</version>
+    </dependency>-->
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js</artifactId>
+      <version>20.1.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
