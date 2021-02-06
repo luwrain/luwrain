@@ -25,17 +25,38 @@ import org.luwrain.core.*;
 
 public final class StreamUtils
 {
-    static public int copyAllBytes(InputStream is, OutputStream os) throws IOException
+    public interface Progress
+    {
+	void processed(int chunkNumBytes, long totalNumBytes);
+    }
+
+    public interface Interrupting
+    {
+	boolean interrupting();
+    }
+
+    static public long copyAllBytes(InputStream is, OutputStream os) throws IOException
+    {
+	return copyAllBytes(is, os, null, null);
+    }
+
+    static public long copyAllBytes(InputStream is, OutputStream os, Progress progress, Interrupting interrupting) throws IOException
     {
 	NullCheck.notNull(is, "is");
 	NullCheck.notNull(os, "os");
+	long totalBytes = 0;
 	final byte[] buf = new byte[2048];
-	int length = 0;
-	do {
-	    length = is.read(buf);
-	    if (length > 0)
-		FileUtils.writeAllBytes(os, buf, length);
-	} while(length >= 0);
-	return length;
+	while(true)
+	{
+	    if (interrupting != null && interrupting.interrupting())
+		return totalBytes;
+	    final int length = is.read(buf);
+	    if (length < 0)
+		return totalBytes;
+	    FileUtils.writeAllBytes(os, buf, length);
+	    totalBytes += length;
+	    if (progress != null)
+		progress.processed(length, totalBytes);
+	}
     }
 }
