@@ -108,26 +108,37 @@ public interface WizardItem
 	fillForm(frames.get(0));
     }
 
+    public void show(WizardFrame frame)
+    {
+	NullCheck.notNull(frame, "frame");
+	fillForm(frame);
+    }
+
     void fillForm(WizardFrame frame)
     {
 	NullCheck.notNull(frame, "frame");
 	clear();
 	if (frame.getItems().length == 0)
 	    return;
+	boolean emptyLine = true;
 	for(WizardItem i: frame.getItems())
 	{
-	    	addStatic("");
 	    if (i instanceof WizardText)
 	    {
+			    	addStatic("");
 		final WizardText t = (WizardText)i;
 		for(String l: TextUtils.wordWrap(t.getText(), 80))//FIXME: proper width
 		addStatic(l);
+		emptyLine = true;
 		continue;
 	    }
 	    	    if (i instanceof WizardClickable)
 	    {
+			    if (emptyLine)
+	    	addStatic("");
 		final WizardClickable c = (WizardClickable)i;
 		addStatic(getItemNewAutoName(), c.getText(), c);
+		emptyLine = false;
 		continue;
 	    }
 	}
