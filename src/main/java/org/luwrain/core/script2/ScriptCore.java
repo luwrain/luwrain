@@ -50,13 +50,31 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 	    m.close();
     }
 
-    public void load (File file) throws IOException
+    public void load (Reader reader) throws IOException
+    {
+	NullCheck.notNull(reader, "reader");
+	final String lineSep = System.lineSeparator();
+	final StringBuilder b = new StringBuilder();
+	final BufferedReader r = new BufferedReader(reader);
+	String line = r.readLine();
+	while (line != null)
+	{
+	    b.append(line).append(lineSep);
+	    line = r.readLine();
+	}
+	final Module m = new Module(luwrain, bindings);
+	m.run(new String(b));
+	modules.add(m);
+	    }
+
+        public void load (File file) throws IOException
     {
 	NullCheck.notNull(file, "file");
 	final Module m = new Module(luwrain, bindings);
 	m.run(FileUtils.readTextFileSingleString(file, "UTF-8"));
 	modules.add(m);
 	    }
+
 
     @Override public boolean runHooks(String hookName, Luwrain.HookRunner runner)
     {

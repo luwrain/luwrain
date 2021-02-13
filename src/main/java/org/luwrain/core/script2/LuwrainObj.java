@@ -53,6 +53,8 @@ final class LuwrainObj implements ProxyObject
 	    return logObj;
 	case "readTextFile":
 	    return (ProxyExecutable)this::readTextFile;
+	case "speak":
+	    return (ProxyExecutable)this::speak;
 	default:
 	    return null;
 	}
@@ -65,6 +67,7 @@ final class LuwrainObj implements ProxyObject
 	case "addHook":
 	    case "log":
 	    case "readTextFile":
+	case "speak":
 	    return true;
 	default:
 	    return false;
@@ -73,11 +76,12 @@ final class LuwrainObj implements ProxyObject
 
     @Override public Object getMemberKeys()
     {
-	return new String[]{
+	return ProxyArray.fromArray(
 	    "addHook",
 	    "log",
 	    "readTextFile",
-	};
+	    "speak"
+				    );
     }
 
     @Override public void putMember(String name, Value value)
@@ -119,5 +123,17 @@ final class LuwrainObj implements ProxyObject
 	{
 	    throw new ScriptException(e);
 	}
+    }
+
+    private Object speak(Value[] values)
+    {
+	if (!ScriptUtils.notNullAndLen(values, 1))
+	    return false;
+	if (!values[0].isString())
+	    return false;
+	luwrain.speak(values[0].asString());
+	return true;
+	
+	    
     }
 }
