@@ -26,6 +26,16 @@ import org.luwrain.util.*;
 
 public class WizardArea extends FormArea
 {
+public interface WizardValues
+{
+    String getText(int inputIndex);
+}
+
+    public interface WizardClickHandler
+    {
+	boolean handle(WizardValues values);
+    }
+
 public interface WizardItem
 {
 }
@@ -47,8 +57,8 @@ public interface WizardItem
         public final class WizardClickable implements WizardItem
     {
 	private final String text;
-	private final Runnable handler;
-	public WizardClickable(String text, Runnable handler)
+	private final WizardClickHandler handler;
+	public WizardClickable(String text, WizardClickHandler handler)
 	{
 	    NullCheck.notEmpty(text, "text");
 	    NullCheck.notNull(handler, "handler");
@@ -59,27 +69,61 @@ public interface WizardItem
 	{
 	    return text;
 	}
-	public void click()
+	public boolean  click(WizardValues values)
 	{
-	    handler.run();
+	    NullCheck.notNull(values, "values");
+	    return handler.handle(values);
 	}
     }
 
-    public final class WizardFrame
+            public final class WizardInput implements WizardItem
+    {
+	private final String prefix;
+	private final String text;
+	public WizardInput(String prefix, String text)
+	{
+	    NullCheck.notNull(prefix, "prefix");
+	    NullCheck.notNull(text, "text");
+	    this.prefix = prefix;
+	    this.text = text;
+	}
+	public String getPrefix()
+	{
+	    return this.prefix;
+	}
+	public String getText()
+	{
+	    return this.text;
+	}
+    }
+
+    public final class Frame
     {
 	private final List<WizardItem> items = new ArrayList();
-	public WizardFrame addText(String text)
+	public Frame addText(String text)
 	{
 	    NullCheck.notEmpty(text, "text");
 	    items.add(new WizardText(text));
 	    return this;
 	}
-	public WizardFrame addClickable(String text, Runnable handler)
+	public Frame addClickable(String text, WizardClickHandler handler)
 	{
 	    NullCheck.notEmpty(text, "text");
 	    NullCheck.notNull(handler, "handler");
 	    items.add(new WizardClickable(text, handler));
 	    return this;
+	}
+	public Frame addInput(String prefix, String text)
+	{
+	    NullCheck.notNull(prefix, "prefix");
+	    NullCheck.notNull(text, "text");
+	    items.add(new WizardInput(prefix, text));
+	    return this;
+	}
+	public Frame addINput(String prefix)
+	{
+	    NullCheck.notNull(prefix, "prefix");
+	    return addInput(prefix, "");
 	}
 	WizardItem[] getItems()
 	{
@@ -87,34 +131,25 @@ public interface WizardItem
 	}
     }
 
-    protected final List<WizardFrame> frames = new ArrayList();
+    protected final Values values = new Values();
 
     public WizardArea(ControlContext context)
     {
 	super(context);
     }
 
-    public WizardFrame addFrame()
+    public Frame newFrame()
     {
-	final WizardFrame frame = new WizardFrame();
-	this.frames.add(frame);
-	return frame;
+	return new Frame();
     }
 
-    public void start()
-    {
-	if (this.frames.isEmpty())
-	    throw new IllegalStateException("No frames to start the wizard");
-	fillForm(frames.get(0));
-    }
-
-    public void show(WizardFrame frame)
+    public void show(Frame frame)
     {
 	NullCheck.notNull(frame, "frame");
 	fillForm(frame);
     }
 
-    void fillForm(WizardFrame frame)
+    void fillForm(Frame frame)
     {
 	NullCheck.notNull(frame, "frame");
 	clear();
@@ -141,13 +176,24 @@ public interface WizardItem
 		emptyLine = false;
 		continue;
 	    }
+		    	    	    if (i instanceof WizardInput)
+	    {
+			    if (emptyLine)
+	    	addStatic("");
+		final WizardInput c = (WizardInput)i;
+		final String name = getItemNewAutoName();
+		this.values.addEdit(name);
+		addEdit(name, c.getPrefix(), c.getText());
+		emptyLine = false;
+		continue;
+	    }
 	}
     }
 
-    protected boolean onOk()
+    protected boolean onClick()
     {
 	final String itemName = getItemNameOnLine(getHotPointY());
-	if (name == null || name.isEmpty())
+	if (itemName == null || itemName.isEmpty())
 	    return false;
 	final Object obj = getItemObjByName(itemName);
 	if (obj == null)
@@ -155,8 +201,7 @@ public interface WizardItem
 	if (obj instanceof WizardClickable)
 	{
 	    final WizardClickable c = (WizardClickable)obj;
-	    c.click();
-	    return true;
+	    return c.click(values);
 	}
 	return false;
     }
@@ -168,7 +213,7 @@ public interface WizardItem
 	    switch(event.getSpecial())
 	    {
 	    case ENTER:
-		if (onOk())
+		if (onClick())
 		    return true;
 		return super.onInputEvent(event);
 	    }
@@ -196,5 +241,21 @@ public interface WizardItem
 		return;
 	}
 	context.setEventResponse(DefaultEventResponse.text(Sounds.MAIN_MENU_ITEM, context.getSpeakableText(line, Luwrain.SpeakableTextType.NATURAL)));
+    }
+
+    protected final class Values implements WizardValues
+    {
+	private final List<String> edits = new ArrayList();
+	public void addEdit(String name)
+	{
+	    NullCheck.notEmpty(name, "name");
+	    this.edits.add(name);
+	}
+	@Override public String getText(int index)
+	{
+	    if (index < 0 || index >= this.edits.size())
+		throw new IllegalArgumentException("Illegal index (" + String.valueOf(index) + "), the edit list contains " + String.valueOf(this.edits.size()) + " items");
+	    return getEnteredText(this.edits.get(index));
+	}
     }
 }
