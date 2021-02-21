@@ -194,4 +194,20 @@ public final class FileUtils
 	    return file;
 	return new File(baseDir, path);
     }
+
+    static public void createSubdirs(File destDir) throws IOException
+    {
+	NullCheck.notNull(destDir, "destDir");
+
+	if (destDir.exists())
+	{
+	    if (!destDir.isDirectory())
+		throw new IOException(destDir.getAbsolutePath() + " exists and isn't a directory");
+	    return;
+	}
+	final File parent = destDir.getParentFile();
+	if (parent != null)
+	    createSubdirs(parent);
+	destDir.mkdir();	
+    }
 }

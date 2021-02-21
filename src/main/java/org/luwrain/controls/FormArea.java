@@ -80,6 +80,7 @@ public class FormArea  extends NavigationArea
 
     public void clear()
     {
+	nextAutoNameNum = 1;
 	items.clear();
 	multilineEditCaption = "";
 	multilineEdit = null;
