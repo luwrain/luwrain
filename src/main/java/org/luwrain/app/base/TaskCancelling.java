@@ -26,6 +26,7 @@ public class TaskCancelling
     static public final class TaskId
     {
 	private final long id;
+	private boolean finished = false;
 	public TaskId(long id)
 	{
 	    if (id < 0)
@@ -35,6 +36,13 @@ public class TaskCancelling
 	public long getId()
 	{
 	    return this.id;
+	}
+	boolean finish()
+	{
+	    if (finished)
+		return false;
+	    finished = true;
+	    return true;
 	}
     }
 
