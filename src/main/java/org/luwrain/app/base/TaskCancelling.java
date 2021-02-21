@@ -33,11 +33,11 @@ public class TaskCancelling
 		throw new IllegalArgumentException("id (" + String.valueOf(id) + ") may not be negative");
 	    this.id = id;
 	}
-	public long getId()
+	protected long getId()
 	{
 	    return this.id;
 	}
-	boolean finish()
+	protected boolean finish()
 	{
 	    if (finished)
 		return false;

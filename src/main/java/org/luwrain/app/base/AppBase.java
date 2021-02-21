@@ -95,6 +95,10 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return this.layout.getLayout();
     }
 
+    public void onCancelledTask()
+    {
+    }
+
     public boolean onEscape(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
@@ -172,7 +176,6 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return onSystemEvent(area, event);
     }
 
-
     public boolean onAreaQuery(Area area, AreaQuery query)
     {
 	NullCheck.notNull(area, "area");
@@ -247,10 +250,11 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     {
 	if (!isBusy())
 	    return;
+		super.cancelTask();
 	task.cancel(true);
-	super.cancelTask();
 	luwrain.playSound(Sounds.CLICK);
 	resetTask();
+	onCancelledTask();
     }
 
     void resetTask()
