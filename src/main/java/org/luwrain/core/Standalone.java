@@ -47,7 +47,7 @@ public final class Standalone
 	    {
 		// UNIX
 		final File f = new File(System.getProperty("user.home"));
-		dataDir = new File(f, unixDataDirName);
+		dataDir = new File(f, "." + unixDataDirName);
 	    }
     }
 
