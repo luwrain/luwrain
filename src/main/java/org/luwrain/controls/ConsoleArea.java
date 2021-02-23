@@ -70,7 +70,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
     protected final Appearance consoleAppearance;
     protected ClickHandler consoleClickHandler = null;
     protected InputHandler consoleInputHandler = null;
-    protected final EmbeddedSingleLineEdit edit;
+    protected final EmbeddedEdit edit;
     protected final InputPos inputPos;
 
     protected String enteringPrefix = "";
@@ -92,7 +92,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	this.consoleInputHandler = params.inputHandler;
 	this.enteringPrefix = params.inputPrefix;
 	this.areaName = params.name;
-	this.edit = new EmbeddedSingleLineEdit(context, this, this, regionPoint, 0, 0);
+	this.edit = new EmbeddedEdit(context, this, this, regionPoint, 0, 0);
 	refresh();
 	moveHotPointToInput();
     }

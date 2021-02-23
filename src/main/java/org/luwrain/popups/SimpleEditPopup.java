@@ -43,7 +43,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
     protected final RegionPoint regionPoint = new RegionPoint();
     protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint, EnumSet.noneOf(ClipboardTranslator.Flags.class));
     protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));
-    protected final EmbeddedSingleLineEdit edit;
+    protected final EmbeddedEdit edit;
     protected final String name;
     protected final String prefix;
     protected String text;
@@ -67,7 +67,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	this.text = text;
 	this.popupFlags = popupFlags;
 	this.pos = prefix.length() + text.length();
-	this.edit = new EmbeddedSingleLineEdit(new DefaultControlContext(luwrain), this, this, regionPoint, prefix.length(), 0);
+	this.edit = new EmbeddedEdit(new DefaultControlContext(luwrain), this, this, regionPoint, prefix.length(), 0);
     }
 
     @Override public int getLineCount()

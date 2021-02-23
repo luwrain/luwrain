@@ -171,7 +171,7 @@ public class FormArea  extends NavigationArea
 	item.enteredText = initialText;
 	item.obj = obj;
 	item.enabled = enabled;
-	item.edit = new EmbeddedSingleLineEdit(context, item, this, regionPoint,
+	item.edit = new EmbeddedEdit(context, item, this, regionPoint,
 					       item.caption.length(), //offsetX
 					       items.size()); //offsetY
 	items.add(item);
@@ -192,7 +192,7 @@ public class FormArea  extends NavigationArea
 	item.obj = obj;
 	item.enabled = enabled;
 	item.hideLetters = true;
-	item.edit = new EmbeddedSingleLineEdit(new WrappingControlContext(context){
+	item.edit = new EmbeddedEdit(new WrappingControlContext(context){
 		@Override public void sayLetter(char letter)
 		{
 		    super.sayLetter('*');
@@ -762,7 +762,7 @@ final int count = multilineEditLines.getLineCount();
 	protected final Area area;
 	// For edits
 	protected String enteredText = "";
-	protected EmbeddedSingleLineEdit edit;
+	protected EmbeddedEdit edit = null;
 	protected boolean hideLetters = false;
 	// For unirefs
 	UniRefInfo uniRefInfo;
