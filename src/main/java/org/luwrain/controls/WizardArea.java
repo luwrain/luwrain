@@ -183,6 +183,7 @@ public interface WizardItem
     {
 	NullCheck.notNull(frame, "frame");
 	clear();
+	values.edits.clear();
 	defaultClickable = null;
 	clickableCount = 0;
 	if (frame.getItems().length == 0)
@@ -300,7 +301,7 @@ public interface WizardItem
 
     protected final class Values implements WizardValues
     {
-	private final List<String> edits = new ArrayList();
+	final List<String> edits = new ArrayList();
 	public void addEdit(String name)
 	{
 	    NullCheck.notEmpty(name, "name");

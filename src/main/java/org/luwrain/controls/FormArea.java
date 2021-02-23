@@ -223,9 +223,7 @@ public class FormArea  extends NavigationArea
 
     public String getEnteredText(String itemName)
     {
-	NullCheck.notNull(itemName, "itemName");
-	if (itemName.trim().isEmpty())
-	    return null;
+	NullCheck.notEmpty(itemName, "itemName");
 	for(Item i: items)
 	    if (i.type == Type.EDIT && i.name.equals(itemName))
 		return i.enteredText;
