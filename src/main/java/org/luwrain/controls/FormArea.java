@@ -695,6 +695,24 @@ final int count = multilineEditLines.getLineCount();
 	defaultLineAnnouncement(context, index, context.getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
     }
 
+    @Override public int getNewHotPointX(int oldHotPointY, int newHotPointY, int oldHotPointX, String oldLine, String newLine)
+    {
+	NullCheck.notNull(oldLine, "oldLine");
+	NullCheck.notNull(newLine, "newLine");
+	// The first line of multiline edit
+	if (newHotPointY == items.size())
+	    return 0;
+	if (newHotPointY < items.size())
+	    switch(items.get(newHotPointY).type)
+	    {
+	    case EDIT:
+		return newLine.length();
+	    default:
+		return 0;
+	    }
+	return super.getNewHotPointX(oldHotPointY, newHotPointY, oldHotPointX, oldLine, newLine);
+    }
+
     @Override public String getAreaName()
     {
 	return name;

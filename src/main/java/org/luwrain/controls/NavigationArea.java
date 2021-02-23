@@ -201,10 +201,10 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_BELOW));
 	    return true;
 	}
+		final String line = getLineNotNull(hotPointY);
 	++hotPointY;
 	final String nextLine = getLineNotNull(hotPointY);
-	//FIXME:do proper next line transition according to possible tab shifts;hotPointX = proper new position respecting tab sequences;
-	hotPointX = hotPointX <= nextLine.length()?hotPointX:nextLine.length();
+	hotPointX = getNewHotPointX(hotPointY - 1, hotPointY, hotPointX, line, nextLine);
 	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, nextLine);
 	return true;
@@ -221,10 +221,10 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 		context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_ABOVE));
 	    return true;
 	}
+		final String line = getLineNotNull(hotPointY);
 	--hotPointY;
 	final String prevLine = getLineNotNull(hotPointY);
-	//FIXME:do proper next line transition according to possible tab shifts;hotPointX = proper new position respecting tab sequences;
-	hotPointX = hotPointX <= prevLine.length()?hotPointX:prevLine.length();
+		hotPointX = getNewHotPointX(hotPointY + 1, hotPointY, hotPointX, line, prevLine);
 	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, prevLine);
 	return true;
@@ -381,6 +381,11 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     {
 	NullCheck.notNull(line, "line");
 	defaultLineAnnouncement(context, index, line);
+    }
+
+    public int getNewHotPointX(int oldHotPointY, int newHotPointY, int oldHotPointX, String oldLine, String newLine)
+    {
+	return Math.min(oldHotPointX, newLine.length());
     }
 
     public void reset(boolean announce)
