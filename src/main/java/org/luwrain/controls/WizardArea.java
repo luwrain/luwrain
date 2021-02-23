@@ -166,6 +166,8 @@ public interface WizardItem
     }
 
     protected final Values values = new Values();
+    protected WizardClickable defaultClickable = null;
+    protected int clickableCount = 0;
 
     public WizardArea(ControlContext context)
     {
@@ -180,13 +182,9 @@ public interface WizardItem
     public void show(Frame frame)
     {
 	NullCheck.notNull(frame, "frame");
-	fillForm(frame);
-    }
-
-    void fillForm(Frame frame)
-    {
-	NullCheck.notNull(frame, "frame");
 	clear();
+	defaultClickable = null;
+	clickableCount = 0;
 	if (frame.getItems().length == 0)
 	    return;
 	boolean emptyLine = true;
@@ -201,15 +199,19 @@ public interface WizardItem
 		emptyLine = true;
 		continue;
 	    }
+
 	    	    if (i instanceof WizardClickable)
 	    {
 			    if (emptyLine)
 	    	addStatic("");
 		final WizardClickable c = (WizardClickable)i;
+		clickableCount++;
+		    defaultClickable = c;
 		addStatic(getItemNewAutoName(), c.getText(), c);
 		emptyLine = false;
 		continue;
 	    }
+
 		    	    	    if (i instanceof WizardInput)
 	    {
 			    if (emptyLine)
@@ -221,6 +223,7 @@ public interface WizardItem
 		emptyLine = false;
 		continue;
 	    }
+
 				    		    	    	    if (i instanceof WizardPasswd)
 	    {
 			    if (emptyLine)
@@ -235,20 +238,27 @@ public interface WizardItem
 	}
     }
 
+    protected boolean defaultClick()
+    {
+	if (clickableCount != 1 || defaultClickable == null)
+	    return false;
+	    return defaultClickable.click(values);
+    }
+
     protected boolean onClick()
     {
 	final String itemName = getItemNameOnLine(getHotPointY());
 	if (itemName == null || itemName.isEmpty())
-	    return false;
+	    return defaultClick();
 	final Object obj = getItemObjByName(itemName);
 	if (obj == null)
-	    return false;
+	    return defaultClick();
 	if (obj instanceof WizardClickable)
 	{
 	    final WizardClickable c = (WizardClickable)obj;
 	    return c.click(values);
 	}
-	return false;
+	return defaultClick();
     }
 
     @Override public boolean onInputEvent(InputEvent event)
