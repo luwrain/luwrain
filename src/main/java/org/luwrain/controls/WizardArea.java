@@ -97,6 +97,27 @@ public interface WizardItem
 	}
     }
 
+                public final class WizardPasswd implements WizardItem
+    {
+	private final String prefix;
+	private final String text;
+	public WizardPasswd(String prefix, String text)
+	{
+	    NullCheck.notNull(prefix, "prefix");
+	    NullCheck.notNull(text, "text");
+	    this.prefix = prefix;
+	    this.text = text;
+	}
+	public String getPrefix()
+	{
+	    return this.prefix;
+	}
+	public String getText()
+	{
+	    return this.text;
+	}
+    }
+
     public final class Frame
     {
 	private final List<WizardItem> items = new ArrayList();
@@ -125,6 +146,19 @@ public interface WizardItem
 	    NullCheck.notNull(prefix, "prefix");
 	    return addInput(prefix, "");
 	}
+		public Frame addPasswd(String prefix, String text)
+	{
+	    NullCheck.notNull(prefix, "prefix");
+	    NullCheck.notNull(text, "text");
+	    items.add(new WizardPasswd(prefix, text));
+	    return this;
+	}
+	public Frame addPasswd(String prefix)
+	{
+	    NullCheck.notNull(prefix, "prefix");
+	    return addPasswd(prefix, "");
+	}
+
 	WizardItem[] getItems()
 	{
 	    return items.toArray(new WizardItem[items.size()]);
@@ -183,7 +217,18 @@ public interface WizardItem
 		final WizardInput c = (WizardInput)i;
 		final String name = getItemNewAutoName();
 		this.values.addEdit(name);
-		addEdit(name, c.getPrefix(), c.getText());
+		addEdit(name, c.getPrefix(), c.getText(), c, true);
+		emptyLine = false;
+		continue;
+	    }
+				    		    	    	    if (i instanceof WizardPasswd)
+	    {
+			    if (emptyLine)
+	    	addStatic("");
+		final WizardPasswd c = (WizardPasswd)i;
+		final String name = getItemNewAutoName();
+		this.values.addEdit(name);
+		addPasswd(name, c.getPrefix(), c.getText(), c, true);
 		emptyLine = false;
 		continue;
 	    }

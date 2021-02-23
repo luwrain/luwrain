@@ -43,7 +43,6 @@ public class DefaultControlContext implements ControlContext
 	luwrain.speak(text, sound);
     }
 
-
     @Override public void sayStaticStr(org.luwrain.i18n.LangStatic id)
     {
 	NullCheck.notNull(id, "id");
@@ -70,7 +69,7 @@ public class DefaultControlContext implements ControlContext
 	luwrain.onAreaNewHotPoint(area);
     }
 
-        @Override public int getAreaVisibleWidth(Area area)
+    @Override public int getAreaVisibleWidth(Area area)
     {
 	return luwrain.getAreaVisibleWidth(area);
     }
@@ -80,29 +79,10 @@ public class DefaultControlContext implements ControlContext
 	return luwrain.getAreaVisibleHeight(area);
     }
 
-    /*
-    @Override public void setClipboard(String[] value)
-    {
-	luwrain.setClipboard(value);
-    }
-
-    @Override public String[] getClipboard()
-    {
-	return luwrain.getClipboard();
-    }
-    */
-
     @Override public void popup(Popup popupObj)
     {
 	luwrain.popup(popupObj);
     }
-
-    /*
-    @Override public LaunchContext launchContext()
-    {
-	return luwrain.launchContext();
-    }
-    **/
 
     @Override public String staticStr(org.luwrain.i18n.LangStatic id)
     {
@@ -115,7 +95,6 @@ public class DefaultControlContext implements ControlContext
 	NullCheck.notNull(id, "id");
 	return luwrain.i18n().getStaticStr(id);
     }
-
 
     @Override public void playSound(Sounds sound)
     {
@@ -170,14 +149,14 @@ public class DefaultControlContext implements ControlContext
 	luwrain.onAreaNewBackgroundSound(area);
     }
 
-        @Override public     String getSpeakableText(String text, Luwrain.SpeakableTextType type)
+    @Override public     String getSpeakableText(String text, Luwrain.SpeakableTextType type)
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(type, "type");
 	return luwrain.getSpeakableText(text, type);
     }
 
-            @Override public boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy)
+    @Override public boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy)
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");

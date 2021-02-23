@@ -181,6 +181,33 @@ public class FormArea  extends NavigationArea
 	return true;
     }
 
+        public boolean addPasswd(String name, String caption, String text, Object obj, boolean enabled)
+    {
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(caption, "caption");
+	NullCheck.notNull(text, "text");
+	final Item item = new Item(context, this, Type.EDIT, name);
+	item.caption = caption;
+	item.enteredText = text;
+	item.obj = obj;
+	item.enabled = enabled;
+	item.hideLetters = true;
+	item.edit = new EmbeddedSingleLineEdit(new WrappingControlContext(context){
+		@Override public void sayLetter(char letter)
+		{
+		    super.sayLetter('*');
+		}
+	    }, item, this, regionPoint,
+					       item.caption.length(), //offsetX
+					       items.size()); //offsetY
+	items.add(item);
+	updateItems();
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
+	return true;
+    }
+
+
     public void setEnteredText(String itemName, String newText)
     {
 	NullCheck.notNull(itemName, "itemName");
@@ -617,8 +644,18 @@ final int count = multilineEditLines.getLineCount();
 	    final Item item = items.get(index);
 	    switch(item.type)
 	    {
-	    case EDIT:
-		return item.caption + item.enteredText;
+	    case EDIT: {
+		final String text;
+		if (item.hideLetters)
+		{
+		    final StringBuilder b = new StringBuilder();
+		    for(int i = 0;i < item.enteredText.length();i++)
+			b.append("*");
+		    text = new String(b);
+		} else
+		    text = item.enteredText;
+		return item.caption + text;
+	    }
 	    case UNIREF:
 		return item.caption + (item.uniRefInfo != null?item.uniRefInfo.toString():"");
 	    case LIST:
@@ -723,17 +760,18 @@ final int count = multilineEditLines.getLineCount();
 //A couple of variables needed for sending notifications about changing of text
 //	protected final ControlContext context;
 	protected final Area area;
-	//For edits
+	// For edits
 	protected String enteredText = "";
 	protected EmbeddedSingleLineEdit edit;
-	//For unirefs
+	protected boolean hideLetters = false;
+	// For unirefs
 	UniRefInfo uniRefInfo;
-	//For static items
+	// For static items
 	protected Object staticObject;
-	//For lists
+	// For lists
 protected Object selectedListItem = null;
 protected ListChoosing listChoosing;
-	//For checkboxes
+	// For checkbox
 	boolean checkboxState;
 	Item(ControlContext context, Area area, Type type, String name)
 	{

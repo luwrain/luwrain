@@ -66,7 +66,7 @@ public class WrappingControlContext implements ControlContext
 	context.onAreaNewHotPoint(area);
     }
 
-        @Override public int getAreaVisibleWidth(Area area)
+    @Override public int getAreaVisibleWidth(Area area)
     {
 	return context.getAreaVisibleWidth(area);
     }
@@ -141,12 +141,12 @@ public class WrappingControlContext implements ControlContext
 	context.onAreaNewBackgroundSound(area);
     }
 
-        @Override public     String getSpeakableText(String text, Luwrain.SpeakableTextType type)
+    @Override public     String getSpeakableText(String text, Luwrain.SpeakableTextType type)
     {
 	return context.getSpeakableText(text, type);
     }
 
-            @Override public boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy)
+    @Override public boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy)
     {
 	return context.runHooks(hookName, args, strategy);
     }
