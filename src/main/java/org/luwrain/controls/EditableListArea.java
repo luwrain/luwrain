@@ -27,9 +27,8 @@ public class EditableListArea extends ListArea
 {
     public interface Model extends ListArea.Model
     {
-	boolean clearModel();
 	boolean addToModel(int pos, java.util.function.Supplier supplier);
-	boolean removeFromModel(int index);
+	boolean removeFromModel(int indexFrom, int indexTo);
     }
 
     public interface Confirmation
@@ -148,7 +147,7 @@ public class EditableListArea extends ListArea
 	    return false;
 	if (withConfirmation && confirmation != null && !confirmation.confirmDeleting(this, editableListModel, index, index + 1))
 	    return true;
-	if (!editableListModel.removeFromModel(index))
+	if (!editableListModel.removeFromModel(index, index + 1))
 	    return false;
 	refresh();
 	return true;
@@ -164,9 +163,7 @@ public class EditableListArea extends ListArea
 	    return false;
 	if (withConfirmation && confirmation != null && !confirmation.confirmDeleting(this, editableListModel, fromIndex, toIndex))
 	    return true;
-	//FIXME:complete entire region at once
-	for(int i = fromIndex;i < toIndex;++i)
-	    if (!editableListModel.removeFromModel(fromLineIndex))
+	    if (!editableListModel.removeFromModel(fromIndex, toIndex))
 		return false;
 	refresh();
 	return true;

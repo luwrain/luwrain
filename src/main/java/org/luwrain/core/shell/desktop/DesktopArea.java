@@ -128,31 +128,26 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	return luwrain.runCommand(cmdName.trim());
     }
 
-    static private final class Model implements EditableListArea.Model
+    static private final class Model extends ArrayList<DesktopItem> implements EditableListArea.Model
     {
 	private final Luwrain luwrain;
 	private final Settings.UserInterface sett;
-	private ArrayList<DesktopItem> items = new ArrayList();
 	Model(Luwrain luwrain)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
 	    this.luwrain = luwrain;
 	    this.sett = Settings.createUserInterface(luwrain.getRegistry());
-	    this.items.addAll(Arrays.asList(DesktopItem.fromJson(sett.getDesktopContent(""))));
+	    addAll(Arrays.asList(DesktopItem.fromJson(sett.getDesktopContent(""))));
 	}
-	@Override public boolean clearModel()
+	@Override public boolean removeFromModel(int fromIndex, int toIndex)
 	{
-	    this.items.clear();
-	    save();
-	    return true;
-	}
-	@Override public boolean removeFromModel(int index)
-	{
-	    if (index < 0)
-		throw new IllegalArgumentException("index may not be negative");
-	    if (index >= this.items.size())
+	    if (fromIndex < 0)
+		throw new IllegalArgumentException("fromIndex can't be negative");
+	    if (toIndex < 0)
+		throw new IllegalArgumentException("toIndex can't be negative");
+	    if (fromIndex >= size() || toIndex > size())
 		return false;
-	    this.items.remove(index);
+	    removeRange(fromIndex, toIndex);
 	    save();
 	    return true;
 	}
@@ -176,26 +171,26 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 		final UniRefInfo info = UniRefUtils.make(luwrain, o);
 		if (info == null)
 		    return false;
-		    newItems.add(new DesktopItem(info));
+		newItems.add(new DesktopItem(info));
 	    }
-	    items.addAll(index, newItems);
+	    addAll(index, newItems);
 	    save();
 	    return true;
 	}
 	@Override public int getItemCount()
 	{
-	    return items.size();
+	    return size();
 	}
 	@Override public Object getItem(int index)
 	{
-	    return items.get(index);
+	    return get(index);
 	}
 	@Override public void refresh()
 	{
 	}
 	private void save()
 	{
-	    sett.setDesktopContent(DesktopItem.toJson(this.items.toArray(new DesktopItem[this.items.size()])));
+	    sett.setDesktopContent(DesktopItem.toJson(toArray(new DesktopItem[size()])));
 	}
     }
 }

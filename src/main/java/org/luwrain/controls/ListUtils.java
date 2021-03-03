@@ -317,31 +317,21 @@ public class ListUtils
 	public DefaultEditableModel()
 	{
 	}
-
 	public DefaultEditableModel(Object[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
 	    setItems(items);
 	}
-
 	public void setItems(Object[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
 	    clear();
 	    addAll(Arrays.asList(items));
 	}
-
 	public Object[] getItems()
 	{
 	    return toArray(new Object[size()]);
 	}
-
-	@Override public boolean clearModel()
-	{
-	    clear();
-	    return true;
-	}
-
 	@Override public boolean addToModel(int pos, java.util.function.Supplier supplier)
 	{
 	    NullCheck.notNull(supplier, "supplier");
@@ -359,27 +349,25 @@ public class ListUtils
 	    addAll(pos, Arrays.asList(values));
 	    return true;
 	}
-
-	@Override public boolean removeFromModel(int index)
+	@Override public boolean removeFromModel(int fromIndex, int toIndex)
 	{
-	    if (index < 0)
-		throw new IllegalArgumentException("index may not be negative (" + index + ")");
-	    if (index >= size())
+	    if (fromIndex < 0)
+		throw new IllegalArgumentException("fromIndex can't be negative (" + String.valueOf(fromIndex) + ")");
+	    if (toIndex < 0)
+		throw new IllegalArgumentException("toIndex can't be negative (" + String.valueOf(toIndex) + ")");
+	    if (fromIndex >= size() || toIndex > size())
 		return false;
-	    remove(index);
+	    removeRange(fromIndex, toIndex);
 	    return true;
 	}
-
 	@Override public int getItemCount()
 	{
 	    return size();
 	}
-
 	@Override public Object getItem(int index)
 	{
 	    return get(index);
 	}
-
 	@Override public void refresh()
 	{
 	}
