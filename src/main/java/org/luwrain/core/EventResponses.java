@@ -67,8 +67,7 @@ public final class  EventResponses
 	    NullCheck.notNull(luwrain, "luwrain");
 	    NullCheck.notNull(text, "text");
 	    NullCheck.notNull(speech, "speech");
-	    if (sound != null)
-		luwrain.playSound(sound);
+	    luwrain.playSound(sound);
 	    if (!text.trim().isEmpty())
 		speech.speak(new String[]{text});
 	}

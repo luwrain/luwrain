@@ -355,7 +355,6 @@ final class LuwrainImpl implements Luwrain
 
     @Override public void playSound(Sounds sound)
     {
-	NullCheck.notNull(sound, "sound");
 	runUiSafely(()->core.playSound(sound));
     }
 
