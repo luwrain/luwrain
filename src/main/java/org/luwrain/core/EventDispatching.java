@@ -214,6 +214,7 @@ abstract class EventDispatching extends Areas
 	    if (code == InputEvent.Special.CONTROL)
 	    {
 		speech.silence();
+		sounds.stop();
 		soundManager.stopStartingMode();
 		return true;
 	    }

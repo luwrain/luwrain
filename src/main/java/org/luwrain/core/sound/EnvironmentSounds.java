@@ -57,6 +57,12 @@ public final class EnvironmentSounds
 	new Thread(previous).start();
     }
 
+    public void stop()
+    {
+	if (previous != null)
+	    previous.stopPlaying();
+    }
+
     private File getSoundFile(Sounds sound)
     {
 	NullCheck.notNull(sound, "sound");
