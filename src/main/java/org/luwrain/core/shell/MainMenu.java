@@ -161,7 +161,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	@Override public void announceNonSection(Object item)
 	{
 	    NullCheck.notNull(item, "item");
-	    context.setEventResponse(DefaultEventResponse.listItem(context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));
+	    context.setEventResponse(DefaultEventResponse.text(Sounds.DESKTOP_ITEM, context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));
 	}
 	public void announceSection(Object item)
 	{
