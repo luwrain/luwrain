@@ -43,7 +43,7 @@ public class WrappingControlContext implements ControlContext
 
     @Override public void sayStaticStr(org.luwrain.i18n.LangStatic id)
     {
-	sayStaticStr(id);
+	context.sayStaticStr(id);
     }
 
     @Override public void sayLetter(char letter)
@@ -88,7 +88,7 @@ public class WrappingControlContext implements ControlContext
 
     @Override public String getStaticStr(String id)
     {
-	return getStaticStr(id);
+	return context.getStaticStr(id);
     }
 
     @Override public void playSound(Sounds sound)
