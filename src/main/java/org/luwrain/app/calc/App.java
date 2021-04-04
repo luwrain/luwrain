@@ -47,6 +47,12 @@ public final class App extends AppBase<Strings>
 	return true;
     }
 
+    @Override public boolean onEscape(InputEvent event)
+    {
+	closeApp();
+	return true;
+    }
+
     @Override public AreaLayout getDefaultAreaLayout()
     {
 	return mainLayout.getAreaLayout();
@@ -70,7 +76,6 @@ public final class App extends AppBase<Strings>
 	    return (Number)res;
 	return null;
     }
-
 
     private String readPrescript()
     {

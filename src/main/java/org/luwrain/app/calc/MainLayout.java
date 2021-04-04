@@ -36,7 +36,22 @@ public final class MainLayout extends LayoutBase
     {
 	super(app);
 	this.app = app;
-	this.editArea = new EditArea(null/*base.createEditParams(()->hotUpdate())*/){
+	final EditArea.Params params = new EditArea.Params();
+	params.context = getControlContext();
+	params.name = app.getStrings().appName();
+	params.appearance = new EditUtils.DefaultEditAreaAppearance(getControlContext()){
+		@Override public void announceLine(int index, String line)
+		{
+		    NullCheck.notNull(line, "line");
+		    NavigationArea.defaultLineAnnouncement(context, index, getLuwrain().getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
+		}
+	    };
+	params.editFactory = (p)->{
+	    p.model = createBlockingModel(p.model);
+	    return new MultilineEdit(p);
+	};
+	params.changeListener = ()->hotUpdate();
+	this.editArea = new EditArea(params){
 		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -83,8 +98,8 @@ public final class MainLayout extends LayoutBase
 			    Log.debug(LOG_COMPONENT, "calculation faild:" + e.getClass().getName() + ":" + e.getMessage());
 			    e.printStackTrace();
 			    getLuwrain().playSound(Sounds.ERROR);
-				return true;
-			    }
+			    return true;
+			}
 		    default:
 			return super.onSystemEvent(event);
 		    }
@@ -96,6 +111,7 @@ public final class MainLayout extends LayoutBase
 		"# 0",
 		"",
 	    });
+	setAreaLayout(editArea, actions());
     }
 
     private void hotUpdate()
@@ -108,7 +124,7 @@ public final class MainLayout extends LayoutBase
 	}
 	catch(Exception e)
 	{
-	    //FIXME:putResLine("# " + strings.error());
+	    putResLine("# " + app.getStrings().error());
 	}
     }
 
@@ -134,111 +150,7 @@ public final class MainLayout extends LayoutBase
 	return String.format("%.5f", num.floatValue());
     }
 
-
-    /*
     static private MultilineEdit.Model createBlockingModel(MultilineEdit.Model origModel)
-    {
-	return new MultilineEdit.Model(){
-	    @Override public int getLineCount()
-	    {
-		return origModel.getLineCount();
-	    }
-	    @Override public String getLine(int index)
-	    {
-		return origModel.getLine(index);
-	    }
-	    @Override public int getHotPointX()
-	    {
-		return origModel.getHotPointX();
-	    }
-	    @Override public int getHotPointY()
-	    {
-		return origModel.getHotPointY();
-	    }
-	    @Override public String getTabSeq()
-	    {
-		return origModel.getTabSeq();
-	    }
-	    @Override public char deleteChar(int pos, int lineIndex)
-	    {
-		if (lineIndex >= getLineCount() - 3)
-		    return '\0';
-		return origModel.deleteChar(pos, lineIndex);
-	    }
-	    @Override public boolean deleteRegion(int fromX, int fromY, int toX, int toY)
-	    {
-		final int x;
-		final int y;
-		if (fromY < toY)
-		{
-		    y = toY;
-		    x = toX;
-		} else
-		    if (fromY > toY)
-		    {
-			y = fromY;
-			x = fromX;
-		    } else
-		    {
-			y = fromY;
-			x = Math.max(fromX, toX);
-		    }
-		final int count = getLineCount();
-		if (y >= count - 2)
-		    return false;
-		if (y == count - 3 && x > 0)
-		    return false;
-		//There may not be less than 4 lines
-		if (count - (Math.abs(toY - fromY)) < 4)
-		    return false;
-		return origModel.deleteRegion(fromX, fromY, toX, toY);
-	    }
-	    @Override public boolean insertRegion(int x, int y, String[] lines)
-	    {
-		NullCheck.notNullItems(lines, "lines");
-		if (y >= getLineCount() - 3)
-		    return false;
-		for(String s: lines)
-		{
-		    		    if (s.indexOf(";") >= 0)
-			return false;
-		    if (s.indexOf("=") >= 0)
-			return false;
-		    if (s.indexOf("\'") >= 0)
-			return false;
-		    if (s.indexOf("\"") >= 0)
-			return false;
-		}
-		return origModel.insertRegion(x, y, lines);
-	    }
-	    @Override public boolean insertChars(int pos, int lineIndex, String str)
-	    {
-		if (lineIndex >= getLineCount() - 3)
-		    return false;
-		return origModel.insertChars(pos, lineIndex, str);
-	    }
-	    @Override public boolean mergeLines(int firstLineIndex)
-	    {
-		final int count = getLineCount();
-		if (count <= 4)
-		    return false;
-		if (firstLineIndex >= count - 3)
-		    return false;
-		if (firstLineIndex == count - 4 && !getLine(firstLineIndex).isEmpty())
-		    return false;
-		return origModel.mergeLines(firstLineIndex);
-	    }
-	    @Override public String splitLine(int pos, int lineIndex)
-	    {
-		if (lineIndex >= getLineCount() - 3)
-		    return null;
-		return origModel.splitLine(pos, lineIndex);
-	    }
-	};
-    }
-    */
-
-        static private MultilineEdit.Model createBlockingModel(MultilineEdit.Model origModel)
     {
 	return new MultilineEdit.Model(){
 	    @Override public int getLineCount()
@@ -338,27 +250,4 @@ public final class MainLayout extends LayoutBase
 	    }
 	};
     }
-
-        EditArea.Params createEditParams(EditArea.ChangeListener listener)
-    {
-	NullCheck.notNull(listener, "listener");
-	final EditArea.Params params = new EditArea.Params();
-	params.context = getControlContext();
-	params.name = app.getStrings().appName();
-	params.appearance = new EditUtils.DefaultEditAreaAppearance(params.context){
-		@Override public void announceLine(int index, String line)
-		{
-		    NullCheck.notNull(line, "line");
-		    NavigationArea.defaultLineAnnouncement(context, index, getLuwrain().getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
-		}
-	    };
-	params.editFactory = (editParams)->{
-	    editParams.model = createBlockingModel(editParams.model);
-	    return new MultilineEdit(editParams);
-	};
-	params.changeListener = listener;
-		return params;
-    }
-
-
 }
