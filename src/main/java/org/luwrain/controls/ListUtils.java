@@ -312,6 +312,28 @@ public class ListUtils
 	}
     }
 
+        static public class ListModel implements ListArea.Model
+    {
+	protected final List source;
+	public ListModel(List source)
+	{
+	    NullCheck.notNull(source, "source");
+	    this.source = source;
+	}
+	@Override public int getItemCount()
+	{
+	    return source.size();
+	    	}
+	@Override public Object getItem(int index)
+	{
+	    return source.get(index);
+	}
+	@Override public void refresh()
+	{
+	}
+    }
+
+
     static public class DefaultEditableModel extends ArrayList implements EditableListArea.Model
     {
 	public DefaultEditableModel()

@@ -18,6 +18,8 @@
 
 package org.luwrain.controls;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 
 public final class ConsoleUtils
@@ -48,5 +50,26 @@ public final class ConsoleUtils
 		return "#Illegal index: " + String.valueOf(index) + "#";
 	    return o[index];
 	}
+	}
+
+            static public class ListModel implements ConsoleArea.Model
+    {
+	protected final List source;
+	public ListModel(List source)
+	{
+	    NullCheck.notNull(source, "source");
+	    this.source = source;
+	}
+	@Override public int getItemCount()
+	{
+	    return source.size();
+	}
+	@Override public Object getItem(int index)
+	{
+	    if (index < 0 || index >= source.size())
+		return "#Illegal index: " + String.valueOf(index) + "#";
+	    return source.get(index);
+	}
     }
+
 }

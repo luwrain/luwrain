@@ -229,6 +229,22 @@ protected interface ActionHandler
 	return this.controlContext;
     }
 
+    protected Luwrain getLuwrain()
+    {
+		if (app == null)
+	    throw new IllegalStateException("No app instance, provide it with the corresponding constructor");
+		return app.getLuwrain();
+    }
+
+    public void setActiveArea(Area area)
+    {
+	NullCheck.notNull(area, "area");
+		if (app == null)
+	    throw new IllegalStateException("No app instance, provide it with the corresponding constructor");
+		final Area a = areaWrappers.get(area);
+		app.getLuwrain().setActiveArea(a != null?a:area);
+    }
+
     protected final class LayoutControlContext extends WrappingControlContext
     {
 	public LayoutControlContext(ControlContext context)
@@ -265,8 +281,5 @@ super.onAreaNewHotPoint(getArea(area));
 	    final Area res = areaWrappers.get(area);
 	    return res != null?res:area;
 	}
-
-	
-
     }
 }
