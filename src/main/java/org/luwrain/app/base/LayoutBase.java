@@ -130,59 +130,122 @@ protected interface ActionHandler
     protected Area getWrappingArea(Area area, Actions actions)
     {
 	NullCheck.notNull(area, "area");
-		if (app == null)
+	if (app == null)
 	    throw new IllegalStateException("No app instance, provide it with the corresponding constructor");
 	final Area res = new Area(){
-	    @Override public int getLineCount()
-	    {
-		return area.getLineCount();
-	    }
-	    @Override public String getLine(int index)
-	    {
-		return area.getLine(index);
-	    }
-	    @Override public int getHotPointX()
-	    {
-		return area.getHotPointX();
-	    }
-	    @Override public int getHotPointY()
-	    {
-		return area.getHotPointY();
-	    }
-	    @Override public String getAreaName()
-	    {
-		return area.getAreaName();
-	    }
-	    @Override public boolean onInputEvent(InputEvent event)
-	    {
-		if (app.onInputEvent(this, event))
-		    return true;
-		return area.onInputEvent(event);
-	    }
-	    @Override public boolean onSystemEvent(SystemEvent event)
-	    {
-		if (actions != null)
+		@Override public int getLineCount()
 		{
-		    if (app.onSystemEvent(this, event, actions))
-		    return true;
-		} else
-		{
-		if (app.onSystemEvent(this, event))
-		    return true;
+		    try {
+			return area.getLineCount();
+		    }
+		    catch(Throwable e)
+		    {
+			getLuwrain().crash(e);
+			return 1;
+		    }
 		}
-		return area.onSystemEvent(event);
-	    }
-	    @Override public boolean onAreaQuery(AreaQuery query)
-	    {
-		if (app.onAreaQuery(this, query))
-		    return true;
-		return area.onAreaQuery(query);
-	    }
-	    @Override public Action[] getAreaActions()
-	    {
-		return actions != null?actions.getAreaActions():area.getAreaActions();
-	    }
-	};
+		@Override public String getLine(int index)
+		{
+		    try {
+			return area.getLine(index);
+		    }
+		    catch(Throwable e)
+		    {
+			getLuwrain().crash(e);
+			return e.getClass().getName() + ": " + e.getMessage();
+		    }
+		}
+		@Override public int getHotPointX()
+		{
+		    try {
+			return area.getHotPointX();
+		    }
+		    catch(Throwable e)
+		    {
+			getLuwrain().crash(e);
+			return 0;
+		    }
+		}
+		@Override public int getHotPointY()
+		{
+		    try {
+			return area.getHotPointY();
+		    }
+		    catch(Throwable e)
+		    {
+			getLuwrain().crash(e);
+			return 0;
+		    }
+		}
+		@Override public String getAreaName()
+		{
+		    try {
+			return area.getAreaName();
+		    }
+		    catch(Throwable e)
+		    {
+			getLuwrain().crash(e);
+			return e.getClass().getName() + ": " + e.getMessage();
+		    }
+		}
+		@Override public boolean onInputEvent(InputEvent event)
+		{
+		    if (app.onInputEvent(this, event))
+			return true;
+		    try {
+			return area.onInputEvent(event);
+		    }
+		    catch(Throwable e)
+		    {
+			getLuwrain().crash(e);
+			return true;
+		    }
+		}
+		@Override public boolean onSystemEvent(SystemEvent event)
+		{
+		    if (actions != null)
+		    {
+			if (app.onSystemEvent(this, event, actions))
+			    return true;
+		    } else
+		    {
+			if (app.onSystemEvent(this, event))
+			    return true;
+		    }
+		    try {
+			return area.onSystemEvent(event);
+		    }
+		    catch(Throwable e)
+		    {
+			getLuwrain().crash(e);
+			return true;
+		    }
+		}
+		@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    if (app.onAreaQuery(this, query))
+			return true;
+		    try {
+			return area.onAreaQuery(query);
+		    }
+		    catch(Throwable e)
+		    {
+			getLuwrain().crash(e);
+			return false;
+		    }
+		}
+		@Override public Action[] getAreaActions()
+		{
+		    try {
+			return actions != null?actions.getAreaActions():area.getAreaActions();
+		    }
+		    catch(Throwable e)
+		    {
+			getLuwrain().crash(e);
+			return new Action[0];
+		    }
+		}
+	    };
 	areaWrappers.put(area, res);
 	return res;
     }
