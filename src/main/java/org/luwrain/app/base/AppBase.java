@@ -276,6 +276,12 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return this.layout;
     }
 
+    public void setAreaLayout(LayoutBase layout)
+    {
+	NullCheck.notNull(layout, "layout");
+	getLayout().setBasicLayout(layout.getAreaLayout());
+    }
+
     public Luwrain getLuwrain()
     {
 	return this.luwrain;

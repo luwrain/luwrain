@@ -95,6 +95,8 @@ protected interface ActionHandler
     protected LayoutControlContext controlContext = null;
     private final Map<Area, Area> areaWrappers = new HashMap();
     private AreaLayout areaLayout = null;
+    private ActionHandler closeHandler = null;
+    private ActionHandler okHandler = null;
 
     protected LayoutBase(AppBase app)
     {
@@ -125,6 +127,18 @@ protected interface ActionHandler
 	NullCheck.notEmpty(title, "title");
 	NullCheck.notNull(handler, "handler");
 	return new ActionInfo(name, title, handler);
+    }
+
+    protected void setCloseHandler(ActionHandler closeHandler)
+    {
+	NullCheck.notNull(closeHandler, "closeHandler");
+	this.closeHandler = closeHandler;
+    }
+
+        protected void setOkHandler(ActionHandler okHandler)
+    {
+	NullCheck.notNull(okHandler, "okHandler");
+	this.okHandler = okHandler;
     }
 
     protected Area getWrappingArea(Area area, Actions actions)
@@ -190,8 +204,15 @@ protected interface ActionHandler
 		}
 		@Override public boolean onInputEvent(InputEvent event)
 		{
-		    if (app.onInputEvent(this, event))
-			return true;
+		    if (closeHandler != null)
+		    {
+			if (app.onInputEvent(this, event, ()->{closeHandler.onAction(); }))
+			    return true;
+		    } else
+		    {
+			if (app.onInputEvent(this, event))
+			    return true;
+		    }
 		    try {
 			return area.onInputEvent(event);
 		    }
@@ -213,6 +234,8 @@ protected interface ActionHandler
 			    return true;
 		    }
 		    try {
+			if (event.getType() == SystemEvent.Type.REGULAR && event.getCode() == SystemEvent.Code.OK && okHandler != null)
+			    return okHandler.onAction();
 			return area.onSystemEvent(event);
 		    }
 		    catch(Throwable e)
