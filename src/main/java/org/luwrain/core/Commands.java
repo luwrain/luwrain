@@ -44,324 +44,279 @@ final class Commands
 	    new Cmd(
 		    "main-menu",
 		    (luwrain)->{
-		    core.mainMenu();
+			core.mainMenu();
 		    }),
 
 	    new Cmd(
 		    "search",
 		    (luwrain)->{
-					    core.activateAreaSearch();
+			core.activateAreaSearch();
 		    }),
 
 	    new Cmd(
 		    "ok",
 		    (luwrain)->{
-		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.OK));
+			core.enqueueEvent(new SystemEvent(SystemEvent.Code.OK));
 		    }),
 
 	    new Cmd(
 		    "cancel",
 		    (luwrain)->{
-		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.CANCEL));
+			core.enqueueEvent(new SystemEvent(SystemEvent.Code.CANCEL));
 		    }),
 
 	    new Cmd(
 		    "close",
 		    (luwrain)->{
-					    core.enqueueEvent(new SystemEvent(SystemEvent.Code.CLOSE));
+			core.enqueueEvent(new SystemEvent(SystemEvent.Code.CLOSE));
 		    }),
 
 	    new Cmd(
 		    "gc",
 		    (luwrain)->{
-					    System.gc();
+			System.gc();
 		    }),
 
 	    new Cmd(
 		    "save",
 		    (luwrain)->{
-					    core.enqueueEvent(new SystemEvent(SystemEvent.Code.SAVE));
+			core.enqueueEvent(new SystemEvent(SystemEvent.Code.SAVE));
 		    }),
 
 	    new Cmd(
 		    "open",
 		    (luwrain)->{
-					    final File res = conversations.open();
-		    if (res != null)
-			core.openFiles(new String[]{res.getAbsolutePath()});
+			final File res = conversations.open();
+			if (res != null)
+			    core.openFiles(new String[]{res.getAbsolutePath()});
 		    }),
 
 	    new Cmd(
 		    "announce",
 		    (luwrain)->{
-					    core.announceActiveArea();
+			core.announceActiveArea();
 		    }),
 
 	    new Cmd(
 		    "refresh",
 		    (luwrain)->{
-					    core.enqueueEvent(new SystemEvent(SystemEvent.Code.REFRESH));
+			core.enqueueEvent(new SystemEvent(SystemEvent.Code.REFRESH));
 		    }),
 
 	    new Cmd(
 		    "announce-line",
 		    (luwrain)->{
-					    final Area area = core.getValidActiveArea(true);
-		    if (area == null)
-			return;
-		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.ANNOUNCE_LINE)))
-			return;
-		    final int hotPointY = area.getHotPointY();
-		    if (hotPointY >= area.getLineCount())
-		    {
-			core.eventNotProcessedMessage();
-			return;
-		    }
-		    final String line = area.getLine(hotPointY);
-		    if (line == null)
-		    {
-			core.eventNotProcessedMessage();
-			return;
-		    }
-		    if (!line.trim().isEmpty())
-			core.speech.speak(line, 0, 0); else
-			core.getObjForEnvironment().setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
-		    core.announcement = null;
+			final Area area = core.getValidActiveArea(true);
+			if (area == null)
+			    return;
+			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.ANNOUNCE_LINE)))
+			    return;
+			final int hotPointY = area.getHotPointY();
+			if (hotPointY >= area.getLineCount())
+			{
+			    core.eventNotProcessedMessage();
+			    return;
+			}
+			final String line = area.getLine(hotPointY);
+			if (line == null)
+			{
+			    core.eventNotProcessedMessage();
+			    return;
+			}
+			if (!line.trim().isEmpty())
+			    core.speech.speak(line, 0, 0); else
+			    core.getObjForEnvironment().setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+			core.announcement = null;
 		    }),
 
-	    	    new Cmd(
+	    new Cmd(
 		    "region-point",
 		    (luwrain)->{
-					    final Area area = core.getValidActiveArea(true);
-		    if (area == null)
-			return;
-		    final AtomicReference res = new AtomicReference();
-		    final AtomicReference x = new AtomicReference();
-		    final AtomicReference y = new AtomicReference();
-		    core.unsafeAreaOperation(()->{
-			    if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.REGION_POINT)))
-			    {
-				res.set(new Boolean(false));
-				return;
-			    }
-			    x.set(new Integer(area.getHotPointX()));
-			    y.set(new Integer(area.getHotPointY()));
-			    res.set(new Boolean(true));
-			});
-		    if (res.get() == null || !((Boolean)res.get()).booleanValue())
-		    {
-			core.eventNotProcessedMessage();
-			return;
-		    }
-		    final EmptyHookObject argObj = new EmptyHookObject(){
-			    @Override public Object getMember(String name)
-			    {
-				NullCheck.notEmpty(name, "name");
-				switch(name)
+			final Area area = core.getValidActiveArea(true);
+			if (area == null)
+			    return;
+			final AtomicReference res = new AtomicReference();
+			final AtomicReference x = new AtomicReference();
+			final AtomicReference y = new AtomicReference();
+			core.unsafeAreaOperation(()->{
+				if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.REGION_POINT)))
 				{
-				case "x":
-				    return x.get();
-				case "y":
-				    return y.get();
-				default:
-				    return super.getMember(name);
+				    res.set(new Boolean(false));
+				    return;
 				}
-			    }
-			};
-		    if (!core.hookChainWithCustom("luwrain.area.region.point.set", new Object[]{argObj}))
-			core.eventNotProcessedMessage();
+				x.set(new Integer(area.getHotPointX()));
+				y.set(new Integer(area.getHotPointY()));
+				res.set(new Boolean(true));
+			    });
+			if (res.get() == null || !((Boolean)res.get()).booleanValue())
+			{
+			    core.eventNotProcessedMessage();
+			    return;
+			}
+			final EmptyHookObject argObj = new EmptyHookObject(){
+				@Override public Object getMember(String name)
+				{
+				    NullCheck.notEmpty(name, "name");
+				    switch(name)
+				    {
+				    case "x":
+					return x.get();
+				    case "y":
+					return y.get();
+				    default:
+					return super.getMember(name);
+				    }
+				}
+			    };
+			if (!core.hookChainWithCustom("luwrain.area.region.point.set", new Object[]{argObj}))
+			    core.eventNotProcessedMessage();
 		    }),
 
-	    	    new Cmd(
-			    "copy",
-			    (luwrain)->{
-						    final Area area = core.getValidActiveArea(true);
-		    if (area == null)
-			return;
-		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY)))
-			core.playSound(Sounds.COPIED); else
-			core.eventNotProcessedMessage();
-			    }),
+	    new Cmd(
+		    "copy",
+		    (luwrain)->{
+			final Area area = core.getValidActiveArea(true);
+			if (area == null)
+			    return;
+			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY)))
+			    core.playSound(Sounds.COPIED); else
+			    core.eventNotProcessedMessage();
+		    }),
 
-	    	    new Cmd(
+	    new Cmd(
 		    "copy-all",
 		    (luwrain)->{
-					    final Area area = core.getValidActiveArea(true);
-		    if (area == null)
-			return;
-		    final AtomicReference res = new AtomicReference();
-		    core.unsafeAreaOperation(()->res.set(new Boolean(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY_ALL)))));
-		    if (res.get() == null || !((Boolean)res.get()).booleanValue())
-		    {
-			core.eventNotProcessedMessage();
-			return;
-		    }
-		    final EmptyHookObject argObj = new EmptyHookObject(){
-			    @Override public Object getMember(String name)
-			    {
-				NullCheck.notEmpty(name, "name");
-				switch(name)
+			final Area area = core.getValidActiveArea(true);
+			if (area == null)
+			    return;
+			final AtomicReference res = new AtomicReference();
+			core.unsafeAreaOperation(()->res.set(new Boolean(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY_ALL)))));
+			if (res.get() == null || !((Boolean)res.get()).booleanValue())
+			{
+			    core.eventNotProcessedMessage();
+			    return;
+			}
+			final EmptyHookObject argObj = new EmptyHookObject(){
+				@Override public Object getMember(String name)
 				{
-				default:
-				    return super.getMember(name);
+				    NullCheck.notEmpty(name, "name");
+				    switch(name)
+				    {
+				    default:
+					return super.getMember(name);
+				    }
 				}
-			    }
-			};
-		    if (!core.hookChainWithCustom("luwrain.clipboard.copy.all", new Object[]{argObj}))
-			core.eventNotProcessedMessage();
+			    };
+			if (!core.hookChainWithCustom("luwrain.clipboard.copy.all", new Object[]{argObj}))
+			    core.eventNotProcessedMessage();
 		    }),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "cut";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Area area = core.getValidActiveArea(true);
-		    if (area == null)
-			return;
-		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_CUT)))
-			core.playSound(Sounds.CUT);else
-			core.eventNotProcessedMessage();
-		}
-	    },
+	    new Cmd(
+		    "cut",
+		    (luwrain)->{
+			final Area area = core.getValidActiveArea(true);
+			if (area == null)
+			    return;
+			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_CUT)))
+			    core.playSound(Sounds.CUT);else
+			    core.eventNotProcessedMessage();
+		    }),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "clear-region";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Area area = core.getValidActiveArea(true);
-		    if (area == null)
-			return;
-		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR_REGION)))
-			core.playSound(Sounds.DELETED); else
-			core.eventNotProcessedMessage();
-		}
-	    },
+	    new Cmd(
+		    "clear-region",
+		    (luwrain)->{
+			final Area area = core.getValidActiveArea(true);
+			if (area == null)
+			    return;
+			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR_REGION)))
+			    core.playSound(Sounds.DELETED); else
+			    core.eventNotProcessedMessage();
+		    }),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "paste";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    if (luwrain.getClipboard().isEmpty())
-		    {
-			core.eventNotProcessedMessage();
-			return;
-		    }
-		    final Area area = core.getValidActiveArea(true);
-		    if (area == null)
-			return;
-		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_PASTE)))
-			core.playSound(Sounds.PASTE); else
-			core.eventNotProcessedMessage();
-		}
-	    },
+	    new Cmd(
+		    "paste",
+		    (luwrain)->{
+			if (luwrain.getClipboard().isEmpty())
+			{
+			    core.eventNotProcessedMessage();
+			    return;
+			}
+			final Area area = core.getValidActiveArea(true);
+			if (area == null)
+			    return;
+			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_PASTE)))
+			    core.playSound(Sounds.PASTE); else
+			    core.eventNotProcessedMessage();
+		    }),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "clear";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Area area = core.getValidActiveArea(true);
-		    if (area == null)
-			return;
-		    final AtomicReference res = new AtomicReference();
-		    core.unsafeAreaOperation(()->{
-			    res.set(new Boolean(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR))));
-			});
-		    if (res.get() == null || !((Boolean)res.get()).booleanValue())
-		    {
-						core.eventNotProcessedMessage();
-						return;
-		    }
-		    final EmptyHookObject argObj = new EmptyHookObject(){
-			    @Override public Object getMember(String name)
-			    {
-				NullCheck.notEmpty(name, "name");
-				switch(name)
+	    new Cmd(
+		    "clear",
+		    (luwrain)->{
+			final Area area = core.getValidActiveArea(true);
+			if (area == null)
+			    return;
+			final AtomicReference res = new AtomicReference();
+			core.unsafeAreaOperation(()->{
+				res.set(new Boolean(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR))));
+			    });
+			if (res.get() == null || !((Boolean)res.get()).booleanValue())
+			{
+			    core.eventNotProcessedMessage();
+			    return;
+			}
+			final EmptyHookObject argObj = new EmptyHookObject(){
+				@Override public Object getMember(String name)
 				{
-				default:
-				    return super.getMember(name);
+				    NullCheck.notEmpty(name, "name");
+				    switch(name)
+				    {
+				    default:
+					return super.getMember(name);
+				    }
 				}
-			    }
-			};
-		    if (!core.hookChainWithCustom("luwrain.area.clear", new Object[]{argObj}))
-			core.eventNotProcessedMessage();
-		}
-	    },
+			    };
+			if (!core.hookChainWithCustom("luwrain.area.clear", new Object[]{argObj}))
+			    core.eventNotProcessedMessage();
+		    }),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "help";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.HELP));
-		}
-	    },
+	    new Cmd(
+		    "help",
+		    (luwrain)->{
+			core.enqueueEvent(new SystemEvent(SystemEvent.Code.HELP));
+		    }),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "switch-next-app";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.onSwitchNextAppCommand();
-		}
-	    },
+	    new Cmd(
+		    "switch-next-app",
+		    (luwrain)->{
+			core.onSwitchNextAppCommand();
+		    }),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "switch-next-area";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.onSwitchNextAreaCommand();
-		}
-	    },
+	    new Cmd(
+		    "switch-next-area",
+		    (luwrain)->{
+			core.onSwitchNextAreaCommand();
+		    }),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "font-size-inc";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.fontSizeInc();
-		}
-	    },
+	    new Cmd(
+		    "font-size-inc",
+		    (luwrain)->{
+			core.fontSizeInc();
+		    }),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "font-size-dec";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.fontSizeDec();
-		}
-	    },
+	    new Cmd(
+		    "font-size-dec",
+		    (luwrain)->{
+			core.fontSizeDec();
+		    }),
 
 	    new Cmd(
 		    "control-panel",
 		    (luwrain)->{
-					    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories());
-		    core.launchApp(app);
+			final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories());
+			core.launchApp(app);
 		    }),
 
-	    	    new Cmd(
+	    new Cmd(
 		    "jobs",
 		    (luwrain)->{
 			core.launchApp(new org.luwrain.app.jobs.App(core.jobs));
@@ -370,25 +325,25 @@ final class Commands
 	    new Cmd(
 		    "calc",
 		    (luwrain)->{
-					    core.launchApp(new org.luwrain.app.calc.App());
+			core.launchApp(new org.luwrain.app.calc.App());
 		    }),
 
 	    new Cmd(
 		    "console",
 		    (luwrain)->{
-		    core.launchApp(new org.luwrain.app.console.App());
+			core.launchApp(new org.luwrain.app.console.App());
 		    }),
 
 	    new Cmd(
 		    "registry",
 		    (luwrain)->{
-		    core.launchApp(new org.luwrain.app.registry.RegistryApp());
+			core.launchApp(new org.luwrain.app.registry.RegistryApp());
 		    }),
 
 	    new Cmd(
 		    "context-menu",
 		    (luwrain)->{
-					    core.showContextMenu();
+			core.showContextMenu();
 		    }),
 
 	    //copy-uniref-area
@@ -619,7 +574,6 @@ final class Commands
 		    final String cmd = Popups.editWithHistory(core.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
 		    if (cmd == null)
 			return;
-
 		    final String dir;
 		    final Area area = core.getValidActiveArea(false);
 		    if (area != null)
@@ -635,8 +589,6 @@ final class Commands
 			});
 		}
 	    },
-
-
 	};    
     }
 
