@@ -24,7 +24,7 @@ import org.luwrain.core.*;
 final class JobsTracking 
 {
     final ObjRegistry objRegistry;
-    private final List<Entry> entries = new LinkedList();
+    private final List<Entry> entries = new ArrayList();
 
     JobsTracking(ObjRegistry objRegistry)
     {

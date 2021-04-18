@@ -14,11 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.cmdtool;
+package org.luwrain.app.jobs;
 
 public interface Strings
 {
-    static final String NAME = "luwrain.cmdtool";
+    static final String NAME = "luwrain.jobs";
 
     String appName();
 }

@@ -33,7 +33,7 @@ import org.luwrain.controls.DefaultControlContext;
  * an essential part of LUWRAIN core and are always easily accessible to
  * users.
  */
-class Commands
+final class Commands
 {
     static private final int SPEECH_STEP = 5;
     static private final int VOLUME_STEP = 5;
@@ -457,31 +457,24 @@ class Commands
 		}
 	    },
 
-	    //control panel
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "control-panel";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories());
+	    new Cmd(
+		    "control-panel",
+		    (luwrain)->{
+					    final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories());
 		    core.launchApp(app);
-		}
-	    },
+		    }),
 
-	    	    //calc
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "calc";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    NullCheck.notNull(luwrain, "luwrain");
-		    core.launchApp(new org.luwrain.app.calc.App());
-		}
-	    },
+	    	    new Cmd(
+		    "jobs",
+		    (luwrain)->{
+			core.launchApp(new org.luwrain.app.jobs.App());
+		    }),
+
+	    new Cmd(
+		    "calc",
+		    (luwrain)->{
+					    core.launchApp(new org.luwrain.app.calc.App());
+		    }),
 
 	    //console
 	    new Command() {
@@ -767,5 +760,31 @@ class Commands
 
 
 	};    
+    }
+
+    private interface Handler
+    {
+	void onCommand(Luwrain luwrain);
+    }
+
+    static private final class Cmd implements Command
+    {
+	private final String name;
+	private final Handler handler;
+	Cmd(String name, Handler handler)
+	{
+	    NullCheck.notEmpty(name, "name");
+	    NullCheck.notNull(handler, "handler");
+	    this.name = name;
+	    this.handler = handler;
+	}
+	@Override public String getName()
+	{
+	    return name;
+	}
+			@Override public void onCommand(Luwrain luwrain)
+			{
+			    handler.onCommand(luwrain);
+			}
     }
 }
