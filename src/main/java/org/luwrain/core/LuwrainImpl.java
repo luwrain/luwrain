@@ -377,9 +377,8 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(name, "name");
 	NullCheck.notNullItems(args, "args");
 	NullCheck.notNull(flags, "flags");
-	NullCheck.notNull(listener, "listener");
 	core.mainCoreThreadOnly();
-	return core.jobs.run(name, args, listener);
+	return core.jobs.run(name, args, listener != null?listener:new EmptyJobListener());
     }
 
     @Override public void speak(String text)

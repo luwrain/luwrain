@@ -58,8 +58,7 @@ final class ObjRegistry implements ExtObjects
 	if (obj instanceof Job)
 	{
 	    final Job job = (Job)obj;
-
-	    if (jobs.containsKey(name))
+	    if (!jobs.containsKey(name))
 	    {
 		jobs.put(name, new Entry(ext, name, job));
 		res = true;
