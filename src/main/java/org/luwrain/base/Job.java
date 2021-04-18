@@ -46,5 +46,5 @@ public interface Job extends ExtensionObject
     }
 
     Instance launch(Listener listener, String[] args);
-    Set<Flags> getToolFlags();
+    Set<Flags> getJobFlags();
 }

@@ -99,6 +99,10 @@ public interface Luwrain extends PropertiesBase
 	CHAIN_OF_RESPONSIBILITY,
     };
 
+    public enum JobFlags {
+	TRACKING
+    };
+
     public interface Hook
     {
 	Object run(Object[] args);
@@ -233,7 +237,7 @@ public interface Luwrain extends PropertiesBase
      */
     boolean registerExtObj(ExtensionObject extObj);
     boolean runCommand(String command);
-    Job.Instance runJob(String name, String[] args, org.luwrain.base.Job.Listener listener);
+    Job.Instance newJob(String name, String[] args, Set<JobFlags> flags, org.luwrain.base.Job.Listener listener);
     //    void runInMainThread(Runnable runnable);
     Object runLaterSync(java.util.concurrent.Callable callable);
     OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);

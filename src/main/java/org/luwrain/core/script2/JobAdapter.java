@@ -69,7 +69,7 @@ final class JobAdapter implements Job
 	}
     }
 
-    @Override public Set<Flags> getToolFlags()
+    @Override public Set<Flags> getJobFlags()
     {
 	return EnumSet.noneOf(Flags.class);
     }
