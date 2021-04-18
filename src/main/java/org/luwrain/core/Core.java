@@ -295,7 +295,7 @@ final class Core extends EventDispatching
 
     private void initObjects()
     {
-	final Command[] standardCommands = Commands.createStandardCommands(this, conversations);
+	final Command[] standardCommands = Commands.getCommands(this, conversations);
 	for(Command sc: standardCommands)
 	    commands.add(getObjForEnvironment(), sc);//FIXME:
 	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(getObjForEnvironment());

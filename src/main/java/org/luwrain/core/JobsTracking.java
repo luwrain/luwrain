@@ -21,7 +21,7 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-final class JobsTracking 
+public final class JobsTracking 
 {
     final ObjRegistry objRegistry;
     private final List<Entry> entries = new ArrayList();

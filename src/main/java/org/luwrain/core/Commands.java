@@ -28,11 +28,6 @@ import org.luwrain.base.OperatingSystem;
 import org.luwrain.script.*;
 import org.luwrain.controls.DefaultControlContext;
 
-/**
- * The set of standard commands. The commands provided by this class are
- * an essential part of LUWRAIN core and are always easily accessible to
- * users.
- */
 final class Commands
 {
     static private final int SPEECH_STEP = 5;
@@ -40,148 +35,78 @@ final class Commands
 
     static private final Set<String> osCmdHistory = new HashSet<String>();
 
-    /** Creates the set of standard commands.
-     *
-     * @param env The environment object to process commands on
-     * @return The vector of created commands
-     */
-    static Command[] createStandardCommands(Core core, org.luwrain.core.shell.Conversations conversations)
+    static Command[] getCommands(Core core, org.luwrain.core.shell.Conversations conversations)
     {
 	NullCheck.notNull(core, "core");
 	NullCheck.notNull(conversations, "conversations");
 	return new Command[]{
 
-	    //Main menu
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "main-menu";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
+	    new Cmd(
+		    "main-menu",
+		    (luwrain)->{
 		    core.mainMenu();
-		}
-	    },
+		    }),
 
-	    //search
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "search";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.activateAreaSearch();
-		}
-	    },
+	    new Cmd(
+		    "search",
+		    (luwrain)->{
+					    core.activateAreaSearch();
+		    }),
 
-	    //ok
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "ok";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
+	    new Cmd(
+		    "ok",
+		    (luwrain)->{
 		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.OK));
-		}
-	    },
+		    }),
 
-	    //Cancel
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "cancel";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
+	    new Cmd(
+		    "cancel",
+		    (luwrain)->{
 		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.CANCEL));
-		}
-	    },
+		    }),
 
-	    //Close
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "close";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.CLOSE));
-		}
-	    },
+	    new Cmd(
+		    "close",
+		    (luwrain)->{
+					    core.enqueueEvent(new SystemEvent(SystemEvent.Code.CLOSE));
+		    }),
 
-	    //gc
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "gc";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    System.gc();
-		}
-	    },
+	    new Cmd(
+		    "gc",
+		    (luwrain)->{
+					    System.gc();
+		    }),
 
-	    //Save
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "save";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.SAVE));
-		}
-	    },
+	    new Cmd(
+		    "save",
+		    (luwrain)->{
+					    core.enqueueEvent(new SystemEvent(SystemEvent.Code.SAVE));
+		    }),
 
-	    //open
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "open";
-		}
-		@Override public void onCommand(Luwrain luwrainArg)
-		{
-		    final File res = conversations.open();
+	    new Cmd(
+		    "open",
+		    (luwrain)->{
+					    final File res = conversations.open();
 		    if (res != null)
 			core.openFiles(new String[]{res.getAbsolutePath()});
-		}
-	    },
+		    }),
 
-	    //announce
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "announce";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.announceActiveArea();
-		}
-	    },
+	    new Cmd(
+		    "announce",
+		    (luwrain)->{
+					    core.announceActiveArea();
+		    }),
 
-	    //Refresh
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "refresh";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.enqueueEvent(new SystemEvent(SystemEvent.Code.REFRESH));
-		}
-	    },
+	    new Cmd(
+		    "refresh",
+		    (luwrain)->{
+					    core.enqueueEvent(new SystemEvent(SystemEvent.Code.REFRESH));
+		    }),
 
-	    //announce-line
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "announce-line";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Area area = core.getValidActiveArea(true);
+	    new Cmd(
+		    "announce-line",
+		    (luwrain)->{
+					    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.ANNOUNCE_LINE)))
@@ -202,18 +127,12 @@ final class Commands
 			core.speech.speak(line, 0, 0); else
 			core.getObjForEnvironment().setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 		    core.announcement = null;
-		}
-	    },
+		    }),
 
-	    //region-point
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "region-point";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Area area = core.getValidActiveArea(true);
+	    	    new Cmd(
+		    "region-point",
+		    (luwrain)->{
+					    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    final AtomicReference res = new AtomicReference();
@@ -251,35 +170,23 @@ final class Commands
 			};
 		    if (!core.hookChainWithCustom("luwrain.area.region.point.set", new Object[]{argObj}))
 			core.eventNotProcessedMessage();
-		}
-	    },
+		    }),
 
-	    //copy
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "copy";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Area area = core.getValidActiveArea(true);
+	    	    new Cmd(
+			    "copy",
+			    (luwrain)->{
+						    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY)))
 			core.playSound(Sounds.COPIED); else
 			core.eventNotProcessedMessage();
-		}
-	    },
+			    }),
 
-	    //copy-all
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "copy-all";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Area area = core.getValidActiveArea(true);
+	    	    new Cmd(
+		    "copy-all",
+		    (luwrain)->{
+					    final Area area = core.getValidActiveArea(true);
 		    if (area == null)
 			return;
 		    final AtomicReference res = new AtomicReference();
@@ -302,10 +209,8 @@ final class Commands
 			};
 		    if (!core.hookChainWithCustom("luwrain.clipboard.copy.all", new Object[]{argObj}))
 			core.eventNotProcessedMessage();
-		}
-	    },
+		    }),
 
-	    //cut
 	    new Command() {
 		@Override public String getName()
 		{
@@ -322,7 +227,6 @@ final class Commands
 		}
 	    },
 
-	    //clear-region
 	    new Command() {
 		@Override public String getName()
 		{
@@ -339,7 +243,6 @@ final class Commands
 		}
 	    },
 
-	    //paste
 	    new Command() {
 		@Override public String getName()
 		{
@@ -361,7 +264,6 @@ final class Commands
 		}
 	    },
 
-	    //clear
 	    new Command() {
 		@Override public String getName()
 		{
@@ -397,7 +299,6 @@ final class Commands
 		}
 	    },
 
-	    //Help
 	    new Command() {
 		@Override public String getName()
 		{
@@ -409,7 +310,6 @@ final class Commands
 		}
 	    },
 
-	    //Switch to next App
 	    new Command() {
 		@Override public String getName()
 		{
@@ -421,7 +321,6 @@ final class Commands
 		}
 	    },
 
-	    //Switch to next area
 	    new Command() {
 		@Override public String getName()
 		{
@@ -433,7 +332,6 @@ final class Commands
 		}
 	    },
 
-	    //Increase font size
 	    new Command() {
 		@Override public String getName()
 		{
@@ -445,7 +343,6 @@ final class Commands
 		}
 	    },
 
-	    //Decrease font size
 	    new Command() {
 		@Override public String getName()
 		{
@@ -467,7 +364,7 @@ final class Commands
 	    	    new Cmd(
 		    "jobs",
 		    (luwrain)->{
-			core.launchApp(new org.luwrain.app.jobs.App());
+			core.launchApp(new org.luwrain.app.jobs.App(core.jobs));
 		    }),
 
 	    new Cmd(
@@ -476,42 +373,23 @@ final class Commands
 					    core.launchApp(new org.luwrain.app.calc.App());
 		    }),
 
-	    //console
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "console";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
+	    new Cmd(
+		    "console",
+		    (luwrain)->{
 		    core.launchApp(new org.luwrain.app.console.App());
-		}
-	    },
+		    }),
 
-	    //registry
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "registry";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    Application app = new org.luwrain.app.registry.RegistryApp();
-		    core.launchApp(app);
-		}
-	    },
+	    new Cmd(
+		    "registry",
+		    (luwrain)->{
+		    core.launchApp(new org.luwrain.app.registry.RegistryApp());
+		    }),
 
-	    //context-menu
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "context-menu";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    core.showContextMenu();
-		}
-	    },
+	    new Cmd(
+		    "context-menu",
+		    (luwrain)->{
+					    core.showContextMenu();
+		    }),
 
 	    //copy-uniref-area
 	    new Command() {
