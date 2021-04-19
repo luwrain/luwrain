@@ -240,7 +240,7 @@ public interface Luwrain extends PropertiesBase
     Job.Instance newJob(String name, String[] args, Set<JobFlags> flags, org.luwrain.base.Job.Listener listener);
     //    void runInMainThread(Runnable runnable);
     Object runLaterSync(java.util.concurrent.Callable callable);
-    OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);
+    //    OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);
     java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, File dataDir, String text);
     ScriptCallable createScriptCallable(String text, Map<String, Object> objs, String dataDir);
     void runUiSafely(Runnable runnable);

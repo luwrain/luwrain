@@ -614,6 +614,7 @@ final class LuwrainImpl implements Luwrain
 	return core.props.getFileProperty(propName);
     }
 
+    /*
     @Override public OsCommand runOsCommand(String cmd, String dir,
 					    OsCommand.Output output, OsCommand.Listener listener)
     {
@@ -622,6 +623,7 @@ final class LuwrainImpl implements Luwrain
 	core.mainCoreThreadOnly();
 	return core.os.runOsCommand(cmd, (!dir.isEmpty())?dir:getFileProperty("luwrain.dir.userhome").getAbsolutePath(), output, listener);
     }
+    */
 
     @Override public String getProperty(String propName)
     {

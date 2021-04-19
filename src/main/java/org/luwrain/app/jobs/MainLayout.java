@@ -42,8 +42,24 @@ final class MainLayout extends LayoutBase
 	params.appearance = new Appearance();
 	params.name = app.getStrings().appName();
 	this.jobsArea = new ListArea(params);
-	final Actions actions = actions();
-	setAreaLayout(jobsArea, actions);
+	final Actions jobsActions = actions(
+					    action("stop", app.getStrings().actionStop(), new InputEvent(InputEvent.Special.F5), this::actStop)
+);
+	setAreaLayout(jobsArea, jobsActions);
+    }
+
+    private boolean actStop()
+    {
+	final Object o = jobsArea.selected();
+	if (o == null || !(o instanceof Entry))
+	    return false;
+	final Entry e = (Entry)o;
+	if (e.getStatus() == Job.Status.FINISHED)
+	    return false;
+	e.stop();
+	app.getLuwrain().playSound(Sounds.OK);
+	return true;
+	
     }
 
     private final class Appearance implements ListArea.Appearance
@@ -54,7 +70,7 @@ final class MainLayout extends LayoutBase
 	    NullCheck.notNull(flags, "flags");
 	    if (!(item instanceof Entry))
 	    {
-		app.getLuwrain().setEventResponse(DefaultEventResponse.listItem(item.toString()));
+		app.setEventResponse(DefaultEventResponse.listItem(item.toString()));
 		return;
 	    }
 	    final Entry entry = (Entry)item;
@@ -62,7 +78,7 @@ final class MainLayout extends LayoutBase
 	    if (entry.getStatus() == Job.Status.FINISHED)
 		sound = entry.isFinishedSuccessfully()?Sounds.SELECTED:Sounds.ATTENTION; else
 				sound = Sounds.LIST_ITEM;
-	    app.getLuwrain().setEventResponse(DefaultEventResponse.listItem(sound, entry.getInstanceName(), null));
+	    app.setEventResponse(DefaultEventResponse.listItem(sound, entry.getInstanceName(), null));
 	}
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
 	{

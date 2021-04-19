@@ -557,22 +557,11 @@ final class Commands
 		}
 	    },
 
-	    //run
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "run";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    /*
-		    final SimpleEditPopup popup = new SimpleEditPopup(core.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", Popups.DEFAULT_POPUP_FLAGS);
-		    core.popup(null, popup, Popup.Position.BOTTOM, popup.closing, true, true);
-		    if (popup.closing.cancelled() || popup.text().trim().isEmpty())
-			return;
-		    */
+	    new Cmd(
+		    "run",
+		    (luwrain)->{
 		    final String cmd = Popups.editWithHistory(core.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
-		    if (cmd == null)
+		    if (cmd == null || cmd.trim().isEmpty())
 			return;
 		    final String dir;
 		    final Area area = core.getValidActiveArea(false);
@@ -584,11 +573,12 @@ final class Commands
 			    dir = "";
 		    } else
 			dir = "";
+		    /*
 		    luwrain.runOsCommand(cmd.trim(), dir, (line)->{}, (exitCode, output)->{
 			    luwrain.runUiSafely(()->ObjRegistry.issueResultingMessage(luwrain, exitCode, output));
 			});
-		}
-	    },
+		    */
+		    }),
 	};    
     }
 

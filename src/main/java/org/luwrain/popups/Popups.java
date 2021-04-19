@@ -107,8 +107,8 @@ public final class Popups
 	NullCheck.notNull(history, "history");
 	NullCheck.notNull(popupFlags, "popupFlags");
 	final EditListPopup popup = new EditListPopup(luwrain, 
-							new EditListPopupUtils.FixedModel(history.toArray(new String[history.size()])),
-name, prefix, text, popupFlags);
+						      new EditListPopupUtils.FixedModel(history.toArray(new String[history.size()])),
+						      name, prefix, text, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;

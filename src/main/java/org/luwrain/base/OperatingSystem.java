@@ -29,5 +29,4 @@ public interface OperatingSystem
     Braille getBraille();
     void openFileInDesktop(Path path);
     org.luwrain.interaction.KeyboardHandler getCustomKeyboardHandler(String subsystem);
-    OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);
 }

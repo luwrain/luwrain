@@ -303,6 +303,12 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return luwrain.i18n();
     }
 
+    public void setEventResponse(EventResponse resp)
+    {
+	NullCheck.notNull(resp, "resp");
+	luwrain.setEventResponse(resp);
+    }
+
     public void message(String text, Luwrain.MessageType type)
     {
 	NullCheck.notNull(text, "text");

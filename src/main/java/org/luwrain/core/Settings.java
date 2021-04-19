@@ -353,13 +353,6 @@ public interface Settings
 	return RegistryProxy.create(registry, path, FileTypeAppInfo.class);
     }
 
-    static public OsCommand createOsCommand(Registry registry, String path)
-    {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notEmpty(path, "path");
-	return RegistryProxy.create(registry, path, OsCommand.class);
-    }
-
     static public I18n createI18n(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
