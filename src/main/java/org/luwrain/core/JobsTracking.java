@@ -25,12 +25,15 @@ public final class JobsTracking
 {
     static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
 
+    private final Luwrain luwrain;
     private final ObjRegistry objRegistry;
     public final List<Entry> entries = new ArrayList();
 
-    JobsTracking(ObjRegistry objRegistry)
+    JobsTracking(Luwrain luwrain, ObjRegistry objRegistry)
     {
+	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(objRegistry, "objRegistry");
+	this.luwrain = luwrain;
 	this.objRegistry = objRegistry;
     }
 
@@ -58,9 +61,12 @@ public final class JobsTracking
     private void onFinish(Entry entry)
     {
 	NullCheck.notNull(entry, "entry");
+	luwrain.runUiSafely(()->{
+		luwrain.playSound(entry.isFinishedSuccessfully()?Sounds.DONE:Sounds.ERROR);
+	    });
     }
 
-public  final class Entry implements Job.Listener, Job.Instance
+    public  final class Entry implements Job.Listener, Job.Instance
     {
 	private final Job.Listener listener;
 	private Job.Instance instance = null;
@@ -69,54 +75,16 @@ public  final class Entry implements Job.Listener, Job.Instance
 	    NullCheck.notNull(listener, "listener");
 	    this.listener = listener;
 	}
-	@Override public String getInstanceName()
-	{
-	    if (instance == null)
-		return "";
-	    return instance.getInstanceName();
-	}
-	@Override public Job.Status getStatus()
-	{
-	    if (instance == null)
-		return Job.Status.RUNNING;
-	    return instance.getStatus();
-	}
-	@Override public int getExitCode()
-	{
-	    if (instance == null)
-		return 0;
-	    return instance.getExitCode();
-	}
-	@Override public boolean isFinishedSuccessfully()
-	{
-	    if (instance == null)
-		return false;
-	    return instance.isFinishedSuccessfully();
-	}
-	@Override public String getSingleLineState()
-	{
-	    if (instance == null)
-		return "";
-	    return instance.getSingleLineState();
-	}
-	@Override public String[] getMultilineState()
-	{
-	    if (instance == null)
-		return new String[0];
-	    return instance.getMultilineState();
-	}
-	@Override public String[] getNativeState()
-	{
-	    if (instance == null)
-		return new String[0];
-	    return instance.getNativeState();
-	}
-	@Override public void stop()
-	{
-	    if (instance == null)
-		return;
-	    instance.stop();
-	}
+
+	@Override public String getInstanceName() { return instance.getInstanceName(); }
+	@Override public Job.Status getStatus() { return instance.getStatus(); }
+	@Override public int getExitCode() { return instance.getExitCode(); }
+	@Override public boolean isFinishedSuccessfully() { return instance.isFinishedSuccessfully(); }
+	@Override public String getSingleLineState() { return instance.getSingleLineState(); }
+	@Override public String[] getMultilineState() { return instance.getMultilineState(); }
+	@Override public String[] getNativeState() { return instance.getNativeState(); }
+	@Override public void stop() { instance.stop(); }
+
 	@Override public void onStatusChange(Job.Instance instance)
 	{
 	    listener.onStatusChange(this);

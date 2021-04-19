@@ -560,24 +560,20 @@ final class Commands
 	    new Cmd(
 		    "run",
 		    (luwrain)->{
-		    final String cmd = Popups.editWithHistory(core.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
-		    if (cmd == null || cmd.trim().isEmpty())
-			return;
-		    final String dir;
-		    final Area area = core.getValidActiveArea(false);
-		    if (area != null)
-		    {
-			final CurrentDirQuery query = new CurrentDirQuery();
-			if (AreaQuery.ask(area, query))
-			    dir = query.getAnswer(); else
+			final String cmd = Popups.editWithHistory(core.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
+			if (cmd == null || cmd.trim().isEmpty())
+			    return;
+			final String dir;
+			final Area area = core.getValidActiveArea(false);
+			if (area != null)
+			{
+			    final CurrentDirQuery query = new CurrentDirQuery();
+			    if (AreaQuery.ask(area, query))
+				dir = query.getAnswer(); else
+				dir = "";
+			} else
 			    dir = "";
-		    } else
-			dir = "";
-		    /*
-		    luwrain.runOsCommand(cmd.trim(), dir, (line)->{}, (exitCode, output)->{
-			    luwrain.runUiSafely(()->ObjRegistry.issueResultingMessage(luwrain, exitCode, output));
-			});
-		    */
+			luwrain.newJob("sys", new String[]{ cmd.trim() }, EnumSet.noneOf(Luwrain.JobFlags.class), null);
 		    }),
 	};    
     }
