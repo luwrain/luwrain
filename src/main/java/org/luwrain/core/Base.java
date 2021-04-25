@@ -36,6 +36,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 
     protected final CmdLine cmdLine;
     protected final  Registry registry;
+    public final Luwrain luwrain;
     final PropertiesRegistry props;
     final HelpSections helpSects;
     protected final String lang;
@@ -81,6 +82,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	this.sounds = new org.luwrain.core.sound.EnvironmentSounds(registry, props.getFileProperty("luwrain.dir.sounds"));
 	this.soundManager = new org.luwrain.core.sound.Manager(objRegistry, getObjForEnvironment());
 	this.mainCoreThread = Thread.currentThread();
+	this.luwrain = getObjForEnvironment();
     }
 
     //True means the event is processed and there is no need to process it again;

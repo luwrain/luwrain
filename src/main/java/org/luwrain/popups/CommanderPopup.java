@@ -25,19 +25,27 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.io.*;
+import org.luwrain.controls.CommanderArea.Filter;
 
 public class CommanderPopup extends CommanderArea<File> implements CommanderArea.ClickHandler<File>, Popup, PopupClosingTranslator.Provider
 {
+    //    static public final Filter<File> FILTER_ALL = new CommanderUtilsFile.Filter(EnumSet.noneOf(CommanderUtilsFile.Filter.Flags.class));
+    static public final Filter<File> FILTER_ALL = new CommanderUtils.AllEntriesFilter();
+    static public final Filter<File> FILTER_NO_HIDDEN = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.NO_HIDDEN));
+
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final Luwrain luwrain;
     protected final String name;
+    protected final Filter<File> filter;
     protected final Set<Popup.Flags> popupFlags;
     protected File result;
+    protected boolean filterCancelled;
 
-    public CommanderPopup(Luwrain luwrain, String name, File file,
-			  CommanderArea.Filter<File> filter, Set<Popup.Flags> popupFlags)
+    public CommanderPopup(Luwrain luwrain, String name,
+			  File file, Filter<File> filter,
+			  Set<Popup.Flags> popupFlags)
     {
-	super(constructParams(luwrain, filter));
+	super(newParams(luwrain, filter != null?filter:FILTER_ALL));
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(file, "file");
@@ -45,7 +53,9 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	this.luwrain = luwrain;
 	this.name = name;
 	this.popupFlags = popupFlags;
-	setClickHandler(this);
+	this.filter = filter != null?filter:FILTER_ALL;
+	this.filterCancelled = this.filter == FILTER_ALL;
+		setClickHandler(this);
 	setLoadingResultHandler((location, data, selectedIndex, announce)->{
 		luwrain.runUiSafely(()->acceptNewLocation(location, data, selectedIndex, announce));
 	    });
@@ -78,8 +88,24 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	switch(event.getCode())
 	{
 	case INTRODUCE:
-	    //	    luwrain.silence();
 	    luwrain.speak(getAreaName(), Sounds.INTRO_POPUP);
+	    return true;
+	    		    case ACTION:
+			if (ActionEvent.isAction(event, "mkdir"))
+			    return Popups.mkdir(luwrain, opened());
+			if (ActionEvent.isAction(event, "cancel-filter"))
+			{
+			    setCommanderFilter(FILTER_ALL);
+			    filterCancelled = true;
+			    reread(true);
+			    return true;
+			}
+			return false;
+	case PROPERTIES:
+	    final File f = Popups.disks(luwrain, "Выберите диск:");
+	    if (f == null)
+		return false;
+	    open(f, null, false);
 	    return true;
 	default:
 	    if (closing.onSystemEvent(event))
@@ -103,6 +129,16 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	return true;
     }
 
+    		@Override public Action[] getAreaActions()
+		{
+		    final List<Action> res = new ArrayList();
+		    if (!filterCancelled)
+			res.add(new Action("cancel-filter", "Показать все файлы", new InputEvent(InputEvent.Special.F5)));
+		    res.add(new Action("mkdir", "Создать каталог", new InputEvent(InputEvent.Special.INSERT)));
+		    return res.toArray(new Action[res.size()]);
+		}
+
+
     @Override public Luwrain getLuwrainObject()
     {
 	return luwrain;
@@ -118,16 +154,17 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	return popupFlags;
     }
 
-    public boolean wasCancelled()
+    public boolean isCancelled()
     {
 	return closing.cancelled();
     }
 
-    static private CommanderArea.Params<File> constructParams(Luwrain luwrain, CommanderArea.Filter<File> filter)
+    static private CommanderArea.Params<File> newParams(Luwrain luwrain, CommanderArea.Filter<File> filter)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(filter, "filter");
 	final CommanderArea.Params<File> params = CommanderUtilsFile.createParams(new DefaultControlContext(luwrain));
-	params.filter = filter != null?filter:new CommanderUtils.AllEntriesFilter();
+	params.filter = filter;
 	params.comparator = new CommanderUtils.ByNameComparator();
 	return params;
     }

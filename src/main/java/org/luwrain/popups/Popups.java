@@ -231,13 +231,14 @@ public final class Popups
 	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNull(startWith, "startWith");
 	NullCheck.notNullItems(extensions, "extensions");
-	final CommanderArea.Filter<File> fullFilter = new CommanderUtilsFile.Filter(EnumSet.noneOf(CommanderUtilsFile.Filter.Flags.class));
-	final CommanderArea.Filter<File> noHiddenFilter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.NO_HIDDEN));
-	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
-	final AtomicBoolean skipHidden = new AtomicBoolean(sett.getFilePopupSkipHidden(false));
+		final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+		final CommanderArea.Filter<File> filter;
+		if (sett.getFilePopupSkipHidden(false))
+		    filter = CommanderPopup.FILTER_NO_HIDDEN; else
+		    filter = CommanderPopup.FILTER_ALL;
 	final AtomicReference res = new AtomicReference(null);
-	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
-							luwrain.getFileProperty("luwrain.dir.userhome"), skipHidden.get()?noHiddenFilter:fullFilter, DEFAULT_POPUP_FLAGS){
+	final CommanderPopup popup = new CommanderPopup(luwrain, prefix, 
+							startWith, filter, DEFAULT_POPUP_FLAGS){
 		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -245,38 +246,11 @@ public final class Popups
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
-		    case ACTION:
-			if (ActionEvent.isAction(event, "mkdir"))
-			    return mkdir(luwrain, opened());
-			if (ActionEvent.isAction(event, "show-hidden"))
-			{
-			    setCommanderFilter(fullFilter);
-			    reread(true);
-			    skipHidden.set(false);
-			    return true;
-			}
-			if (ActionEvent.isAction(event, "skip-hidden"))
-			{
-			    setCommanderFilter(noHiddenFilter);
-			    reread(true);
-			    skipHidden.set(true);
-			    return true;
-			}
-			return false;
 		    case OK:
-			return closing.doOk();
+			return true;//closing.doOk();
 		    default:
 			return super.onSystemEvent(event);
 		    }
-		}
-		@Override public Action[] getAreaActions()
-		{
-		    final List<Action> res = new LinkedList();
-		    if (skipHidden.get())
-			res.add(new Action("show-hidden", "Показать скрытые файлы", new InputEvent('='))); else
-			res.add(new Action("skip-hidden", "Убрать скрытые файлы", new InputEvent('-')));
-		    res.add(new Action("mkdir", "Создать каталог", new InputEvent(InputEvent.Special.INSERT)));
-		    return res.toArray(new Action[res.size()]);
 		}
 		@Override public boolean onOk()
 		{
@@ -288,23 +262,23 @@ public final class Popups
 		}
 	    };
 	luwrain.popup(popup);
-	if (popup.closing.cancelled())
+	if (popup.isCancelled())
 	    return null;
 	return (File)res.get();
     }
 
-    static public File existingDir(Luwrain luwrain, String name, String prefix, File startWith)
+    static public File existingDir(Luwrain luwrain, String name, File startWith)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
-	NullCheck.notEmpty(prefix, "prefix");
-	final CommanderArea.Filter<File> fullFilter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.DIR_ONLY));
-	final CommanderArea.Filter<File> noHiddenFilter = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.NO_HIDDEN, CommanderUtilsFile.Filter.Flags.DIR_ONLY));
-	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
-	final AtomicBoolean skipHidden = new AtomicBoolean(sett.getFilePopupSkipHidden(false));
-	final AtomicReference res = new AtomicReference(null);
-	final CommanderPopup popup = new CommanderPopup(luwrain, prefix,
-							luwrain.getFileProperty("luwrain.dir.userhome"), skipHidden.get()?noHiddenFilter:fullFilter, DEFAULT_POPUP_FLAGS){
+			final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+		final CommanderArea.Filter<File> filter;
+		if (sett.getFilePopupSkipHidden(false))
+		    filter = CommanderPopup.FILTER_NO_HIDDEN; else
+		    filter = CommanderPopup.FILTER_ALL;
+		final AtomicReference res = new AtomicReference(null);
+			final CommanderPopup popup = new CommanderPopup(luwrain, name,
+							startWith, filter, DEFAULT_POPUP_FLAGS){
 		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -312,38 +286,11 @@ public final class Popups
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
-		    case ACTION:
-			if (ActionEvent.isAction(event, "mkdir"))
-			    return mkdir(luwrain, opened());
-			if (ActionEvent.isAction(event, "show-hidden"))
-			{
-			    setCommanderFilter(fullFilter);
-			    reread(true);
-			    skipHidden.set(false);
-			    return true;
-			}
-			if (ActionEvent.isAction(event, "skip-hidden"))
-			{
-			    setCommanderFilter(noHiddenFilter);
-			    reread(true);
-			    skipHidden.set(true);
-			    return true;
-			}
-			return false;
 		    case OK:
-			return closing.doOk();
+			return true;//closing.doOk();
 		    default:
 			return super.onSystemEvent(event);
 		    }
-		}
-		@Override public Action[] getAreaActions()
-		{
-		    final List<Action> res = new LinkedList();
-		    if (skipHidden.get())
-			res.add(new Action("show-hidden", "Показать скрытые файлы", new InputEvent('='))); else
-			res.add(new Action("skip-hidden", "Убрать скрытые файлы", new InputEvent('-')));
-		    res.add(new Action("mkdir", "Создать каталог", new InputEvent(InputEvent.Special.INSERT)));
-		    return res.toArray(new Action[res.size()]);
 		}
 		@Override public boolean onOk()
 		{
@@ -355,12 +302,12 @@ public final class Popups
 		}
 	    };
 	luwrain.popup(popup);
-	if (popup.closing.cancelled())
+	if (popup.isCancelled())
 	    return null;
 	return (File)res.get();
     }
 
-    static private boolean mkdir(Luwrain luwrain, File createIn)
+    static boolean mkdir(Luwrain luwrain, File createIn)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(createIn, "createIn");
@@ -459,17 +406,7 @@ public final class Popups
 	return existingFile(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), new String[0]);
     }
 
-
-        static public File existingDir(Luwrain luwrain, String name, String prefix)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notEmpty(prefix, "prefix");
-	return existingDir(luwrain, name, prefix, null);
-	    }
-
-
-    static public File disksVolumes(Luwrain luwrain, String name)
+    static public File disks(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");

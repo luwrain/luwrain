@@ -44,7 +44,7 @@ public final class ClassUtils
 	}
 	catch (Throwable e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to create an instance of the class " + className + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "unable to create an instance of the class " + className + ":" + e.getClass().getName() + ": " + e.getMessage());
 	    return null;
 	}
 	if (ensureInstanceOf == null)

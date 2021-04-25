@@ -22,14 +22,26 @@ import java.io.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-import org.luwrain.script.*;
+import org.luwrain.util.*;
 
 public class DisksPopup extends ListPopupBase
 {
     static private final String LOG_COMPONENT = Popups.LOG_COMPONENT;
 
-    static public final String LIST_HOOK = "luwrain.popups.disks.list";
-    static public final String CLICK_HOOK = "luwrain.popups.disks.click";
+    public interface Disk
+    {
+	File activate();
+    }
+
+    public interface Disks
+    {
+	Disk[] getDisks();
+    }
+
+    public interface Factory
+    {
+	Disks newDisks(Luwrain luwrain);
+    }
 
     protected File result = null;
 
@@ -54,10 +66,6 @@ public class DisksPopup extends ListPopupBase
 		    return false;
 		closing.doOk();
 		return true;
-		/*
-		  case INSERT:
-		  case DELETE:
-		*/
 	    }
 	return super.onInputEvent(event);
     }
@@ -81,58 +89,50 @@ public class DisksPopup extends ListPopupBase
     @Override public boolean onOk()
     {
 	final Object sel = selected();
-	if (sel == null)
+	if (sel == null || !(sel instanceof Disk))
 	    return false;
-	final Object obj;
-	try {
-	    obj = new org.luwrain.script.hooks.ProviderHook(luwrain).run(CLICK_HOOK, new Object[]{sel});
-	}
-	catch(RuntimeException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to run the " + CLICK_HOOK + " hook:" + e.getClass().getName() + ":" + e.getMessage());
-	    luwrain.message(luwrain.i18n().getExceptionDescr(e), Luwrain.MessageType.ERROR);
+	final Disk disk = (Disk)sel;
+	final File res = disk.activate();
+	if (res == null)
 	    return false;
-	}
-	if (obj == null || !(obj instanceof String))
-	    return false;
-	final String str = (String)obj;
-	if (str.isEmpty())
-	    return false;
-	this.result = new File(str);
+	this.result = res;
 	return true;
     }
 
-    static private Object[] prepareContent(Luwrain luwrain)
+    static private void announceDisk(Luwrain luwrain, Object obj, Set<ListArea.Appearance.Flags> flags)
     {
-	final Object obj;
-	try {
-	    obj = new org.luwrain.script.hooks.ProviderHook(luwrain).run(LIST_HOOK, new Object[0]);
-	}
-	catch(RuntimeException e)
+	NullCheck.notNull(obj, "obj");
+	NullCheck.notNull(flags, "flags");
+	final String str = obj.toString().replaceAll(",", " ").replaceAll(",", " ").replaceAll("-", " ");
+	if (str.equals("/"))
 	{
-	    Log.error(LOG_COMPONENT, "unable to run " + LIST_HOOK + " hook:" + e.getClass().getName() + ":" + e.getMessage());
-	    luwrain.message(luwrain.i18n().getExceptionDescr(e), Luwrain.MessageType.ERROR);
-	    return new Object[0];
+	        luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.i18n().getStaticStr("DisksPopupItemRoot"), Suggestions.CLICKABLE_LIST_ITEM));
+		return;
 	}
-	if (obj == null)
-	    return new Object[0];
-	final List items = ScriptUtils.getArray(obj);
-	if (items == null)
-	    return new Object[0];
-	final List<Item> res = new LinkedList();
-	for(Object o: items)
+
+		if (str.equals("/home"))
 	{
-	    if (o == null)
-		continue;
-	    final Object nameObj = ScriptUtils.getMember(o, "name");
-	    if (nameObj == null)
-		continue;
-	    final String name = ScriptUtils.getStringValue(nameObj);
-	    if (name == null || name.trim().isEmpty())
-		continue;
-	    res.add(new Item(name, o));
+	        luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.i18n().getStaticStr("DisksPopupItemUserHome"), Suggestions.CLICKABLE_LIST_ITEM));
+		return;
 	}
-	return res.toArray(new Item[res.size()]);
+
+		
+	luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.getSpeakableText(str, Luwrain.SpeakableTextType.NATURAL), Suggestions.CLICKABLE_LIST_ITEM));
+    }
+
+    static private Disk[] getDisks(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final Factory factory = (Factory)ClassUtils.newInstanceOf(luwrain.getClass().getClassLoader(), "org.luwrain.linux.disks.Factory", Factory.class);
+	if (factory  == null)
+	    return new Disk[0];
+	final Disks disks = factory.newDisks(luwrain);
+	if (disks == null)
+	{
+	    Log.debug(LOG_COMPONENT, "the disks factory object gives a null pointer");
+	    return new Disk[0];
+	}
+	return disks.getDisks();
     }
 
     static protected ListArea.Params createParams(Luwrain luwrain, String name)
@@ -142,43 +142,16 @@ public class DisksPopup extends ListPopupBase
 	final ListArea.Params params = new ListArea.Params();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
-	params.model = new ListUtils.FixedModel(prepareContent(luwrain)){
+	params.model = new ListUtils.FixedModel(getDisks(luwrain)){
 		@Override public void refresh()
 		{
-		    setItems(prepareContent(luwrain));
+		    setItems(getDisks(luwrain));
 		}};
 	params.appearance = new ListUtils.DefaultAppearance(new DefaultControlContext(luwrain)){
-		@Override public void announceItem(Object obj, Set<Flags> flags)
-		{
-		    NullCheck.notNull(obj, "obj");
-		    luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.getSpeakableText(obj.toString(), Luwrain.SpeakableTextType.PROGRAMMING), Suggestions.CLICKABLE_LIST_ITEM));
-		}
+		@Override public void announceItem(Object obj, Set<Flags> flags) { announceDisk(luwrain, obj, flags); }
 	    };
 	params.flags = EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP);
 	return params;
     }
+}
 
-    static public final class Item
-    {
-	private final String name;
-	private final Object obj;
-	public Item(String name, Object obj)
-	{
-	    NullCheck.notEmpty(name, "name");
-	    NullCheck.notNull(obj, "obj");
-	    this.name = name;
-	    this.obj = obj;
-	}
-	@Override public String toString()
-	{
-	    return name;
-	}
-	public String getName()
-	{
-	    return name;
-	}
-	public Object getObj()
-	{
-	    return obj;
-	}
-    }}
