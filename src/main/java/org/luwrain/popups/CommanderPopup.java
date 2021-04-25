@@ -100,13 +100,15 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 			    reread(true);
 			    return true;
 			}
-			return false;
-	case PROPERTIES:
+			if (ActionEvent.isAction(event, "change-disk"))
+			{
 	    final File f = Popups.disks(luwrain, "Выберите диск:");
 	    if (f == null)
 		return false;
 	    open(f, null, false);
 	    return true;
+			}
+			return false;
 	default:
 	    if (closing.onSystemEvent(event))
 		return true;
@@ -134,6 +136,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 		    final List<Action> res = new ArrayList();
 		    if (!filterCancelled)
 			res.add(new Action("cancel-filter", "Показать все файлы", new InputEvent(InputEvent.Special.F5)));
+		    		    		    res.add(new Action("change-disk", "Сменить диск", new InputEvent(InputEvent.Special.TAB)));
 		    res.add(new Action("mkdir", "Создать каталог", new InputEvent(InputEvent.Special.INSERT)));
 		    return res.toArray(new Action[res.size()]);
 		}

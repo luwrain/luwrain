@@ -313,6 +313,14 @@ public final class Popups
 	return (File)res.get();
     }
 
+            static public File existingDir(Luwrain luwrain, String name)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	return existingDir(luwrain, name, getUserHome(luwrain));
+    }
+
+
     static boolean mkdir(Luwrain luwrain, File createIn)
     {
 	NullCheck.notNull(luwrain, "luwrain");
