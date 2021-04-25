@@ -14,6 +14,8 @@
    General Public License for more details.
 */
 
+//LWR_API 2.0
+
 package org.luwrain.app.base;
 
 import java.util.concurrent.*;
