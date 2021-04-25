@@ -172,7 +172,7 @@ public final class Popups
 	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNull(startFrom, "startFrom");
 	final FilePopup popup = new FilePopup(luwrain, name, prefix,
-					      acceptance, startFrom, luwrain.getFileProperty("luwrain.dir.userhome"),
+					      acceptance, startFrom, getUserHome(luwrain),
 					      loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS){
 		@Override public boolean onInputEvent(InputEvent event)
 		{
@@ -224,11 +224,10 @@ public final class Popups
 	return popup.result();
     }
 
-    static public File existingFile(Luwrain luwrain, String name, String prefix, File startWith, String[] extensions)
+    static public File existingFile(Luwrain luwrain, String name, File startWith, String[] extensions)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
-	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNull(startWith, "startWith");
 	NullCheck.notNullItems(extensions, "extensions");
 		final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
@@ -237,7 +236,7 @@ public final class Popups
 		    filter = CommanderPopup.FILTER_NO_HIDDEN; else
 		    filter = CommanderPopup.FILTER_ALL;
 	final AtomicReference res = new AtomicReference(null);
-	final CommanderPopup popup = new CommanderPopup(luwrain, prefix, 
+	final CommanderPopup popup = new CommanderPopup(luwrain, name, 
 							startWith, filter, DEFAULT_POPUP_FLAGS){
 		@Override public boolean onSystemEvent(SystemEvent event)
 		{
@@ -267,7 +266,14 @@ public final class Popups
 	return (File)res.get();
     }
 
-    static public File existingDir(Luwrain luwrain, String name, File startWith)
+        static public File existingFile(Luwrain luwrain, String name)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	return Popups.existingFile(luwrain, name, getUserHome(luwrain), new String[0]);
+    }
+
+        static public File existingDir(Luwrain luwrain, String name, File startWith)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
@@ -389,23 +395,6 @@ public final class Popups
     }
 
 
-    static public File existingFile(Luwrain luwrain, String name, String prefix, String[] extensions)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notEmpty(prefix, "prefix");
-	NullCheck.notNullItems(extensions, "extensions");
-	return existingFile(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), extensions);
-    }
-
-        static public File existingFile(Luwrain luwrain, String name, String prefix)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notEmpty(prefix, "prefix");
-	return existingFile(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), new String[0]);
-    }
-
     static public File disks(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -458,6 +447,12 @@ public final class Popups
 	if (popup.closing.cancelled())
 	    return false;
 	return popup.result();
+    }
+
+    static private File getUserHome(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	return luwrain.getFileProperty("luwrain.dir.userhome");
     }
 
     static public Set<FilePopup.Flags> loadFilePopupFlags(Luwrain luwrain)

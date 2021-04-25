@@ -95,7 +95,7 @@ final class SoundsList extends ListArea implements SectionArea, ListArea.ClickHa
 	if (obj == null || !(obj instanceof Item))
 	    return false;
 	final Item item = (Item)obj;
-	final File file = Popups.existingFile(luwrain, luwrain.i18n().getStaticStr("CpSoundsList"), luwrain.i18n().getStaticStr("CpSoundsListChangePopupPrefix"), new String[0]);
+	final File file = Popups.existingFile(luwrain, luwrain.i18n().getStaticStr("CpSoundsListChangePopupName"));
 	if (file == null || file.isDirectory())
 	    return true;
 	final String soundsDirPath = luwrain.getFileProperty("luwrain.dir.sounds").getAbsolutePath();
