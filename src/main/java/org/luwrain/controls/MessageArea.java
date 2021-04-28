@@ -33,7 +33,9 @@ public class MessageArea extends FormArea
     static public class Params
     {
 	public ControlContext context = null;
+	public String name = "";
 	public String[] text = new String[0];
+	public String[] attachments = new String[0];
 	public String to = "";
 	public String cc = "";
 	public String subject = "";
@@ -65,14 +67,17 @@ public class MessageArea extends FormArea
 
     public MessageArea(Params params)
     {
-	super(params.context);
+	super(params.context, params.name);
 	NullCheck.notNull(params, "params");
 	NullCheck.notNullItems(params.text, "params.text");
+		NullCheck.notNullItems(params.attachments, "params.attachments");
 	      this.lines = new MutableLinesImpl(params.text);
 	      addEdit(TO_NAME, context.getI18n().getStaticStr("MessageTo"), params.to);
 	      addEdit(CC_NAME, context.getI18n().getStaticStr("MessageCc"), params.cc);
 	      addEdit(SUBJECT_NAME, context.getI18n().getStaticStr("MessageSubject"), params.subject);
 	      activateMultilineEdit(context.getI18n().getStaticStr("MessageEnterTextBelow"), lines, createEditParams(), true);
+	      for(String a: params.attachments)
+		  addAttachment(new File(a));
     }
 
     public String getTo()
@@ -117,6 +122,16 @@ public class MessageArea extends FormArea
 	return lines.getWholeText();
     }
 
+    public Attachment getAttachmentByLineIndex(int lineIndex)
+    {
+		if (getItemTypeOnLine(lineIndex) != MessageArea.Type.STATIC)
+	    return null;
+	final Object obj = getItemObj(lineIndex);
+	if (obj == null || !(obj instanceof Attachment))
+	    return null;
+return (MessageArea.Attachment)obj;
+    }
+
     public Attachment[] getAttachments()
     {
 	final List<Attachment> res = new LinkedList();
@@ -155,7 +170,7 @@ public class MessageArea extends FormArea
 	addStatic(a.name, context.getI18n().getStaticStr("MessageAttachment") + " " + a.file.getName(), a);
     }
 
-    public void removeAttachment(int lineIndex)
+    public void removeAttachmentByLineIndex(int lineIndex)
     {
 	removeItemOnLine(lineIndex);
     }
