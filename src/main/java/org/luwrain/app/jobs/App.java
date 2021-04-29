@@ -38,15 +38,10 @@ public final class App extends AppBase<Strings>
     this.jobs = jobs;
     }
 
-@Override public boolean onAppInit()
+@Override protected AreaLayout onAppInit()
 {
     this.mainLayout = new MainLayout(this);
-return true;
-}
-
-@Override public AreaLayout getDefaultAreaLayout()
-{
-    return this.mainLayout.getAreaLayout();
+return this.mainLayout.getAreaLayout();
 }
 
     @Override public boolean onEscape(InputEvent event)

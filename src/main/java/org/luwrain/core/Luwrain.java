@@ -293,4 +293,5 @@ public interface Luwrain extends PropertiesBase
     boolean xRunHooks(String hookName, Object[] args, HookStrategy strategy);
     OsInterface xGetOsInterface();
     boolean xCreatePropertyHook(String propName, String hookName);
+    void showGraphical(Object obj);
 }

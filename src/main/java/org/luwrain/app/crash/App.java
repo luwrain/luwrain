@@ -40,15 +40,10 @@ public final class App extends AppBase<Strings>
 	this.srcArea = srcArea;
     }
 
-    @Override public boolean onAppInit()
+    @Override public AreaLayout onAppInit()
     {
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
-	return true;
-    }
-
-    @Override public AreaLayout getDefaultAreaLayout()
-    {
 	return mainLayout.getLayout();
     }
 

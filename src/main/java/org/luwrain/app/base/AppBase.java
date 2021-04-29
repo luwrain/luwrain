@@ -50,8 +50,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	this(stringsName, stringsClass, null);
     }
 
-    abstract protected boolean onAppInit() throws Exception;
-    abstract protected AreaLayout getDefaultAreaLayout();
+    abstract protected AreaLayout onAppInit() throws Exception;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
@@ -61,17 +60,20 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, stringsName);
 	this.strings = stringsClass.cast(o);
 	this.luwrain = luwrain;
+	final AreaLayout initialLayout;
 	try {
-	    onAppInit();
+	    initialLayout = onAppInit();
+	    	if (initialLayout == null)
+		    throw new Exception("The application is unable to initialize");
 	}
-	catch(Exception e)
+	catch(Throwable e)
 	{
 	    return new InitResult(e);
 	}
 	this.layout = new AreaLayoutHelper(()->{
 		this.setVisibleAreas(layout.getLayout().getAreas());
 		luwrain.onNewAreaLayout();
-	    }, getDefaultAreaLayout());
+	    }, initialLayout);
 			this.setVisibleAreas(layout.getLayout().getAreas());
 	return new InitResult();
     }

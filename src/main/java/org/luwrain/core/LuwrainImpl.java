@@ -820,6 +820,12 @@ final class LuwrainImpl implements Luwrain
 	return core.props.createHook(propName, hookName);
     }
 
+    @Override public void showGraphical(Object obj)
+    {
+	NullCheck.notNull(obj, "obj");
+	core.interaction.showGraphical(obj);
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");

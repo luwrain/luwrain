@@ -38,24 +38,19 @@ public final class App extends AppBase<Strings>
 	super(Strings.NAME, Strings.class);
     }
 
-    @Override public boolean onAppInit()
+    @Override public AreaLayout onAppInit()
     {
 	final ScriptEngineManager manager = new ScriptEngineManager();
 	this.engine = manager.getEngineByName("nashorn");
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
-	return true;
+	return mainLayout.getAreaLayout();
     }
 
     @Override public boolean onEscape(InputEvent event)
     {
 	closeApp();
 	return true;
-    }
-
-    @Override public AreaLayout getDefaultAreaLayout()
-    {
-	return mainLayout.getAreaLayout();
     }
 
     Number calculate(String[] expr) throws Exception

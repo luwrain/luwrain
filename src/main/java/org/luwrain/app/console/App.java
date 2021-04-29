@@ -34,14 +34,14 @@ public final class App extends AppBase<Strings> implements MonoApp
 	super(Strings.NAME, Strings.class, "luwrain.console");
     }
 
-    @Override public boolean onAppInit()
+    @Override protected AreaLayout onAppInit()
     {
 	this.mainLayout = new MainLayout(this);
 	this.commands = new ConsoleCommand[]{
 	    new Commands.Prop(getLuwrain()),
 	};
 	setAppName(getStrings().appName());
-	return true;
+	return mainLayout.getLayout();
     }
 
     ConsoleCommand[] getCommands()
@@ -54,12 +54,6 @@ public final class App extends AppBase<Strings> implements MonoApp
 	NullCheck.notNull(event, "event");
 	closeApp();
 	return true;
-    }
-
-
-    @Override public AreaLayout getDefaultAreaLayout()
-    {
-	return this.mainLayout.getLayout();
     }
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
