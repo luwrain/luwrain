@@ -20,6 +20,16 @@ package org.luwrain.base;
 
 public interface Interaction
 {
+    public interface GraphicalModeControl
+    {
+	void close();
+    }
+
+public interface GraphicalMode
+{
+    Object getGraphicalObj(GraphicalModeControl control);
+}
+    
     boolean init(InteractionParams params,OperatingSystem os);
     void close();
     void startInputEventsAccepting(EventConsumer eventConsumer);
@@ -36,6 +46,5 @@ public interface Interaction
     void setHotPoint(int x, int y);
     void drawVerticalLine(int top, int bottom, int x);
     void drawHorizontalLine(int left, int right, int y);
-    GraphicalMode openGraphicalMode(String modeName, GraphicalMode.Params params);
-    void showGraphical(Object obj);
+    void showGraphical(GraphicalMode graphicalMode);
 }

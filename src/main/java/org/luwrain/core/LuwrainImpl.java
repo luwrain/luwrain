@@ -528,14 +528,6 @@ final class LuwrainImpl implements Luwrain
 	}
     }
 
-    @Override public GraphicalMode openGraphicalMode(String modeName, GraphicalMode.Params params)
-    {
-	NullCheck.notEmpty(modeName, "modeName");
-	NullCheck.notNull(params, "params");
-	core.mainCoreThreadOnly();
-	return core.interaction.openGraphicalMode(modeName, params);
-    }
-
     @Override public void runUiSafely(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
@@ -820,10 +812,10 @@ final class LuwrainImpl implements Luwrain
 	return core.props.createHook(propName, hookName);
     }
 
-    @Override public void showGraphical(Object obj)
+    @Override public void showGraphical(org.luwrain.base.Interaction.GraphicalMode graphicalMode)
     {
-	NullCheck.notNull(obj, "obj");
-	core.interaction.showGraphical(obj);
+	NullCheck.notNull(graphicalMode, "graphicalMode");
+	core.interaction.showGraphical(graphicalMode);
     }
 
     private void sayHint(Hint hint)

@@ -118,7 +118,6 @@ public interface Luwrain extends PropertiesBase
     void closeApp();
     void crash(org.luwrain.app.crash.App app);
         void crash(Throwable e);
-    GraphicalMode openGraphicalMode(String modeName, GraphicalMode.Params params);
     void announcement(String text, String announcementClass, String announcementSubclass);
 
 
@@ -293,5 +292,5 @@ public interface Luwrain extends PropertiesBase
     boolean xRunHooks(String hookName, Object[] args, HookStrategy strategy);
     OsInterface xGetOsInterface();
     boolean xCreatePropertyHook(String propName, String hookName);
-    void showGraphical(Object obj);
+    void showGraphical(org.luwrain.base.Interaction.GraphicalMode graphicalMode);
 }
