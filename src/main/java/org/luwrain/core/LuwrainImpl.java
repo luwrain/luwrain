@@ -516,16 +516,7 @@ final class LuwrainImpl implements Luwrain
     @Override public boolean openUrl(String url)
     {
 	NullCheck.notEmpty(url, "url");
-	try {
-	    if (xRunHooks(OPEN_URL_CUSTOM_HOOK, new Object[]{url}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY))
-		return true;
-	    return xRunHooks(OPEN_URL_DEFAULT_HOOK, new Object[]{url}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
-	}
-	catch(RuntimeException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to open the url \'" + url + "\':" + e.getClass().getName() + ":" + e.getMessage());
-	    return false;
-	}
+	return core.hookChainWithCustom(OPEN_URL_DEFAULT_HOOK, new Object[]{url});
     }
 
     @Override public void runUiSafely(Runnable runnable)
@@ -730,11 +721,12 @@ final class LuwrainImpl implements Luwrain
 	return core.i18n.getSpeakableText(text, type);
     }
 
-        @Override public void xRunHooks(String hookName, HookRunner runner)
+        @Override public boolean runHooks(String hookName, HookRunner runner)
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(runner, "runner");
 	core.extensions.runHooks(hookName, runner);
+	return true;
     }
 
         @Override public boolean xRunHooks(String hookName, Object[] args, HookStrategy strategy)
@@ -744,16 +736,19 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notNull(strategy, "strategy");
 	switch(strategy)
 	{
+	    /*
 	case CHAIN_OF_RESPONSIBILITY:
 	    return new org.luwrain.script.hooks.ChainOfResponsibilityHook(this).run(hookName, args);
+	    */
 	}
 	final AtomicBoolean execRes = new AtomicBoolean(false);
 	final AtomicReference<RuntimeException> error = new AtomicReference();
-	xRunHooks(hookName, (hook)->{
+	runHooks(hookName, (hook)->{
 		try {
 		final Object res = hook.run(args);
 		switch(strategy)
 		{
+		    /*
 		case CHAIN_OF_RESPONSIBILITY:
 		    if (res == null)
 					    		return Luwrain.HookResult.CONTINUE;
@@ -764,6 +759,7 @@ final class LuwrainImpl implements Luwrain
 			execRes.set(true);
 			return Luwrain.HookResult.BREAK;
 		    }
+		    */
 		case ALL:
 		default:
 		    		return Luwrain.HookResult.CONTINUE;
@@ -780,8 +776,10 @@ final class LuwrainImpl implements Luwrain
 		    error.set(runtimeEx);
 		    switch(strategy)
 		    {
+			/*
 		    case CHAIN_OF_RESPONSIBILITY:
 			return HookResult.BREAK;
+			*/
 		    case ALL:
 		    default:
 			return HookResult.CONTINUE;
@@ -790,10 +788,12 @@ final class LuwrainImpl implements Luwrain
 	    });
 	switch(strategy)
 	{
+	    /*
 	case CHAIN_OF_RESPONSIBILITY:
 	    	if (error.get() != null)
 	    throw error.get();
 	    return execRes.get();
+	    */
 	case ALL:
 	default:
 	    return error.get() == null;

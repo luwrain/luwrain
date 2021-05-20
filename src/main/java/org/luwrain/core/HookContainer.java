@@ -18,6 +18,18 @@ package org.luwrain.core;
 
 public interface HookContainer
 {
-    //Returns true if execution must be continued
-    boolean runHooks(String hookName, Luwrain.HookRunner runner);
+        public enum HookResult { CONTINUE, BREAK };
+
+    public interface Hook
+    {
+	Object run(Object[] args);
+    }
+
+    public interface HookRunner
+    {
+	    //Returns true if execution must be continued
+	HookResult runHook(Hook hook);
+    }
+
+    boolean runHooks(String hookName, HookRunner runner);
 }

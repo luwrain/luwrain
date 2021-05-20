@@ -36,7 +36,7 @@ public class ProviderHook
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
 	final AtomicReference res = new AtomicReference();
-	luwrain.xRunHooks(hookName, (hook)->{
+	luwrain.runHooks(hookName, (hook)->{
 		try {
 		    final Object obj = hook.run(args);
 		    if (obj == null)

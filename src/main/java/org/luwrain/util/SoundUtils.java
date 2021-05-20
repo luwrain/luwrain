@@ -19,6 +19,7 @@
 package org.luwrain.util;
 
 import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat.Encoding;
 
 import org.luwrain.core.*;
 
@@ -91,6 +92,63 @@ public class SoundUtils
     {
 	NullCheck.notNull(audioFormat, "audioFormat");
 	return createWaveHeader((int)audioFormat.getSampleRate(), audioFormat.getSampleSizeInBits(), audioFormat.getChannels(), dataLen);
+    }
+
+    static public AudioFormat createAudioFormat(String params)
+    {
+	Encoding encoding = Encoding.PCM_SIGNED;
+	float sampleRate = 24000;
+	int channels = 2;
+	int bitsInSample = 16;
+	boolean bigEndian = false;
+	for (String p: params.split(",", -1))
+	{
+	    if (p.isEmpty())
+		continue;
+	    switch(p.trim().toLowerCase())
+	    {
+	    case "mono":
+		channels = 1;
+		continue;
+	    case "stereo":
+		channels = 2;
+		continue;
+	    case "8bit":
+	    case "8bits":
+		bitsInSample = 8;
+	    continue;
+	    case "16bit":
+	    case "16bits":
+		bitsInSample = 16;
+	    continue;
+	    case "bigendian":
+		bigEndian = true;
+		continue;
+	    case "littleEndian":
+		bigEndian = false;
+		continue;
+	    case "signed":
+		encoding = Encoding.PCM_SIGNED;
+		continue;
+	    case "unsigned":
+		encoding = Encoding.PCM_UNSIGNED;
+		continue;
+	    }
+	    try {
+		sampleRate = Float.parseFloat(p.trim());
+	    }
+	    catch(NumberFormatException e)
+	    {
+		continue;
+	    }
+	}
+	return new AudioFormat(encoding,
+			       sampleRate, 
+			       bitsInSample, //sampleSizeInBits
+			       channels, //channels
+			       (1 * bitsInSample / 8), //frameSize
+			       sampleRate, //frameRate
+			       bigEndian);
     }
 
     static public boolean setLineMasterGanePercent(SourceDataLine line, int percent)

@@ -68,7 +68,7 @@ protected interface ActionHandler
 	}
 	public org.luwrain.core.Action[] getAreaActions()
 	{
-	    final List<org.luwrain.core.Action> res = new LinkedList();
+	    final List<org.luwrain.core.Action> res = new ArrayList();
 	    for(ActionInfo a: actions)
 		if (a.inputEvent != null)
 		    res.add(new org.luwrain.core.Action(a.name, a.title, a.inputEvent)); else

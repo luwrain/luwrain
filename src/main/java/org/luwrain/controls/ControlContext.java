@@ -22,7 +22,7 @@ import java.io.File;
 
 import org.luwrain.core.*;
 
-public interface ControlContext
+public interface ControlContext extends HookContainer
 {
     void say(String text);
     void say(String text, Sounds sound);
@@ -48,6 +48,5 @@ int getAreaVisibleHeight(Area area);
     void onAreaNewBackgroundSound(Area area);
     String getSpeakableText(String text, Luwrain.SpeakableTextType type);
         boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy);
-    void runHooks(String hookName, Luwrain.HookRunner runner);
     void message(String text, Luwrain.MessageType messageType);
 }

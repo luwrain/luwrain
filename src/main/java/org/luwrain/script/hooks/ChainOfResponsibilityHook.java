@@ -24,12 +24,12 @@ import org.luwrain.script.*;
 
 public class ChainOfResponsibilityHook
 {
-    protected final Luwrain luwrain;
+    protected final HookContainer hookContainer;
 
-    public ChainOfResponsibilityHook(Luwrain luwrain)
+    public ChainOfResponsibilityHook(HookContainer hookContainer)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	this.luwrain = luwrain;
+	NullCheck.notNull(hookContainer, "hookContainer");
+	this.hookContainer = hookContainer;
     }
 
     public boolean  run(String hookName, Object[] args)
@@ -38,7 +38,7 @@ public class ChainOfResponsibilityHook
 	NullCheck.notNullItems(args, "args");
 	final AtomicBoolean execRes = new AtomicBoolean(false);
 	final AtomicReference error = new AtomicReference();
-	luwrain.xRunHooks(hookName, (hook)->{
+	hookContainer.runHooks(hookName, (hook)->{
 		try {
 		    final Object res = hook.run(args);
 		    if (res == null || !(res instanceof Boolean))
@@ -62,5 +62,18 @@ public class ChainOfResponsibilityHook
 	if (error.get() != null)
 	    throw (RuntimeException)error.get();
 	return execRes.get();
+    }
+
+        public boolean  runNoExcept(String hookName, Object[] args)
+    {
+	NullCheck.notEmpty(hookName, "hookName");
+	NullCheck.notNullItems(args, "args");
+	try {
+	    return run(hookName, args);
+	}
+	catch(Throwable e)
+	{
+	    return false;
+	}
     }
 }

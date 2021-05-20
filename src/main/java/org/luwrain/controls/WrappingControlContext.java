@@ -151,9 +151,9 @@ public class WrappingControlContext implements ControlContext
 	return context.runHooks(hookName, args, strategy);
     }
 
-    @Override public     void runHooks(String hookName, Luwrain.HookRunner runner)
+    @Override public     boolean runHooks(String hookName, HookRunner runner)
     {
-	context.runHooks(hookName, runner);
+	return context.runHooks(hookName, runner);
     }
 
     @Override public void message(String text, Luwrain.MessageType messageType)

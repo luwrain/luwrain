@@ -22,6 +22,7 @@ import java.io.*;
 import java.nio.file.*;
 
 import org.luwrain.util.*;
+import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 
 abstract class Base implements org.luwrain.base.EventConsumer
 {
@@ -391,23 +392,11 @@ abstract class Base implements org.luwrain.base.EventConsumer
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
-	try {
-	    if (getObjForEnvironment().xRunHooks(hookName + ".custom", args, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY))
-		return true;
-	}
-	catch(RuntimeException e)
-	{
-	    Log.error(LOG_COMPONENT, "failed hook " + hookName + ".custom:" + e.getClass().getName() + ":" + e.getMessage());
-	    return false;
-	}
-	try {
-	    return getObjForEnvironment().xRunHooks(hookName, args, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
-	}
-	catch(RuntimeException e)
-	{
-	    Log.error(LOG_COMPONENT, "failed hook " + hookName + ":" + e.getClass().getName() + ":" + e.getMessage());
-	    return false;
-	}
+	if (new ChainOfResponsibilityHook(luwrain).runNoExcept(hookName + ".custom", args))
+	    return true;
+	if (new ChainOfResponsibilityHook(luwrain).runNoExcept(hookName, args))
+	    return true;
+	return false;
     }
 
     void unsafeAreaOperation(Runnable runnable)

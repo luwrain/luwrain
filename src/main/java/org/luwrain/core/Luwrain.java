@@ -54,7 +54,7 @@ import org.luwrain.speech.Channel;
  * of access.  It is necessary to make extensions using more accurate and
  * transparent.
  */
-public interface Luwrain extends PropertiesBase
+public interface Luwrain extends PropertiesBase, HookContainer
 {
     public enum MessageType {
 	ALERT,
@@ -75,11 +75,7 @@ public interface Luwrain extends PropertiesBase
 	URL,
     };
 
-    public enum SpeakableTextType {
-	NONE,
-	NATURAL,
-	PROGRAMMING,
-    };
+    public enum SpeakableTextType { NONE, NATURAL, PROGRAMMING };
 
     public enum AreaAttr {
 	DIRECTORY,
@@ -89,29 +85,15 @@ public interface Luwrain extends PropertiesBase
 	URL_UNDER_HOT_POINT,
     };
 
-    public enum HookResult {
-	CONTINUE,
-	BREAK,
-    };
 
     public enum HookStrategy {
 	ALL,
-	CHAIN_OF_RESPONSIBILITY,
+	//	CHAIN_OF_RESPONSIBILITY,
     };
 
     public enum JobFlags {
 	TRACKING
     };
-
-    public interface Hook
-    {
-	Object run(Object[] args);
-    }
-
-    public interface HookRunner
-    {
-	HookResult runHook(Hook hook);
-    }
 
     void announceActiveArea();
     Object callUiSafely(java.util.concurrent.Callable callable);
@@ -284,7 +266,7 @@ public interface Luwrain extends PropertiesBase
     int xGetSpeechPitch();
     void xSetSpeechPitch(int value);
     //From any thread
-    void xRunHooks(String hookName, HookRunner runner);
+    //    void xRunHooks(String hookName, HookRunner runner);
     //From any thread
 
     //if chain of responsibility: true if was one true returned, if RuntimeException it will be thrown

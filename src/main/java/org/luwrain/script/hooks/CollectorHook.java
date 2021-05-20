@@ -38,7 +38,7 @@ public class CollectorHook
 	NullCheck.notNullItems(args, "args");
 	final List res = new LinkedList();
 	final AtomicReference ex = new AtomicReference();
-	luwrain.xRunHooks(hookName, (hook)->{
+	luwrain.runHooks(hookName, (hook)->{
 		try {
 		    final Object obj = hook.run(args);
 		    if (obj == null)

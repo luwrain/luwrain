@@ -64,4 +64,12 @@ public class ChainOfResponsibilityHook
 	    throw (RuntimeException)error.get();
 	return execRes.get();
     }
+
+    static public     boolean  run(HookContainer hookContainer, String hookName, Object[] args)
+    {
+	NullCheck.notNull(hookContainer, "hookContainer");
+	NullCheck.notEmpty(hookName, "hookName");
+	NullCheck.notNullItems(args, "args");
+	return new ChainOfResponsibilityHook(hookContainer).run(hookName, args);
+    }
 }

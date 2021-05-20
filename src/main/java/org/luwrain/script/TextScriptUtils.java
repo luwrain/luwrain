@@ -25,6 +25,7 @@ import jdk.nashorn.api.scripting.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.script.hooks.*;
 
 public final class TextScriptUtils
 {
@@ -135,11 +136,10 @@ public final class TextScriptUtils
 	final AtomicReference res = new AtomicReference();
 	corrector.doEditAction((lines, hotPoint)->{
 		try {
-		    //FIXME: using ChainOfResponsibilityHook instead of context.runHooks()
-		    res.set(new Boolean(context.runHooks(hookName, new Object[]{
+		    res.set(new Boolean(new ChainOfResponsibilityHook(context).runNoExcept(hookName, new Object[]{
 				    ScriptUtils.createInputEvent(event),
 				    createTextEditHookObject(area, lines, hotPoint, regionPoint)
-				}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY)));
+				})));
 		}
 		catch(RuntimeException e)
 		{

@@ -193,36 +193,13 @@ return new MultilineEditCorrectorTranslator(content, this);
     @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
+	/*
 	if (runInputEventHook(event))
 	    return true;
+	*/
 	if (edit.onInputEvent(event))
 	    return true;
 	return super.onInputEvent(event);
-    }
-
-    protected boolean runInputEventHook(InputEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	final MultilineEdit.Model model = edit.getMultilineEditModel();
-	if (model == null || !(model instanceof MultilineEditCorrector))
-	    return false;
-	final MultilineEditCorrector corrector = (MultilineEditCorrector)model;
-	final AtomicReference res = new AtomicReference();
-	corrector.doEditAction((lines, hotPoint)->{
-		try {
-		    res.set(new Boolean(context.runHooks("luwrain.edit.multiline.input", new Object[]{
-				    ScriptUtils.createInputEvent(event),
-				    TextScriptUtils.createTextEditHookObject(EditArea.this, lines, hotPoint, regionPoint)
-				}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY)));
-		}
-		catch(RuntimeException e)
-		{
-		    Log.error(LOG_COMPONENT, "the luwrain.edit.multiline.input hook failed:" + e.getClass().getName() + ":" + e.getMessage());
-		}
-	    });
-	if (res.get() == null)
-	    return false;
-	return ((Boolean)res.get()).booleanValue();
     }
 
     @Override public boolean onSystemEvent(SystemEvent event)

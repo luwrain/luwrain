@@ -37,7 +37,7 @@ public class NotificationHook
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
 	final AtomicBoolean execRes = new AtomicBoolean(true);
-	luwrain.xRunHooks(hookName, (hook)->{
+	luwrain.runHooks(hookName, (hook)->{
 		try {
 hook.run(args);
 		    }
