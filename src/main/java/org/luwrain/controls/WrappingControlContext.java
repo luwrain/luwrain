@@ -28,6 +28,7 @@ public class WrappingControlContext implements ControlContext
 
     public WrappingControlContext(ControlContext context)
     {
+	NullCheck.notNull(context, "context");
 	this.context = context;
     }
 

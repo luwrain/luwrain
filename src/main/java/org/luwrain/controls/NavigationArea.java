@@ -290,15 +290,26 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_BELOW));
 	    return true;
 	}
-	while(hotPointY < count - 1 && !getLineNotNull(hotPointY).isEmpty())
-	    hotPointY++;
-		while(hotPointY < count - 1 && getLineNotNull(hotPointY).isEmpty())
-	    hotPointY++;
-	hotPointX = 0;
+	final int index = Math.min(getNextBlockLine(hotPointY), count - 1);
+	if (index < 0)
+	    return false;
+	hotPointX = getNewHotPointX(hotPointY, index, hotPointX, getLineNotNull(hotPointY), getLineNotNull(index));
+	hotPointY = index;
 	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, getLineNotNull(hotPointY));
 	return true;
     }
+
+    protected int getNextBlockLine(int startFrom)
+    {
+		final int count = getValidLineCount();
+	int index = startFrom;
+		while(index < count - 1 && !getLineNotNull(index).isEmpty())
+	    index++;
+		while(index < count - 1 && getLineNotNull(index).isEmpty())
+	    index++;
+		return index;
+		    }
 
     protected boolean onPageUp(InputEvent event)
     {
@@ -309,14 +320,27 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_ABOVE));
 	    return true;
 	}
-	while(hotPointY > 0 && !getLineNotNull(hotPointY).isEmpty())
-	    hotPointY--;
-		while(hotPointY > 0 && getLineNotNull(hotPointY).isEmpty())
-	    hotPointY--;
+
+		final int index = Math.min(getPrevBlockLine(hotPointY), count - 1);
+	if (index < 0)
+	    return false;
+	hotPointX = getNewHotPointX(hotPointY, index, hotPointX, getLineNotNull(hotPointY), getLineNotNull(index));
+	hotPointY = index;
 	hotPointX = 0;
 	context.onAreaNewHotPoint(this);
 	announceLine(hotPointY, getLineNotNull(hotPointY));
 	return true;
+    }
+
+    protected int getPrevBlockLine(int startFrom)
+    {
+			final int count = getValidLineCount();
+	int index = startFrom;
+		while(index > 0 && !getLineNotNull(index).isEmpty())
+	    index--;
+		while(index > 0 && getLineNotNull(index).isEmpty())
+	    index--;
+		return index;
     }
 
     protected boolean onAltRight(InputEvent event)

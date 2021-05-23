@@ -135,4 +135,9 @@ public class MutableLinesImpl implements MutableLines
     {
 	return getWholeText(null);
     }
+
+    public List<String> asList()
+    {
+	return lines;
+    }
 }
