@@ -83,5 +83,7 @@ public final class FixedPlaylist implements Playlist
     @Override public void onNewVolume(int newVolumeLevel)
     {
 	this.volume = newVolumeLevel;
+	if (volumeListener != null)
+	    volumeListener.onNewVolume(volume);
     }
 }
