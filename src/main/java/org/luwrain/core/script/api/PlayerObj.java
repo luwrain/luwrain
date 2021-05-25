@@ -95,7 +95,7 @@ final class PlayerObj extends AbstractJSObject
 	    return false;
 	final Playlist playlist;
 	try {
-	    playlist = new Playlist(tracks.toArray(new String[tracks.size()]));
+	    playlist = new FixedPlaylist(tracks.toArray(new String[tracks.size()]));
 	}
 	catch(IllegalArgumentException e)
 	{

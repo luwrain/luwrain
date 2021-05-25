@@ -22,6 +22,10 @@ import java.util.*;
 
 public interface Player
 {
+static public final int
+    MIN_VOLUME = 0,
+    MAX_VOLUME = 100;
+
     static public final String SHARED_OBJECT_NAME = "luwrain.player";
     static public final Set<Flags> DEFAULT_FLAGS = EnumSet.noneOf(Flags.class);
 

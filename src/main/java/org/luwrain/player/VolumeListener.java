@@ -18,13 +18,7 @@
 
 package org.luwrain.player;
 
-import java.util.*;
-
-import org.luwrain.core.*;
-
-public interface Playlist extends VolumeListener
+public interface VolumeListener
 {
-    int getTrackCount();
-    String getTrackUrl(int index);
-    int getVolume();
+    void onNewVolume(int newVolumeLevel);
 }

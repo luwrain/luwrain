@@ -93,7 +93,7 @@ public final class Player implements PropertiesProvider, org.luwrain.player.List
     {
 	NullCheck.notNull(playlist, "playlist");
 	this.trackNum = trackNum;
-	this.trackUrl = playlist.getTrack(trackNum);
+	this.trackUrl = playlist.getTrackUrl(trackNum);
 	if (listener != null)
 	{
 	listener.onNewPropertyValue(PROP_TRACK_INDEX, String.valueOf(trackNum));

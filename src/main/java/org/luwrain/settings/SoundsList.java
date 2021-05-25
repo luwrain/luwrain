@@ -120,7 +120,7 @@ final class SoundsList extends ListArea implements SectionArea, ListArea.ClickHa
 	    return false;
 	if (luwrain.getPlayer() == null)
 	    return false;
-	luwrain.getPlayer().play(new Playlist(Urls.toUrl(item.file).toString()), 0, 0, Player.DEFAULT_FLAGS, null);
+	luwrain.getPlayer().play(new FixedPlaylist(Urls.toUrl(item.file).toString()), 0, 0, Player.DEFAULT_FLAGS, null);
 	return true;
     }
 
