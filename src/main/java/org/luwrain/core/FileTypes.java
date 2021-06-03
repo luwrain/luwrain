@@ -21,25 +21,23 @@ import java.net.*;
 import java.io.*;
 import java.nio.file.*;
 
-public class FileTypes
+final class FileTypes
 {
-    private final HashMap<String, String> fileTypes = new HashMap<String, String>();
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
+
+    private final Map<String, String> fileTypes = new HashMap();
 
     void load(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-	final String path = Settings.FILE_TYPES_PATH;
-	final String[] values= registry.getValues(path);
-	if (values.length < 1)
-	    return;
+	registry.addDirectory(Settings.FILE_TYPES_PATH);
+	final String[] values= registry.getValues(Settings.FILE_TYPES_PATH);
 	for(String v: values)
 	{
-	    if (v.trim().isEmpty())
-		continue;
-	    final String valuePath = Registry.join(path, v);
+	    final String valuePath = Registry.join(Settings.FILE_TYPES_PATH, v);
 	    if (registry.getTypeOf(valuePath) != Registry.STRING)
 	    {
-		Log.warning("core", "registry value " + valuePath + " is not a string");
+		Log.warning(LOG_COMPONENT, "registry value " + valuePath + " is not a string");
 		continue;
 	    }
 	    final String value = registry.getString(valuePath).trim();
@@ -132,11 +130,10 @@ public class FileTypes
 	return res.toArray(new String[res.size()]);
     }
 
-    static public String getExtension(String fileName)
+    private String getExtension(String fileName)
     {
 	NullCheck.notEmpty(fileName, "fileName");
-	final Path path = Paths.get(fileName);
-	final String name = path.getFileName().toString();
+	final String name = new File(fileName).getName();
 	if (name.isEmpty())
 	    return "";
 	int dotPos = name.lastIndexOf(".");
@@ -145,7 +142,7 @@ public class FileTypes
 	return name.substring(dotPos + 1);
     }
 
-    static public String getExtension(URL url)
+    private String getExtension(URL url)
     {
 	NullCheck.notEmpty(url, "url");
 	final String name = url.getFile();
@@ -156,5 +153,4 @@ public class FileTypes
 	    return "";
 	return name.substring(dotPos + 1);
     }
-
 }

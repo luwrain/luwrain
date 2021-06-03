@@ -50,6 +50,7 @@ static public final int
     boolean jump(long offsetMsec);
     boolean nextTrack();
     boolean prevTrack();
+    boolean playTrack(int trackIndex);
     State getState();
     boolean hasPlaylist();
     Playlist getPlaylist();

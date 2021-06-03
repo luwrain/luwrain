@@ -41,6 +41,7 @@ public final class App extends AppBase<Strings>
 @Override protected AreaLayout onAppInit()
 {
     this.mainLayout = new MainLayout(this);
+    setAppName(getStrings().appName());
 return this.mainLayout.getAreaLayout();
 }
 
@@ -50,5 +51,4 @@ return this.mainLayout.getAreaLayout();
 	closeApp();
 	return true;
     }
-
 }
