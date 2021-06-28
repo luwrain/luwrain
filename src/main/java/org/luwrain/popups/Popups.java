@@ -293,7 +293,7 @@ public final class Popups
 		    switch(event.getCode())
 		    {
 		    case OK:
-			return true;//closing.doOk();
+			return closing.doOk();
 		    default:
 			return super.onSystemEvent(event);
 		    }
