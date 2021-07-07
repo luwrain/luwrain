@@ -573,7 +573,7 @@ final class Commands
 				dir = "";
 			} else
 			    dir = "";
-			luwrain.newJob("sys", new String[]{ cmd.trim() }, EnumSet.noneOf(Luwrain.JobFlags.class), null);
+			luwrain.newJob("sys", new String[]{ cmd.trim() }, "", EnumSet.noneOf(Luwrain.JobFlags.class), null);
 		    }),
 	};    
     }

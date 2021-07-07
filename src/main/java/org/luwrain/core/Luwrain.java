@@ -218,7 +218,7 @@ public interface Luwrain extends PropertiesBase, HookContainer
      */
     boolean registerExtObj(ExtensionObject extObj);
     boolean runCommand(String command);
-    Job.Instance newJob(String name, String[] args, Set<JobFlags> flags, org.luwrain.base.Job.Listener listener);
+    Job.Instance newJob(String name, String[] args, String dir, Set<JobFlags> flags, org.luwrain.base.Job.Listener listener);
     //    void runInMainThread(Runnable runnable);
     Object runLaterSync(java.util.concurrent.Callable callable);
     //    OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);

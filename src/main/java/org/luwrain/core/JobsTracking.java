@@ -37,10 +37,11 @@ public final class JobsTracking
 	this.objRegistry = objRegistry;
     }
 
-    Job.Instance run(String name, String[] args, Job.Listener listener)
+    Job.Instance run(String name, String[] args, String dir, Job.Listener listener)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNullItems(args, "args");
+	NullCheck.notNull(dir, "dir");
 	NullCheck.notNull(listener, "listener");
 	final Job job = objRegistry.getJob(name);
 	if (job == null)
@@ -50,7 +51,7 @@ public final class JobsTracking
 	}
 	Log.debug(LOG_COMPONENT, "starting the job '" + name + "' and arguments " + Arrays.toString(args));
 	final Entry entry = new Entry(listener);
-	final Job.Instance instance = job.launch(entry, args);
+	final Job.Instance instance = job.launch(entry, args, dir.isEmpty()?null:dir);
 	if (instance == null)
 	    return null;
 	entry.setInstance(instance);

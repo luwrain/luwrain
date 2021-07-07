@@ -45,6 +45,6 @@ public interface Job extends ExtensionObject
 	void stop();
     }
 
-    Instance launch(Listener listener, String[] args);
+    Instance launch(Listener listener, String[] args, String dir);
     Set<Flags> getJobFlags();
 }

@@ -47,10 +47,11 @@ final class JobAdapter implements Job
 	return name;
     }
 
-    @Override public Instance launch(Listener listener, String[] args)
+    @Override public Instance launch(Listener listener, String[] args, String dir)
     {
 	NullCheck.notNull(listener, "listener");
 	NullCheck.notNullItems(args, "args");
+	//FIXME: dir processing
 	try {
 	    final Instance instance = new Instance(listener);
 	    final Value res = func.execute(new Object[]{
