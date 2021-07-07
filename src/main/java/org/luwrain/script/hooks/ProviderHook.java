@@ -23,12 +23,12 @@ import org.luwrain.script.*;
 
 public class ProviderHook
 {
-    protected final Luwrain luwrain;
+    protected final HookContainer hookContainer;
 
-    public ProviderHook(Luwrain luwrain)
+    public ProviderHook(HookContainer hookContainer)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	this.luwrain = luwrain;
+	NullCheck.notNull(hookContainer, "hookContainer");
+	this.hookContainer = hookContainer;
     }
 
     public Object run(String hookName, Object[] args)
@@ -36,7 +36,7 @@ public class ProviderHook
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
 	final AtomicReference res = new AtomicReference();
-	luwrain.runHooks(hookName, (hook)->{
+	hookContainer.runHooks(hookName, (hook)->{
 		try {
 		    final Object obj = hook.run(args);
 		    if (obj == null)
