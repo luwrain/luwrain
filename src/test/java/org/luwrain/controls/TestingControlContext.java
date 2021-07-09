@@ -104,10 +104,8 @@ public class TestingControlContext implements ControlContext
     {
     }
 
-        @Override public void runHooks(String hookName, Luwrain.HookRunner runner)
-    {
-    }
-
+    @Override public boolean runHooks(String hookName, Luwrain.HookRunner runner) { return false; }
+    //    @Override public void runHooks(String hookName, HookContainer.HookRunner runner) {}
     @Override public boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy)
     {
 	return false;
@@ -118,12 +116,7 @@ public class TestingControlContext implements ControlContext
 	return text;
     }
 
-    @Override public int getAreaVisibleWidth(Area area)
-    {
-	return 80;
-    }
-
-    @Override public void sayStaticStr(LangStatic str)
-    {
-    }
+    @Override public int getAreaVisibleWidth(Area area) { return 80; }
+    @Override public void sayStaticStr(LangStatic str) {}
+    @Override public void message(String text, Luwrain.MessageType messageType) {}
     }
