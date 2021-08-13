@@ -16,16 +16,6 @@
       <artifactId>luwrain-base</artifactId>
       <version>${project.version}</version>
     </dependency>
-        <!--<dependency>
-      <groupId>org.graalvm</groupId>
-      <artifactId>graal-sdk</artifactId>
-      <version>20.1.0</version>
-    </dependency>-->
-    <dependency>
-      <groupId>org.graalvm.js</groupId>
-      <artifactId>js</artifactId>
-      <version>20.1.0</version>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -40,6 +30,20 @@
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

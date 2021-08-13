@@ -293,6 +293,68 @@ final class Core extends EventDispatching
 	}
     }
 
+
+
+    ScriptFile[] getScriptFilesList(String componentName)
+    {
+	NullCheck.notEmpty(componentName, "componentName");
+	//Common JavaScript extensions
+	final List<ScriptFile> res = new ArrayList();
+	final File jsDir = props.getFileProperty(Luwrain.PROP_DIR_JS);
+	if (jsDir.exists() && jsDir.isDirectory())
+	{
+	    final File[] files = jsDir.listFiles();
+	    if (files != null)
+		for(File f: files)
+		{
+		    if (f == null || !f.exists() || f.isDirectory())
+			continue;
+		    if (!f.getName().toUpperCase().endsWith(".JS"))
+			continue;
+		    final String name = f.getName();
+		    final int pos = name.indexOf("-");
+		    if (pos < 1 || pos >= name.length() - 4 || name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
+			continue;
+		    res.add(new ScriptFile(componentName, f.getAbsolutePath(), props.getProperty(Luwrain.PROP_DIR_DATA)));
+		}
+	}
+	//JavaScript extensions from packs
+	final File[] packs = getInstalledPacksDirs();
+	for(File pack: packs)
+	{
+	    final File dataDir = new File(pack, "data");
+	    if (dataDir.exists() && !dataDir.isDirectory())
+	    {
+		Log.warning(LOG_COMPONENT, "a pack contains '" + dataDir.getAbsolutePath() + "' exists and it isn't a directory");
+		continue;
+	    }
+	    if (!dataDir.exists() && !dataDir.mkdir())
+	    {
+		Log.error(LOG_COMPONENT, "unable to create '" + dataDir.getAbsolutePath() + "', skipping the pack");
+		continue;
+	    }
+	    final File jsExtDir = new File(pack, "js");
+	    if (!jsExtDir.exists() || !jsExtDir.isDirectory())
+		continue;
+	    final File[] files = jsExtDir.listFiles();
+	    if (files == null)
+		continue;
+	    for(File f: files)
+	    {
+		if (f == null || !f.exists() || f.isDirectory())
+		    continue;
+		if (!f.getName().toUpperCase().endsWith(".JS"))
+		    continue;
+		final String name = f.getName();
+		final int pos = name.indexOf("-");
+		if (pos < 1 || pos >= name.length() - 4 || name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
+		    continue;
+		res.add(new ScriptFile(componentName, f.getAbsolutePath(), dataDir.getAbsolutePath()));
+	    }
+	}
+	return res.toArray(new ScriptFile[res.size()]);
+    }
+
     private void initObjects()
     {
 	final Command[] standardCommands = Commands.getCommands(this, conversations);

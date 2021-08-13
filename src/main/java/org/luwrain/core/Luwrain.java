@@ -56,6 +56,10 @@ import org.luwrain.speech.Channel;
  */
 public interface Luwrain extends PropertiesBase, HookContainer
 {
+static public final String
+    PROP_DIR_DATA = "luwrain.dir.data",
+    PROP_DIR_JS = "luwrain.dir.js";
+    
     public enum MessageType {
 	ALERT,
 	ANNOUNCEMENT,
