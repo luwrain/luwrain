@@ -819,6 +819,12 @@ final class LuwrainImpl implements Luwrain
 	core.interaction.showGraphical(graphicalMode);
     }
 
+    @Override public     ScriptFile[] getScriptFilesList(String componentName)
+    {
+	NullCheck.notEmpty(componentName, "componentName");
+	return core.getScriptFilesList(componentName);
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");

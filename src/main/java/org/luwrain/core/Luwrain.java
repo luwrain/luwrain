@@ -279,4 +279,5 @@ static public final String
     OsInterface xGetOsInterface();
     boolean xCreatePropertyHook(String propName, String hookName);
     void showGraphical(org.luwrain.base.Interaction.GraphicalMode graphicalMode);
+    ScriptFile[] getScriptFilesList(String componentName);
 }
