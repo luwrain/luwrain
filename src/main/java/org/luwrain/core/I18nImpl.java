@@ -22,9 +22,10 @@ import org.luwrain.i18n.*;
 
 final class I18nImpl implements I18n, I18nExtension
 {
-    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-    static private final String EN_LANG = "en";
-    static private final String NO_CHOSEN_LANG = "#NO CHOSEN LANGUAGE#";
+    static private final String
+	LOG_COMPONENT = Base.LOG_COMPONENT,
+	EN_LANG = "en",
+	NO_CHOSEN_LANG = "#NO CHOSEN LANGUAGE#";
 
     private Lang chosenLang = null;
     private String chosenLangName = "";
@@ -43,6 +44,12 @@ final class I18nImpl implements I18n, I18nExtension
 	NullCheck.notEmpty(langName, "langName");
 	return langs.containsKey(langName)?langs.get(langName):null;
 	    }
+
+    @Override public Map<String, Lang> getAllLangs()
+    {
+	return new HashMap(langs);
+	    }
+
 
     String getSpeakableText(String text, Luwrain.SpeakableTextType speakableTextType)
     {

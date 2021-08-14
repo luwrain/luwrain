@@ -75,6 +75,14 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 	modules.add(m);
 	    }
 
+            public void load (ScriptFile scriptFile) throws IOException
+    {
+	NullCheck.notNull(scriptFile, "scriptFile");
+	Log.debug(LOG_COMPONENT, "loading " + scriptFile.toString());
+	load(scriptFile.asFile());
+	    }
+
+
 
     @Override public boolean runHooks(String hookName, Luwrain.HookRunner runner)
     {

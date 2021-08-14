@@ -313,7 +313,7 @@ final class Core extends EventDispatching
 			continue;
 		    final String name = f.getName();
 		    final int pos = name.indexOf("-");
-		    if (pos < 1 || pos >= name.length() - 4 || name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
+		    if (pos < 1 || pos >= name.length() - 4 || !name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
 			continue;
 		    res.add(new ScriptFile(componentName, f.getAbsolutePath(), props.getProperty(Luwrain.PROP_DIR_DATA)));
 		}
@@ -347,7 +347,7 @@ final class Core extends EventDispatching
 		    continue;
 		final String name = f.getName();
 		final int pos = name.indexOf("-");
-		if (pos < 1 || pos >= name.length() - 4 || name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
+		if (pos < 1 || pos >= name.length() - 4 || !name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
 		    continue;
 		res.add(new ScriptFile(componentName, f.getAbsolutePath(), dataDir.getAbsolutePath()));
 	    }

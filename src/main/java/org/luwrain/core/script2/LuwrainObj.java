@@ -29,10 +29,25 @@ import org.luwrain.util.*;
 
 final class LuwrainObj implements ProxyObject
 {
-    final Luwrain luwrain;
-    final Map<String, List<Value> > hooks = new HashMap();
-    final List<ExtensionObject> extObjs = new ArrayList();
+    static private String[] KEYS = new String[]{
+
+	"addHook",
+	"isDigit",
+	"isLetter",
+	"isLetterOrDigit",
+	"isSpace",
+	"log",
+	"readTextFile",
+	"speak",
+    };
+    static private final Set<String> KEYS_SET = new HashSet(Arrays.asList(KEYS));
+    static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray(KEYS);
+
     private final LogObj logObj;
+
+        final Luwrain luwrain;
+        final Map<String, List<Value> > hooks = new HashMap();
+        final List<ExtensionObject> extObjs = new ArrayList();
 
     LuwrainObj(Luwrain luwrain)
     {
@@ -49,6 +64,26 @@ final class LuwrainObj implements ProxyObject
 	{
 	case "addHook":
 	    return(ProxyExecutable)this::addHook;
+
+	    	case "isDigit":
+	    return(ProxyExecutable)this::isDigit;
+
+	    	    	case "isLetter":
+	    return(ProxyExecutable)this::isLetter;
+
+	    	    	case "isLetterOrDigit":
+	    return(ProxyExecutable)this::isLetterOrDigit;
+
+	    	    	    	case "isSpace":
+	    return(ProxyExecutable)this::isSpace;
+
+
+	    
+
+	    
+
+	    
+	    
 	case "log":
 	    return logObj;
 	case "readTextFile":
@@ -60,34 +95,9 @@ final class LuwrainObj implements ProxyObject
 	}
     }
 
-    @Override public boolean hasMember(String name)
-    {
-	switch(name)
-	{
-	case "addHook":
-	    case "log":
-	    case "readTextFile":
-	case "speak":
-	    return true;
-	default:
-	    return false;
-	}
-    }
-
-    @Override public Object getMemberKeys()
-    {
-	return ProxyArray.fromArray(
-	    "addHook",
-	    "log",
-	    "readTextFile",
-	    "speak"
-				    );
-    }
-
-    @Override public void putMember(String name, Value value)
-    {
-	throw new RuntimeException("The Luwrain object doesn't support updating of its variables");
-    }
+    @Override public boolean hasMember(String name) { return KEYS_SET.contains(name); }
+    @Override public Object getMemberKeys() { return KEYS_ARRAY; }
+    @Override public void putMember(String name, Value value) { throw new RuntimeException("The Luwrain object doesn't support updating of its variables"); }
 
     private Object addHook(Value[] args)
     {
@@ -103,10 +113,49 @@ final class LuwrainObj implements ProxyObject
 	{
 	    h = new ArrayList();
 	    this.hooks.put(name, h);
-	    }
+	}
 	h.add(args[1]);
-		return true;
+	return true;
     }
+
+    private Object isDigit(Value[] values)
+    {
+	if (!ScriptUtils.notNullAndLen(values, 1))
+	    return false;
+	if (!values[0].isString() || values[0].asString().length() != 1)
+	    return false;
+	return Character.isDigit(values[0].asString().charAt(0));
+    }
+
+            private Object isLetter(Value[] values)
+    {
+	if (!ScriptUtils.notNullAndLen(values, 1))
+	    return false;
+	if (!values[0].isString() || values[0].asString().length() != 1)
+	    return false;
+	return Character.isLetter(values[0].asString().charAt(0));
+    }
+
+            private Object isLetterOrDigit(Value[] values)
+    {
+	if (!ScriptUtils.notNullAndLen(values, 1))
+	    return false;
+	if (!values[0].isString() || values[0].asString().length() != 1)
+	    return false;
+	return Character.isLetterOrDigit(values[0].asString().charAt(0));
+    }
+
+                private Object isSpace(Value[] values)
+    {
+	if (!ScriptUtils.notNullAndLen(values, 1))
+	    return false;
+	if (!values[0].isString() || values[0].asString().length() != 1)
+	    return false;
+	return Character.isSpace(values[0].asString().charAt(0));
+    }
+
+
+    
 
     private Object readTextFile(Value[] args)
     {
@@ -133,7 +182,6 @@ final class LuwrainObj implements ProxyObject
 	    return false;
 	luwrain.speak(values[0].asString());
 	return true;
-	
-	    
     }
+
 }

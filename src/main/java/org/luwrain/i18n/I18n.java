@@ -32,4 +32,5 @@ public interface I18n
     String getExceptionDescr(Exception e);
     Lang getActiveLang();
     Lang getLang(String langName);
+    Map<String, Lang> getAllLangs();
 }

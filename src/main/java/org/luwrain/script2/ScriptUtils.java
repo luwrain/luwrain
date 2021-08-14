@@ -69,6 +69,11 @@ public final class ScriptUtils
 	if (value.isNull() || !value.isString())
 	    return 0;
 	return value.asInt();
+    }
 
+    static public Object getArray(Object[] items)
+    {
+	NullCheck.notNullItems(items, "items");
+	return ProxyArray.fromArray(items);
     }
 }
