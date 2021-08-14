@@ -238,18 +238,18 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	return interfaces.objForEnvironment;
     }
 
-    String loadScriptExtension(File dataDir, String text) throws org.luwrain.core.extensions.DynamicExtensionException
+    String loadScriptExtension(File dataDir, String text) throws ExtensionException
     {
 	NullCheck.notNull(text, "text");
 	mainCoreThreadOnly();
 	final org.luwrain.core.script.Core.ExecResult execRes = script.exec(dataDir, text);
 	if (!execRes.isOk())
-	    throw new org.luwrain.core.extensions.DynamicExtensionException(execRes.getException());
+	    throw new ExtensionException(execRes.getException());
 	final LoadedExtension loadedExt = extensions.addDynamicExtension(execRes.getExtension(), execRes.getLuwrain());
 	if (loadedExt == null)
 	{
 	    interfaces.release(execRes.getLuwrain());
-	    throw new org.luwrain.core.extensions.DynamicExtensionException("Trying to load twice the same extension");
+	    throw new ExtensionException("Trying to load twice the same extension");
 	}
 	objRegistry.takeObjects(loadedExt);
 	for(Command c: loadedExt.commands)//FIXME:
@@ -257,7 +257,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	return loadedExt.id;
     }
 
-    String loadScriptExtensionFromFile(File dataDir, File file) throws org.luwrain.core.extensions.DynamicExtensionException
+    String loadScriptExtensionFromFile(File dataDir, File file) throws ExtensionException
     {
 	NullCheck.notNull(file, "file");
 	final String text;
@@ -266,12 +266,12 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	}
 	catch(IOException e)
 	{
-	    throw new org.luwrain.core.extensions.DynamicExtensionException(e);
+	    throw new ExtensionException(e);
 	}
 	return loadScriptExtension(dataDir, text);
     }
 
-        String loadScript2(ScriptFile scriptFile) throws org.luwrain.core.extensions.DynamicExtensionException
+        String loadScript2(ScriptFile scriptFile) throws ExtensionException
     {
 	NullCheck.notNull(scriptFile, "scriptFile");
 	mainCoreThreadOnly();
@@ -291,7 +291,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	if (loadedExt == null)
 	{
 	    interfaces.release(ext.getLuwrainObj());
-	    throw new org.luwrain.core.extensions.DynamicExtensionException("Trying to load twice the same extension");
+	    throw new ExtensionException("Trying to load twice the same extension");
 	}
 	objRegistry.takeObjects(loadedExt);
 	for(Command c: loadedExt.commands)//FIXME:

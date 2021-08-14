@@ -146,7 +146,7 @@ static public final String
     org.luwrain.i18n.I18n i18n();
     void launchApp(String shortcutName);
     void launchApp(String shortcutName, String[] args);
-    String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException;
+    String loadScriptExtension(String text) throws ExtensionException;
     org.luwrain.speech.Channel loadSpeechChannel(String engineName, String params) throws org.luwrain.speech.SpeechException;
     void message(String text);
     void message(String text, MessageType messageType);

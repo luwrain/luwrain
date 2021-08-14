@@ -16,16 +16,16 @@
 
 //LWR_API 1.0
 
-package org.luwrain.core.extensions;
+package org.luwrain.core;
 
-public class DynamicExtensionException extends Exception
+public final class ExtensionException extends Exception
 {
-    public DynamicExtensionException(Exception ex)
+    public ExtensionException(Throwable ex)
     {
 	super(ex);
     }
 
-    public DynamicExtensionException(String message)
+    public ExtensionException(String message)
     {
 	super(message);
     }

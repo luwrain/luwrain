@@ -183,7 +183,7 @@ final class Core extends EventDispatching
 			    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
 			    final String id = loadScriptExtensionFromFile(props.getFileProperty("luwrain.dir.data"), f);
 			}
-			catch(org.luwrain.core.extensions.DynamicExtensionException e)
+			catch(ExtensionException e)
 			{
 			    Log.error(LOG_COMPONENT, "unable to load the script extension " + f.getAbsolutePath() + ":" + e.getMessage());
 			}
@@ -223,7 +223,7 @@ final class Core extends EventDispatching
 		    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
 		    final String id = loadScriptExtensionFromFile(dataDir, f);
 		}
-		catch(org.luwrain.core.extensions.DynamicExtensionException e)
+		catch(ExtensionException e)
 		{
 		    Log.error(LOG_COMPONENT, "unable to load the script extension " + f.getAbsolutePath() + ":" + e.getMessage());
 		}

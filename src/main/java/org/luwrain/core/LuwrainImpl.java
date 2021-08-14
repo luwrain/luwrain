@@ -686,7 +686,7 @@ final class LuwrainImpl implements Luwrain
     }
 
 
-    @Override public String loadScriptExtension(String text) throws org.luwrain.core.extensions.DynamicExtensionException
+    @Override public String loadScriptExtension(String text) throws ExtensionException
     {
 	NullCheck.notNull(text, "text");
 	core.mainCoreThreadOnly();
