@@ -14,12 +14,12 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.extensions;
+package org.luwrain.core;
 
 import java.util.*;
 
 import org.luwrain.base.*;
-import org.luwrain.core.*;
+import org.luwrain.core.extensions.*;
 import org.luwrain.core.script2.*;
 
 public class Script2Extension implements Extension, org.luwrain.core.HookContainer
@@ -41,6 +41,17 @@ public class Script2Extension implements Extension, org.luwrain.core.HookContain
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	return null;
+    }
+
+    public Luwrain getLuwrainObj()
+    {
+	return this.luwrain;
+    }
+
+    public void setScriptCore(ScriptCore scriptCore)
+    {
+	NullCheck.notNull(scriptCore, "scriptCore");
+	this.scriptCore = scriptCore;
     }
 
             @Override public void close()

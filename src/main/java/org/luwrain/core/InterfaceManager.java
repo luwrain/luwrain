@@ -24,14 +24,13 @@ import org.luwrain.core.extensions.Extension;
 public final class InterfaceManager
 {
     private final Core core;
-    private final List<Entry> entries = new Vector();
+    private final List<Entry> entries = new ArrayList();
     final Luwrain objForEnvironment;
 
     InterfaceManager(Base base)
     {
 	NullCheck.notNull(base, "base");
 	this.core = (Core)base;
-	NullCheck.notNull(core, "core");
 	this.objForEnvironment = new LuwrainImpl((Core)base);
     }
 

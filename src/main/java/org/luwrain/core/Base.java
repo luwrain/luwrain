@@ -23,6 +23,7 @@ import java.nio.file.*;
 
 import org.luwrain.util.*;
 import org.luwrain.core.ExtensionsManager.LoadedExtension;
+import org.luwrain.core.script2.ScriptCore;
 import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 
 abstract class Base implements org.luwrain.base.EventConsumer
@@ -268,6 +269,34 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	    throw new org.luwrain.core.extensions.DynamicExtensionException(e);
 	}
 	return loadScriptExtension(dataDir, text);
+    }
+
+        String loadScript2(ScriptFile scriptFile) throws org.luwrain.core.extensions.DynamicExtensionException
+    {
+	NullCheck.notNull(scriptFile, "scriptFile");
+	mainCoreThreadOnly();
+	final Script2Extension ext = new Script2Extension(scriptFile.toString());
+	ext.init(interfaces.requestNew(ext));
+	final ScriptCore scriptCore = new ScriptCore(ext.getLuwrainObj());
+	ext.setScriptCore(scriptCore);
+	try {
+	scriptCore.load(scriptFile);
+	}
+	catch(IOException e)
+	{
+	    interfaces.release(ext.getLuwrainObj());
+	    throw new RuntimeException(e);
+	}
+	final LoadedExtension loadedExt = extensions.addDynamicExtension(ext, ext.getLuwrainObj());
+	if (loadedExt == null)
+	{
+	    interfaces.release(ext.getLuwrainObj());
+	    throw new org.luwrain.core.extensions.DynamicExtensionException("Trying to load twice the same extension");
+	}
+	objRegistry.takeObjects(loadedExt);
+	for(Command c: loadedExt.commands)//FIXME:
+	    commands.add(ext.getLuwrainObj(), c);
+	return loadedExt.id;
     }
 
     boolean runFunc(Luwrain luwrain, String name)
