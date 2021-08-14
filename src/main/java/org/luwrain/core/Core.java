@@ -191,71 +191,8 @@ final class Core extends EventDispatching
 		Log.warning(LOG_COMPONENT, "the directory " + jsDir.getAbsolutePath() + " does not exist, skipping loading of script extensions");
 	}
 
-	//Common text extensions
-	{
-	    final File textExtDir = props.getFileProperty("luwrain.dir.textext");
-	    if (textExtDir.exists() && textExtDir.isDirectory())
-	    {
-		final File[] files = textExtDir.listFiles();
-		if (files != null)
-		    for(File f: files)
-		    {
-			if (f == null ||!f.exists() || f.isDirectory())
-			    continue;
-			if (!f.getName().toLowerCase().endsWith(".ext"))
-			    continue;
-			try {
-			    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
-			    final String id = loadTextExtensionFromFile(f, props.getFileProperty("luwrain.dir.data"));
-			}
-			catch(org.luwrain.core.extensions.DynamicExtensionException e)
-			{
-			    Log.error(LOG_COMPONENT, "unable to load the text extension " + f.getAbsolutePath() + ":" + e.getMessage());
-			}
-		    }
-	    } else
-		Log.warning(LOG_COMPONENT, "the directory " + textExtDir.getAbsolutePath() + " does not exist, skipping loading of text extensions");
-	}
-	
-	//Text extensions from packs
-	final File[] packs = getInstalledPacksDirs();
-	for(File pack: packs)
-	{
-	    final File textExtDir = new File(pack, "text");
-	    if (!textExtDir.exists() || !textExtDir.isDirectory())
-		continue;
-	    final File[] files = textExtDir.listFiles();
-	    if (files == null)
-		continue;
-	    for(File f: files)
-	    {
-		if (f == null || !f.exists() || f.isDirectory())
-		    continue;
-		if (!f.getName().toLowerCase().endsWith(".ext"))
-		    continue;
-		final File dataDir = new File(pack, "data");
-		if (dataDir.exists() && !dataDir.isDirectory())
-		{
-		    Log.error(LOG_COMPONENT, dataDir.getAbsolutePath() + " exists, skipping the pack");
-		    continue;
-		}
-		if (!dataDir.exists() && !dataDir.mkdir())
-		{
-		    Log.error(LOG_COMPONENT, "unable to create " + dataDir.getAbsolutePath() + ", skipping the pack");
-		    continue;
-		}
-		try {
-		    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
-		    final String id = loadTextExtensionFromFile(f, dataDir);
-		}
-		catch(org.luwrain.core.extensions.DynamicExtensionException e)
-		{
-		    Log.error(LOG_COMPONENT, "unable to load the text extension " + f.getAbsolutePath() + ":" + e.getMessage());
-		}
-	    }
-	}
-
 	//JavaScript extensions from packs
+		final File[] packs = getInstalledPacksDirs();
 	for(File pack: packs)
 	{
 	    final File jsExtDir = new File(pack, "js");

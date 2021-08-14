@@ -31,18 +31,18 @@ public final class Core
 
 	public final class ExecResult
 	{
-	    private final DynamicExtension ext;
+	    private final Extension ext;
 	    private final Luwrain luwrain;
 	    private final Exception exception;
 
-	    ExecResult(DynamicExtension ext, Luwrain luwrain, Exception exception )
+	    ExecResult(Extension ext, Luwrain luwrain, Exception exception )
 	    {
 		this.ext = ext;
 		this.luwrain = luwrain;
 		this.exception = exception;
 	    }
 
-	    public DynamicExtension getExtension()
+	    public Extension getExtension()
 	    {
 		return ext;
 	    }

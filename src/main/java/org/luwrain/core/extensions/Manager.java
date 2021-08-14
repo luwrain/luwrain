@@ -138,18 +138,13 @@ public final class Manager
 	return true;
     }
 
-    public LoadedExtension addDynamicExtension(DynamicExtension ext, Luwrain luwrain)
+    public LoadedExtension addDynamicExtension(Extension ext, Luwrain luwrain)
     {
 	NullCheck.notNull(ext, "ext");
 	NullCheck.notNull(luwrain, "luwrain");
 	for(LoadedExtension e: getAllLoadedExtensions())
 	    if (e.ext == ext)
 		return null;
-	/*
-	for(LoadedExtension e: extensions)
-	    if (e.ext == ext)
-		return null;
-	*/
 	final LoadedExtension loadedExt = createLoadedExtension(ext, luwrain);
 	dynamicExtensions.add(loadedExt);
 	return loadedExt;
