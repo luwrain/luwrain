@@ -43,22 +43,25 @@ public final class Module implements AutoCloseable
     public void run(String text)
     {
 	close();
-	this.context = Context.newBuilder()
-	.allowExperimentalOptions(true)
-	//.option("js.nashorn-compat", "true"
-	.build();
-	context.getBindings("js").putMember("Luwrain", this.luwrainObj);
-	if (bindings != null)
-	    bindings.onBindings(context.getBindings("js"));
-context.eval("js", text);
+	synchronized(luwrainObj) {
+	    this.context = Context.newBuilder()
+	    .allowExperimentalOptions(true)
+	    //.option("js.nashorn-compat", "true"
+	    .build();
+	    context.getBindings("js").putMember("Luwrain", this.luwrainObj);
+	    if (bindings != null)
+		bindings.onBindings(context.getBindings("js"));
+	    context.eval("js", text);
+	}
     }
 
     @Override public void close()
     {
-	if (context == null)
-	    return;
-	context.close();
-	context = null;
+	synchronized(luwrainObj) {
+	    if (context == null)
+		return;
+	    context.close();
+	    context = null;
+	}
     }
-
 }

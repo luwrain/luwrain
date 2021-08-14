@@ -65,38 +65,40 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 	final Module m = new Module(luwrain, bindings);
 	m.run(new String(b));
 	modules.add(m);
-	    }
+    }
 
-        public void load (File file) throws IOException
+    public void load (File file) throws IOException
     {
 	NullCheck.notNull(file, "file");
 	final Module m = new Module(luwrain, bindings);
 	m.run(FileUtils.readTextFileSingleString(file, "UTF-8"));
 	modules.add(m);
-	    }
+    }
 
-            public void load (ScriptFile scriptFile) throws IOException
+    public void load (ScriptFile scriptFile) throws IOException
     {
 	NullCheck.notNull(scriptFile, "scriptFile");
 	Log.debug(LOG_COMPONENT, "loading " + scriptFile.toString());
 	load(scriptFile.asFile());
-	    }
-
-
+    }
 
     @Override public boolean runHooks(String hookName, Luwrain.HookRunner runner)
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	try {
 	    for(Module m: modules)
-		for(Value v: m.luwrainObj.hooks.get(hookName))
-		{
-		    final Luwrain.HookResult res = runner.runHook((args)->v.execute(args));
-		    if (res == null)
-			return false;
-		    if (res == Luwrain.HookResult.BREAK)
-			return false;
-		}
+		if (m.luwrainObj.hooks.containsKey(hookName))
+		    for(Value v: m.luwrainObj.hooks.get(hookName))
+		    {
+			final Luwrain.HookResult res;
+			synchronized(m.luwrainObj) {
+			    res = runner.runHook((args)->v.execute(args));
+			}
+			if (res == null)
+			    return false;
+			if (res == Luwrain.HookResult.BREAK)
+			    return false;
+		    }
 	}
 	catch(Throwable e)
 	{
