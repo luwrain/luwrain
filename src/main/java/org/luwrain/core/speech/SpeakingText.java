@@ -20,9 +20,9 @@ import org.luwrain.core.*;
 
 public class SpeakingText
 {
-    private final org.luwrain.core.extensions.Manager extensions;
+    private ExtensionsManager  extensions;
 
-    public SpeakingText(org.luwrain.core.extensions.Manager extensions)
+    public SpeakingText(ExtensionsManager extensions)
     {
 	NullCheck.notNull(extensions, "extensions");
 	this.extensions = extensions;

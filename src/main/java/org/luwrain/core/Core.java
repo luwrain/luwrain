@@ -26,7 +26,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.i18n.*;
 import org.luwrain.core.extensions.*;
-import org.luwrain.core.extensions.Manager.LoadedExtension;
+import org.luwrain.core.ExtensionsManager.LoadedExtension;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
 import org.luwrain.core.listening.*;

@@ -14,32 +14,28 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.extensions;
+package org.luwrain.core;
 
 import java.util.*;
 import java.util.jar.*;
 import java.io.*;
 
 import org.luwrain.base.*;
-import org.luwrain.core.*;
+import org.luwrain.core.extensions.*;
 
-public final class Manager
+public final class ExtensionsManager
 {
-    static final String LOG_COMPONENT = "core";
-    static private final String EXTENSIONS_LIST_PREFIX = "--extensions=";
-
-    public interface InterfaceRequest 
-    {
-	Luwrain getInterfaceObj(Extension ext);
-    }
+    static final String
+	LOG_COMPONENT = Core.LOG_COMPONENT,
+	EXTENSIONS_LIST_PREFIX = "--extensions=";
 
     private final InterfaceManager interfaces;
     private LoadedExtension[] extensions = new LoadedExtension[0];
     private final List<LoadedExtension> dynamicExtensions = new ArrayList();
 
-    public Manager(InterfaceManager interfaces)
+    ExtensionsManager(InterfaceManager interfaces)
     {
-		NullCheck.notNull(interfaces, "interfaces");
+	NullCheck.notNull(interfaces, "interfaces");
 	this.interfaces = interfaces;
     }
 
@@ -289,6 +285,11 @@ public final class Manager
 	    return new String[0];
 	}
 	return getExtensionsListFromManifest(classLoader);
+    }
+
+interface InterfaceRequest 
+    {
+	Luwrain getInterfaceObj(Extension ext);
     }
 
     static public final class LoadedExtension

@@ -22,7 +22,7 @@ import java.io.*;
 import java.nio.file.*;
 
 import org.luwrain.util.*;
-import org.luwrain.core.extensions.Manager.LoadedExtension;
+import org.luwrain.core.ExtensionsManager.LoadedExtension;
 import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 
 abstract class Base implements org.luwrain.base.EventConsumer
@@ -45,7 +45,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 
     private final Thread mainCoreThread;
     protected final InterfaceManager interfaces = new InterfaceManager(this);
-    final org.luwrain.core.extensions.Manager extensions = new org.luwrain.core.extensions.Manager(interfaces);
+    final ExtensionsManager extensions = new ExtensionsManager(interfaces);
          final ObjRegistry objRegistry = new ObjRegistry();
     final CommandManager commands = new CommandManager();//FIXME:must be merged into objRegistry
     protected final org.luwrain.core.script.Core script = new org.luwrain.core.script.Core(interfaces);
