@@ -290,4 +290,27 @@ public final class Manager
 	}
 	return getExtensionsListFromManifest(classLoader);
     }
+
+    static public final class LoadedExtension
+{
+    public final Extension ext;
+    public final Luwrain luwrain;
+    public final String id;
+    public final ExtensionObject[] extObjects;
+    public Command[] commands;
+    public UniRefProc[] uniRefProcs;
+    public org.luwrain.cpanel.Factory[] controlPanelFactories;
+    LoadedExtension(Extension ext, Luwrain luwrain,
+		    ExtensionObject[] extObjects)
+    {
+	NullCheck.notNull(ext, "ext");
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNullItems(extObjects, "extObjects");
+	this.ext = ext;
+	this.luwrain = luwrain;
+	this.id = java.util.UUID.randomUUID().toString();
+	this.extObjects = extObjects;
+    }
+}
+
 }

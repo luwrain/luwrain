@@ -22,6 +22,7 @@ import java.io.*;
 import java.nio.file.*;
 
 import org.luwrain.util.*;
+import org.luwrain.core.extensions.Manager.LoadedExtension;
 import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 
 abstract class Base implements org.luwrain.base.EventConsumer
@@ -243,7 +244,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	final org.luwrain.core.script.Core.ExecResult execRes = script.exec(dataDir, text);
 	if (!execRes.isOk())
 	    throw new org.luwrain.core.extensions.DynamicExtensionException(execRes.getException());
-	final org.luwrain.core.extensions.LoadedExtension loadedExt = extensions.addDynamicExtension(execRes.getExtension(), execRes.getLuwrain());
+	final LoadedExtension loadedExt = extensions.addDynamicExtension(execRes.getExtension(), execRes.getLuwrain());
 	if (loadedExt == null)
 	{
 	    interfaces.release(execRes.getLuwrain());
@@ -332,7 +333,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
     {
 	NullCheck.notEmpty(extId, "extId");
 	mainCoreThreadOnly();
-	final org.luwrain.core.extensions.LoadedExtension ext = extensions.getDynamicExtensionById(extId);
+	final LoadedExtension ext = extensions.getDynamicExtensionById(extId);
 	if (ext == null)
 	    return false;
 	objRegistry.deleteByExt(ext.ext);

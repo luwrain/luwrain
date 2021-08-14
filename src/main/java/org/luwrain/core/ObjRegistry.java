@@ -20,6 +20,7 @@ import java.util.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.extensions.*;
+import org.luwrain.core.extensions.Manager.LoadedExtension;
 
 final class ObjRegistry implements ExtObjects
 {
@@ -234,7 +235,7 @@ final class ObjRegistry implements ExtObjects
 		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFailed"), Luwrain.MessageType.ERROR);
     }
 
-    void takeObjects(org.luwrain.core.extensions.LoadedExtension loadedExt)
+    void takeObjects(LoadedExtension loadedExt)
     {
 	NullCheck.notNull(loadedExt, "loadedExt");
 	    final Extension ext = loadedExt.ext;
