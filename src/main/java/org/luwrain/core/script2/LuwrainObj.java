@@ -27,10 +27,13 @@ import org.luwrain.core.*;
 import org.luwrain.script2.*;
 import org.luwrain.util.*;
 
+import static org.luwrain.script2.ScriptUtils.*;
+
 final class LuwrainObj implements ProxyObject
 {
     static private String[] KEYS = new String[]{
 	"addHook",
+	"addWroker",
 	"i18n",
 	"isDigit",
 	"isLetter",
@@ -66,6 +69,8 @@ final class LuwrainObj implements ProxyObject
 	{
 	case "addHook":
 	    return(ProxyExecutable)this::addHook;
+	    	case "addWorker":
+	    return(ProxyExecutable)this::addWorker;
 	case "i18n":
 	    i18nObj.refresh();
 	    return i18nObj;
@@ -94,7 +99,7 @@ final class LuwrainObj implements ProxyObject
 
     private Object addHook(Value[] args)
     {
-	if (!ScriptUtils.notNullAndLen(args, 2))
+	if (!notNullAndLen(args, 2))
 	    return false;
 	if (!args[0].isString() || !args[1].canExecute())
 	    return false;
@@ -111,9 +116,30 @@ final class LuwrainObj implements ProxyObject
 	return true;
     }
 
+        private Object addWorker(Value[] args)
+    {
+	if (!notNullAndLen(args, 4))
+	    return false;
+	if (!args[0].isString() ||
+	    !args[1].isNumber() ||
+	    !args[2].isNumber() ||
+args[3].canExecute())
+	    return false;
+	final String name = args[0].asString();
+	final int firstLaunchDelay = args[1].asInt();
+	final int launchPeriod = args[2].asInt();
+	if (name.trim().isEmpty())
+	    return false;
+	if (firstLaunchDelay == 0 || launchPeriod == 0)
+	    return false;
+	extObjs.add(new WorkerWrapper(this, name.trim(), firstLaunchDelay, launchPeriod, args[3]));
+	return true;
+	    }
+
+
     private Object isDigit(Value[] values)
     {
-	if (!ScriptUtils.notNullAndLen(values, 1))
+	if (!notNullAndLen(values, 1))
 	    return false;
 	if (!values[0].isString() || values[0].asString().length() != 1)
 	    return false;
