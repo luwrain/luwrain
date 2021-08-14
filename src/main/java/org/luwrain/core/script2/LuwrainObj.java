@@ -30,8 +30,8 @@ import org.luwrain.util.*;
 final class LuwrainObj implements ProxyObject
 {
     static private String[] KEYS = new String[]{
-
 	"addHook",
+	"i18n",
 	"isDigit",
 	"isLetter",
 	"isLetterOrDigit",
@@ -44,6 +44,7 @@ final class LuwrainObj implements ProxyObject
     static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray(KEYS);
 
     private final LogObj logObj;
+    private final I18nObj i18nObj;
 
         final Luwrain luwrain;
         final Map<String, List<Value> > hooks = new HashMap();
@@ -54,6 +55,7 @@ final class LuwrainObj implements ProxyObject
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.logObj = new LogObj(luwrain);
+	this.i18nObj = new I18nObj(luwrain);
     }
 
     @Override public Object getMember(String name)
@@ -64,26 +66,17 @@ final class LuwrainObj implements ProxyObject
 	{
 	case "addHook":
 	    return(ProxyExecutable)this::addHook;
-
+	case "i18n":
+	    i18nObj.refresh();
+	    return i18nObj;
 	    	case "isDigit":
 	    return(ProxyExecutable)this::isDigit;
-
 	    	    	case "isLetter":
 	    return(ProxyExecutable)this::isLetter;
-
 	    	    	case "isLetterOrDigit":
 	    return(ProxyExecutable)this::isLetterOrDigit;
-
 	    	    	    	case "isSpace":
 	    return(ProxyExecutable)this::isSpace;
-
-
-	    
-
-	    
-
-	    
-	    
 	case "log":
 	    return logObj;
 	case "readTextFile":
@@ -154,9 +147,6 @@ final class LuwrainObj implements ProxyObject
 	return Character.isSpace(values[0].asString().charAt(0));
     }
 
-
-    
-
     private Object readTextFile(Value[] args)
     {
 	if (!ScriptUtils.notNullAndLen(args, 1))
@@ -183,5 +173,4 @@ final class LuwrainObj implements ProxyObject
 	luwrain.speak(values[0].asString());
 	return true;
     }
-
 }

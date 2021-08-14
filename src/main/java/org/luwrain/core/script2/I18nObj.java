@@ -17,32 +17,36 @@
 package org.luwrain.core.script2;
 
 import java.util.*;
-
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
-//import org.luwrain.script2.*;
-//import org.luwrain.util.*;
 
 final class I18nObj implements ProxyObject
 {
     static private String[] KEYS = new String[]{
 	"lang",
 	"langs",
-	};
+    };
     static private final Set<String> KEYS_SET = new HashSet(Arrays.asList(KEYS));
     static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray(KEYS);
 
     private final Luwrain luwrain;
-    private final LangObj activeLangObj;
-    private final LangsObj langsObj;
+    private LangObj activeLangObj = null;
+    private LangsObj langsObj = null;
 
     I18nObj(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.activeLangObj = new LangObj(luwrain.i18n().getActiveLang());
+	refresh();
+    }
+
+    void refresh()
+    {
+	if (luwrain.i18n().getActiveLang() != null)
+	    this.activeLangObj = new LangObj(luwrain.i18n().getActiveLang()); else
+	    this.activeLangObj = null;
 	this.langsObj = new LangsObj(luwrain.i18n());
     }
 

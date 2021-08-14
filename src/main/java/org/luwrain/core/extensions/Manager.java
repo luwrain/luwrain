@@ -35,7 +35,7 @@ public final class Manager
 
     private final InterfaceManager interfaces;
     private LoadedExtension[] extensions = new LoadedExtension[0];
-    private final List<LoadedExtension> dynamicExtensions = new LinkedList();
+    private final List<LoadedExtension> dynamicExtensions = new ArrayList();
 
     public Manager(InterfaceManager interfaces)
     {
@@ -49,14 +49,14 @@ public final class Manager
 	NullCheck.notNull(cmdLine, "cmdLine");
 	NullCheck.notNull(classLoader, "classLoader");
 	final String[] extensionsList = getExtensionsList(cmdLine, classLoader);
-	if (extensionsList == null || extensionsList.length < 1)
+	if (extensionsList == null || extensionsList.length == 0)
 	    return;
-	final List<LoadedExtension> res = new LinkedList();
+	final List<LoadedExtension> res = new ArrayList();
 	for(String s: extensionsList)
 	{
 	    if (s == null || s.trim().isEmpty())
 		continue;
-	    Log.debug(LOG_COMPONENT, "loading extension " + s);
+	    Log.debug(LOG_COMPONENT, "loading the extension " + s);
 	    final Object o;
 	    try {
 		o = Class.forName(s, true, classLoader).newInstance();
@@ -113,11 +113,9 @@ public final class Manager
 
     public LoadedExtension[] getAllLoadedExtensions()
     {
-	final List<LoadedExtension> res = new LinkedList();
-	for(LoadedExtension e: extensions)
-	    res.add(e);
-	for(LoadedExtension e: dynamicExtensions)
-	    res.add(e);
+	final List<LoadedExtension> res = new ArrayList();
+	res.addAll(Arrays.asList(extensions));
+	res.addAll(dynamicExtensions);
 	return res.toArray(new LoadedExtension[res.size()]);
     }
 
@@ -126,10 +124,15 @@ public final class Manager
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(runner, "runner");
+	/*
 	for(LoadedExtension e: extensions)
 	    if (e.ext instanceof HookContainer && !((HookContainer)e.ext).runHooks(hookName, runner))
 		return false;
 	for(LoadedExtension e: dynamicExtensions)
+	    if (e.ext instanceof HookContainer && !((HookContainer)e.ext).runHooks(hookName, runner))
+		return false;
+	*/
+	for(LoadedExtension e: getAllLoadedExtensions())
 	    if (e.ext instanceof HookContainer && !((HookContainer)e.ext).runHooks(hookName, runner))
 		return false;
 	return true;
@@ -139,12 +142,14 @@ public final class Manager
     {
 	NullCheck.notNull(ext, "ext");
 	NullCheck.notNull(luwrain, "luwrain");
-	for(LoadedExtension e: dynamicExtensions)
+	for(LoadedExtension e: getAllLoadedExtensions())
 	    if (e.ext == ext)
 		return null;
+	/*
 	for(LoadedExtension e: extensions)
 	    if (e.ext == ext)
 		return null;
+	*/
 	final LoadedExtension loadedExt = createLoadedExtension(ext, luwrain);
 	dynamicExtensions.add(loadedExt);
 	return loadedExt;
@@ -186,7 +191,7 @@ public final class Manager
 
     private ExtensionObject[] getExtObjects(Extension ext, Luwrain luwrain)
     {
-	final List<ExtensionObject> res = new LinkedList();
+	final List<ExtensionObject> res = new ArrayList();
 	try {
 	    final ExtensionObject[] e = ext.getExtObjects(luwrain);
 	    for(int i = 0;i < e.length;++i)
