@@ -24,7 +24,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
-public class I18nExtensionBase extends org.luwrain.core.extensions.EmptyExtension
+public class I18nExtensionBase extends EmptyExtension
 {
     static public final String COMMAND_PREFIX = "command.";
     static public final String STATIC_PREFIX = "static.";

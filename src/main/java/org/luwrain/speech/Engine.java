@@ -20,6 +20,8 @@ package org.luwrain.speech;
 
 import java.util.*;
 
+import org.luwrain.core.*;
+
 /**
  * The interface for text-to-speech engines. This class behaves like
  * a factory for speech channels, which are used for synthesizing human
@@ -45,7 +47,7 @@ import java.util.*;
  * not expect that all engines support all features, it's absolutely
  * normal to have some engines with partial functionality.
  */
-public interface Engine extends org.luwrain.base.ExtensionObject
+public interface Engine extends ExtensionObject
 {
     public enum Features {
 	CAN_SYNTH_TO_STREAM,

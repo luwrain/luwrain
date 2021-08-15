@@ -16,10 +16,10 @@
 
 //LWR_API 1.0
 
-package org.luwrain.core.extensions;
+package org.luwrain.core;
 
-import org.luwrain.base.*;
-import org.luwrain.core.*;
+//import org.luwrain.base.*;
+//import org.luwrain.core.*;
 
 public class EmptyExtension implements Extension
 {

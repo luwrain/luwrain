@@ -18,9 +18,8 @@ package org.luwrain.core.sound;
 
 import java.net.*;
 
-import org.luwrain.base.*;
-import org.luwrain.base.MediaResourcePlayer.Instance;
 import org.luwrain.core.*;
+import org.luwrain.core.MediaResourcePlayer.*;
 
 final class BkgPlayer
 {

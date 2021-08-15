@@ -24,7 +24,7 @@ public final class Braille
     private String errorMessage = "";
 
     void init(Registry registry, org.luwrain.base.Braille braille,
-	      org.luwrain.base.EventConsumer eventConsumer)
+	      EventConsumer eventConsumer)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(eventConsumer, "eventConsumer");

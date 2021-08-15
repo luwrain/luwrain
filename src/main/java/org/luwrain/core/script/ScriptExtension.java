@@ -21,7 +21,7 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-class ScriptExtension implements org.luwrain.core.extensions.Extension, org.luwrain.core.HookContainer
+class ScriptExtension implements Extension, org.luwrain.core.HookContainer
 {
     static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
 

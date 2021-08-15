@@ -134,7 +134,7 @@ static public final String
     Clipboard getClipboard();
     CmdLine getCmdLine();
     String[] xGetLoadedSpeechFactories();
-    org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers();
+    MediaResourcePlayer[] getMediaResourcePlayers();
     org.luwrain.player.Player getPlayer();
     Registry getRegistry();
     int getScreenWidth();
@@ -222,7 +222,7 @@ static public final String
      */
     boolean registerExtObj(ExtensionObject extObj);
     boolean runCommand(String command);
-    Job.Instance newJob(String name, String[] args, String dir, Set<JobFlags> flags, org.luwrain.base.Job.Listener listener);
+    Job.Instance newJob(String name, String[] args, String dir, Set<JobFlags> flags, Job.Listener listener);
     //    void runInMainThread(Runnable runnable);
     Object runLaterSync(java.util.concurrent.Callable callable);
     //    OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);
@@ -278,6 +278,6 @@ static public final String
     boolean xRunHooks(String hookName, Object[] args, HookStrategy strategy);
     OsInterface xGetOsInterface();
     boolean xCreatePropertyHook(String propName, String hookName);
-    void showGraphical(org.luwrain.base.Interaction.GraphicalMode graphicalMode);
+    void showGraphical(Interaction.GraphicalMode graphicalMode);
     ScriptFile[] getScriptFilesList(String componentName);
 }

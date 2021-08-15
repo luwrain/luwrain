@@ -16,12 +16,10 @@
 
 //LWR_API 1.0
 
-package org.luwrain.base;
+package org.luwrain.core;
 
 import java.net.*;
 import java.util.*;
-
-import org.luwrain.core.*;
 
 public interface MediaResourcePlayer extends ExtensionObject 
 {

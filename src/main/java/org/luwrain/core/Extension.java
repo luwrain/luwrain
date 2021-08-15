@@ -16,9 +16,19 @@
 
 //LWR_API 1.0
 
-package org.luwrain.base;
+package org.luwrain.core;
 
-public interface ExtensionObject
+//import org.luwrain.base.*;
+//import org.luwrain.core.*;
+
+public interface Extension
 {
-    String getExtObjName();
+    String init(Luwrain luwrain);
+    Command[] getCommands(Luwrain luwrain);
+    Shortcut[] getShortcuts(Luwrain luwrain);
+    ExtensionObject[] getExtObjects(Luwrain luwrain);
+    void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt);
+    org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain);
+    UniRefProc[] getUniRefProcs(Luwrain luwrain);
+    void close();
 }

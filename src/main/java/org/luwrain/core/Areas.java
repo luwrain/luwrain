@@ -27,7 +27,7 @@ abstract class Areas extends Base
 
     protected Areas(CmdLine cmdLine, Registry registry,
 			       PropertiesRegistry props, String lang,
-			       org.luwrain.base.Interaction interaction)
+			       Interaction interaction)
     {
 	super(cmdLine, registry, props, lang);
 	NullCheck.notNull(interaction, "interaction");

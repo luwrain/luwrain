@@ -19,7 +19,6 @@ package org.luwrain.core;
 import java.util.*;
 
 import org.luwrain.base.*;
-import org.luwrain.core.extensions.*;
 import org.luwrain.core.ExtensionsManager.LoadedExtension;
 
 final class ObjRegistry implements ExtObjects

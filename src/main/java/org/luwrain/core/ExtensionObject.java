@@ -16,17 +16,9 @@
 
 //LWR_API 1.0
 
-package org.luwrain.base;
+package org.luwrain.core;
 
-import java.nio.file.*;
-
-import org.luwrain.core.*;
-
-public interface OperatingSystem
+public interface ExtensionObject
 {
-    org.luwrain.core.InitResult init(PropertiesBase props);
-    OsInterface getInterface();
-    Braille getBraille();
-    void openFileInDesktop(Path path);
-    org.luwrain.interaction.KeyboardHandler getCustomKeyboardHandler(String subsystem);
+    String getExtObjName();
 }

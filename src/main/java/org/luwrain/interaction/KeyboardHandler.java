@@ -16,7 +16,7 @@
 
 package org.luwrain.interaction;
 
-import org.luwrain.base.EventConsumer;
+import org.luwrain.core.*;
 
 public interface KeyboardHandler
 {

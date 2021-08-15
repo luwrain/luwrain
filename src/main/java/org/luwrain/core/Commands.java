@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
-import org.luwrain.base.OperatingSystem;
 import org.luwrain.script.*;
 import org.luwrain.controls.DefaultControlContext;
 

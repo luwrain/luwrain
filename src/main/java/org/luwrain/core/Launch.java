@@ -19,7 +19,6 @@ package org.luwrain.core;
 import java.util.*;
 import java.io.*;
 
-import org.luwrain.base.OperatingSystem;
 import org.luwrain.core.init.*;
 
 public final class Launch implements Runnable
@@ -41,7 +40,7 @@ public final class Launch implements Runnable
     private final Registry registry;
     private final PropertiesRegistry props;
     private OperatingSystem os = null;
-    private org.luwrain.base.Interaction interaction = null;
+    private Interaction interaction = null;
 
     Launch(boolean standalone, String[] cmdLine, File dataDir, File userDataDir, File userHomeDir)
     {
@@ -139,7 +138,7 @@ public final class Launch implements Runnable
 	    Log.fatal(LOG_COMPONENT, "unable to load the interaction:no luwrain.class.interaction property among loaded properties");
 	    System.exit(1);
 	}
-	interaction = (org.luwrain.base.Interaction)org.luwrain.util.ClassUtils.newInstanceOf(this.classLoader, interactionClass, org.luwrain.base.Interaction.class);
+	interaction = (Interaction)org.luwrain.util.ClassUtils.newInstanceOf(this.classLoader, interactionClass, Interaction.class);
 	if (interaction == null)
 	{
 	    Log.fatal(LOG_COMPONENT, "Unable to create an instance of  the interaction class " + interactionClass);
@@ -182,7 +181,7 @@ public final class Launch implements Runnable
 	    Log.fatal(LOG_COMPONENT, "unable to load the operating system interface:no luwrain.class.os property in loaded core properties");
 	    System.exit(1);
 	}
-	os = (org.luwrain.base.OperatingSystem)org.luwrain.util.ClassUtils.newInstanceOf(classLoader, osClass, org.luwrain.base.OperatingSystem.class);
+	os = (OperatingSystem)org.luwrain.util.ClassUtils.newInstanceOf(classLoader, osClass, OperatingSystem.class);
 	if (os == null)
 	{
 	    Log.fatal(LOG_COMPONENT, "unable to create a new instance of the operating system class " + osClass);

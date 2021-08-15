@@ -19,7 +19,6 @@ package org.luwrain.core;
 import java.util.*;
 
 import org.luwrain.core.events.*;
-import org.luwrain.core.extensions.*;
 
 final class UniRefProcManager
 {

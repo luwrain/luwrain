@@ -16,7 +16,7 @@
 
 //LWR_API 1.0
 
-package org.luwrain.base;
+package org.luwrain.core;
 
 public interface Interaction
 {

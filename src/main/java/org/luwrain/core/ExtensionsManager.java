@@ -21,7 +21,6 @@ import java.util.jar.*;
 import java.io.*;
 
 import org.luwrain.base.*;
-import org.luwrain.core.extensions.*;
 
 public final class ExtensionsManager
 {

@@ -23,7 +23,6 @@ import javax.script.*;
 import jdk.nashorn.api.scripting.*;
 
 import org.luwrain.core.*;
-import org.luwrain.core.extensions.*;
 
 public final class Core
     {

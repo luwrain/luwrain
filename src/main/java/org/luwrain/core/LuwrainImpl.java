@@ -372,7 +372,7 @@ final class LuwrainImpl implements Luwrain
 	return core.runCommand(command);
     }
 
-    @Override public org.luwrain.base.Job.Instance newJob(String name, String[] args, String dir, Set<JobFlags> flags, org.luwrain.base.Job.Listener listener)
+    @Override public Job.Instance newJob(String name, String[] args, String dir, Set<JobFlags> flags, Job.Listener listener)
     {
 	NullCheck.notNull(name, "name");
 	NullCheck.notNullItems(args, "args");
@@ -628,14 +628,14 @@ final class LuwrainImpl implements Luwrain
 	return core.player;
     }
 
-    @Override public org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers()
+    @Override public MediaResourcePlayer[] getMediaResourcePlayers()
     {
 	core.mainCoreThreadOnly();
-	final List<org.luwrain.base.MediaResourcePlayer> res = new ArrayList();
+	final List<MediaResourcePlayer> res = new ArrayList();
 	res.add(core.wavePlayer);
-	for(org.luwrain.base.MediaResourcePlayer p: core.objRegistry.getMediaResourcePlayers())
+	for(MediaResourcePlayer p: core.objRegistry.getMediaResourcePlayers())
 	    res.add(p);
-	return res.toArray(new org.luwrain.base.MediaResourcePlayer[res.size()]);
+	return res.toArray(new MediaResourcePlayer[res.size()]);
     }
 
     @Override public String[] xGetLoadedSpeechFactories()
@@ -813,7 +813,7 @@ final class LuwrainImpl implements Luwrain
 	return core.props.createHook(propName, hookName);
     }
 
-    @Override public void showGraphical(org.luwrain.base.Interaction.GraphicalMode graphicalMode)
+    @Override public void showGraphical(Interaction.GraphicalMode graphicalMode)
     {
 	NullCheck.notNull(graphicalMode, "graphicalMode");
 	core.interaction.showGraphical(graphicalMode);

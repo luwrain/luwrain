@@ -19,7 +19,7 @@
 package org.luwrain.core;
 
 import org.luwrain.base.*;
-import org.luwrain.base.Job.Instance;
+import org.luwrain.core.Job.Instance;
 
 public class EmptyJobListener implements Job.Listener
 {

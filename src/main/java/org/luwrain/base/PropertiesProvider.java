@@ -21,6 +21,8 @@ package org.luwrain.base;
 import java.util.*;
 import java.io.*;
 
+import org.luwrain.core.*;
+
 public interface PropertiesProvider extends ExtensionObject
 {
     public enum Flags {

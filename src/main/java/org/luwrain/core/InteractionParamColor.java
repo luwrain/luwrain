@@ -16,7 +16,7 @@
 
 //LWR_API 1.0
 
-package org.luwrain.base;
+package org.luwrain.core;
 
 /* Dumb color class for using inside InteractionParam, defined as one of predefined colors or RGB values, passed directly awt/javafx color
  * predefined and rgb colors are stored different private member, color can be only one of them 

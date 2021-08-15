@@ -26,7 +26,7 @@ import org.luwrain.core.ExtensionsManager.LoadedExtension;
 import org.luwrain.core.script2.ScriptCore;
 import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 
-abstract class Base implements org.luwrain.base.EventConsumer
+abstract class Base implements EventConsumer
 {
     static final String LOG_COMPONENT = "core";
 

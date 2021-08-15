@@ -16,19 +16,17 @@
 
 //LWR_API 1.0
 
-package org.luwrain.core.extensions;
+package org.luwrain.core;
+
+import java.nio.file.*;
 
 import org.luwrain.base.*;
-import org.luwrain.core.*;
 
-public interface Extension
+public interface OperatingSystem
 {
-    String init(Luwrain luwrain);
-    Command[] getCommands(Luwrain luwrain);
-    Shortcut[] getShortcuts(Luwrain luwrain);
-    ExtensionObject[] getExtObjects(Luwrain luwrain);
-    void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt);
-    org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain);
-    UniRefProc[] getUniRefProcs(Luwrain luwrain);
-    void close();
+    org.luwrain.core.InitResult init(PropertiesBase props);
+    OsInterface getInterface();
+    org.luwrain.base.Braille getBraille();
+    void openFileInDesktop(Path path);
+    org.luwrain.interaction.KeyboardHandler getCustomKeyboardHandler(String subsystem);
 }

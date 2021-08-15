@@ -23,7 +23,6 @@ import java.nio.file.*;
 
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
-import org.luwrain.core.extensions.*;
 import org.luwrain.popups.*;
 import org.luwrain.base.*;
 import org.luwrain.core.listening.*;
@@ -39,7 +38,7 @@ abstract class EventDispatching extends Areas
     protected final org.luwrain.core.properties.Listening listeningProp;
 
     protected EventDispatching(CmdLine cmdLine, Registry registry,
-			       PropertiesRegistry props, String lang, org.luwrain.base.Interaction interaction)
+			       PropertiesRegistry props, String lang, Interaction interaction)
     {
 	super(cmdLine, registry, props, lang, interaction);
 	this.globalKeys = new GlobalKeys(registry);
