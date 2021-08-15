@@ -76,7 +76,6 @@ return props.getProperty(propName);
 	NullCheck.notNull(file, "file");
 	if (file.isDirectory() || !file.getName().endsWith(".properties"))
 	    return;
-	Log.debug(LOG_COMPONENT, "reading properties from " + file.getAbsolutePath());
 	try {
 	    final InputStream s = new FileInputStream(file);
 	    try {

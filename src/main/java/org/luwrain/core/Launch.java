@@ -24,11 +24,12 @@ import org.luwrain.core.util.*;
 public final class Launch implements Runnable
 {
     static public final String LOG_COMPONENT = "init";
-    static private final String  CMDARG_HELP = "--help";
-    static private final String  CMDARG_PRINT_LANG = "--print-lang";
-    static private final String  CMDARG_PRINT_DIRS = "--print-dirs";
-    static private final String  CMDARG_CREATE_PROFILE = "--create-profile";
-    static private final String  CMDARG_CREATE_PROFILE_IN = "--create-profile-in=";
+    static private final String
+	CMDARG_HELP = "--help",
+	CMDARG_PRINT_LANG = "--print-lang",
+	CMDARG_PRINT_DIRS = "--print-dirs",
+	CMDARG_CREATE_PROFILE = "--create-profile",
+	CMDARG_CREATE_PROFILE_IN = "--create-profile-in=";
 
     private final boolean standalone;
     private final ClassLoader classLoader;
@@ -48,7 +49,8 @@ public final class Launch implements Runnable
 	NullCheck.notNull(dataDir, "dataDir");
 	NullCheck.notNull(userDataDir, "userDataDir");
 	NullCheck.notNull(userHomeDir, "userHomeDir");
-			org.luwrain.app.console.App.installListener();
+	org.luwrain.app.console.App.installListener();
+	org.apache.log4j.BasicConfigurator.configure();
 	new JniLoader().autoload(this.getClass().getClassLoader());
 		this.standalone = standalone;
 	this.cmdLine = new CmdLine(cmdLine);
@@ -122,7 +124,6 @@ public final class Launch implements Runnable
 		final TimeZone timeZone = TimeZone.getTimeZone(value.trim());
 		if (timeZone != null)
 		{
-		    Log.debug(LOG_COMPONENT, "Setting time zone to " + value.trim());
 		    TimeZone.setDefault(timeZone);
 		} else
 		    Log.warning(LOG_COMPONENT, "time zone " + value.trim() + " is unknown");
@@ -195,7 +196,6 @@ public final class Launch implements Runnable
 		Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName());
 	    System.exit(1);
 	}
-	Log.debug(LOG_COMPONENT, "OS (" + osClass + ") initialized successfully");
     }
 
     private void handleCmdLine()
