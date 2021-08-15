@@ -59,7 +59,7 @@ abstract class Base implements EventConsumer
     protected final I18nImpl i18n = new I18nImpl();
     final Speech speech;
     final org.luwrain.core.speech.SpeakingText speakingText = new org.luwrain.core.speech.SpeakingText(extensions);
-    final Braille braille = new Braille();
+    final BrailleImpl braille = new BrailleImpl();
     protected final org.luwrain.core.sound.EnvironmentSounds sounds;
     protected final org.luwrain.core.sound.Manager soundManager;
 

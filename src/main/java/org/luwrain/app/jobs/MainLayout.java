@@ -19,11 +19,9 @@ package org.luwrain.app.jobs;
 import java.util.*;
 import java.io.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-import org.luwrain.base.*;
 import org.luwrain.app.base.*;
 import org.luwrain.core.JobsTracking.Entry;
 

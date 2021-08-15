@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.function.*;
 import jdk.nashorn.api.scripting.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 final class MessageObj extends AbstractJSObject

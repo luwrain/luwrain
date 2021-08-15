@@ -18,8 +18,6 @@
 
 package org.luwrain.core;
 
-import org.luwrain.base.*;
-
 public interface Worker extends Runnable, ExtensionObject
 {
     int getFirstLaunchDelay();

@@ -23,7 +23,6 @@ import java.util.concurrent.*;
 import javax.script.*;
 import jdk.nashorn.api.scripting.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.core.script.Utils;
 

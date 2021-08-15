@@ -19,7 +19,7 @@ package org.luwrain.core;
 import java.util.*;
 import java.io.*;
 
-import org.luwrain.core.init.*;
+import org.luwrain.core.util.*;
 
 public final class Launch implements Runnable
 {
@@ -66,7 +66,7 @@ public final class Launch implements Runnable
 	if (standalone)
 	{
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
-	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{
+	    this.props = new PropertiesRegistry(new PropertiesProvider[]{
 		    basicProps,
 		    filesProps,
 		    new org.luwrain.core.properties.Player(),
@@ -77,7 +77,7 @@ public final class Launch implements Runnable
 	{
 	    filesProps.load(new File(userDataDir, "properties"));
 	    final org.luwrain.core.properties.Basic basicProps = new org.luwrain.core.properties.Basic(dataDir, userDataDir, userHomeDir);
-	    this.props = new PropertiesRegistry(new org.luwrain.base.PropertiesProvider[]{
+	    this.props = new PropertiesRegistry(new PropertiesProvider[]{
 		    basicProps,
 		    filesProps,
 		    new org.luwrain.core.properties.Player(),

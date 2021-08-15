@@ -24,7 +24,6 @@ import java.nio.file.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
-import org.luwrain.base.*;
 import org.luwrain.core.listening.*;
 
 abstract class EventDispatching extends Areas

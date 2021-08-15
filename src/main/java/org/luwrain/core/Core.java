@@ -27,7 +27,6 @@ import org.luwrain.core.queries.*;
 import org.luwrain.i18n.*;
 import org.luwrain.core.ExtensionsManager.LoadedExtension;
 import org.luwrain.popups.*;
-import org.luwrain.base.*;
 import org.luwrain.core.listening.*;
 
 final class Core extends EventDispatching
@@ -903,7 +902,7 @@ onNewAreasLayout();
 	listening = null;
     }
 
-    private final class StartingModeProperty implements org.luwrain.base.PropertiesProvider
+    private final class StartingModeProperty implements PropertiesProvider
     {
 	static private final String PROP_NAME = "luwrain.startingmode";
         @Override public String getExtObjName()
@@ -914,7 +913,7 @@ onNewAreasLayout();
 	{
 	    return new String[0];
 	}
-	@Override public Set<org.luwrain.base.PropertiesProvider.Flags> getPropertyFlags(String propName)
+	@Override public Set<PropertiesProvider.Flags> getPropertyFlags(String propName)
 	{
 	    NullCheck.notEmpty(propName, "propName");
 	    if (propName.equals(PROP_NAME))
@@ -935,7 +934,7 @@ onNewAreasLayout();
 	    NullCheck.notNull(value, "value");
 	    return false;
 	}
-	@Override public void setListener(org.luwrain.base.PropertiesProvider.Listener listener)
+	@Override public void setListener(PropertiesProvider.Listener listener)
 	{
 	}
     }

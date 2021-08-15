@@ -20,8 +20,6 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-import org.luwrain.base.*;
-
 final class PropertiesRegistry implements PropertiesBase, PropertiesProvider.Listener
 {
     static private final String HOOK_PREFIX = "luwrain.prop.";

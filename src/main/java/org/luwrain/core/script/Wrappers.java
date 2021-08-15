@@ -22,7 +22,6 @@ import jdk.nashorn.api.scripting.AbstractJSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import java.util.function.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 final class Wrappers

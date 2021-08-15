@@ -21,7 +21,6 @@ import java.io.*;
 
 import org.graalvm.polyglot.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.util.*;
 

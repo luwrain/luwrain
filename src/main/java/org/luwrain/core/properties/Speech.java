@@ -19,7 +19,6 @@ package org.luwrain.core.properties;
 import java.io.*;
 import java.util.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.speech.*;
 

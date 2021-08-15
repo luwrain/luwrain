@@ -18,7 +18,6 @@ package org.luwrain.core.script.api;
 
 import jdk.nashorn.api.scripting.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 final class PropObj extends AbstractJSObject

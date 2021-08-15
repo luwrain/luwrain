@@ -21,7 +21,6 @@ import java.io.*;
 import java.net.*;
 import javax.sound.sampled.*;
 
-import org.luwrain.base.*;
 
 public final class WavePlayers
 {

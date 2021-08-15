@@ -18,7 +18,6 @@ package org.luwrain.core;
 
 import java.util.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public final class JobsTracking 

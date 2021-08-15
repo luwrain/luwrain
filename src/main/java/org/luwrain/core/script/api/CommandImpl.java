@@ -20,7 +20,6 @@ import java.io.*;
 import java.util.*;
 import jdk.nashorn.api.scripting.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 final class CommandImpl implements Command

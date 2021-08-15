@@ -16,8 +16,6 @@
 
 package org.luwrain.core;
 
-import org.luwrain.base.*;
-
 public interface ExtObjects
 {
     MediaResourcePlayer[] getMediaResourcePlayers();

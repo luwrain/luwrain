@@ -18,8 +18,6 @@
 
 package org.luwrain.core;
 
-import org.luwrain.base.*;
-
 public interface Shortcut extends ExtensionObject
 {
     Application[] prepareApp(String[] args);

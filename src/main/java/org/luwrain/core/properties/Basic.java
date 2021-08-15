@@ -19,7 +19,6 @@ package org.luwrain.core.properties;
 import java.io.*;
 import java.util.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public final class Basic implements PropertiesProvider
@@ -52,7 +51,7 @@ public final class Basic implements PropertiesProvider
 	return new String[0];
     }
 
-    @Override public Set<org.luwrain.base.PropertiesProvider.Flags> getPropertyFlags(String propName)
+    @Override public Set<PropertiesProvider.Flags> getPropertyFlags(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
 	final String value = getProperty(propName);
@@ -99,7 +98,7 @@ public final class Basic implements PropertiesProvider
 	return false;
     }
 
-    @Override public void setListener(org.luwrain.base.PropertiesProvider.Listener listener)
+    @Override public void setListener(PropertiesProvider.Listener listener)
     {
 	this.listener = listener;
     }

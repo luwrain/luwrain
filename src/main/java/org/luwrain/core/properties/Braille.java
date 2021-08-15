@@ -19,15 +19,14 @@ package org.luwrain.core.properties;
 import java.io.*;
 import java.util.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public final class Braille implements PropertiesProvider
 {
-    private final org.luwrain.core.Braille braille;
+    private final org.luwrain.core.BrailleImpl braille;
     private PropertiesProvider.Listener listener = null;
 
-    public Braille(org.luwrain.core.Braille braille)
+    public Braille(org.luwrain.core.BrailleImpl braille)
     {
 	NullCheck.notNull(braille, "braille");
 	this.braille = braille;

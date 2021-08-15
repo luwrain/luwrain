@@ -19,7 +19,6 @@ package org.luwrain.core.script.api;
 import java.util.*;
 import jdk.nashorn.api.scripting.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.player.*;
 

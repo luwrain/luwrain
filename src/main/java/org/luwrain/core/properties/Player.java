@@ -19,7 +19,6 @@ package org.luwrain.core.properties;
 import java.io.*;
 import java.util.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.player.*;
 
@@ -48,7 +47,7 @@ public final class Player implements PropertiesProvider, org.luwrain.player.List
 	return new String[0];
     }
 
-    @Override public Set<org.luwrain.base.PropertiesProvider.Flags> getPropertyFlags(String propName)
+    @Override public Set<PropertiesProvider.Flags> getPropertyFlags(String propName)
     {
 	NullCheck.notEmpty(propName, "propName");
 	final String value = getProperty(propName);
@@ -80,7 +79,7 @@ public final class Player implements PropertiesProvider, org.luwrain.player.List
 	return false;
     }
 
-    @Override public void setListener(org.luwrain.base.PropertiesProvider.Listener listener)
+    @Override public void setListener(PropertiesProvider.Listener listener)
     {
 	this.listener = listener;
     }

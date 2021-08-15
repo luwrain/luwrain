@@ -20,8 +20,6 @@ import java.util.*;
 import java.util.jar.*;
 import java.io.*;
 
-import org.luwrain.base.*;
-
 public final class ExtensionsManager
 {
     static final String

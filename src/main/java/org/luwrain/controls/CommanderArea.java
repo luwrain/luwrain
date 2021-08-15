@@ -25,7 +25,6 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
-import org.luwrain.base.*;
 
 public class CommanderArea<E> extends ListArea
 {

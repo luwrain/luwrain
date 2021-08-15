@@ -20,7 +20,6 @@ import java.io.*;
 import java.util.*;
 import jdk.nashorn.api.scripting.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public final class Hook implements Luwrain.Hook

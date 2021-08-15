@@ -18,8 +18,6 @@
 
 package org.luwrain.core;
 
-import org.luwrain.base.*;
-
 public final class ErrorJob implements Job.Instance
 {
     private final String name;
