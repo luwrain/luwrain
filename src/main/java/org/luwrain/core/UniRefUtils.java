@@ -79,7 +79,7 @@ public final class UniRefUtils
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNullItems(objs, "objs");
-	final List<UniRefInfo> res = new LinkedList();
+	final List<UniRefInfo> res = new ArrayList();
 	for(Object o: objs)
 	{
 	    final UniRefInfo info = make(luwrain, o);

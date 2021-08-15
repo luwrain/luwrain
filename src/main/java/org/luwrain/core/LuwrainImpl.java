@@ -631,7 +631,7 @@ final class LuwrainImpl implements Luwrain
     @Override public org.luwrain.base.MediaResourcePlayer[] getMediaResourcePlayers()
     {
 	core.mainCoreThreadOnly();
-	final List<org.luwrain.base.MediaResourcePlayer> res = new LinkedList();
+	final List<org.luwrain.base.MediaResourcePlayer> res = new ArrayList();
 	res.add(core.wavePlayer);
 	for(org.luwrain.base.MediaResourcePlayer p: core.objRegistry.getMediaResourcePlayers())
 	    res.add(p);

@@ -45,7 +45,7 @@ final class AppManager
 
     Application[] getLaunchedApps()
     {
-	final List<Application> res = new LinkedList();
+	final List<Application> res = new ArrayList();
 	for(LaunchedApp a: apps)
 	    res.add(a.app);
 	return res.toArray(new Application[res.size()]);

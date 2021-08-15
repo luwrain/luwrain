@@ -47,7 +47,7 @@ final class CommandManager
 
     String[] getCommandNames()
     {
-	final List<String> res = new LinkedList();
+	final List<String> res = new ArrayList();
 	for(Map.Entry<String, Entry> e: commands.entrySet())
 	    res.add(e.getKey());
 	String[] str = res.toArray(new String[res.size()]);
@@ -58,7 +58,7 @@ final class CommandManager
     void deleteByInstance(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	final List<String> deleting = new LinkedList();
+	final List<String> deleting = new ArrayList();
 		for(Map.Entry<String, Entry> e: commands.entrySet())
 		    if (e.getValue().luwrain == luwrain)
 			deleting.add(e.getKey());

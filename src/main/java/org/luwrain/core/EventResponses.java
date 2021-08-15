@@ -165,7 +165,7 @@ public final class  EventResponses
 				luwrain.playSound(Sounds.LIST_ITEM);
 				break;
 		}
-	    final List<String> parts = new LinkedList();
+	    final List<String> parts = new ArrayList();
 	    parts.add(text);
 	    switch(type)
 	    {

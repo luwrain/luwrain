@@ -132,7 +132,7 @@ final class Core extends EventDispatching
 	final String params = command.substring("app ".length());
 	Log.debug("proba", "params " + params);
 	String shortcut = null;
-	final List<String> args = new LinkedList();
+	final List<String> args = new ArrayList();
 	//FIXME:quotes
 	for(String s: params.split(" ", -1))
 	    if (!s.trim().isEmpty())
@@ -825,7 +825,7 @@ onNewAreasLayout();
 
     org.luwrain.cpanel.Factory[] getControlPanelFactories()
     {
-	final List<org.luwrain.cpanel.Factory> res = new LinkedList();
+	final List<org.luwrain.cpanel.Factory> res = new ArrayList();
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
 	    if (e.controlPanelFactories != null)

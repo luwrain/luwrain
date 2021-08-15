@@ -30,8 +30,8 @@ final class I18nImpl implements I18n, I18nExtension
     private Lang chosenLang = null;
     private String chosenLangName = "";
 
-    private final List<CommandTitle> commandTitles = new LinkedList();
-    private final List<StringsObj> stringsObjs = new LinkedList();
+    private final List<CommandTitle> commandTitles = new ArrayList();
+    private final List<StringsObj> stringsObjs = new ArrayList();
     private final Map<String, Lang> langs = new HashMap();
 
     @Override public Lang getActiveLang()

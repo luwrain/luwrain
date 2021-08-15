@@ -159,7 +159,7 @@ final class ObjRegistry implements ExtObjects
 
     String[] getShortcutNames()
     {
-	final List<String> res = new LinkedList();
+	final List<String> res = new ArrayList();
 	for(Map.Entry<String, Entry<Shortcut>> e: shortcuts.entrySet())
 	    res.add(e.getKey());
 	final String[] str = res.toArray(new String[res.size()]);
@@ -169,7 +169,7 @@ final class ObjRegistry implements ExtObjects
 
     @Override public MediaResourcePlayer[] getMediaResourcePlayers()
     {
-	final List<MediaResourcePlayer> res = new LinkedList();
+	final List<MediaResourcePlayer> res = new ArrayList();
 	for(Map.Entry<String, Entry<MediaResourcePlayer>> e: players.entrySet())
 	    res.add(e.getValue().obj);
 	return res.toArray(new MediaResourcePlayer[res.size()]);
@@ -183,7 +183,7 @@ final class ObjRegistry implements ExtObjects
 
         org.luwrain.speech.Engine[] getSpeechEngines()
     {
-	final List<org.luwrain.speech.Engine> res = new LinkedList();
+	final List<org.luwrain.speech.Engine> res = new ArrayList();
 	for(Map.Entry<String, Entry<org.luwrain.speech.Engine>> e: speechEngines.entrySet())
 	    res.add(e.getValue().obj);
 	return res.toArray(new org.luwrain.speech.Engine[res.size()]);
@@ -191,7 +191,7 @@ final class ObjRegistry implements ExtObjects
 
             Worker[] getWorkers()
     {
-	final List<Worker> res = new LinkedList();
+	final List<Worker> res = new ArrayList();
 	for(Map.Entry<String, Entry<Worker>> e: workers.entrySet())
 	    res.add(e.getValue().obj);
 	return res.toArray(new Worker[res.size()]);
@@ -199,7 +199,7 @@ final class ObjRegistry implements ExtObjects
 
                 PropertiesProvider[] getPropertiesProviders()
     {
-	final List<PropertiesProvider> res = new LinkedList();
+	final List<PropertiesProvider> res = new ArrayList();
 	for(Map.Entry<String, Entry<PropertiesProvider>> e: propsProviders.entrySet())
 	    res.add(e.getValue().obj);
 	return res.toArray(new PropertiesProvider[res.size()]);
@@ -208,7 +208,7 @@ final class ObjRegistry implements ExtObjects
     /*
                     TextEditingExtension[] getTextEditingExtensions()
     {
-	final List<TextEditingExtension> res = new LinkedList();
+	final List<TextEditingExtension> res = new ArrayList();
 	for(Map.Entry<String, Entry<TextEditingExtension>> e: textEditingExts.entrySet())
 	    res.add(e.getValue().obj);
 	return res.toArray(new TextEditingExtension[res.size()]);
@@ -249,7 +249,7 @@ final class ObjRegistry implements ExtObjects
 	NullCheck.notNull(map, "map");
 	NullCheck.notNull(ext, "ext");
 	final Map<String, org.luwrain.core.ObjRegistry.Entry> entryMap = (Map<String, Entry>)map;
-	final List<String> deleting = new LinkedList();
+	final List<String> deleting = new ArrayList();
 	for(Map.Entry<String, org.luwrain.core.ObjRegistry.Entry> e: entryMap.entrySet())
 	if (e.getValue().ext == ext)
 	    deleting.add(e.getKey());

@@ -220,7 +220,7 @@ public final class Speech
 	NullCheck.notNull(params, "params");
 	if (line.isEmpty())
 	    return true;
-	final List<String> items = new LinkedList();
+	final List<String> items = new ArrayList();
 	String item = "";
 	for(int i = 0;i < line.length();++i)
 	{
