@@ -271,7 +271,7 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	return loadScriptExtension(dataDir, text);
     }
 
-        String loadScript2(ScriptFile scriptFile) throws ExtensionException
+    String loadScript2(ScriptFile scriptFile) throws ExtensionException
     {
 	NullCheck.notNull(scriptFile, "scriptFile");
 	mainCoreThreadOnly();
@@ -280,12 +280,12 @@ abstract class Base implements org.luwrain.base.EventConsumer
 	final ScriptCore scriptCore = new ScriptCore(ext.getLuwrainObj());
 	ext.setScriptCore(scriptCore);
 	try {
-	scriptCore.load(scriptFile);
+	    scriptCore.load(scriptFile);
 	}
 	catch(IOException e)
 	{
 	    interfaces.release(ext.getLuwrainObj());
-	    throw new RuntimeException(e);
+	    throw new ExtensionException(e);
 	}
 	final LoadedExtension loadedExt = extensions.addDynamicExtension(ext, ext.getLuwrainObj());
 	if (loadedExt == null)

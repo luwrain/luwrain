@@ -21,6 +21,7 @@ import java.io.*;
 
 import org.graalvm.polyglot.*;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.util.*;
 
@@ -107,5 +108,13 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 	    return false;
 	}
 	return true;
+    }
+
+    public ExtensionObject[] getExtObjects()
+    {
+	final List<ExtensionObject> res = new ArrayList();
+	for(Module m: modules)
+	    res.addAll(m.luwrainObj.extObjs);
+	return res.toArray(new ExtensionObject[res.size()]);
     }
 }

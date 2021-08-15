@@ -54,6 +54,11 @@ public final class ScriptFile
 	return new File(file);
     }
 
+    public File getDataDirAsFile()
+    {
+	return new File(dataDir);
+    }
+
     @Override public String toString()
     {
 	return file;

@@ -151,7 +151,7 @@ final class Core extends EventDispatching
     {
 	extensions.load((ext)->interfaces.requestNew(ext), cmdLine, this.classLoader);
 	initObjects();
-	initDynamicExtensions();
+	loadScriptExtensions();
 	initI18n();
 	objRegistry.add(null, new StartingModeProperty());
 	speech.init(objRegistry.getSpeechEngines());
@@ -164,74 +164,25 @@ final class Core extends EventDispatching
 	uiSettings = Settings.createUserInterface(registry);
     }
 
-    private void initDynamicExtensions()
+    private void loadScriptExtensions()
     {
-	//Common JavaScript extensions
-	{
-	    final File jsDir = props.getFileProperty("luwrain.dir.js");
-	    if (jsDir.exists() && jsDir.isDirectory())
-	    {
-		final File[] files = jsDir.listFiles();
-		if (files != null)
-		    for(File f: files)
-		    {
-			if (f == null || !f.exists() || f.isDirectory())
-			    continue;
-			if (!f.getName().toLowerCase().endsWith(".js"))
-			    continue;
-			try {
-			    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
-			    final String id = loadScriptExtensionFromFile(props.getFileProperty("luwrain.dir.data"), f);
-			}
-			catch(ExtensionException e)
-			{
-			    Log.error(LOG_COMPONENT, "unable to load the script extension " + f.getAbsolutePath() + ":" + e.getMessage());
-			}
-		    }
-	    } else
-		Log.warning(LOG_COMPONENT, "the directory " + jsDir.getAbsolutePath() + " does not exist, skipping loading of script extensions");
-	}
-
-	//JavaScript extensions from packs
-		final File[] packs = getInstalledPacksDirs();
-	for(File pack: packs)
-	{
-	    final File jsExtDir = new File(pack, "js");
-	    if (!jsExtDir.exists() || !jsExtDir.isDirectory())
-		continue;
-	    final File[] files = jsExtDir.listFiles();
-	    if (files == null)
-		continue;
-	    for(File f: files)
-	    {
-		if (f == null || !f.exists() || f.isDirectory())
-		    continue;
-		if (!f.getName().toLowerCase().endsWith(".js"))
-		    continue;
-		final File dataDir = new File(pack, "data");
-		if (dataDir.exists() && !dataDir.isDirectory())
-		{
-		    Log.error(LOG_COMPONENT, dataDir.getAbsolutePath() + " exists, skipping the pack");
-		    continue;
-		}
-		if (!dataDir.exists() && !dataDir.mkdir())
-		{
-		    Log.error(LOG_COMPONENT, "unable to create " + dataDir.getAbsolutePath() + ", skipping the pack");
-		    continue;
-		}
-		try {
-		    Log.debug(LOG_COMPONENT, "Loading " + f.getAbsolutePath());
-		    final String id = loadScriptExtensionFromFile(dataDir, f);
-		}
-		catch(ExtensionException e)
-		{
-		    Log.error(LOG_COMPONENT, "unable to load the script extension " + f.getAbsolutePath() + ":" + e.getMessage());
-		}
+	for (ScriptFile f: getScriptFilesList("core"))
+	    try {
+		loadScript2(f);
 	    }
-	}
+	    catch(ExtensionException e)
+	    {
+		Log.error(LOG_COMPONENT, "unable to load the script extension " + f.toString() + ": " + e.getClass().getName() + ": " + e.getMessage());
+	    }
+	for (ScriptFile f: getScriptFilesList("nashorn"))
+	    try {
+		loadScriptExtensionFromFile(f.getDataDirAsFile(), f.asFile());
+	    }
+	    catch(ExtensionException e)
+	    {
+		Log.error(LOG_COMPONENT, "unable to load the script extension " + f.toString() + ": " + e.getClass().getName() + ": " + e.getMessage());
+	    }
     }
-
-
 
     ScriptFile[] getScriptFilesList(String componentName)
     {

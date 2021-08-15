@@ -67,32 +67,18 @@ public class Script2Extension implements Extension, org.luwrain.core.HookContain
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	/*
-	final List<ExtensionObject> res = new LinkedList();
-	for(Shortcut s: instance.luwrainObj.shortcuts )
-	    res.add(s);
-	for(Worker w: instance.luwrainObj.workers)
-	    res.add(w);
-	return res.toArray(new ExtensionObject[res.size()]);
-	*/
-	return null;
+	return scriptCore.getExtObjects();
     }
 
     @Override public Command[] getCommands(Luwrain luwrain)
     {
-	/*
-	return instance.luwrainObj.commands.toArray(new Command[instance.luwrainObj.commands.size()]);
-	*/
-	return null;
+	return new Command[0];
     }
 
     @Override public Shortcut[] getShortcuts(Luwrain luwrain)
     {
-	/*
 	return new Shortcut[0];
-	*/
-	return null;
-    }
+	    }
 
     @Override public void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt)
     {
@@ -100,17 +86,11 @@ public class Script2Extension implements Extension, org.luwrain.core.HookContain
 
     @Override public org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain)
     {
-	/*
 	return new org.luwrain.cpanel.Factory[0];
-	*/
-	return null;
-    } 
+	    } 
 
     @Override public UniRefProc[] getUniRefProcs(Luwrain luwrain)
     {
-	/*
 	return new UniRefProc[0];
-	*/
-	return null;
-    }
+	    }
 }
