@@ -50,7 +50,8 @@ public final class Launch implements Runnable
 	NullCheck.notNull(userDataDir, "userDataDir");
 	NullCheck.notNull(userHomeDir, "userHomeDir");
 	org.luwrain.app.console.App.installListener();
-	org.apache.log4j.BasicConfigurator.configure();
+	//org.apache.log4j.BasicConfigurator.configure();
+	initLog4j();
 	new JniLoader().autoload(this.getClass().getClassLoader());
 		this.standalone = standalone;
 	this.cmdLine = new CmdLine(cmdLine);
@@ -265,6 +266,21 @@ public final class Launch implements Runnable
 		System.err.println("ERROR: " + e.getClass().getName() + ":" + e.getMessage());
 		System.exit(1);
 	    }
+	}
+    }
+
+    private void initLog4j()
+    {
+	try {
+	    final Properties props = new Properties();
+	    try (final InputStream is = getClass().getResourceAsStream("log4j.properties")) {
+		props.load(is);
+	    }
+	    org.apache.log4j.PropertyConfigurator.configure(props);
+	}
+	catch(IOException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to init log4j: " + e.getClass().getName() + ": " + e.getMessage());
 	}
     }
 
