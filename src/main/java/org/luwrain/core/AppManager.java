@@ -26,7 +26,7 @@ final class AppManager
     private final ArrayList<LaunchedApp> apps = new ArrayList<LaunchedApp>();
     private int activeAppIndex = -1;
     private final LaunchedAppPopups shell = new LaunchedAppPopups();
-    private final Vector<OpenedPopup> popups = new Vector<OpenedPopup>();
+    private final List<OpenedPopup> popups = new ArrayList();
 
     void setDefaultApp(Application app)
     {
@@ -236,7 +236,7 @@ final class AppManager
 	    Log.warning(LOG_COMPONENT, "trying to remove the last popup without any opened popups at all");
 	    return;
 	}
-	final OpenedPopup removedPopup = popups.lastElement();
+	final OpenedPopup removedPopup = popups.get(popups.size() - 1);
 	popups.remove(popups.size() - 1);
 	if (removedPopup.app != null)
 	{
@@ -256,7 +256,7 @@ final class AppManager
     {
 	if (popups.isEmpty())
 	    return true;
-	return !popups.lastElement().stopCondition.continueEventLoop();
+	return !popups.get(popups.size() - 1).stopCondition.continueEventLoop();
     }
 
     boolean hasAnyPopup()
@@ -285,14 +285,14 @@ final class AppManager
 
     Application getAppOfLastPopup()
     {
-	return !popups.isEmpty()?popups.lastElement().app:null;
+	return !popups.isEmpty()?popups.get(popups.size() - 1).app:null;
     }
 
     Area getEffectiveAreaOfLastPopup()
     {
 	if (popups.isEmpty())
 	    return null;
-	final OpenedPopup popup = popups.lastElement();
+	final OpenedPopup popup = popups.get(popups.size() - 1);
 	final LaunchedAppPopups launchedApp;
 	if (popup.app != null)
 	{
@@ -416,7 +416,7 @@ final class AppManager
     {
 	if (popups.isEmpty())
 	    return null;
-	return popups.lastElement().position;
+	return popups.get(popups.size() - 1).position;
     }
 
     void onNewPopupOpening(Application app, Class newCopyClass)
@@ -453,14 +453,14 @@ final class AppManager
     {
 	if (popups.isEmpty())
 	    return false;
-	return popups.lastElement().isWeak;
+	return popups.get(popups.size() - 1).isWeak;
     }
 
     void cancelLastPopup()
     {
 	if (popups.isEmpty())
 	    return;
-	popups.lastElement().stopCondition.cancel();
+	popups.get(popups.size() - 1).stopCondition.cancel();
     }
 
     void sendBroadcastEvent(org.luwrain.core.events.SystemEvent event)

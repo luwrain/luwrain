@@ -365,7 +365,7 @@ public interface Settings
 	final String value = createI18n(registry).getCharsets("");
 	if (value.trim().isEmpty())
 	    return new String[0];
-	final LinkedList<String> res = new LinkedList<String>();
+	final List<String> res = new ArrayList();
 	for(String s: value.split(":", -1))
 	    if (!s.trim().isEmpty())
 		res.add(s.trim());

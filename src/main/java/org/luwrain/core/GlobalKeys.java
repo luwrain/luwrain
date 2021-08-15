@@ -21,7 +21,7 @@ import org.luwrain.core.events.*;
 
 final class GlobalKeys
 {
-    private final List<Item> items = new Vector();
+    private final List<Item> items = new ArrayList();
     private final Registry registry;
 
     GlobalKeys(Registry registry)

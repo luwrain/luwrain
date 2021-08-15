@@ -16,12 +16,12 @@
 
 package org.luwrain.core;
 
-import java.util.Vector;
+import java.util.*;
 
-public class AreaLayoutSwitch
+public final class AreaLayoutSwitch
 {
     private Luwrain luwrain;
-    private final Vector<AreaLayout> layouts = new Vector<AreaLayout>();
+    private final ArrayList<AreaLayout> layouts = new ArrayList();
     private int currentIndex = 0;
 
     public AreaLayoutSwitch(Luwrain luwrain)

@@ -238,7 +238,7 @@ public final class ExtensionsManager
     private String[] getExtensionsListFromManifest(ClassLoader classLoader)
     {
 	NullCheck.notNull(classLoader, "classLoader");
-	Vector<String> res = new Vector<String>();
+	final List<String> res = new ArrayList();
 	try {
 	    Enumeration<java.net.URL> resources = classLoader.getResources("META-INF/MANIFEST.MF");
 	    while (resources.hasMoreElements())
