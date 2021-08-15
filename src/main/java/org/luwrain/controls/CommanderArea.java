@@ -265,7 +265,7 @@ public class CommanderArea<E> extends ListArea
 		    final E[] res = model.getEntryChildren(newCurrent);
 		    if (res != null)
 		    {
-			final Vector<E> filtered = new Vector();
+			final List<E> filtered = new ArrayList();
 			for(E e: res)
 			    if (filter == null || filter.commanderEntrySuits(e))
 				filtered.add(e);

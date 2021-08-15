@@ -31,8 +31,8 @@ class Directory
 
     private final String name;
     private final File dir;
-    private Vector<Directory> subdirs;
-    private TreeMap<String, Value> values;
+    private List<Directory> subdirs = null;
+    private Map<String, Value> values = null;
 
     Directory(String name, File dir)
     {
@@ -265,7 +265,7 @@ return values.get(valueName).type;
     {
 	if (values != null)
 	    return;
-	values = new TreeMap<String, Value>();
+	values = new HashMap();
 	Map<String, String> raw;
 
 	//strings
@@ -334,7 +334,7 @@ return values.get(valueName).type;
     {
 	if (subdirs != null)
 	    return;
-	subdirs = new Vector<Directory>();
+	subdirs = new ArrayList();
 	final File[] content = dir.listFiles();
 	for(File f: content)
 	    if (f.isDirectory())

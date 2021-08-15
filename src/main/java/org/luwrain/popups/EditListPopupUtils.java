@@ -110,7 +110,7 @@ public final class EditListPopupUtils
 	    final String[] items = new String[fullItems.length];
 	    for(int i = 0;i < fullItems.length;++i)
 		items[i] = fullItems[i].getValue();
-	    Vector<String> m = new Vector<String>();
+	    final List<String> m = new ArrayList<String>();
 	    for(String s: items)
 		//	    if (beginning.isEmpty() || s.indexOf(beginning) == 0)
 		if (beginning.isEmpty() || s.startsWith(beginning))
@@ -145,7 +145,7 @@ public final class EditListPopupUtils
 		items[i] = fullItems[i].getValue();
 	    if (beginning == null || beginning.isEmpty())
 		return items;
-	    Vector<String> matching = new Vector<String>();
+	    final List<String> matching = new ArrayList();
 	    for(String s: items)
 		if (s.startsWith(beginning))
 		    matching.add(s);

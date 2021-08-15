@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 final class Directory
 {
     final String name;
-    private final List<Directory> subdirs = new Vector();
+    private final List<Directory> subdirs = new ArrayList();
     private Map<String, Value> values = new HashMap();
 
     Directory(String name)
