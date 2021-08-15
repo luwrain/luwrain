@@ -103,9 +103,8 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     {
     }
 
-    public boolean onEscape(InputEvent event)
+    public boolean onEscape()
     {
-	NullCheck.notNull(event, "event");
 	return false;
     }
 
@@ -128,7 +127,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 		closing.run();
 		return true;
 	    }
-	    return onEscape(event);
+	    return onEscape();
 	case TAB:
 	    {
 		final Area nextArea = layout.getLayout().getNextArea(area);

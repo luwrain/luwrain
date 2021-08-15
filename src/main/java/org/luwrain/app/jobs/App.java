@@ -45,9 +45,8 @@ public final class App extends AppBase<Strings>
 return this.mainLayout.getAreaLayout();
 }
 
-    @Override public boolean onEscape(InputEvent event)
+    @Override public boolean onEscape()
     {
-	NullCheck.notNull(event, "event");
 	closeApp();
 	return true;
     }

@@ -47,7 +47,7 @@ public final class App extends AppBase<Strings>
 	return mainLayout.getAreaLayout();
     }
 
-    @Override public boolean onEscape(InputEvent event)
+    @Override public boolean onEscape()
     {
 	closeApp();
 	return true;
