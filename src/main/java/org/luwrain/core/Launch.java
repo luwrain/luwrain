@@ -50,7 +50,7 @@ public final class Launch implements Runnable
 	NullCheck.notNull(userDataDir, "userDataDir");
 	NullCheck.notNull(userHomeDir, "userHomeDir");
 	org.luwrain.app.console.App.installListener();
-	//org.apache.log4j.BasicConfigurator.configure();
+	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
 	initLog4j();
 	new JniLoader().autoload(this.getClass().getClassLoader());
 		this.standalone = standalone;
@@ -95,7 +95,6 @@ public final class Launch implements Runnable
     {
 	handleCmdLine();
 	try {
-	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
 	    final UserProfile userProfile = new UserProfile(dataDir, userDataDir, getRegVersion(), lang);
 	    userProfile.userProfileReady();
 	    if (!standalone)

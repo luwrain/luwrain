@@ -25,7 +25,7 @@ import org.luwrain.app.base.*;
 
 public final class App extends AppBase<Strings> implements MonoApp
 {
-    static final List messages = new LinkedList();
+    static final List messages = new ArrayList();
     private ConsoleCommand[] commands = new ConsoleCommand[0];
     private MainLayout mainLayout = null;
 

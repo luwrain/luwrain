@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.controls.ConsoleArea.InputHandler;
 
-class Utils
+final class Utils
 {
     static String firstWord(String text)
     {
