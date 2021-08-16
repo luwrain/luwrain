@@ -20,7 +20,7 @@ import java.util.*;
 
 import org.luwrain.core.script2.*;
 
-public class Script2Extension implements Extension, org.luwrain.core.HookContainer
+final class Script2Extension implements Extension, org.luwrain.core.HookContainer
 {
     static private final String LOG_COMPONENT = "core";
 
