@@ -164,7 +164,7 @@ public final class Popups
 	return fixedList(luwrain, name, items, DEFAULT_POPUP_FLAGS);
     }
 
-    static public File flexiblePath(Luwrain luwrain, String name, String prefix, File startFrom, FileAcceptance acceptance)
+    static public File path(Luwrain luwrain, String name, String prefix, File startFrom, FileAcceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
@@ -223,20 +223,20 @@ public final class Popups
 	return popup.result();
     }
 
-        static public File flexiblePath(Luwrain luwrain, String name, String prefix, FileAcceptance acceptance)
+        static public File path(Luwrain luwrain, String name, String prefix, FileAcceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(prefix, "prefix");
-		return flexiblePath(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), acceptance);
+		return path(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), acceptance);
     }
 
-    static public File flexiblePath(Luwrain luwrain, String name, String prefix)
+    static public File path(Luwrain luwrain, String name, String prefix)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
-	return flexiblePath(luwrain, name, prefix, null);
+	return path(luwrain, name, prefix, null);
     }
 
     static public File existingFile(Luwrain luwrain, String name, File startWith, String[] extensions)
@@ -379,50 +379,6 @@ public final class Popups
 	luwrain.popup(newDirPopup);
 	return true;
     }
-
-    /*
-    static private File path(Luwrain luwrain,
-			     String name, String prefix,
-			     File startWith, File defaultPath,
-			     FileAcceptance acceptance, 
-			     Set<FilePopup.Flags> filePopupFlags, Set<Popup.Flags> popupFlags)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(prefix, "prefix");
-	NullCheck.notNull(acceptance, "acceptance");
-	NullCheck.notNull(filePopupFlags, "filePopupFlags");
-	NullCheck.notNull(popupFlags, "popupFlags");
-	final FilePopup popup = new FilePopup(luwrain, name, prefix, acceptance,
-					      startWith != null?startWith:luwrain.getFileProperty("luwrain.dir.userhome"),
-					      defaultPath != null?defaultPath:luwrain.getFileProperty("luwrain.dir.userhome"),
-					      filePopupFlags, popupFlags);
-	luwrain.popup(popup);
-	return popup.closing.cancelled()?null:popup.result();
-    }
-
-    static public File path(Luwrain luwrain, String name, String prefix, File startWith, FileAcceptance acceptance)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(prefix, "prefix");
-	NullCheck.notNull(acceptance, "acceptance");
-	return path(luwrain, name, prefix,
-		    startWith, null, 
-		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
-    }
-
-    static public File path(Luwrain luwrain, String name, String prefix, FileAcceptance acceptance)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(prefix, "prefix");
-	NullCheck.notNull(acceptance, "acceptance");
-	return path(luwrain, name, prefix,
-		    null, null,
-		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
-    }
-    */
 
     static public File disks(Luwrain luwrain, String name)
     {

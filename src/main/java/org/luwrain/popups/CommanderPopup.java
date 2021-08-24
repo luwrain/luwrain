@@ -38,7 +38,6 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
     protected final String name;
     protected final Filter<File> filter;
     protected final Set<Popup.Flags> popupFlags;
-    protected File result;
     protected boolean filterCancelled;
 
     public CommanderPopup(Luwrain luwrain, String name,
@@ -68,7 +67,6 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	NullCheck.notNull(file, "file");
 	if (dir)
 	    return ClickHandler.Result.OPEN_DIR;
-	result = file;
 	return closing.doOk()?ClickHandler.Result.OK:ClickHandler.Result.REJECTED;
     }
 
@@ -131,16 +129,15 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	return true;
     }
 
-    		@Override public Action[] getAreaActions()
-		{
-		    final List<Action> res = new ArrayList();
-		    if (!filterCancelled)
-			res.add(new Action("cancel-filter", "Показать все файлы", new InputEvent(InputEvent.Special.F5)));
-		    		    		    res.add(new Action("change-disk", "Сменить диск", new InputEvent(InputEvent.Special.TAB)));
-		    res.add(new Action("mkdir", "Создать каталог", new InputEvent(InputEvent.Special.INSERT)));
-		    return res.toArray(new Action[res.size()]);
-		}
-
+    @Override public Action[] getAreaActions()
+    {
+	final List<Action> res = new ArrayList();
+	res.add(new Action("mkdir", "Создать каталог", new InputEvent(InputEvent.Special.INSERT)));
+	res.add(new Action("change-disk", "Сменить диск", new InputEvent(InputEvent.Special.TAB)));
+	if (!filterCancelled)
+	    res.add(new Action("cancel-filter", "Показать все файлы", new InputEvent(InputEvent.Special.F5)));
+	return res.toArray(new Action[res.size()]);
+    }
 
     @Override public Luwrain getLuwrainObject()
     {
