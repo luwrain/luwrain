@@ -58,12 +58,13 @@ public class PopupClosingTranslator
 	return true;
     }
 
-    public void doCancel()
+    public boolean doCancel()
     {
 	if (!provider.onCancel())
-	    return;
+	    return false;
 	cancelled = true;
 	shouldContinue = false;
+	return true;
     }
 
     public boolean cancelled()
@@ -79,11 +80,8 @@ public class PopupClosingTranslator
     public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.isSpecial() && event.getSpecial() == InputEvent.Special.ESCAPE)
-	{
-	    doCancel();
-	    return true;
-	}
+	if (!event.isModified() && event.isSpecial() && event.getSpecial() == InputEvent.Special.ESCAPE)
+	    return doCancel();
 	return false;
     }
 
@@ -96,13 +94,11 @@ public class PopupClosingTranslator
 	{
 	case CANCEL:
 	case CLOSE:
-	    doCancel();
-	    return true;
+	    return doCancel();
 	case OK:
-	    doOk();
-	    return true;
+	    return doOk();
 	default:
-	return false;
+	    return false;
 	}
     }
 }

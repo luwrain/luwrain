@@ -110,6 +110,6 @@ final class PopupsObj implements ProxyObject
 		final String name = args[0].asString();
 		final String text = args[1].asString();
 		final String defaultValue = args[2].asString();
-						return Popups.simple(luwrain, name, text, defaultValue);
+						return Popups.text(luwrain, name, text, defaultValue);
 	    }
 }

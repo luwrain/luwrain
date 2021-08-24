@@ -34,9 +34,9 @@ public final class Popups
     static final String LOG_COMPONENT = "popups";
     static public final Set<Popup.Flags> DEFAULT_POPUP_FLAGS = EnumSet.noneOf(Popup.Flags.class);
 
-    static public String simple(Luwrain luwrain,
-				String name, String prefix, String text,
-				StringAcceptance acceptance, Luwrain.SpeakableTextType speakableTextType)
+    static public String text(Luwrain luwrain,
+			      String name, String prefix, String text,
+			      StringAcceptance acceptance, Luwrain.SpeakableTextType speakableTextType)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -61,23 +61,23 @@ public final class Popups
 	return popup.text ();
     }
 
-    static public String simple(Luwrain luwrain, String name, String prefix,
-				String text, StringAcceptance acceptance)
+    static public String text(Luwrain luwrain, String name, String prefix,
+			      String text, StringAcceptance acceptance)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(text, "text");
-	return simple(luwrain, name, prefix, text, acceptance, Luwrain.SpeakableTextType.PROGRAMMING);
+	return text(luwrain, name, prefix, text, acceptance, Luwrain.SpeakableTextType.PROGRAMMING);
     }
 
-        static public String simple(Luwrain luwrain, String name, String prefix, String text)
+    static public String text(Luwrain luwrain, String name, String prefix, String text)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(prefix, "prefix");
 	NullCheck.notNull(text, "text");
-	return simple(luwrain, name, prefix, text, null);
+	return text(luwrain, name, prefix, text, null);
     }
 
     static public String textNotEmpty(Luwrain luwrain, String name, String prefix, String text)
@@ -86,7 +86,7 @@ public final class Popups
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
 	NullCheck.notNull(text, "text");
-	return simple(luwrain, name, prefix, text, (input)->{
+	return text(luwrain, name, prefix, text, (input)->{
 		if (input.trim().isEmpty())
 		{
 		    luwrain.message("Значение не должно быть пустым", Luwrain.MessageType.ERROR);
@@ -97,8 +97,8 @@ public final class Popups
     }
 
     static public String editWithHistory(Luwrain luwrain,
-				String name, String prefix, String text, 
-				Set<String> history, Set<Popup.Flags> popupFlags)
+					 String name, String prefix, String text, 
+					 Set<String> history, Set<Popup.Flags> popupFlags)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -117,8 +117,8 @@ public final class Popups
     }
 
     static public String editWithHistory(Luwrain luwrain,
-				String name, String prefix, String text, 
-				Set<String> history)
+					 String name, String prefix, String text, 
+					 Set<String> history)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -127,7 +127,6 @@ public final class Popups
 	NullCheck.notNull(history, "history");
 	return editWithHistory(luwrain, name, prefix, text, history, DEFAULT_POPUP_FLAGS);
     }
-
 
     static public Object fixedList(Luwrain luwrain,
 				   String name, final Object[] items,
@@ -224,17 +223,33 @@ public final class Popups
 	return popup.result();
     }
 
+        static public File flexiblePath(Luwrain luwrain, String name, String prefix, FileAcceptance acceptance)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notNull(prefix, "prefix");
+		return flexiblePath(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), acceptance);
+    }
+
+    static public File flexiblePath(Luwrain luwrain, String name, String prefix)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(prefix, "prefix");
+	return flexiblePath(luwrain, name, prefix, null);
+    }
+
     static public File existingFile(Luwrain luwrain, String name, File startWith, String[] extensions)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(startWith, "startWith");
 	NullCheck.notNullItems(extensions, "extensions");
-		final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
-		final CommanderArea.Filter<File> filter;
-		if (sett.getFilePopupSkipHidden(false))
-		    filter = CommanderPopup.FILTER_NO_HIDDEN; else
-		    filter = CommanderPopup.FILTER_ALL;
+	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+	final CommanderArea.Filter<File> filter;
+	if (sett.getFilePopupSkipHidden(false))
+	    filter = CommanderPopup.FILTER_NO_HIDDEN; else
+	    filter = CommanderPopup.FILTER_ALL;
 	final AtomicReference res = new AtomicReference(null);
 	final CommanderPopup popup = new CommanderPopup(luwrain, name, 
 							startWith, filter, DEFAULT_POPUP_FLAGS){
@@ -245,8 +260,10 @@ public final class Popups
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
-		    case OK:
-			return true;//closing.doOk();
+		    case ACTION:
+			if (ActionEvent.isAction(event, "select"))
+			    return closing.doOk();
+			return super.onSystemEvent(event);
 		    default:
 			return super.onSystemEvent(event);
 		    }
@@ -259,6 +276,16 @@ public final class Popups
 		    res.set(file);
 		    return true;
 		}
+		@Override public Action[] getAreaActions()
+		{
+		    final Action[] a = super.getAreaActions();
+		    final File file = getSelectedEntry();
+		    if (file == null || !file.isFile())
+			return a;
+		    final Action[] res = Arrays.copyOf(a, a.length + 1);
+		    res[res.length - 1] = new Action("select", "Выбрать файл");
+		    return res;
+		}
 	    };
 	luwrain.popup(popup);
 	if (popup.isCancelled())
@@ -266,24 +293,24 @@ public final class Popups
 	return (File)res.get();
     }
 
-        static public File existingFile(Luwrain luwrain, String name)
+    static public File existingFile(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	return Popups.existingFile(luwrain, name, getUserHome(luwrain), new String[0]);
     }
 
-        static public File existingDir(Luwrain luwrain, String name, File startWith)
+    static public File existingDir(Luwrain luwrain, String name, File startWith)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
-			final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
-		final CommanderArea.Filter<File> filter;
-		if (sett.getFilePopupSkipHidden(false))
-		    filter = CommanderPopup.FILTER_NO_HIDDEN; else
-		    filter = CommanderPopup.FILTER_ALL;
-		final AtomicReference res = new AtomicReference(null);
-			final CommanderPopup popup = new CommanderPopup(luwrain, name,
+	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
+	final CommanderArea.Filter<File> filter;
+	if (sett.getFilePopupSkipHidden(false))
+	    filter = CommanderPopup.FILTER_NO_HIDDEN; else
+	    filter = CommanderPopup.FILTER_ALL;
+	final AtomicReference res = new AtomicReference(null);
+	final CommanderPopup popup = new CommanderPopup(luwrain, name,
 							startWith, filter, DEFAULT_POPUP_FLAGS){
 		@Override public boolean onSystemEvent(SystemEvent event)
 		{
@@ -292,8 +319,10 @@ public final class Popups
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
-		    case OK:
-			return closing.doOk();
+		    case ACTION:
+			if (ActionEvent.isAction(event, "select"))
+			    return closing.doOk();
+			return super.onSystemEvent(event);
 		    default:
 			return super.onSystemEvent(event);
 		    }
@@ -306,6 +335,16 @@ public final class Popups
 		    res.set(file);
 		    return true;
 		}
+		@Override public Action[] getAreaActions()
+		{
+		    final Action[] a = super.getAreaActions();
+		    final File file = opened();
+		    if (file == null)
+			return a;
+		    final Action[] res = Arrays.copyOf(a, a.length + 1);
+		    res[res.length - 1] = new Action("select", "Выбрать текущий каталог");
+		    return res;
+		}
 	    };
 	luwrain.popup(popup);
 	if (popup.isCancelled())
@@ -313,13 +352,12 @@ public final class Popups
 	return (File)res.get();
     }
 
-            static public File existingDir(Luwrain luwrain, String name)
+    static public File existingDir(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	return existingDir(luwrain, name, getUserHome(luwrain));
     }
-
 
     static boolean mkdir(Luwrain luwrain, File createIn)
     {
@@ -342,24 +380,7 @@ public final class Popups
 	return true;
     }
 
-    // Convenience functions for files choosing
-
-    static public File flexiblePath(Luwrain luwrain, String name, String prefix, FileAcceptance acceptance)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notNull(prefix, "prefix");
-		return flexiblePath(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), acceptance);
-    }
-
-    static public File flexiblePath(Luwrain luwrain, String name, String prefix)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notEmpty(prefix, "prefix");
-	return flexiblePath(luwrain, name, prefix, null);
-    }
-
+    /*
     static private File path(Luwrain luwrain,
 			     String name, String prefix,
 			     File startWith, File defaultPath,
@@ -401,7 +422,7 @@ public final class Popups
 		    null, null,
 		    acceptance, loadFilePopupFlags(luwrain), DEFAULT_POPUP_FLAGS);
     }
-
+    */
 
     static public File disks(Luwrain luwrain, String name)
     {

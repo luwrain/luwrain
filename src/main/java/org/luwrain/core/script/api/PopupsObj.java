@@ -80,7 +80,7 @@ final class PopupsObj extends AbstractJSObject
 						final String defaultValue = org.luwrain.script.ScriptUtils.getStringValue(args[2]);
 						if (name == null || text == null || defaultValue == null)
 						    return null;
-						return org.luwrain.popups.Popups.simple(luwrain, name, text, defaultValue);
+						return org.luwrain.popups.Popups.text(luwrain, name, text, defaultValue);
 	    }
 	    @Override public boolean isFunction()
 	    {
