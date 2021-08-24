@@ -194,7 +194,7 @@ public class CommanderArea<E> extends ListArea
     {
 	if (getListModel().wrappers == null && !flags.contains(Flags.MARKING))
 	    return new Object[0];
-	final List res = new LinkedList();
+	final List res = new ArrayList();
 	for(Wrapper w: getListModel().wrappers)
 	    if (w.marked)
 		res.add(w.obj);
@@ -205,7 +205,7 @@ public class CommanderArea<E> extends ListArea
     {
 	if (getListModel().wrappers == null || !flags.contains(Flags.MARKING))
 	    return new String[0];
-	final List<String> res = new LinkedList();
+	final List<String> res = new ArrayList();
 	for(Wrapper w: getListModel().wrappers)
 	    if (w.marked)
 		res.add(w.baseName);
@@ -216,7 +216,7 @@ public class CommanderArea<E> extends ListArea
     {
 	if (getListModel().wrappers == null || !flags.contains(Flags.MARKING))
 	    return new Wrapper[0];
-	final List<Wrapper<E>> res = new LinkedList<Wrapper<E>>();
+	final List<Wrapper<E>> res = new ArrayList();
 	for(Wrapper w: getListModel().wrappers)
 	    if (w.marked)
 		res.add(w);

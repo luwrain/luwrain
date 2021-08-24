@@ -82,7 +82,7 @@ public class EditableListPopup extends EditableListArea implements Popup, PopupC
 	final int count = editableListModel.getItemCount();
 	if (count < 1)
 	    return new Object[0];
-	final List res = new LinkedList();
+	final List res = new ArrayList();
 	for(int i = 0;i < count;++i)
 	    res.add(editableListModel.getItem(i));
 	return res.toArray(new Object[res.size()]);

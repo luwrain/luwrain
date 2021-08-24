@@ -35,7 +35,7 @@ public class CachedTreeModel implements TreeArea.Model
     }
 
     private final CachedTreeModelSource source;
-    private  final List<CacheItem> cache = new LinkedList<CacheItem>();
+    private  final List<CacheItem> cache = new ArrayList();
 
     public CachedTreeModel(CachedTreeModelSource source)
     {

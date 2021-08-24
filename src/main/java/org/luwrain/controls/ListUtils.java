@@ -444,7 +444,7 @@ mark(o);
 
 	@Override public Object[] getAllMarked()
 	{
-	    final List res = new LinkedList();
+	    final List res = new ArrayList();
 	    for(Object o: items)
 		res.add(o);
 	    return res.toArray(new Object[res.size()]);
@@ -520,7 +520,7 @@ mark(o);
 		throw new IllegalArgumentException("toIndex may not be negative (" + toIndex + ")");
 	    if (fromIndex >= toIndex)
 		return false;
-final List<String> res = new LinkedList<String>();
+final List<String> res = new ArrayList();
 	    for(int i = fromIndex;i < toIndex;++i)
 	    {
 	    final Object obj = model.getItem(i);

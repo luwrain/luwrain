@@ -32,11 +32,11 @@ final class BlockRowsBuilder
     private final int rowLen;
 
     /** Objects of the incomplete row*/
-    final List<BlockRowFragment> res = new LinkedList();
+    final List<BlockRowFragment> res = new ArrayList();
     /** Number of characters on the current (incomplete) row*/
     private int offset = 0;
     /** Complete rows*/
-    final List<BlockRow> rows = new LinkedList();
+    final List<BlockRow> rows = new ArrayList();
 
     BlockRowsBuilder(int rowLen)
     {

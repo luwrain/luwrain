@@ -50,7 +50,7 @@ final class ViewBuilder
 		    //		    Log.warning(LOG_COMPONENT, "container #" + i + ":" + blocks[i].toString());
 		    //		    		    Log.warning(LOG_COMPONENT, "container #" + j + ":" + blocks[j].toString());
 		}
-	final List<Block> viewBlocks = new LinkedList();
+	final List<Block> viewBlocks = new ArrayList();
 	for(Block c: blocks)
 	{
 	    final BlockRowsBuilder b = new BlockRowsBuilder(c.textWidth);
@@ -135,7 +135,7 @@ final class ViewBuilder
 	    Log.debug("building", "chosen for " + nextTextY + " is " + chosenContainer.toString());
 	    nextTextY++;
 	    //Checking if there are some more non-overlapping containers located vertically closely
-	    final List<Container> closeContList = new LinkedList();
+	    final List<Container> closeContList = new ArrayList();
 	    for(int k = 0;k < containers.length;++k)
 	    {
 		if (k == baseContIndex)

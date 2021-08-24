@@ -192,7 +192,7 @@ public final class EditListPopupUtils
 	public FixedModel(String[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
-	    final List<Item> v = new LinkedList();
+	    final List<Item> v = new ArrayList();
 	    for(String s: items)
 		if (!s.isEmpty())
 		    v.add(new DefaultItem(s));
