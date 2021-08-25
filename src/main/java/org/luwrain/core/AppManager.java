@@ -26,7 +26,7 @@ final class AppManager
     private final ArrayList<LaunchedApp> apps = new ArrayList<LaunchedApp>();
     private int activeAppIndex = -1;
     private final LaunchedAppPopups shell = new LaunchedAppPopups();
-    private final List<OpenedPopup> popups = new ArrayList();
+    private final List<OpenedPopup> popups = new ArrayList<>();
 
     void setDefaultApp(Application app)
     {
@@ -45,7 +45,7 @@ final class AppManager
 
     Application[] getLaunchedApps()
     {
-	final List<Application> res = new ArrayList();
+	final List<Application> res = new ArrayList<>();
 	for(LaunchedApp a: apps)
 	    res.add(a.app);
 	return res.toArray(new Application[res.size()]);

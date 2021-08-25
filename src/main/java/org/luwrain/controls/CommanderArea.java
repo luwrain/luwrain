@@ -205,7 +205,7 @@ public class CommanderArea<E> extends ListArea
     {
 	if (getListModel().wrappers == null || !flags.contains(Flags.MARKING))
 	    return new String[0];
-	final List<String> res = new ArrayList();
+	final List<String> res = new ArrayList<>();
 	for(Wrapper w: getListModel().wrappers)
 	    if (w.marked)
 		res.add(w.baseName);
@@ -216,7 +216,7 @@ public class CommanderArea<E> extends ListArea
     {
 	if (getListModel().wrappers == null || !flags.contains(Flags.MARKING))
 	    return new Wrapper[0];
-	final List<Wrapper<E>> res = new ArrayList();
+	final List<Wrapper<E>> res = new ArrayList<>();
 	for(Wrapper w: getListModel().wrappers)
 	    if (w.marked)
 		res.add(w);
@@ -259,13 +259,13 @@ public class CommanderArea<E> extends ListArea
 	    return false;
 	final E newCurrent = entry;
 	final String previouslySelectedText = getSelectedEntryText();
-	task = new FutureTask(()->{
+	task = new FutureTask<>(()->{
 		try {
 		    final Wrapper<E>[] wrappers;
 		    final E[] res = model.getEntryChildren(newCurrent);
 		    if (res != null)
 		    {
-			final List<E> filtered = new ArrayList();
+			final List<E> filtered = new ArrayList<>();
 			for(E e: res)
 			    if (filter == null || filter.commanderEntrySuits(e))
 				filtered.add(e);

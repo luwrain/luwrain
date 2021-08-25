@@ -42,7 +42,7 @@ public class LinesClipboardProvider implements ClipboardTranslator.Provider
 
     @Override public boolean onClipboardCopyAll()
     {
-	final List<String> res = new ArrayList();
+	final List<String> res = new ArrayList<>();
 	final int count = lines.getLineCount();
 	if (count < 1)
 	{
@@ -81,7 +81,7 @@ public class LinesClipboardProvider implements ClipboardTranslator.Provider
 	    clipboardSource.getClipboard().set(line.substring(fromPos, toPos));
 	    return true;
 	}
-	final List<String> res = new ArrayList();
+	final List<String> res = new ArrayList<>();
 	final String firstLine = lines.getLine(fromY);
 	if (firstLine == null)
 	    return false;

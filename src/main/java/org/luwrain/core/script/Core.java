@@ -76,7 +76,7 @@ public final class Core
 	    NullCheck.notNull(dataDir, "dataDir");
 	    NullCheck.notNull(context, "context");
 	    NullCheck.notNull(text, "text");
-	    final Map<String, Object> objs = new HashMap();
+	    final Map<String, Object> objs = new HashMap<>();
 	    if (context.output != null)
 		objs.put("Output", new Wrappers.Output(context.output));
 	    final Instance instance = new Instance(luwrain, dataDir, objs);
@@ -112,7 +112,7 @@ public final class Core
 	    Luwrain toRelease = luwrain;
 	    try {
 		ext.init(luwrain);
-		final Instance instance = new Instance(luwrain, dataDir, new HashMap());
+		final Instance instance = new Instance(luwrain, dataDir, new HashMap<>());
 		ext.setInstance(instance);
 		try {
 		    instance.exec(text);

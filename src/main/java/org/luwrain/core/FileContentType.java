@@ -24,7 +24,7 @@ import java.util.regex.*;
 //Must be thread-safe
 final class FileContentType
 {
-    private final Map<String, String> contentTypes = new HashMap();
+    private final Map<String, String> contentTypes = new HashMap<>();
 
     FileContentType()
     {

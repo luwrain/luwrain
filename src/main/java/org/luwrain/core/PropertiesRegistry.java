@@ -27,9 +27,9 @@ final class PropertiesRegistry implements PropertiesBase, PropertiesProvider.Lis
     private Luwrain luwrain = null;
     private final PropertiesProvider[] basicProviders;
     private Provider[] providers = new Provider[0];
-    private final Map<String, Provider> propsCache = new HashMap();
-        private final Map<String, Provider> filesPropsCache = new HashMap();
-    private final Map<String, List<String>> hooks = new HashMap();
+    private final Map<String, Provider> propsCache = new HashMap<>();
+        private final Map<String, Provider> filesPropsCache = new HashMap<>();
+    private final Map<String, List<String>> hooks = new HashMap<>();
 
     PropertiesRegistry(PropertiesProvider[] basicProviders)
     {
@@ -60,7 +60,7 @@ PropertiesProvider[] getBasicProviders()
 	if (!hookName.equals(hookName.trim()) || !propName.equals(propName.trim()))
 	    return false;
 	if (!hooks.containsKey(propName))
-	    hooks.put(propName, new ArrayList());
+	    hooks.put(propName, new ArrayList<>());
 	final List<String> hooksList = hooks.get(propName);
 	for(String s: hooksList)
 	    if (s.equals(hookName))
@@ -92,7 +92,7 @@ PropertiesProvider[] getBasicProviders()
     boolean setProviders(PropertiesProvider[] providers)
     {
 	NullCheck.notNullItems(providers, "providers");
-	final List<Provider> newProviders = new ArrayList();
+	final List<Provider> newProviders = new ArrayList<>();
 	for(PropertiesProvider p: basicProviders)
 	    newProviders.add(new Provider(true, p));
 		for(PropertiesProvider p: providers)
@@ -194,7 +194,7 @@ PropertiesProvider[] getBasicProviders()
 	    this.provider = provider;
 	    final String[] regex = provider.getPropertiesRegex();
 	    NullCheck.notNullItems(regex, "regex");
-	    final List<Pattern> patterns = new ArrayList();
+	    final List<Pattern> patterns = new ArrayList<>();
 	    for (String r: regex)
 		if (!r.isEmpty())
 		    patterns.add(Pattern.compile(r));//Pattern.CASE_INSENSITIVE	    this.patterns = patterns.toArray(new Pattern[patterns.size()]);

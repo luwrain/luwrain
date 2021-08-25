@@ -25,7 +25,7 @@ public final class EnvironmentSounds
 {
     private final Registry registry;
     private final File soundsDir;
-    private final Map<Sounds, File> soundFiles = new HashMap();
+    private final Map<Sounds, File> soundFiles = new HashMap<>();
     private WavePlayers.Simple previous = null;
 
     public EnvironmentSounds(Registry registry, File soundsDir)

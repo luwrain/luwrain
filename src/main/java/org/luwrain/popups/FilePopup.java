@@ -176,7 +176,7 @@ protected Item[] readDirectory(File dir, File base)
 	    final File[] files = dir.listFiles();
 	    if (files == null)
 		return new Item[0];
-	    final List<Item> items = new ArrayList();
+	    final List<Item> items = new ArrayList<>();
 	    for (File pp: dir.listFiles())
 			if (!skipHidden || !pp.isHidden())
 			{

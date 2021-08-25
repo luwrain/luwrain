@@ -50,7 +50,7 @@ public class FormArea  extends NavigationArea
     public enum Type { EDIT, CHECKBOX, LIST, STATIC, UNIREF, MULTILINE };
 
     protected final ControlContext context;
-    protected final List<Item> items = new ArrayList();
+    protected final List<Item> items = new ArrayList<>();
     protected String name = "";
     protected int nextAutoNameNum = 1;
 

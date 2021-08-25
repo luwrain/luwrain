@@ -22,7 +22,7 @@ import org.luwrain.util.*;
 public final class InterfaceManager
 {
     private final Core core;
-    private final List<Entry> entries = new ArrayList();
+    private final List<Entry> entries = new ArrayList<>();
     final Luwrain objForEnvironment;
 
     InterfaceManager(Base base)

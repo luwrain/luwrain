@@ -130,7 +130,7 @@ final class Core extends EventDispatching
 	final String params = command.substring("app ".length());
 	Log.debug("proba", "params " + params);
 	String shortcut = null;
-	final List<String> args = new ArrayList();
+	final List<String> args = new ArrayList<>();
 	//FIXME:quotes
 	for(String s: params.split(" ", -1))
 	    if (!s.trim().isEmpty())
@@ -186,7 +186,7 @@ final class Core extends EventDispatching
     {
 	NullCheck.notEmpty(componentName, "componentName");
 	//Common JavaScript extensions
-	final List<ScriptFile> res = new ArrayList();
+	final List<ScriptFile> res = new ArrayList<>();
 	final File jsDir = props.getFileProperty(Luwrain.PROP_DIR_JS);
 	if (jsDir.exists() && jsDir.isDirectory())
 	{
@@ -355,7 +355,7 @@ final class Core extends EventDispatching
 	    message("Нет приложения с именем " + shortcutName, Luwrain.MessageType.ERROR);//FIXME:
 	    return;
 	}
-	final AtomicReference<Application[]> appRef = new AtomicReference();
+	final AtomicReference<Application[]> appRef = new AtomicReference<>();
 	unsafeAreaOperation(()->{
 		appRef.set(shortcut.prepareApp(args));
 	    });
@@ -823,7 +823,7 @@ onNewAreasLayout();
 
     org.luwrain.cpanel.Factory[] getControlPanelFactories()
     {
-	final List<org.luwrain.cpanel.Factory> res = new ArrayList();
+	final List<org.luwrain.cpanel.Factory> res = new ArrayList<>();
 	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(LoadedExtension e: allExt)
 	    if (e.controlPanelFactories != null)

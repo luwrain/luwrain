@@ -42,8 +42,8 @@ final class LuwrainObj implements ProxyObject
 	"readTextFile",
 	"speak",
     };
-    static private final Set<String> KEYS_SET = new HashSet(Arrays.asList(KEYS));
-    static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray(KEYS);
+    static private final Set<String> KEYS_SET = new HashSet(Arrays.asList((Object[])KEYS));
+    static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray((Object[])KEYS);
 
     private final LogObj logObj;
     private final I18nObj i18nObj;

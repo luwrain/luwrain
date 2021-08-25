@@ -29,7 +29,7 @@ public final class Speech
 
     private final CmdLine cmdLine;
     private final Settings.SpeechParams sett;
-    private final Map<String, Engine> engines = new HashMap();
+    private final Map<String, Engine> engines = new HashMap<>();
     private Channel defaultChannel = null;
     private int pitch = 50;
     private int rate = 50;
@@ -63,7 +63,7 @@ public final class Speech
 	    this.engines.put(name, e);
 	}
 	final String engineName;
-	final Map<String, String> params = new HashMap();
+	final Map<String, String> params = new HashMap<>();
 	final String speechArg = cmdLine.getFirstArg(SPEECH_PREFIX);
 	if (speechArg != null && !speechArg.isEmpty())
 	{
@@ -101,7 +101,7 @@ public final class Speech
     {
 	NullCheck.notEmpty(engineName, "engineName");
 	NullCheck.notNull(paramsLine, "paramsLine");
-	final Map<String, String> params = new HashMap();
+	final Map<String, String> params = new HashMap<>();
 	if (!parseParams(paramsLine, params))
 	    return null;
 	return loadChannel(engineName, params);
@@ -220,7 +220,7 @@ public final class Speech
 	NullCheck.notNull(params, "params");
 	if (line.isEmpty())
 	    return true;
-	final List<String> items = new ArrayList();
+	final List<String> items = new ArrayList<>();
 	String item = "";
 	for(int i = 0;i < line.length();++i)
 	{

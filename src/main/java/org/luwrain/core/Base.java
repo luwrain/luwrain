@@ -351,7 +351,7 @@ abstract class Base implements EventConsumer
 	final File[] files = packsDir.listFiles();
 	if (files == null)
 	    return new File[0];
-	final List<File> res = new ArrayList();
+	final List<File> res = new ArrayList<>();
 	for(File f: files)
 	    if (f != null && f.exists() && f.isDirectory())
 		res.add(f);

@@ -145,7 +145,7 @@ public final class EditListPopupUtils
 		items[i] = fullItems[i].getValue();
 	    if (beginning == null || beginning.isEmpty())
 		return items;
-	    final List<String> matching = new ArrayList();
+	    final List<String> matching = new ArrayList<>();
 	    for(String s: items)
 		if (s.startsWith(beginning))
 		    matching.add(s);
@@ -192,7 +192,7 @@ public final class EditListPopupUtils
 	public FixedModel(String[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
-	    final List<Item> v = new ArrayList();
+	    final List<Item> v = new ArrayList<>();
 	    for(String s: items)
 		if (!s.isEmpty())
 		    v.add(new DefaultItem(s));

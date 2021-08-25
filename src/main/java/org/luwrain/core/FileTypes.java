@@ -31,7 +31,7 @@ final class FileTypes
 	JOB_PREFIX = "job:";
 
     private final Gson gson = new Gson();
-    private final Map<String, String> fileTypes = new HashMap();
+    private final Map<String, String> fileTypes = new HashMap<>();
 
     void load(Registry registry)
     {
@@ -59,7 +59,7 @@ final class FileTypes
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNullItems(files, "files");
 	final String[] shortcuts = chooseShortcuts(files);
-	final Map<String, List<String> > lists = new HashMap();
+	final Map<String, List<String> > lists = new HashMap<>();
 	for(int i = 0;i < files.length;++i)
 	{
 	    final String s = shortcuts[i];
@@ -71,7 +71,7 @@ final class FileTypes
 		lists.get(s).add(f);
 		continue;
 	    }
-	    final List<String> l = new ArrayList();
+	    final List<String> l = new ArrayList<>();
 	    l.add(f);
 	    lists.put(s, l);
 	}

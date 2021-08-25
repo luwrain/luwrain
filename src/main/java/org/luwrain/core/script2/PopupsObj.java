@@ -31,7 +31,7 @@ final class PopupsObj implements ProxyObject
 	"confirmDefaultYes",
 	"text",
     };
-    static private final ProxyArray MEMBERS_KEYS = ProxyArray.fromArray(MEMBERS);
+    static private final ProxyArray MEMBERS_KEYS = ProxyArray.fromArray((Object[])MEMBERS);
 
     private final Luwrain luwrain;
 

@@ -43,7 +43,7 @@ final class LangsObj implements ProxyObject
 	    this.langs.put(e.getKey(), new LangObj(e.getValue()));
 	}
 	this.keysSet = new HashSet(keys);
-	this.keysArray = ProxyArray.fromArray(keys.toArray(new String[keys.size()]));
+	this.keysArray = ProxyArray.fromArray((Object[])keys.toArray(new String[keys.size()]));
     }
 
     @Override public Object getMember(String name)

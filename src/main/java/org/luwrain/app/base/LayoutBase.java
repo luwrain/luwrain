@@ -68,7 +68,7 @@ protected interface ActionHandler
 	}
 	public org.luwrain.core.Action[] getAreaActions()
 	{
-	    final List<org.luwrain.core.Action> res = new ArrayList();
+	    final List<org.luwrain.core.Action> res = new ArrayList<>();
 	    for(ActionInfo a: actions)
 		if (a.inputEvent != null)
 		    res.add(new org.luwrain.core.Action(a.name, a.title, a.inputEvent)); else
@@ -95,7 +95,7 @@ protected interface ActionHandler
 
     protected final AppBase app;
     protected LayoutControlContext controlContext = null;
-    private final Map<Area, Area> areaWrappers = new HashMap();
+    private final Map<Area, Area> areaWrappers = new HashMap<>();
     private AreaLayout areaLayout = null;
     private ActionHandler closeHandler = null;
     private ActionHandler okHandler = null;

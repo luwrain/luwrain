@@ -30,9 +30,9 @@ final class I18nImpl implements I18n, I18nExtension
     private Lang chosenLang = null;
     private String chosenLangName = "";
 
-    private final List<CommandTitle> commandTitles = new ArrayList();
-    private final List<StringsObj> stringsObjs = new ArrayList();
-    private final Map<String, Lang> langs = new HashMap();
+    private final List<CommandTitle> commandTitles = new ArrayList<>();
+    private final List<StringsObj> stringsObjs = new ArrayList<>();
+    private final Map<String, Lang> langs = new HashMap<>();
 
     @Override public Lang getActiveLang()
     {
@@ -47,7 +47,7 @@ final class I18nImpl implements I18n, I18nExtension
 
     @Override public Map<String, Lang> getAllLangs()
     {
-	return new HashMap(langs);
+	return new HashMap<>(langs);
 	    }
 
 

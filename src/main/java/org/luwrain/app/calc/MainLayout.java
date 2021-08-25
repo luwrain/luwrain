@@ -137,7 +137,7 @@ public final class MainLayout extends LayoutBase
     private String[] getLinesToEval()
     {
 	final String[] lines = editArea.getLines();
-	final List<String> res = new LinkedList();
+	final List<String> res = new LinkedList<>();
 	for(int i = 0;i < lines.length - 3;i++)
 	    res.add(lines[i]);
 	return res.toArray(new String[res.size()]);

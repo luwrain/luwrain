@@ -23,7 +23,7 @@ class WorkersTracking
 {
     static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
 
-        private final Map<String, Entry> workers = new HashMap();
+        private final Map<String, Entry> workers = new HashMap<>();
     private volatile boolean continueWork = true;
 
     boolean runExplicitly(String workerName)

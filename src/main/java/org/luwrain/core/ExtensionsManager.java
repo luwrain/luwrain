@@ -28,7 +28,7 @@ public final class ExtensionsManager
 
     private final InterfaceManager interfaces;
     private LoadedExtension[] extensions = new LoadedExtension[0];
-    private final List<LoadedExtension> dynamicExtensions = new ArrayList();
+    private final List<LoadedExtension> dynamicExtensions = new ArrayList<>();
 
     ExtensionsManager(InterfaceManager interfaces)
     {
@@ -44,7 +44,7 @@ public final class ExtensionsManager
 	final String[] extensionsList = getExtensionsList(cmdLine, classLoader);
 	if (extensionsList == null || extensionsList.length == 0)
 	    return;
-	final List<LoadedExtension> res = new ArrayList();
+	final List<LoadedExtension> res = new ArrayList<>();
 	for(String s: extensionsList)
 	{
 	    if (s == null || s.trim().isEmpty())
@@ -106,7 +106,7 @@ public final class ExtensionsManager
 
     LoadedExtension[] getAllLoadedExtensions()
     {
-	final List<LoadedExtension> res = new ArrayList();
+	final List<LoadedExtension> res = new ArrayList<>();
 	res.addAll(Arrays.asList(extensions));
 	res.addAll(dynamicExtensions);
 	return res.toArray(new LoadedExtension[res.size()]);
@@ -171,7 +171,7 @@ public final class ExtensionsManager
 
     private ExtensionObject[] getExtObjects(Extension ext, Luwrain luwrain)
     {
-	final List<ExtensionObject> res = new ArrayList();
+	final List<ExtensionObject> res = new ArrayList<>();
 	try {
 	    final ExtensionObject[] e = ext.getExtObjects(luwrain);
 	    for(int i = 0;i < e.length;++i)
@@ -235,7 +235,7 @@ public final class ExtensionsManager
     private String[] getExtensionsListFromManifest(ClassLoader classLoader)
     {
 	NullCheck.notNull(classLoader, "classLoader");
-	final List<String> res = new ArrayList();
+	final List<String> res = new ArrayList<>();
 	try {
 	    Enumeration<java.net.URL> resources = classLoader.getResources("META-INF/MANIFEST.MF");
 	    while (resources.hasMoreElements())

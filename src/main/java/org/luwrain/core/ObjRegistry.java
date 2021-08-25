@@ -39,12 +39,12 @@ final class ObjRegistry implements ExtObjects
 	}
     }
 
-    private Map<String, Entry<Shortcut>> shortcuts = new HashMap();
-    private Map<String, Entry<Job>> jobs = new HashMap();
-    private Map<String, Entry<Worker>> workers = new HashMap();
-    private Map<String, Entry<org.luwrain.speech.Engine>> speechEngines = new HashMap();
-    private Map<String, Entry<MediaResourcePlayer>> players = new HashMap();
-        private Map<String, Entry<PropertiesProvider>> propsProviders = new HashMap();
+    private Map<String, Entry<Shortcut>> shortcuts = new HashMap<>();
+    private Map<String, Entry<Job>> jobs = new HashMap<>();
+    private Map<String, Entry<Worker>> workers = new HashMap<>();
+    private Map<String, Entry<org.luwrain.speech.Engine>> speechEngines = new HashMap<>();
+    private Map<String, Entry<MediaResourcePlayer>> players = new HashMap<>();
+        private Map<String, Entry<PropertiesProvider>> propsProviders = new HashMap<>();
     //private Map<String, Entry<TextEditingExtension>> textEditingExts = new HashMap();
 
     boolean add(Extension ext, ExtensionObject obj)
@@ -139,7 +139,7 @@ final class ObjRegistry implements ExtObjects
 
     String[] getJobNames()
     {
-	final List<String> res = new ArrayList();
+	final List<String> res = new ArrayList<>();
 	for(Map.Entry<String, Entry<Job>> e: jobs.entrySet())
 	    res.add(e.getKey());
 	final String[] str = res.toArray(new String[res.size()]);
@@ -157,7 +157,7 @@ final class ObjRegistry implements ExtObjects
 
     String[] getShortcutNames()
     {
-	final List<String> res = new ArrayList();
+	final List<String> res = new ArrayList<>();
 	for(Map.Entry<String, Entry<Shortcut>> e: shortcuts.entrySet())
 	    res.add(e.getKey());
 	final String[] str = res.toArray(new String[res.size()]);
@@ -167,7 +167,7 @@ final class ObjRegistry implements ExtObjects
 
     @Override public MediaResourcePlayer[] getMediaResourcePlayers()
     {
-	final List<MediaResourcePlayer> res = new ArrayList();
+	final List<MediaResourcePlayer> res = new ArrayList<>();
 	for(Map.Entry<String, Entry<MediaResourcePlayer>> e: players.entrySet())
 	    res.add(e.getValue().obj);
 	return res.toArray(new MediaResourcePlayer[res.size()]);
@@ -181,7 +181,7 @@ final class ObjRegistry implements ExtObjects
 
         org.luwrain.speech.Engine[] getSpeechEngines()
     {
-	final List<org.luwrain.speech.Engine> res = new ArrayList();
+	final List<org.luwrain.speech.Engine> res = new ArrayList<>();
 	for(Map.Entry<String, Entry<org.luwrain.speech.Engine>> e: speechEngines.entrySet())
 	    res.add(e.getValue().obj);
 	return res.toArray(new org.luwrain.speech.Engine[res.size()]);
@@ -189,7 +189,7 @@ final class ObjRegistry implements ExtObjects
 
             Worker[] getWorkers()
     {
-	final List<Worker> res = new ArrayList();
+	final List<Worker> res = new ArrayList<>();
 	for(Map.Entry<String, Entry<Worker>> e: workers.entrySet())
 	    res.add(e.getValue().obj);
 	return res.toArray(new Worker[res.size()]);
@@ -197,7 +197,7 @@ final class ObjRegistry implements ExtObjects
 
                 PropertiesProvider[] getPropertiesProviders()
     {
-	final List<PropertiesProvider> res = new ArrayList();
+	final List<PropertiesProvider> res = new ArrayList<>();
 	for(Map.Entry<String, Entry<PropertiesProvider>> e: propsProviders.entrySet())
 	    res.add(e.getValue().obj);
 	return res.toArray(new PropertiesProvider[res.size()]);
@@ -247,7 +247,7 @@ final class ObjRegistry implements ExtObjects
 	NullCheck.notNull(map, "map");
 	NullCheck.notNull(ext, "ext");
 	final Map<String, org.luwrain.core.ObjRegistry.Entry> entryMap = (Map<String, Entry>)map;
-	final List<String> deleting = new ArrayList();
+	final List<String> deleting = new ArrayList<>();
 	for(Map.Entry<String, org.luwrain.core.ObjRegistry.Entry> e: entryMap.entrySet())
 	if (e.getValue().ext == ext)
 	    deleting.add(e.getKey());

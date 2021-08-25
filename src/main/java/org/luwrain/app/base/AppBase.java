@@ -36,7 +36,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     private Area[] visibleAreas = new Area[0];
     private FutureTask task = null;
 
-    public AppBase(String stringsName, Class stringsClass, String helpSection)
+    public AppBase(String stringsName, Class<S> stringsClass, String helpSection)
     {
 	NullCheck.notEmpty(stringsName, "stringsName");
 	NullCheck.notNull(stringsClass, "stringsClass");
@@ -45,7 +45,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	this.helpSection = helpSection;
     }
 
-        public AppBase(String stringsName, Class stringsClass)
+        public AppBase(String stringsName, Class<S> stringsClass)
     {
 	this(stringsName, stringsClass, null);
     }
@@ -219,7 +219,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     {
 	NullCheck.notNull(taskId, "taskId");
 	NullCheck.notNull(runnable, "runnable");
-	return runTask(new FutureTask(()->{
+	return runTask(new FutureTask<>(()->{
 		    try {
 			try {
 			    runnable.run();

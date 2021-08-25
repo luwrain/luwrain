@@ -26,7 +26,7 @@ public final class JobsTracking
 
     private final Luwrain luwrain;
     private final ObjRegistry objRegistry;
-    public final List<Entry> entries = new ArrayList();
+    public final List<Entry> entries = new ArrayList<>();
 
     JobsTracking(Luwrain luwrain, ObjRegistry objRegistry)
     {
