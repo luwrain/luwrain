@@ -78,12 +78,12 @@ final class MainLayout extends LayoutBase
 	if (app.ex instanceof CustomMessageException)
 	{
 	    final CustomMessageException c = (CustomMessageException)app.ex;
-	    simpleArea.beginLinesTrans();
+	    simpleArea.update((lines)->{
 	    final String[] message = c.getCustomMessage();
 	    for(String s: message)
-		simpleArea.addLine(s);
-	    simpleArea.addLine("");
-	    simpleArea.endLinesTrans();
+		lines.addLine(s);
+	    lines.addLine("");
+		});
 	    return;
 	}
 	fillException(app.ex);
@@ -91,27 +91,26 @@ final class MainLayout extends LayoutBase
 
     private void fillException(Throwable t)
     {
-			simpleArea.beginLinesTrans();
-	NullCheck.notNull(t, "t");
+		NullCheck.notNull(t, "t");
+	    	simpleArea.update((lines)->{
 	if (t instanceof java.io.FileNotFoundException && t.getMessage() != null)
 	{
-	    simpleArea.beginLinesTrans();
-	    simpleArea.addLine("");
-	    simpleArea.addLine(app.getStrings().fileNotFound() + ": " + t.getMessage());
+	    lines.addLine("");
+	    lines.addLine(app.getStrings().fileNotFound() + ": " + t.getMessage());
 	}
 
 	final String[] msg = app.getStrings().intro().split("\\n");
-	simpleArea.addLine("");
+	lines.addLine("");
 	for(String s: msg)
-	    simpleArea.addLine(s);
-	simpleArea.addLine("");
+	    lines.addLine(s);
+	lines.addLine("");
 	if (app.srcApp != null)
-	    simpleArea.addLine(app.getStrings().app(app.srcApp.getClass().getName()));
+	    lines.addLine(app.getStrings().app(app.srcApp.getClass().getName()));
 	if (app.srcArea != null)
-	    simpleArea.addLine(app.getStrings().area(app.srcArea.getClass().getName()));
+	    lines.addLine(app.getStrings().area(app.srcArea.getClass().getName()));
 	if (app.srcApp != null || app.srcArea != null)
-	    simpleArea.addLine("");
-	simpleArea.addLine(app.getStrings().stackTrace());
+	    lines.addLine("");
+	lines.addLine(app.getStrings().stackTrace());
 	final StringWriter sw = new StringWriter();
 	final PrintWriter pw = new PrintWriter(sw);
 	t.printStackTrace(pw);
@@ -119,8 +118,8 @@ final class MainLayout extends LayoutBase
 	sw.flush();
 	final String[] trace = sw.toString().split("\n", -1);
 	for(String s: trace)
-	    simpleArea.addLine(s);
-	simpleArea.endLinesTrans();
+	    lines.addLine(s);
+		    });
     }
 
     AreaLayout getLayout()

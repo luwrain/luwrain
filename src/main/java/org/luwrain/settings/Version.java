@@ -43,13 +43,14 @@ final class Version extends SimpleArea implements SectionArea
 	final String osVersion = luwrain.i18n().getStaticStr("CpVersionOs") + " " + System.getProperty("os.name") + " " + System.getProperty("os.version");
 	final String javaVersion = luwrain.i18n().getStaticStr("CpVersionJava") + " " + System.getProperty("java.version") + " (" + System.getProperty("java.vm.vendor") + ")";
 	final String memUsed = luwrain.i18n().getStaticStr("CpVersionMemUsed") + " " + (memUsedBytes / 1048576) + "M";
-	beginLinesTrans();
-	addLine("");
-	addLine(luwrainVersion);
-	addLine(osVersion);
-	addLine(javaVersion);
-	addLine(memUsed);
-	endLinesTrans();
+	update((lines)->{
+		lines.addLine("");
+		lines.addLine(luwrainVersion);
+		lines.addLine(osVersion);
+		lines.addLine(javaVersion);
+		lines.addLine(memUsed);
+		lines.addLine("");
+	    });
     }
 
     @Override public boolean onInputEvent(InputEvent event)

@@ -36,12 +36,10 @@ public class MutableLinesImpl implements MutableLines
 	this.lines.addAll(Arrays.asList(lines));
     }
 
-    @Override public void beginLinesTrans()
+    @Override public void update(Updating updating)
     {
-    }
-
-    @Override public void endLinesTrans()
-    {
+	NullCheck.notNull(updating, "updating");
+	updating.update(this);
     }
 
     @Override public int getLineCount()

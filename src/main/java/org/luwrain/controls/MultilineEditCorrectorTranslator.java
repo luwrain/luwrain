@@ -336,7 +336,6 @@ return "";
 
     protected void beginEditTrans()
     {
-	lines.beginLinesTrans();
 	hotPoint.beginHotPointTrans();
     }
 
@@ -346,6 +345,5 @@ return "";
 	    if (lines.getLineCount() == 1 && lines.getLine(0).isEmpty())
 		lines.removeLine(0);
 	hotPoint.endHotPointTrans();
-	lines.endLinesTrans();
     }
 }

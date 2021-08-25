@@ -33,13 +33,12 @@ abstract public class MutableLinesChangeListener implements MutableLines
     }
 
     abstract public void onMutableLinesChange();
-	
-    @Override public void beginLinesTrans()
-    {
-    }
 
-    @Override public void endLinesTrans()
+    @Override public void update(Updating updating)
     {
+	NullCheck.notNull(updating, "updating");
+	lines.update(updating);
+	onMutableLinesChange();
     }
 
     @Override public int getLineCount()

@@ -34,7 +34,6 @@ public class SimpleArea extends NavigationArea implements MutableLines
     protected final ControlContext environment;
     protected String name = "";
     protected final MutableLinesImpl content = new MutableLinesImpl();
-    protected boolean transOpened = false;
 
     public SimpleArea(ControlContext environment)
     {
@@ -64,17 +63,11 @@ public class SimpleArea extends NavigationArea implements MutableLines
 	content.setLines(lines);
     }
 
-    @Override public void beginLinesTrans()
+    @Override public void update(Updating updating)
     {
-	content.beginLinesTrans();
-	transOpened = true;
-    }
-
-    @Override public void endLinesTrans()
-    {
-	transOpened = false;
-	content.endLinesTrans();
-	environment.onAreaNewContent(this);
+	NullCheck.notNull(updating, "updating");
+	content.update(updating);
+	afterChange();
     }
 
     @Override public int getLineCount()
@@ -168,8 +161,6 @@ public class SimpleArea extends NavigationArea implements MutableLines
 
     private void afterChange()
     {
-	if (transOpened)
-	    return;
 	environment.onAreaNewContent(this);
     }
 }

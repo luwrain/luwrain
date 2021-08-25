@@ -18,8 +18,12 @@ package org.luwrain.core;
 
 public interface MutableLines extends MarkedLines
 {
-    void beginLinesTrans();
-    void endLinesTrans();
+    public interface Updating
+    {
+	public void update(MutableLines lines);
+    }
+
+    void update(Updating updating);
     String[] getLines();
     void setLines(String[] lines);
     void addLine(String line);

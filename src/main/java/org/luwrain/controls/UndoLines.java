@@ -41,12 +41,9 @@ public class UndoLines implements MutableLines
 	return lines.getLine(index);
     }
 
-    @Override public void beginLinesTrans()
+    @Override public void update(Updating updating)
     {
-    }
-
-    @Override public void endLinesTrans()
-    {
+	//FIXME:
     }
 
     @Override public String[] getLines()

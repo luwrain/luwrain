@@ -37,21 +37,21 @@ class HardwareCpuMem extends SimpleArea implements SectionArea
 
     private void fillData()
     {
-	beginLinesTrans();
+	update((lines)->{
 	int i = 0;
 	while(true)
 	{
 	    final String cpu = luwrain.getProperty("luwrain.hardware.cpu." + i);
 	    if (cpu.trim().isEmpty())
 		break;
-	    addLine("Центральный процессор " + (i + 1) + ": " + cpu);
+	    lines.addLine("Центральный процессор " + (i + 1) + ": " + cpu);
 	    ++i;
 	    if (i >= 1024)
 		break;
 	}
-	addLine("Объём оперативной памяти (МБ): " + luwrain.getProperty("luwrain.hardware.ramsizemb"));
-	addLine("");
-	endLinesTrans();
+	lines.addLine("Объём оперативной памяти (МБ): " + luwrain.getProperty("luwrain.hardware.ramsizemb"));
+	lines.addLine("");
+	    });
     }
 
     @Override public boolean onInputEvent(InputEvent event)
