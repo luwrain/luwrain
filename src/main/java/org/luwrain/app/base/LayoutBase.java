@@ -333,6 +333,36 @@ protected interface ActionHandler
 		app.getLuwrain().setActiveArea(a != null?a:area);
     }
 
+    protected interface ListParams { void setListParams(ListArea.Params params); }
+    protected ListArea.Params listParams(ListParams l)
+    {
+	NullCheck.notNull(l, "l");
+	final ListArea.Params params = new ListArea.Params();
+	params.context = getControlContext();
+	l.setListParams(params);
+	return params;
+    }
+
+        protected interface EditParams { void setEditParams(EditArea.Params params); }
+    protected EditArea.Params editParams(EditParams l)
+    {
+	NullCheck.notNull(l, "l");
+	final EditArea.Params params = new EditArea.Params();
+	params.context = getControlContext();
+	l.setEditParams(params);
+	return params;
+    }
+
+            protected interface ConsoleParams { void setConsoleParams(ConsoleArea.Params params); }
+    protected ConsoleArea.Params consoleParams(ConsoleParams l)
+    {
+	NullCheck.notNull(l, "l");
+	final ConsoleArea.Params params = new ConsoleArea.Params();
+	params.context = getControlContext();
+	l.setConsoleParams(params);
+	return params;
+    }
+
     protected final class LayoutControlContext extends WrappingControlContext
     {
 	public LayoutControlContext(ControlContext context)

@@ -20,6 +20,11 @@ public class MapScriptObject implements ProxyObject
 	this.members = members;
     }
 
+    public MapScriptObject()
+    {
+	this(new HashMap());
+    }
+
     @Override public Object getMember(String name)
     {
 	NullCheck.notEmpty(name, "name");
@@ -35,8 +40,12 @@ public class MapScriptObject implements ProxyObject
 
     @Override public Object getMemberKeys()
     {
-	if (membersCache == null)
-	    membersCache = ProxyArray.fromArray(members.keySet());
+	if (membersCache != null)
+	    return membersCache;
+	final List<String> m = new ArrayList();
+	for(Map.Entry<String, Object> e: members.entrySet())
+	    m.add(e.getKey());
+	membersCache = ProxyArray.fromArray((Object[])m.toArray(new String[m.size()]));
 	return membersCache;
 }
 
@@ -48,6 +57,13 @@ public class MapScriptObject implements ProxyObject
 	members.remove(value);
     membersCache = null;
 }
+
+    public ProxyArray array(Object[] a)
+    {
+	if (a == null)
+	    return null;
+	return ProxyArray.fromArray(a);
+    }
 
     public void updateMembersCache()
     {
