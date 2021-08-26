@@ -111,9 +111,17 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 
     public ExtensionObject[] getExtObjects()
     {
-	final List<ExtensionObject> res = new ArrayList();
+	final List<ExtensionObject> res = new ArrayList<>();
 	for(Module m: modules)
 	    res.addAll(m.luwrainObj.extObjs);
 	return res.toArray(new ExtensionObject[res.size()]);
+    }
+
+        public Command[] getCommands()
+    {
+	final List<Command> res = new ArrayList<>();
+	for(Module m: modules)
+	    res.addAll(m.luwrainObj.commands);
+	return res.toArray(new Command[res.size()]);
     }
 }

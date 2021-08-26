@@ -742,7 +742,7 @@ final class LuwrainImpl implements Luwrain
 	    */
 	}
 	final AtomicBoolean execRes = new AtomicBoolean(false);
-	final AtomicReference<RuntimeException> error = new AtomicReference();
+	final AtomicReference<RuntimeException> error = new AtomicReference<>();
 	runHooks(hookName, (hook)->{
 		try {
 		final Object res = hook.run(args);

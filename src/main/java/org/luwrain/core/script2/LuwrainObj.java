@@ -31,8 +31,9 @@ import static org.luwrain.script2.ScriptUtils.*;
 final class LuwrainObj implements ProxyObject
 {
     static private String[] KEYS = new String[]{
+	"addCommand",
 	"addHook",
-	"addWroker",
+	"addWoker",
 	"i18n",
 	"isDigit",
 	"isLetter",
@@ -49,8 +50,9 @@ final class LuwrainObj implements ProxyObject
     private final I18nObj i18nObj;
 
         final Luwrain luwrain;
-        final Map<String, List<Value> > hooks = new HashMap();
-        final List<ExtensionObject> extObjs = new ArrayList();
+        final Map<String, List<Value> > hooks = new HashMap<>();
+        final List<ExtensionObject> extObjs = new ArrayList<>();
+    final List<Command> commands = new ArrayList<>();
 
     LuwrainObj(Luwrain luwrain)
     {
@@ -66,6 +68,8 @@ final class LuwrainObj implements ProxyObject
 	    return null;
 	switch(name)
 	{
+	    	case "addCommand":
+	    return(ProxyExecutable)this::addCommand;
 	case "addHook":
 	    return(ProxyExecutable)this::addHook;
 	    	case "addWorker":
@@ -96,6 +100,20 @@ final class LuwrainObj implements ProxyObject
     @Override public Object getMemberKeys() { return KEYS_ARRAY; }
     @Override public void putMember(String name, Value value) { throw new RuntimeException("The Luwrain object doesn't support updating of its variables"); }
 
+            private Object addCommand(Value[] args)
+    {
+	if (!notNullAndLen(args, 2))
+	    return false;
+	if (!args[0].isString() || !args[1].canExecute())
+	    return false;
+	final String name = args[0].asString();
+	if (name.trim().isEmpty())
+	    return false;
+	commands.add(new CommandWrapper(this, name.trim(), args[1]));
+	return true;
+	    }
+
+
     private Object addHook(Value[] args)
     {
 	if (!notNullAndLen(args, 2))
@@ -122,7 +140,7 @@ final class LuwrainObj implements ProxyObject
 	if (!args[0].isString() ||
 	    !args[1].isNumber() ||
 	    !args[2].isNumber() ||
-args[3].canExecute())
+!args[3].canExecute())
 	    return false;
 	final String name = args[0].asString();
 	final int firstLaunchDelay = args[1].asInt();
