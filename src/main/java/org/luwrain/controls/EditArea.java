@@ -160,12 +160,12 @@ return new MultilineEditCorrectorTranslator(content, this);
 	context.onAreaNewName(this);
     }
 
-    public String[] getLines()
+    public String[] getText()
     {
 	return content.getLines();
     }
 
-    public void setLines(String[] lines)
+    public void setText(String[] lines)
     {
 	NullCheck.notNullItems(lines, "lines");
 	content.setLines(lines);
@@ -188,6 +188,12 @@ return new MultilineEditCorrectorTranslator(content, this);
         public MutableLines getDirectContent()
     {
 	return content.getDirectContent();
+    }
+
+    public void refresh()
+    {
+	context.onAreaNewContent(this);
+	context.onAreaNewHotPoint(this);
     }
 
     @Override public boolean onInputEvent(InputEvent event)

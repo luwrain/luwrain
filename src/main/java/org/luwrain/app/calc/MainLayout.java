@@ -82,7 +82,7 @@ public final class MainLayout extends LayoutBase
 		    switch (event.getCode())
 		    {
 		    case CLEAR:
-			setLines(new String[]{"0", "", "# 0", ""});
+			setText(new String[]{"0", "", "# 0", ""});
 			setHotPoint(0, 0);
 			return true;
 		    case OK:
@@ -136,7 +136,7 @@ public final class MainLayout extends LayoutBase
 
     private String[] getLinesToEval()
     {
-	final String[] lines = editArea.getLines();
+	final String[] lines = editArea.getText();
 	final List<String> res = new LinkedList<>();
 	for(int i = 0;i < lines.length - 3;i++)
 	    res.add(lines[i]);
