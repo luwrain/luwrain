@@ -16,7 +16,7 @@
 
 package org.luwrain.core.script2;
 
-import java.util.function.*;
+import java.util.*;
 
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
@@ -24,14 +24,18 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 import org.luwrain.popups.*;
 
+import static org.luwrain.script2.ScriptUtils.*;
+
 final class PopupsObj implements ProxyObject
 {
-    static private final String[] MEMBERS = new String[]{
+    static private final String[] KEYS = new String[]{
 	"confirmDefaultNo",
 	"confirmDefaultYes",
 	"text",
     };
-    static private final ProxyArray MEMBERS_KEYS = ProxyArray.fromArray((Object[])MEMBERS);
+        static private final Set<String> KEYS_SET = new HashSet(Arrays.asList(KEYS));
+    static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray((Object[])KEYS);
+
 
     private final Luwrain luwrain;
 
@@ -57,55 +61,34 @@ final class PopupsObj implements ProxyObject
 	}
     }
 
-    @Override public void putMember(String name, Value value)
-    {
-    }
-
-    @Override public boolean hasMember(String name)
-    {
-	for(String s: MEMBERS)
-	    if (s.equals(name))
-		return true;
-	return false;
-    }
-
-    @Override public ProxyArray getMemberKeys()
-    {
-	return MEMBERS_KEYS;
-    }
+        @Override public boolean hasMember(String name) { return KEYS_SET.contains(name); }
+    @Override public Object getMemberKeys() { return KEYS_ARRAY; }
+    @Override public void putMember(String name, Value value) { throw new RuntimeException("The popups object doesn't support updating of its variables"); }
 
     private Boolean confirmDefaultYes(Value[] args)
     {
-	if (args == null || args.length != 2)
+		if (!notNullAndLen(args, 2))
 	    return false;
-	if (args[0] == null || !args[0].isString())
+	if (!args[0].isString() || !args[1].isString())
 	    return false;
-	if (args[1] == null || !args[1].isString())
-	    return false;
-	final String name = args[0].asString();
-	final String text = args[1].asString();
-	return new Boolean(Popups.confirmDefaultYes(luwrain, name, text));
+	return new Boolean(Popups.confirmDefaultYes(luwrain, args[0].asString(), args[1].asString()));
     }
 
         private Boolean confirmDefaultNo(Value[] args)
     {
-	if (args == null || args.length != 2)
+			if (!notNullAndLen(args, 2))
 	    return false;
-	if (args[0] == null || !args[0].isString())
+	if (!args[0].isString() || !args[1].isString())
 	    return false;
-	if (args[1] == null || !args[1].isString())
-	    return false;
-	final String name = args[0].asString();
-	final String text = args[1].asString();
-	return new Boolean(Popups.confirmDefaultNo(luwrain, name, text));
+	return new Boolean(Popups.confirmDefaultNo(luwrain, args[0].asString(), args[1].asString()));
     }
 
     private String text(Value[] args)
     {
-		if (args == null || args.length != 3)
-		    return null;
+				if (!notNullAndLen(args, 3))
+	    return null;
 		for(int i = 0;i < args.length;i++)
-		    if (args[i] == null || args[i].isString())
+		    if (!args[i].isString())
 			return null;
 		final String name = args[0].asString();
 		final String text = args[1].asString();

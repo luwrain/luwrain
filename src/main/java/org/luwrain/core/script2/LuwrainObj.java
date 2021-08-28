@@ -33,13 +33,14 @@ final class LuwrainObj implements ProxyObject
     static private String[] KEYS = new String[]{
 	"addCommand",
 	"addHook",
-	"addWoker",
+	"addWorker",
 	"i18n",
 	"isDigit",
 	"isLetter",
 	"isLetterOrDigit",
 	"isSpace",
 	"log",
+	"popups",
 	"readTextFile",
 	"speak",
     };
@@ -48,6 +49,7 @@ final class LuwrainObj implements ProxyObject
 
     private final LogObj logObj;
     private final I18nObj i18nObj;
+    private final PopupsObj popups;
 
         final Luwrain luwrain;
         final Map<String, List<Value> > hooks = new HashMap<>();
@@ -60,6 +62,7 @@ final class LuwrainObj implements ProxyObject
 	this.luwrain = luwrain;
 	this.logObj = new LogObj(luwrain);
 	this.i18nObj = new I18nObj(luwrain);
+	this.popups = new PopupsObj(luwrain);
     }
 
     @Override public Object getMember(String name)
@@ -87,6 +90,8 @@ final class LuwrainObj implements ProxyObject
 	    return(ProxyExecutable)this::isSpace;
 	case "log":
 	    return logObj;
+	case "popups":
+	    return popups;
 	case "readTextFile":
 	    return (ProxyExecutable)this::readTextFile;
 	case "speak":
@@ -209,7 +214,7 @@ final class LuwrainObj implements ProxyObject
 
     private Object speak(Value[] values)
     {
-	if (!ScriptUtils.notNullAndLen(values, 1))
+	if (!notNullAndLen(values, 1))
 	    return false;
 	if (!values[0].isString())
 	    return false;

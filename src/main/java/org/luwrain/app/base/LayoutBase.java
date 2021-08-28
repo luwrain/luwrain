@@ -347,8 +347,7 @@ protected interface ActionHandler
     protected EditArea.Params editParams(EditParams l)
     {
 	NullCheck.notNull(l, "l");
-	final EditArea.Params params = new EditArea.Params();
-	params.context = getControlContext();
+	final EditArea.Params params = new EditArea.Params(getControlContext());
 	l.setEditParams(params);
 	return params;
     }
