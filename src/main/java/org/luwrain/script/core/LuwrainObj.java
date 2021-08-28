@@ -40,6 +40,7 @@ final class LuwrainObj implements ProxyObject
 	"isLetterOrDigit",
 	"isSpace",
 	"log",
+	"now",
 	"popups",
 	"readTextFile",
 	"speak",
@@ -90,6 +91,8 @@ final class LuwrainObj implements ProxyObject
 	    return(ProxyExecutable)this::isSpace;
 	case "log":
 	    return logObj;
+	case "now":
+	    return new DateTimeObj();
 	case "popups":
 	    return popups;
 	case "readTextFile":
