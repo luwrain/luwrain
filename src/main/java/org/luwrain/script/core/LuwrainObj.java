@@ -40,6 +40,7 @@ final class LuwrainObj implements ProxyObject
 	"isLetterOrDigit",
 	"isSpace",
 	"log",
+	"message",
 	"now",
 	"popups",
 	"readTextFile",
@@ -91,6 +92,8 @@ final class LuwrainObj implements ProxyObject
 	    return(ProxyExecutable)this::isSpace;
 	case "log":
 	    return logObj;
+	    	case "message":
+	    return (ProxyExecutable)this::message;
 	case "now":
 	    return new DateTimeObj();
 	case "popups":
@@ -198,9 +201,19 @@ final class LuwrainObj implements ProxyObject
 	return Character.isSpace(values[0].asString().charAt(0));
     }
 
+        private Object message(Value[] values)
+    {
+	if (!notNullAndLen(values, 1))
+	    return false;
+	if (!values[0].isString())
+	    return false;
+	luwrain.message(values[0].asString());
+	return true;
+    }
+
     private Object readTextFile(Value[] args)
     {
-	if (!ScriptUtils.notNullAndLen(args, 1))
+	if (!notNullAndLen(args, 1))
 	    return new ScriptException("readTextFile takes exactly one non-null argument");
 	final String fileName = ScriptUtils.asString(args[0]);
 	if (fileName == null || fileName.isEmpty())
