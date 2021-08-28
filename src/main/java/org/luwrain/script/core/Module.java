@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.script2;
+package org.luwrain.script.core;
 
 import org.graalvm.polyglot.*;
 

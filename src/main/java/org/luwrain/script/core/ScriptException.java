@@ -14,11 +14,17 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.script2;
+package org.luwrain.script.core;
 
-import org.graalvm.polyglot.*;
-
-public interface Bindings
+public final class ScriptException extends RuntimeException
 {
-    void onBindings(Value value);
+    public ScriptException(String message)
+    {
+	super(message);
+    }
+
+    public ScriptException(Throwable e)
+    {
+	super(e);
+    }
 }

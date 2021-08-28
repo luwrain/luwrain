@@ -23,7 +23,7 @@ import java.nio.file.*;
 
 import org.luwrain.util.*;
 import org.luwrain.core.ExtensionsManager.LoadedExtension;
-import org.luwrain.core.script2.ScriptCore;
+import org.luwrain.script.core.ScriptCore;
 import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 
 abstract class Base implements EventConsumer

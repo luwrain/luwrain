@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.core.script2;
+package org.luwrain.script.core;
 
 import java.io.*;
 import java.util.*;
@@ -23,43 +23,30 @@ import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 
-final class WorkerWrapper implements Worker
+final class CommandWrapper implements Command
 {
     private final LuwrainObj luwrainObj;
     private final String name;
-    private final int firstLaunchDelay, launchPeriod;
     private final Value func;
 
-    WorkerWrapper(LuwrainObj luwrainObj, String name, int firstLaunchDelay, int launchPeriod, Value func)
+    CommandWrapper(LuwrainObj luwrainObj, String name, Value func)
     {
 	NullCheck.notNull(luwrainObj, "luwrainObj");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(func, "func");
 	this.luwrainObj = luwrainObj;
 	this.name = name;
-	this.firstLaunchDelay = firstLaunchDelay;
-	this.launchPeriod = launchPeriod;
 	this.func = func;
     }
 
-    @Override public void run()
+    @Override public void onCommand(Luwrain luwrain)
     {
 	synchronized(luwrainObj) {
 	    func.execute(null, new Object[0]);
 	}
     }
 
-    @Override public int getFirstLaunchDelay()
-    {
-	return firstLaunchDelay;
-    }
-
-    @Override public int getLaunchPeriod()
-    {
-	return launchPeriod;
-    }
-
-    @Override public String getExtObjName()
+    @Override public String getName()
     {
 	return name;
     }

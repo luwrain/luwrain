@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 
-import org.luwrain.core.script2.*;
+import org.luwrain.script.core.*;
 
 final class Script2Extension implements Extension, org.luwrain.core.HookContainer
 {
