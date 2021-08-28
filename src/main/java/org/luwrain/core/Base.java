@@ -294,7 +294,7 @@ abstract class Base implements EventConsumer
 	    throw new ExtensionException("Trying to load twice the same extension");
 	}
 	objRegistry.takeObjects(loadedExt);
-	for(Command c: loadedExt.commands)//FIXME:
+	for(Command c: loadedExt.commands)
 	    commands.add(ext.getLuwrainObj(), c);
 	return loadedExt.id;
     }

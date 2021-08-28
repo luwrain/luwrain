@@ -70,7 +70,7 @@ final class Script2Extension implements Extension, org.luwrain.core.HookContaine
 
     @Override public Command[] getCommands(Luwrain luwrain)
     {
-	return new Command[0];
+	return scriptCore.getCommands();
     }
 
     @Override public Shortcut[] getShortcuts(Luwrain luwrain)

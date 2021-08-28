@@ -309,13 +309,6 @@ final class Commands
 		    }),
 
 	    new Cmd(
-		    "control-panel",
-		    (luwrain)->{
-			final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories());
-			core.launchApp(app);
-		    }),
-
-	    new Cmd(
 		    "jobs",
 		    (luwrain)->{
 			core.launchApp(new org.luwrain.app.jobs.App(core.jobs));
@@ -537,25 +530,6 @@ final class Commands
 		}
 	    },
 
-	    //hot-info
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "hot-info";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Date date = new Date();
-		    final Calendar cal = GregorianCalendar.getInstance();
-		    cal.setTime(date);
-		    luwrain.silence();
-		    luwrain.speak("Время" + 
-				luwrain.i18n().getNumberStr(cal.get(Calendar.HOUR_OF_DAY), "hours") + " " + 
-				luwrain.i18n().getNumberStr(cal.get(Calendar.MINUTE), "minutes"));
-				luwrain.playSound(Sounds.GENERAL_TIME);
-		}
-	    },
-
 	    new Cmd(
 		    "run",
 		    (luwrain)->{
@@ -575,6 +549,20 @@ final class Commands
 			luwrain.newJob("sys", new String[]{ cmd.trim() }, "", EnumSet.noneOf(Luwrain.JobFlags.class), null);
 		    }),
 	};    
+    }
+
+    static Command[] getNonStandaloneCommands(Core core, org.luwrain.core.shell.Conversations conversations)
+    {
+	return new Command[]{
+
+	    new Cmd(
+		    "control-panel",
+		    (luwrain)->{
+			final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories());
+			core.launchApp(app);
+		    }),
+
+	};
     }
 
     private interface Handler

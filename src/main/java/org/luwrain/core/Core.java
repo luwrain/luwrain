@@ -31,12 +31,14 @@ import org.luwrain.core.listening.*;
 
 final class Core extends EventDispatching
 {
-    static private final String DESKTOP_PROP_NAME = "luwrain.class.desktop";
-    static private final String PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
+    static private final String
+	DESKTOP_PROP_NAME = "luwrain.class.desktop",
+	PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
 
     private final ClassLoader classLoader;
     final OperatingSystem os;
     final Interaction interaction;
+    final boolean standalone;
     private final org.luwrain.core.shell.Conversations conversations;
     org.luwrain.player.Player player = null;
         private Application desktop = null;
@@ -47,7 +49,7 @@ final class Core extends EventDispatching
 
     Core(CmdLine cmdLine, ClassLoader classLoader, Registry registry,
 	 OperatingSystem os, Interaction interaction, 
-	 PropertiesRegistry props, String lang)
+	 PropertiesRegistry props, String lang, boolean standalone)
     {
 	super(cmdLine, registry, props, lang, interaction);
 	NullCheck.notNull(classLoader, "classLoader");
@@ -57,6 +59,7 @@ final class Core extends EventDispatching
 	this.os = os;
 	this.interaction = interaction;
 	this.conversations = new org.luwrain.core.shell.Conversations(getObjForEnvironment());
+	this.standalone = standalone;
     }
 
     void run()
@@ -244,9 +247,11 @@ final class Core extends EventDispatching
 
     private void initObjects()
     {
-	final Command[] standardCommands = Commands.getCommands(this, conversations);
-	for(Command sc: standardCommands)
+	for(Command sc: Commands.getCommands(this, conversations))
 	    commands.add(getObjForEnvironment(), sc);//FIXME:
+	if (!standalone)
+	    for(Command sc: Commands.getNonStandaloneCommands(this, conversations))
+		commands.add(getObjForEnvironment(), sc);//FIXME:
 	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(getObjForEnvironment());
 	for(UniRefProc proc: standardUniRefProcs)
 	    uniRefProcs.add(getObjForEnvironment(), proc);//FIXME:

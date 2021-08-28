@@ -20,7 +20,7 @@ import java.util.*;
 
 final class CommandManager
 {
-    private final Map<String, Entry> commands = new TreeMap<>();
+    private final Map<String, Entry> commands = new HashMap<>();
 
     boolean add(Luwrain luwrain, Command command)
     {
@@ -41,7 +41,13 @@ final class CommandManager
 	if (!commands.containsKey(name))
 	    return false;
 	final Entry entry = commands.get(name);
-	entry.command.onCommand(entry.luwrain);
+	try {
+	    entry.command.onCommand(entry.luwrain);
+	}
+	catch(Throwable e)
+	{
+	    entry.luwrain.crash(e);
+	}
 	return true;
     }
 
@@ -66,12 +72,11 @@ final class CommandManager
 		    commands.remove(s);
     }
 
-    static private class Entry 
+    static private final class Entry 
     {
 	final Luwrain luwrain;
 	final String name;
 	final Command command;
-
 	Entry(Luwrain luwrain, String name, Command command)
 	{
 	    NullCheck.notNull(luwrain, "luwrain ");

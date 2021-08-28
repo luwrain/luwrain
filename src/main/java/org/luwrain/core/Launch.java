@@ -100,7 +100,7 @@ public final class Launch implements Runnable
 	    if (!standalone)
 		userProfile.registryDirReady();
 	    init();
-	    new Core(cmdLine, classLoader, registry, os, interaction, props, lang).run();
+	    new Core(cmdLine, classLoader, registry, os, interaction, props, lang, this.standalone).run();
 	    interaction.close();
 	    Log.info(LOG_COMPONENT, "exiting LUWRAIN normally");
 	    System.exit(0);
