@@ -114,13 +114,22 @@ public final class EditUtils
 
     static public class DefaultEditAreaAppearance extends DefaultMultilineEditAppearance implements EditArea.Appearance
     {
-	public DefaultEditAreaAppearance(ControlContext context)
+	protected final Luwrain.SpeakableTextType speakableTextType;
+	public DefaultEditAreaAppearance(ControlContext context, Luwrain.SpeakableTextType speakableTextType)
 	{
 	    super(context);
+	    this.speakableTextType = speakableTextType;
+	}
+	public DefaultEditAreaAppearance(ControlContext context)
+	{
+	    this(context, null);
 	}
 	    @Override public void announceLine(int index, String line)
     {
 	NullCheck.notNull(line, "line");
+	if (speakableTextType != null)
+	    NavigationArea.defaultLineAnnouncement(context, index, context.getSpeakableText(line, speakableTextType
+											    )); else
 	NavigationArea.defaultLineAnnouncement(context, index, line);
     }
     }
@@ -139,13 +148,11 @@ public final class EditUtils
     static abstract public class CorrectorChangeListener implements MultilineEditCorrector
     {
 	protected final MultilineEditCorrector corrector;
-
 	public CorrectorChangeListener(MultilineEditCorrector corrector)
 	{
 	    NullCheck.notNull(corrector, "corrector");
 	    this.corrector = corrector;
 	}
-
 	/** Called if the model gets some changes. There is a guarantee that this method
 	 * is invoked strictly after the changes in the model.
 	 */
@@ -380,6 +387,65 @@ public final class EditUtils
 	@Override public ModificationResult doEditAction(TextEditAction action)
 	{
 	    return basicCorrector.doEditAction(action);
+	}
+    }
+
+    static public class IndentationCorrector extends EmptyCorrector
+    {
+	public IndentationCorrector(MultilineEditCorrector basicCorrector)
+	{
+	    super(basicCorrector);
+	}
+	@Override public ModificationResult splitLine(int pos, int lineIndex)
+	{
+	    final ModificationResult res = basicCorrector.splitLine(pos, lineIndex);
+	    if (!res.isPerformed())
+		return res;
+	    final int indent = getIndent(lineIndex);
+	    if (!deleteIndent(lineIndex + 1))
+		return new ModificationResult(false);
+	    if (!addIndent(lineIndex + 1, indent))
+		return new ModificationResult(false);  
+	    return res;
+	}
+	protected int getIndent(int lineIndex)
+	{
+	    final int tabLen = getTabLen();
+	    final String line = getLine(lineIndex);
+	    int res = 0;
+	    for(int i = 0;i < line.length() && Character.isWhitespace(line.charAt(i));i++)
+		if (line.charAt(i) == '\t')
+		    res += tabLen; else
+		    ++res;
+	    return res;
+	}
+	protected boolean deleteIndent(int lineIndex)
+	{
+	    final String line = getLine(lineIndex);
+	    int pos = 0;
+	    while (pos < line.length() && Character.isWhitespace(line.charAt(pos)))
+		pos++;
+	    if (pos == 0)
+		return true;
+	    return basicCorrector.deleteRegion(0, lineIndex, pos, lineIndex).isPerformed();
+	}
+	protected boolean addIndent(int lineIndex, int len)
+	{
+	    if (len == 0)
+		return true;
+	    final int tabLen = getTabLen();
+	    final StringBuilder b = new StringBuilder();
+	    final int tabCount = len / tabLen;
+	    for(int i = 0;i < tabCount;i++)
+		b.append('\t');
+	    final int spaceCount = len % tabLen;
+	    for(int i = 0;i < spaceCount;i++)
+		b.append(' ');
+	    return basicCorrector.putChars(0, lineIndex, new String(b)).isPerformed();
+	}
+	protected int getTabLen()
+	{
+	    return 8;
 	}
     }
 }

@@ -74,6 +74,13 @@ public final class ScriptUtils
     static public Object getArray(Object[] items)
     {
 	NullCheck.notNullItems(items, "items");
-	return ProxyArray.fromArray(items);
+	return ProxyArray.fromArray((Object[])items);
     }
+
+        static public Object getArray(List items)
+    {
+	NullCheck.notNull(items, "items");
+	return ProxyArray.fromArray((Object[])items.toArray(new Object[items.size()]));
+    }
+
 }

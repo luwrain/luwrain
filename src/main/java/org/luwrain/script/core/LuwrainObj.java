@@ -34,6 +34,7 @@ final class LuwrainObj implements ProxyObject
 	"addCommand",
 	"addHook",
 	"addWorker",
+	"const",
 	"i18n",
 	"isDigit",
 	"isLetter",
@@ -50,6 +51,7 @@ final class LuwrainObj implements ProxyObject
     static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray((Object[])KEYS);
 
     private final LogObj logObj;
+    private final ConstObj constObj = new ConstObj();
     private final I18nObj i18nObj;
     private final PopupsObj popups;
 
@@ -79,6 +81,8 @@ final class LuwrainObj implements ProxyObject
 	    return(ProxyExecutable)this::addHook;
 	    	case "addWorker":
 	    return(ProxyExecutable)this::addWorker;
+	case "const":
+	    return constObj;
 	case "i18n":
 	    i18nObj.refresh();
 	    return i18nObj;
@@ -230,6 +234,22 @@ final class LuwrainObj implements ProxyObject
 
     private Object speak(Value[] values)
     {
+
+		if (notNullAndLen(values, 2))
+		{
+		    if (!values[0].isString() || !values[1].isString())
+	    return false;
+		    final String text = values[0].asString();
+		    final String sound = values[1].asString();
+		    if (sound.isEmpty())
+			return false;
+		    final Sounds s = ConstObj.getSound(sound);
+		    if (s == null)
+			return false;
+		    luwrain.playSound(s);
+	luwrain.speak(text);
+	return true;
+		}
 	if (!notNullAndLen(values, 1))
 	    return false;
 	if (!values[0].isString())
