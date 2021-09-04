@@ -36,6 +36,11 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     private Area[] visibleAreas = new Area[0];
     private FutureTask task = null;
 
+    public interface TaskRunnable
+    {
+	void run() throws Exception;
+    }
+
     public AppBase(String stringsName, Class<S> stringsClass, String helpSection)
     {
 	NullCheck.notEmpty(stringsName, "stringsName");
@@ -215,7 +220,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return true;
     }
 
-    public boolean runTask(TaskId taskId, Runnable runnable)
+    public boolean runTask(TaskId taskId, TaskRunnable runnable)
     {
 	NullCheck.notNull(taskId, "taskId");
 	NullCheck.notNull(runnable, "runnable");

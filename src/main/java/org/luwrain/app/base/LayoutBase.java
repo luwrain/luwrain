@@ -339,6 +339,7 @@ protected interface ActionHandler
 	NullCheck.notNull(l, "l");
 	final ListArea.Params params = new ListArea.Params();
 	params.context = getControlContext();
+	params.appearance = new ListUtils.DefaultAppearance(getControlContext());
 	l.setListParams(params);
 	return params;
     }
