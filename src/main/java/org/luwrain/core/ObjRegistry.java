@@ -59,7 +59,7 @@ final class ObjRegistry implements ExtObjects
 	    final Job job = (Job)obj;
 	    if (!jobs.containsKey(name))
 	    {
-		jobs.put(name, new Entry(ext, name, job));
+		jobs.put(name, new Entry<>(ext, name, job));
 		res = true;
 	    }
 	}
@@ -69,7 +69,7 @@ final class ObjRegistry implements ExtObjects
 	    final Shortcut shortcut = (Shortcut)obj;
 	    if (!shortcuts.containsKey(name))
 	    {
-		shortcuts.put(name, new Entry(ext, name, shortcut));
+		shortcuts.put(name, new Entry<>(ext, name, shortcut));
 		res = true;
 	    }
 	}
@@ -79,7 +79,7 @@ final class ObjRegistry implements ExtObjects
 	    final MediaResourcePlayer player = (MediaResourcePlayer)obj;
 	    if (!players.containsKey(name))
 	    {
-		players.put(name, new Entry(ext, name, player));
+		players.put(name, new Entry<>(ext, name, player));
 		res = true;
 	    }
 	}
@@ -89,7 +89,7 @@ final class ObjRegistry implements ExtObjects
 	    final org.luwrain.speech.Engine engine = (org.luwrain.speech.Engine)obj;
 	    if (!speechEngines.containsKey(name))
 	    {
-		speechEngines.put(name, new Entry(ext, name, engine));
+		speechEngines.put(name, new Entry<>(ext, name, engine));
 		res = true;
 	    }
 	}
@@ -99,7 +99,7 @@ final class ObjRegistry implements ExtObjects
 	    final Worker worker = (Worker)obj;
 	    if (!workers.containsKey(name))
 	    {
-		workers.put(name, new Entry(ext, name, worker));
+		workers.put(name, new Entry<>(ext, name, worker));
 		res = true;
 	    }
 	}
@@ -109,7 +109,7 @@ final class ObjRegistry implements ExtObjects
 	    final PropertiesProvider provider = (PropertiesProvider)obj;
 	    if (!propsProviders.containsKey(name))
 	    {
-		propsProviders.put(name, new Entry(ext, name, provider));
+		propsProviders.put(name, new Entry<>(ext, name, provider));
 		res = true;
 	    }
 	}
@@ -242,13 +242,13 @@ final class ObjRegistry implements ExtObjects
 			    Log.warning(LOG_COMPONENT, "the extension object \'" + s.getExtObjName() + "\' of the extension " + ext.getClass().getName() + " has been refused by  the object registry");
     }
 
-    static private void removeEntriesByExt(Map map, Extension ext)
+    static private <E> void removeEntriesByExt(Map<String, Entry<E>> map, Extension ext)
     {
 	NullCheck.notNull(map, "map");
 	NullCheck.notNull(ext, "ext");
-	final Map<String, org.luwrain.core.ObjRegistry.Entry> entryMap = (Map<String, Entry>)map;
+	//	final Map<String, org.luwrain.core.ObjRegistry.Entry> entryMap = (Map<String, Entry>)map;
 	final List<String> deleting = new ArrayList<>();
-	for(Map.Entry<String, org.luwrain.core.ObjRegistry.Entry> e: entryMap.entrySet())
+	for(Map.Entry<String, org.luwrain.core.ObjRegistry.Entry<E>> e: map.entrySet())
 	if (e.getValue().ext == ext)
 	    deleting.add(e.getKey());
     for(String s: deleting)

@@ -299,6 +299,7 @@ abstract class Base implements EventConsumer
 	return loadedExt.id;
     }
 
+    @SuppressWarnings("unchecked") //This function will be deleted
     boolean runFunc(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");

@@ -20,5 +20,5 @@ import java.util.*;
 
 interface ConsoleCommand
 {
-    boolean onCommand(String text, List messages);
+    boolean onCommand(String text, List<Object> messages);
 }

@@ -134,7 +134,7 @@ return (MessageArea.Attachment)obj;
 
     public Attachment[] getAttachments()
     {
-	final List<Attachment> res = new ArrayList();
+	final List<Attachment> res = new ArrayList<>();
 		for(int i = 0;i < getItemCount();++i)
 	{
 	    if (getItemTypeOnLine(i) != FormArea.Type.STATIC)

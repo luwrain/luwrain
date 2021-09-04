@@ -393,7 +393,7 @@ final class Core extends EventDispatching
 		if (a instanceof MonoApp && a.getClass().equals(app.getClass()))
 		{
 		    final MonoApp ma = (MonoApp)a;
-		    final AtomicReference ref = new AtomicReference();
+		    final AtomicReference<MonoApp.Result> ref = new AtomicReference<>();
 		    unsafeAreaOperation(()->{
 			    final MonoApp.Result value = ma.onMonoAppSecondInstance(app);
 			    if (value != null)
@@ -401,7 +401,7 @@ final class Core extends EventDispatching
 			});
 		    if (ref.get() == null)
 			continue;
-		    final MonoApp.Result res = (MonoApp.Result)ref.get();
+		    final MonoApp.Result res = ref.get();
 		    switch(res)
 		    {
 		    case SECOND_INSTANCE_PERMITTED:
@@ -859,7 +859,7 @@ onNewAreasLayout();
 	final Area activeArea = getValidActiveArea(true);
 	if (activeArea == null)
 	    return;
-	final AtomicReference res = new AtomicReference();
+	final AtomicReference<Object> res = new AtomicReference<>();
 	unsafeAreaOperation(()->res.set(activeArea.getAreaActions()));
 	if (res.get() == null || !(res.get() instanceof Action[]))
 	{

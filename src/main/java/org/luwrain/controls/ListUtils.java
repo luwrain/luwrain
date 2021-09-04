@@ -444,7 +444,7 @@ mark(o);
 
 	@Override public Object[] getAllMarked()
 	{
-	    final List res = new ArrayList();
+	    final List<Object> res = new ArrayList<>();
 	    for(Object o: items)
 		res.add(o);
 	    return res.toArray(new Object[res.size()]);

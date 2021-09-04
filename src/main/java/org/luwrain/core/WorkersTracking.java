@@ -35,7 +35,7 @@ class WorkersTracking
 	synchronized (e) {
 	    if (e.task != null && !e.task.isDone())
 		return false;
-	    e.task = new FutureTask(e.worker, null);
+	    e.task = new FutureTask<>(e.worker, null);
 	    e.executor.execute(e.task);
 	}
 	return true;
@@ -71,7 +71,7 @@ class WorkersTracking
 				continue;
 			    if (counter >= delay && (counter - delay) % period == 0)
 			    {
-				e.task = new FutureTask(e.worker, null);
+				e.task = new FutureTask<>(e.worker, null);
 				e.executor.execute(e.task);
 			    }
 			}

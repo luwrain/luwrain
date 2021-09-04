@@ -31,7 +31,7 @@ final class Commands
 	    NullCheck.notNull(luwrain, "luwrain");
 	    this.luwrain = luwrain;
 	}
-	@Override public boolean onCommand(String text, List messages)
+	@Override public boolean onCommand(String text, List<Object> messages)
 	{
 	    NullCheck.notEmpty(text, "text");
 	    NullCheck.notNull(messages, "messages");

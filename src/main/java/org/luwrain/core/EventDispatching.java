@@ -243,11 +243,11 @@ abstract class EventDispatching extends Areas
 	    //	    areaBlockedMessage();
 	    return true;
 	}
-	final AtomicReference res = new AtomicReference();
+	final AtomicReference<Integer> res = new AtomicReference<>();
 	unsafeAreaOperation(()->res.set(new Integer(screenContentManager.onSystemEvent(event))));
 	if (res.get() == null || !(res.get() instanceof Integer))
 	    return true;
-	final int intRes = ((Integer)res.get()).intValue();
+	final int intRes = (res.get()).intValue();
 	switch(intRes)
 	{
 	case ScreenContentManager.EVENT_NOT_PROCESSED:
@@ -275,7 +275,7 @@ abstract class EventDispatching extends Areas
 	    noAppsMessage();
 	    return;
 	}
-	final AtomicReference res = new AtomicReference();
+	final AtomicReference<Object> res = new AtomicReference<>();
 	unsafeAreaOperation(()->{
 		final String value = app.getAppName();
 		if (value != null)
@@ -304,7 +304,7 @@ abstract class EventDispatching extends Areas
 	}
 	if (isActiveAreaBlockedByPopup() || isAreaBlockedBySecurity(activeArea))
 	    return;
-	final AtomicReference res = new AtomicReference();
+	final AtomicReference<Object> res = new AtomicReference<>();
 	unsafeAreaOperation(()->{
 		res.set(new Boolean(activeArea.onSystemEvent(new SystemEvent(SystemEvent.Code.INTRODUCE))));
 	    });

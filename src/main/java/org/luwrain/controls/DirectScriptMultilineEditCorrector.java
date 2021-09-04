@@ -148,7 +148,7 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
     {
 	NullCheck.notNull(str, "str");
 	final Map readOnlyValues = new HashMap();
-	final Map values = new HashMap();
+	final Map<Object, Object> values = new HashMap<>();
 	readOnlyValues.put("chars", str);
 	values.put("x", new Integer(pos));
 	values.put("y", new Integer(lineIndex));
@@ -220,7 +220,7 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 			    }
 			}
 		    };
-		final AtomicReference ex = new AtomicReference();
+		final AtomicReference<Object> ex = new AtomicReference<>();
 		context.runHooks(hookName, (hook)->{
 			final Object res;
 			try {

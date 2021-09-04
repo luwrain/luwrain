@@ -27,9 +27,9 @@ public final class Clipboard implements java.util.function.Supplier
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
     private final Gson gson = new Gson();
-    private Obj[] objs = null;
+    private Obj<?>[] objs = null;
 
-    public boolean set(Object[] o)
+    public <E> boolean set(E[] o)
     {
 	if (o == null)
 	    return false;
@@ -48,6 +48,7 @@ public final class Clipboard implements java.util.function.Supplier
 	    return false;
 	if (o.length != s.length)
 	    return false;
+	new XClipboard().setClipboardText(s[0]);
 	for(int i = 0;i < o.length;i++)
 	{
 	    if (o[i] == null || s[i] == null)
@@ -65,6 +66,7 @@ public final class Clipboard implements java.util.function.Supplier
     {
 	if (o == null || o.getClass().isArray())
 	    return false;
+	new XClipboard().setClipboardText(o.toString());
 	return set(new Object[]{o});
     }
 
@@ -109,22 +111,26 @@ public final class Clipboard implements java.util.function.Supplier
 	this.objs = null;
 	    }
 
-    private Obj saveObj(Object o, String s)
+    @SuppressWarnings("unchecked")
+    private <E> Obj saveObj(E o, String s)
     {
 	NullCheck.notNull(o, "o");
 	NullCheck.notNull(s, "s");
 	if (o instanceof String)
-	    return new Obj(o.getClass(), null, o.toString(), o);
-	if (o instanceof java.net.URL || o instanceof java.io.File ||
-	    o instanceof java.net.URI)
-	    return new Obj(o.getClass(), null, s, o);
+	    return new Obj<String>(String.class, null, o.toString(), (String)o);
+	if (o instanceof java.net.URL)
+	    return new Obj<java.net.URL>(java.net.URL.class, null, s, (java.net.URL)o);
+	    if (o instanceof java.io.File)
+			    return new Obj<java.io.File>(java.io.File.class, null, s, (java.io.File)o);
+	       if (o instanceof java.net.URI)
+	    return new Obj<java.net.URI>(java.net.URI.class, null, s, (java.net.URI)o);
 	final StringWriter w = new StringWriter();
 	gson.toJson(o, w);
 	w.flush();
-	return new Obj(o.getClass(), w.toString(), s, null);
+	return new Obj<E>((Class<E>)o.getClass(), w.toString(), s, null);
     }
 
-    private Object restore(Obj obj)
+    private <E> E restore(Obj<E> obj)
     {
 	NullCheck.notNull(obj, "obj");
 	if (obj.obj != null)
@@ -133,13 +139,13 @@ public final class Clipboard implements java.util.function.Supplier
 	return gson.fromJson(obj.content, obj.cl);
     }
 
-static private final class Obj
+static private final class Obj<E>
 {
-    final Class cl;
+    final Class<E> cl;
     final String content;
         final String str;
-    final Object obj;
-    Obj(Class cl, String content, String str, Object obj)
+    final E obj;
+    Obj(Class<E> cl, String content, String str, E obj)
     {
 	NullCheck.notNull(cl, "cl");
 	NullCheck.notNull(str, "str");

@@ -100,7 +100,7 @@ public final class EditUtils
 	    NullCheck.notNull(res, "res");
 	    if (!res.isPerformed())
 		return false;
-	    if (Character.isSpace(res.getCharArg()))
+	    if (Character.isWhitespace(res.getCharArg()))
 	    {
 		final String word = res.getStringArg();
 		if (word != null && !word.trim().isEmpty())
