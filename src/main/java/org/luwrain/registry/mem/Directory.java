@@ -23,8 +23,8 @@ import org.luwrain.core.*;
 final class Directory
 {
     final String name;
-    private final List<Directory> subdirs = new ArrayList();
-    private Map<String, Value> values = new HashMap();
+    private final List<Directory> subdirs = new ArrayList<>();
+    private Map<String, Value> values = new HashMap<>();
 
     Directory(String name)
     {
@@ -156,7 +156,7 @@ final class Directory
 
     String[] subdirs()
     {
-	final List<String> v = new LinkedList();
+	final List<String> v = new ArrayList<>();
 	for (Directory d: subdirs)
 	    v.add(d.getName());
 	return v.toArray(new String[v.size()]);
@@ -164,7 +164,7 @@ final class Directory
 
     String[] values()
     {
-	final List<String> v = new LinkedList();
+	final List<String> v = new ArrayList<>();
 	for(Map.Entry<String, Value> i: values.entrySet())
 	    v.add(i.getKey());
 final String[] res = v.toArray(new String[v.size()]);

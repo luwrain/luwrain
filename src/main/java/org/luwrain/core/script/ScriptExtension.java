@@ -82,7 +82,7 @@ class ScriptExtension implements Extension, org.luwrain.core.HookContainer
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	final List<ExtensionObject> res = new LinkedList();
+	final List<ExtensionObject> res = new ArrayList<>();
 	for(Shortcut s: instance.luwrainObj.shortcuts )
 	    res.add(s);
 	for(Worker w: instance.luwrainObj.workers)

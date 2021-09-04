@@ -30,7 +30,7 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 
     private final Bindings bindings;
     private final Luwrain luwrain;
-    private final List<Module> modules = new ArrayList();
+    private final List<Module> modules = new ArrayList<>();
 
     public ScriptCore(Luwrain luwrain, Bindings bindings)
     {

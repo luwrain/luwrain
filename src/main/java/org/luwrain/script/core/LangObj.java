@@ -30,7 +30,7 @@ final class LangObj implements ProxyObject
     static private String[] KEYS = new String[]{
 	"getSpecialNameOfChar",
     };
-    static private final Set<String> KEYS_SET = new HashSet(Arrays.asList(KEYS));
+    static private final Set<String> KEYS_SET = new HashSet<>(Arrays.asList(KEYS));
     static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray((Object[])KEYS);
 
     private final Lang lang;

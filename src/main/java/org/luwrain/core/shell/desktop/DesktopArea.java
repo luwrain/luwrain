@@ -47,7 +47,7 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 	params.appearance = new org.luwrain.core.shell.desktop.Appearance(luwrain);
 	params.name = areaName;
 	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
-	    final List<UniRefInfo> u = new ArrayList();
+	    final List<UniRefInfo> u = new ArrayList<>();
 	    final List<String> s = new ArrayList<String>();
 	    for(int i = fromIndex;i < toIndex;++i)
 	    {
@@ -165,7 +165,7 @@ final class DesktopArea extends EditableListArea implements EditableListArea.Cli
 		objs = new Object[]{supplied};
 	    if (objs.length == 0)
 		return false;
-	    final List<DesktopItem> newItems = new ArrayList();
+	    final List<DesktopItem> newItems = new ArrayList<>();
 	    for(Object o: objs)
 	    {
 		final UniRefInfo info = UniRefUtils.make(luwrain, o);

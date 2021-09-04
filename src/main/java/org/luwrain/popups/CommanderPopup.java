@@ -131,7 +131,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 
     @Override public Action[] getAreaActions()
     {
-	final List<Action> res = new ArrayList();
+	final List<Action> res = new ArrayList<>();
 	res.add(new Action("mkdir", "Создать каталог", new InputEvent(InputEvent.Special.INSERT)));
 	res.add(new Action("change-disk", "Сменить диск", new InputEvent(InputEvent.Special.TAB)));
 	if (!filterCancelled)

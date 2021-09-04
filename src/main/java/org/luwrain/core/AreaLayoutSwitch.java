@@ -21,7 +21,7 @@ import java.util.*;
 public final class AreaLayoutSwitch
 {
     private Luwrain luwrain;
-    private final ArrayList<AreaLayout> layouts = new ArrayList();
+    private final ArrayList<AreaLayout> layouts = new ArrayList<>();
     private int currentIndex = 0;
 
     public AreaLayoutSwitch(Luwrain luwrain)

@@ -25,7 +25,7 @@ public final class PathParser
     static public Path parse(String str)
     {
 	NullCheck.notEmpty(str, "str");
-	final List<String> items = new LinkedList();
+	final List<String> items = new ArrayList<>();
 	String current = "";
 	for(int i = 0;i < str.length();++i)
 	{
@@ -49,7 +49,7 @@ public final class PathParser
     static public Path parseAsDirectory(String str)
     {
 	NullCheck.notEmpty(str, "str");
-	final List<String> items = new LinkedList();
+	final List<String> items = new ArrayList<>();
 	String current = "";
 	for(int i = 0;i < str.length();++i)
 	{

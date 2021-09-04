@@ -25,7 +25,7 @@ import org.luwrain.script.*;
 final class LangsObj extends EmptyHookObject
 {
     private final I18n i18n;
-    private final Map<String, LangObj> langs = new HashMap();
+    private final Map<String, LangObj> langs = new HashMap<>();
 
     LangsObj(I18n i18n)
     {

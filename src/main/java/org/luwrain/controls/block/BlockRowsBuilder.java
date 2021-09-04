@@ -32,11 +32,11 @@ final class BlockRowsBuilder
     private final int rowLen;
 
     /** Objects of the incomplete row*/
-    final List<BlockRowFragment> res = new ArrayList();
+    final List<BlockRowFragment> res = new ArrayList<>();
     /** Number of characters on the current (incomplete) row*/
     private int offset = 0;
     /** Complete rows*/
-    final List<BlockRow> rows = new ArrayList();
+    final List<BlockRow> rows = new ArrayList<>();
 
     BlockRowsBuilder(int rowLen)
     {
@@ -217,9 +217,9 @@ final class BlockRowsBuilder
 	    while (nextWordEnd - posFrom <= lenRestriction)
 	    {
 		pos = nextWordEnd;//It is definitely before the row end
-		while (nextWordEnd < boundTo && Character.isSpace(text.charAt(nextWordEnd)))//FIXME:nbsp
+		while (nextWordEnd < boundTo && Character.isWhitespace(text.charAt(nextWordEnd)))//FIXME:nbsp
 		    ++nextWordEnd;
-		while (nextWordEnd < boundTo && !Character.isSpace(text.charAt(nextWordEnd)))//FIXME:nbsp
+		while (nextWordEnd < boundTo && !Character.isWhitespace(text.charAt(nextWordEnd)))//FIXME:nbsp
 		    ++nextWordEnd;
 		if (nextWordEnd == pos)
 		    return pos;
@@ -231,7 +231,7 @@ final class BlockRowsBuilder
     {
 	NullCheck.notNull(text, "text");
 	int i = pos;
-	while (i < text.length() && Character.isSpace(text.charAt(i)))
+	while (i < text.length() && Character.isWhitespace(text.charAt(i)))
 		++i;
 	if (i >= text.length())
 		return pos;

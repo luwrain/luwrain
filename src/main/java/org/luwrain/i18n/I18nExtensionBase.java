@@ -35,7 +35,7 @@ public class I18nExtensionBase extends EmptyExtension
     protected Luwrain luwrain = null;
     protected final String langName;
     protected final Map<String, String> staticStrings = new HashMap();
-    protected final Map<String, String> chars = new HashMap();
+    protected final Map<String, String> chars = new HashMap<>();
 
     public I18nExtensionBase(String langName)
     {

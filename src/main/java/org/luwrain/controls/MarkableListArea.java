@@ -100,7 +100,7 @@ public class MarkableListArea extends ListArea
     @Override public void refresh()
     {
 	super.refresh();
-	final List newItems = new ArrayList();
+	final List<Object> newItems = new ArrayList<>();
 	final int count = listModel.getItemCount();
 	for(int i = 0;i < count;++i)
 	{

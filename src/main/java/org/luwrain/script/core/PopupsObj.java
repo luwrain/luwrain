@@ -33,7 +33,7 @@ final class PopupsObj implements ProxyObject
 	"confirmDefaultYes",
 	"text",
     };
-        static private final Set<String> KEYS_SET = new HashSet(Arrays.asList(KEYS));
+        static private final Set<String> KEYS_SET = new HashSet<>(Arrays.asList(KEYS));
     static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray((Object[])KEYS);
 
 

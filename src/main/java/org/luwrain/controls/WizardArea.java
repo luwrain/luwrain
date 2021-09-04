@@ -120,7 +120,7 @@ public interface WizardItem
 
     public final class Frame
     {
-	private final List<WizardItem> items = new ArrayList();
+	private final List<WizardItem> items = new ArrayList<>();
 	public Frame addText(String text)
 	{
 	    NullCheck.notEmpty(text, "text");
@@ -301,7 +301,7 @@ public interface WizardItem
 
     protected final class Values implements WizardValues
     {
-	final List<String> edits = new ArrayList();
+	final List<String> edits = new ArrayList<>();
 	public void addEdit(String name)
 	{
 	    NullCheck.notEmpty(name, "name");

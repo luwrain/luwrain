@@ -228,7 +228,7 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
 	finally {
 	    endEditTrans(false);
 	}
-	if (str.length() == 1 && Character.isSpace(str.charAt(0)))
+	if (str.length() == 1 && Character.isWhitespace(str.charAt(0)))
 	{
 	    final String word = getWordPriorTo(pos, lineIndex);
 	    if (!word.isEmpty())

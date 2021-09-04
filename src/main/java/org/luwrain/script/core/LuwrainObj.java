@@ -141,7 +141,7 @@ final class LuwrainObj implements ProxyObject
 	List<Value> h = this.hooks.get(name);
 	if (h == null)
 	{
-	    h = new ArrayList();
+	    h = new ArrayList<>();
 	    this.hooks.put(name, h);
 	}
 	h.add(args[1]);
@@ -202,7 +202,7 @@ final class LuwrainObj implements ProxyObject
 	    return false;
 	if (!values[0].isString() || values[0].asString().length() != 1)
 	    return false;
-	return Character.isSpace(values[0].asString().charAt(0));
+	return Character.isWhitespace(values[0].asString().charAt(0));
     }
 
         private Object message(Value[] values)

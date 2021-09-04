@@ -129,7 +129,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
     static public final class Appearance extends ListUtils.DoubleLevelAppearance
     {
 	static private final String STATIC_PREFIX = "static:";
-	private final Map<String, UniRefInfo> uniRefCache = new HashMap();
+	private final Map<String, UniRefInfo> uniRefCache = new HashMap<>();
 	public Appearance(ControlContext context)
 	{
 	    super(context);

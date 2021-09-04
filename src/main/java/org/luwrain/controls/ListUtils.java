@@ -248,7 +248,7 @@ public class ListUtils
 	}
     }
 
-    static public class FixedModel extends ArrayList implements ListArea.Model
+    static public class FixedModel extends ArrayList<Object> implements ListArea.Model
     {
 	public FixedModel()
 	{
@@ -334,7 +334,7 @@ public class ListUtils
     }
 
 
-    static public class DefaultEditableModel extends ArrayList implements EditableListArea.Model
+    static public class DefaultEditableModel extends ArrayList<Object> implements EditableListArea.Model
     {
 	public DefaultEditableModel()
 	{
@@ -397,26 +397,22 @@ public class ListUtils
 
     static public class DefaultMarksInfo implements MarkableListArea.MarksInfo
     {
-	protected final Set items = new HashSet();
-
+	protected final Set<Object> items = new HashSet<>();
 	@Override public boolean marked(Object o)
 	{
 	    NullCheck.notNull(o, "o");
 	    return items.contains(o);
 	}
-
 	@Override public void mark(Object o)
 	{
 	    NullCheck.notNull(o, "o");
 	    items.add(o);
 	}
-
 	@Override public void unmark(Object o)
 	{
 	    NullCheck.notNull(o, "o");
 	    items.remove(o);
 	}
-
 	@Override public boolean toggleMark(Object o)
 	{
 	    NullCheck.notNull(o, "o");
@@ -428,7 +424,6 @@ unmark(o);
 mark(o);
 	    return true;
 	}
-
 	@Override public void markOnly(Object[] o)
 	{
 	    NullCheck.notNullItems(o, "o");
@@ -436,12 +431,10 @@ mark(o);
 	    for(Object oo: o)
 		items.add(oo);
 	}
-
 	@Override public void clearMarks()
 	{
 	    items.clear();
 	}
-
 	@Override public Object[] getAllMarked()
 	{
 	    final List<Object> res = new ArrayList<>();

@@ -134,9 +134,9 @@ final class Commands
 			final Area area = core.getValidActiveArea(true);
 			if (area == null)
 			    return;
-			final AtomicReference res = new AtomicReference();
-			final AtomicReference x = new AtomicReference();
-			final AtomicReference y = new AtomicReference();
+			final AtomicReference<Boolean> res = new AtomicReference<>();
+			final AtomicReference<Integer> x = new AtomicReference<>();
+			final AtomicReference<Integer> y = new AtomicReference<>();
 			core.unsafeAreaOperation(()->{
 				if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.REGION_POINT)))
 				{
@@ -147,7 +147,7 @@ final class Commands
 				y.set(new Integer(area.getHotPointY()));
 				res.set(new Boolean(true));
 			    });
-			if (res.get() == null || !((Boolean)res.get()).booleanValue())
+			if (res.get() == null || !res.get().booleanValue())
 			{
 			    core.eventNotProcessedMessage();
 			    return;

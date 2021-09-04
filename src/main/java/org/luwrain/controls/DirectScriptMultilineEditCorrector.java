@@ -280,7 +280,7 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 			    }
 			}
 		    };
-		final AtomicReference ex = new AtomicReference();
+		final AtomicReference<Object> ex = new AtomicReference<>();
 		context.runHooks(hookName, (hook)->{
 			try {
 			    hook.run(new Object[]{arg});

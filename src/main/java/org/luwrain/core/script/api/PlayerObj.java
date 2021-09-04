@@ -68,7 +68,7 @@ final class PlayerObj extends AbstractJSObject
 	case "flags":
 	    {
 		final Set<Player.Flags> flags = player.getFlags();
-		final List<String> res = new LinkedList();
+		final List<String> res = new ArrayList<>();
 		if (flags != null)
 		for(Object o: flags)
 		res.add(o.toString().toLowerCase());

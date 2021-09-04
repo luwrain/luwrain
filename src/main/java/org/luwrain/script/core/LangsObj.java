@@ -29,20 +29,20 @@ import static org.luwrain.script2.ScriptUtils.*;
 
 final class LangsObj implements ProxyObject
 {
-        private final Map<String, LangObj> langs = new HashMap();
+        private final Map<String, LangObj> langs = new HashMap<>();
     private final Set<String> keysSet;
     private final ProxyArray keysArray;
 
     LangsObj(I18n i18n)
     {
 	NullCheck.notNull(i18n, "i18n");
-	final List<String> keys = new ArrayList();
+	final List<String> keys = new ArrayList<>();
 	for(Map.Entry<String, Lang> e: i18n.getAllLangs().entrySet())
 	{
 	    keys.add(e.getKey());
 	    this.langs.put(e.getKey(), new LangObj(e.getValue()));
 	}
-	this.keysSet = new HashSet(keys);
+	this.keysSet = new HashSet<>(keys);
 	this.keysArray = ProxyArray.fromArray((Object[])keys.toArray(new String[keys.size()]));
     }
 

@@ -250,7 +250,7 @@ public final class Popups
 	if (sett.getFilePopupSkipHidden(false))
 	    filter = CommanderPopup.FILTER_NO_HIDDEN; else
 	    filter = CommanderPopup.FILTER_ALL;
-	final AtomicReference res = new AtomicReference(null);
+	final AtomicReference<Object> res = new AtomicReference<>(null);
 	final CommanderPopup popup = new CommanderPopup(luwrain, name, 
 							startWith, filter, DEFAULT_POPUP_FLAGS){
 		@Override public boolean onSystemEvent(SystemEvent event)
@@ -309,7 +309,7 @@ public final class Popups
 	if (sett.getFilePopupSkipHidden(false))
 	    filter = CommanderPopup.FILTER_NO_HIDDEN; else
 	    filter = CommanderPopup.FILTER_ALL;
-	final AtomicReference res = new AtomicReference(null);
+	final AtomicReference<Object> res = new AtomicReference<>(null);
 	final CommanderPopup popup = new CommanderPopup(luwrain, name,
 							startWith, filter, DEFAULT_POPUP_FLAGS){
 		@Override public boolean onSystemEvent(SystemEvent event)

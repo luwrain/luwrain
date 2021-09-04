@@ -33,7 +33,7 @@ final class Loader
 
     private String currentDir = null;
     private String currentFile = null;
-    private final List<String> lines = new LinkedList();
+    private final List<String> lines = new ArrayList<>();
 
     Loader(Registry registry)
     {

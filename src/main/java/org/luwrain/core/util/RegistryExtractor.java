@@ -30,7 +30,7 @@ final class RegistryExtractor
 
     private File currentDir = null;
     private File currentFile = null;
-    private final List<String> lines = new ArrayList();
+    private final List<String> lines = new ArrayList<>();
 
     RegistryExtractor(File destDir)
     {
@@ -113,7 +113,7 @@ final class RegistryExtractor
     static private void createDirectories(File file) throws IOException
     {
 	NullCheck.notNull(file, "file");
-	final LinkedList<File> files = new LinkedList();
+	final LinkedList<File> files = new LinkedList<>();
 	File f = file;
 	while(f != null)
 	{

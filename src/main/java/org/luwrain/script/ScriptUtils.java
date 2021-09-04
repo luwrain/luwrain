@@ -111,7 +111,7 @@ public final class ScriptUtils
 	final JSObject jsObj = (JSObject)obj;
 	if (!jsObj.isArray())
 	    return null;
-		final List res = new LinkedList();
+		final List<Object> res = new ArrayList<>();
 	int index = 0;
 	while (jsObj.hasSlot(index))
 	{

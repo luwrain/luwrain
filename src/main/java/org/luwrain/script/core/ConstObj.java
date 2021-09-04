@@ -43,7 +43,7 @@ private final ProxyArray keysArray;
 	for(Sounds s: ALL_SOUNDS)
 	    k.add(SOUND_PREFIX + s.toString());
 	    keys = k.toArray(new String[k.size()]);
-	keysSet = new HashSet(k);
+	keysSet = new HashSet<>(k);
 	keysArray = ProxyArray.fromArray((Object[])keys);
     }
 

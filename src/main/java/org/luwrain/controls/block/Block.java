@@ -33,7 +33,7 @@ protected int textHeight = -1;
     protected final BlockObject[] objs;
     protected BlockRow[] rows = new BlockRow[0];
 
-    final List<Block> vertDepOn = new ArrayList();
+    final List<Block> vertDepOn = new ArrayList<>();
     boolean actualTextY = false;
 
     public Block(BlockObject[] objs)

@@ -96,6 +96,7 @@ public class CommanderArea<E> extends ListArea
     protected FutureTask task = null;
     protected boolean closed = false;
 
+    @SuppressWarnings("unchecked")
     public CommanderArea(Params<E> params)
     {
 	super(createListParams(params));
@@ -116,7 +117,7 @@ public class CommanderArea<E> extends ListArea
 	return this.model;
     }
 
-    public void setCommanderFilter(Filter filter)
+    public void setCommanderFilter(Filter<E> filter)
     {
 	this.filter = filter;
     }
@@ -159,12 +160,13 @@ public class CommanderArea<E> extends ListArea
 	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.length < 1;
     }
 
+    @SuppressWarnings("unchecked")
     protected Wrapper<E> getSelectedWrapper()
     {
 	final Object res = selected();
 	if (res == null || !(res instanceof Wrapper))
 	    return null;
-	    return (Wrapper)res;
+	    return (Wrapper<E>)res;
     }
 
     //never returns parent
@@ -194,7 +196,7 @@ public class CommanderArea<E> extends ListArea
     {
 	if (getListModel().wrappers == null && !flags.contains(Flags.MARKING))
 	    return new Object[0];
-	final List res = new ArrayList();
+	final List<Object> res = new ArrayList<>();
 	for(Wrapper w: getListModel().wrappers)
 	    if (w.marked)
 		res.add(w.obj);
@@ -212,12 +214,13 @@ public class CommanderArea<E> extends ListArea
 	return res.toArray(new String[res.size()]);
     }
 
+    @SuppressWarnings("unchecked")
     protected Wrapper<E>[] getMarkedWrappers()
     {
 	if (getListModel().wrappers == null || !flags.contains(Flags.MARKING))
 	    return new Wrapper[0];
 	final List<Wrapper<E>> res = new ArrayList<>();
-	for(Wrapper w: getListModel().wrappers)
+	for(Wrapper<E> w: getListModel().wrappers)
 	    if (w.marked)
 		res.add(w);
 	return res.toArray(new Wrapper[res.size()]);
@@ -273,7 +276,7 @@ public class CommanderArea<E> extends ListArea
 			for(int i = 0;i < filtered.size();++i)
 			{
 			    final EntryType entryType = model.getEntryType(newCurrent, filtered.get(i));
-			    wrappers[i] = new Wrapper(filtered.get(i), entryType, appearance.getEntryText(filtered.get(i), entryType, false));
+			    wrappers[i] = new Wrapper<E>(filtered.get(i), entryType, appearance.getEntryText(filtered.get(i), entryType, false));
 			}
 			if (comparator != null)
 			    Arrays.sort(wrappers, comparator);
@@ -349,6 +352,7 @@ public class CommanderArea<E> extends ListArea
 	    appearance.announceLocation(currentLocation);
     }
 
+    @SuppressWarnings("unchecked")
     @Override public ListModelAdapter<E> getListModel()
     {
 	return (ListModelAdapter<E>)super.getListModel();
@@ -498,6 +502,7 @@ public class CommanderArea<E> extends ListArea
 	return wrapper.getBaseName();
     }
 
+    @SuppressWarnings("unchecked")
     static protected ListArea.Params createListParams(CommanderArea.Params params)
     {
 	NullCheck.notNull(params, "params");

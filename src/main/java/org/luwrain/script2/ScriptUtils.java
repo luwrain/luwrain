@@ -34,7 +34,7 @@ public final class ScriptUtils
 	final Value value = (Value)o;
 	if (!value.hasArrayElements())
 	    return null;
-	final List<Value> res = new ArrayList();
+	final List<Value> res = new ArrayList<>();
 	for(long i = 0;i < value.getArraySize();i++)
 	    res.add(value.getArrayElement(i));
 	return res;
@@ -77,7 +77,7 @@ public final class ScriptUtils
 	return ProxyArray.fromArray((Object[])items);
     }
 
-        static public Object getArray(List items)
+        static public <E> Object getArray(List<E> items)
     {
 	NullCheck.notNull(items, "items");
 	return ProxyArray.fromArray((Object[])items.toArray(new Object[items.size()]));

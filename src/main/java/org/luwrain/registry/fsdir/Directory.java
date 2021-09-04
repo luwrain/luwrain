@@ -265,7 +265,7 @@ return values.get(valueName).type;
     {
 	if (values != null)
 	    return;
-	values = new HashMap();
+	values = new HashMap<>();
 	Map<String, String> raw;
 
 	//strings
@@ -334,7 +334,7 @@ return values.get(valueName).type;
     {
 	if (subdirs != null)
 	    return;
-	subdirs = new ArrayList();
+	subdirs = new ArrayList<>();
 	final File[] content = dir.listFiles();
 	for(File f: content)
 	    if (f.isDirectory())

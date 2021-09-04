@@ -30,10 +30,10 @@ public final class LuwrainObj extends AbstractJSObject
 {
     private final Luwrain luwrain;
     private final File dataDir;
-    public final List<Shortcut> shortcuts = new LinkedList();
-    public final List<Command> commands = new LinkedList();
-        public final List<Worker> workers = new LinkedList();
-    public final Map<String, List<Hook>> hooks = new HashMap();
+    public final List<Shortcut> shortcuts = new ArrayList<>();
+    public final List<Command> commands = new ArrayList<>();
+        public final List<Worker> workers = new ArrayList<>();
+    public final Map<String, List<Hook>> hooks = new HashMap<>();
 
     private final RegistryObj registryObj;
     private final PopupsObj popupsObj;
@@ -185,7 +185,7 @@ public final class LuwrainObj extends AbstractJSObject
 	    if (!funcObj.isFunction())
 		return false;
 	    	if (!hooks.containsKey(name.toString()))
-	    	    hooks.put(name.toString(), new LinkedList());
+	    	    hooks.put(name.toString(), new ArrayList<>());
 	hooks.get(name.toString()).add(new org.luwrain.core.script.api.Hook(funcObj));
 	return true;
     }
@@ -207,7 +207,7 @@ public final class LuwrainObj extends AbstractJSObject
 	if (!(obj instanceof jdk.nashorn.api.scripting.ScriptObjectMirror))
 	    return false;
 	final JSObject func = (JSObject)obj;
-	luwrain.executeBkg(new FutureTask(()->{
+	luwrain.executeBkg(new FutureTask<>(()->{
 		    func.call(null, new Object[0]);
 	}, null));
 	return true;

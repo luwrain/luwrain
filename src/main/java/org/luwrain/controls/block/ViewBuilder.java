@@ -50,7 +50,7 @@ final class ViewBuilder
 		    //		    Log.warning(LOG_COMPONENT, "container #" + i + ":" + blocks[i].toString());
 		    //		    		    Log.warning(LOG_COMPONENT, "container #" + j + ":" + blocks[j].toString());
 		}
-	final List<Block> viewBlocks = new ArrayList();
+	final List<Block> viewBlocks = new ArrayList<>();
 	for(Block c: blocks)
 	{
 	    final BlockRowsBuilder b = new BlockRowsBuilder(c.textWidth);

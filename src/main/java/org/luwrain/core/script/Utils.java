@@ -27,7 +27,7 @@ public final class Utils
     static public List<String> getStringArray(JSObject obj)
     {
 	NullCheck.notNull(obj, "obj");
-	final List<String> res = new LinkedList();
+	final List<String> res = new ArrayList<>();
 	if (!obj.isArray())
 	    return null;
 	int index = 0;

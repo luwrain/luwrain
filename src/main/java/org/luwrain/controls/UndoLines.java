@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 public class UndoLines implements MutableLines 
 {
     protected final MutableLines lines;
-    protected final List<Command> commands = new ArrayList();
+    protected final List<Command> commands = new ArrayList<>();
 
     public UndoLines(MutableLines lines)
     {
