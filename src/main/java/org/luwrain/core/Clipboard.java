@@ -23,8 +23,11 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.DataFlavor;
 
 import com.google.gson.*;
+
+import static org.luwrain.util.TextUtils.*;
 
 public final class Clipboard implements ClipboardOwner, java.util.function.Supplier
 {
@@ -96,7 +99,7 @@ public final class Clipboard implements ClipboardOwner, java.util.function.Suppl
     @Override public Object[] get()
     {
 	if (this.objs == null)
-	    return new Object[0];
+	    return getSystemClipboard();
 	final Object[] res = new Object[this.objs.length];
 	for(int i = 0;i < this.objs.length;i++)
 	    res[i] = restore(this.objs[i]);
@@ -106,7 +109,7 @@ public final class Clipboard implements ClipboardOwner, java.util.function.Suppl
     public String[] getStrings()
     {
 	if (this.objs == null)
-	    return new String[0];
+	    return getSystemClipboard();
 	final String[] res = new String[this.objs.length];
 	for(int i = 0;i < this.objs.length;i++)
 	    res[i] = this.objs[i].str;
@@ -116,7 +119,7 @@ public final class Clipboard implements ClipboardOwner, java.util.function.Suppl
     public String getString(String lineSep)
     {
 	final String[] str = getStrings();
-	if (str.length == 0)
+	if (str == null || str.length == 0)
 	    return "";
 	final StringBuilder b = new StringBuilder();
 	b.append(str[0]);
@@ -125,9 +128,32 @@ public final class Clipboard implements ClipboardOwner, java.util.function.Suppl
 	return new String(b);
     }
 
+    private String[] getSystemClipboard()
+    {
+	final String s ;
+	try {
+	    s = (String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+	    Log.debug(LOG_COMPONENT, "system clipboard content is '" + s + "'");
+	    if (s == null)
+		return new String[0];
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to set the system clipboard: " + e.getClass().getName() + ": " + e.getMessage());
+	    e.printStackTrace();
+	    return null;
+	}
+	return splitLinesAnySeparator(s);
+    }
+
     public boolean isEmpty()
     {
-	return objs == null || objs.length == 0;
+	if (objs == null || objs.length == 0)
+	{
+	    final String[] s = getSystemClipboard();
+	    return s == null || s.length == 0;
+	}
+	return false;
     }
 
     public void clear()
