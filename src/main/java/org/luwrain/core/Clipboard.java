@@ -118,10 +118,11 @@ public final class Clipboard implements ClipboardOwner, java.util.function.Suppl
 	final String[] str = getStrings();
 	if (str.length == 0)
 	    return "";
-		final StringBuilder b = new StringBuilder();
-		for(int i = 0;i < str.length;i++)
-		    b.append(str[i]).append(lineSep);
-		return new String(b);
+	final StringBuilder b = new StringBuilder();
+	b.append(str[0]);
+	for(int i = 1;i < str.length;i++)
+	    b.append(str[i]).append(lineSep);
+	return new String(b);
     }
 
     public boolean isEmpty()
