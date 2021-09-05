@@ -38,7 +38,7 @@ public class ConsoleArea<E> extends NavigationArea implements  EmbeddedEditLines
     public interface Appearance<E> 
     {
 	void announceItem(E item);
-	String getTextAppearance(Object item);
+	String getTextAppearance(E item);
     }
 
     public interface ClickHandler<E>

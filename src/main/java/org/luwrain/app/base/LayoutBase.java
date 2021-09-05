@@ -354,7 +354,7 @@ protected interface ActionHandler
     }
 
             protected interface ConsoleParams<E> { void setConsoleParams(ConsoleArea.Params<E> params); }
-    protected <E> ConsoleArea.Params consoleParams(ConsoleParams<E> l)
+    protected <E> ConsoleArea.Params<E> consoleParams(ConsoleParams<E> l)
     {
 	NullCheck.notNull(l, "l");
 	final ConsoleArea.Params<E> params = new ConsoleArea.Params<E>();
