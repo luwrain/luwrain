@@ -25,25 +25,25 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.i18n.LangStatic;//FIXME:deleting
 
-public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
+public class ConsoleArea<E> extends NavigationArea implements  EmbeddedEditLines
 {
     public enum InputPos {TOP, BOTTOM};
 
-    public interface Model
+    public interface Model<E>
     {
 	int getItemCount();
-	Object getItem(int index);
+	E getItem(int index);
     }
 
-    public interface Appearance 
+    public interface Appearance<E> 
     {
-	void announceItem(Object item);
+	void announceItem(E item);
 	String getTextAppearance(Object item);
     }
 
-    public interface ClickHandler
+    public interface ClickHandler<E>
     {
-	boolean onConsoleClick(ConsoleArea area, int index, Object obj);
+	boolean onConsoleClick(ConsoleArea area, int index, E obj);
     }
 
     public interface InputHandler
@@ -53,22 +53,22 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	Result onConsoleInput(ConsoleArea area, String text);
     }
 
-    static public class Params
+    static public class Params<E>
     {
 	public ControlContext context = null;
 	public String name = "";
-	public Model model = null;
-	public Appearance appearance = null;
-	public ClickHandler clickHandler = null;
+	public Model<E> model = null;
+	public Appearance<E> appearance = null;
+	public ClickHandler<E> clickHandler = null;
 	public InputHandler inputHandler = null;
 	public InputPos inputPos = InputPos.TOP;
 	public String inputPrefix = ">";
     }
 
     protected String areaName = "";
-    protected Model consoleModel;
-    protected final Appearance consoleAppearance;
-    protected ClickHandler consoleClickHandler = null;
+    protected Model<E> consoleModel;
+    protected final Appearance<E> consoleAppearance;
+    protected ClickHandler<E> consoleClickHandler = null;
     protected InputHandler consoleInputHandler = null;
     protected final EmbeddedEdit edit;
     protected final InputPos inputPos;
@@ -76,7 +76,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
     protected String enteringPrefix = "";
     protected String enteringText = "";
 
-    public ConsoleArea(Params params)
+    public ConsoleArea(Params<E> params)
     {
 	super(params.context);
 	NullCheck.notNull(params, "params");
@@ -97,7 +97,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	moveHotPointToInput();
     }
 
-    public void setConsoleClickHandler(ClickHandler clickHandler)
+    public void setConsoleClickHandler(ClickHandler<E> clickHandler)
     {
 	this.consoleClickHandler = clickHandler;
     }
@@ -142,7 +142,7 @@ public class ConsoleArea extends NavigationArea implements  EmbeddedEditLines
 	return getExistingItemIndexOnLine(getHotPointY());
     }
 
-    public Object selected()
+    public E selected()
     {
 	final int index = getSelectedIndex();
 	return index >= 0?consoleModel.getItem(index):null;

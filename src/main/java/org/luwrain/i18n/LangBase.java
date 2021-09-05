@@ -90,7 +90,7 @@ return null;
 	}
     }
 
-    @Override public String getTextExp(String expName, Function args)
+    @Override public String getTextExp(String expName, Function<Object, Object> args)
     {
 	NullCheck.notEmpty(expName, "expName");
 	NullCheck.notNull(args, "args");

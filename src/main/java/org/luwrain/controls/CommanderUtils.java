@@ -50,9 +50,9 @@ public class CommanderUtils
 	}
     }
 
-    static public class AllEntriesFilter implements CommanderArea.Filter
+    static public class AllEntriesFilter<E> implements CommanderArea.Filter<E>
     {
-	@Override public boolean commanderEntrySuits(Object entry)
+	@Override public boolean commanderEntrySuits(E entry)
 	{
 	    return true;
 	}

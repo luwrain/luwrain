@@ -24,14 +24,14 @@ import org.luwrain.core.*;
 
 public final class ConsoleUtils
 {
-        static public class ArrayModel implements ConsoleArea.Model
+    static public class ArrayModel<E> implements ConsoleArea.Model<E>
     {
-	public interface Source
+	public interface Source<E>
 	{
-	    Object[] getItems();
+	    E[] getItems();
 	}
-	protected final Source source;
-	public ArrayModel(Source source)
+	protected final Source<E> source;
+	public ArrayModel(Source<E> source)
 	{
 	    NullCheck.notNull(source, "source");
 	    this.source = source;
@@ -41,21 +41,21 @@ public final class ConsoleUtils
 	    final Object[] o = source.getItems();
 	    return o != null?o.length:0;
 	}
-	@Override public Object getItem(int index)
+	@Override public E getItem(int index)
 	{
-	    final Object[] o = source.getItems();
+	    final E[] o = source.getItems();
 	    if (o == null)
-		return "#No items#";
+		throw new IllegalStateException("No items");
 	    if (index < 0 || index >= o.length)
-		return "#Illegal index: " + String.valueOf(index) + "#";
+		throw new IllegalArgumentException("Illegal index: " + String.valueOf(index));
 	    return o[index];
 	}
-	}
+    }
 
-            static public class ListModel implements ConsoleArea.Model
+    static public class ListModel<E> implements ConsoleArea.Model<E>
     {
-	protected final List source;
-	public ListModel(List source)
+	protected final List<E> source;
+	public ListModel(List<E> source)
 	{
 	    NullCheck.notNull(source, "source");
 	    this.source = source;
@@ -64,12 +64,11 @@ public final class ConsoleUtils
 	{
 	    return source.size();
 	}
-	@Override public Object getItem(int index)
+	@Override public E getItem(int index)
 	{
 	    if (index < 0 || index >= source.size())
-		return "#Illegal index: " + String.valueOf(index) + "#";
+		throw new IllegalArgumentException("Illegal index: " + String.valueOf(index));
 	    return source.get(index);
 	}
     }
-
 }

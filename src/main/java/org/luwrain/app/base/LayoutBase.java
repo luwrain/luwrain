@@ -333,8 +333,8 @@ protected interface ActionHandler
 		app.getLuwrain().setActiveArea(a != null?a:area);
     }
 
-    protected interface ListParams { void setListParams(ListArea.Params params); }
-    protected ListArea.Params listParams(ListParams l)
+    protected interface ListParams<E> { void setListParams(ListArea.Params params); }
+    protected <E> ListArea.Params listParams(ListParams<E> l)
     {
 	NullCheck.notNull(l, "l");
 	final ListArea.Params params = new ListArea.Params();
@@ -353,11 +353,11 @@ protected interface ActionHandler
 	return params;
     }
 
-            protected interface ConsoleParams { void setConsoleParams(ConsoleArea.Params params); }
-    protected ConsoleArea.Params consoleParams(ConsoleParams l)
+            protected interface ConsoleParams<E> { void setConsoleParams(ConsoleArea.Params<E> params); }
+    protected <E> ConsoleArea.Params consoleParams(ConsoleParams<E> l)
     {
 	NullCheck.notNull(l, "l");
-	final ConsoleArea.Params params = new ConsoleArea.Params();
+	final ConsoleArea.Params<E> params = new ConsoleArea.Params<E>();
 	params.context = getControlContext();
 	l.setConsoleParams(params);
 	return params;

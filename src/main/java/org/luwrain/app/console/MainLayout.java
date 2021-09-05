@@ -22,17 +22,18 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.app.base.*;
+import org.luwrain.controls.ConsoleUtils.*;
 
 final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 {
     private final App app;
-    private final ConsoleArea consoleArea;
+    private final ConsoleArea<Object> consoleArea;
 
     MainLayout(App app)
     {
 	NullCheck.notNull(app, "app");
 	this.app = app;
-	this.consoleArea = new ConsoleArea(createConsoleParams()){
+	this.consoleArea = new ConsoleArea<Object>(createConsoleParams()){
 		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -76,12 +77,12 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 	return Result.CLEAR_INPUT;
     }
 
-    private ConsoleArea.Params createConsoleParams()
+    private ConsoleArea.Params<Object> createConsoleParams()
     {
-	final ConsoleArea.Params params = new ConsoleArea.Params();
+	final ConsoleArea.Params<Object> params = new ConsoleArea.Params<Object>();
 	params.context = new DefaultControlContext(app.getLuwrain());
 	params.name = "LUWRAIN";
-	params.model = new Model();
+	params.model = new ListModel<Object>(app.messages);
 	params.appearance = new Appearance();
 	//	params.clickHandler = clickHandler;
 	params.inputHandler = this;
@@ -95,19 +96,7 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 	return new AreaLayout(consoleArea);
     }
 
-    private final class Model implements ConsoleArea.Model
-    {
-	@Override public int getItemCount()
-	{
-	    return app.messages.size();
-	}
-	@Override public Object getItem(int index)
-	{
-	    return app.messages.get(index);
-	}
-    }
-
-    private final class Appearance implements ConsoleArea.Appearance
+    private final class Appearance implements ConsoleArea.Appearance<Object>
     {
 	@Override public void announceItem(Object item)
 	{

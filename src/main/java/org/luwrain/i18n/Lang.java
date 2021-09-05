@@ -62,5 +62,5 @@ public interface Lang
     java.io.InputStream getResource(String resourceName);
 
 
-    String getTextExp(String expName, java.util.function.Function args);
+    String getTextExp(String expName, java.util.function.Function<Object, Object> args);
 }

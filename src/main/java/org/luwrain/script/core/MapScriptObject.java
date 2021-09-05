@@ -37,7 +37,7 @@ public class MapScriptObject implements ProxyObject
 
     public MapScriptObject()
     {
-	this(new HashMap());
+	this(new HashMap<>());
     }
 
     @Override public Object getMember(String name)
