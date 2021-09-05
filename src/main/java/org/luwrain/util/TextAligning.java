@@ -53,7 +53,7 @@ public class TextAligning
     public int hotPointY = -1;
 
     /** The result with new text dividing*/
-    public final LinkedList<String> res = new LinkedList();
+    public final LinkedList<String> res = new LinkedList<>();
 
     public TextAligning(int maxLineLen)
     {

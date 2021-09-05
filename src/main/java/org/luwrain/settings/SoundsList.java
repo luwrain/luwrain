@@ -155,7 +155,7 @@ final class SoundsList extends ListArea implements SectionArea, ListArea.ClickHa
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	final Registry registry = luwrain.getRegistry();
-	final List<Item> res = new LinkedList();
+	final List<Item> res = new ArrayList<>();
 	final File soundsDir = luwrain.getFileProperty("luwrain.dir.sounds");
 	for(Sounds s: allSounds)
 	{

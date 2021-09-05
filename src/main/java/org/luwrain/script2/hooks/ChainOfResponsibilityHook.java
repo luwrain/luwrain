@@ -38,7 +38,7 @@ public class ChainOfResponsibilityHook
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
 	final AtomicBoolean execRes = new AtomicBoolean(false);
-	final AtomicReference error = new AtomicReference();
+	final AtomicReference<RuntimeException> error = new AtomicReference<>();
 	hookContainer.runHooks(hookName, (hook)->{
 		try {
 		    final Object res = hook.run(args);
@@ -61,7 +61,7 @@ public class ChainOfResponsibilityHook
 		}
 	    });
 	if (error.get() != null)
-	    throw (RuntimeException)error.get();
+	    throw error.get();
 	return execRes.get();
     }
 

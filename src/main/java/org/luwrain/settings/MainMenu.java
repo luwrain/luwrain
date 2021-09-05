@@ -54,7 +54,7 @@ final class MainMenu extends EditableListArea implements SectionArea
         @Override public boolean saveSectionData()
     {
 	final List<UniRefInfo> model = (List)getListModel();
-	final List<MainMenuItem> items = new ArrayList();
+	final List<MainMenuItem> items = new ArrayList<>();
 	for(UniRefInfo info: model)
 	    items.add(new MainMenuItem(MainMenuItem.TYPE_UNIREF, info.getValue()));
 	sett.setMainMenuContent(gson.toJson(items));
@@ -84,7 +84,7 @@ final class MainMenu extends EditableListArea implements SectionArea
 	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final Settings.UserInterface sett = Settings.createUserInterface(luwrain.getRegistry());
 	final List<MainMenuItem> items = new Gson().fromJson(sett.getMainMenuContent(""), MainMenuItem.LIST_TYPE);
-	final List<UniRefInfo> uniRefs = new LinkedList();
+	final List<UniRefInfo> uniRefs = new ArrayList<>();
 	if (items != null)
 	    for(MainMenuItem item: items)
 	    {
@@ -116,7 +116,7 @@ final class MainMenu extends EditableListArea implements SectionArea
 		}
 	    };
 	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
-	    final List<UniRefInfo> u = new ArrayList();
+	    final List<UniRefInfo> u = new ArrayList<>();
 	    final List<String> s = new ArrayList<String>();
 	    for(int i = fromIndex;i < toIndex;++i)
 	    {

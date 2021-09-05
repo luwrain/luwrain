@@ -30,7 +30,7 @@ public final class TextUtils
 	NullCheck.notNull(text, "text");
 	boolean wasBN = false;
 	boolean wasBR = false;
-	final List<String> res = new LinkedList();
+	final List<String> res = new ArrayList<>();
 	StringBuilder b = new StringBuilder();
 	for(int i = 0;i < text.length();++i)
 	{
@@ -148,7 +148,7 @@ public final class TextUtils
     {
 	if (width < 3)
 	    throw new IllegalArgumentException("width (" + String.valueOf(width) + ") can't be less than 3");
-	final List<String> res = new ArrayList();
+	final List<String> res = new ArrayList<>();
 	final String[] words = line.split(" ", -1);
 	StringBuilder b = new StringBuilder();
 	for(String word: words)

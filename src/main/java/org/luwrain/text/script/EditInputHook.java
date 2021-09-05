@@ -21,7 +21,7 @@ public class EditInputHook
 	if (model == null || !(model instanceof MultilineEditCorrector))
 	    return false;
 	final MultilineEditCorrector corrector = (MultilineEditCorrector)model;
-	final AtomicReference res = new AtomicReference();
+	final AtomicReference<Boolean> res = new AtomicReference<>();
 	corrector.doEditAction((lines, hotPoint)->{
 		try {
 		    res.set(new Boolean(ChainOfResponsibilityHook.run(hookContainer, "luwrain.edit.multiline.input", new Object[]{
@@ -36,6 +36,6 @@ public class EditInputHook
 	    });
 	if (res.get() == null)
 	    return false;
-	return ((Boolean)res.get()).booleanValue();
+	return res.get().booleanValue();
     }
 }

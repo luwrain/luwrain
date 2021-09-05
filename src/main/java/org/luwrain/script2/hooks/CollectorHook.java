@@ -36,7 +36,7 @@ public class CollectorHook
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
-	final List res = new ArrayList();
+	final List<Object> res = new ArrayList<>();
 	final AtomicReference ex = new AtomicReference();
 	hookContainer.runHooks(hookName, (hook)->{
 		try {
@@ -61,7 +61,7 @@ public class CollectorHook
     {
 	NullCheck.notNull(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
-	final List res = new ArrayList();
+	final List<Object> res = new ArrayList<>();
 	final Object[] objs = run(hookName, args);
 	for(Object o: objs)
 	{

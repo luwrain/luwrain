@@ -126,7 +126,7 @@ public final class FileUtils
 	NullCheck.notNull(text, "text");
 	boolean wasBN = false;
 	boolean wasBR = false;
-	final List<String> res = new LinkedList();
+	final List<String> res = new ArrayList<>();
 	StringBuilder b = new StringBuilder();
 	for(int i = 0;i < text.length();++i)
 	{

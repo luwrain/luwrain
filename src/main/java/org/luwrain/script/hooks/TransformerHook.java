@@ -37,7 +37,7 @@ public class TransformerHook
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(obj, "obj");
-	final AtomicReference o = new AtomicReference(obj);
+	final AtomicReference<Object> o = new AtomicReference<>(obj);
 	hookContainer.runHooks(hookName, (hook)->{
 		try {
 		    final Object res = hook.run(new Object[]{ o.get() });
