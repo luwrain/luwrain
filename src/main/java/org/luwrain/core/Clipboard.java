@@ -19,15 +19,20 @@
 package org.luwrain.core;
 
 import java.io.*;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
 
 import com.google.gson.*;
 
-public final class Clipboard implements java.util.function.Supplier
+public final class Clipboard implements ClipboardOwner, java.util.function.Supplier
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
     private final Gson gson = new Gson();
     private Obj<?>[] objs = null;
+    private String systemClipboard = null;
 
     public <E> boolean set(E[] o)
     {
@@ -39,6 +44,7 @@ public final class Clipboard implements java.util.function.Supplier
 		this.objs = new Obj[o.length];
 	for(int i = 0;i < o.length;i++)
 	    this.objs[i] = saveObj(o[i], o[i].toString());
+	setSystemClipboard();
 	return true;
     }
 
@@ -48,7 +54,6 @@ public final class Clipboard implements java.util.function.Supplier
 	    return false;
 	if (o.length != s.length)
 	    return false;
-	new XClipboard().setClipboardText(s[0]);
 	for(int i = 0;i < o.length;i++)
 	{
 	    if (o[i] == null || s[i] == null)
@@ -59,6 +64,7 @@ public final class Clipboard implements java.util.function.Supplier
 	this.objs = new Obj[o.length];
 	for(int i = 0;i < o.length;i++)
 	    this.objs[i] = saveObj(o[i], s[i]);
+	setSystemClipboard();
 	return true;
     }
 
@@ -66,8 +72,25 @@ public final class Clipboard implements java.util.function.Supplier
     {
 	if (o == null || o.getClass().isArray())
 	    return false;
-	new XClipboard().setClipboardText(o.toString());
 	return set(new Object[]{o});
+    }
+
+    private void setSystemClipboard()
+    {
+	if (this.objs == null || this.objs.length == 0)
+	    return;
+	final StringBuilder b = new StringBuilder();
+	final String lineSep = System.lineSeparator();
+	for(Obj o: this.objs)
+	    b.append(o.str).append(lineSep);
+	try {
+	    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(new String(b)), this);
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to set the system clipboard: " + e.getClass().getName() + ": " + e.getMessage());
+	    e.printStackTrace();
+	}
     }
 
     @Override public Object[] get()
@@ -137,6 +160,12 @@ public final class Clipboard implements java.util.function.Supplier
 	    return obj.obj;
 	NullCheck.notNull(obj.content, "obj.content");
 	return gson.fromJson(obj.content, obj.cl);
+    }
+
+            @Override public void              lostOwnership(java.awt.datatransfer.Clipboard clipboard, Transferable contents)
+    {
+	Log.debug(LOG_COMPONENT, "the clipboard lost ownership");
+	this.objs = null;
     }
 
 static private final class Obj<E>
