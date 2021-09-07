@@ -169,9 +169,8 @@ public final class Popups
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(prefix, "prefix");
-	NullCheck.notNull(startFrom, "startFrom");
 	final FilePopup popup = new FilePopup(luwrain, name, prefix,
-					      acceptance, startFrom, getUserHome(luwrain),
+					      acceptance, startFrom != null?startFrom:luwrain.getFileProperty(Luwrain.PROP_DIR_USERHOME), getUserHome(luwrain),
 					      loadFilePopupFlags(luwrain), Popups.DEFAULT_POPUP_FLAGS){
 		@Override public boolean onInputEvent(InputEvent event)
 		{
@@ -228,7 +227,7 @@ public final class Popups
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(prefix, "prefix");
-		return path(luwrain, name, prefix, luwrain.getFileProperty("luwrain.dir.userhome"), acceptance);
+		return path(luwrain, name, prefix, null, acceptance);
     }
 
     static public File path(Luwrain luwrain, String name, String prefix)
