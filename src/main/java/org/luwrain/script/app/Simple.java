@@ -25,28 +25,28 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.controls.*;
-import org.luwrain.util.*;
 
+import static org.luwrain.util.Urls.toUrl;
 import static org.luwrain.script2.ScriptUtils.*;
 
 public final class Simple implements Application
 {
     private final String name;
     private final File dataDir;
-    private final Value jsObj;
+    private final Value jsApp;
 
     private Luwrain luwrain = null;
     private CenteredArea area = null;
     private String bkgSound = "";
 
-    public Simple(String name, File dataDir, Value jsObj)
+    public Simple(String name, File dataDir, Value jsApp)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(dataDir, "dataDir");
-	NullCheck.notNull(jsObj, "jsObj");
+	NullCheck.notNull(jsApp, "jsApp");
 	this.name = name;
 	this.dataDir = dataDir;
-	    this.jsObj = jsObj;
+	    this.jsApp = jsApp;
 	}
 
         @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -102,7 +102,7 @@ public final class Simple implements Application
 			    return false;
 			{
 			    final File f = new File(dataDir, bkgSound);
-			    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(Urls.toUrl(f).toString()));
+			    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(toUrl(f).toString()));
 			    return true;
 			}
 			//return false;
@@ -124,14 +124,14 @@ bkgSound = requestBkgSound();
     private boolean handleInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
-	final Object funcObj = getMember(jsObj, "onInputEvent");
+	final Object funcObj = getMember(jsApp, "onInputEvent");
 	if (funcObj == null || !(funcObj instanceof Value))
 	    return false;
 	final Value func = (Value)funcObj;
 	if (func.isNull() || !func.canExecute())
 	    return false;
 	final Object arg = createInputEvent(event);
-	final Object res = func.execute(jsObj, new Object[]{arg});
+	final Object res = func.execute(jsApp, new Object[]{arg});
 	if (res != null && (res instanceof java.lang.Boolean))
 	    if (((java.lang.Boolean)res).booleanValue())
 	{
@@ -146,14 +146,14 @@ bkgSound = requestBkgSound();
         private boolean handleSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	final Object funcObj = getMember(jsObj, "onSystemEvent");
+	final Object funcObj = getMember(jsApp, "onSystemEvent");
 	if (funcObj == null || !(funcObj instanceof Value))
 	    return false;
 	final Value func = (Value)funcObj;
 	if (func.isNull() || !func.canExecute())
 	    return false;
 	final Object arg = createSystemEvent(event);
-	final Object res = func.execute(jsObj, new Object[]{arg});
+	final Object res = func.execute(jsApp, new Object[]{arg});
 	if (res != null && (res instanceof java.lang.Boolean))
 	    if (((java.lang.Boolean)res).booleanValue())
 	{
@@ -168,23 +168,23 @@ bkgSound = requestBkgSound();
 
     private String[] requestLines()
     {
-final String[] res = asStringArray(getMember(jsObj, "lines"));
+final String[] res = asStringArray(getMember(jsApp, "lines"));
 return res != null?res:new String[0];
 	    }
 
     private int requestHotPointX()
     {
-	return Math.max(0, asInt(getMember(jsObj, "hotPointX")));
+	return Math.max(0, asInt(getMember(jsApp, "hotPointX")));
     }
 
 	        private int requestHotPointY() 
     {
-	return Math.max(0, asInt(getMember(jsObj, "hotPointY")));
+	return Math.max(0, asInt(getMember(jsApp, "hotPointY")));
     }
 
         private String requestBkgSound()
     {
-final String res = asString(getMember(jsObj, "bkgSound"));
+final String res = asString(getMember(jsApp, "bkgSound"));
 return res != null?res:"";
     }
 
