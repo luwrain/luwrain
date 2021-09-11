@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.script2;
 
@@ -8,6 +23,7 @@ import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.script.core.*;
 
 public final class ScriptUtils
 {
@@ -112,13 +128,28 @@ public final class ScriptUtils
 
     static public Object createInputEvent(InputEvent event)
     {
-	return null;
+
+		NullCheck.notNull(event, "event");
+		final Map<String, Object> values = new HashMap<>();
+		values.put("special", event.isSpecial()?event.getSpecial().toString():null);
+		values.put("ch", event.isSpecial()?null:new String(new StringBuilder().append(event.getChar())));
+		values.put("withAlt", new Boolean(event.withAlt()));
+		values.put("withAltOnly", new Boolean(event.withAltOnly()));
+		values.put("withControl", new Boolean(event.withControl()));
+		values.put("withControlOnly", new Boolean(event.withControlOnly()));
+		values.put("withShift", new Boolean(event.withShift()));
+		values.put("withShiftOnly", new Boolean(event.withShiftOnly()));
+		values.put("modified", new Boolean(event.isModified()));
+		return new MapScriptObject(values);
     }
 
-    static public Object createSystemEvent(SystemEvent event)
+	    static public Object createSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	return null;
+	final Map<String, Object> values = new HashMap<>();
+	values.put("code", event.getCode().toString());
+	values.put("type", event.getType().toString());
+	return new MapScriptObject(values);
     }
 
 }
