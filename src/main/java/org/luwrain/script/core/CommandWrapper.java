@@ -41,7 +41,7 @@ final class CommandWrapper implements Command
 
     @Override public void onCommand(Luwrain luwrain)
     {
-	synchronized(luwrainObj) {
+	synchronized(luwrainObj.syncObj) {
 	    func.execute(null, new Object[0]);
 	}
     }

@@ -43,7 +43,7 @@ public final class Module implements AutoCloseable
     public void run(String text)
     {
 	close();
-	synchronized(luwrainObj) {
+	synchronized(luwrainObj.syncObj) {
 	    this.context = Context.newBuilder()
 	    .allowExperimentalOptions(true)
 	    //.option("js.nashorn-compat", "true"
@@ -57,7 +57,7 @@ public final class Module implements AutoCloseable
 
     @Override public void close()
     {
-	synchronized(luwrainObj) {
+	synchronized(luwrainObj.syncObj) {
 	    if (context == null)
 		return;
 	    context.close();

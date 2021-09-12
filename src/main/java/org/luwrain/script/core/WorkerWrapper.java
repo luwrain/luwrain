@@ -44,7 +44,7 @@ final class WorkerWrapper implements Worker
 
     @Override public void run()
     {
-	synchronized(luwrainObj) {
+	synchronized(luwrainObj.syncObj) {
 	    func.execute(null, new Object[0]);
 	}
     }

@@ -91,7 +91,7 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 		    for(Value v: m.luwrainObj.hooks.get(hookName))
 		    {
 			final Luwrain.HookResult res;
-			synchronized(m.luwrainObj) {
+			synchronized(m.luwrainObj.syncObj) {
 			    res = runner.runHook((args)->v.execute(args));
 			}
 			if (res == null)

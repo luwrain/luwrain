@@ -25,17 +25,20 @@ import org.luwrain.core.*;
 
 import static org.luwrain.script2.ScriptUtils.*;
 
-final class ShortcutImpl implements Shortcut
+final class ShortcutWrapper implements Shortcut
 {
+    private final LuwrainObj luwrainObj;
     private final String name;
     private final File dataDir;
     private final Value cons;
 
-    ShortcutImpl(String name, File dataDir, Value cons)
+    ShortcutWrapper(LuwrainObj luwrainObj, String name, File dataDir, Value cons)
     {
+	NullCheck.notNull(luwrainObj, "luwrainObj");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(dataDir, "dateDir");
 	NullCheck.notNull(cons, "cons");
+	this.luwrainObj = luwrainObj;
 	this.name = name;
 	this.dataDir = dataDir;
 	this.cons = cons;
@@ -44,21 +47,23 @@ final class ShortcutImpl implements Shortcut
     @Override public Application[] prepareApp(String[] args)
     {
 	NullCheck.notNullItems(args, "args");
-	final Value newObj = cons.newInstance(ProxyArray.fromArray((Object[])args));
-	if (newObj == null || newObj.isNull())
-	    return null;
-	final String name = asString(getMember(newObj, "name"));
-	final String type = asString(getMember(newObj, "type"));
-	if (name == null || name.trim().isEmpty())
-	    return null;
-	if (type == null)
-	    return null;
-	switch(type.trim().toUpperCase())
-	{
-	case "SIMPLE":
-	    return new Application[]{new org.luwrain.script.app.Simple(name, dataDir, newObj)};
-	default:
-	    return null;
+	synchronized(luwrainObj.syncObj) {
+	    final Value newObj = cons.newInstance(ProxyArray.fromArray((Object[])args));
+	    if (newObj == null || newObj.isNull())
+		return null;
+	    final String name = asString(getMember(newObj, "name"));
+	    final String type = asString(getMember(newObj, "type"));
+	    if (name == null || name.trim().isEmpty())
+		return null;
+	    if (type == null)
+		return null;
+	    switch(type.trim().toUpperCase())
+	    {
+	    case "SIMPLE":
+		return new Application[]{new org.luwrain.script.app.Simple(name, dataDir, newObj)};
+	    default:
+		return null;
+	    }
 	}
     }
 

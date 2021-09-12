@@ -33,6 +33,7 @@ final class LuwrainObj implements ProxyObject
     static private String[] KEYS = new String[]{
 	"addCommand",
 	"addHook",
+	"addShortcut",
 	"addWorker",
 	"const",
 	"i18n",
@@ -56,6 +57,7 @@ final class LuwrainObj implements ProxyObject
     private final PopupsObj popups;
 
         final Luwrain luwrain;
+    final Object syncObj = new Object();
         final Map<String, List<Value> > hooks = new HashMap<>();
         final List<ExtensionObject> extObjs = new ArrayList<>();
     final List<Command> commands = new ArrayList<>();
@@ -79,6 +81,8 @@ final class LuwrainObj implements ProxyObject
 	    return(ProxyExecutable)this::addCommand;
 	case "addHook":
 	    return(ProxyExecutable)this::addHook;
+	    	    	case "addShortcut":
+	    return(ProxyExecutable)this::addShortcut;
 	    	case "addWorker":
 	    return(ProxyExecutable)this::addWorker;
 	case "const":
@@ -128,7 +132,6 @@ final class LuwrainObj implements ProxyObject
 	return true;
 	    }
 
-
     private Object addHook(Value[] args)
     {
 	if (!notNullAndLen(args, 2))
@@ -147,6 +150,19 @@ final class LuwrainObj implements ProxyObject
 	h.add(args[1]);
 	return true;
     }
+
+                private Object addShortcut(Value[] args)
+    {
+	if (!notNullAndLen(args, 2))
+	    return false;
+	if (!args[0].isString() || !args[1].canInstantiate())
+	    return false;
+	final String name = args[0].asString();
+	if (name.trim().isEmpty())
+	    return false;
+	extObjs.add(new ShortcutWrapper(this, name.trim(), luwrain.getFileProperty(Luwrain.PROP_DIR_DATA), args[1]));
+	return true;
+	    }
 
         private Object addWorker(Value[] args)
     {
