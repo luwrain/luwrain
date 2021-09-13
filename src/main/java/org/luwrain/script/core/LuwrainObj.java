@@ -18,6 +18,7 @@ package org.luwrain.script.core;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
@@ -36,6 +37,7 @@ final class LuwrainObj implements ProxyObject
 	"addShortcut",
 	"addWorker",
 	"const",
+	"executeBkg",
 	"i18n",
 	"isDigit",
 	"isLetter",
@@ -48,6 +50,7 @@ final class LuwrainObj implements ProxyObject
 	"popups",
 	"readTextFile",
 	"speak",
+	"quit",
     };
     static private final Set<String> KEYS_SET = new HashSet(Arrays.asList((Object[])KEYS));
     static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray((Object[])KEYS);
@@ -88,6 +91,8 @@ final class LuwrainObj implements ProxyObject
 	    return(ProxyExecutable)this::addWorker;
 	case "const":
 	    return constObj;
+	case "executeBkg":
+	    return (ProxyExecutable)this::executeBkg;
 	case "i18n":
 	    i18nObj.refresh();
 	    return i18nObj;
@@ -113,6 +118,8 @@ final class LuwrainObj implements ProxyObject
 	    return (ProxyExecutable)this::readTextFile;
 	case "speak":
 	    return (ProxyExecutable)this::speak;
+	    	case "quit":
+	    return (ProxyExecutable)this::quit;
 	default:
 	    return null;
 	}
@@ -185,8 +192,23 @@ final class LuwrainObj implements ProxyObject
 	    return false;
 	extObjs.add(new WorkerWrapper(this, name.trim(), firstLaunchDelay, launchPeriod, args[3]));
 	return true;
-	    }
+    }
 
+        private Object executeBkg(Value[] values)
+    {
+	if (!notNullAndLen(values, 1))
+	    return false;
+	if (values[0].isNull() || !values[0].canExecute())
+	    return false;
+	final FutureTask<Object> task = new FutureTask<>(()->{
+		synchronized(syncObj) {
+		    values[0].execute(new Object[0]);
+		}
+		return null;
+	    });
+	luwrain.executeBkg(task);
+	return true;
+    }
 
     private Object isDigit(Value[] values)
     {
@@ -260,6 +282,15 @@ final class LuwrainObj implements ProxyObject
 	    throw new ScriptException(e);
 	}
     }
+
+        private Object quit(Value[] values)
+    {
+	if (values != null && values.length > 0)
+	    return false;
+	luwrain.xQuit();
+	return true;
+	}
+
 
     private Object speak(Value[] values)
     {
