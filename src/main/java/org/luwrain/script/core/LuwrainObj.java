@@ -263,8 +263,7 @@ final class LuwrainObj implements ProxyObject
 
     private Object speak(Value[] values)
     {
-
-		if (notNullAndLen(values, 2))
+	if (notNullAndLen(values, 2))
 		{
 		    if (!values[0].isString() || !values[1].isString())
 	    return false;

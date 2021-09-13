@@ -23,15 +23,18 @@ import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 import org.luwrain.script2.*;
 import org.luwrain.util.*;
 
 final class ConstObj implements ProxyObject
 {
     static private final String
-	SOUND_PREFIX = "SOUND_";
+	SOUND_PREFIX = "SOUND_",
+	KEY_PREFIX = "KEY_";
 
     static private final EnumSet<Sounds> ALL_SOUNDS = EnumSet.allOf(Sounds.class);
+        static private final EnumSet<InputEvent.Special> ALL_KEYS = EnumSet.allOf(InputEvent.Special.class);
 
     private final String[] keys;
     private final Set<String> keysSet;
@@ -42,16 +45,22 @@ private final ProxyArray keysArray;
 	final List<String> k = new ArrayList<>();
 	for(Sounds s: ALL_SOUNDS)
 	    k.add(SOUND_PREFIX + s.toString());
-	    keys = k.toArray(new String[k.size()]);
-	keysSet = new HashSet<>(k);
-	keysArray = ProxyArray.fromArray((Object[])keys);
+		for(InputEvent.Special s: ALL_KEYS)
+		    k.add(KEY_PREFIX + s.toString().replaceAll("ARROW_", "MOVE_"));
+	    this.keys = k.toArray(new String[k.size()]);
+	this.keysSet = new HashSet<>(k);
+	this.keysArray = ProxyArray.fromArray((Object[])keys);
     }
 
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
 	if (keysSet.contains(name))
+	{
+	    if (name.startsWith("KEY_"))
+		return name.substring(KEY_PREFIX.length()).replaceAll("MOVE_", "ARROW_");
 	    return name;
+	    }
 	return null;
     }
 
