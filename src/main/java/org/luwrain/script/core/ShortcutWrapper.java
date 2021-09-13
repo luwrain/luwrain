@@ -60,7 +60,7 @@ final class ShortcutWrapper implements Shortcut
 	    switch(type.trim().toUpperCase())
 	    {
 	    case "SIMPLE":
-		return new Application[]{new org.luwrain.script.app.Simple(name, dataDir, newObj)};
+		return new Application[]{new org.luwrain.script.app.Simple(name, dataDir, newObj, luwrainObj.syncObj)};
 	    default:
 		return null;
 	    }

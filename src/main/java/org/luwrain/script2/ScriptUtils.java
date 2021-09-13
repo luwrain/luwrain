@@ -128,7 +128,6 @@ public final class ScriptUtils
 
     static public Object createInputEvent(InputEvent event)
     {
-
 		NullCheck.notNull(event, "event");
 		final Map<String, Object> values = new HashMap<>();
 		values.put("special", event.isSpecial()?event.getSpecial().toString():null);

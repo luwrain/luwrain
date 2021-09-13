@@ -282,7 +282,7 @@ abstract class Base implements EventConsumer
 	try {
 	    scriptCore.load(scriptFile);
 	}
-	catch(IOException e)
+	catch(Throwable e)
 	{
 	    interfaces.release(ext.getLuwrainObj());
 	    throw new ExtensionException(e);

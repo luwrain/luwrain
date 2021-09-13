@@ -34,19 +34,22 @@ public final class Simple implements Application
     private final String name;
     private final File dataDir;
     private final Value jsApp;
+    private final Object syncObj;
 
     private Luwrain luwrain = null;
     private CenteredArea area = null;
     private String bkgSound = "";
 
-    public Simple(String name, File dataDir, Value jsApp)
+    public Simple(String name, File dataDir, Value jsApp, Object syncObj)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(dataDir, "dataDir");
 	NullCheck.notNull(jsApp, "jsApp");
+	NullCheck.notNull(syncObj, "syncObj");
 	this.name = name;
 	this.dataDir = dataDir;
 	    this.jsApp = jsApp;
+	    this.syncObj = syncObj;
 	}
 
         @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -124,47 +127,56 @@ bkgSound = requestBkgSound();
     private boolean handleInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
-	final Object funcObj = getMember(jsApp, "onInputEvent");
-	if (funcObj == null || !(funcObj instanceof Value))
+	synchronized(syncObj) {
+	    final Object funcObj = getMember(jsApp, "onInputEvent");
+	    if (funcObj == null || !(funcObj instanceof Value))
+		return false;
+	    final Value func = (Value)funcObj;
+	    if (func.isNull() || !func.canExecute())
+		return false;
+	    final Object arg = createInputEvent(event);
+	    final Object res = func.execute(new Object[]{arg});
+	    if (res != null && (res instanceof Value))
+	    {
+		final Value resValue = (Value)res;
+		if (!resValue.isNull() && resValue.isBoolean() && resValue.asBoolean())
+		{
+		    updateLines();
+		    updateHotPoint();
+		    updateBkgSound();
+		    return true;
+		}
+	    }
 	    return false;
-	final Value func = (Value)funcObj;
-	if (func.isNull() || !func.canExecute())
-	    return false;
-	final Object arg = createInputEvent(event);
-	final Object res = func.execute(jsApp, new Object[]{arg});
-	if (res != null && (res instanceof java.lang.Boolean))
-	    if (((java.lang.Boolean)res).booleanValue())
-	{
-	    updateLines();
-	    updateHotPoint();
-	    updateBkgSound();
-	    return true;
 	}
-	return false;
     }
 
-        private boolean handleSystemEvent(SystemEvent event)
+    private boolean handleSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	final Object funcObj = getMember(jsApp, "onSystemEvent");
-	if (funcObj == null || !(funcObj instanceof Value))
+	synchronized(syncObj) {
+	    final Object funcObj = getMember(jsApp, "onSystemEvent");
+	    if (funcObj == null || !(funcObj instanceof Value))
+		return false;
+	    final Value func = (Value)funcObj;
+	    if (func.isNull() || !func.canExecute())
+		return false;
+	    final Object arg = createSystemEvent(event);
+	    final Object res = func.execute(new Object[]{arg});
+	    if (res != null && (res instanceof Value))
+	    {
+		final Value resValue = (Value)res;
+		if (!resValue.isNull() && resValue.isBoolean() && resValue.asBoolean())
+		{
+		    updateLines();
+		    updateHotPoint();
+		    updateBkgSound();
+		    return true;
+		}
+	    }
 	    return false;
-	final Value func = (Value)funcObj;
-	if (func.isNull() || !func.canExecute())
-	    return false;
-	final Object arg = createSystemEvent(event);
-	final Object res = func.execute(jsApp, new Object[]{arg});
-	if (res != null && (res instanceof java.lang.Boolean))
-	    if (((java.lang.Boolean)res).booleanValue())
-	{
-	    updateLines();
-	    updateHotPoint();
-	    updateBkgSound();
-	    return true;
 	}
-	return false;
     }
-
 
     private String[] requestLines()
     {

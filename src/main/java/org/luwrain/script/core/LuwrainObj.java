@@ -41,6 +41,7 @@ final class LuwrainObj implements ProxyObject
 	"isLetter",
 	"isLetterOrDigit",
 	"isSpace",
+	"launchApp",
 	"log",
 	"message",
 	"now",
@@ -98,6 +99,8 @@ final class LuwrainObj implements ProxyObject
 	    return(ProxyExecutable)this::isLetterOrDigit;
 	    	    	    	case "isSpace":
 	    return(ProxyExecutable)this::isSpace;
+	    	    	    	    	case "launchApp":
+	    return(ProxyExecutable)this::launchApp;
 	case "log":
 	    return logObj;
 	    	case "message":
@@ -219,6 +222,16 @@ final class LuwrainObj implements ProxyObject
 	if (!values[0].isString() || values[0].asString().length() != 1)
 	    return false;
 	return Character.isWhitespace(values[0].asString().charAt(0));
+    }
+
+            private Object launchApp(Value[] values)
+    {
+	if (!notNullAndLen(values, 1))
+	    return false;
+	if (!values[0].isString())
+	    return false;
+	luwrain.launchApp(values[0].asString());
+	return true;
     }
 
         private Object message(Value[] values)
