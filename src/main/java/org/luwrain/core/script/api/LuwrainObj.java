@@ -89,9 +89,6 @@ public final class LuwrainObj extends AbstractJSObject
 	    return (BiPredicate)this::createPropertyHook;
 	    	case "addWorker":
 		    return createAddWorker();
-	case "addApp":
-	case "addShortcut":
-	    return (BiPredicate)this::addShortcut;
 	case "addCommand":
 	    return (BiPredicate)this::addCommand;
 	case "getActiveAreaText":
@@ -114,22 +111,6 @@ public final class LuwrainObj extends AbstractJSObject
 	final String text = org.luwrain.script.ScriptUtils.getStringValue(arg);
 	if (text != null && !text.trim().isEmpty())
 	    luwrain.speak(text);
-    }
-
-    private boolean addShortcut(Object name, Object obj)
-    {
-	final String nameStr = org.luwrain.script.ScriptUtils.getStringValue(name);
-	if (nameStr == null || nameStr.isEmpty()  ||
-	    obj == null || !(obj instanceof JSObject))
-	    return false;
-	for(Shortcut s: shortcuts)
-	    if (s.getExtObjName().equals(nameStr))
-		return false;
-	final JSObject cons = (JSObject)obj;
-	if (!cons.isFunction())
-	    return false;
-	shortcuts.add(new org.luwrain.core.script.api.ShortcutImpl(nameStr, dataDir, cons));
-	return true;
     }
 
         private boolean addCommand(Object name, Object obj)
