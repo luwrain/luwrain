@@ -109,7 +109,7 @@ public final class ScriptUtils
 	if (obj == null || !(obj instanceof Value))
 	    return 0;
 	final Value value = (Value)obj;
-	if (value.isNull() || !value.isString())
+	if (value.isNull() || !value.isNumber())
 	    return 0;
 	return value.asInt();
     }

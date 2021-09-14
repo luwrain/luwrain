@@ -108,20 +108,21 @@ public final class Simple implements Application
 			    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(toUrl(f).toString()));
 			    return true;
 			}
-			//return false;
 		    default:
 			return super.onAreaQuery(query);
 		    }
 		}
 	    };
-	final String[] lines = requestLines();
-if (lines != null)
-    this.area.setLines(lines);
-	final int hotPointX = requestHotPointX();
-	final int hotPointY = requestHotPointY();
-	area.setLocalHotPointX(hotPointX >= 0?hotPointX:0);
-		area.setLocalHotPointY(hotPointY >= 0?hotPointY:0);
-bkgSound = requestBkgSound();
+	synchronized(syncObj){
+	    final String[] lines = requestLines();
+	    if (lines != null)
+		this.area.setLines(lines);
+	    final int hotPointX = requestHotPointX();
+	    final int hotPointY = requestHotPointY();
+	    area.setLocalHotPointX(hotPointX >= 0?hotPointX:0);
+	    area.setLocalHotPointY(hotPointY >= 0?hotPointY:0);
+	    bkgSound = requestBkgSound();
+	}
     }
 
     private boolean handleInputEvent(InputEvent event)
