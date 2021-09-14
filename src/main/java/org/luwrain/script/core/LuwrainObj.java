@@ -248,6 +248,16 @@ final class LuwrainObj implements ProxyObject
 
             private Object launchApp(Value[] values)
     {
+	if (notNullAndLen(values, 2))
+	{
+	if (!values[0].isString() || !values[1].hasArrayElements())
+	    return false;
+	final String[] args = asStringArray(values[1]);
+	if (args == null)
+	    return false;
+	luwrain.launchApp(values[0].asString(), args);
+	return true;
+    }
 	if (!notNullAndLen(values, 1))
 	    return false;
 	if (!values[0].isString())
