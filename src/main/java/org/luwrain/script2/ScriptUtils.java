@@ -114,19 +114,19 @@ public final class ScriptUtils
 	return value.asInt();
     }
 
-    static public Object getArray(Object[] items)
+    static public Proxy getArray(Object[] items)
     {
 	NullCheck.notNullItems(items, "items");
 	return ProxyArray.fromArray((Object[])items);
     }
 
-        static public <E> Object getArray(List<E> items)
+        static public <E> Proxy getArray(List<E> items)
     {
 	NullCheck.notNull(items, "items");
 	return ProxyArray.fromArray((Object[])items.toArray(new Object[items.size()]));
     }
 
-    static public Object createInputEvent(InputEvent event)
+    static public Proxy createInputEvent(InputEvent event)
     {
 		NullCheck.notNull(event, "event");
 		final Map<String, Object> values = new HashMap<>();
@@ -142,7 +142,7 @@ public final class ScriptUtils
 		return new MapScriptObject(values);
     }
 
-	    static public Object createSystemEvent(SystemEvent event)
+	    static public Proxy createSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	final Map<String, Object> values = new HashMap<>();
@@ -151,4 +151,45 @@ public final class ScriptUtils
 	return new MapScriptObject(values);
     }
 
+        static public <E> Proxy createEnumSet(Set<E> s)
+    {
+	NullCheck.notNull(s, "s");
+	final List<String> res = new ArrayList<>();
+	for(E o: s)
+	    res.add(o.toString().toLowerCase());
+	return ProxyArray.fromArray((Object[])res.toArray(new String[res.size()]));
+    }
+
+    static public Object getEnumItemByStr(Class enumClass, String itemName)
+    {
+	NullCheck.notNull(enumClass, "enumClass");
+	NullCheck.notEmpty(itemName, "itemName");
+	final EnumSet allItems = EnumSet.allOf(enumClass);
+	for(Object s: allItems)
+	    if (s.toString().equals(itemName))
+		return s;
+	return null;
+    }
+
+    static public Set getEnumByArrayObj(Class enumClass, Object arrayObj)
+    {
+	NullCheck.notNull(enumClass, "enumClass");
+	NullCheck.notNull(arrayObj, "arrayObj");
+	final String[] items = asStringArray(arrayObj);
+	if (items == null)
+	    return null;
+	final Set res = EnumSet.noneOf(enumClass);
+	for(Object o: items)
+	{
+	    if (o == null)
+		continue;
+	    final String str = asString(o);
+	    if (str == null)
+		continue;
+	    final Object enumItem = getEnumItemByStr(enumClass, str.toUpperCase());
+	    if (enumItem != null)
+		res.add(enumItem);
+	}
+	return res;
+    }
 }

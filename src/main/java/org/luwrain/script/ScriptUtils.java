@@ -373,7 +373,7 @@ public final class ScriptUtils
     static public Object createEnumSet(Set s)
     {
 	NullCheck.notNull(s, "s");
-	final List<String> res = new LinkedList();
+	final List<String> res = new ArrayList<>();
 	for(Object o: s)
 	    res.add(o.toString().toLowerCase());
 	return createReadOnlyArray(res.toArray(new String[res.size()]));

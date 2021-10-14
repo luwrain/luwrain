@@ -231,7 +231,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 			}
 			catch(Throwable e)
 			{
-			    luwrain.crash(e);
+			    finishedTask(taskId, ()->onException(e));
 			}
 		    }
 		    finally {
@@ -278,6 +278,11 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     {
 	return task != null && !task.isDone();
     }
+
+    public void onException(Throwable e)
+    {
+	 luwrain.crash(e);
+	 }
 
     protected AreaLayoutHelper getLayout()
     {
