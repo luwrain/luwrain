@@ -26,7 +26,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
-public class CommanderArea<E> extends ListArea
+public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 {
     static public final String PARENT_DIR = "..";
     public enum Flags {MARKING};
@@ -60,7 +60,7 @@ public class CommanderArea<E> extends ListArea
 
     public interface LoadingResultHandler<E>
     {
-	void onLoadingResult(E location, Object data, int selectedIndex, boolean announce);
+	void onLoadingResult(E location, List<Wrapper<E>> data, int selectedIndex, boolean announce);
     }
 
     protected interface NativeItem<E>//FIXME:to delete
@@ -138,15 +138,18 @@ public class CommanderArea<E> extends ListArea
 	NullCheck.notNull(fileName, "fileName");
 	if (isEmpty())
 	    return false;
-	final Wrapper<E>[] wrappers = getListModel().wrappers;
+	final List<Wrapper<E>> wrappers = getListModel().wrappers;
 	int index = 0;
-	while(index < wrappers.length && !getBaseName(wrappers[index]).equals(fileName))
+	while(index < wrappers.size() && !getBaseName(wrappers.get(index)).equals(fileName))
 	    ++index;
-	if (index >= wrappers.length)
+	if (index >= wrappers.size())
 	    return false;
 	select(index, false);
 	if (announce)
-	    appearance.announceEntry(wrappers[index].obj, wrappers[index].type, wrappers[index].marked);
+	{
+	    final Wrapper<E> w = wrappers.get(index);
+	    appearance.announceEntry(w.obj, w.type, w.marked);
+	}
 	return true;
     }
 
@@ -157,10 +160,10 @@ public class CommanderArea<E> extends ListArea
 
     public boolean isEmpty()
     {
-	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.length < 1;
+	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.isEmpty();
     }
 
-    @SuppressWarnings("unchecked")
+    //    @SuppressWarnings("unchecked")
     protected Wrapper<E> getSelectedWrapper()
     {
 	final Object res = selected();
@@ -254,7 +257,7 @@ public class CommanderArea<E> extends ListArea
     }
 
     //If no desiredSelected found, area tries to leave selection unchanged
-        @SuppressWarnings("unchecked")
+    //        @SuppressWarnings("unchecked")
     public boolean open(E entry, String desiredSelected, String [] desiredMarked, boolean announce)
     {
 	NullCheck.notNull(entry, "entry");
@@ -265,47 +268,56 @@ public class CommanderArea<E> extends ListArea
 	final String previouslySelectedText = getSelectedEntryText();
 	task = new FutureTask<>(()->{
 		try {
-		    final Wrapper<E>[] wrappers;
+		    final ArrayList<Wrapper<E>> wrappers;
 		    final E[] res = model.getEntryChildren(newCurrent);
 		    if (res != null)
 		    {
-			final List<E> filtered = new ArrayList<>();
+			wrappers = new ArrayList<>();
+			final ArrayList<E> filtered = new ArrayList<>();
+			filtered.ensureCapacity(res.length);
 			for(E e: res)
 			    if (filter == null || filter.commanderEntrySuits(e))
 				filtered.add(e);
-			wrappers = new Wrapper[filtered.size()];
+			//			wrappers = new Wrapper[filtered.size()];
+			wrappers.ensureCapacity(filtered.size());
 			for(int i = 0;i < filtered.size();++i)
 			{
 			    final EntryType entryType = model.getEntryType(newCurrent, filtered.get(i));
-			    wrappers[i] = new Wrapper<E>(filtered.get(i), entryType, appearance.getEntryText(filtered.get(i), entryType, false));
+			    wrappers.add(new Wrapper<E>(filtered.get(i), entryType, appearance.getEntryText(filtered.get(i), entryType, false)));
 			}
 			if (comparator != null)
-			    Arrays.sort(wrappers, comparator);
+			    Collections.sort(wrappers, comparator);
 		    } else
 			wrappers = null;
 		    //Trying to find what to select after opening
 		    int index = -1;
 		    if (desiredSelected != null && !desiredSelected.isEmpty())
 		    {
-			for(int i = 0;i < wrappers.length;++i)
-			    if (desiredSelected.equals(appearance.getEntryText(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
+			for(int i = 0;i < wrappers.size();++i)
+			{
+			    final Wrapper<E> w = wrappers.get(i);
+			    if (desiredSelected.equals(appearance.getEntryText(w.obj, w.type, w.marked)))
 				index = i;
+			}
 			//If there is still no found selection, we must try to save selection without changes
 			if (index < 0 && previouslySelectedText != null && !previouslySelectedText.isEmpty())
-			for(int i = 0;i < wrappers.length;++i)
-			    if (previouslySelectedText.equals(appearance.getEntryText(wrappers[i].obj, wrappers[i].type, wrappers[i].marked)))
+			    for(int i = 0;i < wrappers.size();++i)
+			    {
+				final Wrapper<E> w = wrappers.get(i);
+			    if (previouslySelectedText.equals(appearance.getEntryText(w.obj, w.type, w.marked)))
 				index = i;
+			    }
 		    }
 		    //Setting marks
 		    if (flags.contains(Flags.MARKING) && desiredMarked != null)
 			for(String toMark: desiredMarked)
 			{
 			    int k = 0;
-			    for(k = 0;k < wrappers.length;++k)
-				if (wrappers[k].getBaseName().equals(toMark))
+			    for(k = 0;k < wrappers.size();++k)
+				if (wrappers.get(k).getBaseName().equals(toMark))
 				    break;
-			    if (k < wrappers.length)
-				wrappers[k].marked = true;
+			    if (k < wrappers.size())
+				wrappers.get(k).marked = true;
 			}
 		    loadingResultHandler.onLoadingResult(newCurrent, wrappers, index, announce);
 		}
@@ -332,34 +344,37 @@ public class CommanderArea<E> extends ListArea
 	return open(currentLocation, desiredSelected, getMarkedNames(), announce);
     }
 
-    public void acceptNewLocation(E location, Object data, int selectedIndex, boolean announce)
+    //        @SuppressWarnings("unchecked")
+    public void acceptNewLocation(E location, List<Wrapper<E>> data, int selectedIndex, boolean announce)
     {
 	NullCheck.notNull(location, "location");
-	final Wrapper<E>[] wrappers;
+	/*
+	//	final Wrapper<E>[] wrappers;
 	if (data != null)
 	{
 	    if (!(data instanceof Wrapper[]))
 		throw new IllegalArgumentException("data must be an instance of Wrapper<E>[]");
-	    wrappers = (Wrapper<E>[])data;
+	    //	    wrappers = (Wrapper<E>[])data;
 	} else
 	    wrappers = null;
+	*/
 	currentLocation = location;
-	getListModel().wrappers = wrappers;
+	getListModel().wrappers = data;
 	super.redraw();
-	if (wrappers != null && selectedIndex >= 0)
+	if (data != null && selectedIndex >= 0)
 	    select(selectedIndex, false); else
 	    reset(false);
 	if (announce)
 	    appearance.announceLocation(currentLocation);
     }
 
-    @SuppressWarnings("unchecked")
+    //    @SuppressWarnings("unchecked")
     @Override public ListModelAdapter<E> getListModel()
     {
 	return (ListModelAdapter<E>)super.getListModel();
     }
 
-    public void setClickHandler(CommanderArea.ClickHandler clickHandler)
+    public void setClickHandler(CommanderArea.ClickHandler<E> clickHandler)
     {
 	this.clickHandler = clickHandler;
     }
@@ -397,31 +412,17 @@ public class CommanderArea<E> extends ListArea
 	if (fromX < 0 || toX < 0 ||
 	    (fromX == toX && fromY == toY))
 	{
-	    final Wrapper[] objs;
+	    final List<Wrapper<E>> wrappers = new ArrayList<>();
 	    if (flags.contains(Flags.MARKING))
- objs = getMarkedWrappers(); else
+		wrappers.addAll(Arrays.asList(getMarkedWrappers())); else
 	    {
-		objs = new Wrapper[]{getSelectedWrapper()};
-		if (objs[0].type == EntryType.PARENT)
+		wrappers.add(getSelectedWrapper());
+		if (wrappers.get(0).type == EntryType.PARENT)
 		    return false;
 	    }
-	    if (objs.length == 0)
+	    if (wrappers.isEmpty())
 		return super.onClipboardCopy(fromX, fromY, toX, toY, withDeleting);
-	    return listClipboardSaver.saveToClipboard(this, new ListArea.Model(){
-		    @Override public int getItemCount()
-		    {
-			return objs.length;
-		    }
-		    @Override public Object getItem(int index)
-		    {
-			if (index < 0 || index >= objs.length)
-			    throw new IllegalArgumentException("Illegal index value (" + index + ")");
-			return objs[index];
-		    }
-		    @Override public void refresh()
-		    {
-		    }
-		}, listAppearance, 0, objs.length, context.getClipboard());
+	    return listClipboardSaver.saveToClipboard(this, new ListUtils.ListModel<>(wrappers), listAppearance, 0, wrappers.size(), context.getClipboard());
 	}
 	return super.onClipboardCopy(fromX, fromY, toX, toY, withDeleting);
     }
@@ -503,8 +504,8 @@ public class CommanderArea<E> extends ListArea
 	return wrapper.getBaseName();
     }
 
-    @SuppressWarnings("unchecked")
-    static protected ListArea.Params createListParams(CommanderArea.Params params)
+    //    @SuppressWarnings("unchecked")
+    static protected <E> ListArea.Params<Wrapper<E>> createListParams(CommanderArea.Params<E> params)
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.context, "params.context");
@@ -512,7 +513,7 @@ public class CommanderArea<E> extends ListArea
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.comparator, "params.comparator");
 	NullCheck.notNull(params.clipboardSaver, "params.clipboardSaver");
-	final ListArea.Params listParams = new ListArea.Params();
+	final ListArea.Params<Wrapper<E>> listParams = new ListArea.Params<>();
 	listParams.context = params.context;
 	listParams.model = new ListModelAdapter(params.model, params.filter, params.comparator);
 	listParams.appearance = new ListAppearanceImpl(params.appearance);
@@ -521,7 +522,7 @@ public class CommanderArea<E> extends ListArea
 	return listParams;
     }
 
-    static private class Wrapper<E> implements NativeItem<E>
+    static public class Wrapper<E> implements NativeItem<E>
     {
 	final E obj;
 final EntryType type;
@@ -627,11 +628,11 @@ final EntryType type;
 	}
     }
 
-    static protected class ListModelAdapter<E> implements ListArea.Model
+    static protected class ListModelAdapter<E> implements ListArea.Model<Wrapper<E>>
     {
 	protected final CommanderArea.Model<E> model;
 	boolean marking = true;
-	Wrapper<E>[] wrappers;//null means the content is inaccessible
+	List<Wrapper<E>> wrappers = null;//null means the content is inaccessible
 	public ListModelAdapter(CommanderArea.Model<E> model, Filter<E> filter, Comparator comparator)
 	{
 	    NullCheck.notNull(model, "model");
@@ -639,11 +640,11 @@ final EntryType type;
 	}
 	@Override public int getItemCount()
 	{
-	    return wrappers != null?wrappers.length:0;
+	    return wrappers != null?wrappers.size():0;
 	}
-	@Override public Object getItem(int index)
+	@Override public Wrapper<E> getItem(int index)
 	{
-	    return (wrappers != null && index < wrappers.length)?wrappers[index]:null;
+	    return wrappers != null?wrappers.get(index):null;
 	}
 	@Override public void refresh()
 	{

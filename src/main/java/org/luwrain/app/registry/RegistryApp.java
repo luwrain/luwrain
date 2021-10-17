@@ -102,6 +102,7 @@ public class RegistryApp implements Application, Actions
 			return true;
     }
 
+        @SuppressWarnings("unchecked")
     private void createAreas()
     {
 	final Actions actions = this;
