@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.io.json.*;
 
-final class Appearance extends ListUtils.AbstractAppearance<Object>
+final class Appearance extends ListUtils.AbstractAppearance<DesktopItem>
 {
     private final Luwrain luwrain;
 
@@ -32,32 +32,18 @@ final class Appearance extends ListUtils.AbstractAppearance<Object>
 	this.luwrain = luwrain;
     }
 
-    @Override public void announceItem(Object item, Set<Flags> flags)
+    @Override public void announceItem(DesktopItem item, Set<Flags> flags)
     {
 	NullCheck.notNull(item, "item");
 	NullCheck.notNull(flags, "flags");
-	if (item instanceof DesktopItem)
-	{
-	    final DesktopItem desktopItem = (DesktopItem)item;
-	    final UniRefInfo info = desktopItem.getUniRefInfo(luwrain);
+	    final UniRefInfo info = item.getUniRefInfo(luwrain);
 	    UniRefUtils.defaultAnnouncement(new DefaultControlContext(luwrain), info, Sounds.DESKTOP_ITEM, Suggestions.CLICKABLE_LIST_ITEM);
-	    return;
-	}
-	luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.DESKTOP_ITEM, luwrain.getSpeakableText(item.toString(), Luwrain.SpeakableTextType.NATURAL), null));
     }
 
-    @Override public String getScreenAppearance(Object item, Set<Flags> flags)
+    @Override public String getScreenAppearance(DesktopItem item, Set<Flags> flags)
     {
-	if (item == null)
-	    return "";
-	if (item instanceof String)
-	    return (String)item;
-	if (item instanceof DesktopItem)
-	{
-	    final DesktopItem desktopItem = (DesktopItem)item;
-	    final UniRefInfo info = desktopItem.getUniRefInfo(luwrain);
+	NullCheck.notNull(item, "item");
+	    final UniRefInfo info = item.getUniRefInfo(luwrain);
 	    return info.toString();
-	}
-	return "";
     }
 }

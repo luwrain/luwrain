@@ -27,7 +27,7 @@ import org.luwrain.cpanel.*;
 import org.luwrain.player.*;
 import org.luwrain.util.*;
 
-final class SoundsList extends ListArea implements SectionArea, ListArea.ClickHandler
+final class SoundsList extends ListArea<SoundsList.Item> implements SectionArea, ListArea.ClickHandler<SoundsList.Item>
 {
     static private final Sounds[] allSounds = new Sounds[]{
 	Sounds.ANNOUNCEMENT,
@@ -80,7 +80,7 @@ final class SoundsList extends ListArea implements SectionArea, ListArea.ClickHa
     private final ControlPanel controlPanel;
     private final Luwrain luwrain;
 
-    SoundsList(ControlPanel controlPanel, ListArea.Params params)
+    SoundsList(ControlPanel controlPanel, ListArea.Params<Item> params)
     {
 	super(params);
 	NullCheck.notNull(controlPanel, "controlPanel");
@@ -90,11 +90,9 @@ final class SoundsList extends ListArea implements SectionArea, ListArea.ClickHa
 	setListClickHandler(this);
     }
 
-    @Override public boolean onListClick(ListArea area, int index, Object obj)
+    @Override public boolean onListClick(ListArea area, int index, Item item)
     {
-	if (obj == null || !(obj instanceof Item))
-	    return false;
-	final Item item = (Item)obj;
+	NullCheck.notNull(item, "item");
 	final File file = Popups.existingFile(luwrain, luwrain.i18n().getStaticStr("CpSoundsListChangePopupName"));
 	if (file == null || file.isDirectory())
 	    return true;
@@ -173,11 +171,11 @@ final class SoundsList extends ListArea implements SectionArea, ListArea.ClickHa
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<Item> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
-	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.LIST_ITEM);
+	params.appearance = new ListUtils.DefaultAppearance<>(params.context, Suggestions.LIST_ITEM);
 	params.name = luwrain.i18n().getStaticStr("CpSoundsList");
-	params.model = new ListUtils.FixedModel(loadItems(luwrain));
+	params.model = new ListUtils.FixedModel<>(loadItems(luwrain));
 	return new SoundsList(controlPanel, params);
     }
 
@@ -208,7 +206,7 @@ final class SoundsList extends ListArea implements SectionArea, ListArea.ClickHa
 	return Registry.join(Settings.CURRENT_SOUND_SCHEME_PATH, str.toLowerCase().replaceAll("_", "-"));
     }
 
-    static private final class Item 
+    static final class Item 
     {
 	final Sounds sound;
 	final String title;

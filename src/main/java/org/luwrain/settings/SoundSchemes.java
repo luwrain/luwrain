@@ -25,42 +25,114 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class SoundSchemes extends ListArea implements SectionArea
+class SoundSchemes extends ListArea<SoundSchemes.Item> implements SectionArea
 {
     static private final String SCHEMES_DIR = "sounds/schemes";
 
-    static private class Item 
-    {
-	Path path;
-	String title;
+    private ControlPanel controlPanel;
+    private final ListUtils.FixedModel model = new ListUtils.FixedModel();
 
+    SoundSchemes(ControlPanel controlPanel, ListArea.Params<Item> params)
+    {
+	super(params);
+	NullCheck.notNull(controlPanel, "controlPanel");
+	this.controlPanel = controlPanel;
+    }
+
+    @Override public boolean onInputEvent(InputEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onInputEvent(event))
+	    return true;
+	return super.onInputEvent(event);
+    }
+
+    @Override public boolean onSystemEvent(SystemEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onSystemEvent(event))
+	    return true;
+	return super.onSystemEvent(event);
+    }
+
+    @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
+    static private Item[] loadItems(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final List<Item> items = new ArrayList<>();
+	final List<Path> dirs = new ArrayList<>();
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(luwrain.getFileProperty("luwrain.dir.data").toPath().resolve(SCHEMES_DIR))) {
+		for (Path p : directoryStream) 
+		    if (Files.isDirectory(p))
+			dirs.add(p);
+	    } 
+	catch (IOException e) 
+	{
+	    luwrain.crash(e);
+	    return new Item[0];
+	}
+	for(Path p: dirs)
+	{
+	    String title = null;
+	    try {
+		final List<String> lines = Files.readAllLines(p.resolve("TITLE." + luwrain.getProperty("luwrain.lang") + ".txt"));
+		if (!lines.isEmpty())
+		    title = lines.get(0);
+	    }
+	    catch(Exception e)
+	    {
+		Log.warning("control-panel", "unable to read title of the sound scheme in " + p.toString());
+		e.printStackTrace();
+		continue;
+	    }
+	    if (title != null && !title.trim().isEmpty())
+		items.add(new Item(p, title));
+	} //for(dirs)
+return items.toArray(new Item[items.size()]);
+    }
+
+    static SoundSchemes create(ControlPanel controlPanel)
+    {
+	NullCheck.notNull(controlPanel, "controlPanel");
+	final Luwrain luwrain = controlPanel.getCoreInterface();
+	final ListArea.Params<Item> params = new ListArea.Params<>();
+	params.context = new DefaultControlContext(luwrain);
+	params.appearance = new ListUtils.DefaultAppearance<>(params.context, Suggestions.LIST_ITEM);
+	params.name = "Звуковые схемы";
+	params.model = new ListUtils.FixedModel<>(loadItems(luwrain));
+	return new SoundSchemes(controlPanel, params);
+    }
+
+        static class Item 
+    {
+	final Path path;
+	final String title;
 	Item(Path path, String title)
 	{
 	    this.path = path;
 	    this.title = title;
 	}
-
 	@Override public String toString()
 	{
 	    return title;
 	}
     }
 
-    static private class ClickHandler implements ListArea.ClickHandler
+    static private class ClickHandler implements ListArea.ClickHandler<Item>
     {
 	private Luwrain luwrain;
-
 	ClickHandler(Luwrain luwrain)
 	{
 	    this.luwrain = luwrain;
 	}
-
-	@Override public boolean onListClick(ListArea area, int index, Object obj)
+	@Override public boolean onListClick(ListArea area, int index, Item item)
 	{
-	    if (obj == null || !(obj instanceof Item))
-		return false;
+	    NullCheck.notNull(item, "item");
 	    final Settings.SoundScheme scheme = Settings.createCurrentSoundScheme(luwrain.getRegistry());
-	    final Item item = (Item)obj;
 	    Path path = item.path;
 	    if (path.startsWith(luwrain.getFileProperty("luwrain.dir.data").toPath()))
 		path = luwrain.getFileProperty("luwrain.dir.data").toPath().relativize(path);
@@ -96,82 +168,4 @@ class SoundSchemes extends ListArea implements SectionArea
 	    return true;
 	}
     };
-
-    private ControlPanel controlPanel;
-    private final ListUtils.FixedModel model = new ListUtils.FixedModel();
-
-    SoundSchemes(ControlPanel controlPanel, ListArea.Params params)
-    {
-	super(params);
-	NullCheck.notNull(controlPanel, "controlPanel");
-	this.controlPanel = controlPanel;
-    }
-
-    @Override public boolean onInputEvent(InputEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	if (controlPanel.onInputEvent(event))
-	    return true;
-	return super.onInputEvent(event);
-    }
-
-    @Override public boolean onSystemEvent(SystemEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	if (controlPanel.onSystemEvent(event))
-	    return true;
-	return super.onSystemEvent(event);
-    }
-
-    @Override public boolean saveSectionData()
-    {
-	return true;
-    }
-
-    static private Item[] loadItems(Luwrain luwrain)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	final LinkedList<Item> items = new LinkedList<Item>();
-	final LinkedList<Path> dirs = new LinkedList<Path>();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(luwrain.getFileProperty("luwrain.dir.data").toPath().resolve(SCHEMES_DIR))) {
-		for (Path p : directoryStream) 
-		    if (Files.isDirectory(p))
-			dirs.add(p);
-	    } 
-	catch (IOException e) 
-	{
-	    luwrain.crash(e);
-	    return new Item[0];
-	}
-	for(Path p: dirs)
-	{
-	    String title = null;
-	    try {
-		final List<String> lines = Files.readAllLines(p.resolve("TITLE." + luwrain.getProperty("luwrain.lang") + ".txt"));
-		if (!lines.isEmpty())
-		    title = lines.get(0);
-	    }
-	    catch(Exception e)
-	    {
-		Log.warning("control-panel", "unable to read title of the sound scheme in " + p.toString());
-		e.printStackTrace();
-		continue;
-	    }
-	    if (title != null && !title.trim().isEmpty())
-		items.add(new Item(p, title));
-	} //for(dirs)
-return items.toArray(new Item[items.size()]);
-    }
-
-    static SoundSchemes create(ControlPanel controlPanel)
-    {
-	NullCheck.notNull(controlPanel, "controlPanel");
-	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlContext(luwrain);
-	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.LIST_ITEM);
-	params.name = "Звуковые схемы";
-	params.model = new ListUtils.FixedModel(loadItems(luwrain));
-	return new SoundSchemes(controlPanel, params);
-    }
 }

@@ -31,18 +31,18 @@ public class EditableListArea<E> extends ListArea<E>
 	boolean removeFromModel(int indexFrom, int indexTo);
     }
 
-    public interface Confirmation
+    public interface Confirmation<E>
     {
-	boolean confirmDeleting(EditableListArea area, Model model, int deleteFromIndex, int deleteToIndex);
+	boolean confirmDeleting(EditableListArea<E> area, Model<E> model, int deleteFromIndex, int deleteToIndex);
     }
 
     static public class Params<E> extends ListArea.Params<E>
     {
-	public Confirmation confirmation = null;
+	public Confirmation<E> confirmation = null;
     }
 
     protected final Model<E> editableListModel;
-    protected final Confirmation confirmation;
+    protected final Confirmation<E> confirmation;
 
     public EditableListArea(Params<E> params)
     {

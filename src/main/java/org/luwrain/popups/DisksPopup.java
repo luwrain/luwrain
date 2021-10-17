@@ -24,7 +24,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class DisksPopup extends ListPopupBase
+public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 {
     static private final String LOG_COMPONENT = Popups.LOG_COMPONENT;
 
@@ -135,7 +135,7 @@ public class DisksPopup extends ListPopupBase
 	return disks.getDisks();
     }
 
-    static protected ListArea.Params createParams(Luwrain luwrain, String name)
+    static protected ListArea.Params<Disk> createParams(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
