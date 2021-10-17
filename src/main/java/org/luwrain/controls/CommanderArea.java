@@ -278,7 +278,6 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 			for(E e: res)
 			    if (filter == null || filter.commanderEntrySuits(e))
 				filtered.add(e);
-			//			wrappers = new Wrapper[filtered.size()];
 			wrappers.ensureCapacity(filtered.size());
 			for(int i = 0;i < filtered.size();++i)
 			{
@@ -319,12 +318,12 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 			    if (k < wrappers.size())
 				wrappers.get(k).marked = true;
 			}
-		    loadingResultHandler.onLoadingResult(newCurrent, wrappers, index, announce);
+		    //		    loadingResultHandler.onLoadingResult(newCurrent, wrappers, index, announce);
+		    final int finalIndex = index;
+		    context.runUiSafely(()->acceptNewLocation(newCurrent, wrappers, finalIndex, announce));
 		}
-		catch (Exception e)
+		catch (Throwable e)
 		{
-		    //		    Log.error("core", "unexpected error on commander content reading:" + e.getClass().getName() + ":" + e.getMessage());
-		    //		    e.printStackTrace();
 		    throw new RuntimeException(e);
 		}
 	    }, null);

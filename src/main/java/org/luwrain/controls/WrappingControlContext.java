@@ -161,4 +161,9 @@ public class WrappingControlContext implements ControlContext
     {
 	context.message(text, messageType);
     }
+
+    @Override public void runUiSafely(Runnable runnable)
+    {
+	context.runUiSafely(runnable);
+    }
 }

@@ -34,6 +34,7 @@ public interface ControlContext extends HookContainer
 int getAreaVisibleHeight(Area area);
     int getAreaVisibleWidth(Area area);
     void popup(Popup popupObj);
+    void runUiSafely(Runnable runnable);
     String staticStr(org.luwrain.i18n.LangStatic id);
     String getStaticStr(String id);
     void playSound(Sounds sound);

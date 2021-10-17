@@ -176,4 +176,10 @@ public class DefaultControlContext implements ControlContext
 	NullCheck.notNull(messageType, "messageType");
 	luwrain.message(text, messageType);
     }
+
+    @Override public void runUiSafely(Runnable runnable)
+    {
+	NullCheck.notNull(runnable, "runnable");
+	luwrain.runUiSafely(runnable);
+    }
 }
