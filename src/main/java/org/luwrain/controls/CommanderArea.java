@@ -58,11 +58,6 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	Result onCommanderClick(CommanderArea area, E entry, boolean dir);
     }
 
-    public interface LoadingResultHandler<E>
-    {
-	void onLoadingResult(E location, List<Wrapper<E>> data, int selectedIndex, boolean announce);
-    }
-
     protected interface NativeItem<E>//FIXME:to delete
     {
 	E getNativeObj();
@@ -73,10 +68,10 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 
     static public class Params<E>
     {
-	public ControlContext context;
-	public CommanderArea.Model<E> model;
-	public CommanderArea.Appearance<E> appearance;
-	public CommanderArea.ClickHandler<E> clickHandler;
+	public ControlContext context = null;
+	public CommanderArea.Model<E> model = null;
+	public CommanderArea.Appearance<E> appearance = null;
+	public CommanderArea.ClickHandler<E> clickHandler = null;
 	public ClipboardSaver<Wrapper<E>> clipboardSaver = new ListUtils.DefaultClipboardSaver<Wrapper<E>>();
 	public Filter<E> filter = null;
 	public Comparator<NativeItem<E>> comparator = new CommanderUtils.ByNameComparator<NativeItem<E>>();
@@ -89,13 +84,11 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
     protected CommanderArea.ClickHandler<E> clickHandler = null;
     protected Filter<E> filter = null;
     protected Comparator<NativeItem<E>> comparator = null;
-    //protected LoadingResultHandler<E> loadingResultHandler = null;
 
     protected E currentLocation = null;
     protected FutureTask task = null;
     protected boolean closed = false;
 
-    @SuppressWarnings("unchecked")
     public CommanderArea(Params<E> params)
     {
 	super(createListParams(params));
@@ -126,13 +119,6 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	this.comparator = comparator;
     }
 
-    /*
-    public void setLoadingResultHandler(LoadingResultHandler<E> loadingResultHandler)
-    {
-	//	this.loadingResultHandler = loadingResultHandler;
-    }
-    */
-
     public boolean findFileName(String fileName, boolean announce)
     {
 	NullCheck.notNull(fileName, "fileName");
@@ -162,6 +148,8 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
     {
 	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.isEmpty();
     }
+
+    //FIXME:select() prohibiting calling and suggesting to call getSelectedEntry() instead
 
 protected Wrapper<E> getSelectedWrapper()
     {
@@ -248,16 +236,13 @@ protected Wrapper<E> getSelectedWrapper()
     public boolean open(E entry, String desiredSelected, boolean announce)
     {
 	NullCheck.notNull(entry, "entry");
-	//	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
 	return open(entry, desiredSelected, null, announce);
     }
 
     //If no desiredSelected found, area tries to leave selection unchanged
-    //        @SuppressWarnings("unchecked")
     public boolean open(E entry, String desiredSelected, String [] desiredMarked, boolean announce)
     {
 	NullCheck.notNull(entry, "entry");
-	//	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
 	if (closed || isBusy())
 	    return false;
 	final E newCurrent = entry;
@@ -339,20 +324,9 @@ protected Wrapper<E> getSelectedWrapper()
 	return open(currentLocation, desiredSelected, getMarkedNames(), announce);
     }
 
-    //        @SuppressWarnings("unchecked")
-    public void acceptNewLocation(E location, List<Wrapper<E>> data, int selectedIndex, boolean announce)
+    protected void acceptNewLocation(E location, List<Wrapper<E>> data, int selectedIndex, boolean announce)
     {
 	NullCheck.notNull(location, "location");
-	/*
-	//	final Wrapper<E>[] wrappers;
-	if (data != null)
-	{
-	    if (!(data instanceof Wrapper[]))
-		throw new IllegalArgumentException("data must be an instance of Wrapper<E>[]");
-	    //	    wrappers = (Wrapper<E>[])data;
-	} else
-	    wrappers = null;
-	*/
 	currentLocation = location;
 	getListModel().wrappers = data;
 	super.redraw();
@@ -498,7 +472,6 @@ protected Wrapper<E> getSelectedWrapper()
 	return wrapper.getBaseName();
     }
 
-    //    @SuppressWarnings("unchecked")
     static protected <E> ListArea.Params<Wrapper<E>> createListParams(CommanderArea.Params<E> params)
     {
 	NullCheck.notNull(params, "params");
@@ -516,7 +489,7 @@ protected Wrapper<E> getSelectedWrapper()
 	return listParams;
     }
 
-    static public class Wrapper<E> implements NativeItem<E>
+    static class Wrapper<E> implements NativeItem<E>
     {
 	final E obj;
 final EntryType type;
