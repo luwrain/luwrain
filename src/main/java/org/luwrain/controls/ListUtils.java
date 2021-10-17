@@ -204,15 +204,15 @@ public class ListUtils
 	}
     }
 
-    static abstract public class DoubleLevelTransition extends DefaultTransition
+    static abstract public class DoubleLevelTransition<E> extends DefaultTransition
     {
-	protected final ListArea.Model model;
-	public DoubleLevelTransition(ListArea.Model model)
+	protected final ListArea.Model<E> model;
+	public DoubleLevelTransition(ListArea.Model<E> model)
 	{
 	    NullCheck.notNull(model, "model");
 	    this.model = model;
 	}
-	abstract public boolean isSectionItem(Object item);
+	abstract public boolean isSectionItem(E item);
 	@Override public State transition(Type type, State fromState, int itemCount, boolean hasEmptyLineTop, boolean hasEmptyLineBottom)
 	{
 	    NullCheck.notNull(type, "type");

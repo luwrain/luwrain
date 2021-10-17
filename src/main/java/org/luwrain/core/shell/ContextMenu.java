@@ -22,22 +22,22 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 
-public final class ContextMenu extends ListPopup
+public final class ContextMenu extends ListPopup<Action>
 {
     public ContextMenu(Luwrain luwrain, Action[] actions)
     {
-	super(luwrain, constructParams(luwrain, actions), EnumSet.noneOf(Popup.Flags.class));
+	super(luwrain, createParams(luwrain, actions), EnumSet.noneOf(Popup.Flags.class));
     }
 
-    static private ListArea.Params constructParams(Luwrain luwrain, Action[] actions)
+    static private ListArea.Params<Action> createParams(Luwrain luwrain, Action[] actions)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNullItems(actions, "actions");
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<Action> params = new ListArea.Params<>();
+		params.context = new DefaultControlContext(luwrain);
 	params.name = luwrain.i18n().getStaticStr("ContextMenuName");
-	params.model = new ListUtils.FixedModel(actions);
+	params.model = new ListUtils.FixedModel<>(actions);
 	params.appearance = new Appearance(luwrain);
-	params.context = new DefaultControlContext(luwrain);
 	params.flags = EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP);
 	params.transition = new Transition();
 	return params;

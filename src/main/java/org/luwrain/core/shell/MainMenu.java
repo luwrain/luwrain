@@ -26,13 +26,13 @@ import org.luwrain.popups.*;
 //import org.luwrain.util.*;
 import org.luwrain.io.json.*;
 
-public final class MainMenu extends ListArea implements PopupClosingTranslator.Provider
+public final class MainMenu extends ListArea<MainMenuItem> implements PopupClosingTranslator.Provider
 {
     private final Luwrain luwrain;
     public final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     private UniRefInfo result = null;
 
-    private MainMenu(Luwrain luwrain, ListArea.Params params)
+    private MainMenu(Luwrain luwrain, ListArea.Params<MainMenuItem> params)
     {
 	super(params);
 	NullCheck.notNull(luwrain, "luwrain");
@@ -73,6 +73,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	NullCheck.notNull(query, "query");
 	switch(query.getQueryCode())
 	{
+	    /*
 	case AreaQuery.UNIREF_HOT_POINT:
 	    if (selected() == null || !(selected() instanceof UniRefInfo))
 		return false;
@@ -81,6 +82,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	case AreaQuery.BACKGROUND_SOUND:
 	    ((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.MAIN_MENU));
 	    return true;
+	    */
 	default:
 	    return super.onAreaQuery(query);
 	}
@@ -88,7 +90,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 
     @Override public boolean onOk()
     {
-	final Object o = selected();
+	final MainMenuItem o = selected();
 	if (o == null)
 	    return false;
 	final Appearance appearance = (Appearance)getListAppearance();
@@ -116,9 +118,9 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	NullCheck.notNull(luwrain, "luwrain");
 	final Settings.UserInterface ui = Settings.createUserInterface(luwrain.getRegistry());
 	final MainMenuItem[] items = MainMenuItem.fromJson(ui.getMainMenuContent(""));
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<MainMenuItem> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
-	params.model = new ListUtils.FixedModel(items);
+	params.model = new ListUtils.FixedModel<>(items);
 	params.appearance = new Appearance(new DefaultControlContext(luwrain));
 	params.transition = new Transition(params.model, (Appearance)params.appearance);
 	params.name = luwrain.i18n().getStaticStr("MainMenuName");
@@ -126,7 +128,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	return mainMenu;
     }
 
-    static public final class Appearance extends ListUtils.DoubleLevelAppearance
+    static public final class Appearance extends ListUtils.DoubleLevelAppearance<MainMenuItem>
     {
 	static private final String STATIC_PREFIX = "static:";
 	private final Map<String, UniRefInfo> uniRefCache = new HashMap<>();
@@ -134,13 +136,13 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	{
 	    super(context);
 	}
-	@Override public boolean isSectionItem(Object obj)
+	@Override public boolean isSectionItem(MainMenuItem item)
 	{
-	    NullCheck.notNull(obj, "obj");
-	    final UniRefInfo info = getUniRefInfo(obj);
+	    NullCheck.notNull(item, "item");
+	    final UniRefInfo info = getUniRefInfo(item);
 	    return info.getType().equals(UniRefProcs.TYPE_SECTION);
 	}
-	@Override public String getSectionScreenAppearance(Object item)
+	@Override public String getSectionScreenAppearance(MainMenuItem item)
 	{
 	    NullCheck.notNull(item, "item");
 	    final UniRefInfo info = getUniRefInfo(item);
@@ -149,7 +151,7 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 		return title;
 	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
 	}
-    	@Override public String getNonSectionScreenAppearance(Object item)
+    	@Override public String getNonSectionScreenAppearance(MainMenuItem item)
 	{
 	    NullCheck.notNull(item, "item");
 	    final UniRefInfo info = getUniRefInfo(item);
@@ -158,19 +160,19 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 		return title;
 	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
 	}
-	@Override public void announceNonSection(Object item)
+	@Override public void announceNonSection(MainMenuItem item)
 	{
 	    NullCheck.notNull(item, "item");
 	    context.setEventResponse(DefaultEventResponse.text(Sounds.DESKTOP_ITEM, context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));
 	}
-	public void announceSection(Object item)
+	public void announceSection(MainMenuItem item)
 	{
 	    NullCheck.notNull(item, "item");
 	    context.setEventResponse(DefaultEventResponse.text(Sounds.DOC_SECTION, context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));//FIXME:DefaultEventResponse.listItem()
 	}
 	UniRefInfo getUniRefInfo(Object obj)
 	{
-	    NullCheck.notNull(obj, "obj");
+	    	    NullCheck.notNull(obj, "obj");
 	    if (obj instanceof UniRefInfo)
 		return (UniRefInfo)obj;
 	    final String value;
@@ -185,16 +187,16 @@ public final class MainMenu extends ListArea implements PopupClosingTranslator.P
 	}
     }
 
-    static private class Transition extends ListUtils.DoubleLevelTransition
+    static private class Transition extends ListUtils.DoubleLevelTransition<MainMenuItem>
     {
 	private final Appearance appearance;
-	Transition(ListArea.Model model, Appearance appearance)
+	Transition(ListArea.Model<MainMenuItem> model, Appearance appearance)
 	{
 	    super(model);
 	    NullCheck.notNull(appearance, "appearance");
 	    this.appearance = appearance;
 	}
-	@Override public boolean isSectionItem(Object item)
+	@Override public boolean isSectionItem(MainMenuItem item)
 	{
 	    NullCheck.notNull(item, "item");
 	    return appearance.isSectionItem(item);
