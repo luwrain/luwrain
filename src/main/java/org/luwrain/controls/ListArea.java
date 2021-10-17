@@ -26,7 +26,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.util.*;
 
-public class ListArea  implements Area, ClipboardTranslator.Provider, RegionTextQueryTranslator.Provider
+public class ListArea<E>  implements Area, ClipboardTranslator.Provider, RegionTextQueryTranslator.Provider
 {
     public enum Flags {
 	EMPTY_LINE_TOP,
@@ -36,26 +36,26 @@ public class ListArea  implements Area, ClipboardTranslator.Provider, RegionText
     static protected final Set<Appearance.Flags> NONE_APPEARANCE_FLAGS = EnumSet.noneOf(Appearance.Flags.class);
     static protected final Set<Appearance.Flags> BRIEF_ANNOUNCEMENT_ONLY = EnumSet.of(Appearance.Flags.BRIEF);
 
-    public interface Model
+    public interface Model<E>
     {
 	int getItemCount();
-	Object getItem(int index);
+	E getItem(int index);
 	void refresh();
     }
 
-    public interface Appearance
+    public interface Appearance<E>
     {
 	public enum Flags {BRIEF, CLIPBOARD};
 
-	void announceItem(Object item, Set<Flags> flags);
-	String getScreenAppearance(Object item, Set<Flags> flags);
-	int getObservableLeftBound(Object item);
-	int getObservableRightBound(Object item);
+	void announceItem(E item, Set<Flags> flags);
+	String getScreenAppearance(E item, Set<Flags> flags);
+	int getObservableLeftBound(E item);
+	int getObservableRightBound(E item);
     }
 
-    public interface ClickHandler
+    public interface ClickHandler<E>
     {
-	boolean onListClick(ListArea area, int index, Object item);
+	boolean onListClick(ListArea area, int index, E item);
     }
 
 public interface ClipboardSaver
@@ -92,12 +92,12 @@ public interface ClipboardSaver
 			 boolean hasEmptyLineTop, boolean hasEmptyLineBottom);
     }
 
-    static public class Params
+    static public class Params<E>
     {
 	public ControlContext context;
-	public Model model;
-	public Appearance appearance;
-	public ListArea.ClickHandler clickHandler;
+	public Model<E> model;
+	public Appearance<E> appearance;
+	public ListArea.ClickHandler<E> clickHandler;
 	public Transition transition = new ListUtils.DefaultTransition();
 	public ClipboardSaver clipboardSaver = new ListUtils.DefaultClipboardSaver();
 	public String name;
@@ -109,17 +109,17 @@ public interface ClipboardSaver
     protected final ClipboardTranslator clipboardTranslator = new ClipboardTranslator(this, regionPoint, EnumSet.of(ClipboardTranslator.Flags.ALLOWED_EMPTY, ClipboardTranslator.Flags.ALLOWED_WITHOUT_REGION_POINT));
     protected final RegionTextQueryTranslator regionTextQueryTranslator = new RegionTextQueryTranslator(this, regionPoint, EnumSet.noneOf(RegionTextQueryTranslator.Flags.class));
     protected String areaName = "";
-    protected final Model listModel;
-    protected final Appearance listAppearance;
+    protected final Model<E> listModel;
+    protected final Appearance<E> listAppearance;
     protected final Transition listTransition;
     protected final ClipboardSaver listClipboardSaver;
     protected final Set<Flags> listFlags;
-    protected ListArea.ClickHandler listClickHandler = null;
+    protected ListArea.ClickHandler<E> listClickHandler = null;
 
     protected int hotPointX = 0;
     protected int hotPointY = 0;
 
-    public ListArea(Params params)
+    public ListArea(Params<E> params)
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.context, "params.context");
@@ -162,7 +162,7 @@ public interface ClipboardSaver
      *
      * @return The object in the model associated with the currently selected line or {@code null} if there is no any
      */
-    public final Object selected()
+    public final E selected()
     {
 	final int index = selectedIndex();
 	return (index >= 0 && index < listModel.getItemCount())?listModel.getItem(index):null;
@@ -200,7 +200,7 @@ public interface ClipboardSaver
 	NullCheck.notNull(obj, "obj");
 	for(int i = 0;i < listModel.getItemCount();++i)
 	{
-	    final Object o = listModel.getItem(i);
+	    final E o = listModel.getItem(i);
 	    if (o == null)
 		continue;
 		if (obj != o && !obj.equals(o))
@@ -231,7 +231,7 @@ public interface ClipboardSaver
 	    return false;
 	final int emptyCountAbove = listFlags.contains(Flags.EMPTY_LINE_TOP)?1:0;
 	hotPointY = index + emptyCountAbove;
-	final Object item = listModel.getItem(index);
+	final E item = listModel.getItem(index);
 	if (item != null)
 	{
 	    hotPointX = listAppearance.getObservableLeftBound(item);
@@ -289,7 +289,7 @@ public interface ClipboardSaver
 	return index + linesTop;
     }
 
-    public Object getItemOnLine(int lineIndex)
+    public E getItemOnLine(int lineIndex)
     {
 	if (lineIndex < 0)
 	    throw new IllegalArgumentException("lineIndex may not be negative (" + lineIndex + ")");
@@ -325,7 +325,7 @@ public interface ClipboardSaver
 	    context.onAreaNewHotPoint(this);
 	    return;
 	}
-	final Object item = listModel.getItem(0);
+	final E item = listModel.getItem(0);
 	if (item != null)
 	{
 	    hotPointX = item != null?listAppearance.getObservableLeftBound(item):0;
@@ -341,7 +341,7 @@ public interface ClipboardSaver
 
     public void announceSelected()
     {
-	final Object item = selected();
+	final E item = selected();
 	if (item != null)
 	    listAppearance.announceItem(item, NONE_APPEARANCE_FLAGS);
     }
@@ -355,7 +355,7 @@ public interface ClipboardSaver
      */
     public void refresh()
     {
-	final Object previouslySelected = selected();
+	final E previouslySelected = selected();
 	listModel.refresh();
 	context.onAreaNewContent(this);
 	final int count = listModel.getItemCount();
@@ -374,7 +374,7 @@ public interface ClipboardSaver
 		return;
 	}
 	hotPointY = Math.min(hotPointY, getLineCount() - 1);
-	final Object item = getItemOnLine(hotPointY);
+	final E item = getItemOnLine(hotPointY);
 	if (item != null)
 	{
 	    hotPointX = Math.min(hotPointX, listAppearance.getObservableRightBound(item));
@@ -404,7 +404,7 @@ public interface ClipboardSaver
 		return;
 	}
 	hotPointY = Math.min(hotPointY, getLineCount() - 1);
-	final Object item = getItemOnLine(hotPointY);
+	final E item = getItemOnLine(hotPointY);
 	if (item != null)
 	{
 	    hotPointX = Math.min(hotPointX, listAppearance.getObservableRightBound(item));
@@ -534,7 +534,7 @@ public interface ClipboardSaver
 	final int itemIndex = getExistingItemIndexOnLine(index);
 	if (itemIndex < 0)
 	    return "";
-	final Object res = listModel.getItem(itemIndex);
+	final E res = listModel.getItem(itemIndex);
 	return res != null?listAppearance.getScreenAppearance(res, NONE_APPEARANCE_FLAGS):"";
     }
 
@@ -593,7 +593,7 @@ public interface ClipboardSaver
     {
 	if (isEmpty())
 	    return false;
-	final Object item = selected();
+	final E item = selected();
 	if (item == null)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
@@ -619,7 +619,7 @@ newY = y;
 	if (getExistingItemIndexOnLine(newY) >= 0)
 	    {
 		//Line with item, not empty
-		final Object item = listModel.getItem(getExistingItemIndexOnLine(newY));
+		final E item = listModel.getItem(getExistingItemIndexOnLine(newY));
 		final int leftBound = listAppearance.getObservableLeftBound(item);
 final int rightBound = listAppearance.getObservableRightBound(item);
 		if (event.precisely() &&
@@ -650,13 +650,13 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	final int count = listModel.getItemCount();
 	if (index >= count)
 	    return false;
-	final Object current = listModel.getItem(index);
+	final E current = listModel.getItem(index);
 	final String text = listAppearance.getScreenAppearance(current, NONE_APPEARANCE_FLAGS).substring(Math.max(hotPointX, listAppearance.getObservableLeftBound(current)), listAppearance.getObservableRightBound(current));
 	if (text.isEmpty() && index + 1 >= count)
 	    return false;
 	if (index + 1 < count)
 	{
-	    final Object next = listModel.getItem(index + 1);
+	    final E next = listModel.getItem(index + 1);
 	    query.answer(new BeginListeningQuery.Answer(text, new ListeningInfo(index + 1, listAppearance.getObservableLeftBound(next))));
 	} else
 	    query.answer(new BeginListeningQuery.Answer(text, new ListeningInfo(index, listAppearance.getObservableRightBound(current))));
@@ -672,7 +672,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	final int count = listModel.getItemCount();
 	if (info.itemIndex >= count)
 	    return false;
-	final Object item = listModel.getItem(info.itemIndex);
+	final E item = listModel.getItem(info.itemIndex);
 	final int leftBound = listAppearance.getObservableLeftBound(item);
 	final int rightBound = listAppearance.getObservableRightBound(item);
 	if (info.pos < leftBound || info.pos > rightBound)
@@ -797,7 +797,7 @@ protected boolean onMoveRight(InputEvent event)
     {
 	if (noContent())
 	    return true;
-	final Object item = selected();
+	final E item = selected();
 	if (item == null)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
@@ -825,7 +825,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
     {
 	if (noContent())
 	    return true;
-	final Object item = selected();
+	final E item = selected();
 	if (item == null)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
@@ -854,7 +854,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
     {
 	if (noContent())
 	    return true;
-	final Object item = selected();
+	final E item = selected();
 	if (item == null)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
@@ -893,7 +893,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
     {
 	if (noContent())
 	    return true;
-	final Object item = selected();
+	final E item = selected();
 	if (item == null)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
@@ -929,7 +929,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
     {
 	if (noContent())
 	    return true;
-	final Object item = selected();
+	final E item = selected();
 	if (item == null)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
@@ -947,7 +947,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
     {
 	if (noContent())
     	    return true;
-	final Object item = selected();
+	final E item = selected();
 	if (item == null)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
@@ -978,7 +978,7 @@ final int rightBound = listAppearance.getObservableRightBound(item);
 	if (listClickHandler == null)
 	    return false;
 	final int index = selectedIndex();
-	final Object item = selected();
+	final E item = selected();
 	if (index < 0 || item == null)
 	    return false;
 	if (!listClickHandler.onListClick(this, index, item))
@@ -1075,7 +1075,7 @@ return listClipboardSaver.saveToClipboard(this, listModel, listAppearance, model
 	    context.onAreaNewHotPoint(this);
 	    return;
 	}
-	final Object item = listModel.getItem(index);
+	final E item = listModel.getItem(index);
 	if (item == null)
 	{
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
@@ -1088,7 +1088,7 @@ return listClipboardSaver.saveToClipboard(this, listModel, listAppearance, model
 	context.onAreaNewHotPoint(this);
     }
 
-    protected String getObservableSubstr(Object item)
+    protected String getObservableSubstr(E item)
     {
 	NullCheck.notNull(item, "item");
 final String line = listAppearance.getScreenAppearance(item, NONE_APPEARANCE_FLAGS);

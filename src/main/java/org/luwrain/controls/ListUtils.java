@@ -25,19 +25,19 @@ import org.luwrain.core.*;
 
 public class ListUtils
 {
-    static public abstract class AbstractModel implements ListArea.Appearance
+    static public abstract class AbstractModel<E> implements ListArea.Appearance<E>
     {
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	@Override public String getScreenAppearance(E item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
 	    return item.toString();
 	}
-	@Override public int getObservableLeftBound(Object item)
+	@Override public int getObservableLeftBound(E item)
 	{
 	    return 0;
 	}
-	@Override public int getObservableRightBound(Object item)
+	@Override public int getObservableRightBound(E item)
 	{
 	    NullCheck.notNull(item, "item");
 	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();

@@ -60,39 +60,17 @@ final class MainLayout extends LayoutBase
 	
     }
 
-    private final class Appearance implements ListArea.Appearance
+    private final class Appearance implements ListArea.Appearance<Entry>
     {
-	@Override public void announceItem(Object item, Set<Flags> flags)
+	@Override public void announceItem(Entry entry, Set<Flags> flags)
 	{
-	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(entry, "entry");
 	    NullCheck.notNull(flags, "flags");
-	    if (!(item instanceof Entry))
-	    {
-		app.setEventResponse(DefaultEventResponse.listItem(item.toString()));
-		return;
-	    }
-	    final Entry entry = (Entry)item;
 	    final Sounds sound;
 	    if (entry.getStatus() == Job.Status.FINISHED)
 		sound = entry.isFinishedSuccessfully()?Sounds.SELECTED:Sounds.ATTENTION; else
 				sound = Sounds.LIST_ITEM;
 	    app.setEventResponse(DefaultEventResponse.listItem(sound, entry.getInstanceName(), null));
-	}
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    return item.toString();
-	}
-	@Override public int getObservableLeftBound(Object item)
-	{
-	    NullCheck.notNull(item, "item");
-	    return 0;
-	}
-	@Override public int getObservableRightBound(Object item)
-	{
-	    NullCheck.notNull(item, "item");
-	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
 	}
     }
 }
