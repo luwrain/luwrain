@@ -60,7 +60,7 @@ final class MainLayout extends LayoutBase
 	
     }
 
-    private final class Appearance implements ListArea.Appearance<Entry>
+    private final class Appearance extends ListUtils.AbstractAppearance<Entry>
     {
 	@Override public void announceItem(Entry entry, Set<Flags> flags)
 	{

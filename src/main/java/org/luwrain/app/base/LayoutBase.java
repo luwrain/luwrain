@@ -337,7 +337,7 @@ public interface ActionHandler
     protected <E> ListArea.Params listParams(ListParams<E> l)
     {
 	NullCheck.notNull(l, "l");
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<E> params = new ListArea.Params<>();
 	params.context = getControlContext();
 	params.appearance = new ListUtils.DefaultAppearance(getControlContext());
 	l.setListParams(params);

@@ -23,9 +23,11 @@ import java.io.*;
 
 import org.luwrain.core.*;
 
+import static org.luwrain.core.DefaultEventResponse.*;
+
 public class ListUtils
 {
-    static public abstract class AbstractModel<E> implements ListArea.Appearance<E>
+    static public abstract class AbstractAppearance<E> implements ListArea.Appearance<E>
     {
 	@Override public String getScreenAppearance(E item, Set<Flags> flags)
 	{
@@ -44,47 +46,31 @@ public class ListUtils
 	}
     }
 
-    static public class DefaultAppearance implements ListArea.Appearance
+    static public class DefaultAppearance<E> extends AbstractAppearance<E>
     {
-	protected final ControlContext environment;
+	protected final ControlContext context;
 	protected final Suggestions suggestion;
-	public DefaultAppearance(ControlContext environment, Suggestions suggestion)
+	public DefaultAppearance(ControlContext context, Suggestions suggestion)
 	{
-	    NullCheck.notNull(environment, "environment");
-	    this.environment = environment;
+	    NullCheck.notNull(context, "context");
+	    this.context = context;
 	    this.suggestion = suggestion;
 	}
-	public DefaultAppearance(ControlContext environment)
+	public DefaultAppearance(ControlContext context)
 	{
-	    NullCheck.notNull(environment, "environment");
-	    this.environment = environment;
+	    NullCheck.notNull(context, "context");
+	    this.context = context;
 	    this.suggestion = Suggestions.LIST_ITEM;
 	}
-	@Override public void announceItem(Object item, Set<Flags> flags)
+	@Override public void announceItem(E item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
-	    //	    environment.playSound(Sounds.LIST_ITEM);
-	    //	    environment.say(item.toString());
-	    environment.setEventResponse(DefaultEventResponse.listItem(item.toString(), flags.contains(Flags.BRIEF)?null:suggestion));
-	}
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    return item.toString();
-	}
-	@Override public int getObservableLeftBound(Object item)
-	{
-	    return 0;
-	}
-	@Override public int getObservableRightBound(Object item)
-	{
-	    return item != null?item.toString().length():0;
+	    context.setEventResponse(DefaultEventResponse.listItem(item.toString(), flags.contains(Flags.BRIEF)?null:suggestion));
 	}
     }
 
-    static abstract public class DoubleLevelAppearance implements ListArea.Appearance
+    static abstract public class DoubleLevelAppearance<E> implements ListArea.Appearance<E>
     {
 	protected final ControlContext context;
 	public DoubleLevelAppearance(ControlContext context)
@@ -92,29 +78,29 @@ public class ListUtils
 	    NullCheck.notNull(context, "context");
 	    this.context = context;
 	}
-	abstract public boolean isSectionItem(Object item);
-	public void announceNonSection(Object item)
+	abstract public boolean isSectionItem(E item);
+	public void announceNonSection(E item)
 	{
 	    NullCheck.notNull(item, "item");
-	    context.setEventResponse(DefaultEventResponse.listItem(getNonSectionScreenAppearance(item)));
+	    context.setEventResponse(listItem(getNonSectionScreenAppearance(item)));
 	}
-	public String getNonSectionScreenAppearance(Object item)
+	public String getNonSectionScreenAppearance(E item)
 	{
 	    NullCheck.notNull(item, "item");
 	    return item.toString();
 	}
-	public void announceSection(Object item)
+	public void announceSection(E item)
 	{
 	    NullCheck.notNull(item, "item");
 	    context.playSound(Sounds.DOC_SECTION);
 	    context.say(getSectionScreenAppearance(item));
 	}
-	public String getSectionScreenAppearance(Object item)
+	public String getSectionScreenAppearance(E item)
 	{
 	    NullCheck.notNull(item, "item");
 	    return item.toString();
 	}
-	@Override public void announceItem(Object item, Set<Flags> flags)
+	@Override public void announceItem(E item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
@@ -122,7 +108,7 @@ public class ListUtils
 		announceSection(item); else
 		announceNonSection(item);
 	}
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	@Override public String getScreenAppearance(E item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
@@ -130,14 +116,14 @@ public class ListUtils
 		return getSectionScreenAppearance(item);
 	    return "  " + getNonSectionScreenAppearance(item);
 	}
-	@Override public int getObservableLeftBound(Object item)
+	@Override public int getObservableLeftBound(E item)
 	{
 	    NullCheck.notNull(item, "item");
 	    if (isSectionItem(item))
 		return 0;
 	    return 2;
 	}
-	@Override public int getObservableRightBound(Object item)
+	@Override public int getObservableRightBound(E item)
 	{
 	    NullCheck.notNull(item, "item");
 	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
@@ -463,7 +449,7 @@ mark(o);
 	}
     }
 
-    public static class MarkableListAppearance implements ListArea.Appearance
+    public static class MarkableListAppearance implements ListArea.Appearance<Object>
     {
 	protected final ControlContext context;
 	protected final MarkableListArea.MarksInfo marksInfo;

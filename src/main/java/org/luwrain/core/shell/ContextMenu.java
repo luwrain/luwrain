@@ -43,7 +43,7 @@ public final class ContextMenu extends ListPopup
 	return params;
     }
 
-    static private final class Appearance implements ListArea.Appearance
+    static private final class Appearance extends ListUtils.AbstractAppearance<Action>
     {
 	private final Luwrain luwrain;
 	Appearance(Luwrain luwrain)
@@ -51,33 +51,23 @@ public final class ContextMenu extends ListPopup
 	    NullCheck.notNull(luwrain, "luwrain");
 	    this.luwrain = luwrain;
 	}
-	@Override public void announceItem(Object item, Set<Flags> flags)
+	@Override public void announceItem(Action action, Set<Flags> flags)
 	{
-	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(action, "action");
 	    NullCheck.notNull(flags, "flags");
-	    final Action act = (Action)item;
 	    luwrain.silence();
 	    luwrain.playSound(Sounds.MAIN_MENU_ITEM);
-	    if (act.inputEvent() != null)
-		luwrain.speak(act.title() + " " + luwrain.getSpeakableText(act.inputEvent().toString(), Luwrain.SpeakableTextType.PROGRAMMING)); else
-		luwrain.speak(act.title());
+	    if (action.inputEvent() != null)
+		luwrain.speak(action.title() + " " + luwrain.getSpeakableText(action.inputEvent().toString(), Luwrain.SpeakableTextType.PROGRAMMING)); else
+		luwrain.speak(action.title());
 	}
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	@Override public String getScreenAppearance(Action action, Set<Flags> flags)
 	{
-	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(action, "action");
 	    NullCheck.notNull(flags, "flags");
-	    final Action act = (Action)item;
-	    if (act.inputEvent() != null)
-		return act.title() + " (" + act.inputEvent() + ")"; else
-		return act.title();
-	}
-	@Override public int getObservableLeftBound(Object item)
-	{
-	    return 0;
-	}
-	@Override public int getObservableRightBound(Object item)
-	{
-	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
+	    if (action.inputEvent() != null)
+		return action.title() + " (" + action.inputEvent() + ")"; else
+		return action.title();
 	}
     }
 

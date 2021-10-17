@@ -139,7 +139,7 @@ public class DisksPopup extends ListPopupBase
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<Disk> params = new ListArea.Params<Disk>();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
 	params.model = new ListUtils.FixedModel(getDisks(luwrain)){
@@ -147,11 +147,10 @@ public class DisksPopup extends ListPopupBase
 		{
 		    setItems(getDisks(luwrain));
 		}};
-	params.appearance = new ListUtils.DefaultAppearance(new DefaultControlContext(luwrain)){
-		@Override public void announceItem(Object obj, Set<Flags> flags) { announceDisk(luwrain, obj, flags); }
+	params.appearance = new ListUtils.DefaultAppearance<Disk>(new DefaultControlContext(luwrain)){
+		@Override public void announceItem(Disk disk, Set<Flags> flags) { announceDisk(luwrain, disk, flags); }
 	    };
 	params.flags = EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP);
 	return params;
     }
 }
-

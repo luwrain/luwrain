@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.io.json.*;
 
-final class Appearance implements ListArea.Appearance
+final class Appearance extends ListUtils.AbstractAppearance<Object>
 {
     private final Luwrain luwrain;
 
@@ -59,15 +59,5 @@ final class Appearance implements ListArea.Appearance
 	    return info.toString();
 	}
 	return "";
-    }
-
-    @Override public int getObservableLeftBound(Object item)
-    {
-	return 0;
-    }
-
-    @Override public int getObservableRightBound(Object item)
-    {
-	return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
     }
 }

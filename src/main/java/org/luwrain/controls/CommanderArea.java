@@ -564,7 +564,7 @@ final EntryType type;
 	}
     }
 
-    static public class ListAppearanceImpl<E> implements ListArea.Appearance
+    static public class ListAppearanceImpl<E> implements ListArea.Appearance<Wrapper<E>>
     {
 	protected final CommanderArea.Appearance appearance;
 	public ListAppearanceImpl(CommanderArea.Appearance<E> appearance)
@@ -572,18 +572,16 @@ final EntryType type;
 	    NullCheck.notNull(appearance, "appearance");
 	    this.appearance = appearance;
 	}
-	@Override public void announceItem(Object item, Set<Flags> flags)
+	@Override public void announceItem(Wrapper<E> wrapper, Set<Flags> flags)
 	{
-	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(wrapper, "wrapper");
 	    NullCheck.notNull(flags, "flags");
-	    final Wrapper<E> wrapper = (Wrapper<E>)item;
 	    appearance.announceEntry(wrapper.obj, wrapper.type, wrapper.marked);
 	}
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
+	@Override public String getScreenAppearance(Wrapper<E> wrapper, Set<Flags> flags)
 	{
-	    NullCheck.notNull(item, "item");
+	    NullCheck.notNull(wrapper, "wrapper");
 	    NullCheck.notNull(flags, "flags");
-	    final Wrapper<E> wrapper = (Wrapper<E>)item;
 	    final boolean marked = wrapper.marked;
 	    final EntryType type = wrapper.type;
 	    final String name = appearance.getEntryText(wrapper.obj, wrapper.type, wrapper.marked);
@@ -617,14 +615,13 @@ final EntryType type;
 	    }
 	    return new String(b);
 	}
-	@Override public int getObservableLeftBound(Object item)
+	@Override public int getObservableLeftBound(Wrapper<E> wrapper)
 	{
 	    return 2;
 	}
-	@Override public int getObservableRightBound(Object item)
+	@Override public int getObservableRightBound(Wrapper<E> wrapper)
 	{
-	    NullCheck.notNull(item, "item");
-	    final Wrapper<E> wrapper = (Wrapper)item;
+	    NullCheck.notNull(wrapper, "wrapper");
 	    return wrapper.getBaseName().length() + 2;
 	}
     }
