@@ -333,13 +333,13 @@ public interface ActionHandler
 		app.getLuwrain().setActiveArea(a != null?a:area);
     }
 
-    protected interface ListParams<E> { void setListParams(ListArea.Params params); }
-    protected <E> ListArea.Params listParams(ListParams<E> l)
+    protected interface ListParams<E> { void setListParams(ListArea.Params<E> params); }
+    protected <E> ListArea.Params<E> listParams(ListParams<E> l)
     {
 	NullCheck.notNull(l, "l");
 	final ListArea.Params<E> params = new ListArea.Params<>();
 	params.context = getControlContext();
-	params.appearance = new ListUtils.DefaultAppearance(getControlContext());
+	params.appearance = new ListUtils.DefaultAppearance<E>(getControlContext());
 	l.setListParams(params);
 	return params;
     }

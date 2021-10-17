@@ -28,21 +28,20 @@ import org.luwrain.core.JobsTracking.Entry;
 final class MainLayout extends LayoutBase
 {
     private final App app;
-    final ListArea jobsArea;
+    final ListArea<Entry> jobsArea;
 
     MainLayout(App app)
     {
 	super(app);
 	this.app = app;
-	final ListArea.Params params = new ListArea.Params();
-	params.context = getControlContext();
-	params.model = new ListUtils.ListModel(app.jobs.entries);
-	params.appearance = new Appearance();
-	params.name = app.getStrings().appName();
-	this.jobsArea = new ListArea(params);
+	this.jobsArea = new ListArea<Entry>(listParams((params)->{
+		    params.model = new ListUtils.ListModel<Entry>(app.jobs.entries);
+		    params.appearance = new Appearance();
+		    params.name = app.getStrings().appName();
+		}));
 	final Actions jobsActions = actions(
 					    action("stop", app.getStrings().actionStop(), new InputEvent(InputEvent.Special.F5), this::actStop)
-);
+					    );
 	setAreaLayout(jobsArea, jobsActions);
     }
 

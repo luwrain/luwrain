@@ -253,17 +253,17 @@ public class ListUtils
 	}
     }
 
-    static public class FixedModel extends ArrayList<Object> implements ListArea.Model
+    static public class FixedModel<E> extends ArrayList<E> implements ListArea.Model<E>
     {
 	public FixedModel()
 	{
 	}
-	public FixedModel(Object[] items)
+	public FixedModel(E[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
 	    addAll(Arrays.asList(items));
 	}
-	public void setItems(Object[] items)
+	public void setItems(E[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
 	    clear();
@@ -277,7 +277,7 @@ public class ListUtils
 	{
 	    return size();
 	}
-	@Override public Object getItem(int index)
+	@Override public E getItem(int index)
 	{
 	    return get(index);
 	}
@@ -286,30 +286,26 @@ public class ListUtils
 	}
     }
 
-    static public class ArrayModel implements ListArea.Model
+    static public class ArrayModel <E>implements ListArea.Model<E>
     {
-	public interface Source
+	public interface Source<E>
 	{
-	    Object[] getItems();
+	    E[] getItems();
 	}
-	protected final Source source;
-	public ArrayModel(Source source)
+	protected final Source<E> source;
+	public ArrayModel(Source<E> source)
 	{
 	    NullCheck.notNull(source, "source");
 	    this.source = source;
 	}
 	@Override public int getItemCount()
 	{
-	    final Object[] o = source.getItems();
+	    final E[] o = source.getItems();
 	    return o != null?o.length:0;
 	}
-	@Override public Object getItem(int index)
+	@Override public E getItem(int index)
 	{
-	    final Object[] o = source.getItems();
-	    if (o == null)
-		return "#No items#";
-	    if (index < 0 || index >= o.length)
-		return "#Illegal index: " + String.valueOf(index) + "#";
+	    final E[] o = source.getItems();
 	    return o[index];
 	}
 	@Override public void refresh()
@@ -317,10 +313,10 @@ public class ListUtils
 	}
     }
 
-        static public class ListModel implements ListArea.Model
+        static public class ListModel<E> implements ListArea.Model<E>
     {
-	protected final List source;
-	public ListModel(List source)
+	protected final List<E> source;
+	public ListModel(List<E> source)
 	{
 	    NullCheck.notNull(source, "source");
 	    this.source = source;
@@ -329,7 +325,7 @@ public class ListUtils
 	{
 	    return source.size();
 	    	}
-	@Override public Object getItem(int index)
+	@Override public E getItem(int index)
 	{
 	    return source.get(index);
 	}
@@ -337,7 +333,6 @@ public class ListUtils
 	{
 	}
     }
-
 
     static public class DefaultEditableModel extends ArrayList<Object> implements EditableListArea.Model
     {
@@ -502,9 +497,9 @@ mark(o);
 	}
     }
 
-    static public class DefaultClipboardSaver implements ListArea.ClipboardSaver
+    static public class DefaultClipboardSaver<E> implements ListArea.ClipboardSaver<E>
     {
-	@Override public boolean saveToClipboard(ListArea listArea, ListArea.Model model, ListArea.Appearance appearance,
+	@Override public boolean saveToClipboard(ListArea<E> listArea, ListArea.Model<E> model, ListArea.Appearance<E> appearance,
 						    int fromIndex, int toIndex, Clipboard clipboard)
 	{
 	    NullCheck.notNull(listArea, "listArea");
@@ -513,7 +508,6 @@ mark(o);
 	    NullCheck.notNull(clipboard, "clipboard");
 	    if (fromIndex < 0)
 		throw new IllegalArgumentException("fromIndex may not be negative (" + fromIndex + ")");
-
 	    if (toIndex < 0)
 		throw new IllegalArgumentException("toIndex may not be negative (" + toIndex + ")");
 	    if (fromIndex >= toIndex)
@@ -521,7 +515,7 @@ mark(o);
 final List<String> res = new ArrayList<>();
 	    for(int i = fromIndex;i < toIndex;++i)
 	    {
-	    final Object obj = model.getItem(i);
+	    final E obj = model.getItem(i);
 	    if (obj == null)
 		return false;
 	    res.add(appearance.getScreenAppearance(obj, EnumSet.of(ListArea.Appearance.Flags.CLIPBOARD)));

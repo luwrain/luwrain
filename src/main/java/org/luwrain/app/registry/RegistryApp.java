@@ -34,7 +34,7 @@ public class RegistryApp implements Application, Actions
     private Strings strings;
     private Base base = new Base();
     private TreeArea dirsArea;
-    private ListArea valuesArea;
+    private ListArea<Value> valuesArea;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
@@ -157,14 +157,14 @@ return actions.insertDir();
 		}
 	    };
 
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<Value> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
 	params.model = base.getValuesModel();
 	params.appearance = base.getValuesAppearance();
 	params.name = strings.valuesAreaName();
 	params.clickHandler = valuesHandler;
 
-	valuesArea = new ListArea(params)
+	valuesArea = new ListArea<Value>(params)
 	    {
 		@Override public boolean onInputEvent(InputEvent event)
 		{

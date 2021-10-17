@@ -21,7 +21,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 
-class ValuesListAppearance implements ListArea.Appearance<Object>
+class ValuesListAppearance implements ListArea.Appearance<Value>
 {
     private Luwrain luwrain;
     private Strings strings;
@@ -36,30 +36,28 @@ class ValuesListAppearance implements ListArea.Appearance<Object>
 	    throw new NullPointerException("strings may not be null");
     }
 
-    @Override public void announceItem(Object item, Set<Flags> flags)
+    @Override public void announceItem(Value value, Set<Flags> flags)
     {
-	NullCheck.notNull(item, "item");
+	NullCheck.notNull(value, "value");
 	NullCheck.notNull(flags, "flags");
-	final Value value = (Value)item;
 	luwrain.speak(value.name);
     }
 
-    @Override public String getScreenAppearance(Object item, Set<Flags> flags)
+    @Override public String getScreenAppearance(Value value, Set<Flags> flags)
     {
-	NullCheck.notNull(item, "item");
+	NullCheck.notNull(value, "value");
 	NullCheck.notNull(flags, "flags");
-	final Value value = (Value)item;
 	return value.name;
     }
 
-    @Override public int getObservableLeftBound(Object item)
+    @Override public int getObservableLeftBound(Value value)
     {
-	return 0;
+		return 0;
 	//FIXME:
     }
 
-    @Override public int getObservableRightBound(Object item)
+    @Override public int getObservableRightBound(Value value)
     {
-	return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
+	return getScreenAppearance(value, EnumSet.noneOf(Flags.class)).length();
     }
 }

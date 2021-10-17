@@ -254,6 +254,7 @@ public class CommanderArea<E> extends ListArea
     }
 
     //If no desiredSelected found, area tries to leave selection unchanged
+        @SuppressWarnings("unchecked")
     public boolean open(E entry, String desiredSelected, String [] desiredMarked, boolean announce)
     {
 	NullCheck.notNull(entry, "entry");

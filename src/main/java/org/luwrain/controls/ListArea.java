@@ -58,10 +58,10 @@ public class ListArea<E>  implements Area, ClipboardTranslator.Provider, RegionT
 	boolean onListClick(ListArea area, int index, E item);
     }
 
-public interface ClipboardSaver
+public interface ClipboardSaver<E>
 {
     //Use this model only, MarkableListArea may provide another instances
-    boolean saveToClipboard(ListArea listArea, Model model, Appearance appearance, int fromIndex, int toIndex, Clipboard clipboard);
+    boolean saveToClipboard(ListArea<E> listArea, Model<E> model, Appearance<E> appearance, int fromIndex, int toIndex, Clipboard clipboard);
 }
 
     public interface Transition
@@ -94,13 +94,13 @@ public interface ClipboardSaver
 
     static public class Params<E>
     {
-	public ControlContext context;
-	public Model<E> model;
-	public Appearance<E> appearance;
+	public ControlContext context = null;
+	public Model<E> model = null;
+	public Appearance<E> appearance = null;
 	public ListArea.ClickHandler<E> clickHandler;
 	public Transition transition = new ListUtils.DefaultTransition();
-	public ClipboardSaver clipboardSaver = new ListUtils.DefaultClipboardSaver();
-	public String name;
+	public ClipboardSaver<E> clipboardSaver = new ListUtils.DefaultClipboardSaver<E>();
+	public String name = null;
 	public Set<Flags> flags = EnumSet.of(Flags.EMPTY_LINE_BOTTOM);
     }
 
@@ -112,7 +112,7 @@ public interface ClipboardSaver
     protected final Model<E> listModel;
     protected final Appearance<E> listAppearance;
     protected final Transition listTransition;
-    protected final ClipboardSaver listClipboardSaver;
+    protected final ClipboardSaver<E> listClipboardSaver;
     protected final Set<Flags> listFlags;
     protected ListArea.ClickHandler<E> listClickHandler = null;
 
@@ -140,7 +140,7 @@ public interface ClipboardSaver
 	resetHotPoint();
     }
 
-    public void setListClickHandler(ListArea.ClickHandler clickHandler)
+    public void setListClickHandler(ListArea.ClickHandler<E> clickHandler)
     {
 	this.listClickHandler = clickHandler;
     }
