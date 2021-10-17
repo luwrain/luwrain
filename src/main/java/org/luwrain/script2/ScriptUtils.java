@@ -160,6 +160,7 @@ public final class ScriptUtils
 	return ProxyArray.fromArray((Object[])res.toArray(new String[res.size()]));
     }
 
+    @SuppressWarnings("unchecked")
     static public Object getEnumItemByStr(Class enumClass, String itemName)
     {
 	NullCheck.notNull(enumClass, "enumClass");
@@ -171,6 +172,7 @@ public final class ScriptUtils
 	return null;
     }
 
+    @SuppressWarnings("unchecked")
     static public Set getEnumByArrayObj(Class enumClass, Object arrayObj)
     {
 	NullCheck.notNull(enumClass, "enumClass");

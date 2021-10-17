@@ -188,9 +188,9 @@ final class Commands
 			final Area area = core.getValidActiveArea(true);
 			if (area == null)
 			    return;
-			final AtomicReference res = new AtomicReference();
-			core.unsafeAreaOperation(()->res.set(new Boolean(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY_ALL)))));
-			if (res.get() == null || !((Boolean)res.get()).booleanValue())
+			final AtomicBoolean res = new AtomicBoolean();
+			core.unsafeAreaOperation(()->res.set(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY_ALL))));
+			if (!res.get())
 			{
 			    core.eventNotProcessedMessage();
 			    return;
@@ -254,11 +254,9 @@ final class Commands
 			final Area area = core.getValidActiveArea(true);
 			if (area == null)
 			    return;
-			final AtomicReference res = new AtomicReference();
-			core.unsafeAreaOperation(()->{
-				res.set(new Boolean(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR))));
-			    });
-			if (res.get() == null || !((Boolean)res.get()).booleanValue())
+			final AtomicBoolean res = new AtomicBoolean();
+			core.unsafeAreaOperation(()->res.set(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR))));
+			if (!res.get())
 			{
 			    core.eventNotProcessedMessage();
 			    return;

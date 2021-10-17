@@ -29,7 +29,7 @@ import com.google.gson.*;
 
 import static org.luwrain.util.TextUtils.*;
 
-public final class Clipboard implements ClipboardOwner, java.util.function.Supplier
+public final class Clipboard implements ClipboardOwner, java.util.function.Supplier<Object>
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 

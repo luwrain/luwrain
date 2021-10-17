@@ -163,12 +163,9 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.isEmpty();
     }
 
-        @SuppressWarnings("unchecked") protected Wrapper<E> getSelectedWrapper()
+protected Wrapper<E> getSelectedWrapper()
     {
-	final Object res = super.selected();
-	if (res == null || !(res instanceof Wrapper))
-	    return null;
-	    return (Wrapper<E>)res;
+	return super.selected();
     }
 
     //never returns parent

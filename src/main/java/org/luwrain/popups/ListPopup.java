@@ -25,11 +25,11 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class ListPopup extends ListPopupBase
+public class ListPopup<E> extends ListPopupBase<E>
 {
     protected Object result;
 
-    public ListPopup(Luwrain luwrain, ListArea.Params params,
+    public ListPopup(Luwrain luwrain, ListArea.Params<E> params,
 		     Set<Popup.Flags> popupFlags)
     {
 	super(luwrain, params, popupFlags);

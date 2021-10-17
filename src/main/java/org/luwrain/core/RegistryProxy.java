@@ -22,13 +22,11 @@ import java.lang.reflect.*;
 
 public final class RegistryProxy
 {
-    static public <T> T create(Registry registry, String regDir, Class cl)
+    @SuppressWarnings("unchecked") static public <T> T create(Registry registry, String regDir, Class<T> cl)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(regDir, "regDir");
-	return (T) Proxy.newProxyInstance(
-					  cl.getClassLoader(),
-					  new Class[]{cl},
+	return (T)Proxy.newProxyInstance(cl.getClassLoader(), new Class[]{cl},
 					  (object, method, args)->{
 					      final String name = method.getName();
 					      if (name.length() <= 3)

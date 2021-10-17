@@ -52,7 +52,7 @@ final class LuwrainObj implements ProxyObject
 	"speak",
 	"quit",
     };
-    static private final Set<String> KEYS_SET = new HashSet(Arrays.asList((Object[])KEYS));
+    static private final Set<String> KEYS_SET = new HashSet<>(Arrays.asList((String[])KEYS));
     static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray((Object[])KEYS);
 
     private final LogObj logObj;

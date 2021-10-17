@@ -147,7 +147,7 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
     @Override public ModificationResult putChars(int pos, int lineIndex, String str)
     {
 	NullCheck.notNull(str, "str");
-	final Map readOnlyValues = new HashMap();
+	final Map<Object, Object> readOnlyValues = new HashMap<>();
 	final Map<Object, Object> values = new HashMap<>();
 	readOnlyValues.put("chars", str);
 	values.put("x", new Integer(pos));

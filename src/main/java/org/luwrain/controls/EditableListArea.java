@@ -23,11 +23,11 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-public class EditableListArea extends ListArea
+public class EditableListArea<E> extends ListArea<E>
 {
-    public interface Model extends ListArea.Model
+    public interface Model<E> extends ListArea.Model<E>
     {
-	boolean addToModel(int pos, java.util.function.Supplier supplier);
+	boolean addToModel(int pos, java.util.function.Supplier<Object> supplier);
 	boolean removeFromModel(int indexFrom, int indexTo);
     }
 
@@ -36,22 +36,22 @@ public class EditableListArea extends ListArea
 	boolean confirmDeleting(EditableListArea area, Model model, int deleteFromIndex, int deleteToIndex);
     }
 
-    static public class Params extends ListArea.Params
+    static public class Params<E> extends ListArea.Params<E>
     {
 	public Confirmation confirmation = null;
     }
 
-    protected final Model editableListModel;
+    protected final Model<E> editableListModel;
     protected final Confirmation confirmation;
 
-    public EditableListArea(Params params)
+    public EditableListArea(Params<E> params)
     {
 	super(params);
 	NullCheck.notNull(params, "params");
 	NullCheck.notNull(params.model, "params.model");
 	if (!(params.model instanceof EditableListArea.Model))
 	    throw new IllegalArgumentException("params.model must be an instance of EditableModel");
-	this.editableListModel = (EditableListArea.Model)params.model;
+	this.editableListModel = (EditableListArea.Model<E>)params.model;
 	this.confirmation = params.confirmation;
     }
 
