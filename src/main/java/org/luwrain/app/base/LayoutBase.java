@@ -27,7 +27,7 @@ import org.luwrain.controls.*;
 
 public class LayoutBase
 {
-protected interface ActionHandler
+public interface ActionHandler
 {
     boolean onAction();
 }
