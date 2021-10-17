@@ -24,9 +24,9 @@ import org.luwrain.controls.CommanderArea.EntryType;
 
 public class CommanderUtils
 {
-    static public class ByNameComparator implements java.util.Comparator
+    static public class ByNameComparator<E> implements java.util.Comparator<E>
     {
-	@Override public int compare(Object o1, Object o2)
+	@Override public int compare(E o1, E o2)
 	{
 	    NullCheck.notNull(o1, "o1");
 	    NullCheck.notNull(o2, "o2");

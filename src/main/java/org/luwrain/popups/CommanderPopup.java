@@ -30,7 +30,7 @@ import org.luwrain.controls.CommanderArea.Filter;
 public class CommanderPopup extends CommanderArea<File> implements CommanderArea.ClickHandler<File>, Popup, PopupClosingTranslator.Provider
 {
     //    static public final Filter<File> FILTER_ALL = new CommanderUtilsFile.Filter(EnumSet.noneOf(CommanderUtilsFile.Filter.Flags.class));
-    static public final Filter<File> FILTER_ALL = new CommanderUtils.AllEntriesFilter();
+    static public final Filter<File> FILTER_ALL = new CommanderUtils.AllEntriesFilter<>();
     static public final Filter<File> FILTER_NO_HIDDEN = new CommanderUtilsFile.Filter(EnumSet.of(CommanderUtilsFile.Filter.Flags.NO_HIDDEN));
 
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
@@ -55,9 +55,6 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	this.filter = filter != null?filter:FILTER_ALL;
 	this.filterCancelled = this.filter == FILTER_ALL;
 		setClickHandler(this);
-	setLoadingResultHandler((location, data, selectedIndex, announce)->{
-		luwrain.runUiSafely(()->acceptNewLocation(location, data, selectedIndex, announce));
-	    });
 	open(file, null, false);
     }
 
@@ -165,7 +162,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	NullCheck.notNull(filter, "filter");
 	final CommanderArea.Params<File> params = CommanderUtilsFile.createParams(new DefaultControlContext(luwrain));
 	params.filter = filter;
-	params.comparator = new CommanderUtils.ByNameComparator();
+	params.comparator = new CommanderUtils.ByNameComparator<>();
 	return params;
     }
 }

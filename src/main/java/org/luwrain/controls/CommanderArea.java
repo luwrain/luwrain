@@ -77,10 +77,9 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	public CommanderArea.Model<E> model;
 	public CommanderArea.Appearance<E> appearance;
 	public CommanderArea.ClickHandler<E> clickHandler;
-	public LoadingResultHandler<E> loadingResultHandler;
-	public ClipboardSaver clipboardSaver = new ListUtils.DefaultClipboardSaver();
+	public ClipboardSaver<Wrapper<E>> clipboardSaver = new ListUtils.DefaultClipboardSaver<Wrapper<E>>();
 	public Filter<E> filter = null;
-	public Comparator comparator = new CommanderUtils.ByNameComparator();
+	public Comparator<NativeItem<E>> comparator = new CommanderUtils.ByNameComparator<NativeItem<E>>();
 	public Set<Flags> flags = EnumSet.noneOf(Flags.class);
     }
 
@@ -89,8 +88,8 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
     protected final Set<Flags> flags;
     protected CommanderArea.ClickHandler<E> clickHandler = null;
     protected Filter<E> filter = null;
-    protected Comparator comparator = null;
-    protected LoadingResultHandler<E> loadingResultHandler = null;
+    protected Comparator<NativeItem<E>> comparator = null;
+    //protected LoadingResultHandler<E> loadingResultHandler = null;
 
     protected E currentLocation = null;
     protected FutureTask task = null;
@@ -107,7 +106,6 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	this.filter = params.filter;
 	this.comparator = params.comparator;
 	this.clickHandler = params.clickHandler;
-	this.loadingResultHandler = params.loadingResultHandler;
 	super.setListClickHandler((area, index, obj)->clickImpl(index, (Wrapper<E>)obj));
 	getListModel().marking = params.flags.contains(Flags.MARKING);
     }
@@ -122,16 +120,18 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	this.filter = filter;
     }
 
-    public void setCommanderComparator(Comparator comparator)
+    public void setCommanderComparator(Comparator<NativeItem<E>> comparator)
     {
 	NullCheck.notNull(comparator, "comparator");
 	this.comparator = comparator;
     }
 
+    /*
     public void setLoadingResultHandler(LoadingResultHandler<E> loadingResultHandler)
     {
-	this.loadingResultHandler = loadingResultHandler;
+	//	this.loadingResultHandler = loadingResultHandler;
     }
+    */
 
     public boolean findFileName(String fileName, boolean announce)
     {
@@ -163,10 +163,9 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.isEmpty();
     }
 
-    //    @SuppressWarnings("unchecked")
-    protected Wrapper<E> getSelectedWrapper()
+        @SuppressWarnings("unchecked") protected Wrapper<E> getSelectedWrapper()
     {
-	final Object res = selected();
+	final Object res = super.selected();
 	if (res == null || !(res instanceof Wrapper))
 	    return null;
 	    return (Wrapper<E>)res;
@@ -252,7 +251,7 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
     public boolean open(E entry, String desiredSelected, boolean announce)
     {
 	NullCheck.notNull(entry, "entry");
-	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
+	//	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
 	return open(entry, desiredSelected, null, announce);
     }
 
@@ -261,7 +260,7 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
     public boolean open(E entry, String desiredSelected, String [] desiredMarked, boolean announce)
     {
 	NullCheck.notNull(entry, "entry");
-	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
+	//	NullCheck.notNull(loadingResultHandler, "loadingResultHandler");
 	if (closed || isBusy())
 	    return false;
 	final E newCurrent = entry;
@@ -367,8 +366,7 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	    appearance.announceLocation(currentLocation);
     }
 
-    //    @SuppressWarnings("unchecked")
-    @Override public ListModelAdapter<E> getListModel()
+        @SuppressWarnings("unchecked") @Override public ListModelAdapter<E> getListModel()
     {
 	return (ListModelAdapter<E>)super.getListModel();
     }
@@ -514,8 +512,8 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	NullCheck.notNull(params.clipboardSaver, "params.clipboardSaver");
 	final ListArea.Params<Wrapper<E>> listParams = new ListArea.Params<>();
 	listParams.context = params.context;
-	listParams.model = new ListModelAdapter(params.model, params.filter, params.comparator);
-	listParams.appearance = new ListAppearanceImpl(params.appearance);
+	listParams.model = new ListModelAdapter<>(params.model, params.filter, params.comparator);
+	listParams.appearance = new ListAppearanceImpl<>(params.appearance);
 	listParams.name = "";//Never used, getAreaName() overrides
 	listParams.clipboardSaver = params.clipboardSaver;
 	return listParams;
@@ -556,7 +554,7 @@ final EntryType type;
 	{
 	    marked = !marked;
 	}
-	@Override public boolean equals(Object o)
+	@SuppressWarnings("unchecked") @Override public boolean equals(Object o)
 	{
 	    if (o == null || !(o instanceof Wrapper))
 		return false;
@@ -567,7 +565,7 @@ final EntryType type;
 
     static public class ListAppearanceImpl<E> implements ListArea.Appearance<Wrapper<E>>
     {
-	protected final CommanderArea.Appearance appearance;
+	protected final CommanderArea.Appearance<E> appearance;
 	public ListAppearanceImpl(CommanderArea.Appearance<E> appearance)
 	{
 	    NullCheck.notNull(appearance, "appearance");
@@ -632,7 +630,7 @@ final EntryType type;
 	protected final CommanderArea.Model<E> model;
 	boolean marking = true;
 	List<Wrapper<E>> wrappers = null;//null means the content is inaccessible
-	public ListModelAdapter(CommanderArea.Model<E> model, Filter<E> filter, Comparator comparator)
+	public ListModelAdapter(CommanderArea.Model<E> model, Filter<E> filter, Comparator<NativeItem<E>> comparator)
 	{
 	    NullCheck.notNull(model, "model");
 	    this.model = model;

@@ -147,8 +147,8 @@ static     public class Filter implements CommanderArea.Filter<File>
 	params.context = context;
 	params.model = new Model();
 	params.appearance = new Appearance(context);
-	params.filter = new CommanderUtils.AllEntriesFilter();
-	params.comparator = new CommanderUtils.ByNameComparator();
+	params.filter = new CommanderUtils.AllEntriesFilter<>();
+	params.comparator = new CommanderUtils.ByNameComparator<>();
 	return params;
     }
 
