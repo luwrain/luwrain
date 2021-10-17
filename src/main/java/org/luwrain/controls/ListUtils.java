@@ -334,17 +334,26 @@ public class ListUtils
 	}
     }
 
-    static public class DefaultEditableModel extends ArrayList<Object> implements EditableListArea.Model
+    static public class DefaultEditableModel<E> extends ArrayList<E> implements EditableListArea.Model<E>
     {
-	public DefaultEditableModel()
+	protected final Class<E> itemClass;
+	public DefaultEditableModel(Class<E> itemClass)
 	{
+	    NullCheck.notNull(itemClass, "itemClass");
+	    this.itemClass = itemClass;
 	}
-	public DefaultEditableModel(Object[] items)
+	public DefaultEditableModel(Class<E> itemClass, E[] items)
 	{
+	    this(itemClass);
 	    NullCheck.notNullItems(items, "items");
 	    setItems(items);
 	}
-	public void setItems(Object[] items)
+	public DefaultEditableModel(Class<E> itemClass, List<E> items)
+	{
+	    this(itemClass);
+	    addAll(items);
+	}
+	public void setItems(E[] items)
 	{
 	    NullCheck.notNullItems(items, "items");
 	    clear();
@@ -354,7 +363,7 @@ public class ListUtils
 	{
 	    return toArray(new Object[size()]);
 	}
-	@Override public boolean addToModel(int pos, java.util.function.Supplier supplier)
+	@Override public boolean addToModel(int pos, java.util.function.Supplier<Object> supplier)
 	{
 	    NullCheck.notNull(supplier, "supplier");
 	    if (pos < 0)
@@ -366,9 +375,21 @@ public class ListUtils
 	    if (value instanceof Object[])
 		values = (Object[])value; else
 		values = new Object[]{value};
-	    if (values.length == 0)
+	    final List<E> c = new ArrayList<>();
+	    for(Object o: values)
+		if (o != null)
+		{
+		    if (itemClass.isInstance(o))
+			c.add((E)o); else
+		    {
+			final E e = adjust(o);
+			if (e != null)
+			    c.add(e);
+		    }
+		}
+	    if (c.isEmpty())
 		return false;
-	    addAll(pos, Arrays.asList(values));
+	    addAll(pos, c);
 	    return true;
 	}
 	@Override public boolean removeFromModel(int fromIndex, int toIndex)
@@ -386,12 +407,16 @@ public class ListUtils
 	{
 	    return size();
 	}
-	@Override public Object getItem(int index)
+	@Override public E getItem(int index)
 	{
 	    return get(index);
 	}
 	@Override public void refresh()
 	{
+	}
+	protected E adjust(Object o)
+	{
+	    return null;
 	}
     }
 

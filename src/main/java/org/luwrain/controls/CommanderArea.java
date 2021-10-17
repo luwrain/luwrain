@@ -489,7 +489,7 @@ protected Wrapper<E> getSelectedWrapper()
 	return listParams;
     }
 
-    static class Wrapper<E> implements NativeItem<E>
+    static public class Wrapper<E> implements NativeItem<E>
     {
 	final E obj;
 final EntryType type;

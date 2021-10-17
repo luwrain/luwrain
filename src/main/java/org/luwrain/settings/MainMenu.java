@@ -32,10 +32,10 @@ import org.luwrain.cpanel.*;
 import org.luwrain.util.*;
 import org.luwrain.io.json.*;
 
+import static org.luwrain.core.DefaultEventResponse.*;
+
 final class MainMenu extends EditableListArea implements SectionArea
 {
-    //    static final Type ITEM_LIST_TYPE = new TypeToken<List<MainMenuItem>>(){}.getType();
-
     private final Gson gson = new Gson();
     private final ControlPanel controlPanel;
     private final Luwrain luwrain;
@@ -92,27 +92,15 @@ final class MainMenu extends EditableListArea implements SectionArea
 		if (info != null)
 		    uniRefs.add(info);
 	    }
-	final EditableListArea.Params params = new EditableListArea.Params();
+	final EditableListArea.Params<UniRefInfo> params = new EditableListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
-	params.appearance = new org.luwrain.core.shell.MainMenu.Appearance(params.context);
 	params.name = luwrain.i18n().getStaticStr("CpMainMenu");
-	params.model = new ListUtils.DefaultEditableModel(uniRefs.toArray(new UniRefInfo[uniRefs.size()])){
-		@Override public boolean addToModel(int index, Supplier supplier)
+	params.appearance = new Appearance(luwrain);
+	params.model = new ListUtils.DefaultEditableModel<UniRefInfo>(UniRefInfo.class, uniRefs){
+		@Override public UniRefInfo adjust(Object o)
 		{
-		    NullCheck.notNull(supplier, "supplier");
-		    if (index < 0 || index > size())
-			return false;
-		    final Object o = supplier.get();
-		    if (o == null)
-			return false;
-		    final Object[] objs;if (o instanceof Object[])
-					    objs = (Object[])o; else
-			objs = new Object[]{o};
-		    final UniRefInfo[] uniRefs = UniRefUtils.make(luwrain, objs);
-		    if (uniRefs.length == 0)
-			return false;
-		    addAll(index, Arrays.asList(uniRefs));
-		    return true;
+		    NullCheck.notNull(o, "o");
+		    return UniRefUtils.make(o.toString());
 		}
 	    };
 	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
@@ -132,4 +120,61 @@ final class MainMenu extends EditableListArea implements SectionArea
 	};
 	return new MainMenu(controlPanel, params);
     }
+
+
+static private final class Appearance extends ListUtils.DoubleLevelAppearance<UniRefInfo>
+    {
+	static private final String STATIC_PREFIX = "static:";
+	Appearance(Luwrain luwrain) { super(new DefaultControlContext(luwrain)); }
+	@Override public boolean isSectionItem(UniRefInfo info)
+	{
+	    NullCheck.notNull(info, "info");
+	    return info.getType().equals(UniRefProcs.TYPE_SECTION);
+	}
+	@Override public String getSectionScreenAppearance(UniRefInfo info)
+	{
+	    NullCheck.notNull(info, "info");
+	    final String title = info.getTitle();
+	    if (!title.startsWith(STATIC_PREFIX))
+		return title;
+	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
+	}
+    	@Override public String getNonSectionScreenAppearance(UniRefInfo info)
+	{
+	    NullCheck.notNull(info, "info");
+	    final String title = info.getTitle();
+	    if (!title.startsWith(STATIC_PREFIX))
+		return title;
+	    return context.getI18n().getStaticStr(title.substring(STATIC_PREFIX.length()));
+	}
+	@Override public void announceNonSection(UniRefInfo info)
+	{
+	    NullCheck.notNull(info, "info");
+	    context.setEventResponse(text(Sounds.DESKTOP_ITEM, context.getSpeakableText(getNonSectionScreenAppearance(info), Luwrain.SpeakableTextType.NATURAL)));
+	}
+	public void announceSection(UniRefInfo info)
+	{
+	    NullCheck.notNull(info, "info");
+	    context.setEventResponse(text(Sounds.DOC_SECTION, context.getSpeakableText(getNonSectionScreenAppearance(info), Luwrain.SpeakableTextType.NATURAL)));//FIXME:DefaultEventResponse.listItem()
+	}
+	/*
+	UniRefInfo getUniRefInfo(Object obj)
+	{
+	    	    NullCheck.notNull(obj, "obj");
+	    if (obj instanceof UniRefInfo)
+		return (UniRefInfo)obj;
+	    final String value;
+	    if (obj instanceof MainMenuItem)
+		value = ((MainMenuItem)obj).getValueNotNull(); else
+		value = obj.toString();
+	    if (uniRefCache.containsKey(value))
+		return uniRefCache.get(value);
+	    final UniRefInfo info = context.getUniRefInfo(value);
+	    uniRefCache.put(obj.toString(), info);
+	    return info;
+	}
+	*/
+    }
+
+    
 }
