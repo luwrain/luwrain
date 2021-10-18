@@ -380,7 +380,7 @@ public class ListUtils
 		if (o != null)
 		{
 		    if (itemClass.isInstance(o))
-			c.add((E)o); else
+			c.add(itemClass.cast(o)); else
 		    {
 			final E e = adjust(o);
 			if (e != null)

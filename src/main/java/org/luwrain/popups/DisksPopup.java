@@ -142,7 +142,7 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	final ListArea.Params<Disk> params = new ListArea.Params<Disk>();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
-	params.model = new ListUtils.FixedModel(getDisks(luwrain)){
+	params.model = new ListUtils.FixedModel<Disk>(getDisks(luwrain)){
 		@Override public void refresh()
 		{
 		    setItems(getDisks(luwrain));

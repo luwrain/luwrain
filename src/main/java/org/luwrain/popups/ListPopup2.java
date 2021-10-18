@@ -25,14 +25,14 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
-public class ListPopup2 extends ListArea implements Popup, PopupClosingTranslator.Provider
+public class ListPopup2<E> extends ListArea<E> implements Popup, PopupClosingTranslator.Provider
 {
     protected final PopupClosingTranslator closing = new PopupClosingTranslator(this);
     protected final Luwrain luwrain;
     protected final Set<Popup.Flags> popupFlags;
     protected Object result = null;
 
-    public ListPopup2(Luwrain luwrain, ListArea.Params params, 
+    public ListPopup2(Luwrain luwrain, ListArea.Params<E> params, 
 			 Set<Popup.Flags> popupFlags)
     {
 	super(params);

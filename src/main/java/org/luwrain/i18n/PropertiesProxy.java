@@ -50,6 +50,7 @@ public final class PropertiesProxy
 	return create(luwrain, langName, props, prefix, cl);
     }
 
+    @SuppressWarnings("unchecked")
     static public <T> T create(Luwrain luwrain, String langName, Properties props, String prefix, Class cl)
     {
 	NullCheck.notNull(luwrain, "luwrain");

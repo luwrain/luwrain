@@ -57,7 +57,7 @@ public class MapScriptObject implements ProxyObject
     {
 	if (membersCache != null)
 	    return membersCache;
-	final List<String> m = new ArrayList();
+	final List<String> m = new ArrayList<>();
 	for(Map.Entry<String, Object> e: members.entrySet())
 	    m.add(e.getKey());
 	membersCache = ProxyArray.fromArray((Object[])m.toArray(new String[m.size()]));

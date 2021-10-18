@@ -101,7 +101,7 @@ public final class ScriptUtils
 
 
 
-        static public List getArray(Object obj)
+        static public List<Object> getArray(Object obj)
     {
 	NullCheck.notNull(obj, "obj");
 	if (ScriptObjectMirror.isUndefined(obj))
@@ -134,7 +134,7 @@ public final class ScriptUtils
 	if (!(obj instanceof JSObject))
 	    return null;
 	final JSObject jsObj = (JSObject)obj;
-	final List<String> res = new LinkedList();
+	final List<String> res = new ArrayList<>();
 	if (!jsObj.isArray())
 	    return null;
 	int index = 0;
@@ -379,6 +379,7 @@ public final class ScriptUtils
 	return createReadOnlyArray(res.toArray(new String[res.size()]));
     }
 
+    @SuppressWarnings("unchecked")
     static public Object getEnumItemByStr(Class enumClass, String itemName)
     {
 	NullCheck.notNull(enumClass, "enumClass");
@@ -390,6 +391,7 @@ public final class ScriptUtils
 	return null;
     }
 
+    @SuppressWarnings("unchecked")
     static public Set getEnumByArrayObj(Class enumClass, Object arrayObj)
     {
 	NullCheck.notNull(enumClass, "enumClass");

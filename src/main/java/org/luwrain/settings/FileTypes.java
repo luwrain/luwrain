@@ -23,49 +23,16 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class FileTypes extends ListArea implements SectionArea
+final class FileTypes extends ListArea<FileTypes.Item> implements SectionArea
 {
-    private static class Item implements Comparable
-    {
-	String extension;
-	String[] shortcuts;
+    private final ControlPanel controlPanel;
 
-	Item(String extension, String[] shortcuts)
-	{
-	    NullCheck.notNull(extension, "extension");
-	    NullCheck.notNullItems(shortcuts, "shortcuts");
-	    this.extension = extension;
-	    this.shortcuts = shortcuts;
-	}
-
-	@Override public String toString()
-	{
-	    if (shortcuts.length == 0)
-		return extension + ": ";
-	    final StringBuilder b = new StringBuilder();
-	    b.append(extension + ": ");
-	    b.append(shortcuts[0]);
-	    for(int i = 1;i < shortcuts.length;++i)
-		b.append(", " + shortcuts[i]);
-	    return new String(b);
-	}
-
-	@Override public int compareTo(Object o)
-	{
-	    if (o == null || !(o instanceof Item))
-		return 0;
-	    return extension.compareTo(((Item)o).extension);
-	}
-    }
-
-    private ControlPanel controlPanel;
-
-    FileTypes(ControlPanel controlPanel, ListArea.Params params)
+    FileTypes(ControlPanel controlPanel, ListArea.Params<Item> params)
     {
 	super(params);
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
-	setListClickHandler((area, index, obj)->editItem(obj));
+	setListClickHandler((area, index, item)->editItem(item));
     }
 
     @Override public boolean onInputEvent(InputEvent event)
@@ -89,7 +56,7 @@ class FileTypes extends ListArea implements SectionArea
 	return true;
     }
 
-    private boolean editItem(Object obj)
+    private boolean editItem(Item item)
     {
 	return false;
     }
@@ -121,11 +88,41 @@ class FileTypes extends ListArea implements SectionArea
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<Item> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
-	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.LIST_ITEM);
+	params.appearance = new ListUtils.DefaultAppearance<>(params.context, Suggestions.LIST_ITEM);
 	params.name = "Типы файлов";
-	params.model = new ListUtils.FixedModel(loadItems(luwrain.getRegistry()));
+	params.model = new ListUtils.FixedModel<>(loadItems(luwrain.getRegistry()));
 	return new FileTypes(controlPanel, params);
+    }
+
+        static final class Item implements Comparable
+    {
+	final String extension;
+	final String[] shortcuts;
+	Item(String extension, String[] shortcuts)
+	{
+	    NullCheck.notNull(extension, "extension");
+	    NullCheck.notNullItems(shortcuts, "shortcuts");
+	    this.extension = extension;
+	    this.shortcuts = shortcuts;
+	}
+	@Override public String toString()
+	{
+	    if (shortcuts.length == 0)
+		return extension + ": ";
+	    final StringBuilder b = new StringBuilder();
+	    b.append(extension + ": ");
+	    b.append(shortcuts[0]);
+	    for(int i = 1;i < shortcuts.length;++i)
+		b.append(", " + shortcuts[i]);
+	    return new String(b);
+	}
+	@Override public int compareTo(Object o)
+	{
+	    if (o == null || !(o instanceof Item))
+		return 0;
+	    return extension.compareTo(((Item)o).extension);
+	}
     }
 }

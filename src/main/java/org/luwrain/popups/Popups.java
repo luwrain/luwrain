@@ -136,19 +136,19 @@ public final class Popups
 	NullCheck.notNull(name, "name");
 	NullCheck.notNullItems(items, "items");
 	NullCheck.notNull(popupFlags, "popupFlags");
-	final ListArea.Model model = new ListArea.Model(){
+	final ListArea.Model<Object> model = new ListArea.Model<Object>(){
 		@Override public int getItemCount() { return items.length; }
 		@Override public Object getItem(int index) { return index < items.length?items[index]:null; }
 		@Override public void refresh() {}
 	    };
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<Object> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
 	params.model = model;
-	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.POPUP_LIST_ITEM);
+	params.appearance = new ListUtils.DefaultAppearance<>(params.context, Suggestions.POPUP_LIST_ITEM);
 	//	params.flags = ListArea.Params.loadPopupFlags(luwrain.getRegistry());
 	params.flags = EnumSet.of(ListArea.Flags.EMPTY_LINE_TOP);
-	final ListPopup popup = new ListPopup(luwrain, params, popupFlags);
+	final ListPopup<Object> popup = new ListPopup<>(luwrain, params, popupFlags);
 	luwrain.popup(popup);
 	if (popup.closing.cancelled())
 	    return null;

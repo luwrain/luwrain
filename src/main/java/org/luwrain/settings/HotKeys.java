@@ -23,50 +23,23 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 
-class HotKeys extends ListArea implements SectionArea
+final class HotKeys extends ListArea<HotKeys.Item> implements SectionArea
 {
-    private static class Item implements Comparable
-    {
-	InputEvent event;
-	Settings.HotKey settings;
-	String command;
+    private final ControlPanel controlPanel;
 
-	Item(Settings.HotKey settings, String command)
-	{
-	    NullCheck.notNull(settings, "settings");
-	    NullCheck.notNull(command, "command");
-	    this.settings = settings;
-	    this.event = new InputEvent(InputEvent.Special.ENTER);
-	    this.command = command;
-	}
-
-	@Override public String toString()
-	{
-	    return command;
-	}
-
-	@Override public int compareTo(Object o)
-	{
-	    if (o == null || !(o instanceof Item))
-		return 0;
-	    return command.compareTo(((Item)o).command);
-	}
-    }
-
-    @Override public boolean saveSectionData()
-    {
-	return true;
-    }
-
-    private ControlPanel controlPanel;
-
-    HotKeys(ControlPanel controlPanel, ListArea.Params params)
+    HotKeys(ControlPanel controlPanel, ListArea.Params<Item> params)
     {
 	super(params);
 	NullCheck.notNull(controlPanel, "controlPanel");
 	this.controlPanel = controlPanel;
-	setListClickHandler((area, index, obj)->editItem(obj));
+	setListClickHandler((area, index, item)->editItem(item));
     }
+
+        @Override public boolean saveSectionData()
+    {
+	return true;
+    }
+
 
     @Override public boolean onInputEvent(InputEvent event)
     {
@@ -84,8 +57,7 @@ class HotKeys extends ListArea implements SectionArea
 	return super.onSystemEvent(event);
     }
 
-
-    private boolean editItem(Object obj)
+    private boolean editItem(Item item)
     {
 	return false;
     }
@@ -110,11 +82,36 @@ return toSort;
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<Item> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
-	params.appearance = new ListUtils.DefaultAppearance(params.context, Suggestions.LIST_ITEM);
-	params.name = "Общие горячие клавиши";
-	params.model = new ListUtils.FixedModel(loadItems(luwrain.getRegistry()));
+	params.appearance = new ListUtils.DefaultAppearance<>(params.context, Suggestions.LIST_ITEM);
+	params.name = "Общие горячие клавиши";//FIXME:
+	params.model = new ListUtils.FixedModel<>(loadItems(luwrain.getRegistry()));
 	return new HotKeys(controlPanel, params);
+    }
+
+        static final class Item implements Comparable
+    {
+	final InputEvent event;
+	final Settings.HotKey settings;
+	final String command;
+	Item(Settings.HotKey settings, String command)
+	{
+	    NullCheck.notNull(settings, "settings");
+	    NullCheck.notNull(command, "command");
+	    this.settings = settings;
+	    this.event = new InputEvent(InputEvent.Special.ENTER);
+	    this.command = command;
+	}
+	@Override public String toString()
+	{
+	    return command;
+	}
+	@Override public int compareTo(Object o)
+	{
+	    if (o == null || !(o instanceof Item))
+		return 0;
+	    return command.compareTo(((Item)o).command);
+	}
     }
 }

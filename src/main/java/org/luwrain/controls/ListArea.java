@@ -145,12 +145,12 @@ public interface ClipboardSaver<E>
 	this.listClickHandler = clickHandler;
     }
 
-    public Model getListModel()
+    public Model<E> getListModel()
     {
 	return listModel;
     }
 
-    public Appearance getListAppearance()
+    public Appearance<E> getListAppearance()
     {
 	return listAppearance;
     }

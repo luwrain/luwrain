@@ -34,14 +34,14 @@ import org.luwrain.io.json.*;
 
 import static org.luwrain.core.DefaultEventResponse.*;
 
-final class MainMenu extends EditableListArea implements SectionArea
+final class MainMenu extends EditableListArea<UniRefInfo> implements SectionArea
 {
     private final Gson gson = new Gson();
     private final ControlPanel controlPanel;
     private final Luwrain luwrain;
     private final Settings.UserInterface sett;
 
-    MainMenu(ControlPanel controlPanel, EditableListArea.Params params)
+    MainMenu(ControlPanel controlPanel, EditableListArea.Params<UniRefInfo> params)
     {
 	super(params);
 	NullCheck.notNull(controlPanel, "controlPanel");
@@ -53,10 +53,10 @@ final class MainMenu extends EditableListArea implements SectionArea
 
         @Override public boolean saveSectionData()
     {
-	final List<UniRefInfo> model = (List)getListModel();
+	final ListArea.Model<UniRefInfo> model = getListModel();
 	final List<MainMenuItem> items = new ArrayList<>();
-	for(UniRefInfo info: model)
-	    items.add(new MainMenuItem(MainMenuItem.TYPE_UNIREF, info.getValue()));
+	for(int i = 0;i < model.getItemCount();i++)
+	    items.add(new MainMenuItem(MainMenuItem.TYPE_UNIREF, model.getItem(i).getValue()));
 	sett.setMainMenuContent(gson.toJson(items));
 	return true;
     }

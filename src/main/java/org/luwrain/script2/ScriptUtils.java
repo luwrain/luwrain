@@ -44,14 +44,14 @@ public final class ScriptUtils
 	return values.length == len;
     }
 
-    static public List getArrayItems(Object o)
+    static public List<Object> getArrayItems(Object o)
     {
 	if (o == null || !(o instanceof Value))
 	    return null;
 	final Value value = (Value)o;
 	if (!value.hasArrayElements())
 	    return null;
-	final List<Value> res = new ArrayList<>();
+	final List<Object> res = new ArrayList<>();
 	for(long i = 0;i < value.getArraySize();i++)
 	    res.add(value.getArrayElement(i));
 	return res;

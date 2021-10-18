@@ -133,7 +133,7 @@ public final class TextScriptUtils
 	if (model == null || !(model instanceof MultilineEditCorrector))
 	    return false;
 	final MultilineEditCorrector corrector = (MultilineEditCorrector)model;
-	final AtomicReference res = new AtomicReference();
+	final AtomicReference<Object> res = new AtomicReference<>();
 	corrector.doEditAction((lines, hotPoint)->{
 		try {
 		    res.set(new Boolean(new ChainOfResponsibilityHook(context).runNoExcept(hookName, new Object[]{

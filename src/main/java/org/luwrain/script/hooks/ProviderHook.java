@@ -35,7 +35,7 @@ public class ProviderHook
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
-	final AtomicReference res = new AtomicReference();
+	final AtomicReference<Object> res = new AtomicReference<>();
 	hookContainer.runHooks(hookName, (hook)->{
 		try {
 		    final Object obj = hook.run(args);

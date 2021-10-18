@@ -37,7 +37,7 @@ public class CollectorHook
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
 	final List<Object> res = new ArrayList<>();
-	final AtomicReference ex = new AtomicReference();
+	final AtomicReference<RuntimeException> ex = new AtomicReference<>();
 	hookContainer.runHooks(hookName, (hook)->{
 		try {
 		    final Object obj = hook.run(args);
@@ -52,8 +52,8 @@ public class CollectorHook
 		    return Luwrain.HookResult.BREAK;
 		}
 	    });
-	if (ex.get() != null && ex.get() instanceof RuntimeException)
-	    throw (RuntimeException)ex.get();
+	if (ex.get() != null)
+	    throw ex.get();
 	return res.toArray(new Object[res.size()]);
     }
 
@@ -65,7 +65,7 @@ public class CollectorHook
 	final Object[] objs = run(hookName, args);
 	for(Object o: objs)
 	{
-	    final List values = ScriptUtils.getArrayItems(o);
+	    final List<Object> values = ScriptUtils.getArrayItems(o);
 	    if (values == null)
 		throw new RuntimeException("The hook \'" + hookName + "\' has returned non-array value");
 	    res.addAll(values);
