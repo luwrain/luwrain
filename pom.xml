@@ -7,9 +7,9 @@
     <version>1.9.02</version>
   </parent>
   <artifactId>luwrain</artifactId>
-  <name>LUWRAIN</name>
+  <name>LUWRAIN core</name>
   <description>A platform for the creation of apps for the blind and partially-sighted</description>
-  <url>https://github.com/luwrain/luwrain/</url>
+  <url>https://luwrain.org/?lang=en</url>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>

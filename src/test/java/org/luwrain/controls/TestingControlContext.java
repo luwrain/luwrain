@@ -134,4 +134,5 @@ public class TestingControlContext implements ControlContext
     @Override public int getAreaVisibleWidth(Area area) { return 80; }
     @Override public void sayStaticStr(LangStatic str) {}
     @Override public void message(String text, Luwrain.MessageType messageType) {}
+    @Override public void runUiSafely(Runnable runnable) {}
     }

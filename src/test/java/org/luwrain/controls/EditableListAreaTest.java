@@ -26,7 +26,7 @@ import org.luwrain.core.queries.*;
 {
     @Test public void clear()
     {
-	final EditableListArea.Model model = new ListUtils.DefaultEditableModel(new String[]{"1", "2", "3"});
+	final EditableListArea.Model<Object> model = new ListUtils.DefaultEditableModel<Object>(Object.class, new String[]{"1", "2", "3"});
 	final EditableListArea.Params params = new EditableListArea.Params();
 	params.context = new TestingControlContext();
 	params.model = model;
@@ -41,7 +41,7 @@ import org.luwrain.core.queries.*;
     {
 	for(int i = 0;i < 5;i++)
 	{
-	    final EditableListArea.Model model = new ListUtils.DefaultEditableModel(new String[]{"0", "1", "2", "3", "4"});
+	    final EditableListArea.Model<Object> model = new ListUtils.DefaultEditableModel<Object>(Object.class, new String[]{"0", "1", "2", "3", "4"});
 	final EditableListArea.Params params = new EditableListArea.Params();
 	final TestingControlContext context = new TestingControlContext();
 	params.context = context;
@@ -66,7 +66,7 @@ import org.luwrain.core.queries.*;
     {
 	for(int i = 0;i < 5;i++)
 	{
-	    final EditableListArea.Model model = new ListUtils.DefaultEditableModel(new String[]{"0", "1", "2", "3", "4"});
+	    final EditableListArea.Model<Object> model = new ListUtils.DefaultEditableModel<Object>(Object.class, new String[]{"0", "1", "2", "3", "4"});
 	final EditableListArea.Params params = new EditableListArea.Params();
 	final TestingControlContext context = new TestingControlContext();
 	params.context = context;
