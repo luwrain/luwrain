@@ -20,6 +20,7 @@ package org.luwrain.controls;
 
 import java.util.*;
 import java.io.*;
+import java.util.function.Function;
 
 import org.luwrain.core.*;
 
@@ -525,7 +526,7 @@ mark(o);
     static public class DefaultClipboardSaver<E> implements ListArea.ClipboardSaver<E>
     {
 	@Override public boolean saveToClipboard(ListArea<E> listArea, ListArea.Model<E> model, ListArea.Appearance<E> appearance,
-						    int fromIndex, int toIndex, Clipboard clipboard)
+						 int fromIndex, int toIndex, Clipboard clipboard)
 	{
 	    NullCheck.notNull(listArea, "listArea");
 	    NullCheck.notNull(model, "model");
@@ -537,16 +538,65 @@ mark(o);
 		throw new IllegalArgumentException("toIndex may not be negative (" + toIndex + ")");
 	    if (fromIndex >= toIndex)
 		return false;
-final List<String> res = new ArrayList<>();
+	    final ArrayList<Object> res = new ArrayList<>();
+	    final ArrayList<String> strRes = new ArrayList<>();
+	    res.ensureCapacity(toIndex - fromIndex);
+	    strRes.ensureCapacity(fromIndex - toIndex);
 	    for(int i = fromIndex;i < toIndex;++i)
 	    {
-	    final E obj = model.getItem(i);
-	    if (obj == null)
-		return false;
-	    res.add(appearance.getScreenAppearance(obj, EnumSet.of(ListArea.Appearance.Flags.CLIPBOARD)));
-	}
-	    clipboard.set(res.toArray(new String[res.size()]));
+		final E obj = model.getItem(i);
+		if (obj == null)
+		    return false;
+		res.add(getClipboardObj(appearance, obj));
+		strRes.add(getClipboardString(appearance, obj));
+		if (res.get(res.size() - 1) == null || strRes.get(strRes.size() - 1) == null)
+		    return false;
+	    }
+	    clipboard.set(res.toArray(new Object[res.size()]), strRes.toArray(new String[strRes.size()]));
 	    return true;
+	}
+	protected String getClipboardString(ListArea.Appearance<E> appearance, E obj)
+	{
+	    NullCheck.notNull(appearance, "appearance");
+	    NullCheck.notNull(obj, "obj");
+	    return appearance.getScreenAppearance(obj, EnumSet.of(ListArea.Appearance.Flags.CLIPBOARD));
+	}
+	protected Object getClipboardObj(ListArea.Appearance<E> appearance, E obj)
+	{
+	    NullCheck.notNull(appearance, "appearance");
+	    NullCheck.notNull(obj, "obj");
+	    if (obj instanceof java.io.File ||
+		obj instanceof java.net.URL ||
+		obj instanceof java.net.URI)
+		return obj;
+	    return appearance.getScreenAppearance(obj, EnumSet.of(ListArea.Appearance.Flags.CLIPBOARD));
+	}
+    }
+
+    static public class FunctionalClipboardSaver<E> extends DefaultClipboardSaver<E>
+    {
+	protected final Function<E, Object> objFunc;
+	protected final Function<E, String> strFunc;
+	public FunctionalClipboardSaver(Function<E, Object> objFunc, Function<E, String> strFunc)
+	{
+	    NullCheck.notNull(objFunc, "objFunc");
+	    NullCheck.notNull(strFunc, "strFunc");
+	    this.objFunc = objFunc;
+	    this.strFunc = strFunc;
+	}
+	@Override protected Object getClipboardObj(ListArea.Appearance<E> appearance, E obj)
+	{
+	    NullCheck.notNull(appearance, "appearance");
+	    NullCheck.notNull(obj, "obj");
+	    final Object res = objFunc.apply(obj);
+	    return res != null?res:super.getClipboardObj(appearance, obj);
+	}
+	@Override protected String getClipboardString(ListArea.Appearance<E> appearance, E obj)
+	{
+	    NullCheck.notNull(appearance, "appearance");
+	    NullCheck.notNull(obj, "obj");
+	    final String res = strFunc.apply(obj);
+	    return res != null?res:super.getClipboardString(appearance, obj);
 	}
     }
 }
