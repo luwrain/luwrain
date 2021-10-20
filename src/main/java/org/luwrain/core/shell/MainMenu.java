@@ -120,22 +120,34 @@ public final class MainMenu extends ListArea<MainMenuItem> implements PopupClosi
 	final MainMenuItem[] items = MainMenuItem.fromJson(ui.getMainMenuContent(""));
 	final ListArea.Params<MainMenuItem> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
+	final Appearance appearance = new Appearance(params.context);
 	params.model = new ListUtils.FixedModel<>(items);
-	params.appearance = new Appearance(new DefaultControlContext(luwrain));
+	params.appearance = appearance;
 	params.transition = new Transition(params.model, (Appearance)params.appearance);
 	params.name = luwrain.i18n().getStaticStr("MainMenuName");
-	final MainMenu mainMenu = new MainMenu(luwrain, params);
-	return mainMenu;
+	params.clipboardSaver = new ListUtils.DefaultClipboardSaver<MainMenuItem>(){
+		@Override protected Object getClipboardObj(ListArea.Appearance<MainMenuItem> a, MainMenuItem item)
+		{
+		    NullCheck.notNull(a, "a");
+		    NullCheck.notNull(item, "item");
+		    return appearance.getUniRefInfo(item);
+		}
+		@Override protected String getClipboardString(ListArea.Appearance<MainMenuItem> a, MainMenuItem item)
+		{
+		    NullCheck.notNull(a, "a");
+		    NullCheck.notNull(item, "item");
+		    return appearance.getUniRefInfo(item).getTitle();
+		}
+	    };
+
+	return new MainMenu(luwrain, params);
     }
 
-    static public final class Appearance extends ListUtils.DoubleLevelAppearance<MainMenuItem>
+    static final class Appearance extends ListUtils.DoubleLevelAppearance<MainMenuItem>
     {
 	static private final String STATIC_PREFIX = "static:";
 	private final Map<String, UniRefInfo> uniRefCache = new HashMap<>();
-	public Appearance(ControlContext context)
-	{
-	    super(context);
-	}
+	Appearance(ControlContext context) { super(context); }
 	@Override public boolean isSectionItem(MainMenuItem item)
 	{
 	    NullCheck.notNull(item, "item");
@@ -170,19 +182,14 @@ public final class MainMenu extends ListArea<MainMenuItem> implements PopupClosi
 	    NullCheck.notNull(item, "item");
 	    context.setEventResponse(DefaultEventResponse.text(Sounds.DOC_SECTION, context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));//FIXME:DefaultEventResponse.listItem()
 	}
-	UniRefInfo getUniRefInfo(Object obj)
+	UniRefInfo getUniRefInfo(MainMenuItem item)
 	{
-	    	    NullCheck.notNull(obj, "obj");
-	    if (obj instanceof UniRefInfo)
-		return (UniRefInfo)obj;
-	    final String value;
-	    if (obj instanceof MainMenuItem)
-		value = ((MainMenuItem)obj).getValueNotNull(); else
-		value = obj.toString();
+	    NullCheck.notNull(item, "item");
+		final String value = item.getValueNotNull();
 	    if (uniRefCache.containsKey(value))
 		return uniRefCache.get(value);
 	    final UniRefInfo info = context.getUniRefInfo(value);
-	    uniRefCache.put(obj.toString(), info);
+	    uniRefCache.put(value, info);
 	    return info;
 	}
     }

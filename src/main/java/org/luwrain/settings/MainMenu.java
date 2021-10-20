@@ -104,12 +104,12 @@ final class MainMenu extends EditableListArea<UniRefInfo> implements SectionArea
 		}
 	    };
 	params.clipboardSaver = new ListUtils.FunctionalClipboardSaver<>(
-								       (entry)->{ return entry; },
-								       (entry)->entry.getTitle());
-		return new MainMenu(controlPanel, params);
+									 (entry)->{ return entry; },
+									 (entry)->entry.getTitle());
+	return new MainMenu(controlPanel, params);
     }
 
-static private final class Appearance extends ListUtils.DoubleLevelAppearance<UniRefInfo>
+    static private final class Appearance extends ListUtils.DoubleLevelAppearance<UniRefInfo>
     {
 	static private final String STATIC_PREFIX = "static:";
 	Appearance(Luwrain luwrain) { super(new DefaultControlContext(luwrain)); }
