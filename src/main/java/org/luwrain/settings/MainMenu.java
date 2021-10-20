@@ -100,7 +100,7 @@ final class MainMenu extends EditableListArea<UniRefInfo> implements SectionArea
 		@Override public UniRefInfo adjust(Object o)
 		{
 		    NullCheck.notNull(o, "o");
-		    return UniRefUtils.make(o.toString());
+		    return UniRefUtils.make(luwrain, o.toString());
 		}
 	    };
 	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
