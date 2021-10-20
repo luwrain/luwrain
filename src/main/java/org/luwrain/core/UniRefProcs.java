@@ -38,17 +38,16 @@ public final class UniRefProcs
 
 	    //file
 	    new UniRefProc() {
-		static private final String PREFIX = "file:";
+		static private final String PREFIX = TYPE_FILE + ":";
 		@Override public String getUniRefType()
-		{
-		    return "file";
-		}
+		{ return TYPE_FILE; }
 		@Override public UniRefInfo getUniRefInfo(String uniRef)
 		{
 		    NullCheck.notEmpty(uniRef, "uniRef");
 		    if (!uniRef.startsWith(PREFIX))
 			return null;
-		    return new UniRefInfo(uniRef, "file", uniRef.substring(5), uniRef.substring(5));
+		    final File file = new File(uniRef.substring(PREFIX.length()));
+		    return new UniRefInfo(uniRef, TYPE_FILE, file.getAbsolutePath(), file.getName());
 		}
 		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{

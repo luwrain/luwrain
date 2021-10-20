@@ -100,27 +100,14 @@ final class MainMenu extends EditableListArea<UniRefInfo> implements SectionArea
 		@Override public UniRefInfo adjust(Object o)
 		{
 		    NullCheck.notNull(o, "o");
-		    return UniRefUtils.make(luwrain, o.toString());
+		    return UniRefUtils.make(luwrain, o);
 		}
 	    };
-	params.clipboardSaver = (area, model, appearance, fromIndex, toIndex, clipboard)->{
-	    final List<UniRefInfo> u = new ArrayList<>();
-	    final List<String> s = new ArrayList<String>();
-	    for(int i = fromIndex;i < toIndex;++i)
-	    {
-		final Object obj = model.getItem(i);
-		if (!(obj instanceof UniRefInfo))
-		    continue;
-		final UniRefInfo uniRefInfo = (UniRefInfo)obj;
-		u.add(uniRefInfo);
-		s.add(uniRefInfo.getTitle());
-	    }
-	    clipboard.set(u.toArray(new UniRefInfo[u.size()]), s.toArray(new String[s.size()]));
-	    return true;
-	};
-	return new MainMenu(controlPanel, params);
+	params.clipboardSaver = new ListUtils.FunctionalClipboardSaver<>(
+								       (entry)->{ return entry; },
+								       (entry)->entry.getTitle());
+		return new MainMenu(controlPanel, params);
     }
-
 
 static private final class Appearance extends ListUtils.DoubleLevelAppearance<UniRefInfo>
     {
@@ -157,24 +144,5 @@ static private final class Appearance extends ListUtils.DoubleLevelAppearance<Un
 	    NullCheck.notNull(info, "info");
 	    context.setEventResponse(text(Sounds.DOC_SECTION, context.getSpeakableText(getNonSectionScreenAppearance(info), Luwrain.SpeakableTextType.NATURAL)));//FIXME:DefaultEventResponse.listItem()
 	}
-	/*
-	UniRefInfo getUniRefInfo(Object obj)
-	{
-	    	    NullCheck.notNull(obj, "obj");
-	    if (obj instanceof UniRefInfo)
-		return (UniRefInfo)obj;
-	    final String value;
-	    if (obj instanceof MainMenuItem)
-		value = ((MainMenuItem)obj).getValueNotNull(); else
-		value = obj.toString();
-	    if (uniRefCache.containsKey(value))
-		return uniRefCache.get(value);
-	    final UniRefInfo info = context.getUniRefInfo(value);
-	    uniRefCache.put(obj.toString(), info);
-	    return info;
-	}
-	*/
     }
-
-    
 }

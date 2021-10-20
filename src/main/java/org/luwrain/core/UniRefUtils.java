@@ -24,7 +24,9 @@ import org.luwrain.controls.ControlContext;
 
 public final class UniRefUtils
 {
-    static public final String ALIAS = "alias";
+    static private final String
+	ALIAS = UniRefProcs.TYPE_ALIAS,
+	FILE = UniRefProcs.TYPE_FILE;
 
         static public String makeUniRef(String component, String addr)
     {
@@ -46,7 +48,7 @@ public final class UniRefUtils
     {
 	NullCheck.notNull(file, "file");
 	final String path = file.getAbsolutePath();
-	return new UniRefInfo(UniRefInfo.makeValue(UniRefProcs.TYPE_FILE, path), UniRefProcs.TYPE_FILE, path, path);
+	return new UniRefInfo(UniRefInfo.makeValue(FILE, path), FILE, path, file.getName());
     }
 
     static public UniRefInfo make(java.net.URL url)
