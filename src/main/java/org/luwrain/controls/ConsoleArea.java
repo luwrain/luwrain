@@ -25,6 +25,8 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.i18n.LangStatic;//FIXME:deleting
 
+import static org.luwrain.core.DefaultEventResponse.*;
+
 public class ConsoleArea<E> extends NavigationArea implements  EmbeddedEditLines
 {
     public enum InputPos {TOP, BOTTOM};
@@ -109,7 +111,7 @@ public class ConsoleArea<E> extends NavigationArea implements  EmbeddedEditLines
 
     public void moveHotPointToInput()
     {
-	setHotPoint(enteringPrefix.length() + enteringText.length(), getEnteringLineIndex());
+	setHotPoint(enteringPrefix.length(), getEnteringLineIndex());
     }
 
     public void setInputPrefix(String prefix)
@@ -176,10 +178,10 @@ public class ConsoleArea<E> extends NavigationArea implements  EmbeddedEditLines
 	    return super.onAltHome(event);
 	moveHotPointToInput();
 	if (enteringText.isEmpty())
-	    context.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE)); else
+	    context.setEventResponse(hint(Hint.EMPTY_LINE)); else
 	    if (enteringText.trim().isEmpty())
-		context.setEventResponse(DefaultEventResponse.hint(Hint.SPACES)); else
-		context.setEventResponse(DefaultEventResponse.text(enteringText));
+		context.setEventResponse(hint(Hint.SPACES)); else
+		context.setEventResponse(text(enteringText));
 	return true;
     }
 

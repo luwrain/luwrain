@@ -143,6 +143,12 @@ public interface ActionHandler
 	this.okHandler = okHandler;
     }
 
+        protected Area getWrappingArea(Area area)
+    {
+	NullCheck.notNull(area, "area");
+	return getWrappingArea(area, null);
+    }
+
     protected Area getWrappingArea(Area area, Actions actions)
     {
 	NullCheck.notNull(area, "area");
@@ -331,6 +337,24 @@ public interface ActionHandler
 	    throw new IllegalStateException("No app instance, provide it with the corresponding constructor");
 		final Area a = areaWrappers.get(area);
 		app.getLuwrain().setActiveArea(a != null?a:area);
+    }
+
+    public int getAreaVisibleWidth(Area area)
+    {
+	NullCheck.notNull(area, "area");
+			if (app == null)
+	    throw new IllegalStateException("No app instance, provide it with the corresponding constructor");
+		final Area a = areaWrappers.get(area);
+		return app.getLuwrain().getAreaVisibleWidth(a != null?a:area);
+    }
+
+        public int getAreaVisibleHeight(Area area)
+    {
+	NullCheck.notNull(area, "area");
+			if (app == null)
+	    throw new IllegalStateException("No app instance, provide it with the corresponding constructor");
+		final Area a = areaWrappers.get(area);
+		return app.getLuwrain().getAreaVisibleHeight(a != null?a:area);
     }
 
     protected interface ListParams<E> { void setListParams(ListArea.Params<E> params); }

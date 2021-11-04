@@ -26,6 +26,8 @@ import org.luwrain.core.events.*;
 import org.luwrain .util.*;
 import org.luwrain.i18n.LangStatic;//FIXME:deleting
 
+import static org.luwrain.core.DefaultEventResponse.*;
+
 /**
  * An area with basic navigation operations. This abstract class
  * implements the usual behaviour for navigation over the static text
@@ -287,7 +289,7 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	hotPointY = Math.min(hotPointY, count - 1);
 	if (hotPointY + 1 >= count)
 	{
-	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_BELOW));
+	    context.setEventResponse(hint(Hint.NO_LINES_BELOW));
 	    return true;
 	}
 	final int index = Math.min(getNextBlockLine(hotPointY), count - 1);
@@ -300,13 +302,18 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	return true;
     }
 
+    protected boolean isBlockBoundLine(int index, String line)
+    {
+	return line.trim().isEmpty();
+    }
+
     protected int getNextBlockLine(int startFrom)
     {
 		final int count = getValidLineCount();
 	int index = startFrom;
-		while(index < count - 1 && !getLineNotNull(index).isEmpty())
+	while(index < count - 1 && !isBlockBoundLine(index, getLineNotNull(index)))
 	    index++;
-		while(index < count - 1 && getLineNotNull(index).isEmpty())
+	while(index < count - 1 && isBlockBoundLine(index, getLineNotNull(index)))
 	    index++;
 		return index;
 		    }
@@ -320,7 +327,6 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
 	    context.setEventResponse(DefaultEventResponse.hint(Hint.NO_LINES_ABOVE));
 	    return true;
 	}
-
 		final int index = Math.min(getPrevBlockLine(hotPointY), count - 1);
 	if (index < 0)
 	    return false;
@@ -336,10 +342,18 @@ public abstract class NavigationArea implements Area, HotPointControl, Clipboard
     {
 			final int count = getValidLineCount();
 	int index = startFrom;
-		while(index > 0 && !getLineNotNull(index).isEmpty())
+	while(index > 0 && !isBlockBoundLine(index, getLineNotNull(index)))
 	    index--;
-		while(index > 0 && getLineNotNull(index).isEmpty())
+	while(index > 0 && isBlockBoundLine(index, getLineNotNull(index)))
 	    index--;
+	if (index == 0)
+	    return 0;
+	//Looking for the first line of the block, we are at the last one now 
+		while(index > 0 && !isBlockBoundLine(index, getLineNotNull(index)))
+	    index--;
+		//If we are on the line before the block, making one step down
+		if (isBlockBoundLine(index, getLineNotNull(index)))
+		    index++;
 		return index;
     }
 
