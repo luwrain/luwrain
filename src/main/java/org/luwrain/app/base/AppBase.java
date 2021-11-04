@@ -35,6 +35,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     private String appName = "";
     private Area[] visibleAreas = new Area[0];
     private FutureTask task = null;
+    private boolean tabProcessing = true;
 
     public interface TaskRunnable
     {
@@ -134,13 +135,15 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	    }
 	    return onEscape();
 	case TAB:
+	    if (tabProcessing)
 	    {
 		final Area nextArea = layout.getLayout().getNextArea(area);
 		if (nextArea == null)
 		    return false;
 		luwrain.setActiveArea(nextArea);
 		return true;
-	    }
+	    } else
+		return false;
 	}
 	return false;
     }
@@ -333,5 +336,15 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
     {
 	NullCheck.notNull(text, "text");
 	luwrain.message(text);
+    }
+
+    protected boolean getTabProcessing()
+    {
+	return this.tabProcessing;
+    }
+
+    protected void setTabProcessing(boolean tabProcessing)
+    {
+	this.tabProcessing = tabProcessing;
     }
 }

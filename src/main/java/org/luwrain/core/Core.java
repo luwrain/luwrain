@@ -74,7 +74,7 @@ final class Core extends EventDispatching
 	workers.finish();
 	playSound(Sounds.SHUTDOWN);
 	    try {
-		Thread.sleep(2500);//FIXME:
+		Thread.sleep(3000);//FIXME:
 	    } catch (InterruptedException ie)
 	    {
 		Thread.currentThread().interrupt();
