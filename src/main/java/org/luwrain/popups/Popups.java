@@ -116,9 +116,8 @@ public final class Popups
 	return popup.text ();
     }
 
-    static public String editWithHistory(Luwrain luwrain,
-					 String name, String prefix, String text, 
-					 Set<String> history)
+    static public String editWithHistory(Luwrain luwrain, String name,
+					 String prefix, String text, Set<String> history)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");

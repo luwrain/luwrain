@@ -94,7 +94,7 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return this.appName;
     }
 
-    protected void setAppName(String appName)
+    public void setAppName(String appName)
     {
 	NullCheck.notEmpty(appName, "appName");
 	this.appName = appName;
