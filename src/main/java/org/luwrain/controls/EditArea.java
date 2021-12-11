@@ -18,7 +18,8 @@
 
 package org.luwrain.controls;
 
-import java.util.concurrent.atomic.*; 
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -38,6 +39,11 @@ public interface Appearance extends MultilineEdit.Appearance
 	void onEditChange();
     }
 
+    public interface InputEventListener
+    {
+	boolean onEditAreaInputEvent(EditArea area, InputEvent event);
+    }
+
     public interface EditFactory
     {
 	MultilineEdit newMultilineEdit(MultilineEdit.Params params);
@@ -45,10 +51,7 @@ public interface Appearance extends MultilineEdit.Appearance
 
     static public final class Params
     {
-	public Params()
-	{
-	}
-
+	public Params() {}
 	public Params(ControlContext context)
 	{
 	    NullCheck.notNull(context, "context");
@@ -62,6 +65,7 @@ public interface Appearance extends MultilineEdit.Appearance
 	public MutableLines content = null;
 	public ChangeListener changeListener = null;
 	public EditFactory editFactory = null;
+	public List<InputEventListener> inputEventListeners = null;
     }
 
     protected final MutableLinesChangeListener content;
@@ -70,6 +74,7 @@ public interface Appearance extends MultilineEdit.Appearance
     protected String areaName = "";
     protected final ChangeListener changeListener;
     protected final MultilineEdit edit;
+    protected final List<InputEventListener> inputEventListeners;
 
     public EditArea(Params params)
     {
@@ -89,6 +94,9 @@ public interface Appearance extends MultilineEdit.Appearance
 	this.changeListener = params.changeListener;
 this.basicCorrector = createBasicCorrector();
 	    this.edit = createEdit(params);
+	    if (params.inputEventListeners != null)
+		this.inputEventListeners = new ArrayList<>(params.inputEventListeners); else
+		this.inputEventListeners = new ArrayList<>();
     }
 
     protected MultilineEditCorrector createBasicCorrector()

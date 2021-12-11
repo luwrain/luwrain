@@ -170,7 +170,7 @@ final class LuwrainObj implements ProxyObject
 	final String name = args[0].asString();
 	if (name.trim().isEmpty())
 	    return false;
-	extObjs.add(new ShortcutWrapper(this, name.trim(), luwrain.getFileProperty(Luwrain.PROP_DIR_DATA), args[1]));
+	extObjs.add(new ShortcutImpl(this, name.trim(), luwrain.getFileProperty(Luwrain.PROP_DIR_DATA), args[1]));
 	return true;
 	    }
 
@@ -190,7 +190,7 @@ final class LuwrainObj implements ProxyObject
 	    return false;
 	if (firstLaunchDelay == 0 || launchPeriod == 0)
 	    return false;
-	extObjs.add(new WorkerWrapper(this, name.trim(), firstLaunchDelay, launchPeriod, args[3]));
+	extObjs.add(new WorkerImpl(this, name.trim(), firstLaunchDelay, launchPeriod, args[3]));
 	return true;
     }
 

@@ -17,54 +17,46 @@
 package org.luwrain.script.core;
 
 import java.io.*;
-
+import java.util.*;
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 
-import static org.luwrain.script2.ScriptUtils.*;
-
-final class ShortcutWrapper implements Shortcut
+final class WorkerImpl implements Worker
 {
     private final LuwrainObj luwrainObj;
     private final String name;
-    private final File dataDir;
-    private final Value cons;
+    private final int firstLaunchDelay, launchPeriod;
+    private final Value func;
 
-    ShortcutWrapper(LuwrainObj luwrainObj, String name, File dataDir, Value cons)
+    WorkerImpl(LuwrainObj luwrainObj, String name, int firstLaunchDelay, int launchPeriod, Value func)
     {
 	NullCheck.notNull(luwrainObj, "luwrainObj");
 	NullCheck.notEmpty(name, "name");
-	NullCheck.notNull(dataDir, "dateDir");
-	NullCheck.notNull(cons, "cons");
+	NullCheck.notNull(func, "func");
 	this.luwrainObj = luwrainObj;
 	this.name = name;
-	this.dataDir = dataDir;
-	this.cons = cons;
+	this.firstLaunchDelay = firstLaunchDelay;
+	this.launchPeriod = launchPeriod;
+	this.func = func;
     }
 
-    @Override public Application[] prepareApp(String[] args)
+    @Override public void run()
     {
-	NullCheck.notNullItems(args, "args");
 	synchronized(luwrainObj.syncObj) {
-	    final Value newObj = cons.newInstance(ProxyArray.fromArray((Object[])args));
-	    if (newObj == null || newObj.isNull())
-		return null;
-	    final String name = asString(getMember(newObj, "name"));
-	    final String type = asString(getMember(newObj, "type"));
-	    if (name == null || name.trim().isEmpty())
-		return null;
-	    if (type == null)
-		return null;
-	    switch(type.trim().toUpperCase())
-	    {
-	    case "SIMPLE":
-		return new Application[]{new org.luwrain.script.app.Simple(name, dataDir, newObj, luwrainObj.syncObj)};
-	    default:
-		return null;
-	    }
+	    func.execute(null, new Object[0]);
 	}
+    }
+
+    @Override public int getFirstLaunchDelay()
+    {
+	return firstLaunchDelay;
+    }
+
+    @Override public int getLaunchPeriod()
+    {
+	return launchPeriod;
     }
 
     @Override public String getExtObjName()
