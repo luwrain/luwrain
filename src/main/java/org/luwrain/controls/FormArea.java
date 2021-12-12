@@ -560,8 +560,10 @@ final int count = multilineEditLines.getLineCount();
 		return true;
 	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()))
 	    {
+		/*
 		if (org.luwrain.script.TextScriptUtils.runMultilineEditInputEventHook(context, EditArea.INPUT_EVENT_HOOK, this, multilineEdit, event, multilineEditRegionPoint))
 		    return true;
+		*/
 		if (multilineEdit.onInputEvent(event))
 	    return true;
 	    }

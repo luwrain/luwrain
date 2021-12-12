@@ -179,7 +179,7 @@ return (MessageArea.Attachment)obj;
     {
 	final MultilineEdit.Params params = createMultilineEditParams(context, lines);
 	final MultilineEditCorrector corrector = (MultilineEditCorrector)params.model;
-	params.model = new DirectScriptMultilineEditCorrector(context, corrector, HOOKS_PREFIX);
+	//	params.model = new DirectScriptMultilineEditCorrector(context, corrector, HOOKS_PREFIX);
 	return params;
     }
 }

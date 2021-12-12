@@ -1,7 +1,7 @@
 /*
    Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
 
-   This file is part of LUWRAIN.
+class   This file is part of LUWRAIN.
 
    LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -31,13 +31,15 @@ public final class TextScriptUtils
 {
     static final String LOG_COMPONENT = ScriptUtils.LOG_COMPONENT;
 
+    /*
         static public Object createTextEditHookObject(EditArea editArea)
     {
 	NullCheck.notNull(editArea, "editArea");
 	return createTextEditHookObject(editArea, editArea.getContent(), editArea, editArea.getRegionPoint());
     }
+    */
 
-    static public Object createTextEditHookObject(Area area, MutableLines lines, HotPointControl hotPoint, AbstractRegionPoint regionPoint)
+    static public Object reateTextEditHookObject(Area area, MutableLines lines, HotPointControl hotPoint, AbstractRegionPoint regionPoint)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(lines, "lines");
@@ -65,7 +67,7 @@ public final class TextScriptUtils
 	};
     }
 
-    static public HookObject createRegionHookObject(HotPoint p1, HotPoint p2)
+    static HookObject createRegionHookObject(HotPoint p1, HotPoint p2)
     {
 	final int fromX;
 	final int fromY;
@@ -121,33 +123,4 @@ public final class TextScriptUtils
 	};
     }
 
-    static public boolean runMultilineEditInputEventHook(ControlContext context, String hookName, Area area, MultilineEdit edit, InputEvent event, AbstractRegionPoint regionPoint)
-    {
-	NullCheck.notNull(context, "context");
-	NullCheck.notEmpty(hookName, "hookName");
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(edit, "edit");
-	NullCheck.notNull(event, "event");
-	NullCheck.notNull(regionPoint, "regionPoint");
-	final MultilineEdit.Model model = edit.getMultilineEditModel();
-	if (model == null || !(model instanceof MultilineEditCorrector))
-	    return false;
-	final MultilineEditCorrector corrector = (MultilineEditCorrector)model;
-	final AtomicReference<Object> res = new AtomicReference<>();
-	corrector.doEditAction((lines, hotPoint)->{
-		try {
-		    res.set(new Boolean(new ChainOfResponsibilityHook(context).runNoExcept(hookName, new Object[]{
-				    ScriptUtils.createInputEvent(event),
-				    createTextEditHookObject(area, lines, hotPoint, regionPoint)
-				})));
-		}
-		catch(RuntimeException e)
-		{
-		    Log.error(LOG_COMPONENT, "the " + hookName + " hook failed:" + e.getClass().getName() + ":" + e.getMessage());
-		}
-	    });
-	if (res.get() == null)
-	    return false;
-	return ((Boolean)res.get()).booleanValue();
-    }
 }

@@ -18,15 +18,16 @@ package org.luwrain.script.hooks;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
+import org.graalvm.polyglot.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script.*;
+import org.luwrain.script2.*;
 
-public class NotificationHook
+public class PermissionHook
 {
     protected final HookContainer hookContainer;
 
-    public NotificationHook(HookContainer hookContainer)
+    public PermissionHook(HookContainer hookContainer)
     {
 	NullCheck.notNull(hookContainer, "hookContainer");
 	this.hookContainer = hookContainer;
@@ -37,16 +38,35 @@ public class NotificationHook
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
 	final AtomicBoolean execRes = new AtomicBoolean(true);
+	final AtomicReference<RuntimeException> error = new AtomicReference<>();
 	hookContainer.runHooks(hookName, (hook)->{
 		try {
-hook.run(args);
+		    final Object res = hook.run(args);
+		    if (res == null || !(res instanceof Value))
+		    {
+			execRes.set(false);
+						return Luwrain.HookResult.BREAK;
 		    }
+			final Value value = (Value)res;
+		    if (value.isNull() || !value.isBoolean() || !value.asBoolean())
+		    {
+			execRes.set(false);
+			return Luwrain.HookResult.BREAK;
+		    }
+			return Luwrain.HookResult.CONTINUE;
+		}
 		catch(Throwable e)
 		{
-		    execRes.set(false);
+		    final RuntimeException runtimeEx;
+		    if (!(e instanceof RuntimeException))
+			runtimeEx = new RuntimeException(e); else
+			runtimeEx = (RuntimeException)e;
+		    error.set(runtimeEx);
+		    return Luwrain.HookResult.BREAK;
 		}
-					return Luwrain.HookResult.CONTINUE;
 	    });
+	if (error.get() != null)
+	    throw error.get();
 	return execRes.get();
     }
 }

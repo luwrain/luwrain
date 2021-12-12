@@ -16,17 +16,17 @@
 
 //LWR_API 2.0
 
-package org.luwrain.controls;
+package org.luwrain.script.controls;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 import org.luwrain.script.*;
+import org.luwrain.script.core.*;
 import org.luwrain.util.*;
-
-
 import org.luwrain.controls.MultilineEdit.ModificationResult;
 
 /**
@@ -64,7 +64,7 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
  *   <li>{@code base.split.lines.post}</li>
  * </ul>
  */
-public class DirectScriptMultilineEditCorrector implements MultilineEditCorrector
+public class EditCorrectorHooks implements MultilineEditCorrector
 {
     static protected final String LOG_COMPONENT = "controls";
 
@@ -72,7 +72,7 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
     protected final MultilineEditCorrector base;
     protected final String hookNameBase;
 
-    public DirectScriptMultilineEditCorrector(ControlContext context, MultilineEditCorrector base, String hookNameBase)
+    public EditCorrectorHooks(ControlContext context, MultilineEditCorrector base, String hookNameBase)
     {
 	NullCheck.notNull(context, "context");
 	NullCheck.notNull(base, "base");
@@ -111,11 +111,11 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
     {
 	final Map readOnlyValues = new HashMap();
 	final Map values = new HashMap();
-	if (!runPreHook(hookNameBase + ".delete.char.pre", values, readOnlyValues))
+	if (!runPre(hookNameBase + ".delete.char.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.deleteChar(pos, lineIndex);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".delete.char.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".delete.char.post", values, readOnlyValues);
 	return res;
     }
 
@@ -123,11 +123,11 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
     {
 	final Map readOnlyValues = new HashMap();
 	final Map values = new HashMap();
-	if (!runPreHook(hookNameBase + ".delete.region.pre", values, readOnlyValues))
+	if (!runPre(hookNameBase + ".delete.region.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.deleteRegion(fromX, fromY, toX, toY);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".delete.region.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".delete.region.post", values, readOnlyValues);
 	return res;
     }
 
@@ -136,11 +136,11 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 	NullCheck.notNullItems(lines, "lines");
 	final Map readOnlyValues = new HashMap();
 	final Map values = new HashMap();
-	if (!runPreHook(hookNameBase + ".insert.region.pre", values, readOnlyValues))
+	if (!runPre(hookNameBase + ".insert.region.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.insertRegion(x, y, lines);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".insert.region.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".insert.region.post", values, readOnlyValues);
 	return res;
     }
 
@@ -152,11 +152,11 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 	readOnlyValues.put("chars", str);
 	values.put("x", new Integer(pos));
 	values.put("y", new Integer(lineIndex));
-	if (!runPreHook(hookNameBase + ".insert.chars.pre", values, readOnlyValues))
+	if (!runPre(hookNameBase + ".insert.chars.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.putChars(pos, lineIndex, str);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".insert.chars.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".insert.chars.post", values, readOnlyValues);
 	return res;
     }
 
@@ -164,11 +164,11 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
     {
 	final Map readOnlyValues = new HashMap();
 	final Map values = new HashMap();
-	if (!runPreHook(hookNameBase + ".merge.lines.pre", values, readOnlyValues))
+	if (!runPre(hookNameBase + ".merge.lines.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.mergeLines(firstLineIndex);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".merge.lines.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".merge.lines.post", values, readOnlyValues);
 	return res;
     }
 
@@ -176,11 +176,11 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
     {
 	final Map readOnlyValues = new HashMap();
 	final Map values = new HashMap();
-	if (!runPreHook(hookNameBase + ".split.lines.pre", values, readOnlyValues))
+	if (!runPre(hookNameBase + ".split.lines.pre", values, readOnlyValues))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.splitLine(pos, lineIndex);
 	if (res.isPerformed())
-	    runPostHook(hookNameBase + ".split.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".split.post", values, readOnlyValues);
 	return res;
     }
 
@@ -192,114 +192,31 @@ public class DirectScriptMultilineEditCorrector implements MultilineEditCorrecto
 	return base.doEditAction(action);
     }
 
-    protected boolean runPreHook(String hookName, Map values, Map readOnlyValues)
+    protected boolean runPre(String hookName, Map values, Map readOnlyValues)
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(values, "readOnlyValues");
 	NullCheck.notNull(readOnlyValues, "readOnlyValues");
-	final AtomicBoolean mayContinue = new AtomicBoolean(true);
+	final AtomicBoolean res = new AtomicBoolean(true);
 	doEditAction((lines, hotPoint)->{
-		final HookObject linesObj = new MutableLinesHookObject(lines);
-		final HookObject hotPointObj = new HotPointControlHookObject(hotPoint);
-		final HookObject arg = new EmptyHookObject(){
-			@Override public Object getMember(String name)
-			{
-			    NullCheck.notNull(name, "name");
-			    switch(name)
-			    {
-			    case "lines":
-				return linesObj;
-			    case "hotPoint":
-				return hotPointObj;
-			    default:
-				if (values.containsKey(name) &&  values.get(name) != null)
-				    return values.get(name);
-				if (readOnlyValues.containsKey(name) &&  readOnlyValues.get(name) != null)
-				    return readOnlyValues.get(name);
-				return super.getMember(name);
-			    }
-			}
-		    };
-		final AtomicReference<Object> ex = new AtomicReference<>();
-		context.runHooks(hookName, (hook)->{
-			final Object res;
-			try {
-			    res = hook.run(new Object[]{arg});
-			}
-			catch(RuntimeException e)
-			{
-			    ex.set(e);
-			    return Luwrain.HookResult.BREAK;
-			}
-			if (res == null || !(res instanceof Boolean))
-			    return Luwrain.HookResult.CONTINUE;
-			final Boolean b = (Boolean)res;
-			if (!b.booleanValue())
-			{
-			    mayContinue.set(false);
-			    return Luwrain.HookResult.BREAK;
-			}
-			return Luwrain.HookResult.CONTINUE;
-		    });
-		if (ex.get() != null)
-		{
-		    final RuntimeException e = (RuntimeException)ex.get();
-		    Log.error(LOG_COMPONENT, "unable to run the hook " + hookName + ":" + e.getClass().getName() + ":" + e.getMessage());
-		    mayContinue.set(false);
-		    return;
-		}
+		final Map<String, Object> arg = new HashMap<>();
+		arg.put("lines", new MutableLinesArray(lines));
+		arg.put("hotPoint", new HotPointObj(hotPoint));
+		res.set(Hooks.permission(context, hookName, new Object[]{new MapScriptObject(arg)}));
 	    });
-	return mayContinue.get();
-    }
+	return res.get();
+		    }
 
-    protected boolean runPostHook(String hookName, Map values, Map readOnlyValues)
+        protected void runPost(String hookName, Map values, Map readOnlyValues)
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(values, "readOnlyValues");
 	NullCheck.notNull(readOnlyValues, "readOnlyValues");
-	final AtomicBoolean success = new AtomicBoolean(true);
 	doEditAction((lines, hotPoint)->{
-		final HookObject linesObj = new MutableLinesHookObject(lines);
-		final HookObject hotPointObj = new HotPointControlHookObject(hotPoint);
-		final HookObject arg = new EmptyHookObject(){
-			@Override public Object getMember(String name)
-			{
-			    NullCheck.notNull(name, "name");
-			    switch(name)
-			    {
-			    case "lines":
-				return linesObj;
-			    case "hotPoint":
-				return hotPointObj;
-			    default:
-				if (values.containsKey(name) &&  values.get(name) != null)
-				    return values.get(name);
-				if (readOnlyValues.containsKey(name) &&  readOnlyValues.get(name) != null)
-				    return readOnlyValues.get(name);
-				return super.getMember(name);
-			    }
-			}
-		    };
-		final AtomicReference<Object> ex = new AtomicReference<>();
-		context.runHooks(hookName, (hook)->{
-			try {
-			    hook.run(new Object[]{arg});
-			}
-			catch(RuntimeException e)
-			{
-			    ex.set(e);
-			    return Luwrain.HookResult.BREAK;
-			}
-			return Luwrain.HookResult.CONTINUE;
-		    });
-		if (ex.get() != null)
-		{
-		    final RuntimeException e = (RuntimeException)ex.get();
-		    Log.error(LOG_COMPONENT, "unable to run the hook " + hookName + ":" + e.getClass().getName() + ":" + e.getMessage());
-		    success.set(false);
-		    return;
-		}
+		final Map<String, Object> arg = new HashMap<>();
+		arg.put("lines", new MutableLinesArray(lines));
+		arg.put("hotPoint", new HotPointObj(hotPoint));
+Hooks.notification(context, hookName, new Object[]{new MapScriptObject(arg)});
 	    });
-	return success.get();
-    }
+		    }
 }
