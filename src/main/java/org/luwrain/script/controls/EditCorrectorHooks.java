@@ -66,8 +66,6 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
  */
 public class EditCorrectorHooks implements MultilineEditCorrector
 {
-    static protected final String LOG_COMPONENT = "controls";
-
     protected final ControlContext context;
     protected final MultilineEditCorrector base;
     protected final String hookNameBase;
@@ -109,78 +107,72 @@ public class EditCorrectorHooks implements MultilineEditCorrector
 
     @Override public ModificationResult deleteChar(int pos, int lineIndex)
     {
-	final Map readOnlyValues = new HashMap();
-	final Map values = new HashMap();
-	if (!runPre(hookNameBase + ".delete.char.pre", values, readOnlyValues))
+	final Map<String, Object> values = new HashMap<>();
+	if (!runPre(hookNameBase + ".delete.char.pre", values))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.deleteChar(pos, lineIndex);
 	if (res.isPerformed())
-	    runPost(hookNameBase + ".delete.char.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".delete.char.post", values);
 	return res;
     }
 
     @Override public ModificationResult deleteRegion(int fromX, int fromY, int toX, int toY)
     {
-	final Map readOnlyValues = new HashMap();
-	final Map values = new HashMap();
-	if (!runPre(hookNameBase + ".delete.region.pre", values, readOnlyValues))
+	final Map<String, Object> values = new HashMap<>();
+	if (!runPre(hookNameBase + ".delete.region.pre", values))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.deleteRegion(fromX, fromY, toX, toY);
 	if (res.isPerformed())
-	    runPost(hookNameBase + ".delete.region.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".delete.region.post", values);
 	return res;
     }
 
     @Override public ModificationResult insertRegion(int x, int y, String[] lines)
     {
 	NullCheck.notNullItems(lines, "lines");
-	final Map readOnlyValues = new HashMap();
-	final Map values = new HashMap();
-	if (!runPre(hookNameBase + ".insert.region.pre", values, readOnlyValues))
+	final Map<String, Object> values = new HashMap<>();
+	if (!runPre(hookNameBase + ".insert.region.pre", values))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.insertRegion(x, y, lines);
 	if (res.isPerformed())
-	    runPost(hookNameBase + ".insert.region.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".insert.region.post", values);
 	return res;
     }
 
     @Override public ModificationResult putChars(int pos, int lineIndex, String str)
     {
 	NullCheck.notNull(str, "str");
-	final Map<Object, Object> readOnlyValues = new HashMap<>();
-	final Map<Object, Object> values = new HashMap<>();
-	readOnlyValues.put("chars", str);
+	final Map<String, Object> values = new HashMap<>();
+	values.put("chars", str);
 	values.put("x", new Integer(pos));
 	values.put("y", new Integer(lineIndex));
-	if (!runPre(hookNameBase + ".insert.chars.pre", values, readOnlyValues))
+	if (!runPre(hookNameBase + ".insert.chars.pre", values))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.putChars(pos, lineIndex, str);
 	if (res.isPerformed())
-	    runPost(hookNameBase + ".insert.chars.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".insert.chars.post", values);
 	return res;
     }
 
     @Override public ModificationResult mergeLines(int firstLineIndex)
     {
-	final Map readOnlyValues = new HashMap();
-	final Map values = new HashMap();
-	if (!runPre(hookNameBase + ".merge.lines.pre", values, readOnlyValues))
+	final Map<String, Object> values = new HashMap<>();
+	if (!runPre(hookNameBase + ".merge.lines.pre", values))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.mergeLines(firstLineIndex);
 	if (res.isPerformed())
-	    runPost(hookNameBase + ".merge.lines.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".merge.lines.post", values);
 	return res;
     }
 
     @Override public ModificationResult splitLine(int pos, int lineIndex)
     {
-	final Map readOnlyValues = new HashMap();
-	final Map values = new HashMap();
-	if (!runPre(hookNameBase + ".split.lines.pre", values, readOnlyValues))
+	final Map<String, Object> values = new HashMap<>();
+	if (!runPre(hookNameBase + ".split.lines.pre", values))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.splitLine(pos, lineIndex);
 	if (res.isPerformed())
-	    runPost(hookNameBase + ".split.post", values, readOnlyValues);
+	    runPost(hookNameBase + ".split.post", values);
 	return res;
     }
 
@@ -192,31 +184,29 @@ public class EditCorrectorHooks implements MultilineEditCorrector
 	return base.doEditAction(action);
     }
 
-    protected boolean runPre(String hookName, Map values, Map readOnlyValues)
+    protected boolean runPre(String hookName, Map<String, Object> values)
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(values, "readOnlyValues");
-	NullCheck.notNull(readOnlyValues, "readOnlyValues");
 	final AtomicBoolean res = new AtomicBoolean(true);
 	doEditAction((lines, hotPoint)->{
-		final Map<String, Object> arg = new HashMap<>();
+		final Map<String, Object> arg = new HashMap<>(values);
 		arg.put("lines", new MutableLinesArray(lines));
 		arg.put("hotPoint", new HotPointObj(hotPoint));
 		res.set(Hooks.permission(context, hookName, new Object[]{new MapScriptObject(arg)}));
 	    });
 	return res.get();
-		    }
+    }
 
-        protected void runPost(String hookName, Map values, Map readOnlyValues)
+    protected void runPost(String hookName, Map<String, Object> values)
     {
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNull(values, "readOnlyValues");
-	NullCheck.notNull(readOnlyValues, "readOnlyValues");
 	doEditAction((lines, hotPoint)->{
-		final Map<String, Object> arg = new HashMap<>();
+		final Map<String, Object> arg = new HashMap<>(values);
 		arg.put("lines", new MutableLinesArray(lines));
 		arg.put("hotPoint", new HotPointObj(hotPoint));
-Hooks.notification(context, hookName, new Object[]{new MapScriptObject(arg)});
+		Hooks.notification(context, hookName, new Object[]{new MapScriptObject(arg)});
 	    });
-		    }
+    }
 }
