@@ -25,9 +25,11 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.controls.*;
+import org.luwrain.script.core.*;
 
 import static org.luwrain.util.Urls.toUrl;
 import static org.luwrain.script2.ScriptUtils.*;
+
 
 public final class Simple implements Application
 {
@@ -135,7 +137,7 @@ public final class Simple implements Application
 	    final Value func = (Value)funcObj;
 	    if (func.isNull() || !func.canExecute())
 		return false;
-	    final Object arg = createInputEvent(event);
+	    final Object arg = new InputEventObj(event);
 	    final Object res = func.execute(new Object[]{arg});
 	    if (res != null && (res instanceof Value))
 	    {
@@ -162,7 +164,7 @@ public final class Simple implements Application
 	    final Value func = (Value)funcObj;
 	    if (func.isNull() || !func.canExecute())
 		return false;
-	    final Object arg = createSystemEvent(event);
+	    final Object arg = new SystemEventObj(event);
 	    final Object res = func.execute(new Object[]{arg});
 	    if (res != null && (res instanceof Value))
 	    {

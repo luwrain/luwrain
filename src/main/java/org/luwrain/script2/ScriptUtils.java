@@ -126,31 +126,6 @@ public final class ScriptUtils
 	return ProxyArray.fromArray((Object[])items.toArray(new Object[items.size()]));
     }
 
-    static public Proxy createInputEvent(InputEvent event)
-    {
-		NullCheck.notNull(event, "event");
-		final Map<String, Object> values = new HashMap<>();
-		values.put("special", event.isSpecial()?event.getSpecial().toString():null);
-		values.put("ch", event.isSpecial()?null:new String(new StringBuilder().append(event.getChar())));
-		values.put("withAlt", new Boolean(event.withAlt()));
-		values.put("withAltOnly", new Boolean(event.withAltOnly()));
-		values.put("withControl", new Boolean(event.withControl()));
-		values.put("withControlOnly", new Boolean(event.withControlOnly()));
-		values.put("withShift", new Boolean(event.withShift()));
-		values.put("withShiftOnly", new Boolean(event.withShiftOnly()));
-		values.put("modified", new Boolean(event.isModified()));
-		return new MapScriptObject(values);
-    }
-
-	    static public Proxy createSystemEvent(SystemEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	final Map<String, Object> values = new HashMap<>();
-	values.put("code", event.getCode().toString());
-	values.put("type", event.getType().toString());
-	return new MapScriptObject(values);
-    }
-
         static public <E> Proxy createEnumSet(Set<E> s)
     {
 	NullCheck.notNull(s, "s");

@@ -25,16 +25,13 @@ import java.util.concurrent.atomic.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-
+import org.luwrain.script.core.*;
 import org.luwrain.script.controls.*;
 
-import org.luwrain.script2.hooks.ChainOfResponsibilityHook;
+import static org.luwrain.script.Hooks.*;
 
 public class LayoutBase
 {
-static public final String
-    HOOK_EDIT_AREA_INPUT_EVENT = "luwrain.area.edit.input";
-    
 public interface ActionHandler
 {
     boolean onAction();
@@ -397,15 +394,17 @@ public interface ActionHandler
 
     EditArea.InputEventListener createEditAreaInputEventHook()
     {
-return (edit, event)->{
-	final MultilineEditCorrector corrector = (MultilineEditCorrector)edit.getEdit().getMultilineEditModel();
-	final AtomicBoolean res = new AtomicBoolean(false);
-corrector.doEditAction((lines, hotPoint)->{
-	res.set(new ChainOfResponsibilityHook(getLuwrain()).run(HOOK_EDIT_AREA_INPUT_EVENT, new Object[]{new EditAreaObj(edit, lines)}));
-	    });
-return res.get();
-    };
-
+	return (edit, event)->{
+	    final MultilineEditCorrector corrector = (MultilineEditCorrector)edit.getEdit().getMultilineEditModel();
+	    final AtomicBoolean res = new AtomicBoolean(false);
+	    corrector.doEditAction((lines, hotPoint)->{
+		    res.set(chainOfResponsibility(getLuwrain(), EDIT_INPUT, new Object[]{
+				new EditAreaObj(edit, lines),
+				new InputEventObj(event)
+			    }));
+		});
+	    return res.get();
+	};
     }
 
     protected final class LayoutControlContext extends WrappingControlContext
