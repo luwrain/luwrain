@@ -207,10 +207,10 @@ return new MultilineEditCorrectorTranslator(content, this);
     @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
-	/*
-	if (runInputEventHook(event))
-	    return true;
-	*/
+	if (inputEventListeners != null)
+	    for(InputEventListener l: inputEventListeners)
+		if (l.onEditAreaInputEvent(this, event))
+		    return true;
 	if (edit.onInputEvent(event))
 	    return true;
 	return super.onInputEvent(event);

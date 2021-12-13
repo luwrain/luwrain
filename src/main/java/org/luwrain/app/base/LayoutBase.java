@@ -378,6 +378,8 @@ public interface ActionHandler
     {
 	NullCheck.notNull(l, "l");
 	final EditArea.Params params = new EditArea.Params(getControlContext());
+	params.inputEventListeners = new ArrayList<>();
+	params.inputEventListeners.add(createEditAreaInputEventHook());
 	l.setEditParams(params);
 	return params;
     }
@@ -392,7 +394,7 @@ public interface ActionHandler
 	return params;
     }
 
-    EditArea.InputEventListener createEditAreaInputEventHook()
+    protected EditArea.InputEventListener createEditAreaInputEventHook()
     {
 	return (edit, event)->{
 	    final MultilineEditCorrector corrector = (MultilineEditCorrector)edit.getEdit().getMultilineEditModel();
