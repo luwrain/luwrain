@@ -14,41 +14,34 @@
    General Public License for more details.
 */
 
-package org.luwrain.script.controls;
+//LWR_API 1.0
+
+package org.luwrain.script.ml;
 
 import java.util.*;
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
+import org.jsoup.*;
+import org.jsoup.nodes.*;
 
 import org.luwrain.core.*;
-import org.luwrain.controls.*;
-import org.luwrain.script.core.*;
 
-public final class EditAreaObj implements ProxyObject
+final class JsNode implements ProxyObject
 {
-    static private String[] KEYS = new String[]{
-	"hotPoint",
-	"lines",
+        static private String[] KEYS = new String[]{
+	"childNodes",
     };
     static private final Set<String> KEYS_SET = new HashSet<>(Arrays.asList(KEYS));
     static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray((Object[])KEYS);
 
-    protected final EditArea area;
-    protected final MutableLinesArray lines;
-    protected final HotPointObj hotPoint;
+    private final Node node;
+    private final ProxyArray childNodes;
 
-    public EditAreaObj(EditArea area, MutableLines lines)
+	JsNode(Node node)
     {
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(lines, "lines");
-	this.area = area;
-	this.lines = new MutableLinesArray(lines);
-	this.hotPoint = new HotPointObj(area);
-    }
-
-    public EditAreaObj(EditArea area)
-    {
-	this(area, area.getContent());
+	NullCheck.notNull(node, "node");
+	this.node = node;
+	this.childNodes = buildChildNodesArray();
     }
 
     @Override public Object getMember(String name)
@@ -56,10 +49,8 @@ public final class EditAreaObj implements ProxyObject
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
-	case "lines":
-	    return this.lines;
-	case "hotPoint":
-	    return this.hotPoint;
+	case "childNodes":
+	    return this.childNodes;
 	default:
 	    return null;
 	}
@@ -67,5 +58,15 @@ public final class EditAreaObj implements ProxyObject
 
     @Override public boolean hasMember(String name) { return KEYS_SET.contains(name); }
     @Override public Object getMemberKeys() { return KEYS_ARRAY; }
-    @Override public void putMember(String name, Value value) { throw new RuntimeException("The edit object doesn't support updating of its variables"); }
+    @Override public void putMember(String name, Value value) { throw new UnsupportedOperationException("The JsNode object doesn't support updating of its variables"); }
+
+    private ProxyArray buildChildNodesArray()
+    {
+	final List<JsNode> res = new ArrayList<>();
+	final List<Node> childNodes = node.childNodes();
+	if (childNodes != null)
+	for(Node c: childNodes)
+	    res.add(new JsNode(c));
+	return ProxyArray.fromArray((Object[])res.toArray(new JsNode[res.size()]));
+    }
 }
