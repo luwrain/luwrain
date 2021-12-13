@@ -105,7 +105,8 @@ public final class EditCorrectors
 		    break;
 	    if (i <= 0)
 		return super.putChars(pos, lineIndex, str);
-	    return super.splitLine(i, lineIndex);
+super.splitLine(i, lineIndex);
+	    return new ModificationResult(true, getLine(lineIndex + 1), ' ');
 	}
     }
 }

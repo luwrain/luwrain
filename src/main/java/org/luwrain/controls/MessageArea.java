@@ -23,8 +23,6 @@ import org.luwrain.core.*;
 
 public class MessageArea extends FormArea
 {
-    static protected final String HOOKS_PREFIX = "luwrain.message.edit";
-
     static final String TO_NAME = "to",
 	CC_NAME = "cc",
 	SUBJECT_NAME = "subject",
@@ -34,11 +32,10 @@ public class MessageArea extends FormArea
     {
 	public ControlContext context = null;
 	public String name = "";
+	public int maxLineLen = 10;
+		public String to = "", cc = "", subject = "";
 	public String[] text = new String[0];
 	public String[] attachments = new String[0];
-	public String to = "";
-	public String cc = "";
-	public String subject = "";
     }
 
     static public final class Attachment
@@ -52,18 +49,13 @@ public class MessageArea extends FormArea
 	    this.name = name;
 	    this.file = file;
 	}
-	public String getName()
-	{
-	    return this.name;
-	}
-	public File getFile()
-	{
-	    return this.file;
-	}
+	public String getName() { return this.name; }
+	public File getFile() { return this.file; }
     }
 
     protected final MutableLinesImpl lines;
     protected int attachmentCounter = 0;
+    protected final int maxLineLen;
 
     public MessageArea(Params params)
     {
@@ -71,6 +63,7 @@ public class MessageArea extends FormArea
 	NullCheck.notNull(params, "params");
 	NullCheck.notNullItems(params.text, "params.text");
 		NullCheck.notNullItems(params.attachments, "params.attachments");
+		this.maxLineLen = params.maxLineLen;
 	      this.lines = new MutableLinesImpl(params.text);
 	      addEdit(TO_NAME, context.getI18n().getStaticStr("MessageTo"), params.to);
 	      addEdit(CC_NAME, context.getI18n().getStaticStr("MessageCc"), params.cc);
@@ -178,8 +171,11 @@ return (MessageArea.Attachment)obj;
     protected MultilineEdit.Params createEditParams()
     {
 	final MultilineEdit.Params params = createMultilineEditParams(context, lines);
+	if (maxLineLen > 0)
+	{
 	final MultilineEditCorrector corrector = (MultilineEditCorrector)params.model;
-	//	params.model = new DirectScriptMultilineEditCorrector(context, corrector, HOOKS_PREFIX);
+		params.model = new EditCorrectors.WordWrapCorrector(corrector, maxLineLen);
+	}
 	return params;
     }
 }
