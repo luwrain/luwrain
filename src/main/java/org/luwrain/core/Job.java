@@ -22,6 +22,11 @@ import java.util.*;
 
 public interface Job extends ExtensionObject
 {
+    static public final int
+	EXIT_CODE_OK = 0,
+	EXIT_CODE_INVALID = -1,
+	EXIT_CODE_INTERRUPTED = -2;
+
     public enum Flags {WITH_SHORTCUT, INTERACTIVE_SHORTCUT};
     public enum Status {RUNNING, FINISHED};
 
