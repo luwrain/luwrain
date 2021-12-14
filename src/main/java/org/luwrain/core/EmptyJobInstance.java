@@ -21,7 +21,7 @@ package org.luwrain.core;
 import org.luwrain.core.Job.*;
 import static org.luwrain.core.Job.*;
 
-public abstract class EmptyJobInstance implements Job.Instance
+public class EmptyJobInstance implements Job.Instance
 {
     protected final Listener listener;
     protected final String name;
@@ -117,5 +117,9 @@ public abstract class EmptyJobInstance implements Job.Instance
 			this.exitCode = exitCode;
 			if (this.listener != null)
 			    this.listener.onStatusChange(this);
+    }
+
+    @Override public void stop()
+    {
     }
 }

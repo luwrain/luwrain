@@ -19,6 +19,7 @@ package org.luwrain.script.core;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.net.*;
 
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
@@ -50,6 +51,7 @@ final class LuwrainObj implements ProxyObject
 	"popups",
 	"readTextFile",
 	"speak",
+	"urlGet",
 	"quit",
     };
     static private final Set<String> KEYS_SET = new HashSet<>(Arrays.asList((String[])KEYS));
@@ -118,6 +120,8 @@ final class LuwrainObj implements ProxyObject
 	    return (ProxyExecutable)this::readTextFile;
 	case "speak":
 	    return (ProxyExecutable)this::speak;
+	    	case "urlGet":
+	    return (ProxyExecutable)this::urlGet;
 	    	case "quit":
 	    return (ProxyExecutable)this::quit;
 	default:
@@ -194,7 +198,7 @@ final class LuwrainObj implements ProxyObject
 	return true;
     }
 
-        private Object executeBkg(Value[] values)
+    private Object executeBkg(Value[] values)
     {
 	if (!notNullAndLen(values, 1))
 	    return false;
@@ -202,7 +206,13 @@ final class LuwrainObj implements ProxyObject
 	    return false;
 	final FutureTask<Object> task = new FutureTask<>(()->{
 		synchronized(syncObj) {
-		    values[0].execute(new Object[0]);
+		    try {
+			values[0].execute(new Object[0]);
+		    }
+		    catch(Throwable e)
+		    {
+			luwrain.crash(e);
+		    }
 		}
 		return null;
 	    });
@@ -266,6 +276,7 @@ final class LuwrainObj implements ProxyObject
 	return true;
     }
 
+    //FIXME: Speak numbers (or anything other than String)
         private Object message(Value[] values)
     {
 	if (!notNullAndLen(values, 1))
@@ -301,6 +312,29 @@ final class LuwrainObj implements ProxyObject
 	return true;
 	}
 
+    private Object urlGet(Value[] args)
+    {
+	if (!notNullAndLen(args, 1))
+	    return null;
+	if (!args[0].isString())
+	    return null;
+	try {
+	    try (final BufferedReader r = new BufferedReader(new InputStreamReader(new URL(args[0].asString()).openStream()))) {
+		final StringBuilder b = new StringBuilder();
+		String line = r.readLine();
+		while (line != null)
+		{
+		    b.append(line).append(System.lineSeparator());
+		    line = r.readLine();
+		}
+		return new String(b);
+	    }
+	}
+	catch(Throwable e)
+	{
+	    throw new ScriptException(e);
+	}
+    }
 
     private Object speak(Value[] values)
     {
