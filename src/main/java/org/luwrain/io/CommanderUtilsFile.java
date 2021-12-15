@@ -28,7 +28,7 @@ import org.luwrain.controls.CommanderArea.EntryType;
 
 public final class CommanderUtilsFile
 {
-    static private final String LOG_COMPONENT = "commander-file";
+    static private final String LOG_COMPONENT = "core";
 
     static public class Model implements CommanderArea.Model<java.io.File>
     {
@@ -75,11 +75,11 @@ public final class CommanderUtilsFile
 
     static public class Appearance implements CommanderArea.Appearance<File>
     {
-	protected final ControlContext environment;
-	public Appearance(ControlContext environment)
+	protected final ControlContext context;
+	public Appearance(ControlContext context)
 	{
-	    NullCheck.notNull(environment, "environment");
-	    this.environment = environment;
+	    NullCheck.notNull(context, "context");
+	    this.context = context;
 	}
 	@Override public String getCommanderName(File entry)
 	{
@@ -89,11 +89,9 @@ public final class CommanderUtilsFile
 	@Override public void announceLocation(File entry)
 	{
 	    NullCheck.notNull(entry, "entry");
-	    environment.silence();
-	    environment.playSound(Sounds.COMMANDER_LOCATION);
-	    if (entry.getAbsolutePath().equals("/"))
-		environment.say(environment.getStaticStr("PartitionsPopupItemRoot")); else
-		environment.say(entry.getName());
+	    if (entry.getAbsolutePath().equals("/"))//FIXME: Windows style
+		context.say(context.getStaticStr("CommanderRoot"), Sounds.COMMANDER_LOCATION); else
+		context.say(context.getSpeakableText(entry.getName(), Luwrain.SpeakableTextType.PROGRAMMING), Sounds.COMMANDER_LOCATION);
 	}
 	@Override public String getEntryText(File entry, EntryType type, boolean marked)
 	{
@@ -108,7 +106,7 @@ public final class CommanderUtilsFile
 	    NullCheck.notNull(entry, "entry");
 	    NullCheck.notNull(type, "type");
 	    final String name = entry.getName();
-	    CommanderUtils.defaultEntryAnnouncement(environment, name, type, marked);
+	    CommanderUtils.defaultEntryAnnouncement(context, name, type, marked);
     }
     }
 
