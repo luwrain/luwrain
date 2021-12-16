@@ -119,6 +119,11 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
 	this.comparator = comparator;
     }
 
+    public void close()
+    {
+	closed = true;
+    }
+
     public boolean findFileName(String fileName, boolean announce)
     {
 	NullCheck.notNull(fileName, "fileName");
@@ -148,8 +153,6 @@ public class CommanderArea<E> extends ListArea<CommanderArea.Wrapper<E>>
     {
 	return currentLocation == null || getListModel().wrappers == null || getListModel().wrappers.isEmpty();
     }
-
-    //FIXME:select() prohibiting calling and suggesting to call getSelectedEntry() instead
 
 protected Wrapper<E> getSelectedWrapper()
     {
