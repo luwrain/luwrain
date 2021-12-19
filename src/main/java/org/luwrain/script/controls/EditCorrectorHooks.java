@@ -66,16 +66,16 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
  */
 public class EditCorrectorHooks implements MultilineEditCorrector
 {
-    protected final ControlContext context;
+    protected final HookContainer context;
     protected final MultilineEditCorrector base;
     protected final String hookNameBase;
 
-    public EditCorrectorHooks(ControlContext context, MultilineEditCorrector base, String hookNameBase)
+    public EditCorrectorHooks(HookContainer hookContainer, MultilineEditCorrector base, String hookNameBase)
     {
-	NullCheck.notNull(context, "context");
+	NullCheck.notNull(hookContainer, "hookContainer");
 	NullCheck.notNull(base, "base");
 	NullCheck.notEmpty(hookNameBase, "hookNameBase");
-	this.context = context;
+	this.context = hookContainer;
 	this.base = base;
 	this.hookNameBase = hookNameBase;
     }

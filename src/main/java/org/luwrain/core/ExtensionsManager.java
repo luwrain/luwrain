@@ -49,7 +49,7 @@ public final class ExtensionsManager
 	{
 	    if (s == null || s.trim().isEmpty())
 		continue;
-	    Log.debug(LOG_COMPONENT, "loading the extension " + s);
+	    Log.debug(LOG_COMPONENT, "loading " + s);
 	    final Object o;
 	    try {
 		o = Class.forName(s, true, classLoader).newInstance();

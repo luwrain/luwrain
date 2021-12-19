@@ -86,6 +86,7 @@ public interface Appearance extends MultilineEdit.Appearance
 	this.content = new MutableLinesChangeListener(params.content != null?params.content:new MutableLinesImpl()){
 		@Override public void onMutableLinesChange()
 		{
+		    context.onAreaNewContent(EditArea.this);
 		    if (changeListener != null)
 			changeListener.onEditChange();
 		}
