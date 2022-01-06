@@ -23,45 +23,12 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
+import static org.luwrain.util.StreamUtils.*;
+
 public final class FileUtils
 {
-    static public byte [] readAllBytes(InputStream is) throws IOException
-    {
-	NullCheck.notNull(is, "is");
-	final byte[] buf = new byte[2048];
-	final ByteArrayOutputStream res = new ByteArrayOutputStream();
-	int length = 0;
-	do {
-	    length = is.read(buf);
-	    if (length > 0)
-		res.write(buf, 0, length);
-	} while(length >= 0);
-	return res.toByteArray();
-    }
-
-    static public void writeAllBytes(OutputStream os, byte[] bytes) throws IOException
-    {
-	NullCheck.notNull(os, "os");
-	NullCheck.notNull(bytes, "bytes");
-	writeAllBytes(os, bytes, bytes.length);
-    }
-
-    static public void writeAllBytes(OutputStream os, byte[] bytes, int numBytes) throws IOException
-    {
-	NullCheck.notNull(os, "os");
-	NullCheck.notNull(bytes, "bytes");
-	if (numBytes < 0)
-	    throw new IllegalArgumentException("numBytes (" + String.valueOf(numBytes) + ") can't be negative");
-	if (numBytes == 0)
-	    return;
-	int pos = 0;
-	do {
-	    final int remaining = numBytes - pos;
-	    final int numToWrite = remaining > 2048?2048:remaining;
-	    os.write(bytes, pos, numToWrite);
-	    pos += numToWrite;
-	} while(pos < numBytes);
-    }
+    static public final String UTF_8 = "UTF_8";
+    
 
     static public String readTextFileSingleString(File file, String charset) throws IOException
     {
