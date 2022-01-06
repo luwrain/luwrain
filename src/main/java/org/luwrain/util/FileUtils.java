@@ -28,9 +28,14 @@ import static org.luwrain.util.StreamUtils.*;
 public final class FileUtils
 {
     static public final String UTF_8 = "UTF_8";
-    
 
-    static public String readTextFileSingleString(File file, String charset) throws IOException
+            static public String readTextFileAsString(File file) throws IOException
+    {
+	NullCheck.notNull(file, "file");
+	return readTextFileAsString(file, UTF_8);
+    }
+
+    static public String readTextFileAsString(File file, String charset) throws IOException
     {
 	NullCheck.notNull(file, "file");
 	NullCheck.notEmpty(charset, "charset");
@@ -43,6 +48,19 @@ public final class FileUtils
 	    is.close();
 	}
 	return new String(bytes, charset);
+    }
+
+            static public String readTextFileSingleString(File file) throws IOException
+    {
+	NullCheck.notNull(file, "file");
+	return readTextFileAsString(file, UTF_8);
+    }
+
+        static public String readTextFileSingleString(File file, String charset) throws IOException
+    {
+	NullCheck.notNull(file, "file");
+	NullCheck.notEmpty(charset, "charset");
+	return readTextFileAsString(file, charset);
     }
 
     static public void writeTextFileSingleString(File file, String text, String charset) throws IOException

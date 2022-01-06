@@ -62,7 +62,7 @@ public final class StreamUtils
 	}
     }
 
-        static public byte [] readAllBytes(InputStream is) throws IOException
+    static public byte [] readAllBytes(InputStream is) throws IOException
     {
 	NullCheck.notNull(is, "is");
 	final byte[] buf = new byte[BUF_SIZE];
@@ -99,5 +99,4 @@ public final class StreamUtils
 	    pos += numToWrite;
 	} while(pos < numBytes);
     }
-
 }
