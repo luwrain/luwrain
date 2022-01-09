@@ -50,7 +50,7 @@ public final class Module implements AutoCloseable
 	    .build();
 	    context.getBindings("js").putMember("Luwrain", this.luwrainObj);
 	    if (bindings != null)
-		bindings.onBindings(context.getBindings("js"));
+		bindings.onBindings(context.getBindings("js"), luwrainObj.syncObj);
 	    context.eval("js", text);
 	}
     }

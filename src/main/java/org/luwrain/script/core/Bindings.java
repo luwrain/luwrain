@@ -20,5 +20,5 @@ import org.graalvm.polyglot.*;
 
 public interface Bindings
 {
-    void onBindings(Value value);
+    void onBindings(Value value, Object syncObj);
 }
