@@ -276,7 +276,6 @@ static public final String
     //if chain of responsibility: true if was one true returned, if RuntimeException it will be thrown
     // If all, return value always ignored, true if there were no exceptions
     boolean xRunHooks(String hookName, Object[] args, HookStrategy strategy);
-    OsInterface xGetOsInterface();
     boolean xCreatePropertyHook(String propName, String hookName);
     void showGraphical(Interaction.GraphicalMode graphicalMode);
     ScriptFile[] getScriptFilesList(String componentName);

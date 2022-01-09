@@ -23,7 +23,6 @@ import java.nio.file.*;
 public interface OperatingSystem
 {
     org.luwrain.core.InitResult init(PropertiesBase props);
-    OsInterface getInterface();
     org.luwrain.core.Braille getBraille();
     void openFileInDesktop(Path path);
     org.luwrain.interaction.KeyboardHandler getCustomKeyboardHandler(String subsystem);

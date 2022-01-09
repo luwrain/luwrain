@@ -800,11 +800,6 @@ final class LuwrainImpl implements Luwrain
     }
     }
 
-    @Override public OsInterface xGetOsInterface()
-    {
-	return core.os.getInterface();
-    }
-
             @Override public boolean xCreatePropertyHook(String propName, String hookName)
     {
 	NullCheck.notEmpty(propName, "propName");
