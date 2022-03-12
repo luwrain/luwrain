@@ -384,13 +384,22 @@ public interface ActionHandler
 	return params;
     }
 
-            protected interface ConsoleParams<E> { void setConsoleParams(ConsoleArea.Params<E> params); }
+    protected interface ConsoleParams<E> { void setConsoleParams(ConsoleArea.Params<E> params); }
     protected <E> ConsoleArea.Params<E> consoleParams(ConsoleParams<E> l)
     {
 	NullCheck.notNull(l, "l");
 	final ConsoleArea.Params<E> params = new ConsoleArea.Params<E>();
 	params.context = getControlContext();
 	l.setConsoleParams(params);
+	return params;
+    }
+
+        protected interface TreeParams<E> { void setTreeParams(TreeArea.Params params); }
+    protected <E> TreeArea.Params treeParams(TreeParams<E> l)
+    {
+	NullCheck.notNull(l, "l");
+	final TreeArea.Params params = new TreeArea.Params();
+	params.context = getControlContext();
 	return params;
     }
 
