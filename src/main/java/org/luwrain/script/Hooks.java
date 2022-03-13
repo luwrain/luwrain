@@ -22,6 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.script2.hooks.ChainOfResponsibilityHook;
 import org.luwrain.script.hooks.PermissionHook;
 import org.luwrain.script.hooks.NotificationHook;
+import org.luwrain.script.hooks.ProviderHook;
 import org.luwrain.script2.hooks.CollectorHook;
 
 
@@ -45,6 +46,16 @@ public final class Hooks
 	NullCheck.notEmpty(hookName, "hookName");
 	return new PermissionHook(container).run(hookName, args);
     }
+
+
+    //Throws RuntimeException, returns the first not-null value
+        static public Object provider(HookContainer container, String hookName, Object[] args)
+    {
+	NullCheck.notNull(container, "container");
+	NullCheck.notEmpty(hookName, "hookName");
+	return new ProviderHook(container).run(hookName, args);
+    }
+
 
             static public boolean notification(HookContainer container, String hookName, Object[] args)
     {

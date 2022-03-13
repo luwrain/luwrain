@@ -403,6 +403,11 @@ public interface ActionHandler
 	return params;
     }
 
+    protected org.luwrain.script.Hooks getHooks()
+    {
+	return new org.luwrain.script.Hooks();
+    }
+
     protected EditArea.InputEventListener createEditAreaInputEventHook()
     {
 	return (edit, event)->{
