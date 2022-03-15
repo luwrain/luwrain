@@ -26,11 +26,13 @@ import org.luwrain.core.queries.*;
 import org.luwrain.popups.*;
 import org.luwrain.script.*;
 import org.luwrain.controls.DefaultControlContext;
+import org.luwrain.script.core.MapScriptObject;
 
 final class Commands
 {
-    static private final int SPEECH_STEP = 5;
-    static private final int VOLUME_STEP = 5;
+    static private final int
+	SPEECH_STEP = 5,
+	VOLUME_STEP = 5;
 
     static private final Set<String> osCmdHistory = new HashSet<String>();
 
@@ -38,6 +40,7 @@ final class Commands
     {
 	NullCheck.notNull(core, "core");
 	NullCheck.notNull(conversations, "conversations");
+	final org.luwrain.script.Hooks hooks = new org.luwrain.script.Hooks();
 	return new Command[]{
 
 	    new Cmd(
@@ -131,50 +134,26 @@ final class Commands
 	    new Cmd(
 		    "region-point",
 		    (luwrain)->{
-			final Area area = core.getValidActiveArea(true);
+			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
-			final AtomicReference<Boolean> res = new AtomicReference<>();
-			final AtomicReference<Integer> x = new AtomicReference<>();
-			final AtomicReference<Integer> y = new AtomicReference<>();
-			core.unsafeAreaOperation(()->{
-				if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.REGION_POINT)))
-				{
-				    res.set(new Boolean(false));
-				    return;
-				}
-				x.set(new Integer(area.getHotPointX()));
-				y.set(new Integer(area.getHotPointY()));
-				res.set(new Boolean(true));
-			    });
-			if (res.get() == null || !res.get().booleanValue())
+			if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.REGION_POINT)))
 			{
 			    core.eventNotProcessedMessage();
 			    return;
 			}
-			final EmptyHookObject argObj = new EmptyHookObject(){
-				@Override public Object getMember(String name)
-				{
-				    NullCheck.notEmpty(name, "name");
-				    switch(name)
-				    {
-				    case "x":
-					return x.get();
-				    case "y":
-					return y.get();
-				    default:
-					return super.getMember(name);
-				    }
-				}
-			    };
-			if (!core.hookChainWithCustom("luwrain.area.region.point.set", new Object[]{argObj}))
+			final Map<String, Object> arg = new HashMap<>();
+			arg.put("x", area.getHotPointX());
+			arg.put("y", area.getHotPointY());
+			final MapScriptObject argObj = new MapScriptObject(arg);
+			if (!hooks.chainOfResponsibility(core.luwrain, "luwrain.area.region.point.set", new Object[]{argObj}))
 			    core.eventNotProcessedMessage();
 		    }),
 
 	    new Cmd(
 		    "copy",
 		    (luwrain)->{
-			final Area area = core.getValidActiveArea(true);
+			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
 			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY)))

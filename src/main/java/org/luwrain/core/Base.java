@@ -383,6 +383,13 @@ abstract class Base implements EventConsumer
 	return false;
     }
 
+    void unsafeOperation(Runnable runnable)
+    {
+	NullCheck.notNull(runnable, "runnable");
+	unsafeAreaOperation(runnable);
+    }
+
+    //To be deleted
     void unsafeAreaOperation(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
