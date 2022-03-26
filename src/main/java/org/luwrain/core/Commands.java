@@ -108,7 +108,7 @@ final class Commands
 	    new Cmd(
 		    "announce-line",
 		    (luwrain)->{
-			final Area area = core.getValidActiveArea(true);
+			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
 			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.ANNOUNCE_LINE)))
@@ -164,35 +164,25 @@ final class Commands
 	    new Cmd(
 		    "copy-all",
 		    (luwrain)->{
-			final Area area = core.getValidActiveArea(true);
+			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
-			final AtomicBoolean res = new AtomicBoolean();
-			core.unsafeAreaOperation(()->res.set(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY_ALL))));
-			if (!res.get())
+			if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_COPY_ALL)))
 			{
 			    core.eventNotProcessedMessage();
 			    return;
 			}
-			final EmptyHookObject argObj = new EmptyHookObject(){
-				@Override public Object getMember(String name)
-				{
-				    NullCheck.notEmpty(name, "name");
-				    switch(name)
-				    {
-				    default:
-					return super.getMember(name);
-				    }
-				}
-			    };
-			if (!core.hookChainWithCustom("luwrain.clipboard.copy.all", new Object[]{argObj}))
+			final Map<String, Object> arg = new HashMap<>();
+			//FIXME:
+			final MapScriptObject argObj = new MapScriptObject(arg);
+			if (!hooks.chainOfResponsibility(core.luwrain, "luwrain.clipboard.copy.all", new Object[]{argObj}))
 			    core.eventNotProcessedMessage();
 		    }),
 
 	    new Cmd(
 		    "cut",
 		    (luwrain)->{
-			final Area area = core.getValidActiveArea(true);
+			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
 			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_CUT)))
@@ -203,7 +193,7 @@ final class Commands
 	    new Cmd(
 		    "clear-region",
 		    (luwrain)->{
-			final Area area = core.getValidActiveArea(true);
+			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
 			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR_REGION)))
@@ -219,7 +209,7 @@ final class Commands
 			    core.eventNotProcessedMessage();
 			    return;
 			}
-			final Area area = core.getValidActiveArea(true);
+			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
 			if (area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLIPBOARD_PASTE)))
