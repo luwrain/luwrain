@@ -9,18 +9,13 @@
   <artifactId>luwrain</artifactId>
   <name>LUWRAIN core</name>
   <description>A platform for the creation of apps for the blind and partially-sighted</description>
-  <url>https://luwrain.org/?lang=en</url>
+  <url>https://github.com/luwrain/luwrain/</url>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <groupId>org.luwrain</groupId>
       <artifactId>luwrain-base</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.14</version>
     </dependency>
   </dependencies>
   <build>

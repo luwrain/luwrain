@@ -48,7 +48,6 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
  * <p>
  * Here is the list of the hooks created by this class where {@code base}
  * is a string value provided with the constructor:
- * <p>
  * <ul>
  *   <li>{@code base.delete.char.pre}</li>
  *   <li>{@code base.delete.char.post}</li>

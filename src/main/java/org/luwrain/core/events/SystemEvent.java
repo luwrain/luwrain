@@ -54,10 +54,8 @@ import org.luwrain.core.*;
  * synchronization because handling of the events is always done in main
  * system thread while they can be issued in any thread. The only
  * restriction is that the application which has issued this event must
- * be still launched when the event is processed. All addressed events must be
- * derived from {@link AddressedSystemEvent} class.
+ * be still launched when the event is processed.
  *
- * @see AddressedSystemEvent
  */
 public class SystemEvent extends Event
 {

@@ -31,14 +31,6 @@ public class EmbeddedEdit implements SingleLineEdit.Model
     protected int offsetX;
     protected int offsetY;
 
-    /**
-     * @param context The control context for this edit
-     * @param lines The object to provide and to accept edited text
-     * @param hotPoint The object to provide and to set real hot point position in area (without any shift)
-     * @param regionPOint The object to track region point position
-     * @param offsetX The X position of this edit in the area
-     * @param offsetY The Y position of this edit in the area
-     */
     public EmbeddedEdit(ControlContext context, EmbeddedEditLines lines,
 				  HotPointControl hotPoint,  AbstractRegionPoint regionPoint,
 				  int offsetX, int offsetY)
