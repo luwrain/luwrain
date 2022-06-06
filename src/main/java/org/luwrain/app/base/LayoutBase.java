@@ -37,13 +37,19 @@ public interface ActionHandler
     boolean onAction();
 }
 
+    protected interface ActionInfoCondition
+    {
+	boolean isActionInfoEnabled();
+    }
+
     protected final class ActionInfo
     {
 	final String name;
 	final String title;
 	final InputEvent inputEvent;
 	final ActionHandler handler;
-	public ActionInfo(String name, String title, InputEvent inputEvent, ActionHandler handler)
+	final ActionInfoCondition cond;
+	public ActionInfo(String name, String title, InputEvent inputEvent, ActionHandler handler, ActionInfoCondition cond)
 	{
 	    NullCheck.notEmpty(name, "name");
 	    NullCheck.notEmpty(title, "title");
@@ -52,10 +58,19 @@ public interface ActionHandler
 	    this.title = title;
 	    this.inputEvent = inputEvent;
 	    this.handler = handler;
+	    this.cond = cond;
+	}
+		public ActionInfo(String name, String title, InputEvent inputEvent, ActionHandler handler)
+	{
+	    this(name, title, inputEvent, handler, null);
+	}
+	public ActionInfo(String name, String title, ActionHandler handler, ActionInfoCondition cond)
+	{
+	    this(name, title, null, handler, cond);
 	}
 	public ActionInfo(String name, String title, ActionHandler handler)
 	{
-	    this(name, title, null, handler);
+	    this(name, title, null, handler, null);
 	}
     }
 
@@ -75,26 +90,29 @@ public interface ActionHandler
 	{
 	    final List<org.luwrain.core.Action> res = new ArrayList<>();
 	    for(ActionInfo a: actions)
-		if (a.inputEvent != null)
-		    res.add(new org.luwrain.core.Action(a.name, a.title, a.inputEvent)); else
-		    		    res.add(new org.luwrain.core.Action(a.name, a.title));
+		if (a.cond == null || a.cond.isActionInfoEnabled())
+		{
+		    if (a.inputEvent != null)
+			res.add(new org.luwrain.core.Action(a.name, a.title, a.inputEvent)); else
+			res.add(new org.luwrain.core.Action(a.name, a.title));
+		}
 	    return res.toArray(new org.luwrain.core.Action[res.size()]);
 	}
 	public boolean handle(String actionName)
 	{
 	    NullCheck.notEmpty(actionName, "actionName");
 	    for(ActionInfo a: actions)
-	    if (a.name.equals(actionName))
-		return a.handler.onAction();
+		if (a.name.equals(actionName))
+		    return a.handler.onAction();
 	    return false;
 	}
 	boolean onActionEvent(SystemEvent event)
 	{
 	    NullCheck.notNull(event, "event");
-	    	    for(ActionInfo a: actions)
-			if (ActionEvent.isAction(event, a.name))
-			    return a.handler.onAction();
-		    return false;
+	    for(ActionInfo a: actions)
+		if (ActionEvent.isAction(event, a.name))
+		    return a.handler.onAction();
+	    return false;
 	}
     }
 
@@ -119,6 +137,15 @@ public interface ActionHandler
     {
 	return new Actions(a);
 	    }
+
+    protected Actions actions(ActionInfo[] a1, ActionInfo ... a2)
+    {
+	final List<ActionInfo> res = new ArrayList<>();
+	res.addAll(Arrays.asList(a1));
+	res.addAll(Arrays.asList(a2));
+	return new Actions(res.toArray(new ActionInfo[res.size()]));
+    }
+
 
     protected ActionInfo action(String name, String title, InputEvent inputEvent, ActionHandler handler)
     {
