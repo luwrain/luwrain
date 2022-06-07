@@ -289,7 +289,7 @@ final class LuwrainObj implements ProxyObject
 
     private Object newJob(Value[] values)
     {
-	if (values.length < 2 || values.length > 3)
+	if (values.length < 2 || values.length > 4)
 	    return null;
 	if (values[0] == null || values[0].isNull() || !values[0].isString())
 	    return null;
@@ -299,15 +299,26 @@ final class LuwrainObj implements ProxyObject
 	if (values.length < 3 || values[2] == null || values[2].isNull() || !values[2].isString())
 	    dir = ""; else
 	    dir = values[2].asString();
+	final Value finishedFunc;
+	if (values.length < 4 || values[3] == null || values[3].isNull() || !values[3].canExecute())
+	    finishedFunc = null; else
+	    finishedFunc = values[3];
 	luwrain.newJob(name, args != null?args:new String[0], dir, EnumSet.noneOf(Luwrain.JobFlags.class), new Job.Listener(){
-		@Override public void onStatusChange(Job.Instance instance) {}
+		@Override public void onStatusChange(Job.Instance instance)
+		{
+		    NullCheck.notNull(instance, "instance");
+		    if (finishedFunc == null || instance.getStatus() != Job.Status.FINISHED)
+			return;
+		    synchronized(syncObj) {
+			finishedFunc.execute(new Object[]{new Boolean(instance.isFinishedSuccessfully()), new Integer(instance.getExitCode())});
+		    }
+		}
 		@Override public void onSingleLineStateChange(Job.Instance instance) {}
 		@Override public void onMultilineStateChange(Job.Instance instance) {}
 		@Override public void onNativeStateChange(Job.Instance instance) {}
 	    });
 	return true;
     }
-
 
     private Object readTextFile(Value[] args)
     {
