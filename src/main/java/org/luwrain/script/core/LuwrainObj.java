@@ -47,6 +47,7 @@ final class LuwrainObj implements ProxyObject
 	"launchApp",
 	"log",
 	"message",
+	"newJob",
 	"now",
 	"popups",
 	"readTextFile",
@@ -110,10 +111,9 @@ final class LuwrainObj implements ProxyObject
 	    return(ProxyExecutable)this::launchApp;
 	case "log":
 	    return logObj;
-	    	case "message":
-	    return (ProxyExecutable)this::message;
-	case "now":
-	    return new DateTimeObj();
+	    	case "message": return (ProxyExecutable)this::message;
+	case "newJob": return (ProxyExecutable)this::newJob;
+	case "now": return new DateTimeObj();
 	case "popups":
 	    return popups;
 	case "readTextFile":
@@ -286,6 +286,28 @@ final class LuwrainObj implements ProxyObject
 	luwrain.message(values[0].asString());
 	return true;
     }
+
+    private Object newJob(Value[] values)
+    {
+	if (values.length < 2 || values.length > 3)
+	    return null;
+	if (values[0] == null || values[0].isNull() || !values[0].isString())
+	    return null;
+	final String name = values[0].asString();
+	final String[] args = asStringArray(values[1]);
+	final String dir;
+	if (values.length < 3 || values[2] == null || values[2].isNull() || !values[2].isString())
+	    dir = ""; else
+	    dir = values[2].asString();
+	luwrain.newJob(name, args != null?args:new String[0], dir, EnumSet.noneOf(Luwrain.JobFlags.class), new Job.Listener(){
+		@Override public void onStatusChange(Job.Instance instance) {}
+		@Override public void onSingleLineStateChange(Job.Instance instance) {}
+		@Override public void onMultilineStateChange(Job.Instance instance) {}
+		@Override public void onNativeStateChange(Job.Instance instance) {}
+	    });
+	return true;
+    }
+
 
     private Object readTextFile(Value[] args)
     {

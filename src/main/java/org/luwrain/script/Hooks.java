@@ -31,6 +31,22 @@ public final class Hooks
     static public final String
 	EDIT_INPUT = "luwrain.edit.input";
 
+            static public Object[] collector(HookContainer container, String hookName, Object[] args)
+    {
+	NullCheck.notNull(container, "container");
+	NullCheck.notEmpty(hookName, "hookName");
+	return new CollectorHook(container).run(hookName, args);
+    }
+
+                static public Object[] collectorForArrays(HookContainer container, String hookName, Object[] args)
+    {
+	NullCheck.notNull(container, "container");
+	NullCheck.notEmpty(hookName, "hookName");
+	return new CollectorHook(container).runForArrays(hookName, args);
+    }
+
+
+
     //Throws RuntimeException
     static public boolean chainOfResponsibility(HookContainer container, String hookName, Object[] args)
     {

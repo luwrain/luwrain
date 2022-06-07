@@ -57,7 +57,7 @@ public final class ScriptUtils
 	return res;
     }
 
-    static public Object getMember(Object obj, String name)
+    static public Value getMember(Object obj, String name)
     {
 	NullCheck.notEmpty(name, "name");
 	if (obj == null || !(obj instanceof Value))

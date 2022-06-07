@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.*;
 
 import org.luwrain.core.*;
 import org.luwrain.script2.*;
+import static org.luwrain.script2.ScriptUtils.*;
 
 public class CollectorHook
 {
@@ -63,11 +64,15 @@ public class CollectorHook
 	NullCheck.notNullItems(args, "args");
 	final List<Object> res = new ArrayList<>();
 	final Object[] objs = run(hookName, args);
+	if (objs == null)
+	    return null;
 	for(Object o: objs)
 	{
-	    final List<Object> values = ScriptUtils.getArrayItems(o);
+	    if (o  == null)
+		continue;
+	    final List<Object> values = getArrayItems(o);
 	    if (values == null)
-		throw new RuntimeException("The hook \'" + hookName + "\' has returned non-array value");
+		res.add(o); else
 	    res.addAll(values);
 	}
 	return res.toArray(new Object[res.size()]);

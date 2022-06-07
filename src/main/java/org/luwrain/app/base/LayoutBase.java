@@ -42,7 +42,7 @@ public interface ActionHandler
 	boolean isActionInfoEnabled();
     }
 
-    protected final class ActionInfo
+    public final class ActionInfo
     {
 	final String name;
 	final String title;
@@ -133,21 +133,20 @@ public interface ActionHandler
 	this(null);
     }
 
-    protected Actions actions(ActionInfo ... a)
+    public Actions actions(ActionInfo ... a)
     {
 	return new Actions(a);
 	    }
 
-    protected Actions actions(ActionInfo[] a1, ActionInfo ... a2)
+    public Actions actions(ActionInfo[] a1, ActionInfo ... a2)
     {
 	final List<ActionInfo> res = new ArrayList<>();
-	res.addAll(Arrays.asList(a1));
 	res.addAll(Arrays.asList(a2));
+		res.addAll(Arrays.asList(a1));
 	return new Actions(res.toArray(new ActionInfo[res.size()]));
     }
 
-
-    protected ActionInfo action(String name, String title, InputEvent inputEvent, ActionHandler handler)
+    public ActionInfo action(String name, String title, InputEvent inputEvent, ActionHandler handler)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(title, "title");
@@ -155,7 +154,7 @@ public interface ActionHandler
 	return new ActionInfo(name, title, inputEvent, handler);
     }
 
-    protected ActionInfo action(String name, String title, ActionHandler handler)
+    public ActionInfo action(String name, String title, ActionHandler handler)
     {
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notEmpty(title, "title");
