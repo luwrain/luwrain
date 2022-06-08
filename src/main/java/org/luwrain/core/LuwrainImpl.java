@@ -832,7 +832,15 @@ final class LuwrainImpl implements Luwrain
     private void runInMainThread(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");
-	core.enqueueEvent(new Core.RunnableEvent(runnable));
+	core.enqueueEvent(new Core.RunnableEvent(()->{
+		    try {
+			runnable.run();
+		    }
+		    catch(Throwable e)
+		    {
+			crash(e);
+		    }
+	}));
     }
 
     static private String extractUrl(String uniRef)

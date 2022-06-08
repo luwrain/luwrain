@@ -100,7 +100,7 @@ public final class LuwrainObj
 	return true;
 	    }
 
-    @HostAccess.Export public final ProxyExecutable AddWorker = this::addWorkerImpl;
+    @HostAccess.Export public final ProxyExecutable addWorker = this::addWorkerImpl;
         private Object addWorkerImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 4))
