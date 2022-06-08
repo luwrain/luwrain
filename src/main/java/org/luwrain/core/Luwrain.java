@@ -142,7 +142,7 @@ static public final String
 
     //Never returns null, doesn't take empty strings
     UniRefInfo getUniRefInfo(String uniRef);
-    void executeBkg(java.util.concurrent.FutureTask task);
+    void executeBkg(Runnable runnable);
     org.luwrain.i18n.I18n i18n();
     void launchApp(String shortcutName);
     void launchApp(String shortcutName, String[] args);

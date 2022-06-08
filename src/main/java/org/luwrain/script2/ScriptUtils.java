@@ -91,7 +91,6 @@ public final class ScriptUtils
 	final Value value = (Value)obj;
 	if (value.isNull() || !value.isBoolean())
 	    return false;
-	Log.debug("proba", "url " + value.asBoolean());
 	return value.asBoolean();
 	    }
 

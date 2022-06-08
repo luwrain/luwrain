@@ -651,11 +651,20 @@ final class LuwrainImpl implements Luwrain
 	return core.workers.runExplicitly(workerName);
     }
 
-    @Override public void executeBkg(java.util.concurrent.FutureTask task)
+    @Override public void executeBkg(Runnable runnable)
     {
-	NullCheck.notNull(task, "task");
+	NullCheck.notNull(runnable, "runnable");
 	//FIXME:maintaining the registry of executed tasks with their associations to Luwrain objects
-	java.util.concurrent.Executors.newSingleThreadExecutor().execute(task);
+	new Thread(()->{
+		try {
+		    runnable.run();
+		}
+		catch(Throwable e)
+		{
+		    Log.debug(LOG_COMPONENT, "An exception in background thread: " + e.getClass().getName() + ": " + e.getMessage());
+		    crash(e);
+		}
+	}).start();
     }
 
     @Override public boolean registerExtObj(ExtensionObject extObj)
