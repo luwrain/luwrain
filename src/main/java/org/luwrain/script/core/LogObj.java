@@ -29,7 +29,6 @@ import org.luwrain.util.*;
 final class LogObj implements ProxyObject
 {
     final Luwrain luwrain;
-
     LogObj(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");

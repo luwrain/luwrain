@@ -30,110 +30,30 @@ import org.luwrain.util.*;
 
 import static org.luwrain.script2.ScriptUtils.*;
 
-final class LuwrainObj implements ProxyObject
+public final class LuwrainObj
 {
-    static private String[] KEYS = new String[]{
-	"addCommand",
-	"addHook",
-	"addShortcut",
-	"addWorker",
-	"const",
-	"executeBkg",
-	"i18n",
-	"isDigit",
-	"isLetter",
-	"isLetterOrDigit",
-	"isSpace",
-	"launchApp",
-	"log",
-	"message",
-	"newJob",
-	"now",
-	"popups",
-	"readTextFile",
-	"speak",
-	"urlGet",
-	"quit",
-    };
-    static private final Set<String> KEYS_SET = new HashSet<>(Arrays.asList((String[])KEYS));
-    static private final ProxyArray KEYS_ARRAY = ProxyArray.fromArray((Object[])KEYS);
+    @HostAccess.Export public final LogObj log;
+    @HostAccess.Export public final ConstObj constants = new ConstObj();
+    @HostAccess.Export public final PopupsObj popups;
 
-    private final LogObj logObj;
-    private final ConstObj constObj = new ConstObj();
-    private final I18nObj i18nObj;
-    private final PopupsObj popups;
-
-        final Luwrain luwrain;
+    final Luwrain luwrain;
     final Object syncObj = new Object();
-        final Map<String, List<Value> > hooks = new HashMap<>();
-        final List<ExtensionObject> extObjs = new ArrayList<>();
+    final Map<String, List<Value> > hooks = new HashMap<>();
+    final List<ExtensionObject> extObjs = new ArrayList<>();
+    final I18nObj i18nObj;
     final List<Command> commands = new ArrayList<>();
 
     LuwrainObj(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.logObj = new LogObj(luwrain);
+	this.log = new LogObj(luwrain);
 	this.i18nObj = new I18nObj(luwrain);
 	this.popups = new PopupsObj(luwrain);
     }
 
-    @Override public Object getMember(String name)
-    {
-	if (name == null)
-	    return null;
-	switch(name)
-	{
-	    	case "addCommand":
-	    return(ProxyExecutable)this::addCommand;
-	case "addHook":
-	    return(ProxyExecutable)this::addHook;
-	    	    	case "addShortcut":
-	    return(ProxyExecutable)this::addShortcut;
-	    	case "addWorker":
-	    return(ProxyExecutable)this::addWorker;
-	case "const":
-	    return constObj;
-	case "executeBkg":
-	    return (ProxyExecutable)this::executeBkg;
-	case "i18n":
-	    i18nObj.refresh();
-	    return i18nObj;
-	    	case "isDigit":
-	    return(ProxyExecutable)this::isDigit;
-	    	    	case "isLetter":
-	    return(ProxyExecutable)this::isLetter;
-	    	    	case "isLetterOrDigit":
-	    return(ProxyExecutable)this::isLetterOrDigit;
-	    	    	    	case "isSpace":
-	    return(ProxyExecutable)this::isSpace;
-	    	    	    	    	case "launchApp":
-	    return(ProxyExecutable)this::launchApp;
-	case "log":
-	    return logObj;
-	    	case "message": return (ProxyExecutable)this::message;
-	case "newJob": return (ProxyExecutable)this::newJob;
-	case "now": return new DateTimeObj();
-	case "popups":
-	    return popups;
-	case "readTextFile":
-	    return (ProxyExecutable)this::readTextFile;
-	case "speak":
-	    return (ProxyExecutable)this::speak;
-	    	case "urlGet":
-	    return (ProxyExecutable)this::urlGet;
-	    	case "quit":
-	    return (ProxyExecutable)this::quit;
-	default:
-	    return null;
-	}
-    }
-
-    @Override public boolean hasMember(String name) { return KEYS_SET.contains(name); }
-    @Override public Object getMemberKeys() { return KEYS_ARRAY; }
-    @Override public void putMember(String name, Value value) { throw new RuntimeException("The Luwrain object doesn't support updating of its variables"); }
-
-            private Object addCommand(Value[] args)
+    @HostAccess.Export public final ProxyExecutable addCommand = this::addCommandImpl;
+            private Object addCommandImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 2))
 	    return false;
@@ -146,7 +66,8 @@ final class LuwrainObj implements ProxyObject
 	return true;
 	    }
 
-    private Object addHook(Value[] args)
+    @HostAccess.Export public final ProxyExecutable addHook = this::addHookImpl;
+    private Object addHookImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 2))
 	    return false;
@@ -165,7 +86,8 @@ final class LuwrainObj implements ProxyObject
 	return true;
     }
 
-                private Object addShortcut(Value[] args)
+    @HostAccess.Export public final ProxyExecutable addShortcut = this::addShortcutImpl;
+                private Object addShortcutImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 2))
 	    return false;
@@ -178,7 +100,8 @@ final class LuwrainObj implements ProxyObject
 	return true;
 	    }
 
-        private Object addWorker(Value[] args)
+    @HostAccess.Export public final ProxyExecutable AddWorker = this::addWorkerImpl;
+        private Object addWorkerImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 4))
 	    return false;
@@ -198,7 +121,8 @@ final class LuwrainObj implements ProxyObject
 	return true;
     }
 
-    private Object executeBkg(Value[] values)
+    @HostAccess.Export public final ProxyExecutable executeBkg = this::executeBkgImpl;
+    private Object executeBkgImpl(Value[] values)
     {
 	if (!notNullAndLen(values, 1))
 	    return false;
@@ -220,7 +144,15 @@ final class LuwrainObj implements ProxyObject
 	return true;
     }
 
-    private Object isDigit(Value[] values)
+    @HostAccess.Export public final ProxyExecutable i18n = this::i18nImpl;
+    private Object i18nImpl(Value[] args)
+    {
+	i18nObj.refresh();
+	return i18nObj;
+    }
+
+    @HostAccess.Export public final ProxyExecutable isDigit = this::isDigitImpl;
+    private Object isDigitImpl(Value[] values)
     {
 	if (!notNullAndLen(values, 1))
 	    return false;
@@ -229,7 +161,8 @@ final class LuwrainObj implements ProxyObject
 	return Character.isDigit(values[0].asString().charAt(0));
     }
 
-            private Object isLetter(Value[] values)
+    @HostAccess.Export public final ProxyExecutable isLetter = this::isLetterImpl;
+            private Object isLetterImpl(Value[] values)
     {
 	if (!ScriptUtils.notNullAndLen(values, 1))
 	    return false;
@@ -238,7 +171,8 @@ final class LuwrainObj implements ProxyObject
 	return Character.isLetter(values[0].asString().charAt(0));
     }
 
-            private Object isLetterOrDigit(Value[] values)
+    @HostAccess.Export public final ProxyExecutable isLetterOrDigit = this::isLetterOrDigitImpl;
+            private Object isLetterOrDigitImpl(Value[] values)
     {
 	if (!ScriptUtils.notNullAndLen(values, 1))
 	    return false;
@@ -247,7 +181,8 @@ final class LuwrainObj implements ProxyObject
 	return Character.isLetterOrDigit(values[0].asString().charAt(0));
     }
 
-                private Object isSpace(Value[] values)
+    @HostAccess.Export public final ProxyExecutable isSpace = this::isSpaceImpl;
+                private Object isSpaceImpl(Value[] values)
     {
 	if (!ScriptUtils.notNullAndLen(values, 1))
 	    return false;
@@ -256,7 +191,8 @@ final class LuwrainObj implements ProxyObject
 	return Character.isWhitespace(values[0].asString().charAt(0));
     }
 
-            private Object launchApp(Value[] values)
+    @HostAccess.Export public final ProxyExecutable launchApp = this::launchAppImpl;
+            private Object launchAppImpl(Value[] values)
     {
 	if (notNullAndLen(values, 2))
 	{
@@ -277,7 +213,8 @@ final class LuwrainObj implements ProxyObject
     }
 
     //FIXME: Speak numbers (or anything other than String)
-        private Object message(Value[] values)
+    @HostAccess.Export public final ProxyExecutable message = this::messageImpl;
+        private Object messageImpl(Value[] values)
     {
 	if (!notNullAndLen(values, 1))
 	    return false;
@@ -287,7 +224,8 @@ final class LuwrainObj implements ProxyObject
 	return true;
     }
 
-    private Object newJob(Value[] values)
+    @HostAccess.Export public final ProxyExecutable newJob = this::newJobImpl;
+    private JobInstanceObj newJobImpl(Value[] values)
     {
 	if (values.length < 2 || values.length > 4)
 	    return null;
@@ -303,7 +241,7 @@ final class LuwrainObj implements ProxyObject
 	if (values.length < 4 || values[3] == null || values[3].isNull() || !values[3].canExecute())
 	    finishedFunc = null; else
 	    finishedFunc = values[3];
-	luwrain.newJob(name, args != null?args:new String[0], dir, EnumSet.noneOf(Luwrain.JobFlags.class), new Job.Listener(){
+	final Job.Instance res = luwrain.newJob(name, args != null?args:new String[0], dir, EnumSet.noneOf(Luwrain.JobFlags.class), new Job.Listener(){
 		@Override public void onStatusChange(Job.Instance instance)
 		{
 		    NullCheck.notNull(instance, "instance");
@@ -317,10 +255,11 @@ final class LuwrainObj implements ProxyObject
 		@Override public void onMultilineStateChange(Job.Instance instance) {}
 		@Override public void onNativeStateChange(Job.Instance instance) {}
 	    });
-	return true;
+	return res != null?new JobInstanceObj(res):null;
     }
 
-    private Object readTextFile(Value[] args)
+    @HostAccess.Export public final ProxyExecutable readTextFile = this::readTextFileImpl;
+    private Object readTextFileImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 1))
 	    return new ScriptException("readTextFile takes exactly one non-null argument");
@@ -337,7 +276,8 @@ final class LuwrainObj implements ProxyObject
 	}
     }
 
-        private Object quit(Value[] values)
+    @HostAccess.Export public final ProxyExecutable quit = this::quitImpl;
+        private Object quitImpl(Value[] values)
     {
 	if (values != null && values.length > 0)
 	    return false;
@@ -345,7 +285,8 @@ final class LuwrainObj implements ProxyObject
 	return true;
 	}
 
-    private Object urlGet(Value[] args)
+    @HostAccess.Export public final ProxyExecutable urlGet = this::urlGetImpl;
+    private Object urlGetImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 1))
 	    return null;
@@ -369,7 +310,8 @@ final class LuwrainObj implements ProxyObject
 	}
     }
 
-    private Object speak(Value[] values)
+    @HostAccess.Export public final ProxyExecutable speak = this::speakImpl;
+    private Object speakImpl(Value[] values)
     {
 	if (notNullAndLen(values, 2))
 		{

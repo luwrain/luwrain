@@ -35,8 +35,7 @@ public final class PopupsObj
 	this.luwrain = luwrain;
     }
 
-    @HostAccess.Export
-    public ProxyExecutable confirmDefaultYes = this::confirmDefaultYesImpl;
+    @HostAccess.Export public final ProxyExecutable confirmDefaultYes = this::confirmDefaultYesImpl;
     private Boolean confirmDefaultYesImpl(Value[] args)
     {
 		if (!notNullAndLen(args, 2))
@@ -46,8 +45,7 @@ public final class PopupsObj
 	return new Boolean(Popups.confirmDefaultYes(luwrain, args[0].asString(), args[1].asString()));
     }
 
-    @HostAccess.Export
-    public ProxyExecutable confirmDefaultNo = this::confirmDefaultNoImpl;
+    @HostAccess.Export public final ProxyExecutable confirmDefaultNo = this::confirmDefaultNoImpl;
     private Boolean confirmDefaultNoImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 2))
@@ -57,18 +55,17 @@ public final class PopupsObj
 	return new Boolean(Popups.confirmDefaultNo(luwrain, args[0].asString(), args[1].asString()));
     }
 
-    @HostAccess.Export
-    public ProxyExecutable text = this::textImpl;
+    @HostAccess.Export public final ProxyExecutable text = this::textImpl;
     private String textImpl(Value[] args)
     {
-				if (!notNullAndLen(args, 3))
+	if (!notNullAndLen(args, 3))
 	    return null;
-		for(int i = 0;i < args.length;i++)
-		    if (!args[i].isString())
-			return null;
-		final String name = args[0].asString();
-		final String text = args[1].asString();
-		final String defaultValue = args[2].asString();
-						return Popups.text(luwrain, name, text, defaultValue);
-	    }
+	for(int i = 0;i < args.length;i++)
+	    if (!args[i].isString())
+		return null;
+	final String name = args[0].asString();
+	final String text = args[1].asString();
+	final String defaultValue = args[2].asString();
+	return Popups.text(luwrain, name, text, defaultValue);
+    };
 }
