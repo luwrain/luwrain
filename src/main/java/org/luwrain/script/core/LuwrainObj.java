@@ -258,6 +258,19 @@ public final class LuwrainObj
 	return res != null?new JobInstanceObj(res):null;
     }
 
+    @HostAccess.Export public final ProxyExecutable openUrl = this::openUrlImpl;
+    private Object openUrlImpl(Value[] args)
+    {
+	if (!notNullAndLen(args, 1))
+	    return false;
+	if (!args[0].isString())
+	    return false;
+	luwrain.runUiSafely(()->{
+		luwrain.openUrl(args[0].asString());
+	    });
+	return true;
+    }
+
     @HostAccess.Export public final ProxyExecutable readTextFile = this::readTextFileImpl;
     private Object readTextFileImpl(Value[] args)
     {

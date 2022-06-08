@@ -27,6 +27,14 @@ import org.luwrain.script.core.*;
 
 public final class ScriptUtils
 {
+    static public boolean isNull(Object obj)
+    {
+	if (obj == null || !(obj instanceof Value))
+	    return true;
+	final Value value = (Value)obj;
+	return value.isNull();
+    }
+
     static public boolean notNull(Value[] values)
     {
 	if (values == null)
@@ -63,10 +71,30 @@ public final class ScriptUtils
 	if (obj == null || !(obj instanceof Value))
 	    return null;
 	final Value value = (Value)obj;
-	if (value.isNull())
+	if (value.isNull() || !value.hasMembers())
 	    return null;
 	return value.getMember(name);
     }
+
+        static public boolean isBoolean(Object obj)
+    {
+	if (obj == null || !(obj instanceof Value))
+	    return false;
+	final Value value = (Value)obj;
+	return !value.isNull() && value.isBoolean();
+	    }
+
+        static public boolean asBoolean(Object obj)
+    {
+	if (obj == null || !(obj instanceof Value))
+	    return false;
+	final Value value = (Value)obj;
+	if (value.isNull() || !value.isBoolean())
+	    return false;
+	return value.asBoolean();
+	    }
+
+
 
     static public String asString(Object obj)
     {

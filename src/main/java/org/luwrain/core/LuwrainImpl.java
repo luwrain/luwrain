@@ -26,14 +26,14 @@ import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.i18n.*;
 import org.luwrain.speech.Channel;
+import org.luwrain.script.Hooks;
 
 final class LuwrainImpl implements Luwrain
 {
-    static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
+    static private final String
+	LOG_COMPONENT = Core.LOG_COMPONENT,
+	HOOK_URL_OPEN = "luwrain.url.open";
 
-    static private String OPEN_URL_CUSTOM_HOOK = "luwrain.url.open.custom";
-        static private String OPEN_URL_DEFAULT_HOOK = "luwrain.url.open.default";
-    
     private final Core core;
 
     LuwrainImpl(Core core)
@@ -516,7 +516,8 @@ final class LuwrainImpl implements Luwrain
     @Override public boolean openUrl(String url)
     {
 	NullCheck.notEmpty(url, "url");
-	return core.hookChainWithCustom(OPEN_URL_DEFAULT_HOOK, new Object[]{url});
+	//FIXME: main thread only
+	return Hooks.chainOfResponsibility(this, HOOK_URL_OPEN, new Object[]{url});
     }
 
     @Override public void runUiSafely(Runnable runnable)
