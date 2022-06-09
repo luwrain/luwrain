@@ -72,7 +72,7 @@ public interface Appearance extends MultilineEdit.Appearance
     }
 
     protected final MutableLinesChangeListener content;
-    protected final MultilineEditCorrector basicCorrector;
+    protected final MultilineEditCorrectorTranslator translator;
     protected final Appearance appearance;
     protected String areaName = "";
     protected final ChangeListener changeListener;
@@ -96,17 +96,19 @@ public interface Appearance extends MultilineEdit.Appearance
 	    };
 	this.appearance = params.appearance;
 	this.changeListener = params.changeListener;
-this.basicCorrector = createBasicCorrector();
+this.translator = new MultilineEditCorrectorTranslator(content, this);
 	    this.edit = createEdit(params);
 	    if (params.inputEventListeners != null)
 		this.inputEventListeners = new ArrayList<>(params.inputEventListeners); else
 		this.inputEventListeners = new ArrayList<>();
     }
 
-    protected MultilineEditCorrector createBasicCorrector()
+    /*
+    protected MultilineEditCorrectorTransla createBasicCorrector()
     {
 return new MultilineEditCorrectorTranslator(content, this);
     }
+    */
 
     protected MultilineEdit createEdit(Params areaParams)
     {
@@ -115,7 +117,7 @@ return new MultilineEditCorrectorTranslator(content, this);
 	{
 	    final MultilineEdit.Params params = new MultilineEdit.Params();
 	    params.context = context;
-	    params.model = basicCorrector;
+	    params.model = translator;
 	    params.appearance = areaParams.appearance;
 	    params.regionPoint = regionPoint;
 	    final MultilineEdit edit = areaParams.editFactory.newMultilineEdit(params);
@@ -124,7 +126,7 @@ return new MultilineEditCorrectorTranslator(content, this);
 	}
 	final MultilineEdit.Params params = new MultilineEdit.Params();
 	params.context = context;
-	params.model = basicCorrector;
+	params.model = translator;
 	params.appearance = areaParams.appearance;
 	params.regionPoint = regionPoint;
 	return new MultilineEdit(params);
@@ -227,7 +229,14 @@ return new MultilineEditCorrectorTranslator(content, this);
 		if (l.onEditAreaInputEvent(this, event))
 		    return true;
 	if (edit.onInputEvent(event))
+	{
+	    if (translator.commit())
+	    {
+		refresh();
+		notifyChangeListeners();
+	    }
 	    return true;
+	}
 	return super.onInputEvent(event);
     }
 
@@ -256,6 +265,11 @@ return new MultilineEditCorrectorTranslator(content, this);
     protected String getTabSeq()
     {
 	return "\t";
+    }
+
+    protected void notifyChangeListeners()
+    {
+	
     }
 
 }
