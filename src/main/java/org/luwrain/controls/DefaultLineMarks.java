@@ -18,20 +18,30 @@
 
 package org.luwrain.core;
 
-public interface LineMarks
+public class DefaultLineMarks implements LineMarks
 {
-    Mark[] getMarks();
-
-    public interface MarkObject
+    @Override public Mark[] getMarks()
     {
+	return null;
     }
 
-    public interface Mark
+    public final class MarkImpl implements Mark
     {
-	public enum Type {WEAK, EXPANDABLE};
-	Type getType();
-	int getPosFrom();
-	int getPosTo();
-	MarkObject getMarkObject();
+	@Override public Type getType()
+	{
+	    return null;
+	}
+@Override public int getPosFrom()
+	{
+	    return 0;
+	}
+	@Override public int getPosTo()
+	{
+	    return 0;
+	}
+	@Override public MarkObject getMarkObject()
+	{
+	    return null;
+	}
     }
 }

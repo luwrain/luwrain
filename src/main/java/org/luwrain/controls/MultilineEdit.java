@@ -317,9 +317,7 @@ public class MultilineEdit
     protected boolean onChar(InputEvent event)
     {
 	final char c = event.getChar();
-	final String line = model.getLine(model.getHotPointY());
-	NullCheck.notNull(line, "line");
-	final ModificationResult res = model.putChars(model.getHotPointX(), model.getHotPointY(), "" + c);
+	final ModificationResult res = model.putChars(model.getHotPointX(), model.getHotPointY(), new Character(c).toString());
 	return appearance.onChar(res);
     }
 
