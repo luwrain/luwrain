@@ -437,15 +437,12 @@ public interface ActionHandler
     protected EditArea.InputEventListener createEditAreaInputEventHook()
     {
 	return (edit, event)->{
-	    final MultilineEditCorrector corrector = (MultilineEditCorrector)edit.getEdit().getMultilineEditModel();
-	    final AtomicBoolean res = new AtomicBoolean(false);
-	    corrector.doEditAction((lines, hotPoint)->{
-		    res.set(chainOfResponsibility(getLuwrain(), EDIT_INPUT, new Object[]{
+	    return edit.update((lines, hotPoint)->
+chainOfResponsibility(getLuwrain(), EDIT_INPUT, new Object[]{
 				new EditAreaObj(edit, lines),
 				new InputEventObj(event)
-			    }));
-		});
-	    return res.get();
+			    })
+			       );
 	};
     }
 

@@ -34,7 +34,12 @@ public interface Appearance extends MultilineEdit.Appearance
 
     public interface ChangeListener
     {
-	void onEditChange(MutableLines lines, HotPoint hotPoint);
+	void onEditChange(Lines lines, HotPoint hotPoint);
+    }
+
+    public interface EditUpdating
+    {
+	boolean editUpdate(MutableLines lines, HotPointControl hotPoint);
     }
 
     public interface InputEventListener
@@ -178,6 +183,17 @@ return new MultilineEditCorrectorTranslator(content, this);
 	content.setLines(lines);
 	context.onAreaNewContent(this);
 	setHotPoint(getHotPointX(), getHotPointY());
+    }
+
+    public boolean update(EditUpdating updating)
+    {
+	NullCheck.notNull(updating, "updating");
+	if (updating.editUpdate(content, this))
+	{
+	    context.onAreaNewContent(this);
+	    return true;
+	}
+	return false;
     }
 
     public void clear()
