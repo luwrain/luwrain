@@ -31,6 +31,7 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
     protected final MutableLines lines;
     protected final HotPointControl hotPoint;
     protected String tabSeq = "\t";
+    protected boolean hasChanges = false;
 
     public MultilineEditCorrectorTranslator(MutableLines lines, HotPointControl hotPoint)
     {
@@ -85,6 +86,7 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
     {
 	if (pos < 0 || lineIndex < 0)
 	    throw new IllegalArgumentException("pos (" + pos + ") and lineIndex (" + lineIndex + ") may not be negative");
+	hasChanges = true;
 	final int lineCount = lines.getLineCount();
 	if (lineIndex >= lineCount)
 	    throw new IllegalArgumentException("lineIndex (" + lineIndex + ") must be less than the number of lines (" + lineCount + ")");
@@ -103,6 +105,7 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
     @Override public ModificationResult deleteRegion(int fromX, int fromY,
 					  int toX, int toY)
     {
+		hasChanges = true;
 	if (lines.getLineCount() < 1 || fromY > toY ||
 	    (fromY == toY && fromX > toX) ||
 	    toY >= lines.getLineCount())
@@ -161,6 +164,7 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
     {
 	NullCheck.notNullItems(text, "text");
 	checkPos(x, y);
+		hasChanges = true;
 	if (text.length == 0)
 	    return new ModificationResult(true);
 	final String firstLine = text[0];
@@ -211,6 +215,7 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
     {
 	NullCheck.notNull(str, "str");
 	checkPos(pos, lineIndex);
+		hasChanges = true;
 	beginEditTrans();
 	try {
 	    if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
@@ -244,6 +249,7 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
     {
 	if (firstLineIndex < 0)
 	    throw new IllegalArgumentException("firstLineIndex (" + firstLineIndex + ") may not be negative");
+		hasChanges = true;
 	final int lineCount = lines.getLineCount();
 	if (firstLineIndex + 1 >= lineCount)
 	    throw new IllegalArgumentException("firstLineIndex (" + firstLineIndex + ") + 1 must be less than the number of lines (" + lineCount + ")");
@@ -267,6 +273,7 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
     @Override public ModificationResult splitLine(int pos, int lineIndex)
     {
 	checkPos(pos, lineIndex);
+		hasChanges = true;
 	beginEditTrans();
 	final String newLine;
 	try {
@@ -299,8 +306,17 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
     @Override public ModificationResult doEditAction(TextEditAction action)
     {
 	NullCheck.notNull(action, "action");
+		hasChanges = true;
 	action.doTextEdit(lines, hotPoint);
 	return new ModificationResult(true);
+    }
+
+    public boolean commit()
+    {
+	if (!hasChanges)
+	    return false;
+	hasChanges = false;
+	return true;
     }
 
     protected String getWordPriorTo(int pos, int lineIndex)

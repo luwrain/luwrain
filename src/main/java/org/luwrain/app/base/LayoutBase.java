@@ -436,14 +436,10 @@ public interface ActionHandler
 
     protected EditArea.InputEventListener createEditAreaInputEventHook()
     {
-	return (edit, event)->{
-	    return edit.update((lines, hotPoint)->
-chainOfResponsibility(getLuwrain(), EDIT_INPUT, new Object[]{
-				new EditAreaObj(edit, lines),
-				new InputEventObj(event)
-			    })
-			       );
-	};
+	return (edit, event)->edit.update((lines, hotPoint)->chainOfResponsibility(getLuwrain(), EDIT_INPUT, new Object[]{
+		    new EditAreaObj(edit, lines),
+		    new InputEventObj(event)
+		}));
     }
 
     protected final class LayoutControlContext extends WrappingControlContext
