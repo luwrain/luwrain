@@ -34,12 +34,12 @@ public interface Appearance extends MultilineEdit.Appearance
 
     public interface ChangeListener
     {
-	void onEditChange(EditArea editArea, Lines lines, HotPoint hotPoint);
+	void onEditChange(EditArea editArea, MarkedLines lines, HotPoint hotPoint);
     }
 
     public interface EditUpdating
     {
-	boolean editUpdate(MutableLines lines, HotPointControl hotPoint);
+	boolean editUpdate(MutableMarkedLines lines, HotPointControl hotPoint);
     }
 
     public interface InputEventListener
@@ -65,13 +65,13 @@ public interface Appearance extends MultilineEdit.Appearance
 	public ControlContext context = null;
 	public Appearance appearance = null;
 	public String name = "";
-	public MutableLines content = null;
+	public MutableMarkedLines content = null;
 	public ChangeListener changeListener = null;
 	public EditFactory editFactory = null;
 	public List<InputEventListener> inputEventListeners = null;
     }
 
-    protected final MutableLines content;
+    protected final MutableMarkedLines content;
     protected final MultilineEditCorrectorTranslator translator;
     protected final Appearance appearance;
     protected String areaName = "";
@@ -86,7 +86,7 @@ public interface Appearance extends MultilineEdit.Appearance
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.name, "params.name");
 	this.areaName = params.name;
-	this.content = params.content != null?params.content:new MutableLinesImpl();
+	this.content = params.content != null?params.content:new MutableMarkedLinesImpl();
 	this.appearance = params.appearance;
 	this.changeListener = params.changeListener;
 	this.translator = new MultilineEditCorrectorTranslator(content, this);
