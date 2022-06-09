@@ -50,7 +50,7 @@ public final class MainLayout extends LayoutBase
 	    p.model = createBlockingModel(p.model);
 	    return new MultilineEdit(p);
 	};
-	params.changeListener = (lines, hotPoint)->hotUpdate();
+	params.changeListener = (area, lines, hotPoint)->hotUpdate();
 	this.editArea = new EditArea(params){
 		@Override public boolean onInputEvent(InputEvent event)
 		{

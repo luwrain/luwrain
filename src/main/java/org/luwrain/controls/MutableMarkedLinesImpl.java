@@ -22,16 +22,14 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
-public class MutableLinesImpl extends ArrayList<String> implements MutableLines 
+public class MutableMarkedLinesImpl extends ArrayList<MutableMarkedLinesImpl.Line> implements MutableMarkedLines 
 {
-    public MutableLinesImpl()
-    {
-    }
-
-    public MutableLinesImpl(String[] lines)
+    public MutableMarkedLinesImpl() {}
+    public MutableMarkedLinesImpl(String[] lines)
     {
 	NullCheck.notNullItems(lines, "lines");
-	addAll(Arrays.asList(lines));
+	for(String s: lines)
+	    add(new Line(s));
     }
 
     @Override public void update(Updating updating)
@@ -49,14 +47,16 @@ public class MutableLinesImpl extends ArrayList<String> implements MutableLines
     {
 	if (index < 0 || index >= size())
 	    return "";
-	return get(index);
+	return get(index).text;
     }
 
     @Override public void setLines(String[] lines)
     {
 	NullCheck.notNullItems(lines, "lines");
 	clear();
-	addAll(Arrays.asList(lines));
+	ensureCapacity(lines.length);
+	for(String l: lines)
+	    add(new Line(l));
     }
 
     @Override public String[] getLines()
@@ -71,13 +71,13 @@ public class MutableLinesImpl extends ArrayList<String> implements MutableLines
 	    throw new IllegalArgumentException("index (" + String.valueOf(index) + " can't be negative");
 	if (index >= size())
 	    throw new IllegalArgumentException("index (" + String.valueOf(index) + ") can't be greater or equal to line count (" + String.valueOf(size()) + ")");
-	set(index, line);
+	set(index, new Line(line));
     }
 
     @Override public void addLine(String line)
     {
 	NullCheck.notNull(line, "line");
-	add(line);
+	add(new Line(line));
     }
 
     //index is the position of newly inserted line
@@ -87,8 +87,8 @@ public class MutableLinesImpl extends ArrayList<String> implements MutableLines
 	if (index < 0 || index > size())
 	    throw new IllegalArgumentException("Illegal index value (" + index + ")");
 	if (index < size())
-	    add(index, line); else
-	    add(line);
+	    add(index, new Line(line)); else
+	    add(new Line(line));
     }
 
     @Override public void removeLine(int index)
@@ -98,22 +98,38 @@ public class MutableLinesImpl extends ArrayList<String> implements MutableLines
 	remove(index);
     }
 
-    public String getWholeText(String lineSep)
+    @Override public LineMarks getLineMarks(int index)
+    {
+	return null;
+    }
+
+    @Override public void setLineMarks(int index, LineMarks lineMarks)
+    {
+	NullCheck.notNull(lineMarks, "lineMarks");
+    }
+
+    public String getText(String lineSep)
     {
 	final String s = lineSep != null?lineSep:System.lineSeparator();
 	if (size() == 0)
 	    return "";
 	if (size() == 1)
-	    return get(0);
+	    return get(0).text;
 	final StringBuilder res = new StringBuilder();
-	res.append(get(0));
+	res.append(get(0).text);
 	for(int i = 1;i < size();++i)
-	    res.append(s).append(get(i));
+	    res.append(s).append(get(i).text);
 	return new String(res);
     }
 
-    public String getWholeText()
+    static public final class Line
     {
-	return getWholeText(null);
+final String text;
+	LineMarks marks = null;
+	public Line(String text)
+	{
+	    NullCheck.notNull(text, "text");
+	    this.text = text;
+	}
     }
 }

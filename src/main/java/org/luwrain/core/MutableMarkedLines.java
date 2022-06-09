@@ -18,7 +18,7 @@
 
 package org.luwrain.core;
 
-public interface MarkedLines extends Lines
+public interface MutableMarkedLines extends MarkedLines, MutableLines
 {
-    LineMarks getLineMarks(int index);
+    void setLineMarks(int index, LineMarks lineMarks);
 }

@@ -20,7 +20,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
-public class UndoLines implements MutableLines 
+public class UndoLines implements MutableMarkedLines 
 {
     protected final MutableLines lines;
     protected final List<Command> commands = new ArrayList<>();

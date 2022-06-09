@@ -16,7 +16,7 @@
 
 package org.luwrain.core;
 
-public interface MutableLines extends MarkedLines
+public interface MutableLines extends Lines
 {
     public interface Updating
     {

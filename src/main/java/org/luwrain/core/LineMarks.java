@@ -20,9 +20,11 @@ package org.luwrain.core;
 
 public interface LineMarks
 {
+    /*
     LineMarks copy();
     LineMarks cutBegin(int pos);
     LineMarks cutEnd(int pos);
     void addBegin(LineMarks lineMarks);
     void addEnd(LineMarks lineMarks);
+    */
 }

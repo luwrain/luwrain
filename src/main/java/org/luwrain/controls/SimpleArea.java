@@ -130,6 +130,7 @@ public class SimpleArea extends NavigationArea implements MutableLines
 	afterChange();
     }
 
+    /*
     @Override public LineMarks getLineMarks(int index)
     {
 	return content.getLineMarks(index);
@@ -141,6 +142,7 @@ public class SimpleArea extends NavigationArea implements MutableLines
 	content.setLineMarks(index, lineMarks);
 	afterChange();
     }
+    */
 
     @Override public String getAreaName()
     {
