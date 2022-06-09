@@ -131,7 +131,10 @@ public final class MainLayout extends LayoutBase
     private void putResLine(String text)
     {
 	NullCheck.notNull(text, "text");
-	editArea.getDirectContent().setLine(editArea.getLineCount() - 2, text);
+	editArea.update((lines, hotPoint)->{
+		lines.setLine(lines.getLineCount() - 2, text);
+		return true;
+	    });
     }
 
     private String[] getLinesToEval()

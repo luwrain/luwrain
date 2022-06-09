@@ -71,7 +71,7 @@ public interface Appearance extends MultilineEdit.Appearance
 	public List<InputEventListener> inputEventListeners = null;
     }
 
-    protected final MutableLinesChangeListener content;
+    protected final MutableLines content;
     protected final MultilineEditCorrectorTranslator translator;
     protected final Appearance appearance;
     protected String areaName = "";
@@ -86,14 +86,7 @@ public interface Appearance extends MultilineEdit.Appearance
 	NullCheck.notNull(params.appearance, "params.appearance");
 	NullCheck.notNull(params.name, "params.name");
 	this.areaName = params.name;
-	this.content = new MutableLinesChangeListener(params.content != null?params.content:new MutableLinesImpl()){
-		@Override public void onMutableLinesChange()
-		{
-		    context.onAreaNewContent(EditArea.this);
-		    if (changeListener != null)
-			changeListener.onEditChange(this, EditArea.this);
-		}
-	    };
+	this.content = params.content != null?params.content:new MutableLinesImpl();
 	this.appearance = params.appearance;
 	this.changeListener = params.changeListener;
 this.translator = new MultilineEditCorrectorTranslator(content, this);
@@ -102,13 +95,6 @@ this.translator = new MultilineEditCorrectorTranslator(content, this);
 		this.inputEventListeners = new ArrayList<>(params.inputEventListeners); else
 		this.inputEventListeners = new ArrayList<>();
     }
-
-    /*
-    protected MultilineEditCorrectorTransla createBasicCorrector()
-    {
-return new MultilineEditCorrectorTranslator(content, this);
-    }
-    */
 
     protected MultilineEdit createEdit(Params areaParams)
     {
@@ -208,11 +194,6 @@ return new MultilineEditCorrectorTranslator(content, this);
     public MutableLines getContent()
     {
 	return content;
-    }
-
-        public MutableLines getDirectContent()
-    {
-	return content.getDirectContent();
     }
 
     public void refresh()
