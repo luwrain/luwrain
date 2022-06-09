@@ -27,8 +27,6 @@ import org.luwrain.script.*;
 
 public class EditArea extends NavigationArea
 {
-    static public final String INPUT_EVENT_HOOK = "luwrain.edit.multiline.input";
-
 public interface Appearance extends MultilineEdit.Appearance
 {
     void announceLine(int index, String line);
@@ -36,7 +34,7 @@ public interface Appearance extends MultilineEdit.Appearance
 
     public interface ChangeListener
     {
-	void onEditChange();
+	void onEditChange(MutableLines lines, HotPoint hotPoint);
     }
 
     public interface InputEventListener
@@ -88,7 +86,7 @@ public interface Appearance extends MultilineEdit.Appearance
 		{
 		    context.onAreaNewContent(EditArea.this);
 		    if (changeListener != null)
-			changeListener.onEditChange();
+			changeListener.onEditChange(this, EditArea.this);
 		}
 	    };
 	this.appearance = params.appearance;
