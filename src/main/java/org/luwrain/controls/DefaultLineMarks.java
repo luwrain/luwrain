@@ -20,28 +20,33 @@ package org.luwrain.core;
 
 public class DefaultLineMarks implements LineMarks
 {
+    final Mark[] marks;
+    DefaultLineMarks(Mark[] marks)
+    {
+	NullCheck.notNullItems(marks, "marks");
+	this.marks = marks.clone();
+    }
     @Override public Mark[] getMarks()
     {
-	return null;
+	return this.marks.clone();
     }
 
     public final class MarkImpl implements Mark
     {
-	@Override public Type getType()
+	final Type type;
+	final int posFrom, posTo;
+	final MarkObject obj;
+	public MarkImpl(Type type, int posFrom, int posTo, MarkObject obj)
 	{
-	    return null;
+	    NullCheck.notNull(type, "type");
+	    this.type = type;
+	    this.posFrom = posFrom;
+	    this.posTo = posTo;
+	    this.obj = obj;
 	}
-@Override public int getPosFrom()
-	{
-	    return 0;
-	}
-	@Override public int getPosTo()
-	{
-	    return 0;
-	}
-	@Override public MarkObject getMarkObject()
-	{
-	    return null;
-	}
+	@Override public Type getType() { return type; }
+	@Override public int getPosFrom() { return posFrom; }
+	@Override public int getPosTo() { return posTo; }
+	@Override public MarkObject getMarkObject() { return obj; }
     }
 }

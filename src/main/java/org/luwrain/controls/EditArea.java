@@ -72,7 +72,7 @@ public interface Appearance extends MultilineEdit.Appearance
     }
 
     protected final MutableMarkedLines content;
-    protected final MultilineEditCorrectorTranslator translator;
+    protected final MultilineEditTranslator translator;
     protected final Appearance appearance;
     protected String areaName = "";
     protected final ChangeListener changeListener;
@@ -89,7 +89,7 @@ public interface Appearance extends MultilineEdit.Appearance
 	this.content = params.content != null?params.content:new MutableMarkedLinesImpl();
 	this.appearance = params.appearance;
 	this.changeListener = params.changeListener;
-	this.translator = new MultilineEditCorrectorTranslator(content, this);
+	this.translator = new MultilineEditTranslator(content, this);
 	this.edit = createEdit(params);
 	if (params.inputEventListeners != null)
 	    this.inputEventListeners = new ArrayList<>(params.inputEventListeners); else

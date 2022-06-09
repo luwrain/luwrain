@@ -71,7 +71,7 @@ public class MultilineEdit
      * interface is a front-end for {@link MutableLines} in conjunction with
      * {@link HotPointControl}, but you may use it freely as it is
      * necessary for a particular purpose. See 
-     * {@link MultilineEditCorrectorTranslator} for a default implementation.
+     * {@link MultilineEditTranslator} for a default implementation.
      * <p>
      * {@code MultilineEdit} guarantees that each user action results exactly in
      * a single call of some method of this interface.  This allows substitution
@@ -83,7 +83,7 @@ public class MultilineEdit
      * text, the result may be undefined. The implementation of this
      * interface should not issue any speech output.
      *
-     * @see MultilineEditCorrectorTranslator
+     * @see MultilineEditTranslator
      */
     public interface Model extends Lines
     {

@@ -405,7 +405,7 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(lines, "lines");
 	final MultilineEdit.Params params = new MultilineEdit.Params();
 	params.context = context;
-	params.model = new EditUtils.CorrectorChangeListener(new MultilineEditCorrectorTranslator(lines, multilineEditHotPoint)){
+	params.model = new EditUtils.CorrectorChangeListener(new MultilineEditTranslator(lines, multilineEditHotPoint)){
 		@Override public void onMultilineEditChange()
 		{
 		    context.onAreaNewContent(FormArea.this);

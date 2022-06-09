@@ -26,14 +26,14 @@ import org.luwrain.util.*;
 // Hot point position may be adjusted to the content changes only on endEditTrans 
 
 //Keeps lines empty if it is possible providing a fake  first line to be consistent, as it is required by MultilineEdit.Model
-public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
+public class MultilineEditTranslator implements MultilineEditCorrector
 {
     protected final MutableLines lines;
     protected final HotPointControl hotPoint;
     protected String tabSeq = "\t";
     protected boolean hasChanges = false;
 
-    public MultilineEditCorrectorTranslator(MutableLines lines, HotPointControl hotPoint)
+    public MultilineEditTranslator(MutableLines lines, HotPointControl hotPoint)
     {
 	NullCheck.notNull(lines, "lines");
 	NullCheck.notNull(hotPoint, "hotPoint");
@@ -41,7 +41,7 @@ public class MultilineEditCorrectorTranslator implements MultilineEditCorrector
 	this.hotPoint = hotPoint;
     }
 
-    public MultilineEditCorrectorTranslator(MutableLines lines, HotPointControl hotPoint,
+    public MultilineEditTranslator(MutableLines lines, HotPointControl hotPoint,
 					String tabSeq)
     {
 	NullCheck.notNull(lines, "lines");
