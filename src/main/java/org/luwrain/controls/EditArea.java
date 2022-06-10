@@ -193,7 +193,7 @@ public interface Appearance extends MultilineEdit.Appearance
 
     //    public String 
 
-    public MutableLines getContent()
+    public MutableMarkedLines getContent()
     {
 	return content;
     }

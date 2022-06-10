@@ -18,13 +18,58 @@
 
 package org.luwrain.controls;
 
+import java.util.*;
+import java.util.function.*;
+
 import org.luwrain.core.*;
-import org.luwrain.script.*;
 import org.luwrain.controls.MultilineEdit.ModificationResult;
 
 public final class EditUtils
 {
-    static public class DefaultMultilineEditAppearance implements MultilineEdit.Appearance
+    static public void blockBounds(EditArea editArea, int lineIndex, BiPredicate<String, LineMarks> pred, BiConsumer<MarkedLines, Integer> accepting)
+    {
+	NullCheck.notNull(editArea, "editArea");
+	NullCheck.notNull(pred, "pred");
+	NullCheck.notNull(accepting, "accepting");
+	if (lineIndex < 0)
+	    throw new IllegalArgumentException("lineINdex can't be negative");
+	final MarkedLines lines = editArea.getContent();
+	if (lineIndex >= lines.getLineCount())
+	    return;
+	if (!pred.test(lines.getLine(lineIndex), lines.getLineMarks(lineIndex)))
+	    return;
+	int fromPos = lineIndex, toPos = lineIndex;
+	while(fromPos > 0 && pred.test(lines.getLine(fromPos), lines.getLineMarks(fromPos - 1)))
+	    fromPos--;
+	while(toPos + 1 < lines.getLineCount() && pred.test(lines.getLine(toPos + 1), lines.getLineMarks(toPos + 1)))
+	    toPos++;
+	for(int i = fromPos;i <= toPos;i++)
+	    accepting.accept(lines, new Integer(i));
+    }
+
+    static public class DefaultEditAreaAppearance extends DefaultMultilineEditAppearance implements EditArea.Appearance
+    {
+	protected final Luwrain.SpeakableTextType speakableTextType;
+	public DefaultEditAreaAppearance(ControlContext context, Luwrain.SpeakableTextType speakableTextType)
+	{
+	    super(context);
+	    this.speakableTextType = speakableTextType;
+	}
+	public DefaultEditAreaAppearance(ControlContext context)
+	{
+	    this(context, null);
+	}
+	    @Override public void announceLine(int index, String line)
+    {
+	NullCheck.notNull(line, "line");
+	if (speakableTextType != null)
+	    NavigationArea.defaultLineAnnouncement(context, index, context.getSpeakableText(line, speakableTextType
+											    )); else
+	NavigationArea.defaultLineAnnouncement(context, index, line);
+    }
+    }
+
+        static public class DefaultMultilineEditAppearance implements MultilineEdit.Appearance
     {
 	protected final ControlContext context;
 	public DefaultMultilineEditAppearance(ControlContext context)
@@ -112,27 +157,6 @@ public final class EditUtils
 	}
     }
 
-    static public class DefaultEditAreaAppearance extends DefaultMultilineEditAppearance implements EditArea.Appearance
-    {
-	protected final Luwrain.SpeakableTextType speakableTextType;
-	public DefaultEditAreaAppearance(ControlContext context, Luwrain.SpeakableTextType speakableTextType)
-	{
-	    super(context);
-	    this.speakableTextType = speakableTextType;
-	}
-	public DefaultEditAreaAppearance(ControlContext context)
-	{
-	    this(context, null);
-	}
-	    @Override public void announceLine(int index, String line)
-    {
-	NullCheck.notNull(line, "line");
-	if (speakableTextType != null)
-	    NavigationArea.defaultLineAnnouncement(context, index, context.getSpeakableText(line, speakableTextType
-											    )); else
-	NavigationArea.defaultLineAnnouncement(context, index, line);
-    }
-    }
 
     /**
      * Implements a listener of all changes in 

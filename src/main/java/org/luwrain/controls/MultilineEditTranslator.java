@@ -52,36 +52,6 @@ public class MultilineEditTranslator implements MultilineEditCorrector
 	this.tabSeq = tabSeq;
     }
 
-    @Override public int getHotPointX()
-    {
-	return hotPoint.getHotPointX();
-    }
-
-    @Override public int getHotPointY()
-    {
-	return hotPoint.getHotPointY();
-    }
-
-    @Override public int getLineCount()
-    {
-	final int count = lines.getLineCount();
-	return count > 0?count:1;
-    }
-
-    @Override public String getLine(int index)
-    {
-	if (index < 0)
-	    throw new IllegalArgumentException("index (" + index + ") may not be negative");
-	if (index == 0 && lines.getLineCount() == 0)
-	    return "";
-	return lines.getLine(index);
-    }
-
-    @Override public String getTabSeq()
-    {
-	return tabSeq;
-    }
-
     @Override public ModificationResult deleteChar(int pos, int lineIndex)
     {
 	if (pos < 0 || lineIndex < 0)
@@ -319,22 +289,41 @@ public class MultilineEditTranslator implements MultilineEditCorrector
 	return true;
     }
 
-    protected String getWordPriorTo(int pos, int lineIndex)
+    @Override public int getLineCount()
     {
-String res = TextUtils.getLastWord(getLine(lineIndex), pos);
-if (!res.isEmpty())
-    return res;
-if (lineIndex == 0)
-    return "";
-for(int i = lineIndex - 1;i >= 0;i--)
-{
-    final String line = getLine(i);
-    res = TextUtils.getLastWord(line, line.length());
-    if (!res.isEmpty())
-	return res;
-}
-return ""; 
+	final int count = lines.getLineCount();
+	return count > 0?count:1;
     }
+
+    @Override public String getLine(int index)
+    {
+	if (index < 0)
+	    throw new IllegalArgumentException("index (" + index + ") may not be negative");
+	if (index == 0 && lines.getLineCount() == 0)
+	    return "";
+	return lines.getLine(index);
+    }
+
+    @Override public int getHotPointX() { return hotPoint.getHotPointX(); }
+    @Override public int getHotPointY() {return hotPoint.getHotPointY(); }
+    @Override public String getTabSeq() { return tabSeq; }
+
+	protected String getWordPriorTo(int pos, int lineIndex)
+	{
+	    String res = TextUtils.getLastWord(getLine(lineIndex), pos);
+	    if (!res.isEmpty())
+		return res;
+	    if (lineIndex == 0)
+		return "";
+	    for(int i = lineIndex - 1;i >= 0;i--)
+	    {
+		final String line = getLine(i);
+		res = TextUtils.getLastWord(line, line.length());
+		if (!res.isEmpty())
+		    return res;
+	    }
+return ""; 
+	}
 
     protected void checkPos(int pos, int lineIndex)
     {
