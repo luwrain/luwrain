@@ -39,7 +39,7 @@ public final class EditUtils
 	if (!pred.test(lines.getLine(lineIndex), lines.getLineMarks(lineIndex)))
 	    return;
 	int fromPos = lineIndex, toPos = lineIndex;
-	while(fromPos > 0 && pred.test(lines.getLine(fromPos), lines.getLineMarks(fromPos - 1)))
+	while(fromPos > 0 && pred.test(lines.getLine(fromPos - 1), lines.getLineMarks(fromPos - 1)))
 	    fromPos--;
 	while(toPos + 1 < lines.getLineCount() && pred.test(lines.getLine(toPos + 1), lines.getLineMarks(toPos + 1)))
 	    toPos++;
