@@ -16,7 +16,11 @@
 
 //LWR_API 1.0
 
-package org.luwrain.core;
+package org.luwrain.controls;
+
+import java.util.*;
+
+import org.luwrain.core.*;
 
 public class DefaultLineMarks implements LineMarks
 {
@@ -24,14 +28,50 @@ public class DefaultLineMarks implements LineMarks
     DefaultLineMarks(Mark[] marks)
     {
 	NullCheck.notNullItems(marks, "marks");
-	this.marks = marks.clone();
+	this.marks = marks;
     }
     @Override public Mark[] getMarks()
     {
 	return this.marks.clone();
     }
 
-    public final class MarkImpl implements Mark
+    static public final class Builder
+    {
+	private final List<LineMarks.Mark> res = new ArrayList<>();
+	public Builder(LineMarks marks)
+	{
+	    if (marks != null)
+	    {
+		final LineMarks.Mark[] newMarks = marks.getMarks();
+		if (newMarks != null)
+		    res.addAll(Arrays.asList(newMarks));
+	    }
+	}
+	public Builder add(LineMarks.Mark mark)
+	{
+	    NullCheck.notNull(mark, "mark");
+	    res.add(mark);
+	    return this;
+	}
+	public Builder addAll(List<LineMarks.Mark> marks)
+	{
+	    NullCheck.notNull(marks, "marks");
+	    res.addAll(marks);
+	    return this;
+	}
+	public Builder addAll(LineMarks.Mark[] marks)
+	{
+	    NullCheck.notNullItems(marks, "marks");
+	    res.addAll(Arrays.asList(marks));
+	    return this;
+	}
+	public DefaultLineMarks build()
+	{
+	    return new DefaultLineMarks(res.toArray(new LineMarks.Mark[res.size()]));
+	}
+    }
+
+    static public final class MarkImpl implements LineMarks.Mark
     {
 	final Type type;
 	final int posFrom, posTo;

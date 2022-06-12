@@ -66,7 +66,7 @@ public interface Appearance extends MultilineEdit.Appearance
 	public Appearance appearance = null;
 	public String name = "";
 	public MutableMarkedLines content = null;
-	public ChangeListener changeListener = null;
+	public List<ChangeListener> changeListeners = null;
 	public EditFactory editFactory = null;
 	public List<InputEventListener> inputEventListeners = null;
     }
@@ -75,7 +75,7 @@ public interface Appearance extends MultilineEdit.Appearance
     protected final MultilineEditTranslator translator;
     protected final Appearance appearance;
     protected String areaName = "";
-    protected final ChangeListener changeListener;
+    protected final List<ChangeListener> changeListeners = new ArrayList<>();
     protected final MultilineEdit edit;
     protected final List<InputEventListener> inputEventListeners;
 
@@ -88,7 +88,8 @@ public interface Appearance extends MultilineEdit.Appearance
 	this.areaName = params.name;
 	this.content = params.content != null?params.content:new MutableMarkedLinesImpl();
 	this.appearance = params.appearance;
-	this.changeListener = params.changeListener;
+	if (params.changeListeners != null)
+	    this.changeListeners.addAll(params.changeListeners);
 	this.translator = new MultilineEditTranslator(content, this);
 	this.edit = createEdit(params);
 	if (params.inputEventListeners != null)
@@ -252,7 +253,8 @@ public interface Appearance extends MultilineEdit.Appearance
 
     protected void notifyChangeListeners()
     {
-	
+	for(ChangeListener l: this.changeListeners)
+	    l.onEditChange(this, content, this);
     }
 
 }
