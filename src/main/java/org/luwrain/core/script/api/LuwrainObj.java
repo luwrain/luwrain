@@ -61,10 +61,6 @@ public final class LuwrainObj extends AbstractJSObject
 	{
 	case "registry":
 	    return registryObj;
-	case "player":
-	    if (luwrain.getPlayer() != null)
-		return new PlayerObj(luwrain.getPlayer());
-	    return super.getMember(name);
 	case "popups":
 	    return popupsObj;
 	case "prop":

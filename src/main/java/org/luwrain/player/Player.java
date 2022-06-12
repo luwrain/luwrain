@@ -36,7 +36,7 @@ static public final int
     /**
      * Starts playing of the specified playlist. This method acts in separate
      * thread and returns execution control immediately. If there is a previous
-     * playing, initiated prior to this call, it will be silently
+     * playing, initiated before to this call, it will be silently
      * cancelled. You may specify the desired track number and a position in
      * audio file to begin playing from.
      *
@@ -44,7 +44,7 @@ static public final int
      * @param startingTrackNum A desired 0-based track number to play from
      * @param startingPosMsec A position in audio file in milliseconds to start playing from
      */
-    Result play(Playlist playlist, int startingTrackNum, long startingPosMsec, Set<Flags> flags, Properties props);
+    Result play(Playlist playlist, int startingTrackNum, long startingPosMsec, Set<Flags> flags);
     boolean stop();
     boolean pauseResume();
     boolean jump(long offsetMsec);

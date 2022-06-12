@@ -118,7 +118,7 @@ final class SoundsList extends ListArea<SoundsList.Item> implements SectionArea,
 	    return false;
 	if (luwrain.getPlayer() == null)
 	    return false;
-	luwrain.getPlayer().play(new FixedPlaylist(Urls.toUrl(item.file).toString()), 0, 0, Player.DEFAULT_FLAGS, null);
+	luwrain.getPlayer().play(new FixedPlaylist(Urls.toUrl(item.file).toString()), 0, 0, Player.DEFAULT_FLAGS);
 	return true;
     }
 
