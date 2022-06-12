@@ -28,13 +28,10 @@ import org.luwrain.core.listening.*;
 
 abstract class EventDispatching extends Areas
 {
-    static private final int POPUP_BLOCKING_MAY_PROCESS = 0;
-    static private final int POPUP_BLOCKING_EVENT_REJECTED = 1;
-    static private final int POPUP_BLOCKING_TRY_AGAIN = 2;
-
     protected final GlobalKeys globalKeys;
     protected Listening listening = null;
     protected final org.luwrain.core.properties.Listening listeningProp;
+    private AtomicBoolean idleEventCancelling = null;
 
     protected EventDispatching(CmdLine cmdLine, Registry registry,
 			       PropertiesRegistry props, String lang, Interaction interaction)
@@ -44,10 +41,10 @@ abstract class EventDispatching extends Areas
 	org.luwrain.core.properties.Listening l = null;
 	for (PropertiesProvider p: props.getBasicProviders())
 	    if (p instanceof org.luwrain.core.properties.Listening)
-	{
-	    l = (org.luwrain.core.properties.Listening)p;
-	    break;
-	}
+	    {
+		l = (org.luwrain.core.properties.Listening)p;
+		break;
+	    }
 	if (l == null)
 	    throw new RuntimeException("No listening properties provider");
 	this.listeningProp = l;
@@ -90,7 +87,7 @@ abstract class EventDispatching extends Areas
 		case REGULAR:
 		    return onSystemEvent(systemEvent);
 		case BROADCAST:
-		    return onBroadcastEnvironmentEvent(systemEvent);
+		    return onBroadcastSystemEvent(systemEvent);
 		default:
 		    return true;
 		}
@@ -105,33 +102,6 @@ abstract class EventDispatching extends Areas
 	}
     }
 
-    private int popupBlocking()
-    {
-	final Application nonPopupDest = screenContentManager.isNonPopupDest();
-	if (nonPopupDest != null && apps.hasAnyPopup())//Non-popup area activated but some popup opened
-	{
-	    final Application lastPopupApp = apps.getAppOfLastPopup();
-	    if (lastPopupApp == null || apps.isLastPopupWeak())//Weak environment popup
-	    {
-		apps.cancelLastPopup();
-		return POPUP_BLOCKING_TRY_AGAIN;
-	    }
-	    if (nonPopupDest == lastPopupApp)//User tries to deal with app having opened popup
-	    {
-		if (apps.isLastPopupWeak())
-		{
-		    //Weak popup;
-		    apps.cancelLastPopup();
-		    return POPUP_BLOCKING_TRY_AGAIN;
-		} else //Strong popup
-		    return POPUP_BLOCKING_EVENT_REJECTED;
-	    } else
-		if (apps.hasPopupOfApp(nonPopupDest))//The destination application has a popup and it is somewhere in the stack, it is not the popup on top;
-		    return POPUP_BLOCKING_EVENT_REJECTED;
-	}
-	return POPUP_BLOCKING_MAY_PROCESS;
-    }
-
     @Override public void announce(StopCondition stopCondition)
     {
 	NullCheck.notNull(stopCondition, "stopCondition");
@@ -139,30 +109,21 @@ abstract class EventDispatching extends Areas
 	    switch(this.announcement)
 	    {
 	    case APP:
-				announceActiveApp();
-				break;
+		announceActiveApp();
+		break;
 	    case AREA:
 		announceActiveArea();
 		break;
-	}
+	    }
 	this.announcement = null;
     }
 
     private boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
-	new org.luwrain.script.hooks.NotificationHook(getObjForEnvironment()).run("luwrain.events.input", new Object[]{org.luwrain.script.ScriptUtils.createInputEvent(event)});
 	onBeforeEventProcessing();
 	if (systemHotKey(event))
 	    return true;
-	switch(popupBlocking())
-	{
-	case POPUP_BLOCKING_TRY_AGAIN:
-	    return false;
-	case POPUP_BLOCKING_EVENT_REJECTED:
-	    //	    areaBlockedMessage();
-	    return true;
-	}
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)
 	{
@@ -183,8 +144,31 @@ abstract class EventDispatching extends Areas
 		    }
 		if (!activeArea.onInputEvent(event))
 		    playSound(Sounds.EVENT_NOT_PROCESSED);
+		installIdleEvent();
 	    });
 	return true;
+    }
+
+    private void installIdleEvent()
+    {
+	final AtomicBoolean cancelling = new AtomicBoolean(false);
+	synchronized(this){
+	    if (this.idleEventCancelling != null)
+		this.idleEventCancelling.set(true);
+	    this.idleEventCancelling = cancelling;
+	};
+	new Thread(()->{
+		try {
+		    Thread.sleep(1000);
+		}
+		catch(InterruptedException e)
+		{
+		    return;
+		}
+		if (cancelling.get())
+		    return;
+		enqueueEvent(new SystemEvent(SystemEvent.Code.IDLE));
+	}).start();
     }
 
     private boolean systemHotKey(InputEvent event)
@@ -226,20 +210,9 @@ abstract class EventDispatching extends Areas
     private boolean onSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
-	switch(popupBlocking())
-	{
-	case POPUP_BLOCKING_TRY_AGAIN:
-	    return false;
-	case POPUP_BLOCKING_EVENT_REJECTED:
-	    //	    areaBlockedMessage();
-	    return true;
-	}
-	final AtomicReference<Integer> res = new AtomicReference<>();
-	unsafeAreaOperation(()->res.set(new Integer(screenContentManager.onSystemEvent(event))));
-	if (res.get() == null || !(res.get() instanceof Integer))
-	    return true;
-	final int intRes = (res.get()).intValue();
-	switch(intRes)
+	final AtomicInteger res = new AtomicInteger();
+	unsafeAreaOperation(()->res.set(screenContentManager.onSystemEvent(event)));
+	switch(res.get())
 	{
 	case ScreenContentManager.EVENT_NOT_PROCESSED:
 	    playSound(Sounds.EVENT_NOT_PROCESSED);
@@ -251,7 +224,7 @@ abstract class EventDispatching extends Areas
 	return true;
     }
 
-    private boolean onBroadcastEnvironmentEvent(SystemEvent event)
+    private boolean onBroadcastSystemEvent(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	apps.sendBroadcastEvent(event);
@@ -319,8 +292,7 @@ abstract class EventDispatching extends Areas
     static class RunnableEvent extends Event
     {
 	final Runnable runnable;
-
-	public RunnableEvent(Runnable runnable)
+	RunnableEvent(Runnable runnable)
 	{
 	    NullCheck.notNull(runnable, "runnable");
 	    this.runnable = runnable;
@@ -331,18 +303,15 @@ abstract class EventDispatching extends Areas
     {
 	final Callable callable;
 	private Object result = null;
-
 	CallableEvent(Callable callable)
 	{
 	    NullCheck.notNull(callable, "callable");
 	    this.callable = callable;
 	}
-
 	void setResult(Object result)
 	{
 	    this.result = result;
 	}
-
 	Object getResult()
 	{
 	    return result;

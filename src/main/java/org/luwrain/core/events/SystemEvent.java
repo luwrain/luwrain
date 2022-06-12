@@ -75,6 +75,7 @@ public class SystemEvent extends Event
 	FONT_SIZE_CHANGED,
 	HELP,
 	INTRODUCE,
+	IDLE,
 	LISTENING_FINISHED,
 	MOVE_HOT_POINT,
 	OK,
