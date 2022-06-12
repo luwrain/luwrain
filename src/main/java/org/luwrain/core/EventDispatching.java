@@ -215,7 +215,8 @@ abstract class EventDispatching extends Areas
 	switch(res.get())
 	{
 	case ScreenContentManager.EVENT_NOT_PROCESSED:
-	    playSound(Sounds.EVENT_NOT_PROCESSED);
+	    if (event.getCode() != SystemEvent.Code.IDLE)
+		playSound(Sounds.EVENT_NOT_PROCESSED);
 	    break;
 	case ScreenContentManager.NO_APPLICATIONS:
 	    noAppsMessage();

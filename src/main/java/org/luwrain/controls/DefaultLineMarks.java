@@ -22,6 +22,8 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
+import static org.luwrain.util.RangeUtils.*;
+
 public class DefaultLineMarks implements LineMarks
 {
     final Mark[] marks;
@@ -34,6 +36,14 @@ public class DefaultLineMarks implements LineMarks
     {
 	return this.marks.clone();
     }
+    @Override public LineMarks.Mark[] findAtPos(int pos)
+    {
+	 final List<LineMarks.Mark> res = new ArrayList<>();
+	 for(LineMarks.Mark m: marks)
+	     if (between(pos, m.getPosFrom(), m.getPosTo()))
+		 res.add(m);
+	 return res.toArray(new LineMarks.Mark[res.size()]);
+	 }
 
     static public final class Builder
     {

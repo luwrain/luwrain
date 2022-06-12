@@ -100,12 +100,12 @@ public class MutableMarkedLinesImpl extends ArrayList<MutableMarkedLinesImpl.Lin
 
     @Override public LineMarks getLineMarks(int index)
     {
-	return null;
+	return get(index).marks;
     }
 
-    @Override public void setLineMarks(int index, LineMarks lineMarks)
+    @Override public void setLineMarks(int index, LineMarks marks)
     {
-	NullCheck.notNull(lineMarks, "lineMarks");
+	get(index).marks = marks;
     }
 
     public String getText(String lineSep)

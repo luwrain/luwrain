@@ -21,6 +21,7 @@ package org.luwrain.core;
 public interface LineMarks
 {
     Mark[] getMarks();
+    Mark[] findAtPos(int pos);
 
     public interface MarkObject
     {
