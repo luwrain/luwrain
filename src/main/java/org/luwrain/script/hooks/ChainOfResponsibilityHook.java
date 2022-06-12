@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,13 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.script.hooks;
+package org.luwrain.script2.hooks;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
+import org.graalvm.polyglot.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script.*;
+import org.luwrain.script2.*;
 
 public class ChainOfResponsibilityHook
 {
@@ -41,20 +42,20 @@ public class ChainOfResponsibilityHook
 	hookContainer.runHooks(hookName, (hook)->{
 		try {
 		    final Object res = hook.run(args);
-		    if (res == null || !(res instanceof Boolean))
+		    if (res == null || !(res instanceof Value))
+						return Luwrain.HookResult.CONTINUE;
+			final Value value = (Value)res;
+		    if (value.isNull() || !value.isBoolean() || !value.asBoolean())
 			return Luwrain.HookResult.CONTINUE;
-		    if (((Boolean)res).booleanValue())
-		    {
 			execRes.set(true);
 			return Luwrain.HookResult.BREAK;
-		    }
-		    return Luwrain.HookResult.CONTINUE;
 		}
 		catch(Throwable e)
 		{
+		    final RuntimeException runtimeEx;
 		    if (!(e instanceof RuntimeException))
-			return Luwrain.HookResult.BREAK;
-		    final RuntimeException runtimeEx = (RuntimeException)e;
+			runtimeEx = new RuntimeException(e); else
+			runtimeEx = (RuntimeException)e;
 		    error.set(runtimeEx);
 		    return Luwrain.HookResult.BREAK;
 		}
@@ -64,16 +65,11 @@ public class ChainOfResponsibilityHook
 	return execRes.get();
     }
 
-        public boolean  runNoExcept(String hookName, Object[] args)
+    static public     boolean  run(HookContainer hookContainer, String hookName, Object[] args)
     {
+	NullCheck.notNull(hookContainer, "hookContainer");
 	NullCheck.notEmpty(hookName, "hookName");
 	NullCheck.notNullItems(args, "args");
-	try {
-	    return run(hookName, args);
-	}
-	catch(Throwable e)
-	{
-	    return false;
-	}
+	return new ChainOfResponsibilityHook(hookContainer).run(hookName, args);
     }
 }
