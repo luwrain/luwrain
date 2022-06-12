@@ -103,6 +103,7 @@ final Object[] a;
 	NullCheck.notEmpty(langName, "langName");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNullItems(args, "args");
+	/*
 	final ProviderHook hook = new ProviderHook(luwrain);
 	try {
 	    final Object res = hook.run("luwrain.i18n." + langName + ".strings", new Object[]{name, ScriptUtils.createArray(args)});
@@ -115,5 +116,7 @@ final Object[] a;
 	    Log.error(LOG_COMPONENT, "unable to run the luwrain.i18n." + langName + ".strings hook:" + e.getClass().getName() + ":" + e.getMessage());
 	    return null;
 	}
+	*/
+	return null;
     }
 }

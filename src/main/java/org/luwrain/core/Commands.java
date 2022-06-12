@@ -230,6 +230,7 @@ final class Commands
 			    core.eventNotProcessedMessage();
 			    return;
 			}
+			/*
 			final EmptyHookObject argObj = new EmptyHookObject(){
 				@Override public Object getMember(String name)
 				{
@@ -242,6 +243,7 @@ final class Commands
 				}
 			    };
 			if (!core.hookChainWithCustom("luwrain.area.clear", new Object[]{argObj}))
+			*/
 			    core.eventNotProcessedMessage();
 		    }),
 

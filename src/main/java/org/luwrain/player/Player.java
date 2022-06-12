@@ -60,5 +60,4 @@ static public final int
     void addListener(Listener listener);
     void removeListener(Listener listener);
     Set<Flags> getFlags();
-    String getProperty(String propName);
 }

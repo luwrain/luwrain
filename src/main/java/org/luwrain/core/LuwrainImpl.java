@@ -676,25 +676,6 @@ final class LuwrainImpl implements Luwrain
 	return core.objRegistry.add(null, extObj);
     }
 
-    @Override public java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, File dataDir, String text)
-    {
-	NullCheck.notNull(context, "context");
-	NullCheck.notNull(dataDir, "dataDir");
-	NullCheck.notNull(text, "text");
-	core.mainCoreThreadOnly();
-	return core.script.execFuture(this, dataDir, context, text);
-    }
-
-    @Override public ScriptCallable createScriptCallable(String text, Map<String, Object> objs, String dataDir)
-    {
-		NullCheck.notNull(text, "text");
-		NullCheck.notNull(objs, "objs");
-	NullCheck.notNull(dataDir, "dataDir");
-	core.mainCoreThreadOnly();
-	return core.script.createCallable(this, text, objs, new File(dataDir));
-    }
-
-
     @Override public String loadScriptExtension(String text) throws ExtensionException
     {
 	NullCheck.notNull(text, "text");
@@ -714,14 +695,6 @@ final class LuwrainImpl implements Luwrain
 	NullCheck.notEmpty(extId, "extId");
 	core.mainCoreThreadOnly();
 	return core.unloadDynamicExtension(extId);
-    }
-
-    @Override public void xExecScript(File dataDir, String text)
-    {
-	NullCheck.notNull(dataDir, "dataDir");
-	NullCheck.notNull(text, "text");
-	core.mainCoreThreadOnly();
-	core.script.exec(dataDir, text);
     }
 
         @Override public String getSpeakableText(String text, SpeakableTextType type)

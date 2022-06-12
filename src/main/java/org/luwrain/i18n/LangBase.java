@@ -95,7 +95,7 @@ return null;
 	NullCheck.notEmpty(expName, "expName");
 	NullCheck.notNull(args, "args");
 	try {
-	    final EmptyHookObject argsObj = new EmptyHookObject(){
+	    /*	    final EmptyHookObject argsObj = new EmptyHookObject(){
 		    @Override public Object getMember(String name)
 		    {
 			 NullCheck.notEmpty(name, "name");
@@ -112,6 +112,8 @@ return null;
 	    if (res == null)
 		return null;
 	    return res.toString();
+	    */
+	    return null;
 	}
 	catch(RuntimeException e)
 	{

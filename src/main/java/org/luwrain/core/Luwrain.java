@@ -225,9 +225,6 @@ static public final String
     Job.Instance newJob(String name, String[] args, String dir, Set<JobFlags> flags, Job.Listener listener);
     //    void runInMainThread(Runnable runnable);
     Object runLaterSync(java.util.concurrent.Callable callable);
-    //    OsCommand runOsCommand(String cmd, String dir, OsCommand.Output output, OsCommand.Listener listener);
-    java.util.concurrent.Callable runScriptInFuture(org.luwrain.core.script.Context context, File dataDir, String text);
-    ScriptCallable createScriptCallable(String text, Map<String, Object> objs, String dataDir);
     void runUiSafely(Runnable runnable);
     boolean runWorker(String workerName);
     void speak(String text);
@@ -263,7 +260,6 @@ static public final String
         //never returns null
     String suggestContentType(java.io.File file, ContentTypes.ExpectedType expectedType);
     boolean unloadDynamicExtension(String extId);
-    void xExecScript(File dataDir, String text);
     boolean xQuit();
     void xSetSpeechRate(int value);
     int xGetSpeechRate();

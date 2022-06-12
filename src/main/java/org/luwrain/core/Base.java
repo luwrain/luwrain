@@ -49,7 +49,6 @@ abstract class Base implements EventConsumer
     final ExtensionsManager extensions = new ExtensionsManager(interfaces);
          final ObjRegistry objRegistry = new ObjRegistry();
     final CommandManager commands = new CommandManager();//FIXME:must be merged into objRegistry
-    protected final org.luwrain.core.script.Core script = new org.luwrain.core.script.Core(interfaces);
     protected final EventQueue eventQueue = new EventQueue();
     protected final MainStopCondition mainStopCondition = new MainStopCondition();
     private EventResponse eventResponse = null;
@@ -242,33 +241,13 @@ abstract class Base implements EventConsumer
     {
 	NullCheck.notNull(text, "text");
 	mainCoreThreadOnly();
-	final org.luwrain.core.script.Core.ExecResult execRes = script.exec(dataDir, text);
-	if (!execRes.isOk())
-	    throw new ExtensionException(execRes.getException());
-	final LoadedExtension loadedExt = extensions.addDynamicExtension(execRes.getExtension(), execRes.getLuwrain());
-	if (loadedExt == null)
-	{
-	    interfaces.release(execRes.getLuwrain());
-	    throw new ExtensionException("Trying to load twice the same extension");
-	}
-	objRegistry.takeObjects(loadedExt);
-	for(Command c: loadedExt.commands)//FIXME:
-	    commands.add(execRes.getLuwrain(), c);
-	return loadedExt.id;
+	return "";
     }
 
     String loadScriptExtensionFromFile(File dataDir, File file) throws ExtensionException
     {
 	NullCheck.notNull(file, "file");
-	final String text;
-	try {
-	    text = FileUtils.readTextFileSingleString(file, "UTF-8");
-	}
-	catch(IOException e)
-	{
-	    throw new ExtensionException(e);
-	}
-	return loadScriptExtension(dataDir, text);
+	return "loadScriptExtension(dataDir, text)";
     }
 
     String loadScript2(ScriptFile scriptFile) throws ExtensionException
@@ -304,43 +283,6 @@ abstract class Base implements EventConsumer
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(name, "name");
-	if (name.startsWith("jsfile:"))
-	{
-	    final String scriptName = name.substring("jsfile:".length());
-	    if (scriptName.isEmpty())
-		return false;
-	    final String text;
-	    try {
-		text = FileUtils.readTextFileSingleString(new File(scriptName), "UTF-8");
-	    }
-	    catch(IOException e)
-	    {
-		Log.error(LOG_COMPONENT, "unable to run the function \'" + name + "\':" + e.getClass().getName() + ":" + e.getMessage());
-		return false;
-	    }
-	    final org.luwrain.core.script.Context context = new org.luwrain.core.script.Context();
-	    final Callable callable = script.execFuture(luwrain, props.getFileProperty("luwrain.dir.data"), context, text);
-	    try {
-		callable.call();
-	    }
-	    catch(Throwable e)
-	    {
-		Log.error(LOG_COMPONENT, "unable to run the function \'" + name + "\':" + e.getClass().getName() + ":" + e.getMessage());
-		return false;
-	    }
-	    return true;
-	}
-	final java.util.function.Consumer func = (java.util.function.Consumer)ClassUtils.newInstanceOf(this.getClass().getClassLoader(), name, java.util.function.Consumer.class);
-	if (func == null)
-	    return false;
-	try {
-	    func.accept(luwrain);
-	}
-	catch(Throwable e)
-	{
-	    		Log.error(LOG_COMPONENT, "unable to run the function \'" + name + "\':" + e.getClass().getName() + ":" + e.getMessage());
-			return false;
-	}
 	return true;
     }
 
