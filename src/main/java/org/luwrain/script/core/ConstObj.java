@@ -24,7 +24,7 @@ import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.script2.*;
+import org.luwrain.script.*;
 import org.luwrain.util.*;
 
 final class ConstObj implements ProxyObject

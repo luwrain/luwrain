@@ -23,7 +23,7 @@ import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script2.*;
+import org.luwrain.script.*;
 
 final class JobAdapter implements Job
 {

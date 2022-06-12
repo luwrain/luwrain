@@ -24,7 +24,7 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 import org.luwrain.popups.*;
 
-import static org.luwrain.script2.ScriptUtils.*;
+import static org.luwrain.script.ScriptUtils.*;
 
 public class HotPointObj implements ProxyObject
 {

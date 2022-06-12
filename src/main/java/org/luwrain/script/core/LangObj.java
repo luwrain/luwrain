@@ -23,7 +23,7 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 import org.luwrain.i18n.*;
 
-import static org.luwrain.script2.ScriptUtils.*;
+import static org.luwrain.script.ScriptUtils.*;
 
 final class LangObj implements ProxyObject
 {

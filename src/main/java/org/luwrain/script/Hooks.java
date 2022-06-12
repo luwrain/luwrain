@@ -19,11 +19,11 @@
 package org.luwrain.script;
 
 import org.luwrain.core.*;
-import org.luwrain.script2.hooks.ChainOfResponsibilityHook;
+import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 import org.luwrain.script.hooks.PermissionHook;
 import org.luwrain.script.hooks.NotificationHook;
 import org.luwrain.script.hooks.ProviderHook;
-import org.luwrain.script2.hooks.CollectorHook;
+import org.luwrain.script.hooks.CollectorHook;
 
 
 public final class Hooks

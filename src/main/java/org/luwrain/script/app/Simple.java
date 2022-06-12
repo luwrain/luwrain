@@ -28,7 +28,7 @@ import org.luwrain.controls.*;
 import org.luwrain.script.core.*;
 
 import static org.luwrain.util.Urls.toUrl;
-import static org.luwrain.script2.ScriptUtils.*;
+import static org.luwrain.script.ScriptUtils.*;
 
 
 public final class Simple implements Application

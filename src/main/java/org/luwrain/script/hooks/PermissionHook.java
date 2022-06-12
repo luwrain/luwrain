@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.*;
 import org.graalvm.polyglot.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script2.*;
+import org.luwrain.script.*;
 
 public class PermissionHook
 {

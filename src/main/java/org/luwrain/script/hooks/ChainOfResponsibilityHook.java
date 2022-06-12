@@ -14,14 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.script2.hooks;
+package org.luwrain.script.hooks;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
 import org.graalvm.polyglot.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script2.*;
+import org.luwrain.script.*;
 
 public class ChainOfResponsibilityHook
 {

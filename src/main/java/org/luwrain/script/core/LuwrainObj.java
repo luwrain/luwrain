@@ -25,10 +25,10 @@ import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script2.*;
+import org.luwrain.script.*;
 import org.luwrain.util.*;
 
-import static org.luwrain.script2.ScriptUtils.*;
+import static org.luwrain.script.ScriptUtils.*;
 
 public final class LuwrainObj
 {

@@ -293,17 +293,6 @@ abstract class Base implements EventConsumer
 	return extensions.unloadDynamicExtension(ext.ext);
     }
 
-    boolean hookChainWithCustom(String hookName, Object[] args)
-    {
-	NullCheck.notEmpty(hookName, "hookName");
-	NullCheck.notNullItems(args, "args");
-	if (new ChainOfResponsibilityHook(luwrain).runNoExcept(hookName + ".custom", args))
-	    return true;
-	if (new ChainOfResponsibilityHook(luwrain).runNoExcept(hookName, args))
-	    return true;
-	return false;
-    }
-
     void unsafeOperation(Runnable runnable)
     {
 	NullCheck.notNull(runnable, "runnable");

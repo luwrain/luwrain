@@ -14,14 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.script2.hooks;
+package org.luwrain.script.hooks;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script2.*;
-import static org.luwrain.script2.ScriptUtils.*;
+import org.luwrain.script.*;
+import static org.luwrain.script.ScriptUtils.*;
 
 public class CollectorHook
 {

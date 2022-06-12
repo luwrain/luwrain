@@ -24,7 +24,7 @@ import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.Job.Instance;
-import org.luwrain.script2.*;
+import org.luwrain.script.*;
 
 public final class JobInstanceObj
 {
