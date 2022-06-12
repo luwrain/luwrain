@@ -97,12 +97,12 @@ final class Core extends EventDispatching
 	eventResponse.announce(getObjForEnvironment(), s);
     }
 
-    Area getActiveArea(boolean speakMessages)
+    @Override Area getActiveArea(boolean speakMessages)
     {
 	return getValidActiveArea(speakMessages);
     }
 
-        @Override Area getValidActiveArea(boolean speakMessages)
+        Area getValidActiveArea(boolean speakMessages)
     {
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)

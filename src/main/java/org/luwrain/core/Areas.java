@@ -26,8 +26,7 @@ abstract class Areas extends Base
     protected final AppManager apps;
 
     protected Areas(CmdLine cmdLine, Registry registry,
-			       PropertiesRegistry props, String lang,
-			       Interaction interaction)
+			       PropertiesRegistry props, String lang, Interaction interaction)
     {
 	super(cmdLine, registry, props, lang);
 	NullCheck.notNull(interaction, "interaction");
@@ -36,7 +35,9 @@ abstract class Areas extends Base
 	this.windowManager = new WindowManager(interaction, screenContentManager);
     }
 
-    public void onNewAreasLayout()
+        abstract Area getActiveArea(boolean speakMessages);
+
+    void onNewAreasLayout()
     {
 	screenContentManager.updatePopupState();
 	windowManager.redraw();
@@ -45,8 +46,8 @@ abstract class Areas extends Base
 
     protected void updateBackgroundSound(Area updateFor)
     {
-	final Area area = getValidActiveArea(false);
-	//Requested area is not active, we may do nothing
+	final Area area = getActiveArea(false);
+	//The requested area isnt active, we are doing nothing
 	if (updateFor != null && area != updateFor)
 	    return;
 	if (area != null)
@@ -97,15 +98,17 @@ abstract class Areas extends Base
 	return area;
     }
 
+    /*
     protected boolean isActiveAreaBlockedByPopup()
     {
 	return screenContentManager.isActiveAreaBlockedByPopup();
     }
+    */
 
+    /*
     protected boolean isAreaBlockedBySecurity(Area area)
     {
 	return false;
     }
-
-    abstract Area getValidActiveArea(boolean speakMessages);
+    */
 }

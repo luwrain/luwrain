@@ -60,19 +60,31 @@ abstract class EventDispatching extends Areas
     {
 	try {
 	    if (event instanceof RunnableEvent)
-		return onRunnableEvent((RunnableEvent)event);
+	    {
+		unsafeAreaOperation(()->((RunnableEvent)event).runnable.run());
+		return true;
+	    }
 	    if (event instanceof CallableEvent)
-		return onCallableEvent((CallableEvent)event);
+	    {
+		final CallableEvent callableEvent = (CallableEvent)event;
+		unsafeAreaOperation(()->{
+			try {
+			    callableEvent.setResult(callableEvent.callable.call());
+			}
+			catch(Throwable e)
+			{
+			    throw new RuntimeException(e);
+			}
+		    });
+		return true;
+	    }
 	    if (event instanceof InputEvent)
 		return onInputEvent(Keyboard.translate((InputEvent)event));
 	    if (event instanceof SystemEvent)
 	    {
 		final SystemEvent systemEvent = (SystemEvent)event;
 		if (systemEvent.getType() == null)
-		{
-		    Log.warning(LOG_COMPONENT, "the system event with null type in main event loop, skipping");
 		    return true;
-		}
 		switch(systemEvent.getType())
 		{
 		case REGULAR:
@@ -83,10 +95,9 @@ abstract class EventDispatching extends Areas
 		    return true;
 		}
 	    }
-	    Log.warning(LOG_COMPONENT, "unknown event class of the event in main event loop:" + event.getClass().getName());
 	    return true;
 	}
-	catch (Exception e)
+	catch (Throwable e)
 	{
 	    Log.error(LOG_COMPONENT, "an exception of class " + e.getClass().getName() + " has been thrown while processing of event of class " + event.getClass().getName() + "::" + e.getMessage());
 	    e.printStackTrace();
@@ -135,26 +146,6 @@ abstract class EventDispatching extends Areas
 		break;
 	}
 	this.announcement = null;
-    }
-
-    private boolean onRunnableEvent(RunnableEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	unsafeAreaOperation(()->event.runnable.run());
-	return true;
-    }
-
-    private boolean onCallableEvent(CallableEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	try {
-	    event.setResult(event.callable.call());
-	}
-	catch(Throwable e)
-	{
-	    Log.error(LOG_COMPONENT, "exception on processing of CallableEvent:" + e.getClass().getName() + ":" + e.getMessage());
-	}
-	return true;
     }
 
     private boolean onInputEvent(InputEvent event)
@@ -302,12 +293,8 @@ abstract class EventDispatching extends Areas
 	    noAppsMessage();
 	    return;
 	}
-	if (isActiveAreaBlockedByPopup() || isAreaBlockedBySecurity(activeArea))
-	    return;
 	final AtomicReference<Object> res = new AtomicReference<>();
-	unsafeAreaOperation(()->{
-		res.set(new Boolean(activeArea.onSystemEvent(new SystemEvent(SystemEvent.Code.INTRODUCE))));
-	    });
+	unsafeAreaOperation(()->res.set(new Boolean(activeArea.onSystemEvent(new SystemEvent(SystemEvent.Code.INTRODUCE)))));
 	if (res.get() != null && ((Boolean)res.get()).booleanValue())
 	    return;
 	speech.silence();
