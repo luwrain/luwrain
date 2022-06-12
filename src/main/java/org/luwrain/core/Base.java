@@ -237,24 +237,11 @@ abstract class Base implements EventConsumer
 	return interfaces.objForEnvironment;
     }
 
-    String loadScriptExtension(File dataDir, String text) throws ExtensionException
-    {
-	NullCheck.notNull(text, "text");
-	mainCoreThreadOnly();
-	return "";
-    }
-
-    String loadScriptExtensionFromFile(File dataDir, File file) throws ExtensionException
-    {
-	NullCheck.notNull(file, "file");
-	return "loadScriptExtension(dataDir, text)";
-    }
-
-    String loadScript2(ScriptFile scriptFile) throws ExtensionException
+    String loadScript(ScriptFile scriptFile) throws ExtensionException
     {
 	NullCheck.notNull(scriptFile, "scriptFile");
 	mainCoreThreadOnly();
-	final Script2Extension ext = new Script2Extension(scriptFile.toString());
+	final ScriptExtension ext = new ScriptExtension(scriptFile.toString());
 	ext.init(interfaces.requestNew(ext));
 	final ScriptCore scriptCore = new ScriptCore(ext.getLuwrainObj());
 	ext.setScriptCore(scriptCore);
@@ -276,14 +263,6 @@ abstract class Base implements EventConsumer
 	for(Command c: loadedExt.commands)
 	    commands.add(ext.getLuwrainObj(), c);
 	return loadedExt.id;
-    }
-
-    @SuppressWarnings("unchecked") //This function will be deleted
-    boolean runFunc(Luwrain luwrain, String name)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notEmpty(name, "name");
-	return true;
     }
 
     File[] getInstalledPacksDirs()

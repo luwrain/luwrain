@@ -174,15 +174,7 @@ final class Core extends EventDispatching
     {
 	for (ScriptFile f: getScriptFilesList("core"))
 	    try {
-		loadScript2(f);
-	    }
-	    catch(ExtensionException e)
-	    {
-		Log.error(LOG_COMPONENT, "unable to load the script extension " + f.toString() + ": " + e.getClass().getName() + ": " + e.getMessage());
-	    }
-	for (ScriptFile f: getScriptFilesList("nashorn"))
-	    try {
-		loadScriptExtensionFromFile(f.getDataDirAsFile(), f.asFile());
+		loadScript(f);
 	    }
 	    catch(ExtensionException e)
 	    {
