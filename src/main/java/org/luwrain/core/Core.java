@@ -876,7 +876,7 @@ onNewAreasLayout();
 	final Object selected = menu.selected();
 	if (selected == null || !(selected instanceof Action))//Should never happen
 	    return;
-	unsafeAreaOperation(()->res.set(new Boolean(activeArea.onSystemEvent(new ActionEvent((Action)selected)))));
+	unsafeAreaOperation(()->res.set(Boolean.valueOf(activeArea.onSystemEvent(new ActionEvent((Action)selected)))));
 	if (res.get() == null || !(res.get() instanceof Boolean) || !((Boolean)res.get()).booleanValue())
 	    areaInaccessibleMessage();
     }

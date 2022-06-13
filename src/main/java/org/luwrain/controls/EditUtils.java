@@ -44,7 +44,7 @@ public final class EditUtils
 	while(toPos + 1 < lines.getLineCount() && pred.test(lines.getLine(toPos + 1), lines.getLineMarks(toPos + 1)))
 	    toPos++;
 	for(int i = fromPos;i <= toPos;i++)
-	    accepting.accept(lines, new Integer(i));
+	    accepting.accept(lines, Integer.valueOf(i));
     }
 
     static public class DefaultEditAreaAppearance extends DefaultMultilineEditAppearance implements EditArea.Appearance

@@ -42,7 +42,7 @@ public final class Sha1
 	final StringBuilder res = new StringBuilder();
 	for(byte b: sha1.digest())
 	{
-	    int value = new Byte(b).intValue();
+	    int value = Byte.valueOf(b).intValue();
 	    if (value < 0)
 		value = 256 + value;
 	    final String hex = Integer.toHexString(value);

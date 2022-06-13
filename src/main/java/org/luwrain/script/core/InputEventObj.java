@@ -33,12 +33,12 @@ public class InputEventObj extends MapScriptObject
 	this.event = event;
 	members.put("special", event.isSpecial()?event.getSpecial().toString():null);
 	members.put("ch", event.isSpecial()?null:new String(new StringBuilder().append(event.getChar())));
-	members.put("withAlt", new Boolean(event.withAlt()));
-	members.put("withAltOnly", new Boolean(event.withAltOnly()));
-	members.put("withControl", new Boolean(event.withControl()));
-	members.put("withControlOnly", new Boolean(event.withControlOnly()));
-	members.put("withShift", new Boolean(event.withShift()));
-	members.put("withShiftOnly", new Boolean(event.withShiftOnly()));
-	members.put("modified", new Boolean(event.isModified()));
+	members.put("withAlt", Boolean.valueOf(event.withAlt()));
+	members.put("withAltOnly", Boolean.valueOf(event.withAltOnly()));
+	members.put("withControl", Boolean.valueOf(event.withControl()));
+	members.put("withControlOnly", Boolean.valueOf(event.withControlOnly()));
+	members.put("withShift", Boolean.valueOf(event.withShift()));
+	members.put("withShiftOnly", Boolean.valueOf(event.withShiftOnly()));
+	members.put("modified", Boolean.valueOf(event.isModified()));
     }
 }

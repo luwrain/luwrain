@@ -143,8 +143,8 @@ public class EditCorrectorHooks implements MultilineEditCorrector
 	NullCheck.notNull(str, "str");
 	final Map<String, Object> values = new HashMap<>();
 	values.put("chars", str);
-	values.put("x", new Integer(pos));
-	values.put("y", new Integer(lineIndex));
+	values.put("x", Integer.valueOf(pos));
+	values.put("y", Integer.valueOf(lineIndex));
 	if (!runPre(hookNameBase + ".insert.chars.pre", values))
 	    return new ModificationResult(false);
 	final ModificationResult res = base.putChars(pos, lineIndex, str);

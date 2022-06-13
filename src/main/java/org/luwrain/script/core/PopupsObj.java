@@ -42,7 +42,7 @@ public final class PopupsObj
 	    return false;
 	if (!args[0].isString() || !args[1].isString())
 	    return false;
-	return new Boolean(Popups.confirmDefaultYes(luwrain, args[0].asString(), args[1].asString()));
+	return Boolean.valueOf(Popups.confirmDefaultYes(luwrain, args[0].asString(), args[1].asString()));
     }
 
     @HostAccess.Export public final ProxyExecutable confirmDefaultNo = this::confirmDefaultNoImpl;
@@ -52,7 +52,7 @@ public final class PopupsObj
 	    return false;
 	if (!args[0].isString() || !args[1].isString())
 	    return false;
-	return new Boolean(Popups.confirmDefaultNo(luwrain, args[0].asString(), args[1].asString()));
+	return Boolean.valueOf(Popups.confirmDefaultNo(luwrain, args[0].asString(), args[1].asString()));
     }
 
     @HostAccess.Export public final ProxyExecutable text = this::textImpl;

@@ -19,6 +19,7 @@
       <classpath refid="classpath"/>
       <compilerarg value="-Xlint:unchecked" />
       <compilerarg value="-Xlint:deprecation" />
+      <compilerarg value="-Xlint:-options"/>
     </javac>
   </target>
   <target name="jar" depends="compile">

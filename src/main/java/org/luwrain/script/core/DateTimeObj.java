@@ -24,12 +24,12 @@ final class DateTimeObj extends MapScriptObject
     DateTimeObj()
     {
 	final LocalDateTime d = LocalDateTime.now();
-	this.members.put("year", new Integer(d.get(ChronoField.YEAR)));
-	this.members.put("month", new Integer(d.get(ChronoField.MONTH_OF_YEAR)));
-	this.members.put("dayOfMonth", new Integer(d.get(ChronoField.DAY_OF_MONTH)));
-	this.members.put("dayOfWeek", new Integer(d.get(ChronoField.DAY_OF_WEEK)));
-	this.members.put("hour", new Integer(d.get(ChronoField.HOUR_OF_DAY)));
-	this.members.put("min", new Integer(d.get(ChronoField.MINUTE_OF_HOUR)));
-	this.members.put("sec", new Integer(d.get(ChronoField.SECOND_OF_MINUTE)));
+	this.members.put("year", Integer.valueOf(d.get(ChronoField.YEAR)));
+	this.members.put("month", Integer.valueOf(d.get(ChronoField.MONTH_OF_YEAR)));
+	this.members.put("dayOfMonth", Integer.valueOf(d.get(ChronoField.DAY_OF_MONTH)));
+	this.members.put("dayOfWeek", Integer.valueOf(d.get(ChronoField.DAY_OF_WEEK)));
+	this.members.put("hour", Integer.valueOf(d.get(ChronoField.HOUR_OF_DAY)));
+	this.members.put("min", Integer.valueOf(d.get(ChronoField.MINUTE_OF_HOUR)));
+	this.members.put("sec", Integer.valueOf(d.get(ChronoField.SECOND_OF_MINUTE)));
     }
 }

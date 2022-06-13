@@ -52,7 +52,7 @@ public final class ExtensionsManager
 	    Log.debug(LOG_COMPONENT, "loading " + s);
 	    final Object o;
 	    try {
-		o = Class.forName(s, true, classLoader).newInstance();
+		o = Class.forName(s, true, classLoader).getDeclaredConstructor().newInstance();
 	    }
 	    catch (Throwable e)
 	    {

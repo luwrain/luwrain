@@ -38,18 +38,19 @@ public class SimpleShortcut implements Shortcut
 	return shortcutName;
     }
 
+    @SuppressWarnings("unchecked")
     @Override public Application[] prepareApp(String[] args)
     {
 	NullCheck.notNullItems(args, "args");
 	try {
-	    final Object o = appClass.newInstance();
+	    final Object o = appClass.getDeclaredConstructor().newInstance();
 	    if (o == null || !(o instanceof Application))
 	    {Log.error(LOG_COMPONENT, "unable to create new instance of the class " + appClass.getName() + " for the shortcut '" + shortcutName + "': the result is null or is not an instance of org.luwrain.core.Application");
 		return new Application[0];
 	    }
 	    return new Application[]{(Application)o};
 	}
-	catch(InstantiationException | IllegalAccessException e)
+	catch(Exception e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to create new instance of the class " + appClass.getName() + " for the shortcut '" + shortcutName + "':" + e.getClass().getName() + ":" + e.getMessage());
 	    return new Application[0];

@@ -268,7 +268,7 @@ abstract class EventDispatching extends Areas
 	    return;
 	}
 	final AtomicReference<Object> res = new AtomicReference<>();
-	unsafeAreaOperation(()->res.set(new Boolean(activeArea.onSystemEvent(new SystemEvent(SystemEvent.Code.INTRODUCE)))));
+	unsafeAreaOperation(()->res.set(Boolean.valueOf(activeArea.onSystemEvent(new SystemEvent(SystemEvent.Code.INTRODUCE)))));
 	if (res.get() != null && ((Boolean)res.get()).booleanValue())
 	    return;
 	speech.silence();

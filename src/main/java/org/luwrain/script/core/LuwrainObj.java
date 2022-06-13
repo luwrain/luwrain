@@ -248,7 +248,7 @@ public final class LuwrainObj
 		    if (finishedFunc == null || instance.getStatus() != Job.Status.FINISHED)
 			return;
 		    synchronized(syncObj) {
-			finishedFunc.execute(new Object[]{new Boolean(instance.isFinishedSuccessfully()), new Integer(instance.getExitCode())});
+			finishedFunc.execute(new Object[]{Boolean.valueOf(instance.isFinishedSuccessfully()), Integer.valueOf(instance.getExitCode())});
 		    }
 		}
 		@Override public void onSingleLineStateChange(Job.Instance instance) {}

@@ -317,7 +317,7 @@ public class MultilineEdit
     protected boolean onChar(InputEvent event)
     {
 	final char c = event.getChar();
-	final ModificationResult res = model.putChars(model.getHotPointX(), model.getHotPointY(), new Character(c).toString());
+	final ModificationResult res = model.putChars(model.getHotPointX(), model.getHotPointY(), Character.valueOf(c).toString());
 	return appearance.onChar(res);
     }
 

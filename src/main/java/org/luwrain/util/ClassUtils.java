@@ -40,7 +40,7 @@ public final class ClassUtils
 	NullCheck.notEmpty(className, "className");
 	final Object obj;
 	try {
-	    obj = Class.forName(className, true, classLoader).newInstance();
+	    obj = Class.forName(className, true, classLoader).getDeclaredConstructor().newInstance();
 	}
 	catch (Throwable e)
 	{

@@ -46,9 +46,9 @@ public class HotPointObj implements ProxyObject
 	switch(name)
 	{
 	case "x":
-	    return new Integer(hotPoint.getHotPointX());
+	    return Integer.valueOf(hotPoint.getHotPointX());
 	case "y":
-	    return new Integer(hotPoint.getHotPointY());
+	    return Integer.valueOf(hotPoint.getHotPointY());
 	default:
 	    return null;
 	}
