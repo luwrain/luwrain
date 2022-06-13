@@ -120,11 +120,6 @@ public class TestingControlContext implements ControlContext
     }
 
     @Override public boolean runHooks(String hookName, Luwrain.HookRunner runner) { return false; }
-    //    @Override public void runHooks(String hookName, HookContainer.HookRunner runner) {}
-    @Override public boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy)
-    {
-	return false;
-    }
 
     @Override public String getSpeakableText(String text, Luwrain.SpeakableTextType type)
     {

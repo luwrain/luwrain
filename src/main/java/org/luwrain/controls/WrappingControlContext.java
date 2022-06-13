@@ -147,11 +147,6 @@ public class WrappingControlContext implements ControlContext
 	return context.getSpeakableText(text, type);
     }
 
-    @Override public boolean runHooks(String hookName, Object[] args, Luwrain.HookStrategy strategy)
-    {
-	return context.runHooks(hookName, args, strategy);
-    }
-
     @Override public     boolean runHooks(String hookName, HookRunner runner)
     {
 	return context.runHooks(hookName, runner);

@@ -72,39 +72,16 @@ public interface Luwrain extends PropertiesBase, HookContainer
 	UNAVAILABLE,
     };
 
-    public enum AreaTextType {
-	REGION,
-	WORD,
-	LINE,
-	SENTENCE,
-	URL,
-    };
-
+    public enum AreaTextType { REGION, WORD, LINE, SENTENCE, URL };
     public enum SpeakableTextType { NONE, NATURAL, PROGRAMMING };
-
-    public enum AreaAttr {
-	DIRECTORY,
-	UNIREF,
-	URL,
-	UNIREF_UNDER_HOT_POINT,
-	URL_UNDER_HOT_POINT,
-    };
-
-
-    public enum HookStrategy {
-	ALL,
-	//	CHAIN_OF_RESPONSIBILITY,
-    };
-
-    public enum JobFlags {
-	TRACKING
-    };
+    public enum AreaAttr { DIRECTORY, UNIREF, URL, UNIREF_UNDER_HOT_POINT, URL_UNDER_HOT_POINT};
+    public enum JobFlags { TRACKING };
 
     void announceActiveArea();
     Object callUiSafely(java.util.concurrent.Callable callable);
     void closeApp();
     void crash(org.luwrain.app.crash.App app);
-        void crash(Throwable e);
+    void crash(Throwable e);
     void announcement(String text, String announcementClass, String announcementSubclass);
 
 
@@ -265,14 +242,6 @@ public interface Luwrain extends PropertiesBase, HookContainer
     int xGetSpeechRate();
     int xGetSpeechPitch();
     void xSetSpeechPitch(int value);
-    //From any thread
-    //    void xRunHooks(String hookName, HookRunner runner);
-    //From any thread
-
-    //if chain of responsibility: true if was one true returned, if RuntimeException it will be thrown
-    // If all, return value always ignored, true if there were no exceptions
-    boolean xRunHooks(String hookName, Object[] args, HookStrategy strategy);
-    boolean xCreatePropertyHook(String propName, String hookName);
     void showGraphical(Interaction.GraphicalMode graphicalMode);
     ScriptFile[] getScriptFilesList(String componentName);
 }
