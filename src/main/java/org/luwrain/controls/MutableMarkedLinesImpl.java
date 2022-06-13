@@ -61,7 +61,11 @@ public class MutableMarkedLinesImpl extends ArrayList<MutableMarkedLinesImpl.Lin
 
     @Override public String[] getLines()
     {
-	return toArray(new String[size()]);
+	final ArrayList<String> res = new ArrayList<>();
+	res.ensureCapacity(size());
+	for(int i = 0;i < size();i++)
+	    res.add(get(i).text);
+	return res.toArray(new String[res.size()]);
     }
 
     @Override public void setLine(int index, String line)

@@ -59,7 +59,7 @@ abstract class Base implements EventConsumer
     final Speech speech;
     final org.luwrain.core.speech.SpeakingText speakingText = new org.luwrain.core.speech.SpeakingText(extensions);
     final BrailleImpl braille = new BrailleImpl();
-    protected final org.luwrain.core.sound.EnvironmentSounds sounds;
+    protected final org.luwrain.core.sound.SoundIcons sounds;
     protected final org.luwrain.core.sound.Manager soundManager;
 
     final FileTypes fileTypes = new FileTypes();
@@ -81,7 +81,7 @@ abstract class Base implements EventConsumer
 	this.lang = lang;
 	this.helpSects = new HelpSections(registry);
 	this.speech = new Speech(cmdLine, registry);
-	this.sounds = new org.luwrain.core.sound.EnvironmentSounds(registry, props.getFileProperty("luwrain.dir.sounds"));
+	this.sounds = new org.luwrain.core.sound.SoundIcons(registry, props.getFileProperty(Luwrain.PROP_DIR_SOUNDS));
 	this.soundManager = new org.luwrain.core.sound.Manager(objRegistry, getObjForEnvironment());
 	this.mainCoreThread = Thread.currentThread();
 	this.luwrain = getObjForEnvironment();

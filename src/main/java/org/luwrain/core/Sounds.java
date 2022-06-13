@@ -65,6 +65,7 @@ public enum Sounds
     SEARCH,
     SELECTED,
     SHUTDOWN,
+    SPELLING,
     STARTUP,
     TABLE_CELL,
     TERM_BELL,

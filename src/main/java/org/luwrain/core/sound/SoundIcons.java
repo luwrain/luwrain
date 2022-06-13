@@ -21,14 +21,14 @@ import java.io.*;
 
 import org.luwrain.core.*;
 
-public final class EnvironmentSounds
+public final class SoundIcons
 {
     private final Registry registry;
     private final File soundsDir;
     private final Map<Sounds, File> soundFiles = new HashMap<>();
     private WavePlayers.Simple previous = null;
 
-    public EnvironmentSounds(Registry registry, File soundsDir)
+    public SoundIcons(Registry registry, File soundsDir)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(soundsDir, "soundsDir");
