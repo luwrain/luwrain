@@ -28,6 +28,7 @@ import org.luwrain.i18n.*;
 import org.luwrain.core.ExtensionsManager.LoadedExtension;
 import org.luwrain.popups.*;
 import org.luwrain.core.listening.*;
+import org.luwrain.script.Hooks;
 
 final class Core extends EventDispatching
 {
@@ -69,7 +70,13 @@ final class Core extends EventDispatching
 	windowManager.redraw();
 	//soundManager.startingMode();
 	workers.doWork(objRegistry.getWorkers());
-	getObjForEnvironment().xRunHooks("luwrain.startup", new Object[0], Luwrain.HookStrategy.ALL);
+	try {
+	    Hooks.chainOfResponsibility(luwrain, Hooks.STARTUP, new Object[0]);
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "Unable to run the startup hook: " + e.getClass().getName() + ": " + e.getMessage());
+	}
 	eventLoop(mainStopCondition);
 	workers.finish();
 	playSound(Sounds.SHUTDOWN);

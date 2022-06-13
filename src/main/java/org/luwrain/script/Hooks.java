@@ -29,7 +29,8 @@ import org.luwrain.script.hooks.CollectorHook;
 public final class Hooks
 {
     static public final String
-	EDIT_INPUT = "luwrain.edit.input";
+	EDIT_INPUT = "luwrain.edit.input",
+	STARTUP = "luwrain.startup";
 
             static public Object[] collector(HookContainer container, String hookName, Object[] args)
     {
