@@ -26,14 +26,16 @@ import org.luwrain.core.*;
 public final class FixedPlaylist implements Playlist
 {
     private final String[] urls;
-        private final VolumeListener volumeListener;
+    private final VolumeListener volumeListener;
+    private final ProgressListener progressListener;
     private int volume = Player.MAX_VOLUME;
 
     //The object will not be constructed unless all items are a valid URL
-    public FixedPlaylist(String[] urls, VolumeListener volumeListener, int volume)
+    public FixedPlaylist(String[] urls, VolumeListener volumeListener, ProgressListener progressListener, int volume)
     {
 	NullCheck.notNullItems(urls, "urls");
 	this.volumeListener = volumeListener;
+	this.progressListener = progressListener;
 	this.volume = Math.min(Math.max(volume, Player.MIN_VOLUME), Player.MAX_VOLUME);
 	this.urls = new String[urls.length];
 	for(int i = 0;i < urls.length;i++)
@@ -48,6 +50,11 @@ public final class FixedPlaylist implements Playlist
 	    }
 	    this.urls[i] = u.toString();
 	}
+    }
+
+    public FixedPlaylist(String[] urls, VolumeListener volumeListener, int volume)
+    {
+	this(urls, null, null, Player.MAX_VOLUME);
     }
 
     public FixedPlaylist(String[] urls)
@@ -85,5 +92,11 @@ public final class FixedPlaylist implements Playlist
 	this.volume = newVolumeLevel;
 	if (volumeListener != null)
 	    volumeListener.onNewVolume(volume);
+    }
+
+    @Override public void onProgress(int trackIndex, long timeMsec)
+    {
+	if (progressListener != null)
+	    progressListener.onProgress(trackIndex, timeMsec);
     }
 }

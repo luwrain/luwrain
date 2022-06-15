@@ -22,7 +22,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
-public interface Playlist extends VolumeListener
+public interface Playlist extends VolumeListener, ProgressListener
 {
     int getTrackCount();
     String getTrackUrl(int index);
