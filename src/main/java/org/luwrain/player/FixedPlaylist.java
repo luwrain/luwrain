@@ -31,7 +31,7 @@ public final class FixedPlaylist implements Playlist
     private int volume = Player.MAX_VOLUME;
 
     //The object will not be constructed unless all items are a valid URL
-    public FixedPlaylist(String[] urls, VolumeListener volumeListener, ProgressListener progressListener, int volume)
+    public FixedPlaylist(String[] urls, ProgressListener progressListener, VolumeListener volumeListener, int volume)
     {
 	NullCheck.notNullItems(urls, "urls");
 	this.volumeListener = volumeListener;
@@ -54,7 +54,7 @@ public final class FixedPlaylist implements Playlist
 
     public FixedPlaylist(String[] urls, VolumeListener volumeListener, int volume)
     {
-	this(urls, null, null, Player.MAX_VOLUME);
+	this(urls, null, volumeListener, Player.MAX_VOLUME);
     }
 
     public FixedPlaylist(String[] urls)
