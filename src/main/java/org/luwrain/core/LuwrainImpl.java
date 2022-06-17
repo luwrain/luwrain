@@ -354,8 +354,16 @@ final class LuwrainImpl implements Luwrain
 
     @Override public void playSound(Sounds sound)
     {
+	NullCheck.notNull(sound, "sound");
 	runUiSafely(()->core.playSound(sound));
     }
+
+        @Override public void playSound(File file)
+    {
+	NullCheck.notNull(file, "file");
+	runUiSafely(()->core.playSound(file));
+    }
+
 
     @Override public void popup(Popup popup)
     {

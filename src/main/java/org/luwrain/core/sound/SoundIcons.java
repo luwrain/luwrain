@@ -57,6 +57,15 @@ public final class SoundIcons
 	new Thread(previous).start();
     }
 
+        public void play(File file, int volumePercent)
+    {
+	NullCheck.notNull(file, "file");
+	if (previous != null)
+	    previous.stopPlaying();
+	previous = new WavePlayers.Simple(file.getAbsolutePath(), volumePercent);
+	new Thread(previous).start();
+    }
+
     public void stop()
     {
 	if (previous != null)

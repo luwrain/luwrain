@@ -28,7 +28,9 @@ import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 
 abstract class Base implements EventConsumer
 {
-    static final String LOG_COMPONENT = "core";
+    static final String
+	LOG_COMPONENT = "core",
+	PROP_ICONS_VOLUME = "luwrain.sounds.iconsvol";
 
     interface StopCondition
     {
@@ -135,12 +137,8 @@ abstract class Base implements EventConsumer
 
     public final void playSound(Sounds sound)
     {
-	if (sound == null)
-	{
-	    sounds.stop();
-	    return;
-	}
-	final String volumeStr = props.getProperty("luwrain.sounds.iconsvol");
+	NullCheck.notNull(sound, "sound");
+	final String volumeStr = props.getProperty(PROP_ICONS_VOLUME);
 	int volume = 100;
 	try {
 	    if (!volumeStr.trim().isEmpty())
@@ -156,6 +154,27 @@ abstract class Base implements EventConsumer
 	    volume = 100;
 	sounds.play(sound, volume);
     }
+
+        public final void playSound(File file)
+    {
+	NullCheck.notNull(file, "file");
+	final String volumeStr = props.getProperty(PROP_ICONS_VOLUME);
+	int volume = 100;
+	try {
+	    if (!volumeStr.trim().isEmpty())
+	    volume = Integer.parseInt(volumeStr);
+	}
+	catch(NumberFormatException e)
+	{
+	    volume = 100;
+	}
+	if (volume < 0)
+	    volume = 0;
+	if (volume > 100)
+	    volume = 100;
+	sounds.play(file, volume);
+    }
+
 
     protected void noAppsMessage()
     {

@@ -185,6 +185,7 @@ public interface Luwrain extends PropertiesBase, HookContainer
        * @param sound The identifier of the sound to play
        */
     void playSound(Sounds sound);
+    void playSound(java.io.File file);
     void popup(Popup popup);
 
     /**
