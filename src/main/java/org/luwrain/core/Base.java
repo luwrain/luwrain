@@ -137,7 +137,11 @@ abstract class Base implements EventConsumer
 
     public final void playSound(Sounds sound)
     {
-	NullCheck.notNull(sound, "sound");
+	if (sound == null)
+	{
+	    sounds.stop();
+	    return;
+	}
 	final String volumeStr = props.getProperty(PROP_ICONS_VOLUME);
 	int volume = 100;
 	try {

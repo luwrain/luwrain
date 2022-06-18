@@ -352,9 +352,9 @@ final class LuwrainImpl implements Luwrain
 	return core.contentTypes.suggestContentType(file, expectedType);
     }
 
+    //sound can be null, means to stop a playback
     @Override public void playSound(Sounds sound)
     {
-	NullCheck.notNull(sound, "sound");
 	runUiSafely(()->core.playSound(sound));
     }
 

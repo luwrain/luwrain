@@ -17,6 +17,7 @@
 package org.luwrain.core;
 
 import java.util.*;
+import java.util.regex.*;
 import java.net.*;
 import java.io.*;
 import java.nio.file.*;
@@ -43,7 +44,7 @@ final class FileTypes
 	    final String valuePath = Registry.join(Settings.FILE_TYPES_PATH, v);
 	    if (registry.getTypeOf(valuePath) != Registry.STRING)
 	    {
-		Log.warning(LOG_COMPONENT, "registry value " + valuePath + " is not a string");
+		Log.warning(LOG_COMPONENT, "the registry value " + valuePath + " is not a string");
 		continue;
 	    }
 	    final String value = registry.getString(valuePath).trim();
@@ -93,7 +94,7 @@ final class FileTypes
 		    }
 		    catch(java.net.MalformedURLException exc)
 		    {
-			Log.warning("core", "unable to generate URL for path " + toOpen[i] + " which is requested to open");
+			Log.warning(LOG_COMPONENT, "unable to generate URL for path " + toOpen[i] + " which is requested to open");
 		    }
 		}
 	    if (!takesMultiple)
@@ -123,6 +124,8 @@ final class FileTypes
 						    Log.warning(LOG_COMPONENT, "no job value in file types job expression: " + exp.substring(JOB_PREFIX.length()));
 						    return false;
 						}
+						if (jobValue.escaping == null)
+						    jobValue.escaping = "cmd";
 						if (jobValue.args == null)
 						{
 						    core.luwrain.newJob(jobValue.name.trim(), new String[0], "", EnumSet.noneOf(Luwrain.JobFlags.class), null);
@@ -130,10 +133,10 @@ final class FileTypes
 						}
 						final StringBuilder b = new StringBuilder();
 						for(String s: args)
-						    b.append(" '").append(s).append("'");//FIXME:
+						    b.append(" ").append(jobValue.escaping.isEmpty()?s:core.os.escapeString(jobValue.escaping, s));
 						final String bashArgs = new String(b).trim();
 						for(int i = 0;i < jobValue.args.length;i++)
-						    jobValue.args[i] = jobValue.args[i].replaceAll("lwr.args.bash", bashArgs);
+						    jobValue.args[i] = jobValue.args[i].replaceAll("lwr.args.bash", Matcher.quoteReplacement(bashArgs));
 						core.luwrain.newJob(jobValue.name, jobValue.args, "", EnumSet.noneOf(Luwrain.JobFlags.class), null);
 						return true;
     }
@@ -197,9 +200,9 @@ final class FileTypes
 
     static private final class JobValue
     {
-	@SerializedName("name")
-	String name = null;
-	@SerializedName("args")
+	String
+	    name = null,
+	    escaping = null;
 	String[] args = null;
     }
 }
