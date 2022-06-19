@@ -20,5 +20,5 @@ package org.luwrain.core;
 
 public interface ObjFactory extends ExtensionObject
 {
-Object createObj(Luwrain luwrain, String name);
+Object newObject(String name);
 }

@@ -128,6 +128,7 @@ public interface Luwrain extends PropertiesBase, HookContainer
     void message(String text);
     void message(String text, MessageType messageType);
     void message(String text, Sounds sound);
+Object newExtObject(String  name);
     void onAreaNewBackgroundSound(Area area);
 
     /**

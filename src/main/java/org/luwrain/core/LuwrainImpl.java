@@ -239,6 +239,19 @@ final class LuwrainImpl implements Luwrain
 	    });
     }
 
+    @Override public Object newExtObject(String  name)
+						{
+						NullCheck.notEmpty(name, "name");
+						final ObjFactory[] factories = core.objRegistry.getAllObjFactories();
+						for(ObjFactory f: factories)
+						{
+						final Object res = f.newObject(name);
+						if (res != null)
+						return res;
+						}
+						return null;
+						}
+
     @Override public void onAreaNewHotPoint(Area area)
     {
 	NullCheck.notNull(area, "area");

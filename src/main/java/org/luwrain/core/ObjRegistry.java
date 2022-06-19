@@ -177,12 +177,12 @@ final class ObjRegistry implements ExtObjects
 	return str;
     }
 
-        ObjFactory getObjFactory(String name)
+        ObjFactory[] getAllObjFactories()
     {
-	NullCheck.notEmpty(name, "name");
-	if (!objFactories.containsKey(name))
-	    return null;
-	return objFactories.get(name).obj;
+	final List<ObjFactory> res = new ArrayList<>();
+		for(Map.Entry<String, Entry<ObjFactory>> e: objFactories.entrySet())
+	    res.add(e.getValue().obj);
+		return res.toArray(new ObjFactory[res.size()]);
     }
 
     String[] getObjFactoryNames()
