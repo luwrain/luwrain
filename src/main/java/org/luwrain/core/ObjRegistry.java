@@ -22,7 +22,8 @@ import org.luwrain.core.ExtensionsManager.LoadedExtension;
 
 final class ObjRegistry implements ExtObjects
 {
-    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
+    static private final String
+	LOG_COMPONENT = Base.LOG_COMPONENT;
 
     static private final class Entry<E> 
     {
@@ -40,12 +41,12 @@ final class ObjRegistry implements ExtObjects
     }
 
     private Map<String, Entry<Shortcut>> shortcuts = new HashMap<>();
+        private Map<String, Entry<ObjFactory>> objFactories = new HashMap<>();
     private Map<String, Entry<Job>> jobs = new HashMap<>();
     private Map<String, Entry<Worker>> workers = new HashMap<>();
     private Map<String, Entry<org.luwrain.speech.Engine>> speechEngines = new HashMap<>();
     private Map<String, Entry<MediaResourcePlayer>> players = new HashMap<>();
         private Map<String, Entry<PropertiesProvider>> propsProviders = new HashMap<>();
-    //private Map<String, Entry<TextEditingExtension>> textEditingExts = new HashMap();
 
     boolean add(Extension ext, ExtensionObject obj)
     {
@@ -74,6 +75,16 @@ final class ObjRegistry implements ExtObjects
 	    }
 	}
 
+		if (obj instanceof ObjFactory)
+	{
+	    final ObjFactory factory = (ObjFactory)obj;
+	    if (!objFactories.containsKey(name))
+	    {
+		objFactories.put(name, new Entry<>(ext, name, factory));
+		res = true;
+	    }
+	}
+
 		if (obj instanceof MediaResourcePlayer)
 	{
 	    final MediaResourcePlayer player = (MediaResourcePlayer)obj;
@@ -83,7 +94,7 @@ final class ObjRegistry implements ExtObjects
 		res = true;
 	    }
 	}
-		
+
 				if (obj instanceof org.luwrain.speech.Engine)
 	{
 	    final org.luwrain.speech.Engine engine = (org.luwrain.speech.Engine)obj;
@@ -123,6 +134,7 @@ final class ObjRegistry implements ExtObjects
     {
 	NullCheck.notNull(ext, "ext");
 	removeEntriesByExt(shortcuts, ext);
+		removeEntriesByExt(objFactories, ext);
 	removeEntriesByExt(jobs, ext);
 	removeEntriesByExt(workers, ext);
 	removeEntriesByExt(speechEngines, ext);
@@ -159,6 +171,24 @@ final class ObjRegistry implements ExtObjects
     {
 	final List<String> res = new ArrayList<>();
 	for(Map.Entry<String, Entry<Shortcut>> e: shortcuts.entrySet())
+	    res.add(e.getKey());
+	final String[] str = res.toArray(new String[res.size()]);
+	Arrays.sort(str);
+	return str;
+    }
+
+        ObjFactory getObjFactory(String name)
+    {
+	NullCheck.notEmpty(name, "name");
+	if (!objFactories.containsKey(name))
+	    return null;
+	return objFactories.get(name).obj;
+    }
+
+    String[] getObjFactoryNames()
+    {
+	final List<String> res = new ArrayList<>();
+	for(Map.Entry<String, Entry<ObjFactory>> e: objFactories.entrySet())
 	    res.add(e.getKey());
 	final String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);

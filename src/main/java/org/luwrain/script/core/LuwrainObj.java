@@ -216,10 +216,22 @@ public final class LuwrainObj
     @HostAccess.Export public final ProxyExecutable message = this::messageImpl;
         private Object messageImpl(Value[] values)
     {
-	if (!notNullAndLen(values, 1))
+	if (!notNull(values))
 	    return false;
+	if (values.length < 1 || values.length > 2)
+	    return true;
 	if (!values[0].isString())
 	    return false;
+	final Luwrain.MessageType messageType;
+	if (values.length == 2)
+	{
+	    if (!values[1].isString())
+		return false;
+messageType = ConstObj.getMessageType(values[1].asString());
+	} else
+	    messageType = null;
+	if (messageType != null)
+	    	luwrain.message(values[0].asString(), messageType); else
 	luwrain.message(values[0].asString());
 	return true;
     }

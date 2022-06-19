@@ -31,10 +31,12 @@ final class ConstObj implements ProxyObject
 {
     static private final String
 	SOUND_PREFIX = "SOUND_",
-	KEY_PREFIX = "KEY_";
+	KEY_PREFIX = "KEY_",
+	MESSAGE_TYPE_PREFIX = "MESSAGE_TYPE_";
 
     static private final EnumSet<Sounds> ALL_SOUNDS = EnumSet.allOf(Sounds.class);
         static private final EnumSet<InputEvent.Special> ALL_KEYS = EnumSet.allOf(InputEvent.Special.class);
+            static private final EnumSet<Luwrain.MessageType> ALL_MESSAGE_TYPES = EnumSet.allOf(Luwrain.MessageType.class);
 
     private final String[] keys;
     private final Set<String> keysSet;
@@ -47,6 +49,8 @@ private final ProxyArray keysArray;
 	    k.add(SOUND_PREFIX + s.toString());
 		for(InputEvent.Special s: ALL_KEYS)
 		    k.add(KEY_PREFIX + s.toString().replaceAll("ARROW_", "MOVE_"));
+				for(Luwrain.MessageType s: ALL_MESSAGE_TYPES)
+		    k.add(MESSAGE_TYPE_PREFIX + s.toString());
 	    this.keys = k.toArray(new String[k.size()]);
 	this.keysSet = new HashSet<>(k);
 	this.keysArray = ProxyArray.fromArray((Object[])keys);
@@ -75,6 +79,18 @@ private final ProxyArray keysArray;
 	    return null;
 	final String ss = s.substring(SOUND_PREFIX.length());
 	for(Sounds k: ALL_SOUNDS)
+	    if (k.toString().equals(ss))
+		return k;
+	return null;
+    }
+
+        static Luwrain.MessageType getMessageType(String s)
+    {
+	NullCheck.notNull(s, "s");
+	if (!s.startsWith(MESSAGE_TYPE_PREFIX))
+	    return null;
+	final String ss = s.substring(MESSAGE_TYPE_PREFIX.length());
+	for(Luwrain.MessageType k: ALL_MESSAGE_TYPES)
 	    if (k.toString().equals(ss))
 		return k;
 	return null;
