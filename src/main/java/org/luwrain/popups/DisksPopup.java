@@ -26,22 +26,17 @@ import org.luwrain.util.*;
 
 public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 {
-    static private final String LOG_COMPONENT = Popups.LOG_COMPONENT;
+    static private final String
+	LOG_COMPONENT = Popups.LOG_COMPONENT,
+	PROP_FACTORY_CLASS = "luwrain.class.diskspopupfactory";
 
     public interface Disk
     {
 	File activate();
     }
 
-    public interface Disks
-    {
-	Disk[] getDisks();
-    }
-
-    public interface Factory
-    {
-	Disks newDisks(Luwrain luwrain);
-    }
+    public interface Disks { Disk[] getDisks(); }
+    public interface Factory { Disks newDisks(Luwrain luwrain); }
 
     protected File result = null;
 
@@ -88,10 +83,9 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 
     @Override public boolean onOk()
     {
-	final Object sel = selected();
-	if (sel == null || !(sel instanceof Disk))
+	final Disk disk = selected();
+	if (disk == null)
 	    return false;
-	final Disk disk = (Disk)sel;
 	final File res = disk.activate();
 	if (res == null)
 	    return false;
@@ -106,26 +100,26 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	final String str = obj.toString().replaceAll(",", " ").replaceAll(",", " ").replaceAll("-", " ");
 	if (str.equals("/"))
 	{
-	        luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.i18n().getStaticStr("DisksPopupItemRoot"), Suggestions.CLICKABLE_LIST_ITEM));
-		return;
+	    luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.i18n().getStaticStr("DisksPopupItemRoot"), Suggestions.CLICKABLE_LIST_ITEM));
+	    return;
 	}
-
-		if (str.equals("/home"))
+	if (str.equals("/home"))
 	{
-	        luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.i18n().getStaticStr("DisksPopupItemUserHome"), Suggestions.CLICKABLE_LIST_ITEM));
-		return;
+	    luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.i18n().getStaticStr("DisksPopupItemUserHome"), Suggestions.CLICKABLE_LIST_ITEM));
+	    return;
 	}
-
-		
 	luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.getSpeakableText(str, Luwrain.SpeakableTextType.NATURAL), Suggestions.CLICKABLE_LIST_ITEM));
     }
 
     static private Disk[] getDisks(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	final Factory factory = (Factory)ClassUtils.newInstanceOf(luwrain.getClass().getClassLoader(), "org.luwrain.linux.disks.Factory", Factory.class);
+	final Factory factory = (Factory)luwrain.newExtObject(luwrain.getProperty(PROP_FACTORY_CLASS));
 	if (factory  == null)
+	{
+	    Log.error(LOG_COMPONENT, "no disks popup factory");
 	    return new Disk[0];
+	}
 	final Disks disks = factory.newDisks(luwrain);
 	if (disks == null)
 	{

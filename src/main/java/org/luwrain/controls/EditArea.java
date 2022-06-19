@@ -228,7 +228,14 @@ public interface Appearance extends MultilineEdit.Appearance
     {
 	NullCheck.notNull(event, "event");
 	if (edit.onSystemEvent(event))
+	{
+	    if (translator.commit())
+	    {
+		refresh();
+		notifyChangeListeners();
+	    }
 	    return true;
+	}
 	return super.onSystemEvent(event);
     }
 
