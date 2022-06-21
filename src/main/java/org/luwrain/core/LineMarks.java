@@ -18,10 +18,14 @@
 
 package org.luwrain.core;
 
+import java.util.*;
+import java.util.function.*;
+
 public interface LineMarks
 {
     Mark[] getMarks();
     Mark[] findAtPos(int pos);
+LineMarks filter(Predicate<Mark> cond);
 
     public interface MarkObject
     {

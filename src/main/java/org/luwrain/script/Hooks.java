@@ -23,6 +23,7 @@ import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 import org.luwrain.script.hooks.PermissionHook;
 import org.luwrain.script.hooks.NotificationHook;
 import org.luwrain.script.hooks.ProviderHook;
+import org.luwrain.script.hooks.TransformerHook;
 import org.luwrain.script.hooks.CollectorHook;
 
 
@@ -80,5 +81,13 @@ public final class Hooks
 	NullCheck.notEmpty(hookName, "hookName");
 	return new NotificationHook(container).run(hookName, args);
     }
+
+            static public Object transformer(HookContainer container, String hookName, Object arg)
+    {
+	NullCheck.notNull(container, "container");
+	NullCheck.notEmpty(hookName, "hookName");
+	return new TransformerHook(container).run(hookName, arg);
+    }
+
 
 }

@@ -19,6 +19,7 @@
 package org.luwrain.controls;
 
 import java.util.*;
+import java.util.function.*;
 
 import org.luwrain.core.*;
 
@@ -44,6 +45,15 @@ public class DefaultLineMarks implements LineMarks
 		 res.add(m);
 	 return res.toArray(new LineMarks.Mark[res.size()]);
 	 }
+@Override public DefaultLineMarks filter(Predicate<LineMarks.Mark> cond)
+{
+NullCheck.notNull(cond, "cond");
+final List<LineMarks.Mark> res = new ArrayList<>();
+for(LineMarks.Mark m: marks)
+if (cond.test(m))
+res.add(m);
+return new DefaultLineMarks(res.toArray(new LineMarks.Mark[res.size()]));
+}
 
     static public final class Builder
     {

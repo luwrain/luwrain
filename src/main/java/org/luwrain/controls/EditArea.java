@@ -97,6 +97,13 @@ public interface Appearance extends MultilineEdit.Appearance
 	    this.inputEventListeners = new ArrayList<>();
     }
 
+public void setChangeListeners(List<ChangeListener> listeners)
+{
+NullCheck.notNull(listeners, "listeners");
+this.changeListeners.clear();
+this.changeListeners.addAll(listeners);
+}
+
     protected MultilineEdit createEdit(Params areaParams)
     {
 	NullCheck.notNull(areaParams, "areaParams");
@@ -177,12 +184,14 @@ public interface Appearance extends MultilineEdit.Appearance
     public boolean update(EditUpdating updating)
     {
 	NullCheck.notNull(updating, "updating");
-	if (updating.editUpdate(content, this))
+	if (!updating.editUpdate(content, this))
 	{
-	    context.onAreaNewContent(this);
-	    return true;
+	    redraw();
+return false;
 	}
-	return false;
+	redraw();
+notifyChangeListeners();
+return true;
     }
 
     public void clear()
@@ -192,8 +201,6 @@ public interface Appearance extends MultilineEdit.Appearance
 	setHotPoint(0, 0);
     }
 
-    //    public String 
-
     public MutableMarkedLines getContent()
     {
 	return content;
@@ -201,8 +208,8 @@ public interface Appearance extends MultilineEdit.Appearance
 
     public void refresh()
     {
-	context.onAreaNewContent(this);
-	context.onAreaNewHotPoint(this);
+	redraw();
+	context.onAreaNewName(this);
     }
 
     @Override public boolean onInputEvent(InputEvent event)

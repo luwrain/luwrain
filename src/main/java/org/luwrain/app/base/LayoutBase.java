@@ -162,6 +162,25 @@ public interface ActionHandler
 	return new ActionInfo(name, title, handler);
     }
 
+    public ActionInfo action(String name, String title, InputEvent inputEvent, ActionHandler handler, ActionInfoCondition cond)
+    {
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(title, "title");
+	NullCheck.notNull(handler, "handler");
+		NullCheck.notNull(cond, "cond");
+	return new ActionInfo(name, title, inputEvent, handler, cond);
+    }
+
+    public ActionInfo action(String name, String title, ActionHandler handler, ActionInfoCondition cond)
+    {
+	NullCheck.notEmpty(name, "name");
+	NullCheck.notEmpty(title, "title");
+	NullCheck.notNull(handler, "handler");
+	NullCheck.notNull(cond, "cond");
+	return new ActionInfo(name, title, handler, cond);
+    }
+
+
     protected void setCloseHandler(ActionHandler closeHandler)
     {
 	NullCheck.notNull(closeHandler, "closeHandler");

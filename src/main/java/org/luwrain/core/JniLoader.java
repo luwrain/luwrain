@@ -22,11 +22,13 @@ import java.net.*;
 
 public class JniLoader
 {
-    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-    static private final String AUTOLOAD = "autoload.txt";
+    static private final String
+	LOG_COMPONENT = Base.LOG_COMPONENT,
+	AUTOLOAD = "autoload.txt";
 
-    private final String arch = System.getProperty("sun.arch.data.model");
-    private final String os = System.getProperty("os.name");
+    private final String
+	arch = System.getProperty("sun.arch.data.model"),
+	os = System.getProperty("os.name");
     private final String path;
 
     public JniLoader()
@@ -57,12 +59,11 @@ public class JniLoader
 	final URL url = classLoader.getResource(name);
 	if (url == null)
 	{
-	    Log.error(LOG_COMPONENT, "JNI loading failed, no resource " + name);
+	    Log.debug(LOG_COMPONENT, "no resource " + name + ", skipping JNI autoloading");
 	    return null;
 	}
 	try {
-	    final BufferedReader r = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
-	    try {
+	    try (final BufferedReader r = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"))) {
 		final List<String> res = new ArrayList<>();
 		String line = r.readLine();
 		while (line != null)
@@ -72,13 +73,10 @@ public class JniLoader
 		}
 		return res.toArray(new String[res.size()]);
 	    }
-	    finally {
-		r.close();
-	    }
 	}
 	catch(IOException e)
 	{
-	    Log.error(LOG_COMPONENT, "JNI loading failed: unable to load autoload resource with name " + name + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "JNI loading failed: unable to read the resource with name " + name + ": " + e.getClass().getName() + ": " + e.getMessage());
 	    return null;
 	}
     }
@@ -95,20 +93,17 @@ public class JniLoader
 	    return false;
 	}
 	try {
-	    final InputStream is = url.openStream();
-	    	    final File tmpFile = File.createTempFile(".lwr.jni.", "." + name + ".tmp");
-	    try {
+	    final File tmpFile = File.createTempFile(".lwr.jni.", "." + name + ".tmp");
+	    try (final InputStream is = url.openStream()) {
 		java.nio.file.Files.copy(is, tmpFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 	    }
-	    finally {
-		is.close();
-	    }
+	    tmpFile.deleteOnExit();
 	    try {
 		System.load(tmpFile.getAbsolutePath());
 	    }
 	    catch(Throwable e)
 	    {
-		Log.error(LOG_COMPONENT, "unable to load JNI library " + name + ":" + e.getClass().getName() + ":" + e.getMessage());
+		Log.error(LOG_COMPONENT, "unable to load JNI library " + name + ": " + e.getClass().getName() + ": " + e.getMessage());
 		return false;
 	    }
 	    return true;
@@ -118,19 +113,24 @@ public class JniLoader
 	    Log.error(LOG_COMPONENT, "unable to load JNI library:" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;
 	}
-	}
+    }
 
     public boolean loadByShortName(ClassLoader classLoader, String name)
     {
-	switch(os)
+	try {
+	    Log.debug(LOG_COMPONENT, "trying native library loading from the native lain file: " + name);
+	    System.loadLibrary(name);
+	    return true;
+	}
+	catch(Throwable e)
 	{
-	case "Linux":
+	    Log.debug(LOG_COMPONENT, "not a problem, the library can't be loaded from the native file, will try from a resource: " + e.getClass().getName() + ": " + e.getMessage());
+	}
+	if (os.toLowerCase().startsWith("linux"))
 	    return load(classLoader, "lib" + name + ".so");
-	case "Windows":
-	    return load(classLoader, name + ".dll");
-	default:
+	    if (os.toLowerCase().startsWith("windows"))
+		return load(classLoader, name + ".dll");
 	    Log.warning(LOG_COMPONENT, "unknown OS name: " + os + ", loading JNI by the original name '" + name + "'" );
 	    return load(classLoader, name);
-	    	}
     }
-    }
+}

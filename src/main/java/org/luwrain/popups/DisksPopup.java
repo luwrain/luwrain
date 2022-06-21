@@ -24,6 +24,8 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
 
+import static org.luwrain.core.DefaultEventResponse.*;
+
 public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 {
     static private final String
@@ -33,6 +35,7 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
     public interface Disk
     {
 	File activate();
+	boolean isActivated();
     }
 
     public interface Disks { Disk[] getDisks(); }
@@ -93,22 +96,23 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	return true;
     }
 
-    static private void announceDisk(Luwrain luwrain, Object obj, Set<ListArea.Appearance.Flags> flags)
+    static private void announceDisk(Luwrain luwrain, DisksPopup.Disk disk, Set<ListArea.Appearance.Flags> flags)
     {
-	NullCheck.notNull(obj, "obj");
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(disk, "disk");
 	NullCheck.notNull(flags, "flags");
-	final String str = obj.toString().replaceAll(",", " ").replaceAll(",", " ").replaceAll("-", " ");
+	final String str = disk.toString().replaceAll(",", " ").replaceAll(",", " ").replaceAll("-", " ");
 	if (str.equals("/"))
 	{
-	    luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.i18n().getStaticStr("DisksPopupItemRoot"), Suggestions.CLICKABLE_LIST_ITEM));
+	    luwrain.setEventResponse(listItem(luwrain.i18n().getStaticStr("DisksPopupItemRoot"), Suggestions.CLICKABLE_LIST_ITEM));
 	    return;
 	}
 	if (str.equals("/home"))
 	{
-	    luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.i18n().getStaticStr("DisksPopupItemUserHome"), Suggestions.CLICKABLE_LIST_ITEM));
+	    luwrain.setEventResponse(listItem(luwrain.i18n().getStaticStr("DisksPopupItemUserHome"), Suggestions.CLICKABLE_LIST_ITEM));
 	    return;
 	}
-	luwrain.setEventResponse(DefaultEventResponse.listItem(luwrain.getSpeakableText(str, Luwrain.SpeakableTextType.NATURAL), Suggestions.CLICKABLE_LIST_ITEM));
+	luwrain.setEventResponse(listItem(disk.isActivated()?Sounds.ATTENTION:Sounds.LIST_ITEM, luwrain.getSpeakableText(str, Luwrain.SpeakableTextType.PROGRAMMING), Suggestions.CLICKABLE_LIST_ITEM));
     }
 
     static private Disk[] getDisks(Luwrain luwrain)
