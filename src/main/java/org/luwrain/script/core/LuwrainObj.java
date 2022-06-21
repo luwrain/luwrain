@@ -283,6 +283,20 @@ messageType = ConstObj.getMessageType(values[1].asString());
 	return true;
     }
 
+    @HostAccess.Export public final ProxyExecutable playSound = this::playSoundImpl;
+    private Object playSoundImpl(Value[] values)
+    {
+	if (!notNullAndLen(values, 1))
+	    return false;
+	if (!values[0].isString())
+	    return false;
+	final Sounds sound = ConstObj.getSound(values[0].asString());
+	if (sound == null)
+	    return false;
+	luwrain.playSound(sound);
+	return true;
+    }
+
     @HostAccess.Export public final ProxyExecutable readTextFile = this::readTextFileImpl;
     private Object readTextFileImpl(Value[] args)
     {
