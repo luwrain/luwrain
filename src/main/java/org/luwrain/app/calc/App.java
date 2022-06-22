@@ -17,8 +17,7 @@
 package org.luwrain.app.calc;
 
 import java.util.*;
-import java.io.*;
-import java.net.*;
+import java.util.function.*;
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
@@ -29,12 +28,10 @@ import org.luwrain.app.base.*;
 import org.luwrain.script.core.*;
 import static org.luwrain.script.ScriptUtils.*;
 
-
 public final class App extends AppBase<Strings>
 {
     static final String
-	LOG_COMPONENT = "calc",
-	RESOURCE_PATH = "org/luwrain/app/calc/prescript.js";
+	LOG_COMPONENT = "calc";
 
     private org.luwrain.script.core.Module module = null;
     private MainLayout mainLayout = null;
@@ -48,12 +45,9 @@ public final class App extends AppBase<Strings>
     {
 	this.module = new org.luwrain.script.core.Module(getLuwrain(), (bindings, syncObj)->{
 				bindings.putMember("pi", Math.PI);
-		bindings.putMember("sin", (ProxyExecutable)(args)->{ return Math.sin(args[0].asDouble()); });
-
-				bindings.putMember("cos", (ProxyExecutable)(args)->{ return Math.cos(args[0].asDouble()); });
+				bindings.putMember("sin", (ProxyExecutable)(args)->singleArg(args, (x)->Math.sin(x.doubleValue())));
+				bindings.putMember("cos", (ProxyExecutable)(args)->singleArg(args, (x)->Math.cos(x.doubleValue())));
 	    });
-	//	module.eval(readPrescript());
-
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
 	return mainLayout.getAreaLayout();
@@ -79,37 +73,18 @@ public final class App extends AppBase<Strings>
 	return asNumber(module.eval(/*prescript +*/ new String(text)));
     }
 
-    private String readPrescript()
-    {
-	final StringBuilder b = new StringBuilder();
-	final URL url = this.getClass().getClassLoader().getResource(RESOURCE_PATH);
-	try {
-	    final InputStream is = url.openStream();
-	    try {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-		String line = reader.readLine();
-		while (line != null)
-		{
-		    b.append(line + "\n");
-		    line = reader.readLine();
-		}
-		return new String(b);
-	    }
-	    finally {
-		is.close();
-	    }
-	}
-	catch(IOException e)
-	{
-	    getLuwrain().crash(e);
-	    return "";
-	}
-    }
-
     @Override public void closeApp()
     {
 	this.module.close();
 	super.closeApp();
     }
 
+    static Double singleArg(Value[] args, Function<Double, Double> f)
+    {
+	if (!notNullAndLen(args, 1))
+	    throw new IllegalArgumentException("Required one not null arg");
+	if (!args[0].isNumber())
+	    throw new IllegalArgumentException("The first argument must be a number");
+	return f.apply(args[0].asDouble());
+    }
 }
