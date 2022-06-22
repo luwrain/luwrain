@@ -220,30 +220,17 @@ final class Commands
 	    new Cmd(
 		    "clear",
 		    (luwrain)->{
-			final Area area = core.getValidActiveArea(true);
+			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
-			final AtomicBoolean res = new AtomicBoolean();
-			core.unsafeAreaOperation(()->res.set(area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR))));
-			if (!res.get())
+			if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.CLEAR)))
 			{
 			    core.eventNotProcessedMessage();
 			    return;
 			}
-			/*
-			final EmptyHookObject argObj = new EmptyHookObject(){
-				@Override public Object getMember(String name)
-				{
-				    NullCheck.notEmpty(name, "name");
-				    switch(name)
-				    {
-				    default:
-					return super.getMember(name);
-				    }
-				}
-			    };
-			if (!core.hookChainWithCustom("luwrain.area.clear", new Object[]{argObj}))
-			*/
+						final Map<String, Object> arg = new HashMap<>();
+						//FIXME:
+			if (!hooks.chainOfResponsibility(core.luwrain, Hooks.AREA_CLEAR, new Object[]{new MapScriptObject(arg)}))
 			    core.eventNotProcessedMessage();
 		    }),
 

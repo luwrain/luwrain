@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -23,7 +23,7 @@ import org.junit.*;
 
 import org.luwrain.core.*;
 
-public class ConnectionsTest extends Assert
+@Ignore public class ConnectionsTest extends Assert
 {
     static private final String url = "http://download.luwrain.org/pdf/presentation-HongKongOSConference-en-2015-06-27.pdf";
 

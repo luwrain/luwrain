@@ -44,38 +44,26 @@ public final class App extends AppBase<Strings>
     @Override public AreaLayout onAppInit()
     {
 	this.module = new org.luwrain.script.core.Module(getLuwrain(), (bindings, syncObj)->{
-				bindings.putMember("pi", Math.PI);
-												bindings.putMember("abs", (ProxyExecutable)(args)->singleArg(args, (x)->Math.abs(x.doubleValue())));
-																bindings.putMember("sqrt", (ProxyExecutable)(args)->singleArg(args, (x)->Math.sqrt(x.doubleValue())));
-																												bindings.putMember("exp", (ProxyExecutable)(args)->singleArg(args, (x)->Math.exp(x.doubleValue())));
-																																bindings.putMember("log", (ProxyExecutable)(args)->singleArg(args, (x)->Math.log(x.doubleValue())));
-																																				bindings.putMember("log10", (ProxyExecutable)(args)->singleArg(args, (x)->Math.log10(x.doubleValue())));
-																																												bindings.putMember("floor", (ProxyExecutable)(args)->singleArg(args, (x)->Math.floor(x.doubleValue())));
-				//bindings.putMember("round", (ProxyExecutable)(args)->singleArg(args, (x)->Math.round(x.doubleValue())));
-				//bindings.putMember("rand", (ProxyExecutable)(args)->singleArg(args, (x)->Math.random(x.doubleValue())));
-				
-				
-				
-				
-				bindings.putMember("sin", (ProxyExecutable)(args)->singleArg(args, (x)->Math.sin(x.doubleValue())));
-				bindings.putMember("cos", (ProxyExecutable)(args)->singleArg(args, (x)->Math.cos(x.doubleValue())));
-								bindings.putMember("tan", (ProxyExecutable)(args)->singleArg(args, (x)->Math.tan(x.doubleValue())));
-
-												bindings.putMember("toDegrees", (ProxyExecutable)(args)->singleArg(args, (x)->Math.toDegrees(x.doubleValue())));
-																bindings.putMember("toRadians", (ProxyExecutable)(args)->singleArg(args, (x)->Math.toRadians(x.doubleValue())));
-				
-
-												bindings.putMember("asin", (ProxyExecutable)(args)->singleArg(args, (x)->Math.asin(x.doubleValue())));
-												bindings.putMember("acos", (ProxyExecutable)(args)->singleArg(args, (x)->Math.acos(x.doubleValue())));
-																bindings.putMember("atan", (ProxyExecutable)(args)->singleArg(args, (x)->Math.atan(x.doubleValue())));
-																				bindings.putMember("cbrt", (ProxyExecutable)(args)->singleArg(args, (x)->Math.cbrt(x.doubleValue())));
-																												bindings.putMember("sinh", (ProxyExecutable)(args)->singleArg(args, (x)->Math.sinh(x.doubleValue())));
-																								bindings.putMember("cosh", (ProxyExecutable)(args)->singleArg(args, (x)->Math.cosh(x.doubleValue())));
-				
-				
-				
-				
-				
+		bindings.putMember("pi", Math.PI);
+		bindings.putMember("abs", (ProxyExecutable)(args)->singleArg(args, (x)->Math.abs(x.doubleValue())));
+		bindings.putMember("sqrt", (ProxyExecutable)(args)->singleArg(args, (x)->Math.sqrt(x.doubleValue())));
+		bindings.putMember("exp", (ProxyExecutable)(args)->singleArg(args, (x)->Math.exp(x.doubleValue())));
+		bindings.putMember("log", (ProxyExecutable)(args)->singleArg(args, (x)->Math.log(x.doubleValue())));
+		bindings.putMember("log10", (ProxyExecutable)(args)->singleArg(args, (x)->Math.log10(x.doubleValue())));
+		bindings.putMember("floor", (ProxyExecutable)(args)->singleArg(args, (x)->Math.floor(x.doubleValue())));
+		//bindings.putMember("round", (ProxyExecutable)(args)->singleArg(args, (x)->Math.round(x.doubleValue())));
+		//bindings.putMember("rand", (ProxyExecutable)(args)->singleArg(args, (x)->Math.random(x.doubleValue())));
+		bindings.putMember("sin", (ProxyExecutable)(args)->singleArg(args, (x)->Math.sin(x.doubleValue())));
+		bindings.putMember("cos", (ProxyExecutable)(args)->singleArg(args, (x)->Math.cos(x.doubleValue())));
+		bindings.putMember("tan", (ProxyExecutable)(args)->singleArg(args, (x)->Math.tan(x.doubleValue())));
+		bindings.putMember("toDegrees", (ProxyExecutable)(args)->singleArg(args, (x)->Math.toDegrees(x.doubleValue())));
+		bindings.putMember("toRadians", (ProxyExecutable)(args)->singleArg(args, (x)->Math.toRadians(x.doubleValue())));
+		bindings.putMember("asin", (ProxyExecutable)(args)->singleArg(args, (x)->Math.asin(x.doubleValue())));
+		bindings.putMember("acos", (ProxyExecutable)(args)->singleArg(args, (x)->Math.acos(x.doubleValue())));
+		bindings.putMember("atan", (ProxyExecutable)(args)->singleArg(args, (x)->Math.atan(x.doubleValue())));
+		bindings.putMember("cbrt", (ProxyExecutable)(args)->singleArg(args, (x)->Math.cbrt(x.doubleValue())));
+		bindings.putMember("sinh", (ProxyExecutable)(args)->singleArg(args, (x)->Math.sinh(x.doubleValue())));
+		bindings.putMember("cosh", (ProxyExecutable)(args)->singleArg(args, (x)->Math.cosh(x.doubleValue())));
 	    });
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
