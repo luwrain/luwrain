@@ -26,7 +26,8 @@ import org.luwrain.util.*;
 
 public final class ScriptCore implements HookContainer, AutoCloseable
 {
-    static private final String LOG_COMPONENT = "script2";
+    static private final String
+	LOG_COMPONENT = "script2";
 
     private final Bindings bindings;
     private final Luwrain luwrain;

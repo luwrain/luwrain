@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -27,7 +27,8 @@ import org.luwrain.app.base.*;
 
 public final class MainLayout extends LayoutBase
 {
-    static private final String LOG_COMPONENT = "calc";
+    static private final String
+	LOG_COMPONENT = App.LOG_COMPONENT;
 
     private final App app;
     private final EditArea editArea;
@@ -42,7 +43,6 @@ public final class MainLayout extends LayoutBase
 	params.appearance = new EditUtils.DefaultEditAreaAppearance(getControlContext()){
 		@Override public void announceLine(int index, String line)
 		{
-		    NullCheck.notNull(line, "line");
 		    NavigationArea.defaultLineAnnouncement(context, index, getLuwrain().getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
 		}
 	    };
@@ -54,7 +54,6 @@ public final class MainLayout extends LayoutBase
 	this.editArea = new EditArea(params){
 		@Override public boolean onInputEvent(InputEvent event)
 		{
-		    NullCheck.notNull(event, "event");
 		    if (!event.isSpecial())
 			switch(event.getChar())
 			{
@@ -76,7 +75,6 @@ public final class MainLayout extends LayoutBase
 		}
 		@Override public boolean onSystemEvent(SystemEvent event)
 		{
-		    NullCheck.notNull(event, "event");
 		    if (event.getType() != SystemEvent.Type.REGULAR)
 			return super.onSystemEvent(event);
 		    switch (event.getCode())
@@ -95,7 +93,7 @@ public final class MainLayout extends LayoutBase
 			}
 			catch(Exception e)
 			{
-			    Log.debug(LOG_COMPONENT, "calculation faild:" + e.getClass().getName() + ":" + e.getMessage());
+			    Log.debug(LOG_COMPONENT, "calculation faild: " + e.getClass().getName() + ": " + e.getMessage());
 			    e.printStackTrace();
 			    getLuwrain().playSound(Sounds.ERROR);
 			    return true;
@@ -122,7 +120,7 @@ public final class MainLayout extends LayoutBase
 		putResLine("# " + formatNum(res)); else
 		putResLine("# 0");
 	}
-	catch(Exception e)
+	catch(Throwable e)
 	{
 	    putResLine("# " + app.getStrings().error());
 	}
@@ -130,10 +128,9 @@ public final class MainLayout extends LayoutBase
 
     private void putResLine(String text)
     {
-	NullCheck.notNull(text, "text");
 	editArea.update((lines, hotPoint)->{
 		lines.setLine(lines.getLineCount() - 2, text);
-		return true;
+		return false;
 	    });
     }
 

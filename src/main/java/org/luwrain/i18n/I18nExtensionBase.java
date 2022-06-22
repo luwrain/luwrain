@@ -133,7 +133,7 @@ public class I18nExtensionBase extends EmptyExtension
 		return;
 	    }
 	    if (!addProxyByClassName(c.trim(), v.trim(), resourcePath, ext))
-		Log.warning(langName, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
+		Log.debug(langName, "unable to create proxy strings object \'" + c + "\' for interface " + v.trim());
 	    return;
 	}
     }
@@ -171,7 +171,7 @@ public class I18nExtensionBase extends EmptyExtension
 	}
 	catch (Throwable e)
 	{
-	    Log.error(langName, "unable to find the class " + className + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    Log.debug(langName, "unable to find the class " + className + ": " + e.getClass().getName() + ": " + e.getMessage());
 	    return false;
 	}
 	return addProxyByClass(name, cl, propertiesResourceName, ext);

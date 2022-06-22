@@ -27,7 +27,7 @@ public final class Module implements AutoCloseable
     private Context context = null;
     final LuwrainObj luwrainObj;
 
-    Module(Luwrain luwrain, Bindings bindings)
+    public Module(Luwrain luwrain, Bindings bindings)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
@@ -35,7 +35,7 @@ public final class Module implements AutoCloseable
 	this.bindings = bindings;
     }
 
-    Module(Luwrain luwrain )
+    public Module(Luwrain luwrain )
     {
 	this(luwrain, null);
     }
@@ -52,6 +52,21 @@ public final class Module implements AutoCloseable
 	    if (bindings != null)
 		bindings.onBindings(context.getBindings("js"), luwrainObj.syncObj);
 	    context.eval("js", text);
+	}
+    }
+
+    public Object eval(String exp)
+    {
+	synchronized(luwrainObj.syncObj) {
+	    if (this.context == null)
+		this.context = Context.newBuilder()
+		.allowExperimentalOptions(true)
+		//.option("js.nashorn-compat", "true"
+		.build();
+	    context.getBindings("js").putMember("Luwrain", this.luwrainObj);
+	    if (bindings != null)
+		bindings.onBindings(context.getBindings("js"), luwrainObj.syncObj);
+	    return context.eval("js", exp);
 	}
     }
 

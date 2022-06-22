@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,29 +19,41 @@ package org.luwrain.app.calc;
 import java.util.*;
 import java.io.*;
 import java.net.*;
-import javax.script.*;
+import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.app.base.*;
+import org.luwrain.script.core.*;
+import static org.luwrain.script.ScriptUtils.*;
+
 
 public final class App extends AppBase<Strings>
 {
-    static private final String RESOURCE_PATH = "org/luwrain/app/calc/prescript.js";
+    static final String
+	LOG_COMPONENT = "calc",
+	RESOURCE_PATH = "org/luwrain/app/calc/prescript.js";
 
-    private ScriptEngine engine;
+    private org.luwrain.script.core.Module module = null;
     private MainLayout mainLayout = null;
 
     public App()
     {
-	super(Strings.NAME, Strings.class);
+	super(Strings.NAME, Strings.class, "luwrain.calc");
     }
 
     @Override public AreaLayout onAppInit()
     {
-	final ScriptEngineManager manager = new ScriptEngineManager();
-	this.engine = manager.getEngineByName("nashorn");
+	this.module = new org.luwrain.script.core.Module(getLuwrain(), (bindings, syncObj)->{
+				bindings.putMember("pi", Math.PI);
+		bindings.putMember("sin", (ProxyExecutable)(args)->{ return Math.sin(args[0].asDouble()); });
+
+				bindings.putMember("cos", (ProxyExecutable)(args)->{ return Math.cos(args[0].asDouble()); });
+	    });
+	//	module.eval(readPrescript());
+
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
 	return mainLayout.getAreaLayout();
@@ -55,7 +67,6 @@ public final class App extends AppBase<Strings>
 
     Number calculate(String[] expr) throws Exception
     {
-	NullCheck.notNullItems(expr, "expr");
 	final StringBuilder text = new StringBuilder();
 	for(String s: expr)
 	{
@@ -65,11 +76,7 @@ public final class App extends AppBase<Strings>
 		text.append(str + " "); else
 		text.append(str.substring(0, pos) + " ");
 	}
-	final String prescript = readPrescript();
-	final Object res = engine.eval(prescript + new String(text) + ";");
-	if (res != null && res instanceof Number)
-	    return (Number)res;
-	return null;
+	return asNumber(module.eval(/*prescript +*/ new String(text)));
     }
 
     private String readPrescript()
@@ -97,6 +104,12 @@ public final class App extends AppBase<Strings>
 	    getLuwrain().crash(e);
 	    return "";
 	}
+    }
+
+    @Override public void closeApp()
+    {
+	this.module.close();
+	super.closeApp();
     }
 
 }

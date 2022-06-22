@@ -34,22 +34,14 @@ final class I18nImpl implements I18n, I18nExtension
     private final List<StringsObj> stringsObjs = new ArrayList<>();
     private final Map<String, Lang> langs = new HashMap<>();
 
-    @Override public Lang getActiveLang()
-    {
-	return chosenLang;
-    }
+    @Override public Lang getActiveLang() { return chosenLang;}
+    @Override public Map<String, Lang> getAllLangs() { return new HashMap<>(langs); }
 
     @Override public Lang getLang(String langName)
     {
 	NullCheck.notEmpty(langName, "langName");
 	return langs.containsKey(langName)?langs.get(langName):null;
-	    }
-
-    @Override public Map<String, Lang> getAllLangs()
-    {
-	return new HashMap<>(langs);
-	    }
-
+    }
 
     String getSpeakableText(String text, Luwrain.SpeakableTextType speakableTextType)
     {
@@ -57,8 +49,15 @@ final class I18nImpl implements I18n, I18nExtension
 	NullCheck.notNull(speakableTextType, "speakableTextType");
 	if (chosenLang == null)
 	    return NO_CHOSEN_LANG;
-	final String value = chosenLang.getSpeakableText(text, speakableTextType);
-	return value != null?value:"";
+	try {
+	    final String value = chosenLang.getSpeakableText(text, speakableTextType);
+	    return value != null?value:text;
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to make a speakable text of type " + speakableTextType + ": " + e.getClass().getName() + ": " + e.getMessage());
+	    return text;
+	}
     }
 
     @Override public String getPastTimeBrief(Date date)
@@ -113,9 +112,9 @@ final class I18nImpl implements I18n, I18nExtension
     {
 	NullCheck.notNull(id, "id");
 	if (chosenLang == null)
-	    return "#NO CHOSEN LANGUAGE#";
+	    return NO_CHOSEN_LANG;
 	final String value = chosenLang.getStaticStr(id);
-	return value != null && !value.isEmpty()?value:"#NO STATIC VALUE \'" + id + "\'#";
+	return value != null && !value.isEmpty()?value:"#" + id + "#";
     }
 
     @Override public String hasSpecialNameOfChar(char ch)
