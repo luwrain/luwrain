@@ -32,13 +32,16 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	LOG_COMPONENT = Popups.LOG_COMPONENT,
 	PROP_FACTORY_CLASS = "luwrain.class.diskspopupfactory";
 
+    public enum Flags {READ_ONLY};
+
     public interface Disk
     {
-	File activate();
+	File activate(Set<Flags> flags);
 	boolean isActivated();
+	boolean deactivate(Set<Flags> flags);
     }
 
-    public interface Disks { Disk[] getDisks(); }
+    public interface Disks { Disk[] getDisks(Set<Flags> flags); }
     public interface Factory { Disks newDisks(Luwrain luwrain); }
 
     protected File result = null;
@@ -59,6 +62,8 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	if (event.isSpecial() || !event.isModified())
 	    switch(event.getSpecial())
 	    {
+	    case DELETE:
+		return deactivate();
 	    case ENTER:
 		if (selected() == null)
 		    return false;
@@ -84,14 +89,43 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	return super.onSystemEvent(event);
     }
 
+    protected boolean deactivate()
+    {
+	final Disk disk = selected();
+	if (disk == null)
+	    return false;
+	try {
+	    if (!disk.deactivate(EnumSet.noneOf(Flags.class)))
+		luwrain.message("Устройство не может быть отключено", Luwrain.MessageType.ERROR);
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to deactivate a disk: " + e.getClass().getName() + ": " + e.getMessage());
+	    luwrain.message("Устройство не может быть отключено", Luwrain.MessageType.ERROR);
+	}
+	return true;
+    }
+
     @Override public boolean onOk()
     {
 	final Disk disk = selected();
 	if (disk == null)
 	    return false;
-	final File res = disk.activate();
-	if (res == null)
+	final File res;
+	try {
+	    res = disk.activate(EnumSet.noneOf(Flags.class));
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to activate a disk: " + e.getClass().getName() + ": " + e.getMessage());
+	    luwrain.message("Устройство не может быть подключено", Luwrain.MessageType.ERROR);//FIXME:
 	    return false;
+	}
+	if (res == null)
+	{
+	    luwrain.message("Устройство не может быть подключено", Luwrain.MessageType.ERROR);//FIXME:
+	    return false;
+	}
 	this.result = res;
 	return true;
     }
@@ -130,7 +164,7 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	    Log.debug(LOG_COMPONENT, "the disks factory object gives a null pointer");
 	    return new Disk[0];
 	}
-	return disks.getDisks();
+	return disks.getDisks(EnumSet.noneOf(Flags.class));
     }
 
     static protected ListArea.Params<Disk> createParams(Luwrain luwrain, String name)

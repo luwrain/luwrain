@@ -228,8 +228,8 @@ final class Commands
 			    core.eventNotProcessedMessage();
 			    return;
 			}
-						final Map<String, Object> arg = new HashMap<>();
-						//FIXME:
+			final Map<String, Object> arg = new HashMap<>();
+			//FIXME:
 			if (!hooks.chainOfResponsibility(core.luwrain, Hooks.AREA_CLEAR, new Object[]{new MapScriptObject(arg)}))
 			    core.eventNotProcessedMessage();
 		    }),
