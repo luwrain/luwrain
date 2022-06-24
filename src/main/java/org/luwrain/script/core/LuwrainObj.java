@@ -315,6 +315,28 @@ messageType = ConstObj.getMessageType(values[1].asString());
 	}
     }
 
+        @HostAccess.Export public final ProxyExecutable writeTextFile = this::writeTextFileImpl;
+    private Object writeTextFileImpl(Value[] args)
+    {
+	if (!notNullAndLen(args, 2))
+	    return new ScriptException("readTextFile takes exactly one non-null argument");
+	final String fileName = ScriptUtils.asString(args[0]);
+	if (fileName == null || fileName.isEmpty())
+	    throw new ScriptException("readTextFile() takes a non-empty string with the name of the file as the furst argument");
+	final String[] lines = ScriptUtils.asStringArray(args[1]);
+	if (lines == null)
+	    throw new IllegalArgumentException("No lines to write");
+	try {
+	    FileUtils.writeTextFileMultipleStrings(new File(fileName), lines, "UTF-8", null);
+	    return true;
+	}
+	catch(IOException e)
+	{
+	    throw new ScriptException(e);
+	}
+    }
+
+
     @HostAccess.Export public final ProxyExecutable quit = this::quitImpl;
         private Object quitImpl(Value[] values)
     {
