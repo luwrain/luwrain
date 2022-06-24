@@ -52,6 +52,20 @@ public final class LuwrainObj
 	this.popups = new PopupsObj(luwrain);
     }
 
+        @HostAccess.Export public final ProxyExecutable escapeString = this::escapeStringImpl;
+            private Object escapeStringImpl(Value[] args)
+    {
+	if (!notNullAndLen(args, 2))
+	    return false;
+	final String
+	style = ScriptUtils.asString(args[0]),
+	text = ScriptUtils.asString(args[1]);
+	if (style == null || text == null)
+	    return false;
+	return luwrain.escapeString(style, text);
+    }
+
+
     @HostAccess.Export public final ProxyExecutable addCommand = this::addCommandImpl;
             private Object addCommandImpl(Value[] args)
     {

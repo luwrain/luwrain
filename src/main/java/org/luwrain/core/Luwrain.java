@@ -246,4 +246,5 @@ Object newExtObject(String  name);
     void xSetSpeechPitch(int value);
     void showGraphical(Interaction.GraphicalMode graphicalMode);
     ScriptFile[] getScriptFilesList(String componentName);
+    String escapeString(String style, String text);
 }

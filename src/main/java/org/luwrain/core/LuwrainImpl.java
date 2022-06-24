@@ -738,6 +738,13 @@ final class LuwrainImpl implements Luwrain
 	return core.getScriptFilesList(componentName);
     }
 
+    @Override public String escapeString(String style, String text)
+    {
+	NullCheck.notNull(style, "style");
+		NullCheck.notNull(text, "text");
+		return core.os.escapeString(style, text);
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");
