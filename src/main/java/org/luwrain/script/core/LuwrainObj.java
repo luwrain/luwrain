@@ -65,6 +65,19 @@ public final class LuwrainObj
 	return luwrain.escapeString(style, text);
     }
 
+            @HostAccess.Export public final ProxyExecutable deleteFile = this::deleteFileImpl;
+            private Object deleteFileImpl(Value[] args)
+    {
+	if (!notNullAndLen(args, 1))
+	    return false;
+	final String fileName = ScriptUtils.asString(args[0]);
+	if (fileName == null)
+	    return false;
+	new File(fileName).delete();
+	return true;
+	    }
+
+
 
     @HostAccess.Export public final ProxyExecutable addCommand = this::addCommandImpl;
             private Object addCommandImpl(Value[] args)
