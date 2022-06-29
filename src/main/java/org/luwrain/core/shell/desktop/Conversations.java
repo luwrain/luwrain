@@ -42,11 +42,11 @@ final class Conversations
 boolean deleteItem(String name)
     {
 	NullCheck.notNull(name, "name");
-	return Popups.confirmDefaultNo(luwrain, strings.deleteItemsPopupName(), strings.deleteSingleItemPopup(name));
+	return Popups.confirmDefaultYes(luwrain, strings.deleteItemsPopupName(), strings.deleteSingleItemPopup(name));
     }
 
     public boolean deleteItems(int count)
     {
-	return Popups.confirmDefaultNo(luwrain, strings.deleteItemsPopupName(), strings.deleteItemsPopup(count));
+	return Popups.confirmDefaultYes(luwrain, strings.deleteItemsPopupName(), strings.deleteItemsPopup(count));
     }
 }
