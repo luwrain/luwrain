@@ -444,6 +444,7 @@ public interface ActionHandler
     {
 	NullCheck.notNull(l, "l");
 	final TreeArea.Params params = new TreeArea.Params();
+	l.setTreeParams(params);
 	params.context = getControlContext();
 	return params;
     }
