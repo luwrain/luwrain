@@ -28,15 +28,18 @@ import org.luwrain.script.*;
 final class JobAdapter implements Job
 {
     private final Luwrain luwrain;
+    private final Object syncObj;
     private final String name;
     private final Value func;
 
-    JobAdapter(Luwrain luwrain, String name, Value func)
+    JobAdapter(Luwrain luwrain, Object syncObj, String name, Value func)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(syncObj, "syncObj");
 	NullCheck.notEmpty(name, "name");
 	NullCheck.notNull(func, "func");
 	this.luwrain = luwrain;
+	this.syncObj = syncObj;
 	this.name = name;
 	this.func = func;
     }
@@ -53,6 +56,7 @@ final class JobAdapter implements Job
 	//FIXME: dir processing
 	try {
 	    final Instance instance = new Instance(listener);
+	    synchronized(syncObj) {
 	    final Value res = func.execute(new Object[]{
 		    "RUN",
 		    instance,
@@ -61,6 +65,7 @@ final class JobAdapter implements Job
 	    if (res != null && res.isBoolean() && res.asBoolean())
 		return instance;
 	    return null;
+	    }
 	}
 	catch(Throwable e)
 	{
@@ -83,10 +88,7 @@ final class JobAdapter implements Job
 	    NullCheck.notNull(listener, "listener");
 	    this.listener = listener;
 	}
-	@Override public String getInstanceName()
-	{
-	    return name;
-	}
+	@Override public String getInstanceName() { return name; }
 	@Override public Status getStatus()
 	{
 	    return null;
