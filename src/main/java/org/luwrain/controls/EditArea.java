@@ -260,6 +260,11 @@ return true;
 	appearance.announceLine(index, line);
     }
 
+    public Appearance getEditAppearance()
+    {
+	return this.appearance;
+    }
+
     protected String getTabSeq()
     {
 	return "\t";
@@ -270,5 +275,4 @@ return true;
 	for(ChangeListener l: this.changeListeners)
 	    l.onEditChange(this, content, this);
     }
-
 }
