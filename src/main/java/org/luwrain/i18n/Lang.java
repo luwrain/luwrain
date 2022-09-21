@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -34,6 +34,10 @@ import org.luwrain.nlp.*;
  */
 public interface Lang
 {
+static public final String
+    EN= "en",
+    RU = "ru";
+    
     /**
      * Provides some statically stored string on corresponding national
      *language. This method should process values related to environment
