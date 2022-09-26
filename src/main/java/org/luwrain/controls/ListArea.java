@@ -195,7 +195,7 @@ public interface ClipboardSaver<E>
      * @param announce Must be true if it is necessary to introduce the object, once it's found
      * @return True if the request object is found, false otherwise
      */
-    public boolean select(Object obj, boolean announce)
+    public boolean select(E obj, boolean announce)
     {
 	NullCheck.notNull(obj, "obj");
 	for(int i = 0;i < listModel.getItemCount();++i)
@@ -386,7 +386,7 @@ public interface ClipboardSaver<E>
 
     public void redraw()
     {
-	final Object previouslySelected = selected();
+	final E previouslySelected = selected();
 	context.onAreaNewContent(this);
 	final int count = listModel.getItemCount();
 	if (count == 0)
