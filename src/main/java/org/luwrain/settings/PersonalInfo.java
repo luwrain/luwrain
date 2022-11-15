@@ -53,7 +53,7 @@ fillForm();
 	final Registry registry = luwrain.getRegistry();
 	sett.setFullName(getEnteredText("name"));
 	sett.setDefaultMailAddress(getEnteredText("address"));
-	sett.setSignature(getMultilineEditText());
+	sett.setSignature(getMultilineEditText("\n"));
 	return true;
     }
 

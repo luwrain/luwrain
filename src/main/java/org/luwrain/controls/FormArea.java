@@ -22,7 +22,6 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.controls.EditArea.ChangeListener;
 
 import static org.luwrain.core.DefaultEventResponse.*;
 
@@ -52,14 +51,19 @@ public class FormArea  extends NavigationArea
 {
     public enum Type { EDIT, CHECKBOX, LIST, STATIC, UNIREF, MULTILINE };
 
+    public interface MultilineEditChangeListener
+    {
+	void onEditChange(FormArea formArea, MarkedLines lines, HotPoint hotPoint);
+    }
+
     protected final ControlContext context;
     protected final List<Item> items = new ArrayList<>();
     protected String name = "";
     protected int nextAutoNameNum = 1;
 
-    protected MutableLines multilineEditLines = null;
+    protected MutableMarkedLines mlEditContent = null;
         protected MultilineEdit mlEdit = null;
-    protected List<ChangeListener> mlEditChangeListeners = new ArrayList<>();
+    protected List<MultilineEditChangeListener> mlEditChangeListeners = new ArrayList<>();
     protected final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
     protected final RegionPointShift multilineEditRegionPoint = new RegionPointShift(regionPoint, 0, 0);
     protected String multilineEditCaption = "";
@@ -421,15 +425,15 @@ public class FormArea  extends NavigationArea
 	return params;
     }
 
-    public boolean activateMultilineEdit(String caption, MutableLines lines, MultilineEdit.Params params, boolean enabled)
+    public boolean activateMultilineEdit(String caption, MutableMarkedLines content, MultilineEdit.Params params, boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
-	NullCheck.notNull(lines, "lines");
+	NullCheck.notNull(content, "content");
 	NullCheck.notNull(params, "params");
 	if (isMultilineEditActivated())
 	    return false;
 	this.multilineEditCaption = caption;
-	this.multilineEditLines = lines;
+	this.mlEditContent = content;
 	this.mlEdit = new MultilineEdit(params);
 	multilineEditEnabled = enabled;
 	updateItems();
@@ -438,40 +442,45 @@ public class FormArea  extends NavigationArea
 	return true;
     }
 
-        public boolean activateMultilineEdit(String caption, String[] lines, boolean enabled)
+        public boolean activateMultilineEdit(String caption, String[] text, boolean enabled)
     {
 	NullCheck.notNull(caption, "caption");
-	NullCheck.notNullItems(lines, "lines");
-final MutableLines linesImpl = new MutableLinesImpl(lines);
-final MultilineEdit.Params params = createMultilineEditParams(context, linesImpl);
-return activateMultilineEdit(caption, linesImpl, params, enabled);
+	NullCheck.notNullItems(text, "text");
+final MutableMarkedLines content = new MutableMarkedLinesImpl(text);
+final MultilineEdit.Params params = createMultilineEditParams(context, content);
+return activateMultilineEdit(caption, content, params, enabled);
     }
 
-    public boolean activateMultilineEdit(String caption, String[] lines)
+    public boolean activateMultilineEdit(String caption, String[] text)
     {
 	NullCheck.notNull(caption, "caption");
-	NullCheck.notNullItems(lines, "lines");
-	return activateMultilineEdit(caption, lines, true);
+	NullCheck.notNullItems(text, "text");
+	return activateMultilineEdit(caption, text, true);
     }
 
-    public String getMultilineEditText()
+    public String getMultilineEditText(String lineSeparator)
     {
-	if (multilineEditLines  == null)
+	NullCheck.notNull(lineSeparator, "lineSeparator");
+	if (mlEditContent == null)
 	    return null;
-final int count = multilineEditLines.getLineCount();
+final int count = mlEditContent.getLineCount();
 	if (count == 0)
 	    return "";
-		final String lineSep = System.lineSeparator();
 	final StringBuilder b = new StringBuilder();
-	b.append(multilineEditLines.getLine(0));
+	b.append(mlEditContent.getLine(0));
 	for(int i = 1; i < count;i++)
-	    b.append(lineSep).append(multilineEditLines.getLine(i));
+	    b.append(lineSeparator).append(mlEditContent.getLine(i));
 	return new String(b);
     }
 
-        public String[] getMultilineEditLines()
+        public String[] getMultilineEditText()
     {
-	return multilineEditLines != null?multilineEditLines.getLines():new String[0];
+	return mlEditContent != null?mlEditContent .getLines():new String[0];
+    }
+
+    public MutableMarkedLines getMultilineEditContent()
+    {
+	return mlEditContent;
     }
 
     public boolean removeItemOnLine(int index)
@@ -500,6 +509,11 @@ final int count = multilineEditLines.getLineCount();
 		return true;
 	    }
 	return false;
+    }
+
+    public List<MultilineEditChangeListener> getMultilineEditChangeListeners()
+    {
+	return mlEditChangeListeners;
     }
 
     @Override public boolean onInputEvent(InputEvent event)
@@ -609,7 +623,7 @@ final int count = multilineEditLines.getLineCount();
 	int res = items.size();
 	if (!isMultilineEditActivated())
 	    return res + 1;
-	final int count = multilineEditLines.getLineCount();
+	final int count = mlEditContent.getLineCount();
 	res += count;
 	if (count == 0)
 	    ++res;
@@ -658,12 +672,12 @@ final int count = multilineEditLines.getLineCount();
 	{
 	    if (pos == 0)
 		return multilineEditCaption;
-	    if (pos < multilineEditLines.getLineCount() + 1)
-		return multilineEditLines.getLine(pos - 1);
+	    if (pos < mlEditContent.getLineCount() + 1)
+		return mlEditContent.getLine(pos - 1);
 	    return "";
 	}
-	if (pos < multilineEditLines.getLineCount())
-	    return multilineEditLines.getLine(pos);
+	if (pos < mlEditContent.getLineCount())
+	    return mlEditContent.getLine(pos);
 	return "";
     }
 

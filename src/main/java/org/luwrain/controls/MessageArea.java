@@ -53,7 +53,7 @@ public class MessageArea extends FormArea
 	public File getFile() { return this.file; }
     }
 
-    protected final MutableLinesImpl lines;
+    protected final MutableMarkedLinesImpl lines;
     protected int attachmentCounter = 0;
     protected final int maxLineLen;
 
@@ -64,7 +64,7 @@ public class MessageArea extends FormArea
 	NullCheck.notNullItems(params.text, "params.text");
 		NullCheck.notNullItems(params.attachments, "params.attachments");
 		this.maxLineLen = params.maxLineLen;
-	      this.lines = new MutableLinesImpl(params.text);
+	      this.lines = new MutableMarkedLinesImpl(params.text);
 	      addEdit(TO_NAME, context.getI18n().getStaticStr("MessageTo"), params.to);
 	      addEdit(CC_NAME, context.getI18n().getStaticStr("MessageCc"), params.cc);
 	      addEdit(SUBJECT_NAME, context.getI18n().getStaticStr("MessageSubject"), params.subject);
@@ -110,9 +110,10 @@ public class MessageArea extends FormArea
 	setHotPoint(0, 2);
     }
 
-    public String getText()
+    public String getText(String lineSeparator)
     {
-	return lines.getWholeText();
+	NullCheck.notNull(lineSeparator, "lineSeparator");
+	return lines.getText(lineSeparator);
     }
 
     public Attachment getAttachmentByLineIndex(int lineIndex)
