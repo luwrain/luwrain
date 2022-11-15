@@ -31,9 +31,24 @@ public final class EditUtils
 	NullCheck.notNull(editArea, "editArea");
 	NullCheck.notNull(pred, "pred");
 	NullCheck.notNull(accepting, "accepting");
+	blockBounds(editArea.getContent(), lineIndex, pred, accepting);
+    }
+
+    static public void blockBounds(FormArea formArea, int lineIndex, BiPredicate<String, LineMarks> pred, BiConsumer<MarkedLines, Integer> accepting)
+    {
+	NullCheck.notNull(formArea, "formArea");
+	NullCheck.notNull(pred, "pred");
+	NullCheck.notNull(accepting, "accepting");
+	blockBounds(formArea.getMultilineEditContent(), lineIndex, pred, accepting);
+    }
+
+    static public void blockBounds(MarkedLines lines, int lineIndex, BiPredicate<String, LineMarks> pred, BiConsumer<MarkedLines, Integer> accepting)
+    {
+	NullCheck.notNull(lines, "lines");
+	NullCheck.notNull(pred, "pred");
+	NullCheck.notNull(accepting, "accepting");
 	if (lineIndex < 0)
 	    throw new IllegalArgumentException("lineINdex can't be negative");
-	final MarkedLines lines = editArea.getContent();
 	if (lineIndex >= lines.getLineCount())
 	    return;
 	if (!pred.test(lines.getLine(lineIndex), lines.getLineMarks(lineIndex)))
