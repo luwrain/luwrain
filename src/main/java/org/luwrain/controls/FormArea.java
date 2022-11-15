@@ -19,9 +19,12 @@
 package org.luwrain.controls;
 
 import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.i18n.LangStatic;//FIXME:deleting
+import org.luwrain.controls.EditArea.ChangeListener;
+
+import static org.luwrain.core.DefaultEventResponse.*;
 
 /**
  * The area with a set of controls. {@code FormArea} lets the user to
@@ -55,7 +58,8 @@ public class FormArea  extends NavigationArea
     protected int nextAutoNameNum = 1;
 
     protected MutableLines multilineEditLines = null;
-        protected MultilineEdit multilineEdit = null;
+        protected MultilineEdit mlEdit = null;
+    protected List<ChangeListener> mlEditChangeListeners = new ArrayList<>();
     protected final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
     protected final RegionPointShift multilineEditRegionPoint = new RegionPointShift(regionPoint, 0, 0);
     protected String multilineEditCaption = "";
@@ -83,7 +87,7 @@ public class FormArea  extends NavigationArea
 	nextAutoNameNum = 1;
 	items.clear();
 	multilineEditCaption = "";
-	multilineEdit = null;
+	mlEdit = null;
 	multilineEditEnabled = true;
 	context.onAreaNewContent(this);
 	setHotPoint(0, 0);
@@ -386,7 +390,7 @@ public class FormArea  extends NavigationArea
 
     public boolean isMultilineEditActivated()
     {
-	return multilineEdit != null;
+	return mlEdit != null;
     }
 
     public boolean isMultilineEditEnabled()
@@ -426,7 +430,7 @@ public class FormArea  extends NavigationArea
 	    return false;
 	this.multilineEditCaption = caption;
 	this.multilineEditLines = lines;
-	this.multilineEdit = new MultilineEdit(params);
+	this.mlEdit = new MultilineEdit(params);
 	multilineEditEnabled = enabled;
 	updateItems();
 	context.onAreaNewContent(this);
@@ -534,11 +538,11 @@ final int count = multilineEditLines.getLineCount();
 	    if (item.checkboxState)
 	    {
 		item.checkboxState = false;
-		context.say(context.staticStr(LangStatic.NO));
+		context.setEventResponse(text(context.getStaticStr("No")));
 	    } else
 	    {
 		item.checkboxState = true;
-		context.say(context.staticStr(LangStatic.YES));
+		context.setEventResponse(text(context.getStaticStr("Yes")));
 	    }
 	    context.onAreaNewContent(this);
 	    context.onAreaNewHotPoint(this);
@@ -560,12 +564,11 @@ final int count = multilineEditLines.getLineCount();
 		return true;
 	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()))
 	    {
-		/*
-		if (org.luwrain.script.TextScriptUtils.runMultilineEditInputEventHook(context, EditArea.INPUT_EVENT_HOOK, this, multilineEdit, event, multilineEditRegionPoint))
-		    return true;
-		*/
-		if (multilineEdit.onInputEvent(event))
+		if (mlEdit.onInputEvent(event))
+		{
+		    notifyChangeListeners(event);
 	    return true;
+		}
 	    }
 	return super.onInputEvent(event);
     }
@@ -575,36 +578,16 @@ final int count = multilineEditLines.getLineCount();
 	NullCheck.notNull(event, "event");
 	if (event.getType() != SystemEvent.Type.REGULAR)
 	    return super.onSystemEvent(event);
-	//Insert command for a uniref
-
-	/*
-	if (event.getCode() == EnvironmentEvent.Code.INSERT && (event instanceof InsertEvent))
-	{
-	    final int index = getHotPointY();
-	    if (index >= 0 && index < items.size() &&
-		items.get(index).type == Type.UNIREF)
-	    {
-		final InsertEvent insertEvent = (InsertEvent)event;
-		final RegionContent data = insertEvent.getData();
-		if (data.isEmpty())
-		    return false;
-		final UniRefInfo uniRefInfo = context.getUniRefInfo(data.strings()[0]);
-		if (uniRefInfo == null)
-		    return false;
-		items.get(index).uniRefInfo = uniRefInfo;
-		context.onAreaNewContent(this);
-		return true;
-	    }
-	}
-	*/
-
 	for(Item i: items)
 	    if (i.isEnabledEdit() && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		i.onSystemEvent(event))
 		return true;
 	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
-	    multilineEdit.onSystemEvent(event))
+	    mlEdit.onSystemEvent(event))
+	{
+	    notifyChangeListeners(event);
 	    return true;
+	}
 	return super.onSystemEvent(event);
     }
 
@@ -616,7 +599,7 @@ final int count = multilineEditLines.getLineCount();
 		    i.onAreaQuery(query))
 		    return true;
 	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
-	    multilineEdit.onAreaQuery(query))
+	    mlEdit.onAreaQuery(query))
 	    return true;
 	return super.onAreaQuery(query);
     }
@@ -661,7 +644,7 @@ final int count = multilineEditLines.getLineCount();
 	    case LIST:
 		return item.caption + (item.selectedListItem != null?item.selectedListItem.toString():"");
 	    case CHECKBOX:
-		return item.caption + (item.checkboxState?context.staticStr(LangStatic.YES):context.staticStr(LangStatic.NO));
+		return item.caption + " " + context.getStaticStr(item.checkboxState?"Yes":"No");
 	    case STATIC:
 		return item.caption;
 	    default:
@@ -766,6 +749,10 @@ final int count = multilineEditLines.getLineCount();
     public interface ListChoosing
     {
 	Object chooseFormListItem(Area area, String formItemName, Object currentSelected);
+    }
+
+    protected void notifyChangeListeners(Event event)
+    {
     }
 
     protected final class Item implements EmbeddedEditLines
