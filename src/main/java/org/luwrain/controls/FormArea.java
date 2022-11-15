@@ -56,6 +56,11 @@ public class FormArea  extends NavigationArea
 	void onEditChange(FormArea formArea, MarkedLines lines, HotPoint hotPoint);
     }
 
+        public interface MultilineEditUpdating
+    {
+	boolean editUpdate(MutableMarkedLines lines, HotPointControl hotPoint);
+    }
+
     protected final ControlContext context;
     protected final List<Item> items = new ArrayList<>();
     protected String name = "";
@@ -64,8 +69,8 @@ public class FormArea  extends NavigationArea
     protected MutableMarkedLines mlEditContent = null;
         protected MultilineEdit mlEdit = null;
     protected List<MultilineEditChangeListener> mlEditChangeListeners = new ArrayList<>();
-    protected final HotPointShift multilineEditHotPoint = new HotPointShift(this, 0, 0);
-    protected final RegionPointShift multilineEditRegionPoint = new RegionPointShift(regionPoint, 0, 0);
+    protected final HotPointShift mlEditHotPoint = new HotPointShift(this, 0, 0);
+    //protected final RegionPointShift mlEditRegionPoint = new RegionPointShift(regionPoint, 0, 0);
     protected String multilineEditCaption = "";
     protected boolean multilineEditEnabled = true;//FIXME:
 
@@ -413,7 +418,7 @@ public class FormArea  extends NavigationArea
 	NullCheck.notNull(lines, "lines");
 	final MultilineEdit.Params params = new MultilineEdit.Params();
 	params.context = context;
-	params.model = new EditUtils.CorrectorChangeListener(new MultilineEditTranslator(lines, multilineEditHotPoint)){
+	params.model = new EditUtils.CorrectorChangeListener(new MultilineEditTranslator(lines, mlEditHotPoint)){
 		@Override public void onMultilineEditChange()
 		{
 		    context.onAreaNewContent(FormArea.this);
@@ -456,6 +461,21 @@ return activateMultilineEdit(caption, content, params, enabled);
 	NullCheck.notNull(caption, "caption");
 	NullCheck.notNullItems(text, "text");
 	return activateMultilineEdit(caption, text, true);
+    }
+
+    public boolean updateMultilineEdit(MultilineEditUpdating updating)
+    {
+	NullCheck.notNull(updating, "updating");
+	if (mlEditContent == null)
+	    throw new IllegalStateException("Multiline edit not activated");
+	if (!updating.editUpdate(mlEditContent, mlEditHotPoint))
+	{
+	    redraw();
+return false;
+	}
+	redraw();
+	//FIXME:notifyChangeListeners();
+return true;
     }
 
     public String getMultilineEditText(String lineSeparator)
@@ -751,13 +771,13 @@ final int count = mlEditContent.getLineCount();
 	int offset = items.size();
 	if (multilineEditHasCaption())
 	    ++offset;
-	multilineEditHotPoint.setOffsetY(offset);
-		multilineEditRegionPoint.setOffsetY(offset);
+	mlEditHotPoint.setOffsetY(offset);
+	//mlEditRegionPoint.setOffsetY(offset);
     }
 
     protected boolean isMultilineEditCovering(int x, int y)
     {
-	return x >= multilineEditHotPoint.offsetX() && y >= multilineEditHotPoint.offsetY();
+	return x >= mlEditHotPoint.offsetX() && y >= mlEditHotPoint.offsetY();
     }
 
     public interface ListChoosing
