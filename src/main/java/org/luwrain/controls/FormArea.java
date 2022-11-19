@@ -53,7 +53,7 @@ public class FormArea  extends NavigationArea
 
     public interface MultilineEditChangeListener
     {
-	void onEditChange(FormArea formArea, MarkedLines lines, HotPoint hotPoint);
+	void onEditChange(FormArea formArea, Event event, MarkedLines lines, HotPoint hotPoint);
     }
 
         public interface MultilineEditUpdating
@@ -471,11 +471,30 @@ return activateMultilineEdit(caption, content, params, enabled);
 	if (!updating.editUpdate(mlEditContent, mlEditHotPoint))
 	{
 	    redraw();
-return false;
+	    return false;
 	}
 	redraw();
-	//FIXME:notifyChangeListeners();
-return true;
+	notifyChangeListeners(null);
+	return true;
+    }
+
+        public HotPoint getMultilineEditHotPoint()
+    {
+	return mlEditHotPoint;
+    }
+
+    public boolean isHotPointInMultilineEdit()
+    {
+	return isPointInMultilineEdit(getHotPointX(), getHotPointY());
+    }
+
+        public boolean isPointInMultilineEdit(int x, int y)
+    {
+	if (x < 0)
+	    throw new IllegalArgumentException("x can't be negative");
+	if (y < 0)
+	    throw new IllegalArgumentException("y can't be negative");
+	return x >= mlEditHotPoint.getOffsetX() && y >= mlEditHotPoint.getOffsetY();
     }
 
     public String getMultilineEditText(String lineSeparator)
@@ -493,7 +512,7 @@ final int count = mlEditContent.getLineCount();
 	return new String(b);
     }
 
-        public String[] getMultilineEditText()
+    public String[] getMultilineEditText()
     {
 	return mlEditContent != null?mlEditContent .getLines():new String[0];
     }
@@ -596,7 +615,7 @@ final int count = mlEditContent.getLineCount();
 		i.enabled && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		i.onInputEvent(event))
 		return true;
-	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()))
+	if (isMultilineEditEnabled() && isHotPointInMultilineEdit())
 	    {
 		if (mlEdit.onInputEvent(event))
 		{
@@ -616,7 +635,7 @@ final int count = mlEditContent.getLineCount();
 	    if (i.isEnabledEdit() && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		i.onSystemEvent(event))
 		return true;
-	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
+	if (isMultilineEditEnabled() && isHotPointInMultilineEdit() &&
 	    mlEdit.onSystemEvent(event))
 	{
 	    notifyChangeListeners(event);
@@ -632,7 +651,7 @@ final int count = mlEditContent.getLineCount();
 	    if (i.isEnabledEdit() && i.edit.isPosCovered(getHotPointX(), getHotPointY()) &&
 		    i.onAreaQuery(query))
 		    return true;
-	if (isMultilineEditEnabled() && isMultilineEditCovering(getHotPointX(), getHotPointY()) &&
+	if (isMultilineEditEnabled() && isHotPointInMultilineEdit() &&
 	    mlEdit.onAreaQuery(query))
 	    return true;
 	return super.onAreaQuery(query);
@@ -775,10 +794,6 @@ final int count = mlEditContent.getLineCount();
 	//mlEditRegionPoint.setOffsetY(offset);
     }
 
-    protected boolean isMultilineEditCovering(int x, int y)
-    {
-	return x >= mlEditHotPoint.offsetX() && y >= mlEditHotPoint.offsetY();
-    }
 
     public interface ListChoosing
     {
@@ -787,6 +802,8 @@ final int count = mlEditContent.getLineCount();
 
     protected void notifyChangeListeners(Event event)
     {
+	for(MultilineEditChangeListener l: this.mlEditChangeListeners)
+	    l.onEditChange(this, event, mlEditContent, mlEditHotPoint);
     }
 
     protected final class Item implements EmbeddedEditLines

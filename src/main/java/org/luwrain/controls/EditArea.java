@@ -173,6 +173,18 @@ this.changeListeners.addAll(listeners);
 	return content.getLines();
     }
 
+        public String getText(String lineSeparator)
+    {
+	if (content.getLineCount() == 0)
+	    return "";
+	final StringBuilder b = new StringBuilder();
+	b.append(content.getLine(0));
+	for(int i = 1;i < content.getLineCount();i++)
+	    b.append(lineSeparator).append(content.getLine(i));
+	return new String(b);
+    }
+
+
     public void setText(String[] lines)
     {
 	NullCheck.notNullItems(lines, "lines");

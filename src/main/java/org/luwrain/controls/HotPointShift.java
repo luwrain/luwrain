@@ -22,17 +22,20 @@ import org.luwrain.core.*;
 
 public class HotPointShift implements HotPointControl
 {
-    private HotPointControl control;
-    private int offsetX;
-    private int offsetY;
+    protected final HotPointControl control;
+    private int offsetX = 0;
+    private int offsetY = 0;
 
-    public HotPointShift(HotPointControl control,
-			 int offsetX, int offsetY)
+    public HotPointShift(HotPointControl control, int offsetX, int offsetY)
     {
+	NullCheck.notNull(control, "control");
+	if (offsetX < 0)
+	    throw new IllegalArgumentException("offsetX can't be negative");
+	if (offsetY < 0)
+	    throw new IllegalArgumentException("offsetY can't be negative");
 	this.control = control;
 	this.offsetX = offsetX;
 	this.offsetY = offsetY;
-	NullCheck.notNull(control, "control");
     }
 
     @Override public void beginHotPointTrans()
@@ -67,23 +70,20 @@ public class HotPointShift implements HotPointControl
 	control.setHotPointY(value + offsetY);
     }
 
-    public int offsetX()
-    {
-	return offsetX;
-    }
+    public int getOffsetX() { return offsetX; }
+    public int getOffsetY() { return offsetY; }
 
     public void setOffsetX(int value)
     {
+	if (value < 0)
+	    throw new IllegalArgumentException("value can't be negative");
 	offsetX = value;
-    }
-
-    public int offsetY()
-    {
-	return offsetY;
     }
 
     public void setOffsetY(int value)
     {
+	if (value < 0)
+	    throw new IllegalArgumentException("value can't be negative");
 	offsetY = value;
     }
 }
