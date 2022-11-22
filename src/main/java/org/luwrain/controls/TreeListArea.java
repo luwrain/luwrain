@@ -51,7 +51,7 @@ public interface Model<E>
     }
 
     protected final TreeListArea.Model<E> model;
-    protected List<Frame> history = new ArrayList<>();
+    protected List<Frame<E>> history = new ArrayList<>();
     protected final List<E> content;
     protected LeafClickHandler leafClickHandler = null;
 
@@ -76,6 +76,13 @@ public interface Model<E>
 	if (history.isEmpty())
 	    history.add(new Frame<E>(model.getRoot()));
 	return fill(getLastFrame().parent);
+    }
+
+    public E opened()
+    {
+	if (history.isEmpty())
+	    return null;
+	return getLastFrame().parent;
     }
 
     protected boolean fill(E obj, E select)
@@ -104,7 +111,7 @@ public interface Model<E>
 
     @Override public boolean onListClick(ListArea area, int index, E item)
     {
-	if (model.isLeaf(item))
+	if (!model.isLeaf(item))
 	{
 	getLastFrame().selected = selected();
 	history.add(new Frame<E>(item));
@@ -182,41 +189,9 @@ static abstract    protected class Appearance<E> extends ListUtils.DefaultAppear
 	abstract public boolean isLeaf(E e);
 	@Override public void announceItem(E e, Set<Flags> flags)
 	{
-	    if (isLeaf(e))
+	    if (!isLeaf(e))
 		context.setEventResponse(listItem(Sounds.ATTENTION, e.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
 		context.setEventResponse(listItem(e.toString(), Suggestions.LIST_ITEM));
 	}
     }
-
-    /*
-    static public class Adapter implements ListArea.Model<Object>
-    {
-	protected final TreeArea.Model treeModel;
-	protected Object opened;
-	protected final ArrayList<Object> items = new ArrayList<>();
-	public Adapter(TreeArea.Model treeModel)
-	{
-	    NullCheck.notNull(treeModel, "treeModel");
-	    this.treeModel = treeModel;
-	    this.opened = treeModel.getRoot();
-	    refresh();
-	}
-	@Override public int getItemCount() { return items.size(); }
-	@Override public Object getItem(int index) { return items.get(index); }
-	@Override public void refresh()
-	{
-	    treeModel.beginChildEnumeration(opened);
-	    try {
-		final int count = treeModel.getChildCount(opened);
-		this.items.clear();
-		this.items.ensureCapacity(count);
-		for(int i = 0;i < count;i++)
-		    this.items.add(treeModel.getChild(opened, i));
-	    }
-	    finally {
-		treeModel.endChildEnumeration(opened);
-	    }
-	}
-    }
-    */
 }
