@@ -94,6 +94,37 @@ public final class ScriptUtils
 	return value.asBoolean();
 	    }
 
+            static public Number asNumber(Object obj)
+    {
+	if (obj == null || !(obj instanceof Value))
+	    return 0;
+	final Value value = (Value)obj;
+	if (value.isNull() || !value.isNumber())
+	    return null;
+	if (value.fitsInByte())
+	    return Byte.valueOf(value.asByte());
+	if (value.fitsInShort())
+	    return Short.valueOf(value.asShort());
+	if (value.fitsInInt())
+	    return Integer.valueOf(value.asInt());
+	if (value.fitsInLong())
+	    return Long.valueOf(value.asLong());
+	if (value.fitsInFloat())
+	    return Float.valueOf(value.asFloat());
+	return Double.valueOf(value.asDouble());
+    }
+
+    static public int asInt(Object obj)
+    {
+	if (obj == null || !(obj instanceof Value))
+	    return 0;
+	final Value value = (Value)obj;
+	if (value.isNull() || !value.isNumber())
+	    return 0;
+	return value.asInt();
+    }
+
+
     static public String asString(Object obj)
     {
 	if (obj == null || !(obj instanceof Value))
@@ -130,36 +161,6 @@ public final class ScriptUtils
 	return res;
     }
 
-        static public Number asNumber(Object obj)
-    {
-	if (obj == null || !(obj instanceof Value))
-	    return 0;
-	final Value value = (Value)obj;
-	if (value.isNull() || !value.isNumber())
-	    return null;
-	if (value.fitsInByte())
-	    return Byte.valueOf(value.asByte());
-	if (value.fitsInShort())
-	    return Short.valueOf(value.asShort());
-	if (value.fitsInInt())
-	    return Integer.valueOf(value.asInt());
-	if (value.fitsInLong())
-	    return Long.valueOf(value.asLong());
-	if (value.fitsInFloat())
-	    return Float.valueOf(value.asFloat());
-	return Double.valueOf(value.asDouble());
-    }
-
-
-    static public int asInt(Object obj)
-    {
-	if (obj == null || !(obj instanceof Value))
-	    return 0;
-	final Value value = (Value)obj;
-	if (value.isNull() || !value.isNumber())
-	    return 0;
-	return value.asInt();
-    }
 
     static public Proxy getArray(Object[] items)
     {
