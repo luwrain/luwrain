@@ -78,6 +78,14 @@ public interface Model<E>
 	return fill(getLastFrame().parent);
     }
 
+    public void clear()
+    {
+	history.clear();
+	content.clear();
+	reset(false);
+	refresh();
+    }
+
     public E opened()
     {
 	if (history.isEmpty())
