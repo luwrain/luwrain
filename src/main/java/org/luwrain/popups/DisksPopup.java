@@ -39,7 +39,9 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	File activate(Set<Flags> flags);
 	boolean isActivated();
 	boolean deactivate(Set<Flags> flags);
-	boolean poweroff(Set<DisksPopup.Flags> flags);
+default boolean poweroff(Set<Flags> flags) {
+return false;
+}
     }
 
     public interface Disks { Disk[] getDisks(Set<Flags> flags); }
@@ -64,7 +66,9 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	    switch(event.getSpecial())
 	    {
 	    case DELETE:
-		return deactivate();
+		if (event.withShift() && event.withControl())
+		return poweroff();
+		else return deactivate();
 	    case ENTER:
 		if (selected() == null)
 		    return false;
@@ -106,6 +110,34 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	}
 	return true;
     }
+
+protected boolean poweroff()
+    {
+	final Disk disk = selected();
+	if (disk == null)
+	    return false;
+	try {
+	    if (disk.isActivated()) {
+	    if (!disk.deactivate(EnumSet.noneOf(Flags.class))) {
+		luwrain.message("Устройство не может быть отключено", Luwrain.MessageType.ERROR);
+		return true;
+}
+}
+
+if (!disk.poweroff(EnumSet.noneOf(Flags.class)))
+		luwrain.message("Устройство не может быть остановлено", Luwrain.MessageType.ERROR);
+else refresh();
+		
+
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to poweroff a disk: " + e.getClass().getName() + ": " + e.getMessage());
+	    luwrain.message("Устройство не может быть остановлено", Luwrain.MessageType.ERROR);
+	}
+	return true;
+    }
+
 
     @Override public boolean onOk()
     {
