@@ -39,6 +39,7 @@ public class DisksPopup extends ListPopupBase<DisksPopup.Disk>
 	File activate(Set<Flags> flags);
 	boolean isActivated();
 	boolean deactivate(Set<Flags> flags);
+	boolean poweroff(Set<DisksPopup.Flags> flags);
     }
 
     public interface Disks { Disk[] getDisks(Set<Flags> flags); }

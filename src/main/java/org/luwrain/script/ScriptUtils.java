@@ -124,7 +124,6 @@ public final class ScriptUtils
 	return value.asInt();
     }
 
-
     static public String asString(Object obj)
     {
 	if (obj == null || !(obj instanceof Value))
@@ -160,7 +159,6 @@ public final class ScriptUtils
 	    res[i] = v.getArrayElement(i).asString();
 	return res;
     }
-
 
     static public Proxy getArray(Object[] items)
     {
