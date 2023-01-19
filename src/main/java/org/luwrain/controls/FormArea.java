@@ -91,6 +91,16 @@ public class FormArea  extends NavigationArea
 	this.name = name;
     }
 
+    public FormArea(ControlContext context, String name, int textLenLimit)
+    {
+	super(context);
+	NullCheck.notNull(context, "context");
+	NullCheck.notNull(name, "name");
+	this.context = context;
+	this.name = name;
+    }
+
+
     public void clear()
     {
 	nextAutoNameNum = 1;

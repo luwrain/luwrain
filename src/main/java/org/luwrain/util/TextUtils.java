@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -87,6 +87,13 @@ public final class TextUtils
 	}
 	res.add(new String(b));
 	return res.toArray(new String[res.size()]);
+    }
+
+    static public String notLonger(String str, int maxLength)
+    {
+	if (maxLength < 0)
+	    throw new IllegalArgumentException("maxLength can't be negative");
+	return str.length() <= maxLength?str:str.substring(0, maxLength);
     }
 
     static public String getLastWord(String text, int upToPos)
