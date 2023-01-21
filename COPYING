@@ -1,0 +1,11 @@
+The LUWRAIN binary distributions include packages created by various
+developers. They are obtained from Maven Central and not present in
+the distribution with source code.  Please refer the root pom.xml file
+to get the exact list of dependencies.
+
+The code created by the LUWRAIN developers for LUWRAIN itself is
+licensed under the terms of GNU General Public License ver. 3. The
+copy of the license is provided with this fil.
+
+The information about licenses for any third-party library can be
+obtained on Maven Central resources.
