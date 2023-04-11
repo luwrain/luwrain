@@ -163,6 +163,8 @@ public interface Settings
 	boolean getWithControl(boolean defValue);
 	boolean getWithShift(boolean defValue);
 	boolean getWithAlt(boolean defValue);
+	String getKeys(String defValue);
+	void setKeys(String value);
     }
 
     public interface MainMenuSection
