@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -23,6 +23,9 @@ import org.luwrain.core.*;
 
 public class MessageArea extends FormArea
 {
+    static public final int
+	DEFAULT_MAX_LINE_LEN = 80;
+
     static final String TO_NAME = "to",
 	CC_NAME = "cc",
 	SUBJECT_NAME = "subject",
@@ -32,7 +35,7 @@ public class MessageArea extends FormArea
     {
 	public ControlContext context = null;
 	public String name = "";
-	public int maxLineLen = 60;
+	public int maxLineLen = DEFAULT_MAX_LINE_LEN;
 		public String to = "", cc = "", subject = "";
 	public String[] text = new String[0];
 	public String[] attachments = new String[0];
