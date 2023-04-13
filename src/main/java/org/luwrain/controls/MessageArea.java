@@ -32,7 +32,7 @@ public class MessageArea extends FormArea
     {
 	public ControlContext context = null;
 	public String name = "";
-	public int maxLineLen = 10;
+	public int maxLineLen = 60;
 		public String to = "", cc = "", subject = "";
 	public String[] text = new String[0];
 	public String[] attachments = new String[0];
