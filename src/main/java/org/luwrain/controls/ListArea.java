@@ -55,7 +55,7 @@ public class ListArea<E>  implements Area, ClipboardTranslator.Provider, RegionT
 
     public interface ClickHandler<E>
     {
-	boolean onListClick(ListArea area, int index, E item);
+	boolean onListClick(ListArea<E> area, int index, E item);
     }
 
 public interface ClipboardSaver<E>

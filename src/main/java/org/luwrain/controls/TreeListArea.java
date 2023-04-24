@@ -117,7 +117,7 @@ public interface Model<E>
 	return fill(frame.parent, frame.selected);
     }
 
-    @Override public boolean onListClick(ListArea area, int index, E item)
+    @Override public boolean onListClick(ListArea<E> area, int index, E item)
     {
 	if (!model.isLeaf(item))
 	{
