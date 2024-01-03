@@ -543,7 +543,7 @@ final class LuwrainImpl implements Luwrain
 
     @Override public void runUiSafely(Runnable runnable)
     {
-	NullCheck.notNull(runnable, "runnable");
+	notNull(runnable, "runnable");
 	if (!core.isMainCoreThread())
 	    runInMainThread(runnable); else
 	    runnable.run();
@@ -756,7 +756,7 @@ final class LuwrainImpl implements Luwrain
 
     private void runInMainThread(Runnable runnable)
     {
-	NullCheck.notNull(runnable, "runnable");
+	notNull(runnable, "runnable");
 	core.enqueueEvent(new Core.RunnableEvent(()->{
 		    try {
 			runnable.run();

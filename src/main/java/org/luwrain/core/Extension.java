@@ -14,12 +14,7 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.core;
-
-//import org.luwrain.base.*;
-//import org.luwrain.core.*;
 
 public interface Extension
 {

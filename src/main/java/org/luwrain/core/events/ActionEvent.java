@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,21 +14,20 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.core.events;
 
 import org.luwrain.core.*;
+import static org.luwrain.core.NullCheck.*;
 
 public class ActionEvent extends SystemEvent
 {
-    private Action action;
+    final Action action;
 
     public ActionEvent(Action action)
     {
 	super(Code.ACTION);
+	notNull(action, "action");
 	this.action = action;
-	NullCheck.notNull(action, "action");
     }
 
     public Action getAction()
@@ -45,7 +44,7 @@ public class ActionEvent extends SystemEvent
     {
 	if (event == null || !(event instanceof ActionEvent))
 	    return false;
-	NullCheck.notNull(actionName, "actionName");
+	notNull(actionName, "actionName");
 	final ActionEvent actionEvent = (ActionEvent)event;
 	return actionEvent.getActionName().equals(actionName);
     }
