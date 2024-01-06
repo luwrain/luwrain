@@ -1,0 +1,21 @@
+#!/bin/bash -e
+
+./inaccessible.sh
+mv inaccessible.wav _inaccessible.wav
+sox -D _inaccessible.wav inaccessible.wav gain -25
+
+./copy.sh
+mv copy.wav _copy.wav
+sox -D _copy.wav copy.wav gain  -12.5
+
+./cut.sh
+mv cut.wav _cut.wav
+sox -D _cut.wav cut.wav gain  -12.5
+
+./list-item.sh
+mv list-item.wav _list-item.wav
+sox -D _list-item.wav list-item.wav gain  -15
+
+
+
+rm -f _*.wav
