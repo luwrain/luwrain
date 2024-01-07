@@ -1,4 +1,6 @@
 #!/bin/bash -e
+# Copyright 2024 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN Project, GPL v.3
 
 sox -D -n -b 32 -r 44100 -c 2 01.wav \
     synth 1 sin %-1 synth 1 sin fmod %-13 \

@@ -3,9 +3,9 @@
 # The LUWRAIN Project, GPL v.3
 
 sox -D -n -r 48000 -c 2 -b 32 01-1.wav \
-    synth 5 sin B4 sin B5 synth 5 sin fmod B5 fade l 0 1 1 gain -1 trim 0 0.1
+    synth 5 sin B4 sin B5 synth 5 sin fmod B4 fade l 0 1 1 gain -1 trim 0 0.1
 sox -D -n -r 48000 -c 2 -b 32 01-2.wav \
-    synth 5 sin B2 synth 5 sin fmod B1 fade l 0 1 1 gain -10 trim 0 0.1
+    synth 5 sin B1 synth 5 sin fmod B2 fade l 0 1 1 gain -10 trim 0 0.1
 sox -D 01-1.wav 01-2.wav -m 01.wav
 
 sox -D -n -r 48000 -c 2 -b 32 02-1.wav \

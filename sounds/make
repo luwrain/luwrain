@@ -1,20 +1,27 @@
 #!/bin/bash -e
+# Copyright 2024 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN Project, GPL v.3
 
 ./inaccessible.sh
 mv inaccessible.wav _inaccessible.wav
-sox -D _inaccessible.wav inaccessible.wav gain -25
+sox -D _inaccessible.wav inaccessible.wav gain -20
 
 ./copy.sh
 mv copy.wav _copy.wav
-sox -D _copy.wav copy.wav gain  -12.5
+sox -D _copy.wav copy.wav gain  -15
 
 ./cut.sh
 mv cut.wav _cut.wav
-sox -D _cut.wav cut.wav gain  -12.5
+sox -D _cut.wav cut.wav gain  -15
 
 ./list-item.sh
 mv list-item.wav _list-item.wav
-sox -D _list-item.wav list-item.wav gain  -15
+sox -D _list-item.wav list-item.wav gain  -20
+
+./bounds.sh
+mv bounds.wav _bounds.wav
+sox -D _bounds.wav bounds.wav gain -20
+
 
 
 
