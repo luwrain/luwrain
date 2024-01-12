@@ -16,18 +16,14 @@ sox -D _cut.wav cut.wav gain  -15
 
 ./list-item.sh
 mv list-item.wav _list-item.wav
-sox -D _list-item.wav list-item.wav gain  -15
+sox -D _list-item.wav list-item.wav gain  -12
 
 ./list-item-important.sh
 mv list-item-important.wav _list-item-important.wav
-sox -D _list-item-important.wav list-item-important.wav gain  -15
-
+sox -D _list-item-important.wav list-item-important.wav gain  -20
 
 ./bounds.sh
 mv bounds.wav _bounds.wav
 sox -D _bounds.wav bounds.wav gain -25
-
-
-
 
 rm -f _*.wav
