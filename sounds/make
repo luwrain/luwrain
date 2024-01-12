@@ -2,6 +2,11 @@
 # Copyright 2024 Michael Pozhidaev <msp@luwrain.org>
 # The LUWRAIN Project, GPL v.3
 
+./message.sh
+mv message.wav _message.wav
+sox -D _message.wav message.wav gain -15
+
+
 ./inaccessible.sh
 mv inaccessible.wav _inaccessible.wav
 sox -D _inaccessible.wav inaccessible.wav gain -25
