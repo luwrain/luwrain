@@ -4,7 +4,7 @@
 
 ./message.sh
 mv message.wav _message.wav
-sox -D _message.wav message.wav gain -15
+sox -D _message.wav message.wav gain -20
 
 
 ./inaccessible.sh
