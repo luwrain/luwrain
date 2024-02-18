@@ -28,6 +28,8 @@ import org.luwrain.i18n.*;
 import org.luwrain.speech.Channel;
 import org.luwrain.script.Hooks;
 
+import static org.luwrain.core.NullCheck.*;
+
 final class LuwrainImpl implements Luwrain
 {
     static private final String

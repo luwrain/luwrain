@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.luwrain</groupId>
     <artifactId>luwrain-parent</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.0-rc1</version>
   </parent>
   <artifactId>luwrain</artifactId>
   <name>LUWRAIN core</name>
