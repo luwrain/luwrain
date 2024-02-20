@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,15 +16,16 @@
 
 package org.luwrain.controls;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 
-@Ignore public class EditableListAreaTest extends Assert
+public class EditableListAreaTest
 {
-    @Test public void clear()
+    @Disabled @Test public void clear()
     {
 	final EditableListArea.Model<Object> model = new ListUtils.DefaultEditableModel<Object>(Object.class, new String[]{"1", "2", "3"});
 	final EditableListArea.Params params = new EditableListArea.Params();
@@ -37,7 +38,7 @@ import org.luwrain.core.queries.*;
 	assertTrue(model.getItemCount() == 0);
     }
 
-        @Test public void clearRegionNoRegionPoint()
+        @Disabled @Test public void clearRegionNoRegionPoint()
     {
 	for(int i = 0;i < 5;i++)
 	{
@@ -62,7 +63,7 @@ import org.luwrain.core.queries.*;
 
     //FIXME:deleteRegionWithRegionPoint
 
-            @Test public void cutNoRegionPoint()
+            @Disabled @Test public void cutNoRegionPoint()
     {
 	for(int i = 0;i < 5;i++)
 	{

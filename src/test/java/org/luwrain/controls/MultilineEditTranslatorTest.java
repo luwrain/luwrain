@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,16 +16,17 @@
 
 package org.luwrain.controls;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.controls.MultilineEdit.ModificationResult;
 
-@Ignore public class MultilineEditTranslatorTest extends Assert
+public class MultilineEditTranslatorTest
 {
-    @Test public void emptyLines()
+    @Disabled @Test public void emptyLines()
     {
 	final MutableLinesImpl lines = new MutableLinesImpl(new String[0]);
 	final TestingHotPointControl hotPoint = new TestingHotPointControl();
@@ -50,7 +51,7 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
 	assertTrue(hotPoint.y == 0);
     }
 
-    @Test public void emptyLinesSplitMerge()
+    @Disabled @Test public void emptyLinesSplitMerge()
     {
 	final MutableLinesImpl lines = new MutableLinesImpl(new String[0]);
 	final TestingHotPointControl hotPoint = new TestingHotPointControl();
@@ -69,7 +70,7 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
 	assertTrue(hotPoint.y == 0);
     }
 
-    @Test public void deleteChar3x3()
+    @Disabled @Test public void deleteChar3x3()
     {
 	final String[] initial = new String[]{"123", "456", "789"};
 	for(int x = 0;x < 3;++x)
@@ -98,7 +99,7 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
 		    }
     }
 
-    @Test public void insertChar3x3()
+    @Disabled @Test public void insertChar3x3()
     {
 	final String[] initial = new String[]{"123", "456", "789"};
 	for(int x = 0;x <= 3;++x)
@@ -126,7 +127,7 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
 		    }
     }
 
-    @Test public void linesMerge3x3()
+    @Disabled @Test public void linesMerge3x3()
     {
 	final String[] initial = new String[]{"123", "456", "789"};
 	for(int x = 0;x <= 3;++x)
@@ -158,7 +159,7 @@ import org.luwrain.controls.MultilineEdit.ModificationResult;
 		}
     }
 
-    @Test public void linesSplitting3x3()
+    @Disabled @Test public void linesSplitting3x3()
     {
 	final String[] initial = new String[]{"123", "456", "789"};
 	for(int x = 0;x <= 3;++x)

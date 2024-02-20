@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,12 +17,12 @@
 package org.luwrain.core.util;
 
 import java.io.*;
-
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.luwrain.core.*;
 
-public class RegistryExtractorTest extends Assert
+public class RegistryExtractorTest
 {
     @Test public void dirCreation() throws IOException
     {

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -18,13 +18,13 @@ package org.luwrain.core;
 
 import java.net.*;
 import java.io.*;
-
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 //FIXME:txt
 //FIXME:wav
 
-public class FileContentTypeTest extends Assert
+public class FileContentTypeTest
 {
     @Test public void defaultValues() throws Exception
     {

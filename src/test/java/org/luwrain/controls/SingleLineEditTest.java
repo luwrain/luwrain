@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,7 +16,8 @@
 
 package org.luwrain.controls;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -26,7 +27,7 @@ import org.luwrain.core.events.*;
 //FIXME:clearing region with region point
 //FIXME:paste
 
-public class SingleLineEditTest extends Assert
+public class SingleLineEditTest
 {
     @Test public void basics()
     {
