@@ -56,7 +56,7 @@ abstract class Base implements EventConsumer
     private EventResponse eventResponse = null;
 
     protected final WorkersTracking workers = new WorkersTracking();
-    final JobsTracking jobs = new JobsTracking(getObjForEnvironment(), objRegistry);
+    final JobsManager jobs = new JobsManager(getObjForEnvironment(), objRegistry);
     protected final I18nImpl i18n = new I18nImpl();
     final Speech speech;
     final org.luwrain.core.speech.SpeakingText speakingText = new org.luwrain.core.speech.SpeakingText(extensions);
@@ -90,7 +90,7 @@ abstract class Base implements EventConsumer
     }
 
     //True means the event is processed and there is no need to process it again;
-    abstract protected boolean onEvent(Event event);
+    abstract protected void onEvent(Event event);
         abstract protected void processEventResponse(EventResponse eventResponse);
         abstract void message(String text, Luwrain.MessageType messageType);
     abstract protected void announce(StopCondition stopCondition);
@@ -104,24 +104,17 @@ abstract class Base implements EventConsumer
 	    try {
 		this.announcement = null;
 		this.eventResponse = null;
-		final Event event = eventQueue.takeEvent();
+		final Event event = eventQueue.pickEvent();
 		if (event == null)
 		    continue;
-		if (!onEvent(event))
-		{
-		    eventQueue.onceAgain(event);
-		    continue;
-		}
+		onEvent(event);
 		event.markAsProcessed();
-		if (!eventQueue.hasAgain())
-		{
 		    if (this.eventResponse != null)
 		    {
 			processEventResponse(eventResponse);
 			this.eventResponse = null;
 		    } else
 			announce(stopCondition);
-		}
 	    }
 	    catch(Throwable e)
 	    {
@@ -341,6 +334,37 @@ abstract class Base implements EventConsumer
 	}
     }
 
+    static void error(String msg)
+    {
+	Log.error(LOG_COMPONENT, msg);
+    }
+
+    static void error(Throwable e, String comment)
+    {
+	Log.error(LOG_COMPONENT, "Exception " + e.getClass().getName());
+	if (e.getMessage() != null && !e.getMessage().isEmpty())
+	Log .error(LOG_COMPONENT, "Message: " + e.getMessage());
+	if (comment != null && !comment.isEmpty())
+	Log.error(LOG_COMPONENT, "Comment: " + comment);
+	final StringWriter w = new StringWriter();
+	final PrintWriter p = new PrintWriter(w);
+	e.printStackTrace(p);
+	w.flush();
+	p.flush();
+	for(String s: w.toString().split(System.lineSeparator(), -1))
+	    Log.error(LOG_COMPONENT, s);
+	System.err.println("An exception in LUWRAIN core of class " + e.getClass().getName());
+	if (e.getMessage() != null && !e.getMessage().isEmpty())
+	    System.err.println("Message: " + e.getMessage());
+	if (comment != null && !comment.isEmpty())
+	    System.err.println("Comment: " + comment);
+    }
+
+    static void error(Throwable e)
+    {
+	error(e, null);
+    }
+
     static protected final class MainStopCondition implements StopCondition
     {
 	private boolean shouldContinue = true;//FIXME:No static members
@@ -354,7 +378,7 @@ abstract class Base implements EventConsumer
 	{
 	    shouldContinue = false;
 	}
-	    }
+    }
 
     static class PopupStopCondition implements Base.StopCondition
     {

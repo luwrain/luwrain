@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -20,7 +20,9 @@ import java.util.*;
 
 import org.luwrain.core.*;
 
-public final class JobsTracking 
+import static org.luwrain.core.NullCheck.*;
+
+public final class JobsManager 
 {
     static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
 
@@ -28,20 +30,20 @@ public final class JobsTracking
     private final ObjRegistry objRegistry;
     public final List<Entry> entries = new ArrayList<>();
 
-    JobsTracking(Luwrain luwrain, ObjRegistry objRegistry)
+    JobsManager(Luwrain luwrain, ObjRegistry objRegistry)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(objRegistry, "objRegistry");
+	notNull(luwrain, "luwrain");
+	notNull(objRegistry, "objRegistry");
 	this.luwrain = luwrain;
 	this.objRegistry = objRegistry;
     }
 
     Job.Instance run(String name, String[] args, String dir, Job.Listener listener)
     {
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notNullItems(args, "args");
-	NullCheck.notNull(dir, "dir");
-	NullCheck.notNull(listener, "listener");
+	notEmpty(name, "name");
+	notNullItems(args, "args");
+	notNull(dir, "dir");
+	notNull(listener, "listener");
 	final Job job = objRegistry.getJob(name);
 	if (job == null)
 	    throw new IllegalArgumentException("No such job: " + name);
@@ -57,19 +59,20 @@ public final class JobsTracking
 
     private void onFinish(Entry entry)
     {
-	NullCheck.notNull(entry, "entry");
+	notNull(entry, "entry");
 	luwrain.runUiSafely(()->{
 		luwrain.playSound(entry.isFinishedSuccessfully()?Sounds.DONE:Sounds.ERROR);
 	    });
     }
 
-    public  final class Entry implements Job.Listener, Job.Instance
+    //Public for the control app
+    public final class Entry implements Job.Listener, Job.Instance
     {
 	private final Job.Listener listener;
 	private Job.Instance instance = null;
 	Entry(Job.Listener listener)
 	{
-	    NullCheck.notNull(listener, "listener");
+	    notNull(listener, "listener");
 	    this.listener = listener;
 	}
 
@@ -82,6 +85,7 @@ public final class JobsTracking
 	@Override public String[] getNativeState() { return instance.getNativeState(); }
 	@Override public void stop() { instance.stop(); }
 
+			@Override public void onInfoChange(Job.Instance instance, String type, List<String> value){}
 	@Override public void onStatusChange(Job.Instance instance)
 	{
 	    listener.onStatusChange(this);
@@ -106,7 +110,7 @@ public final class JobsTracking
 	}
 	void setInstance(Job.Instance instance)
 	{
-	    NullCheck.notNull(instance, "instance");
+	    notNull(instance, "instance");
 	    if (this.instance == null)
 		this.instance = instance;
 	}

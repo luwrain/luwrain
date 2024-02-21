@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -13,8 +13,6 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
 */
-
-//LWR_API 1.0
 
 package org.luwrain.core;
 
@@ -33,6 +31,7 @@ public interface Job extends ExtensionObject
     public interface Listener
     {
 	void onStatusChange(Instance instance);
+	void onInfoChange(Instance instance, String infoType, List<String> value);
 	void onSingleLineStateChange(Instance instance);
 	void onMultilineStateChange(Instance instance);
 	void onNativeStateChange(Instance instance);

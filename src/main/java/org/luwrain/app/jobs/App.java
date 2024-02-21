@@ -26,10 +26,10 @@ import org.luwrain.app.base.*;
 
 public final class App extends AppBase<Strings>
 {
-    final JobsTracking jobs;
+    final JobsManager jobs;
     private MainLayout mainLayout = null;
 
-    public App(JobsTracking jobs)
+    public App(JobsManager jobs)
     {
     super(Strings.NAME, Strings.class);
     NullCheck.notNull(jobs, "jobs");

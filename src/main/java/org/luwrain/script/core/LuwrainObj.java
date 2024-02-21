@@ -287,6 +287,7 @@ messageType = ConstObj.getMessageType(values[1].asString());
 	    finishedFunc = null; else
 	    finishedFunc = values[3];
 	final Job.Instance res = luwrain.newJob(name, args != null?args:new String[0], dir, EnumSet.noneOf(Luwrain.JobFlags.class), new Job.Listener(){
+		@Override public void onInfoChange(Job.Instance instance, String type, List<String> value){}
 		@Override public void onStatusChange(Job.Instance instance)
 		{
 		    NullCheck.notNull(instance, "instance");

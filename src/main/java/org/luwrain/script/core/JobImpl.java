@@ -25,6 +25,8 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 import org.luwrain.script.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 final class JobImpl implements Job
 {
     private final Luwrain luwrain;

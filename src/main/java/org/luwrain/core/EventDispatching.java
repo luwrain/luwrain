@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -53,13 +53,13 @@ abstract class EventDispatching extends Areas
     abstract protected void onBeforeEventProcessing();
     abstract protected void onAltX();
 
-    @Override protected boolean onEvent(Event event)
+    @Override protected void onEvent(Event event)
     {
 	try {
 	    if (event instanceof RunnableEvent)
 	    {
 		unsafeAreaOperation(()->((RunnableEvent)event).runnable.run());
-		return true;
+		return;
 	    }
 	    if (event instanceof CallableEvent)
 	    {
@@ -73,32 +73,37 @@ abstract class EventDispatching extends Areas
 			    throw new RuntimeException(e);
 			}
 		    });
-		return true;
+		return;
 	    }
 	    if (event instanceof InputEvent)
-		return onInputEvent(Keyboard.translate((InputEvent)event));
+	    {
+onInputEvent(Keyboard.translate((InputEvent)event));
+return;
+	    }
 	    if (event instanceof SystemEvent)
 	    {
 		final SystemEvent systemEvent = (SystemEvent)event;
 		if (systemEvent.getType() == null)
-		    return true;
+		    return;
 		switch(systemEvent.getType())
 		{
 		case REGULAR:
-		    return onSystemEvent(systemEvent);
+		    onSystemEvent(systemEvent);
+		    return;
 		case BROADCAST:
-		    return onBroadcastSystemEvent(systemEvent);
+		    onBroadcastSystemEvent(systemEvent);
+		    return;
 		default:
-		    return true;
+		    return;
 		}
 	    }
-	    return true;
+	    return;
 	}
 	catch (Throwable e)
 	{
 	    Log.error(LOG_COMPONENT, "an exception of class " + e.getClass().getName() + " has been thrown while processing of event of class " + event.getClass().getName() + "::" + e.getMessage());
 	    e.printStackTrace();
-	    return true;
+	    return;
 	}
     }
 
@@ -118,17 +123,17 @@ abstract class EventDispatching extends Areas
 	this.announcement = null;
     }
 
-    private boolean onInputEvent(InputEvent event)
+    private void onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	onBeforeEventProcessing();
 	if (systemHotKey(event))
-	    return true;
+	    return;
 	final Area activeArea = getActiveArea();
 	if (activeArea == null)
 	{
 	    noAppsMessage();
-	    return true;
+	    return;
 	}
 	unsafeAreaOperation(()->{
 		final Action[] actions = activeArea.getAreaActions();
@@ -146,7 +151,6 @@ abstract class EventDispatching extends Areas
 		    playSound(Sounds.EVENT_NOT_PROCESSED);
 		installIdleEvent();
 	    });
-	return true;
     }
 
     private void installIdleEvent()
@@ -207,9 +211,8 @@ abstract class EventDispatching extends Areas
 	return false;
     }
 
-    private boolean onSystemEvent(SystemEvent event)
+    private void onSystemEvent(SystemEvent event)
     {
-	NullCheck.notNull(event, "event");
 	final AtomicInteger res = new AtomicInteger();
 	unsafeAreaOperation(()->res.set(screenContentManager.onSystemEvent(event)));
 	switch(res.get())
@@ -222,14 +225,11 @@ abstract class EventDispatching extends Areas
 	    noAppsMessage();
 	    break;
 	}
-	return true;
     }
 
-    private boolean onBroadcastSystemEvent(SystemEvent event)
+    private void onBroadcastSystemEvent(SystemEvent event)
     {
-	NullCheck.notNull(event, "event");
 	apps.sendBroadcastEvent(event);
-	return true;
     }
 
     private void announceActiveApp()

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -18,14 +18,16 @@ package org.luwrain.core;
 
 import java.util.concurrent.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 final class EventQueue
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-    private final LinkedBlockingQueue<Event> events = new LinkedBlockingQueue<Event>(1024);
-    private Event again = null;
+    private final LinkedBlockingQueue<Event> events = new LinkedBlockingQueue<>(1024);
 
     void putEvent(Event e)
     {
+	notNull(e, "e");
 	try {
 	    events.put(e);
 	}
@@ -35,31 +37,8 @@ final class EventQueue
 	}
     }
 
-    boolean hasAgain()
+    Event pickEvent()
     {
-	return again != null;
-    }
-
-    void onceAgain(Event event)
-    {
-	if (event == null)
-	    throw new NullPointerException("event may not be null");
-	if (again != null)
-	{
-	    Log.warning(LOG_COMPONENT, "adding the event to try it once again but there is already one");
-	    return;
-	}
-	again = event;
-    }
-
-    Event takeEvent()
-    {
-	if (again != null)
-	{
-	    Event event = again;
-	    again = null;
-	    return event;
-	}
 	try {
 	    return events.take();
 	}
