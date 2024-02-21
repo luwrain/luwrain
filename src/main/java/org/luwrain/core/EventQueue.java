@@ -16,36 +16,42 @@
 
 package org.luwrain.core;
 
-import java.util.concurrent.*;
+import java.util.*;
 
+import static org.luwrain.core.Base.*;
 import static org.luwrain.core.NullCheck.*;
 
 final class EventQueue
 {
-    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
-    private final LinkedBlockingQueue<Event> events = new LinkedBlockingQueue<>(1024);
+    static private final int
+	MAX_LEN_LIMIT = 1024;
 
-    void putEvent(Event e)
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
+    private final LinkedList<Event> events = new LinkedList<>();
+
+    synchronized void putEvent(Event e)
     {
 	notNull(e, "e");
-	try {
-	    events.put(e);
-	}
-	catch (InterruptedException ex)
+	if (events.size() >= MAX_LEN_LIMIT)
 	{
-	    Thread.currentThread().interrupt();
+	    warn("exceeding max number of unprocessed  events in the events queue (" + MAX_LEN_LIMIT + ")");
+	    return;
 	}
+	    events.addLast(e);
+	    notify();
     }
 
-    Event pickEvent()
+    synchronized Event pickEvent()
     {
 	try {
-	    return events.take();
+	    while(events.isEmpty())
+	    wait();
 	}
-	catch (InterruptedException ex)
+	catch(InterruptedException e)
 	{
 	    Thread.currentThread().interrupt();
-	    return null;
 	}
-    }
+	final Event e = events.pollFirst();
+	return e;
+	    }
 }

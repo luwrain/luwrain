@@ -118,7 +118,7 @@ abstract class Base implements EventConsumer
 	    }
 	    catch(Throwable e)
 	    {
-		Log.error(LOG_COMPONENT, "event processing failure: " + e.getClass().getName() + ":" + e.getMessage());
+		error(e, "event processing failure");
 	    }
 	}
     }
@@ -328,8 +328,7 @@ abstract class Base implements EventConsumer
 	    //		getObjForEnvironment().crash((Exception)e); else
 	    {
 		getObjForEnvironment().message(e.getClass().getName() + ":" + e.getMessage(), Luwrain.MessageType.ERROR);
-		Log.error(LOG_COMPONENT, "unexpected exception in applications:" + e.getClass().getName() + ":" + e.getMessage());
-		e.printStackTrace();
+		error(e, "unexpected exception in apps");
 	    }
 	}
     }
@@ -363,6 +362,11 @@ abstract class Base implements EventConsumer
     static void error(Throwable e)
     {
 	error(e, null);
+    }
+
+    static void warn(String msg)
+    {
+	Log.warning(LOG_COMPONENT, msg);
     }
 
     static protected final class MainStopCondition implements StopCondition
