@@ -29,6 +29,7 @@ import org.luwrain.script.*;
 import org.luwrain.util.*;
 
 import static org.luwrain.script.ScriptUtils.*;
+import static org.luwrain.core.NullCheck.*;
 
 public final class LuwrainObj
 {
@@ -37,16 +38,17 @@ public final class LuwrainObj
     @HostAccess.Export public final PopupsObj popups;
 
     final Luwrain luwrain;
-    final Object syncObj = new Object();
+    final Object syncObj;
     final Map<String, List<Value> > hooks = new HashMap<>();
     final List<ExtensionObject> extObjs = new ArrayList<>();
     final I18nObj i18nObj;
     final List<Command> commands = new ArrayList<>();
 
-    LuwrainObj(Luwrain luwrain)
+    LuwrainObj(Luwrain luwrain, Object syncObj)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	this.syncObj = syncObj;
 	this.log = new LogObj(luwrain);
 	this.i18nObj = new I18nObj(luwrain);
 	this.popups = new PopupsObj(luwrain);

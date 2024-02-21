@@ -24,10 +24,12 @@ import org.graalvm.polyglot.*;
 import org.luwrain.core.*;
 import org.luwrain.util.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 public final class ScriptCore implements HookContainer, AutoCloseable
 {
     static private final String
-	LOG_COMPONENT = "script2";
+	LOG_COMPONENT = "script";
 
     private final Bindings bindings;
     private final Luwrain luwrain;
@@ -35,7 +37,7 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 
     public ScriptCore(Luwrain luwrain, Bindings bindings)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.bindings = bindings;
     }
@@ -53,7 +55,7 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 
     public void load (Reader reader) throws IOException
     {
-	NullCheck.notNull(reader, "reader");
+	notNull(reader, "reader");
 	final String lineSep = System.lineSeparator();
 	final StringBuilder b = new StringBuilder();
 	final BufferedReader r = new BufferedReader(reader);
@@ -64,28 +66,28 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 	    line = r.readLine();
 	}
 	final Module m = new Module(luwrain, bindings);
-	m.run(new String(b));
+	m.eval(new String(b));
 	modules.add(m);
     }
 
     public void load (File file) throws IOException
     {
-	NullCheck.notNull(file, "file");
+	notNull(file, "file");
 	final Module m = new Module(luwrain, bindings);
-	m.run(FileUtils.readTextFileSingleString(file, "UTF-8"));
+	m.eval(FileUtils.readTextFileSingleString(file, "UTF-8"));
 	modules.add(m);
     }
 
     public void load (ScriptFile scriptFile) throws IOException
     {
-	NullCheck.notNull(scriptFile, "scriptFile");
+	notNull(scriptFile, "scriptFile");
 	Log.debug(LOG_COMPONENT, "loading " + scriptFile.toString());
 	load(scriptFile.asFile());
     }
 
     @Override public boolean runHooks(String hookName, Luwrain.HookRunner runner)
     {
-	NullCheck.notEmpty(hookName, "hookName");
+	notEmpty(hookName, "hookName");
 	try {
 	    for(Module m: modules)
 		if (m.luwrainObj.hooks.containsKey(hookName))

@@ -16,6 +16,7 @@
 
 package org.luwrain.core;
 
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
@@ -48,6 +49,25 @@ public class ScriptAsyncTest
 	assertTrue(res.hasMember("then"));
     }
 
+        @Disabled @Test void completable()
+    {
+		    System.out.println("starting");
+            CompletableFuture<String> javaFuture = new CompletableFuture<>();
+            Value jsPromise = wrapPromise(c, javaFuture);
+            c.getBindings("js").putMember("myJsPromise", jsPromise);
+	    System.out.println("prepared");
+            final Value fn = c.eval("js", "" +
+                            "(async function () {" +
+                            "  console.log('pausing...');" +
+                            "  var foo = await myJsPromise;" +
+                            "  console.log('resumed with value ' + foo);" +
+                            "})");
+	    System.out.println("calling");
+            fn.execute();
+            javaFuture.complete("from Java");
+        }
+
+
     @BeforeEach void init()
     {
     	c = Context.newBuilder()
@@ -62,6 +82,23 @@ public class ScriptAsyncTest
     {
 	c.close();
 	c = null;
+    }
+
+static Value wrapPromise(Context context, CompletableFuture<String> javaFuture)
+    {
+        final Value global = context.getBindings("js");
+        final Value promiseConstructor = global.getMember("Promise");
+        return promiseConstructor.newInstance((ProxyExecutable) arguments -> {
+            final Value resolve = arguments[0], reject = arguments[1];
+	    		    System.out.println("Useful work");
+            javaFuture.whenComplete((result, ex) -> {
+                if (result != null) 
+                    resolve.execute(result); else
+                    reject.execute(ex);
+		System.out.println("final");
+            });
+            return null;
+        });
     }
 
     public interface Thenable {

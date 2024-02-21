@@ -20,19 +20,26 @@ import org.graalvm.polyglot.*;
 
 import org.luwrain.core.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 public final class Module implements AutoCloseable
 {
-    private final Bindings bindings;
+    final Context context;
+    final Object syncObj = new Object();
     private final Luwrain luwrain;
-    private Context context = null;
     final LuwrainObj luwrainObj;
 
     public Module(Luwrain luwrain, Bindings bindings)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.luwrainObj = new LuwrainObj(luwrain);
-	this.bindings = bindings;
+	this.luwrainObj = new LuwrainObj(luwrain, syncObj);
+	this.context = Context.newBuilder()
+	.allowExperimentalOptions(true)
+	.build();
+	this.context.getBindings("js").putMember("Luwrain", this.luwrainObj);
+	if (bindings != null)
+	    bindings.onBindings(context.getBindings("js"), luwrainObj.syncObj);
     }
 
     public Module(Luwrain luwrain )
@@ -40,43 +47,17 @@ public final class Module implements AutoCloseable
 	this(luwrain, null);
     }
 
-    public void run(String text)
-    {
-	close();
-	synchronized(luwrainObj.syncObj) {
-	    this.context = Context.newBuilder()
-	    .allowExperimentalOptions(true)
-	    //.option("js.nashorn-compat", "true"
-	    .build();
-	    context.getBindings("js").putMember("Luwrain", this.luwrainObj);
-	    if (bindings != null)
-		bindings.onBindings(context.getBindings("js"), luwrainObj.syncObj);
-	    context.eval("js", text);
-	}
-    }
-
     public Object eval(String exp)
     {
-	synchronized(luwrainObj.syncObj) {
-	    if (this.context == null)
-		this.context = Context.newBuilder()
-		.allowExperimentalOptions(true)
-		//.option("js.nashorn-compat", "true"
-		.build();
-	    context.getBindings("js").putMember("Luwrain", this.luwrainObj);
-	    if (bindings != null)
-		bindings.onBindings(context.getBindings("js"), luwrainObj.syncObj);
+	synchronized(syncObj) {
 	    return context.eval("js", exp);
 	}
     }
 
     @Override public void close()
     {
-	synchronized(luwrainObj.syncObj) {
-	    if (context == null)
-		return;
+	synchronized(syncObj) {
 	    context.close();
-	    context = null;
 	}
     }
 }
