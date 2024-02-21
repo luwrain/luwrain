@@ -95,7 +95,7 @@ public final class LuwrainObj
 	final String name = args[0].asString();
 	if (name.trim().isEmpty())
 	    return false;
-	commands.add(new CommandWrapper(module, name.trim(), args[1]));
+	commands.add(new CommandImpl(module, name.trim(), args[1]));
 	return true;
 	    }
 
@@ -129,7 +129,7 @@ public final class LuwrainObj
 	final String name = args[0].asString();
 	if (name.trim().isEmpty())
 	    return false;
-	extObjs.add(new ShortcutImpl(this, name.trim(), luwrain.getFileProperty(Luwrain.PROP_DIR_DATA), args[1]));
+	extObjs.add(new ShortcutImpl(module, name.trim(), luwrain.getFileProperty(Luwrain.PROP_DIR_DATA), args[1]));
 	return true;
 	    }
 

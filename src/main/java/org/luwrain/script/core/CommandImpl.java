@@ -25,13 +25,13 @@ import org.luwrain.core.*;
 
 import static org.luwrain.core.NullCheck.*;
 
-final class CommandWrapper implements Command
+final class CommandImpl implements Command
 {
     private final Module module;
     private final String name;
     private final Value func;
 
-    CommandWrapper(Module module, String name, Value func)
+    CommandImpl(Module module, String name, Value func)
     {
 	notNull(module, "module");
 	notEmpty(name, "name");

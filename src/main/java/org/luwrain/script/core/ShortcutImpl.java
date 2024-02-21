@@ -24,21 +24,23 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 
 import static org.luwrain.script.ScriptUtils.*;
+import static org.luwrain.core.NullCheck.*;
 
 final class ShortcutImpl implements Shortcut
 {
-    private final LuwrainObj luwrainObj;
+    private final Module module;
     private final String name;
     private final File dataDir;
     private final Value cons;
 
-    ShortcutImpl(LuwrainObj luwrainObj, String name, File dataDir, Value cons)
+    ShortcutImpl(Module module, String name, File dataDir, Value cons)
     {
-	NullCheck.notNull(luwrainObj, "luwrainObj");
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notNull(dataDir, "dateDir");
-	NullCheck.notNull(cons, "cons");
-	this.luwrainObj = luwrainObj;
+	notNull(module, "module");
+	notEmpty(name, "name");
+	notNull(dataDir, "dataDir");
+	notNull(cons, "cons");
+	//	this.luwrainObj = luwrainObj;
+	this.module = module;
 	this.name = name;
 	this.dataDir = dataDir;
 	this.cons = cons;
@@ -46,8 +48,8 @@ final class ShortcutImpl implements Shortcut
 
     @Override public Application[] prepareApp(String[] args)
     {
-	NullCheck.notNullItems(args, "args");
-	synchronized(luwrainObj.syncObj) {
+	notNullItems(args, "args");
+	synchronized(module.syncObj) {
 	    final Value newObj = cons.newInstance(ProxyArray.fromArray((Object[])args));
 	    if (newObj == null || newObj.isNull())
 		return null;
@@ -60,7 +62,7 @@ final class ShortcutImpl implements Shortcut
 	    switch(type.trim().toUpperCase())
 	    {
 	    case "SIMPLE":
-		return new Application[]{new org.luwrain.script.app.Simple(name, dataDir, newObj, luwrainObj.syncObj)};
+		return new Application[]{new org.luwrain.script.app.Simple(name, dataDir, newObj, module.syncObj)};
 	    default:
 		return null;
 	    }

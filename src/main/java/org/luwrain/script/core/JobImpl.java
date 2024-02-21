@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -25,14 +25,14 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 import org.luwrain.script.*;
 
-final class JobAdapter implements Job
+final class JobImpl implements Job
 {
     private final Luwrain luwrain;
     private final Object syncObj;
     private final String name;
     private final Value func;
 
-    JobAdapter(Luwrain luwrain, Object syncObj, String name, Value func)
+    JobImpl(Luwrain luwrain, Object syncObj, String name, Value func)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(syncObj, "syncObj");
