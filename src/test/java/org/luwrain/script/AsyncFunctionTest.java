@@ -51,7 +51,32 @@ public class AsyncFunctionTest
 	assertEquals("Testing value", finishedValue.get());
     }
 
-    @Test void consequent()
+        @Test void consequent()
+    {
+	final AtomicReference<CompletableFuture<Object>> f1 = new AtomicReference<>(null);
+		final AtomicReference<CompletableFuture<Object>> f2 = new AtomicReference<>(null);
+	final AtomicReference<String> finishedValue = new AtomicReference<>(null);
+	c.getBindings("js").putMember("f1", AsyncFunction.create(c, new Object(), (args, res)->f1.set(res)));
+		c.getBindings("js").putMember("f2", AsyncFunction.create(c, new Object(), (args, res)->f2.set(res)));
+	c.getBindings("js").putMember("finished", (ProxyExecutable)(args)->{ finishedValue.set(args[0].asString()); return null; });
+	final Value fn = c.eval("js", "" +
+				"(async function () {" +
+				"var foo1 = await f1(), foo2 = await f2();" +
+				"finished(foo1 + foo2);" +
+				"})");
+	fn.execute();
+		assertNull(finishedValue.get());
+				assertNotNull(f1.get());
+		assertNull(f2.get());
+	f1.get().complete("a");
+			assertNotNull(f1.get());
+		assertNotNull(f2.get());
+			f2.get().complete("b");
+				assertEquals("ab", finishedValue.get());
+    }
+
+
+    @Test void middle()
     {
 	final AtomicReference<CompletableFuture<Object>> f = new AtomicReference<>(null);
 	final AtomicReference<String> finishedValue = new AtomicReference<>(null);
