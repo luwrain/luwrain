@@ -33,7 +33,7 @@ public final class Module implements AutoCloseable
     {
 	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.luwrainObj = new LuwrainObj(luwrain, syncObj);
+	this.luwrainObj = new LuwrainObj(luwrain, syncObj, this);
 	this.context = Context.newBuilder()
 	.allowExperimentalOptions(true)
 	.build();
@@ -51,6 +51,13 @@ public final class Module implements AutoCloseable
     {
 	synchronized(syncObj) {
 	    return context.eval("js", exp);
+	}
+    }
+
+    public void execFuncValue(Value func)
+    {
+	synchronized(syncObj){
+		    func.execute();
 	}
     }
 

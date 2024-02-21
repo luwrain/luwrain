@@ -25,24 +25,26 @@ public interface AsyncFunction
 {
     void run(Value[] args, CompletableFuture<Object> res);
 
-    static public Object create(Context context, AsyncFunction f)
+    static public Object create(Context context, Object syncObj, AsyncFunction f)
     {
 	return (ProxyExecutable)(args)->{
 	    final CompletableFuture<Object> res = new CompletableFuture<>();
 	    f.run(args, res);
-	    return wrapCompletableFuture(context, res);
+	    return wrapCompletableFuture(context, res, syncObj);
 	};
     }
 
-    static public Value wrapCompletableFuture(Context context, CompletableFuture<Object> f)
+    static public Value wrapCompletableFuture(Context context, CompletableFuture<Object> f, Object syncObj)
     {
         final Value promiseConstructor = context.getBindings("js").getMember("Promise");
         return promiseConstructor.newInstance((ProxyExecutable) arguments -> {
             final Value resolve = arguments[0], reject = arguments[1];
             f.whenComplete((result, ex) -> {
-                if (result != null) 
-                    resolve.execute(result); else
+		    synchronized(syncObj){
+			if (result != null) 
+			    resolve.execute(result); else
                     reject.execute(ex);
+		    }
             });
             return null;
         });

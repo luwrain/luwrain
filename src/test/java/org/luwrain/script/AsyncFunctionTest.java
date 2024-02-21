@@ -35,7 +35,7 @@ public class AsyncFunctionTest
     {
 	final AtomicReference<CompletableFuture<Object>> f = new AtomicReference<>(null);
 	final AtomicReference<String> finishedValue = new AtomicReference<>(null);
-	c.getBindings("js").putMember("f", AsyncFunction.create(c, (args, res)->f.set(res)));
+	c.getBindings("js").putMember("f", AsyncFunction.create(c, new Object(), (args, res)->f.set(res)));
 	c.getBindings("js").putMember("finished", (ProxyExecutable)(args)->{ finishedValue.set(args[0].asString()); return null; });
 	c.getBindings("js").putMember("check", (ProxyExecutable)(args)->{ assertNull(f.get()); return null; });
 	final Value fn = c.eval("js", "" +
@@ -45,6 +45,30 @@ public class AsyncFunctionTest
 				"finished(foo);" +
 				"})");
 	fn.execute();
+	assertNotNull(f.get());
+	assertNull(finishedValue.get());
+	f.get().complete("Testing value");
+	assertEquals("Testing value", finishedValue.get());
+    }
+
+    @Test void consequent()
+    {
+	final AtomicReference<CompletableFuture<Object>> f = new AtomicReference<>(null);
+	final AtomicReference<String> finishedValue = new AtomicReference<>(null);
+	final AtomicBoolean middleCheck = new AtomicBoolean(false);
+	c.getBindings("js").putMember("f", AsyncFunction.create(c, new Object(), (args, res)->f.set(res)));
+	c.getBindings("js").putMember("finished", (ProxyExecutable)(args)->{ finishedValue.set(args[0].asString()); return null; });
+	c.getBindings("js").putMember("check", (ProxyExecutable)(args)->{ assertNull(f.get()); return null; });
+	c.getBindings("js").putMember("middleCheck", (ProxyExecutable)(args)->{ middleCheck.set(true); return null; });
+	final Value fn = c.eval("js", "" +
+				"(async function () {" +
+				"check();" +
+				"var foo = await f();" +
+				"finished(foo);" +
+				"})");
+	fn.execute();
+	c.eval("js", "middleCheck();");
+	assertTrue(middleCheck.get());
 	assertNotNull(f.get());
 	assertNull(finishedValue.get());
 	f.get().complete("Testing value");
@@ -66,7 +90,7 @@ public class AsyncFunctionTest
 	    });
 	assertTrue(called.get());
 	assertNotNull(res);
-	asserTrue(res.hasMember("then"));
+	assertTrue(res.hasMember("then"));
     }
 
     @BeforeEach void init()

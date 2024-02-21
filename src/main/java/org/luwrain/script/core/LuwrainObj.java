@@ -39,16 +39,20 @@ public final class LuwrainObj
 
     final Luwrain luwrain;
     final Object syncObj;
+    final Module module;
     final Map<String, List<Value> > hooks = new HashMap<>();
     final List<ExtensionObject> extObjs = new ArrayList<>();
     final I18nObj i18nObj;
     final List<Command> commands = new ArrayList<>();
 
-    LuwrainObj(Luwrain luwrain, Object syncObj)
+    LuwrainObj(Luwrain luwrain, Object syncObj, Module module)
     {
 	notNull(luwrain, "luwrain");
+	notNull(syncObj, "syncObj");
+	notNull(module, "module");
 	this.luwrain = luwrain;
 	this.syncObj = syncObj;
+	this.module = module;
 	this.log = new LogObj(luwrain);
 	this.i18nObj = new I18nObj(luwrain);
 	this.popups = new PopupsObj(luwrain);
@@ -91,7 +95,7 @@ public final class LuwrainObj
 	final String name = args[0].asString();
 	if (name.trim().isEmpty())
 	    return false;
-	commands.add(new CommandWrapper(this, name.trim(), args[1]));
+	commands.add(new CommandWrapper(module, name.trim(), args[1]));
 	return true;
 	    }
 

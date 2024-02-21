@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -23,27 +23,27 @@ import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 final class CommandWrapper implements Command
 {
-    private final LuwrainObj luwrainObj;
+    private final Module module;
     private final String name;
     private final Value func;
 
-    CommandWrapper(LuwrainObj luwrainObj, String name, Value func)
+    CommandWrapper(Module module, String name, Value func)
     {
-	NullCheck.notNull(luwrainObj, "luwrainObj");
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notNull(func, "func");
-	this.luwrainObj = luwrainObj;
+	notNull(module, "module");
+	notEmpty(name, "name");
+	notNull(func, "func");
+	this.module = module;
 	this.name = name;
 	this.func = func;
     }
 
     @Override public void onCommand(Luwrain luwrain)
     {
-	synchronized(luwrainObj.syncObj) {
-	    func.execute(null, new Object[0]);
-	}
+	module.execFuncValue(func);
     }
 
     @Override public String getName()
