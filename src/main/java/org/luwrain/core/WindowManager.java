@@ -49,7 +49,7 @@ final class WindowManager
 	visibleObjs = windows.getObjects();
 	for(int i = 0;i < visibleObjs.length;i++)
 	{
-	    final Window win = (Window)visibleObjs[i];
+	    final Tile win = (Tile)visibleObjs[i];
 	    if (win != null && win.area != null)
 		drawWindow(win);
 	}
@@ -65,7 +65,7 @@ final class WindowManager
 	}
 	for(int i = 0;i < visibleObjs.length;i++)
 	{
-	    Window win = (Window)visibleObjs[i];
+	    final Tile win = (Tile)visibleObjs[i];
 	    if (win != null &&
 		win.area != null &&
 		win.area == area)
@@ -85,7 +85,7 @@ final class WindowManager
 	    return -1;
 	for(int i = 0;i < visibleObjs.length;i++)
 	{
-	    Window win = (Window)visibleObjs[i];
+	    final Tile win = (Tile)visibleObjs[i];
 	    if (win == null || win.area == null || win.area != area)
 		continue;
 	    if (win.height <= 1)
@@ -101,7 +101,7 @@ final class WindowManager
 	    return -1;
 	for(int i = 0;i < visibleObjs.length;i++)
 	{
-	    Window win = (Window)visibleObjs[i];
+	    final Tile win = (Tile)visibleObjs[i];
 	    if (win == null || win.area == null || win.area != area)
 		continue;
 	    if (win.height <= 1)
@@ -136,7 +136,7 @@ final class WindowManager
 		markWindowsInvisible(windows, obj);
 		return;
 	    }
-	    Window win = (Window)windows.getLeafObject(obj);
+	    final Tile win = (Tile)windows.getLeafObject(obj);
 	    if (win == null)
 		return;
 	    if (win.popup)
@@ -153,7 +153,7 @@ final class WindowManager
 	final Object obj1 = windows.getBranch1(obj), obj2 = windows.getBranch2(obj);
 	if (windows.isLeaf(obj1))
 	{
-	    final Window win = (Window)windows.getLeafObject(obj1);
+	    final Tile win = (Tile)windows.getLeafObject(obj1);
 	    if (win.popup)
 	    {
 		calculateGeomWithPopup(windows, win, obj2, left, top, right, bottom);
@@ -162,7 +162,7 @@ final class WindowManager
 	}
 	if (windows.isLeaf(obj2))
 	{
-	    final Window win = (Window)windows.getLeafObject(obj2);
+	    final Tile win = (Tile)windows.getLeafObject(obj2);
 	    if (win.popup)
 	    {
 		calculateGeomWithPopup(windows, win, obj1, left, top, right, bottom);
@@ -218,7 +218,7 @@ final class WindowManager
 	}
     }
 
-    private void calculateGeomWithPopup(TileManager windows, Window win,
+    private void calculateGeomWithPopup(TileManager windows, Tile win,
 					Object anotherNode,
 					int left, int top,
 					int right, int bottom)
@@ -317,7 +317,7 @@ win.area == null)
 	    calculateGeomImpl(windows, anotherNode, anotherLeft, anotherTop, anotherRight, anotherBottom);
     }
 
-    private void calculateScrolling(Window win)
+    private void calculateScrolling(Tile win)
     {
 	if (win == null || win.area == null)
 	    return;
@@ -333,7 +333,7 @@ win.area == null)
 	    return;
 	if (windows.isLeaf(obj))
 	{
-	    Window win = (Window)windows.getLeafObject(obj);
+	    final Tile win = (Tile)windows.getLeafObject(obj);
 	    win.markInvisible();
 	    return;
 	}
@@ -341,7 +341,7 @@ win.area == null)
 	markWindowsInvisible(windows, windows.getBranch2(obj));
     }
 
-    private void drawWindow(Window win)
+    private void drawWindow(Tile win)
     {
 	if (win == null || win.area == null)
 	    return;
@@ -369,7 +369,7 @@ win.area == null)
 	}
     }
 
-    private String getProperLinePart(Window win, String line)
+    private String getProperLinePart(Tile win, String line)
     {
 	if (win == null || line == null || line.isEmpty())
 	    return "";

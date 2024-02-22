@@ -82,26 +82,26 @@ boolean isPopupActive()
 	if (activeArea == null)
 	    return;
 	Object[] objs = getWindows().getObjects();
-	Window[] windows = new Window[objs.length];
+	final Tile[] tiles = new Tile[objs.length];
 	for(int i = 0;i < objs.length;++i)
-	    windows[i] = (Window)objs[i];
-	if (windows == null || windows.length <= 0)
+	    tiles[i] = (Tile)objs[i];
+	if (tiles == null || tiles.length <= 0)
 	{
 	    activePopup = isPopupOpened();
 	    return;
 	}
 	int index;
-	for(index = 0;index < windows.length;index++)
-	    if (windows[index].area == activeArea)
+	for(index = 0;index < tiles.length;index++)
+	    if (tiles[index].area == activeArea)
 		break;
 	index++;
-	if (index >= windows.length)
+	if (index >= tiles.length)
 	    index = 0;
-	activePopup = windows[index].popup;
+	activePopup = tiles[index].popup;
 	if (!activePopup)
 	{
-	    apps.setActiveAreaOfApp(windows[index].app, windows[index].area);
-	    apps.setActiveApp(windows[index].app);
+	    apps.setActiveAreaOfApp(tiles[index].app, tiles[index].area);
+	    apps.setActiveApp(tiles[index].app);
 	}
     }
 
@@ -114,7 +114,7 @@ windows = constructLayoutOfApp(activeApp); else
 	    windows = new TileManager();
 	if (isPopupOpened())
 	{
-	    final Window popupWindow = new Window(apps.getAppOfLastPopup(), apps.getEffectiveAreaOfLastPopup(), apps.getPositionOfLastPopup());
+	    final Tile popupWindow = new Tile(apps.getAppOfLastPopup(), apps.getEffectiveAreaOfLastPopup(), apps.getPositionOfLastPopup());
 	    switch(popupWindow.popupPos)
 	    {
 	    case BOTTOM:
@@ -157,25 +157,25 @@ windows = constructLayoutOfApp(activeApp); else
 	switch(layout.getLayoutType())
 	{
 	case AreaLayout.SINGLE:
-	    tiles.createSingle(new Window(app, layout.getArea1()));
+	    tiles.createSingle(new Tile(app, layout.getArea1()));
 	    break;
 	case AreaLayout.LEFT_RIGHT:
-	    tiles.createLeftRight(new Window(app, layout.getArea1()),
-				  new Window(app, layout.getArea2()));
+	    tiles.createLeftRight(new Tile(app, layout.getArea1()),
+				  new Tile(app, layout.getArea2()));
 	    break;
 	case AreaLayout.TOP_BOTTOM:
-	    tiles.createTopBottom(new Window(app, layout.getArea1()),
-				  new Window(app, layout.getArea2()));
+	    tiles.createTopBottom(new Tile(app, layout.getArea1()),
+				  new Tile(app, layout.getArea2()));
 	    break;
 	case AreaLayout.LEFT_TOP_BOTTOM:
-	    tiles.createLeftTopBottom(new Window(app, layout.getArea1()),
-				      new Window(app, layout.getArea2()),
-				      new Window(app, layout.getArea3()));
+	    tiles.createLeftTopBottom(new Tile(app, layout.getArea1()),
+				      new Tile(app, layout.getArea2()),
+				      new Tile(app, layout.getArea3()));
 	    break;
 	case AreaLayout.LEFT_RIGHT_BOTTOM:
-	    tiles.createLeftRightBottom(new Window(app, layout.getArea1()),
-					new Window(app, layout.getArea2()),
-					new Window(app, layout.getArea3()));
+	    tiles.createLeftRightBottom(new Tile(app, layout.getArea1()),
+					new Tile(app, layout.getArea2()),
+					new Tile(app, layout.getArea3()));
 	    break;
 	}
 	return tiles;

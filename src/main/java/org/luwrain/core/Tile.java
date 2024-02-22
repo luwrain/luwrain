@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import static org.luwrain.core.NullCheck.*;
 
-final class Window
+final class Tile
 {
     final Application app;
     final Area area;
@@ -27,7 +27,7 @@ final class Window
     int x = 0, y = 0, width = 0, height = 0;//With title bar;
     int scrolledVert = 0, scrolledHoriz = 0;
 
-    Window(Application app, Area area)
+    Tile(Application app, Area area)
     {
 	notNull(app, "app");
 	notNull(area, "area");
@@ -37,7 +37,7 @@ final class Window
 	this.popupPos = null;
     }
 
-    Window(Application app, Area area, Popup.Position popupPos)
+    Tile(Application app, Area area, Popup.Position popupPos)
     {
 	notNull(app, "app");
 	notNull(area, "area");

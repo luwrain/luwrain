@@ -41,160 +41,162 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 
     static final class LeafNode extends Node
     {
-	final Object obj;
-	LeafNode(Window obj)
+	final Tile tile;
+	LeafNode(Tile tile)
 	{
-	    this.obj = obj;
+	    this.tile = tile;
 	}
     }
 
     private Node nodes;
 
-    void createSingle(Window obj)
+    void createSingle(Tile tile)
     {
-	nodes = new LeafNode(obj);
+	this.nodes = new LeafNode(tile);
     }
 
-    void createLeftRight(Window obj1, Window obj2)
+    void createLeftRight(Tile tile1, Tile tile2)
     {
-	LeafNode node1 = new LeafNode(obj1);
-	LeafNode node2 = new LeafNode(obj2);
-	nodes = new CompositeNode(Orientation.HORIZ, node1, node2);
+	final LeafNode
+	node1 = new LeafNode(tile1),
+	node2 = new LeafNode(tile2);
+	this.nodes = new CompositeNode(Orientation.HORIZ, node1, node2);
     }
 
-    void createTopBottom(Window obj1, Window obj2)
+    void createTopBottom(Tile tile1, Tile tile2)
     {
-	LeafNode node1 = new LeafNode(obj1);
-	LeafNode node2 = new LeafNode(obj2);
-	nodes = new CompositeNode(Orientation.VERT, node1, node2);
+	final LeafNode
+	node1 = new LeafNode(tile1),
+node2 = new LeafNode(tile2);
+	this.nodes = new CompositeNode(Orientation.VERT, node1, node2);
     }
 
-    void createLeftTopBottom(Window obj1,
-				    Window obj2, 
-				    Window obj3)
+    void createLeftTopBottom(Tile tile1, Tile tile2, Tile tile3)
     {
-	LeafNode node1 = new LeafNode(obj1);
-	LeafNode node2 = new LeafNode(obj2);
-	LeafNode node3 = new LeafNode(obj3);
-	CompositeNode rightSide = new CompositeNode(Orientation.VERT, node2, node3);
-	nodes = new CompositeNode(Orientation.HORIZ, node1, rightSide);
+	final LeafNode
+	node1 = new LeafNode(tile1),
+	node2 = new LeafNode(tile2),
+node3 = new LeafNode(tile3);
+	final CompositeNode rightSide = new CompositeNode(Orientation.VERT, node2, node3);
+	this.nodes = new CompositeNode(Orientation.HORIZ, node1, rightSide);
     }
 
-    void createLeftRightBottom(Window obj1,
-				    Window obj2, 
-				    Window obj3)
+    void createLeftRightBottom(Tile tile1, Tile tile2, Tile tile3)
     {
-	LeafNode node1 = new LeafNode(obj1);
-	LeafNode node2 = new LeafNode(obj2);
-	LeafNode node3 = new LeafNode(obj3);
-	CompositeNode top = new CompositeNode(Orientation.HORIZ, node1, node2);
-	nodes = new CompositeNode(Orientation.VERT, top, node3);
+	final LeafNode
+	node1 = new LeafNode(tile1),
+	node2 = new LeafNode(tile2),
+node3 = new LeafNode(tile3);
+	final CompositeNode top = new CompositeNode(Orientation.HORIZ, node1, node2);
+	this.nodes = new CompositeNode(Orientation.VERT, top, node3);
     }
 
-    void createHorizontally(Window[] objects)
+    void createHorizontally(Tile[] tiles)
     {
-	if (objects == null || objects.length <= 0)
+	if (tiles == null || tiles.length == 0)
 	{
-	    nodes = null;
+	    this.nodes = null;
 	    return;
 	}
-	if (objects.length == 1)
+	if (tiles.length == 1)
 	{
-	    nodes = new LeafNode(objects[0]);
+	    this.nodes = new LeafNode(tiles[0]);
 	    return;
 	}
-	LeafNode node1 = new LeafNode(objects[0]);
-	LeafNode node2 = new LeafNode(objects[1]);
+	final LeafNode
+	node1 = new LeafNode(tiles[0]),
+node2 = new LeafNode(tiles[1]);
 	CompositeNode node = new CompositeNode(Orientation.HORIZ, node1, node2);
-	for(int i = 2;i < objects.length;i++)
-	    node = new CompositeNode(Orientation.HORIZ, node, new LeafNode(objects[i]));
-	nodes = node;
+	for(int i = 2;i < tiles.length;i++)
+	    node = new CompositeNode(Orientation.HORIZ, node, new LeafNode(tiles[i]));
+	this.nodes = node;
     }
 
-        void createVertically(Window[] objects)
+        void createVertically(Tile tiles[])
     {
-	if (objects == null || objects.length <= 0)
+	if (tiles == null || tiles.length == 0)
 	{
-	    nodes = null;
+	    this.nodes = null;
 	    return;
 	}
-	if (objects.length == 1)
+	if (tiles.length == 1)
 	{
-	    nodes = new LeafNode(objects[0]);
+	    this.nodes = new LeafNode(tiles[0]);
 	    return;
 	}
-	LeafNode node1 = new LeafNode(objects[0]);
-	LeafNode node2 = new LeafNode(objects[1]);
+	final LeafNode
+	node1 = new LeafNode(tiles[0]),
+node2 = new LeafNode(tiles[1]);
 	CompositeNode node = new CompositeNode(Orientation.VERT, node1, node2);
-	for(int i = 2;i < objects.length;i++)
-	    node = new CompositeNode(Orientation.VERT, node, new LeafNode(objects[i]));
+	for(int i = 2;i < tiles.length;i++)
+	    node = new CompositeNode(Orientation.VERT, node, new LeafNode(tiles[i]));
 	nodes = node;
     }
 
-    void addTop(Window o)
+    void addTop(Tile tile)
     {
-	if (o == null)
+	if (tile == null)
 	    return;
 	if (nodes == null)
 	{
-	    nodes = new LeafNode(o);
+	    this.nodes = new LeafNode(tile);
 	    return;
 	}
-	nodes = new CompositeNode(Orientation.VERT, new LeafNode(o), nodes);
+	this.nodes = new CompositeNode(Orientation.VERT, new LeafNode(tile), nodes);
     }
 
-    void addBottom(Window o)
+    void addBottom(Tile tile)
     {
-	if (o == null)
+	if (tile == null)
 	    return;
 	if (nodes == null)
 	{
-	    nodes = new LeafNode(o);
+	    this.nodes = new LeafNode(tile);
 	    return;
 	}
-	nodes = new CompositeNode(Orientation.VERT, nodes, new LeafNode(o));
+	this.nodes = new CompositeNode(Orientation.VERT, nodes, new LeafNode(tile));
     }
 
-    void addLeftSide(Window o)
+    void addLeftSide(Tile tile)
     {
-	if (o == null)
+	if (tile == null)
 	    return;
 	if (nodes == null)
 	{
-	    nodes = new LeafNode(o);
+	    this.nodes = new LeafNode(tile);
 	    return;
 	}
-	nodes = new CompositeNode(Orientation.HORIZ, nodes, new LeafNode(o));
+	this.nodes = new CompositeNode(Orientation.HORIZ, nodes, new LeafNode(tile));
     }
 
-    void addRightSide(Window o)
+    void addRightSide(Tile tile)
     {
-	if (o == null)
+	if (tile == null)
 	    return;
 	if (nodes == null)
 	{
-	    nodes = new LeafNode(o);
+	    this.nodes = new LeafNode(tile);
 	    return;
 	}
-	nodes = new CompositeNode(Orientation.HORIZ, new LeafNode(o), nodes);
+	this.nodes = new CompositeNode(Orientation.HORIZ, new LeafNode(tile), nodes);
     }
 
-    void replace(Object obj, TileManager replaceWith)
+    void replace(Tile tile, TileManager replaceWith)
     {
-	if (obj == null || replaceWith == null || replaceWith.nodes == null)
+	if (tile == null || replaceWith == null || replaceWith.nodes == null)
 	    return;
-	nodes = replaceImpl(nodes, obj, replaceWith.nodes);
+	this.nodes = replaceImpl(nodes, tile, replaceWith.nodes);
     }
 
-    private Node replaceImpl(Node node, Object obj, Node replaceWith)
+    private Node replaceImpl(Node node, Tile tile, Node replaceWith)
     {
 	if (node == null)
 	    return null;
 	if (node instanceof LeafNode leaf)
-	    return leaf.obj == obj?replaceWith:leaf;
-	CompositeNode composite = (CompositeNode)node;
-	composite.node1 = replaceImpl(composite.node1, obj, replaceWith);
-	composite.node2 = replaceImpl(composite.node2, obj, replaceWith);
+	    return leaf.tile == tile?replaceWith:leaf;
+	final CompositeNode composite = (CompositeNode)node;
+	composite.node1 = replaceImpl(composite.node1, tile, replaceWith);
+	composite.node2 = replaceImpl(composite.node2, tile, replaceWith);
 	return composite;
     }
 
@@ -214,8 +216,8 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	    return new Object[0];
 	if (node instanceof LeafNode leaf)
 	{
-	    Object[] o = new Object[1];
-	    o[0] = leaf.obj;
+	    Tile[] o = new Tile[1];
+	    o[0] = leaf.tile;
 	    return o;
 	}
 	CompositeNode composite = (CompositeNode)node;
@@ -247,7 +249,7 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	if (node instanceof LeafNode leaf)
 	{
 	    LeafNode leafNode = (LeafNode)node;
-	    it.onTile(leafNode.obj);
+	    it.onTile(leafNode.tile);
 	    return;
 	}
 	//Should never goes here;
@@ -322,6 +324,6 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	if (o == null)
 	    return null;
 	LeafNode n = (LeafNode)o;
-	return n.obj;
+	return n.tile;
     }
 }
