@@ -17,15 +17,11 @@
 package org.luwrain.core;
 
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.io.*;
-import java.nio.file.*;
 
 import org.luwrain.core.events.*;
-import org.luwrain.core.queries.*;
 import org.luwrain.i18n.*;
-//import org.luwrain.core.ExtensionsManager.LoadedExtension;
 import org.luwrain.popups.*;
 import org.luwrain.core.listening.*;
 import org.luwrain.script.Hooks;
@@ -574,52 +570,6 @@ onNewAreasLayout();
 	setAreaIntroduction();
     }
 
-    void setActiveAreaIface(Luwrain instance, Area area)
-    {
-	notNull(instance, "instance");
-	notNull(area, "area");
-	mainCoreThreadOnly();
-	final Application app = interfaces.findApp(instance);
-	if (app == null)
-	    throw new IllegalArgumentException("Provided an unknown application instance");
-	apps.setActiveAreaOfApp(app, area);
-	if (apps.isAppActive(app) && !screenContentManager.isPopupActive())
-	    setAreaIntroduction();
-	onNewAreasLayout();
-    }
-
-    public void onAreaNewHotPointIface(Luwrain instance, Area area)
-    {
-	notNull(area, "area");
-	mainCoreThreadOnly();
-	if (screenContentManager == null)//FIXME:
-	    return;
-	final Area effectiveArea = getEffectiveAreaFor(instance, area);
-	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
-	    return;
-	if (effectiveArea == screenContentManager.getActiveArea())
-	    windowManager.redrawArea(effectiveArea);
-    }
-
-    void onAreaNewContentIface(Luwrain instance, Area area)
-    {
-	notNull(area, "area");
-	mainCoreThreadOnly();
-	final Area effectiveArea = getEffectiveAreaFor(instance, area);
-	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
-	    return;
-	windowManager.redrawArea(effectiveArea);
-    }
-
-    void onAreaNewNameIface(Luwrain instance, Area area)
-    {
-	NullCheck.notNull(area, "area");
-	mainCoreThreadOnly();
-	final Area effectiveArea = getEffectiveAreaFor(instance, area);
-	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
-	    return;
-	windowManager.redrawArea(effectiveArea);
-    }
 
     void onAreaNewBackgroundSound(Luwrain instance, Area area)
     {

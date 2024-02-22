@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -143,7 +143,7 @@ public class Search implements Area
 	    {
 		hotPointX += pos;
 		expression = lookFor;
-		core.onAreaNewHotPointIface(null, this);
+		core.windowManager.redraw();
 		core.message(getLine(hotPointY)/*.substring(hotPointX)*/, Luwrain.MessageType.NONE);
 		return true;
 	    }
@@ -161,7 +161,7 @@ public class Search implements Area
 	    hotPointY = i;
 	    core.message(line/*.substring(pos)*/, Luwrain.MessageType.NONE);
 	    expression = lookFor;
-	    core.onAreaNewHotPointIface(null, this);
+	    core.windowManager.redraw();
 	    return true;
 	}
 	core.playSound(Sounds.BLOCKED);

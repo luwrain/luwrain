@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,7 +19,7 @@ package org.luwrain.core;
 import org.luwrain.core.events.*;
 import org.luwrain.util.*;
 
-class ScreenContentManager
+final class ScreenContentManager
 {
     static public final int NO_APPLICATIONS = 0;
     static public final int EVENT_NOT_PROCESSED = 1;
@@ -41,18 +41,6 @@ class ScreenContentManager
 	final Area activeArea = apps.getEffectiveActiveAreaOfActiveApp();
 	return activeArea != null?apps.getActiveApp():null;
     }
-
-    /*
-    int onInputEvent(KeyboardEvent event)
-    {
-	final Area activeArea = getActiveArea();
-	if (activeArea == null)
-	    return NO_APPLICATIONS;
-	if (isActiveAreaBlockedByPopup())
-	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
-	return activeArea.onInputEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
-    }
-    */
 
     int onSystemEvent(SystemEvent event)
     {

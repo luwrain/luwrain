@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,24 +16,25 @@
 
 package org.luwrain.core;
 
-class WindowManager 
-{
-    private static final int MIN_RANGE_HORIZONTAL = 5;
-    private static final int MIN_RANGE_VERTICAL = 2;
-    private static final int MAX_TOP_BOTTOM_POPUP_HEIGHT = 7;
+import static org.luwrain.core.NullCheck.*;
 
-    private Interaction interaction;
-    private ScreenContentManager screenContentManager;
+final class WindowManager 
+{
+    static private final int
+	MIN_RANGE_HORIZONTAL = 5,
+	MIN_RANGE_VERTICAL = 2,
+	MAX_TOP_BOTTOM_POPUP_HEIGHT = 7;
+
+    private final Interaction interaction;
+    private final ScreenContentManager screenContentManager;
     private Object[] visibleObjs = null;
 
     WindowManager(Interaction interaction, ScreenContentManager screenContentManager)
     {
+	notNull(interaction, "interace");
+	notNull(screenContentManager, "screenContentManager");
 	this.interaction = interaction;
 	this.screenContentManager = screenContentManager;
-	if (interaction == null)
-	    throw new NullPointerException("interaction may not be null");
-	if (screenContentManager == null)
-	    throw new NullPointerException("screenContentManager may not be null");
     }
 
     void redraw()
@@ -347,7 +348,6 @@ win.area == null)
 	    return;
 	if (win.width < MIN_RANGE_HORIZONTAL || win.height < MIN_RANGE_VERTICAL)
 	    return;
-	//	Log.debug("screen", "window (" + win.x + "," + win.y + ")-(" + (win.x + win.width - 1) + "," + (win.y + win.height - 1) + ")");
 	calculateScrolling(win);
 	Area area = win.area;
 	if (win.scrolledVert < 0 || win.scrolledVert >= area.getLineCount())

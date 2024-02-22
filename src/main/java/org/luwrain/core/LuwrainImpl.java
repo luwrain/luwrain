@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,7 +17,6 @@
 package org.luwrain.core;
 
 import java.util.*;
-import java.util.concurrent.atomic.*;
 import java.util.concurrent.*;
 import java.io.*;
 import java.nio.file.*;
@@ -25,9 +24,9 @@ import java.nio.file.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.i18n.*;
-import org.luwrain.speech.Channel;
 import org.luwrain.script.Hooks;
 
+import static org.luwrain.core.Base.*;
 import static org.luwrain.core.NullCheck.*;
 
 final class LuwrainImpl implements Luwrain
@@ -258,21 +257,39 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(area, "area");
 	core.mainCoreThreadOnly();
-	core.onAreaNewHotPointIface(this, area);
+	//	core.onAreaNewHotPointIface(this, area);
+
+	//		notNull(area, "area");
+	//	mainCoreThreadOnly();
+	//	if (core.screenContentManager == null)//FIXME:
+	//	    return;
+	final Area effectiveArea = core.getEffectiveAreaFor(this, area);
+	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
+	    return;
+	if (effectiveArea == core.screenContentManager.getActiveArea())
+	    core.windowManager.redrawArea(effectiveArea);
+
     }
 
     @Override public void onAreaNewContent(Area area)
     {
 	NullCheck.notNull(area, "area");
 	core.mainCoreThreadOnly();
-	core.onAreaNewContentIface(this, area);
-    }
+		final Area effectiveArea = core.getEffectiveAreaFor(this, area);
+	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
+	    return;
+	core.windowManager.redrawArea(effectiveArea);
+	    }
 
     @Override public void onAreaNewName(Area area)
     {
 	NullCheck.notNull(area, "area");
 	core.mainCoreThreadOnly();
-	core.onAreaNewNameIface(this, area);
+
+		final Area effectiveArea = core.getEffectiveAreaFor(this, area);
+	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
+	    return;
+	core.windowManager.redrawArea(effectiveArea);
     }
 
     @Override public void onAreaNewBackgroundSound(Area area)
@@ -504,9 +521,15 @@ final class LuwrainImpl implements Luwrain
 
     @Override public void setActiveArea(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	core.mainCoreThreadOnly();
-	core.setActiveAreaIface(this, area);
+	final Application app = core.interfaces.findApp(this);
+	if (app == null)
+	    throw new IllegalArgumentException("Trying to use an illegal Luwrain obj");
+	core.apps.setActiveAreaOfApp(app, area);
+	if (core.apps.isAppActive(app) && !core.screenContentManager.isPopupActive())
+	    core.setAreaIntroduction();
+	core.onNewAreasLayout();
     }
 
     @Override public String staticStr(LangStatic id)
