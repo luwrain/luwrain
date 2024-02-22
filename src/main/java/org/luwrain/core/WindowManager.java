@@ -120,8 +120,7 @@ final class WindowManager
 	calculateGeomImpl(windows, windows.getRoot(), 0, 1, screenWidth - 1, screenHeight - 2);//One line at top and one line at bottom are reserved for notifications and messages;
     }
 
-    private void calculateGeomImpl(TileManager windows,
-				   Object obj,
+    private void calculateGeomImpl(TileManager windows, Object obj,
 				   int left,
 				   int top,
 				   int right,

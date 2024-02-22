@@ -24,9 +24,6 @@ final class TileManager
 
     static abstract class Node
     {
-	enum Type {LEAF, COMPOSITE};
-	final Type type;
-    Node(Type type) { this.type = type; }
     }
 
     static final class CompositeNode extends Node
@@ -36,7 +33,6 @@ final class TileManager
 int leafCount = 0;
 CompositeNode(Orientation orientation, Node node1, Node node2)
 	{
-	    super(Type.COMPOSITE);
 	    this.orientation = orientation;
 	    this.node1 = node1;
 	    this.node2 = node2;
@@ -46,37 +42,36 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
     static final class LeafNode extends Node
     {
 	final Object obj;
-	LeafNode(Object obj)
+	LeafNode(Window obj)
 	{
-	    super(Type.LEAF);
 	    this.obj = obj;
 	}
     }
 
     private Node nodes;
 
-    void createSingle(Object obj)
+    void createSingle(Window obj)
     {
 	nodes = new LeafNode(obj);
     }
 
-    void createLeftRight(Object obj1, Object obj2)
+    void createLeftRight(Window obj1, Window obj2)
     {
 	LeafNode node1 = new LeafNode(obj1);
 	LeafNode node2 = new LeafNode(obj2);
 	nodes = new CompositeNode(Orientation.HORIZ, node1, node2);
     }
 
-    void createTopBottom(Object obj1, Object obj2)
+    void createTopBottom(Window obj1, Window obj2)
     {
 	LeafNode node1 = new LeafNode(obj1);
 	LeafNode node2 = new LeafNode(obj2);
 	nodes = new CompositeNode(Orientation.VERT, node1, node2);
     }
 
-    void createLeftTopBottom(Object obj1,
-				    Object obj2, 
-				    Object obj3)
+    void createLeftTopBottom(Window obj1,
+				    Window obj2, 
+				    Window obj3)
     {
 	LeafNode node1 = new LeafNode(obj1);
 	LeafNode node2 = new LeafNode(obj2);
@@ -85,9 +80,9 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	nodes = new CompositeNode(Orientation.HORIZ, node1, rightSide);
     }
 
-    void createLeftRightBottom(Object obj1,
-				    Object obj2, 
-				    Object obj3)
+    void createLeftRightBottom(Window obj1,
+				    Window obj2, 
+				    Window obj3)
     {
 	LeafNode node1 = new LeafNode(obj1);
 	LeafNode node2 = new LeafNode(obj2);
@@ -96,7 +91,7 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	nodes = new CompositeNode(Orientation.VERT, top, node3);
     }
 
-    void createHorizontally(Object[] objects)
+    void createHorizontally(Window[] objects)
     {
 	if (objects == null || objects.length <= 0)
 	{
@@ -116,7 +111,7 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	nodes = node;
     }
 
-        void createVertically(Object[] objects)
+        void createVertically(Window[] objects)
     {
 	if (objects == null || objects.length <= 0)
 	{
@@ -136,7 +131,7 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	nodes = node;
     }
 
-    void addTop(Object o)
+    void addTop(Window o)
     {
 	if (o == null)
 	    return;
@@ -148,7 +143,7 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	nodes = new CompositeNode(Orientation.VERT, new LeafNode(o), nodes);
     }
 
-    void addBottom(Object o)
+    void addBottom(Window o)
     {
 	if (o == null)
 	    return;
@@ -160,7 +155,7 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	nodes = new CompositeNode(Orientation.VERT, nodes, new LeafNode(o));
     }
 
-    void addLeftSide(Object o)
+    void addLeftSide(Window o)
     {
 	if (o == null)
 	    return;
@@ -172,7 +167,7 @@ CompositeNode(Orientation orientation, Node node1, Node node2)
 	nodes = new CompositeNode(Orientation.HORIZ, nodes, new LeafNode(o));
     }
 
-    void addRightSide(Object o)
+    void addRightSide(Window o)
     {
 	if (o == null)
 	    return;
