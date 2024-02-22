@@ -30,6 +30,8 @@ import org.luwrain.popups.*;
 import org.luwrain.core.listening.*;
 import org.luwrain.script.Hooks;
 
+import static org.luwrain.core.NullCheck.*;
+
 final class Core extends EventDispatching
 {
     static private final String
@@ -53,9 +55,9 @@ final class Core extends EventDispatching
 	 PropertiesRegistry props, String lang, boolean standalone)
     {
 	super(cmdLine, registry, props, lang, interaction);
-	NullCheck.notNull(classLoader, "classLoader");
-	NullCheck.notNull(os, "os");
-	NullCheck.notNull(interaction, "interaction");
+	notNull(classLoader, "classLoader");
+	notNull(os, "os");
+	notNull(interaction, "interaction");
 	this.classLoader = classLoader;
 	this.os = os;
 	this.interaction = interaction;
@@ -75,7 +77,7 @@ final class Core extends EventDispatching
 	}
 	catch(Throwable e)
 	{
-	    Log.error(LOG_COMPONENT, "Unable to run the startup hook: " + e.getClass().getName() + ": " + e.getMessage());
+	    error(e, "Unable to run the startup hook");
 	}
 	eventLoop(mainStopCondition);
 	workers.finish();
@@ -98,7 +100,7 @@ final class Core extends EventDispatching
 
     @Override protected void processEventResponse(EventResponse eventResponse)
     {
-	NullCheck.notNull(eventResponse, "eventResponse");
+	notNull(eventResponse, "eventResponse");
 	//FIXME:access level
 	final EventResponse.Speech s = new org.luwrain.core.speech.EventResponseSpeech(speech, i18n, speakingText);
 	eventResponse.announce(getObjForEnvironment(), s);
@@ -138,8 +140,7 @@ final class Core extends EventDispatching
 
         private boolean runAppCommand(String command)
     {
-	NullCheck.notEmpty(command, "command");
-	Log.debug("proba", "command " + command);
+	notEmpty(command, "command");
 	if (!command.startsWith("app "))
 	    return false;
 	final String params = command.substring("app ".length());
@@ -191,7 +192,7 @@ final class Core extends EventDispatching
 
     ScriptFile[] getScriptFilesList(String componentName)
     {
-	NullCheck.notEmpty(componentName, "componentName");
+	notEmpty(componentName, "componentName");
 	//Common JavaScript extensions
 	final List<ScriptFile> res = new ArrayList<>();
 	final File jsDir = props.getFileProperty(Luwrain.PROP_DIR_JS);
@@ -259,7 +260,6 @@ final class Core extends EventDispatching
 	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(getObjForEnvironment());
 	for(UniRefProc proc: standardUniRefProcs)
 	    uniRefProcs.add(getObjForEnvironment(), proc);//FIXME:
-	//	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
 	for(final var e: extensions.extensions)
 	{
 	    objRegistry.takeObjects(e.ext, e.luwrain);
@@ -271,7 +271,7 @@ final class Core extends EventDispatching
 	    //FIXME:
 	    for(Command c: e.ext.getCommands(e.luwrain))
 		if (!commands.add(luwrain, c))
-		    Log.warning("core", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
+		    warn("command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
 	}
     }
 
@@ -332,7 +332,7 @@ final class Core extends EventDispatching
     {
 	if (props.getProperty(DESKTOP_PROP_NAME).isEmpty())
 	{
-	    Log.error(LOG_COMPONENT, "no property " + DESKTOP_PROP_NAME + ", unable to create a desktop");
+	    error("no property " + DESKTOP_PROP_NAME + ", unable to create a desktop");
 	    throw new RuntimeException("unable to create a desktop");
 	}
 	this.desktop = (Application)org.luwrain.util.ClassUtils.newInstanceOf(this.getClass().getClassLoader(), props.getProperty(DESKTOP_PROP_NAME), Application.class);
@@ -351,19 +351,19 @@ final class Core extends EventDispatching
     //It is admissible situation if shortcut returns null
     void launchApp(String shortcutName, String[] args)
     {
-	NullCheck.notEmpty(shortcutName, "shortcutName");
-	NullCheck.notNullItems(args, "args");
-	Log.debug("core", "launching application \'" + shortcutName + "\' with " + args.length + " argument(s)");
+	notEmpty(shortcutName, "shortcutName");
+	notNullItems(args, "args");
+	debug("launching the app \'" + shortcutName + "\' with " + args.length + " argument(s)");
 	mainCoreThreadOnly();
 	for(int i = 0;i < args.length;++i)
-	    Log.debug("core", "args[" + i + "]: " + args[i]);
+	    debug("args[" + i + "]: " + args[i]);
 	final Shortcut shortcut = objRegistry.getShortcut(shortcutName);
 	if (shortcut == null)
 	{
 	    message("Нет приложения с именем " + shortcutName, Luwrain.MessageType.ERROR);//FIXME:
 	    return;
 	}
-	final AtomicReference<Application[]> appRef = new AtomicReference<>();
+	final var appRef = new AtomicReference<Application[]>();
 	unsafeAreaOperation(()->{
 		appRef.set(shortcut.prepareApp(args));
 	    });
@@ -386,7 +386,7 @@ final class Core extends EventDispatching
 
     void launchApp(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	mainCoreThreadOnly();
 	//Checking if it is a mono app
 	if (app instanceof MonoApp)
@@ -396,7 +396,7 @@ final class Core extends EventDispatching
 		if (a instanceof MonoApp && a.getClass().equals(app.getClass()))
 		{
 		    final MonoApp ma = (MonoApp)a;
-		    final AtomicReference<MonoApp.Result> ref = new AtomicReference<>();
+		    final var ref = new AtomicReference<MonoApp.Result>();
 		    unsafeAreaOperation(()->{
 			    final MonoApp.Result value = ma.onMonoAppSecondInstance(app);
 			    if (value != null)
@@ -426,13 +426,13 @@ final class Core extends EventDispatching
 	    }
 	    catch (OutOfMemoryError e)
 	    {
-		Log.error(LOG_COMPONENT, "no enough memory to launch the app of the class " + app.getClass().getName());
+		error("no enough memory to launch the app of the class " + app.getClass().getName());
 		message(i18n.getStaticStr("AppLaunchNoEnoughMemory"), Luwrain.MessageType.ERROR);
 		return;
 	    }
 	    catch (Throwable e)
 	    {
-		Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has thrown an exception on onLaunch()" + e.getMessage());
+		error(e, "application " + app.getClass().getName() + " has thrown an exception on onLaunch()");
 		launchAppCrash(new org.luwrain.app.crash.App(e, app, null));
 		return;
 	    }
@@ -461,8 +461,8 @@ if (initResult.getType() != InitResult.Type.OK)
 
     void launchAppCrash(Luwrain instance, Throwable e)
     {
-	NullCheck.notNull(instance, "instance");
-	NullCheck.notNull(e, "e");
+	notNull(instance, "instance");
+	notNull(e, "e");
 	final Application app = interfaces.findApp(instance);
 	if (app != null)
 	    launchAppCrash(new org.luwrain.app.crash.App(e, app, null));
@@ -470,7 +470,7 @@ if (initResult.getType() != InitResult.Type.OK)
 
     void launchAppCrash(org.luwrain.app.crash.App app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	final Luwrain o = interfaces.requestNew(app);
 	final InitResult initResult;
 	try {
@@ -497,7 +497,7 @@ if (initResult.getType() != InitResult.Type.OK)
 
     void closeApp(Luwrain instance)
     {
-	NullCheck.notNull(instance, "instance");
+	notNull(instance, "instance");
 	mainCoreThreadOnly();
 	if (instance == getObjForEnvironment())
 	    throw new IllegalArgumentException("Trying to close an application through the special interface object");
@@ -535,12 +535,12 @@ if (initResult.getType() != InitResult.Type.OK)
 
     void onNewAreaLayout(Luwrain instance)
     {
-		NullCheck.notNull(instance, "instance");
+		notNull(instance, "instance");
 	mainCoreThreadOnly();
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
 	{
-	    Log.warning(LOG_COMPONENT, "trying to update area layout with a fake app instance");
+	    warn("trying to update area layout with the unknown app instance");
 	    return;
 	}
 	apps.updateAppAreaLayout(app);
@@ -557,9 +557,9 @@ if (initResult.getType() != InitResult.Type.OK)
 
     public void popup(Application app, Area area, Popup.Position pos, StopCondition stopCondition, boolean noMultipleCopies, boolean isWeakPopup)
     {
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(pos, "pos");
-	NullCheck.notNull(stopCondition, "stopCondition");
+	notNull(area, "area");
+	notNull(pos, "pos");
+	notNull(stopCondition, "stopCondition");
 	mainCoreThreadOnly();
 	if (noMultipleCopies)
 	    apps.onNewPopupOpening(app, area.getClass());
@@ -576,8 +576,8 @@ onNewAreasLayout();
 
     void setActiveAreaIface(Luwrain instance, Area area)
     {
-	NullCheck.notNull(instance, "instance");
-	NullCheck.notNull(area, "area");
+	notNull(instance, "instance");
+	notNull(area, "area");
 	mainCoreThreadOnly();
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
@@ -590,7 +590,7 @@ onNewAreasLayout();
 
     public void onAreaNewHotPointIface(Luwrain instance, Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	mainCoreThreadOnly();
 	if (screenContentManager == null)//FIXME:
 	    return;
@@ -603,7 +603,7 @@ onNewAreasLayout();
 
     void onAreaNewContentIface(Luwrain instance, Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	mainCoreThreadOnly();
 	final Area effectiveArea = getEffectiveAreaFor(instance, area);
 	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
