@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,33 +16,33 @@
 
 package org.luwrain.core;
 
-class TileManager 
+import static org.luwrain.core.NullCheck.*;
+
+final class TileManager 
 {
-	public static final int HORIZONTAL = 0;
-	public static final int VERTICAL = 1;
+    enum Orientation {HORIZ, VERT};
 
     abstract class Node
     {
 	public static final int LEAF = 0;
 	public static final int COMPOSITE = 1;
 
-	abstract public int getType();
+	abstract int getType();
     }
 
-    class CompositeNode extends Node
+    final class CompositeNode extends Node
     {
-	public int direction = HORIZONTAL;
-	public Node node1 = null;
-	public Node node2 = null;
-	public int leafCount = 0;
+	Orientation orientation = Orientation.HORIZ;
+	Node node1 = null, node2 = null;
+int leafCount = 0;
 
-	public CompositeNode()
+CompositeNode()
 	{
 	}
 
-	public CompositeNode(int direction, Node node1, Node node2)
+CompositeNode(Orientation orientation, Node node1, Node node2)
 	{
-	    this.direction = direction;
+	    this.orientation = orientation;
 	    this.node1 = node1;
 	    this.node2 = node2;
 	}
@@ -83,14 +83,14 @@ class TileManager
     {
 	LeafNode node1 = new LeafNode(obj1);
 	LeafNode node2 = new LeafNode(obj2);
-	nodes = new CompositeNode(HORIZONTAL, node1, node2);
+	nodes = new CompositeNode(Orientation.HORIZ, node1, node2);
     }
 
     public void createTopBottom(Object obj1, Object obj2)
     {
 	LeafNode node1 = new LeafNode(obj1);
 	LeafNode node2 = new LeafNode(obj2);
-	nodes = new CompositeNode(VERTICAL, node1, node2);
+	nodes = new CompositeNode(Orientation.VERT, node1, node2);
     }
 
     public void createLeftTopBottom(Object obj1,
@@ -100,8 +100,8 @@ class TileManager
 	LeafNode node1 = new LeafNode(obj1);
 	LeafNode node2 = new LeafNode(obj2);
 	LeafNode node3 = new LeafNode(obj3);
-	CompositeNode rightSide = new CompositeNode(VERTICAL, node2, node3);
-	nodes = new CompositeNode(HORIZONTAL, node1, rightSide);
+	CompositeNode rightSide = new CompositeNode(Orientation.VERT, node2, node3);
+	nodes = new CompositeNode(Orientation.HORIZ, node1, rightSide);
     }
 
     public void createLeftRightBottom(Object obj1,
@@ -111,8 +111,8 @@ class TileManager
 	LeafNode node1 = new LeafNode(obj1);
 	LeafNode node2 = new LeafNode(obj2);
 	LeafNode node3 = new LeafNode(obj3);
-	CompositeNode top = new CompositeNode(HORIZONTAL, node1, node2);
-	nodes = new CompositeNode(VERTICAL, top, node3);
+	CompositeNode top = new CompositeNode(Orientation.HORIZ, node1, node2);
+	nodes = new CompositeNode(Orientation.VERT, top, node3);
     }
 
     public void createHorizontally(Object[] objects)
@@ -129,9 +129,9 @@ class TileManager
 	}
 	LeafNode node1 = new LeafNode(objects[0]);
 	LeafNode node2 = new LeafNode(objects[1]);
-	CompositeNode node = new CompositeNode(HORIZONTAL, node1, node2);
+	CompositeNode node = new CompositeNode(Orientation.HORIZ, node1, node2);
 	for(int i = 2;i < objects.length;i++)
-	    node = new CompositeNode(HORIZONTAL, node, new LeafNode(objects[i]));
+	    node = new CompositeNode(Orientation.HORIZ, node, new LeafNode(objects[i]));
 	nodes = node;
     }
 
@@ -149,9 +149,9 @@ class TileManager
 	}
 	LeafNode node1 = new LeafNode(objects[0]);
 	LeafNode node2 = new LeafNode(objects[1]);
-	CompositeNode node = new CompositeNode(VERTICAL, node1, node2);
+	CompositeNode node = new CompositeNode(Orientation.VERT, node1, node2);
 	for(int i = 2;i < objects.length;i++)
-	    node = new CompositeNode(VERTICAL, node, new LeafNode(objects[i]));
+	    node = new CompositeNode(Orientation.VERT, node, new LeafNode(objects[i]));
 	nodes = node;
     }
 
@@ -164,7 +164,7 @@ class TileManager
 	    nodes = new LeafNode(o);
 	    return;
 	}
-	nodes = new CompositeNode(VERTICAL, new LeafNode(o), nodes);
+	nodes = new CompositeNode(Orientation.VERT, new LeafNode(o), nodes);
     }
 
     public void addBottom(Object o)
@@ -176,7 +176,7 @@ class TileManager
 	    nodes = new LeafNode(o);
 	    return;
 	}
-	nodes = new CompositeNode(VERTICAL, nodes, new LeafNode(o));
+	nodes = new CompositeNode(Orientation.VERT, nodes, new LeafNode(o));
     }
 
     public void addLeftSide(Object o)
@@ -188,7 +188,7 @@ class TileManager
 	    nodes = new LeafNode(o);
 	    return;
 	}
-	nodes = new CompositeNode(HORIZONTAL, nodes, new LeafNode(o));
+	nodes = new CompositeNode(Orientation.HORIZ, nodes, new LeafNode(o));
     }
 
     public void addRightSide(Object o)
@@ -200,7 +200,7 @@ class TileManager
 	    nodes = new LeafNode(o);
 	    return;
 	}
-	nodes = new CompositeNode(HORIZONTAL, new LeafNode(o), nodes);
+	nodes = new CompositeNode(Orientation.HORIZ, new LeafNode(o), nodes);
     }
 
     public void replace(Object obj, TileManager replaceWith)
@@ -338,12 +338,12 @@ class TileManager
 	return n.node2;
     }
 
-    public int getDirection(Object o)
+    Orientation getOrientation(Object o)
     {
 	if (o == null)
-	    return HORIZONTAL;
-	CompositeNode n = (CompositeNode)o;
-	return n.direction;
+	    return Orientation.HORIZ;
+	final CompositeNode n = (CompositeNode)o;
+	return n.orientation;
     }
 
     public Object getLeafObject(Object o)

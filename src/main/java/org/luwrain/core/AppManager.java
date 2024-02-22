@@ -18,6 +18,8 @@ package org.luwrain.core;
 
 import java.util.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 final class AppManager
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
@@ -312,9 +314,9 @@ final class AppManager
 	return launchedApp.getEffectiveAreaOfPopup(popup.index);
     }
 
-    AreaLayout getEffectiveAreaLayout(Application app)
+    AreaLayout getFrontAreaLayout(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	if (isDesktopApp(app))
 	    return this.desktopApp.getEffectiveAreaLayout();
 	final int index = findApp(app);

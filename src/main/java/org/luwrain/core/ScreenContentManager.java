@@ -66,16 +66,6 @@ final class ScreenContentManager
 	return null;
     }
 
-   private  boolean isPopupOpened()
-    {
-	if (!apps.hasAnyPopup())
-	    return false;
-	final Application app = apps.getAppOfLastPopup();
-	if (app == null)//it is an environment popup
-	    return true;
-	return apps.isAppActive(app);
-    }
-
 boolean isPopupActive()
     {
 	if (!activePopup)
@@ -117,14 +107,14 @@ boolean isPopupActive()
 
     TileManager getWindows()
     {
-	TileManager windows;
 	final Application activeApp = apps.getActiveApp();
+			final TileManager windows;
 	if (activeApp != null)
-	    windows = constructWindowLayoutOfApp(activeApp); else
+windows = constructLayoutOfApp(activeApp); else
 	    windows = new TileManager();
 	if (isPopupOpened())
 	{
-	    Window popupWindow = new Window(apps.getAppOfLastPopup(), apps.getEffectiveAreaOfLastPopup(), apps.getPositionOfLastPopup());
+	    final Window popupWindow = new Window(apps.getAppOfLastPopup(), apps.getEffectiveAreaOfLastPopup(), apps.getPositionOfLastPopup());
 	    switch(popupWindow.popupPos)
 	    {
 	    case BOTTOM:
@@ -144,10 +134,20 @@ boolean isPopupActive()
 	return windows;
     }
 
-    private TileManager constructWindowLayoutOfApp(Application app)
+       private  boolean isPopupOpened()
+    {
+	if (!apps.hasAnyPopup())
+	    return false;
+	final Application app = apps.getAppOfLastPopup();
+	if (app == null)//it is an environment popup
+	    return true;
+	return apps.isAppActive(app);
+    }
+
+    private TileManager constructLayoutOfApp(Application app)
     {
 	notNull(app, "app");
-	final AreaLayout layout = apps.getEffectiveAreaLayout(app);
+	final AreaLayout layout = apps.getFrontAreaLayout(app);
 	if (layout == null)
 	{
 	    warn("got null area layout for the application " + app.getClass().getName());

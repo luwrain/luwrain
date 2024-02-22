@@ -181,7 +181,7 @@ final class WindowManager
 	    calculateGeomImpl(windows, obj1, left, top, right, bottom);
 	    return;
 	}
-	if (windows.getDirection(obj) == TileManager.VERTICAL)
+	if (windows.getOrientation(obj) == TileManager.Orientation.VERT)
 	{
 	    final int range = bottom - top;//One row is reserved for divider;
 	    if (range < MIN_RANGE_VERTICAL || range < leafCount1 + leafCount2)
@@ -199,7 +199,7 @@ final class WindowManager
 	    interaction.drawHorizontalLine(left, right, top + range1);
 	    return;
 	}
-	if (windows.getDirection(obj) == TileManager.HORIZONTAL)
+	if (windows.getOrientation(obj) == TileManager.Orientation.HORIZ)
 	{
 	    int range = right - left;//One column is reserved for divider;
 	    if (range < MIN_RANGE_HORIZONTAL || range < leafCount1 + leafCount2)
