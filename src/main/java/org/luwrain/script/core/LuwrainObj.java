@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -380,6 +380,7 @@ messageType = ConstObj.getMessageType(values[1].asString());
 	return true;
 	}
 
+
     @HostAccess.Export public final ProxyExecutable urlGet = this::urlGetImpl;
     private Object urlGetImpl(Value[] args)
     {
@@ -404,6 +405,32 @@ messageType = ConstObj.getMessageType(values[1].asString());
 	    throw new ScriptException(e);
 	}
     }
+    /*
+
+    @HostAccess.Export public final ProxyExecutable fetchUrl = AsyncFunction.create(null, syncObj, (args, res)->{
+	if (!notNullAndLen(args, 1))
+	    throw new IllegalArgumentException("Luwrain.fetchUrl takes exactly one argument");
+	if (!args[0].isString())
+	    throw new IllegalArgumentException("Luwrain.fetchUrl() takes a string as its first argument");
+
+	try {
+	    try (final BufferedReader r = new BufferedReader(new InputStreamReader(new URL(args[0].asString()).openStream()))) {
+		final StringBuilder b = new StringBuilder();
+		String line = r.readLine();
+		while (line != null)
+		{
+		    b.append(line).append(System.lineSeparator());
+		    line = r.readLine();
+		}
+		return new String(b);
+	    }
+	}
+	catch(Throwable e)
+	{
+	    throw new ScriptException(e);
+	}
+	});
+    */
 
     @HostAccess.Export public final ProxyExecutable speak = this::speakImpl;
     private Object speakImpl(Value[] values)

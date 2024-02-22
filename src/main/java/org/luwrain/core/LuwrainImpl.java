@@ -31,15 +31,11 @@ import static org.luwrain.core.NullCheck.*;
 
 final class LuwrainImpl implements Luwrain
 {
-    static private final String
-	LOG_COMPONENT = Core.LOG_COMPONENT,
-	HOOK_URL_OPEN = "luwrain.url.open";
-
     private final Core core;
 
     LuwrainImpl(Core core)
     {
-	NullCheck.notNull(core, "core");
+	notNull(core, "core");
 	this.core = core;
     }
 
@@ -157,7 +153,7 @@ final class LuwrainImpl implements Luwrain
 	}
 	catch(IOException e)
 	{
-	    Log.error("core", "unable to prepare application data directory:" + res.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    error("unable to prepare application data directory:" + res.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    return null;
 	}
     }
@@ -255,48 +251,43 @@ final class LuwrainImpl implements Luwrain
 
     @Override public void onAreaNewHotPoint(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	core.mainCoreThreadOnly();
-	//	core.onAreaNewHotPointIface(this, area);
-
-	//		notNull(area, "area");
-	//	mainCoreThreadOnly();
-	//	if (core.screenContentManager == null)//FIXME:
-	//	    return;
-	final Area effectiveArea = core.getEffectiveAreaFor(this, area);
-	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
+	final Area frontArea = core.getFrontAreaFor(this, area);
+	if (frontArea == null)//Area isn't known by the applications manager, generally admissible situation
 	    return;
-	if (effectiveArea == core.screenContentManager.getActiveArea())
-	    core.windowManager.redrawArea(effectiveArea);
-
+	if (frontArea == core.screenContentManager.getActiveArea())
+	    core.windowManager.redrawArea(frontArea);
     }
 
     @Override public void onAreaNewContent(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	core.mainCoreThreadOnly();
-		final Area effectiveArea = core.getEffectiveAreaFor(this, area);
-	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
+		final Area frontArea = core.getFrontAreaFor(this, area);
+	if (frontArea == null)//The area isn't known by the appp manager
 	    return;
-	core.windowManager.redrawArea(effectiveArea);
+	core.windowManager.redrawArea(frontArea);
 	    }
 
     @Override public void onAreaNewName(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	core.mainCoreThreadOnly();
-
-		final Area effectiveArea = core.getEffectiveAreaFor(this, area);
-	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
+		final Area frontArea = core.getFrontAreaFor(this, area);
+	if (frontArea == null)//Area isn't known by the applications manager, generally admissible situation
 	    return;
-	core.windowManager.redrawArea(effectiveArea);
+	core.windowManager.redrawArea(frontArea);
     }
 
     @Override public void onAreaNewBackgroundSound(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	core.mainCoreThreadOnly();
-	core.onAreaNewBackgroundSound(this, area);
+	final Area frontArea = core.getFrontAreaFor(this, area);
+	if (frontArea == null)//The area isn't known by the app manager
+	    return;
+	core.updateBackgroundSound(frontArea);
     }
 
     @Override public int getAreaVisibleHeight(Area area)
@@ -561,9 +552,9 @@ final class LuwrainImpl implements Luwrain
 
     @Override public boolean openUrl(String url)
     {
-	NullCheck.notEmpty(url, "url");
+	notEmpty(url, "url");
 	//FIXME: main thread only
-	return Hooks.chainOfResponsibility(this, HOOK_URL_OPEN, new Object[]{url});
+	return Hooks.chainOfResponsibility(this, Hooks.URL_OPEN, new Object[]{url});
     }
 
     @Override public void runUiSafely(Runnable runnable)
@@ -600,7 +591,7 @@ final class LuwrainImpl implements Luwrain
 	    }
 	    catch(Throwable e)
 	    {
-		Log.error(Core.LOG_COMPONENT, "exception on processing of CallableEvent:" + e.getClass().getName() + ":" + e.getMessage());
+		error(e, "exception on processing of CallableEvent");
 		return null;
 	    }
 	} else
@@ -707,7 +698,7 @@ final class LuwrainImpl implements Luwrain
 		}
 		catch(Throwable e)
 		{
-		    Log.debug(LOG_COMPONENT, "An exception in background thread: " + e.getClass().getName() + ": " + e.getMessage());
+		    error(e, "exception in a background thread");
 		    crash(e);
 		}
 	}).start();

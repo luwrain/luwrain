@@ -25,7 +25,7 @@ public interface AsyncFunction
 {
     void run(Value[] args, CompletableFuture<Object> res);
 
-    static public Object create(Context context, Object syncObj, AsyncFunction f)
+    static public ProxyExecutable create(Context context, Object syncObj, AsyncFunction f)
     {
 	return (ProxyExecutable)(args)->{
 	    final CompletableFuture<Object> res = new CompletableFuture<>();

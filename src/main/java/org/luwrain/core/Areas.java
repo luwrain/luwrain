@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,23 +19,25 @@ package org.luwrain.core;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 abstract class Areas extends Base
 {
+        protected final AppManager apps;
     protected final ScreenContentManager screenContentManager;
     protected final WindowManager windowManager;
-    protected final AppManager apps;
 
     protected Areas(CmdLine cmdLine, Registry registry,
 			       PropertiesRegistry props, String lang, Interaction interaction)
     {
 	super(cmdLine, registry, props, lang);
-	NullCheck.notNull(interaction, "interaction");
+	notNull(interaction, "interaction");
 	this.apps = new AppManager();
 	this.screenContentManager = new ScreenContentManager(apps);
 	this.windowManager = new WindowManager(interaction, screenContentManager);
     }
 
-        abstract Area getActiveArea(boolean speakMessages);
+    //        abstract Area getActiveArea(boolean speakMessages);
 
     void onNewAreasLayout()
     {
@@ -46,7 +48,7 @@ abstract class Areas extends Base
 
     protected void updateBackgroundSound(Area updateFor)
     {
-	final Area area = getActiveArea(false);
+	final Area area = screenContentManager.getActiveArea();
 	//The requested area isnt active, we are doing nothing
 	if (updateFor != null && area != updateFor)
 	    return;
@@ -73,10 +75,8 @@ abstract class Areas extends Base
 	    soundManager.stopBackground();
     }
 
-    //Returns an effective area for the specified one
-    //Returns null if specified area not known in applications and areas managers 
     //Instance is not mandatory but can increase speed of search
-    protected Area getEffectiveAreaFor(Luwrain instance, Area area)
+    Area getFrontAreaFor(Luwrain instance, Area area)
     {
 	Area effectiveArea = null;
 	if (instance != null)
@@ -90,25 +90,4 @@ abstract class Areas extends Base
 	    effectiveArea = apps.getCorrespondingEffectiveArea(area);
 	return effectiveArea;
     }
-
-    //This method may not return an unwrapped area, there should be at least ta security wrapper
-    protected Area getActiveArea()
-    {
-	final Area area = screenContentManager.getActiveArea();
-	return area;
-    }
-
-    /*
-    protected boolean isActiveAreaBlockedByPopup()
-    {
-	return screenContentManager.isActiveAreaBlockedByPopup();
-    }
-    */
-
-    /*
-    protected boolean isAreaBlockedBySecurity(Area area)
-    {
-	return false;
-    }
-    */
 }

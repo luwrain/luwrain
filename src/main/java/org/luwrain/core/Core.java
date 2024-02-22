@@ -571,15 +571,6 @@ onNewAreasLayout();
     }
 
 
-    void onAreaNewBackgroundSound(Luwrain instance, Area area)
-    {
-	NullCheck.notNull(area, "area");
-	mainCoreThreadOnly();
-	final Area effectiveArea = getEffectiveAreaFor(instance, area);
-	if (effectiveArea == null)//Area isn't known by the applications manager, generally admissible situation
-	    return;
-	updateBackgroundSound(effectiveArea);
-    }
 
     //May return -1
     int getAreaVisibleHeightIface(Luwrain instance, Area area)
