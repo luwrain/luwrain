@@ -213,18 +213,18 @@ return;
 
     private void onSystemEvent(SystemEvent event)
     {
-	final AtomicInteger res = new AtomicInteger();
-	unsafeAreaOperation(()->res.set(screenContentManager.onSystemEvent(event)));
-	switch(res.get())
-	{
-	case ScreenContentManager.EVENT_NOT_PROCESSED:
+		final Area activeArea = getActiveArea();
+		if (activeArea == null)
+		{
+			    noAppsMessage();
+			    return;
+		}
+	final AtomicBoolean processed = new AtomicBoolean();
+	unsafeAreaOperation(()->processed.set(activeArea.onSystemEvent(event)));
+	if (processed.get())
+	    return;
 	    if (event.getCode() != SystemEvent.Code.IDLE)
 		playSound(Sounds.EVENT_NOT_PROCESSED);
-	    break;
-	case ScreenContentManager.NO_APPLICATIONS:
-	    noAppsMessage();
-	    break;
-	}
     }
 
     private void onBroadcastSystemEvent(SystemEvent event)

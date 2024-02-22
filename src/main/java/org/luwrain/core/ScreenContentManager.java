@@ -16,43 +16,21 @@
 
 package org.luwrain.core;
 
-import org.luwrain.core.events.*;
-import org.luwrain.util.*;
+import static org.luwrain.core.Base.*;
+import static org.luwrain.core.NullCheck.*;
 
 final class ScreenContentManager
 {
-    static public final int NO_APPLICATIONS = 0;
-    static public final int EVENT_NOT_PROCESSED = 1;
-    static public final int EVENT_PROCESSED = 2;
-
-    private AppManager apps;
+    final AppManager apps;
     private boolean activePopup = false;
 
-    public ScreenContentManager(AppManager apps)
+    ScreenContentManager(AppManager apps)
     {
+	notNull(apps, "apps");
 	this.apps = apps;
-	NullCheck.notNull(apps, "apps");
     }
 
-    public  Application isNonPopupDest()
-    {
-	    if (isPopupActive())
-		return null;
-	final Area activeArea = apps.getEffectiveActiveAreaOfActiveApp();
-	return activeArea != null?apps.getActiveApp():null;
-    }
-
-    int onSystemEvent(SystemEvent event)
-    {
-	final Area activeArea = getActiveArea();
-	if (activeArea == null)
-	return NO_APPLICATIONS;
-	if (isActiveAreaBlockedByPopup())
-	    Log.warning("core", "area " + activeArea.getClass().getName() + " is accepting an environment event even being blocked");
-	    return activeArea.onSystemEvent(event)?EVENT_PROCESSED:EVENT_NOT_PROCESSED;
-    }
-
-    public boolean setPopupActive()
+    boolean setPopupActive()
     {
 	if (!isPopupOpened())
 	    return false;
@@ -60,7 +38,7 @@ final class ScreenContentManager
 	return true;
     }
 
-    public void updatePopupState()
+    void updatePopupState()
     {
 	if (activePopup)
 	{
@@ -73,7 +51,7 @@ final class ScreenContentManager
 	}
     }
 
-    public Area getActiveArea()
+    Area getActiveArea()
     {
 	    if (isPopupActive())
 		return apps.getEffectiveAreaOfLastPopup();
@@ -88,34 +66,7 @@ final class ScreenContentManager
 	return null;
     }
 
-    /**
-     * Checks that the active area may accept events. Events accepting is
-     * prohibited for non-popup areas of the application which has opened
-     * popups. This method return false even if there is no active area at
-     * all. Weak popups block areas as all others.
-     *
-     * @return False if the active area may accept events, true otherwise
-     */
-    public boolean isActiveAreaBlockedByPopup()
-    {
-	if (isPopupActive())
-	    return false;
-	final Application activeApp = apps.getActiveApp();
-	if (activeApp == null)
-	    return false;
-	return apps.hasPopupOfApp(activeApp);
-    }
-
-    /**
-     * Checks that there is an opened popup (probably, inactive). Opened
-     * popup appears on screen in one of two cases: if the currently active
-     * application has a popup or if the environment itself has it.  If the
-     * application with a popup switches to the another one without a popup,
-     * the popup hides.
-     *
-     * @return True if the environment has an opened popup (regardless active or inactive), false otherwise
-     */
-    public boolean isPopupOpened()
+   private  boolean isPopupOpened()
     {
 	if (!apps.hasAnyPopup())
 	    return false;
@@ -125,12 +76,7 @@ final class ScreenContentManager
 	return apps.isAppActive(app);
     }
 
-    /**
-     * Checks that the environment has a proper popup, it opened and active.
-     *
-     * @return True if the popup opened and active, false otherwise
-     */
-    public boolean isPopupActive()
+boolean isPopupActive()
     {
 	if (!activePopup)
 	    return false;
@@ -140,7 +86,7 @@ final class ScreenContentManager
 	    return false;
     }
 
-    public void activateNextArea()
+    void activateNextArea()
     {
 	Area activeArea = getActiveArea();
 	if (activeArea == null)
@@ -200,11 +146,11 @@ final class ScreenContentManager
 
     private TileManager constructWindowLayoutOfApp(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	final AreaLayout layout = apps.getEffectiveAreaLayout(app);
 	if (layout == null)
 	{
-	    Log.warning("core", "got null area layout for the application " + app.getClass().getName());
+	    warn("got null area layout for the application " + app.getClass().getName());
 	    return null;
 	}
 	final TileManager tiles = new TileManager();
