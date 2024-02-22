@@ -260,16 +260,16 @@ final class Core extends EventDispatching
 	for(UniRefProc proc: standardUniRefProcs)
 	    uniRefProcs.add(getObjForEnvironment(), proc);//FIXME:
 	//	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
-	for(Extension e: extensions.allExtensions)
+	for(final var e: extensions.extensions)
 	{
-	    objRegistry.takeObjects(e, null);
+	    objRegistry.takeObjects(e.ext, e.luwrain);
 	    //	    final Extension ext = e.ext;
 	    //FIXME:
-	    for(UniRefProc p: e.getUniRefProcs(luwrain))
+	    for(UniRefProc p: e.ext.getUniRefProcs(e.luwrain))
 		if (!uniRefProcs.add(luwrain, p))
 		    warn("the uniRefProc \'" + p.getUniRefType() + "\' of extension " + e.getClass().getName() + " has been refused by  the uniRefProcs manager to be registered");
 	    //FIXME:
-	    for(Command c: e.getCommands(luwrain))
+	    for(Command c: e.ext.getCommands(e.luwrain))
 		if (!commands.add(luwrain, c))
 		    Log.warning("core", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
 	}
@@ -277,9 +277,9 @@ final class Core extends EventDispatching
 
     private void initI18n()
     {
-	for(Extension e: extensions.allExtensions)
+	for(final var e: extensions.extensions)
 	    try {
-		e.i18nExtension(luwrain, i18n);
+		e.ext.i18nExtension(e.luwrain, i18n);
 	    }
 	    catch (Exception ex)
 	    {
@@ -832,8 +832,8 @@ onNewAreasLayout();
     org.luwrain.cpanel.Factory[] getControlPanelFactories()
     {
 	final List<org.luwrain.cpanel.Factory> res = new ArrayList<>();
-	for(Extension e: extensions.allExtensions)
-	    for(org.luwrain.cpanel.Factory f: e.getControlPanelFactories(luwrain))
+	for(final var e: extensions.extensions)
+	    for(org.luwrain.cpanel.Factory f: e.ext.getControlPanelFactories(e.luwrain))
 		    if (f != null)
 			res.add(f);
 	return res.toArray(new org.luwrain.cpanel.Factory[res.size()]);

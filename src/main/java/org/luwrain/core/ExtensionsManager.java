@@ -23,16 +23,13 @@ import java.io.*;
 import static org.luwrain.core.Base.*;
 import static org.luwrain.core.NullCheck.*;
 
-public final class ExtensionsManager
+public final class ExtensionsManager implements AutoCloseable
 {
     static final String
-	LOG_COMPONENT = Core.LOG_COMPONENT,
 	EXTENSIONS_LIST_PREFIX = "--extensions=";
 
     private final InterfaceManager interfaces;
-    private LoadedExtension[] extensions = new LoadedExtension[0];
-    private final List<LoadedExtension> dynamicExtensions = new ArrayList<>();
-    final ArrayList<Extension> allExtensions = new ArrayList<>();
+    List<Entry> extensions = new ArrayList<>();
 
     ExtensionsManager(InterfaceManager interfaces)
     {
@@ -48,7 +45,6 @@ public final class ExtensionsManager
 	final String[] extensionsList = getExtensionsList(cmdLine, classLoader);
 	if (extensionsList == null || extensionsList.length == 0)
 	    return;
-	final List<LoadedExtension> res = new ArrayList<>();
 	for(String s: extensionsList)
 	{
 	    if (s == null || s.trim().isEmpty())
@@ -86,33 +82,24 @@ public final class ExtensionsManager
 		interfaces.release(iface);
 		continue;
 	    }
-	    res.add(createLoadedExtension(ext, iface));
+	    extensions.add(new Entry(ext, iface));
 	}
-	extensions = res.toArray(new LoadedExtension[res.size()]);
     }
 
-    void close()
+    @Override public void close()
     {
-	for(LoadedExtension e: extensions)
+	for(Entry e: extensions)
 	{
 	    try {
 		e.ext.close();
 	    }
-	    catch (Throwable t)
+	    catch (Throwable ex)
 	    {
-		t.printStackTrace();
+		error(ex);
 	    }
 	    interfaces.release(e.luwrain);
 	}
 	extensions = null;
-    }
-
-    LoadedExtension[] getAllLoadedExtensions()
-    {
-	final List<LoadedExtension> res = new ArrayList<>();
-	res.addAll(Arrays.asList(extensions));
-	res.addAll(dynamicExtensions);
-	return res.toArray(new LoadedExtension[res.size()]);
     }
 
     //From any thread
@@ -120,57 +107,12 @@ public final class ExtensionsManager
     {
 	notEmpty(hookName, "hookName");
 	notNull(runner, "runner");
-	for(LoadedExtension e: getAllLoadedExtensions())
+	for(Entry e: extensions)
 	    if (e.ext instanceof HookContainer && !((HookContainer)e.ext).runHooks(hookName, runner))
 		return false;
 	return true;
     }
 
-    LoadedExtension addDynamicExtension(Extension ext, Luwrain luwrain)
-    {
-	NullCheck.notNull(ext, "ext");
-	NullCheck.notNull(luwrain, "luwrain");
-	for(LoadedExtension e: getAllLoadedExtensions())
-	    if (e.ext == ext)
-		return null;
-	final LoadedExtension loadedExt = createLoadedExtension(ext, luwrain);
-	dynamicExtensions.add(loadedExt);
-	return loadedExt;
-    }
-
-    boolean unloadDynamicExtension(Extension ext)
-    {
-	NullCheck.notNull(ext, "ext");
-	final Iterator<LoadedExtension> it = dynamicExtensions.iterator();
-	while (it.hasNext())
-	    if (it.next().ext == ext)
-	    {
-		dynamicExtensions.remove(it);
-		return true;
-	    }
-	return false;
-    }
-
-    LoadedExtension getDynamicExtensionById(String id)
-    {
-	NullCheck.notEmpty(id, "id");
-	for(LoadedExtension e: dynamicExtensions)
-	    if (e.id.equals(id))
-		return e;
-	return null;
-    }
-
-    private LoadedExtension createLoadedExtension(Extension ext, Luwrain iface)
-    {
-	NullCheck.notNull(ext, "ext");
-	NullCheck.notNull(iface, "iface");
-	final ExtensionObject[] extObjects = getExtObjects(ext, iface);
-	final LoadedExtension loadedExt = new LoadedExtension(ext, iface, extObjects);
-	loadedExt.commands = getCommands(ext, iface);
-	loadedExt.uniRefProcs = getUniRefProcs(ext, iface);
-	loadedExt.controlPanelFactories = getControlPanelFactories(ext, iface);
-	return loadedExt;
-    }
 
     private ExtensionObject[] getExtObjects(Extension ext, Luwrain luwrain)
     {
@@ -284,25 +226,18 @@ public final class ExtensionsManager
 	Luwrain getInterfaceObj(Extension ext);
     }
 
-    static private final class LoadedExtension
+    static final class Entry
     {
 	final Extension ext;
 	final Luwrain luwrain;
 	final String id;
-	final ExtensionObject[] extObjects;
-	Command[] commands;
-	UniRefProc[] uniRefProcs;
-	org.luwrain.cpanel.Factory[] controlPanelFactories;
-	LoadedExtension(Extension ext, Luwrain luwrain,
-			ExtensionObject[] extObjects)
+	Entry(Extension ext, Luwrain luwrain)
 	{
-	    NullCheck.notNull(ext, "ext");
-	    NullCheck.notNull(luwrain, "luwrain");
-	    NullCheck.notNullItems(extObjects, "extObjects");
+	    notNull(ext, "ext");
+	    notNull(luwrain, "luwrain");
 	    this.ext = ext;
 	    this.luwrain = luwrain;
 	    this.id = java.util.UUID.randomUUID().toString();
-	    this.extObjects = extObjects;
 	}
     }
 }
