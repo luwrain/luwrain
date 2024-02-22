@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -20,6 +20,9 @@ import java.util.*;
 import java.util.jar.*;
 import java.io.*;
 
+import static org.luwrain.core.Base.*;
+import static org.luwrain.core.NullCheck.*;
+
 public final class ExtensionsManager
 {
     static final String
@@ -29,18 +32,19 @@ public final class ExtensionsManager
     private final InterfaceManager interfaces;
     private LoadedExtension[] extensions = new LoadedExtension[0];
     private final List<LoadedExtension> dynamicExtensions = new ArrayList<>();
+    final ArrayList<Extension> allExtensions = new ArrayList<>();
 
     ExtensionsManager(InterfaceManager interfaces)
     {
-	NullCheck.notNull(interfaces, "interfaces");
+	notNull(interfaces, "interfaces");
 	this.interfaces = interfaces;
     }
 
     void load(InterfaceRequest interfaceRequest, CmdLine cmdLine, ClassLoader classLoader)
     {
-	NullCheck.notNull(interfaceRequest, "interfaceRequest");
-	NullCheck.notNull(cmdLine, "cmdLine");
-	NullCheck.notNull(classLoader, "classLoader");
+	notNull(interfaceRequest, "interfaceRequest");
+	notNull(cmdLine, "cmdLine");
+	notNull(classLoader, "classLoader");
 	final String[] extensionsList = getExtensionsList(cmdLine, classLoader);
 	if (extensionsList == null || extensionsList.length == 0)
 	    return;
@@ -49,19 +53,19 @@ public final class ExtensionsManager
 	{
 	    if (s == null || s.trim().isEmpty())
 		continue;
-	    Log.debug(LOG_COMPONENT, "loading " + s);
+	    debug("loading " + s);
 	    final Object o;
 	    try {
 		o = Class.forName(s, true, classLoader).getDeclaredConstructor().newInstance();
 	    }
 	    catch (Throwable e)
 	    {
-		Log.error(LOG_COMPONENT, "loading of extension " + s + " failed:" + e.getClass().getName() + ":" + e.getMessage());
+		error(e, "loading of extension " + s + " failed");
 		continue;
 	    }
 	    if (!(o instanceof Extension))
 	    {
-		Log.error(LOG_COMPONENT, "loading of extension " + s + " failed: this object isn\'t an instance of org.luwrain.core.Extension");
+		error("loading of extension " + s + " failed: this object isn't an instance of org.luwrain.core.Extension");
 		continue;
 	    }
 	    final Extension ext = (Extension)o;
@@ -70,22 +74,21 @@ public final class ExtensionsManager
 	    try {
 		message = ext.init(iface);
 	    }
-	    catch (Throwable ee)
+	    catch (Throwable ex)
 	    {
-		Log.error(LOG_COMPONENT, "loading of extension " + s + " failed:" + ee.getClass().getName() + ":" + ee.getMessage());
+		error(ex, "loading of extension " + s + " failed on extension init");
 		interfaces.release(iface);
 		continue;
 	    }
 	    if (message != null)
 	    {
-		Log.error(LOG_COMPONENT, "loading of extension " + s + " failed: " + message);
+		error("loading of extension " + s + " failed: " + message);
 		interfaces.release(iface);
 		continue;
 	    }
 	    res.add(createLoadedExtension(ext, iface));
 	}
 	extensions = res.toArray(new LoadedExtension[res.size()]);
-	Log.debug(LOG_COMPONENT, "loaded " + extensions.length + " extensions");
     }
 
     void close()
@@ -115,8 +118,8 @@ public final class ExtensionsManager
     //From any thread
     public boolean runHooks(String hookName, Luwrain.HookRunner runner)
     {
-	NullCheck.notEmpty(hookName, "hookName");
-	NullCheck.notNull(runner, "runner");
+	notEmpty(hookName, "hookName");
+	notNull(runner, "runner");
 	for(LoadedExtension e: getAllLoadedExtensions())
 	    if (e.ext instanceof HookContainer && !((HookContainer)e.ext).runHooks(hookName, runner))
 		return false;
@@ -281,7 +284,7 @@ public final class ExtensionsManager
 	Luwrain getInterfaceObj(Extension ext);
     }
 
-    static final class LoadedExtension
+    static private final class LoadedExtension
     {
 	final Extension ext;
 	final Luwrain luwrain;

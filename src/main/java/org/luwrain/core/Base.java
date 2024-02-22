@@ -22,7 +22,7 @@ import java.io.*;
 import java.nio.file.*;
 
 import org.luwrain.util.*;
-import org.luwrain.core.ExtensionsManager.LoadedExtension;
+//import org.luwrain.core.ExtensionsManager.LoadedExtension;
 import org.luwrain.script.core.ScriptCore;
 import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 
@@ -255,6 +255,7 @@ abstract class Base implements EventConsumer
 
     String loadScript(ScriptFile scriptFile) throws ExtensionException
     {
+	/*
 	NullCheck.notNull(scriptFile, "scriptFile");
 	mainCoreThreadOnly();
 	final ScriptExtension ext = new ScriptExtension(scriptFile.toString());
@@ -269,6 +270,7 @@ abstract class Base implements EventConsumer
 	    interfaces.release(ext.getLuwrainObj());
 	    throw new ExtensionException(e);
 	}
+
 	final LoadedExtension loadedExt = extensions.addDynamicExtension(ext, ext.getLuwrainObj());
 	if (loadedExt == null)
 	{
@@ -279,6 +281,8 @@ abstract class Base implements EventConsumer
 	for(Command c: loadedExt.commands)
 	    commands.add(ext.getLuwrainObj(), c);
 	return loadedExt.id;
+	*/
+	return "";
     }
 
     File[] getInstalledPacksDirs()
@@ -299,6 +303,7 @@ abstract class Base implements EventConsumer
         boolean unloadDynamicExtension(String extId)
     {
 	NullCheck.notEmpty(extId, "extId");
+	/*
 	mainCoreThreadOnly();
 	final LoadedExtension ext = extensions.getDynamicExtensionById(extId);
 	if (ext == null)
@@ -307,6 +312,8 @@ abstract class Base implements EventConsumer
 	//FIXME:workers
 	commands.deleteByInstance(ext.luwrain);
 	return extensions.unloadDynamicExtension(ext.ext);
+	*/
+	return true;
     }
 
     void unsafeOperation(Runnable runnable)
@@ -368,6 +375,12 @@ abstract class Base implements EventConsumer
     {
 	Log.warning(LOG_COMPONENT, msg);
     }
+
+        static void debug(String msg)
+    {
+	Log.debug(LOG_COMPONENT, msg);
+    }
+
 
     static protected final class MainStopCondition implements StopCondition
     {

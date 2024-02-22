@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -25,7 +25,7 @@ import java.nio.file.*;
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.i18n.*;
-import org.luwrain.core.ExtensionsManager.LoadedExtension;
+//import org.luwrain.core.ExtensionsManager.LoadedExtension;
 import org.luwrain.popups.*;
 import org.luwrain.core.listening.*;
 import org.luwrain.script.Hooks;
@@ -259,32 +259,31 @@ final class Core extends EventDispatching
 	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(getObjForEnvironment());
 	for(UniRefProc proc: standardUniRefProcs)
 	    uniRefProcs.add(getObjForEnvironment(), proc);//FIXME:
-	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
-	for(LoadedExtension e: allExt)
+	//	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
+	for(Extension e: extensions.allExtensions)
 	{
-	    objRegistry.takeObjects(e);
-	    final Extension ext = e.ext;
+	    objRegistry.takeObjects(e, null);
+	    //	    final Extension ext = e.ext;
 	    //FIXME:
-	    for(UniRefProc p: e.uniRefProcs)
-		if (!uniRefProcs.add(e.luwrain, p))
-		    Log.warning("core", "the uniRefProc \'" + p.getUniRefType() + "\' of extension " + e.getClass().getName() + " has been refused by  the uniRefProcs manager to be registered");
+	    for(UniRefProc p: e.getUniRefProcs(luwrain))
+		if (!uniRefProcs.add(luwrain, p))
+		    warn("the uniRefProc \'" + p.getUniRefType() + "\' of extension " + e.getClass().getName() + " has been refused by  the uniRefProcs manager to be registered");
 	    //FIXME:
-	    for(Command c: e.commands)
-		if (!commands.add(e.luwrain, c))
+	    for(Command c: e.getCommands(luwrain))
+		if (!commands.add(luwrain, c))
 		    Log.warning("core", "command \'" + c.getName() + "\' of extension " + e.getClass().getName() + " has been refused by  the commands manager to be registered");
 	}
     }
 
     private void initI18n()
     {
-	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
-	for(LoadedExtension e: allExt)
+	for(Extension e: extensions.allExtensions)
 	    try {
-		e.ext.i18nExtension(e.luwrain, i18n);
+		e.i18nExtension(luwrain, i18n);
 	    }
-	    catch (Exception ee)
+	    catch (Exception ex)
 	    {
-		Log.error(LOG_COMPONENT, "extension " + e.ext.getClass().getName() + " thrown an exception on i18n:" + ee.getMessage());
+		error(ex, "extension " + e.getClass().getName() + " thrown an exception on i18n");
 	    }
 	if (!i18n.chooseLang(lang))
 	{
@@ -833,10 +832,8 @@ onNewAreasLayout();
     org.luwrain.cpanel.Factory[] getControlPanelFactories()
     {
 	final List<org.luwrain.cpanel.Factory> res = new ArrayList<>();
-	final LoadedExtension[] allExt = extensions.getAllLoadedExtensions();
-	for(LoadedExtension e: allExt)
-	    if (e.controlPanelFactories != null)
-		for(org.luwrain.cpanel.Factory f: e.controlPanelFactories)
+	for(Extension e: extensions.allExtensions)
+	    for(org.luwrain.cpanel.Factory f: e.getControlPanelFactories(luwrain))
 		    if (f != null)
 			res.add(f);
 	return res.toArray(new org.luwrain.cpanel.Factory[res.size()]);

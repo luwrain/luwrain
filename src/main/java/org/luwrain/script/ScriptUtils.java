@@ -25,6 +25,8 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.script.core.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 public final class ScriptUtils
 {
     static public boolean isNull(Object obj)

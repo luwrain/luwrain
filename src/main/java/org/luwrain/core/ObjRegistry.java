@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 
-import org.luwrain.core.ExtensionsManager.LoadedExtension;
+//import org.luwrain.core.ExtensionsManager.LoadedExtension;
 
 final class ObjRegistry implements ExtObjects
 {
@@ -263,11 +263,11 @@ final class ObjRegistry implements ExtObjects
 		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFailed"), Luwrain.MessageType.ERROR);
     }
 
-    void takeObjects(LoadedExtension loadedExt)
+    void takeObjects(/*LoadedExtension loadedExt*/Extension ext, Luwrain luwrain)
     {
-	NullCheck.notNull(loadedExt, "loadedExt");
-	    final Extension ext = loadedExt.ext;
-	    	    for(ExtensionObject s: loadedExt.extObjects)
+	//	NullCheck.notNull(loadedExt, "loadedExt");
+	//	    final Extension ext = loadedExt.ext;
+	for(ExtensionObject s: ext.getExtObjects(luwrain))
 			if (!add(ext, s))
 			    Log.warning(LOG_COMPONENT, "the extension object \'" + s.getExtObjName() + "\' of the extension " + ext.getClass().getName() + " has been refused by  the object registry");
     }
