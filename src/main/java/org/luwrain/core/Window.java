@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,29 +16,32 @@
 
 package org.luwrain.core;
 
-class Window
+import static org.luwrain.core.NullCheck.*;
+
+final class Window
 {
-    Application app;
-    Area area;
-    boolean popup = false;
-Popup.Position popupPos;
-    int x = 0;
-    int y = 0;
-    int width = 0;
-    int height = 0;//With title bar;
-    int scrolledVert = 0;
-    int scrolledHoriz = 0;
+    final Application app;
+    final Area area;
+    final boolean popup;
+    final Popup.Position popupPos;
+    int x = 0, y = 0, width = 0, height = 0;//With title bar;
+    int scrolledVert = 0, scrolledHoriz = 0;
 
     Window(Application app, Area area)
     {
+	notNull(app, "app");
+	notNull(area, "area");
 	this.app = app;
 	this.area = area;
 	this.popup = false;
+	this.popupPos = null;
     }
 
-    Window(Application app, Area area,
-	   Popup.Position popupPos)
+    Window(Application app, Area area, Popup.Position popupPos)
     {
+	notNull(app, "app");
+	notNull(area, "area");
+	notNull(popupPos, "popupPos");
 	this.app = app;
 	this.area = area;
 	this.popup = true;
