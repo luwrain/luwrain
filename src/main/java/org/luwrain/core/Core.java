@@ -154,7 +154,14 @@ final class Core extends EventDispatching
     {
 	extensions.load((ext)->interfaces.requestNew(ext), cmdLine, this.classLoader);
 	initObjects();
-	loadScriptExtensions();
+	for (ScriptFile f: extensions.getScriptFiles("core"))
+	    try {
+		loadScript(f);
+	    }
+	    catch(ExtensionException e)
+	    {
+		error(e, "unable to load script " + scriptFile.toString());
+	    }
 	initI18n();
 	objRegistry.add(null, new StartingModeProperty());
 	speech.init(objRegistry.getSpeechEngines());
@@ -167,76 +174,26 @@ final class Core extends EventDispatching
 	uiSettings = Settings.createUserInterface(registry);
     }
 
-    private void loadScriptExtensions()
+    String loadScript(ScriptFile scriptFile) throws ExtensionException
     {
-	for (ScriptFile f: getScriptFilesList("core"))
-	    try {
-		loadScript(f);
-	    }
-	    catch(ExtensionException e)
-	    {
-		Log.error(LOG_COMPONENT, "unable to load the script extension " + f.toString() + ": " + e.getClass().getName() + ": " + e.getMessage());
-	    }
-    }
-
-    ScriptFile[] getScriptFilesList(String componentName)
-    {
-	notEmpty(componentName, "componentName");
-	//Common JavaScript extensions
-	final List<ScriptFile> res = new ArrayList<>();
-	final File jsDir = props.getFileProperty(Luwrain.PROP_DIR_JS);
-	if (jsDir.exists() && jsDir.isDirectory())
-	{
-	    final File[] files = jsDir.listFiles();
-	    if (files != null)
-		for(File f: files)
-		{
-		    if (f == null || !f.exists() || f.isDirectory())
-			continue;
-		    if (!f.getName().toUpperCase().endsWith(".JS"))
-			continue;
-		    final String name = f.getName();
-		    final int pos = name.indexOf("-");
-		    if (pos < 1 || pos >= name.length() - 4 || !name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
-			continue;
-		    res.add(new ScriptFile(componentName, f.getAbsolutePath(), props.getProperty(Luwrain.PROP_DIR_DATA)));
-		}
+	notNull(scriptFile, "scriptFile");
+	mainCoreThreadOnly();
+	final var ext = new org.luwrain.script.core.ScriptExtension(scriptFile.toString());
+	ext.init(interfaces.requestNew(ext));
+	try {
+	    ext.getScriptCore().load(scriptFile);
 	}
-	//JavaScript extensions from packs
-	final File[] packs = getInstalledPacksDirs();
-	for(File pack: packs)
+	catch(Throwable e)
 	{
-	    final File dataDir = new File(pack, "data");
-	    if (dataDir.exists() && !dataDir.isDirectory())
-	    {
-		Log.warning(LOG_COMPONENT, "a pack contains '" + dataDir.getAbsolutePath() + "' exists and it isn't a directory");
-		continue;
-	    }
-	    if (!dataDir.exists() && !dataDir.mkdir())
-	    {
-		Log.error(LOG_COMPONENT, "unable to create '" + dataDir.getAbsolutePath() + "', skipping the pack");
-		continue;
-	    }
-	    final File jsExtDir = new File(pack, "js");
-	    if (!jsExtDir.exists() || !jsExtDir.isDirectory())
-		continue;
-	    final File[] files = jsExtDir.listFiles();
-	    if (files == null)
-		continue;
-	    for(File f: files)
-	    {
-		if (f == null || !f.exists() || f.isDirectory())
-		    continue;
-		if (!f.getName().toUpperCase().endsWith(".JS"))
-		    continue;
-		final String name = f.getName();
-		final int pos = name.indexOf("-");
-		if (pos < 1 || pos >= name.length() - 4 || !name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
-		    continue;
-		res.add(new ScriptFile(componentName, f.getAbsolutePath(), dataDir.getAbsolutePath()));
-	    }
+	    interfaces.release(ext.getLuwrainObj());
+	    throw new ExtensionException(e);
 	}
-	return res.toArray(new ScriptFile[res.size()]);
+	final var entry = new ExtensionsManager.Entry(ext, ext.getLuwrainObj());
+	extensions.extensions.add(entry);
+	objRegistry.takeObjects(ext, ext.getLuwrainObj());
+	for(Command c: ext.getCommands(ext.getLuwrainObj()))
+	    commands.add(ext.getLuwrainObj(), c);
+	return entry.id;
     }
 
     private void initObjects()
@@ -286,7 +243,7 @@ final class Core extends EventDispatching
 	this.player =null;
 	if (props.getProperty(PLAYER_FACTORY_PROP_NAME).isEmpty())
 	{
-	    Log .warning(LOG_COMPONENT, "no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
+	    warn("no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
 	    return;
 	}
 	final String playerFactoryName = props.getProperty(PLAYER_FACTORY_PROP_NAME);
@@ -298,10 +255,10 @@ final class Core extends EventDispatching
 	    this.player = factory.newPlayer(params);
 	    if (this.player == null)
 	    {
-		Log.error(LOG_COMPONENT, "player factory of the class " + playerFactoryName + " returned null, no player");
+		error("player factory of the class " + playerFactoryName + " returned null, no player");
 		return;
 	    }
-	    Log.debug(LOG_COMPONENT, "loaded player instance of class " + this.player.getClass().getName());
+	    debug("loaded player instance of class " + this.player.getClass().getName());
 	    for (PropertiesProvider p: props.getBasicProviders())
 		if (p instanceof org.luwrain.core.properties.Player)
 		{
@@ -311,7 +268,7 @@ final class Core extends EventDispatching
 	}
 	catch(Throwable e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to load player class " + playerFactoryName + ":" + e.getClass().getName() + ":" + e.getMessage());
+	    error(e, "unable to load player class " + playerFactoryName);
 	    this.player = null;
 	    return;
 	}

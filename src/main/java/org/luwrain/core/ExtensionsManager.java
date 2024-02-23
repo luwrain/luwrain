@@ -28,12 +28,30 @@ public final class ExtensionsManager implements AutoCloseable
     static final String
 	EXTENSIONS_LIST_PREFIX = "--extensions=";
 
+        static final class Entry
+    {
+	final Extension ext;
+	final Luwrain luwrain;
+	final String id;
+	Entry(Extension ext, Luwrain luwrain)
+	{
+	    notNull(ext, "ext");
+	    notNull(luwrain, "luwrain");
+	    this.ext = ext;
+	    this.luwrain = luwrain;
+	    this.id = java.util.UUID.randomUUID().toString();
+	}
+    }
+
+    private final Base base;
     private final InterfaceManager interfaces;
     List<Entry> extensions = new ArrayList<>();
 
-    ExtensionsManager(InterfaceManager interfaces)
+    ExtensionsManager(Base base, InterfaceManager interfaces)
     {
+	notNull(base, "base");
 	notNull(interfaces, "interfaces");
+	this.base = base;
 	this.interfaces = interfaces;
     }
 
@@ -157,23 +175,72 @@ public final class ExtensionsManager implements AutoCloseable
 	return getExtensionsListFromManifest(classLoader);
     }
 
+    List<ScriptFile> getScriptFiles(String componentName)
+    {
+	notEmpty(componentName, "componentName");
+	final String dataDir = base.props.getProperty(Luwrain.PROP_DIR_DATA);
+
+	//Common JavaScript extensions
+	final List<ScriptFile> res = new ArrayList<>();
+	final File jsDir = base.props.getFileProperty(Luwrain.PROP_DIR_JS);
+	if (jsDir.exists() && jsDir.isDirectory())
+	{
+	    final File[] files = jsDir.listFiles();
+	    if (files != null)
+		for(File f: files)
+		{
+		    if (f == null || !f.exists() || f.isDirectory())
+			continue;
+		    if (!f.getName().toUpperCase().endsWith(".JS"))
+			continue;
+		    final String name = f.getName();
+		    final int pos = name.indexOf("-");
+		    if (pos < 1 || pos >= name.length() - 4 || !name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
+			continue;
+		    res.add(new ScriptFile(componentName, f.getAbsolutePath(), dataDir));
+		}
+	}
+
+	//JavaScript extensions from packs
+	final File[] packs = base.getInstalledPacksDirs();
+	for(File pack: packs)
+	{
+	    final File packDataDir = new File(pack, "data");
+	    if (packDataDir.exists() && !packDataDir.isDirectory())
+	    {
+		warn("the pack contains '" + packDataDir.getAbsolutePath() + "' exists and it isn't a directory");
+		continue;
+	    }
+	    if (!packDataDir.exists() && !packDataDir.mkdir())
+	    {
+		error("unable to create '" + packDataDir.getAbsolutePath() + "', skipping the pack");
+		continue;
+	    }
+	    final File jsExtDir = new File(pack, "js");
+	    if (!jsExtDir.exists() || !jsExtDir.isDirectory())
+		continue;
+	    final File[] files = jsExtDir.listFiles();
+	    if (files == null)
+		continue;
+	    for(File f: files)
+	    {
+		if (f == null || !f.exists() || f.isDirectory())
+		    continue;
+		if (!f.getName().toUpperCase().endsWith(".JS"))
+		    continue;
+		final String name = f.getName();
+		final int pos = name.indexOf("-");
+		if (pos < 1 || pos >= name.length() - 4 || !name.substring(0, pos).toUpperCase().equals(componentName.toUpperCase()))
+		    continue;
+		res.add(new ScriptFile(componentName, f.getAbsolutePath(), packDataDir.getAbsolutePath()));
+	    }
+	}
+	return res;
+    }
+
     interface InterfaceRequest 
     {
 	Luwrain getInterfaceObj(Extension ext);
     }
 
-    static final class Entry
-    {
-	final Extension ext;
-	final Luwrain luwrain;
-	final String id;
-	Entry(Extension ext, Luwrain luwrain)
-	{
-	    notNull(ext, "ext");
-	    notNull(luwrain, "luwrain");
-	    this.ext = ext;
-	    this.luwrain = luwrain;
-	    this.id = java.util.UUID.randomUUID().toString();
-	}
-    }
 }

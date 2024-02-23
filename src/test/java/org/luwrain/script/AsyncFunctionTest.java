@@ -120,7 +120,11 @@ public class AsyncFunctionTest
 
     @BeforeEach void init()
     {
+		final Engine engine = Engine.newBuilder()
+	.option("engine.WarnInterpreterOnly", "false")
+	.build();
     	c = Context.newBuilder()
+	.engine(engine)
 	.allowExperimentalOptions(true)
 	.allowHostAccess(HostAccess.ALL)
 	.option(JSContextOptions.CONSOLE_NAME, "true")

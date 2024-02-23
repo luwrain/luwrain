@@ -14,30 +14,31 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.script.core;
 
-import java.util.*;
+//import java.util.*;
 
-import org.luwrain.script.core.*;
+import org.luwrain.core.*;
 
-final class ScriptExtension implements Extension, org.luwrain.core.HookContainer
+import static org.luwrain.core.NullCheck.*;
+
+public final class ScriptExtension implements Extension, org.luwrain.core.HookContainer
 {
-    static private final String LOG_COMPONENT = "core";
-
-    final String name;
+    public final String name;
     private ScriptCore scriptCore = null;
     private Luwrain luwrain = null;
 
-    ScriptExtension(String name)
+    public ScriptExtension(String name)
     {
-	NullCheck.notEmpty(name, "name");
+	notEmpty(name, "name");
 	this.name = name;
     }
 
     @Override public String init(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	this.scriptCore = new ScriptCore(luwrain);
 	return null;
     }
 
@@ -46,10 +47,9 @@ final class ScriptExtension implements Extension, org.luwrain.core.HookContainer
 	return this.luwrain;
     }
 
-    public void setScriptCore(ScriptCore scriptCore)
+    public ScriptCore getScriptCore()
     {
-	NullCheck.notNull(scriptCore, "scriptCore");
-	this.scriptCore = scriptCore;
+	return scriptCore;
     }
 
             @Override public void close()
@@ -58,8 +58,8 @@ final class ScriptExtension implements Extension, org.luwrain.core.HookContainer
 
     @Override public boolean runHooks(String hookName, Luwrain.HookRunner runner)
     {
-	NullCheck.notEmpty(hookName, "hookName");
-	NullCheck.notNull(runner, "runner");
+	notEmpty(hookName, "hookName");
+	notNull(runner, "runner");
 	return scriptCore.runHooks(hookName, runner);
     }
 

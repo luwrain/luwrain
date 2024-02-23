@@ -34,8 +34,13 @@ public final class Module implements AutoCloseable
 	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.luwrainObj = new LuwrainObj(luwrain, syncObj, this);
-	this.context = Context.newBuilder()
+	final Engine engine = Engine.newBuilder()
+	.option("engine.WarnInterpreterOnly", "false")
+	.build();
+	this.context = Context.newBuilder("js")
+	.engine(engine)
 	.allowExperimentalOptions(true)
+	.allowHostAccess(HostAccess.ALL) //FIXME: Better to use .EXPLICIT
 	.build();
 	this.context.getBindings("js").putMember("Luwrain", this.luwrainObj);
 	if (bindings != null)

@@ -29,7 +29,7 @@ final class Tile
 
     Tile(Application app, Area area)
     {
-	notNull(app, "app");
+	//app can be null
 	notNull(area, "area");
 	this.app = app;
 	this.area = area;
@@ -39,7 +39,7 @@ final class Tile
 
     Tile(Application app, Area area, Popup.Position popupPos)
     {
-	notNull(app, "app");
+	//app can be null
 	notNull(area, "area");
 	notNull(popupPos, "popupPos");
 	this.app = app;

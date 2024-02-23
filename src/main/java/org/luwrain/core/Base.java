@@ -44,7 +44,7 @@ abstract class Base implements EventConsumer
 
     private final Thread mainCoreThread;
     protected final InterfaceManager interfaces = new InterfaceManager(this);
-    protected final ExtensionsManager extensions = new ExtensionsManager(interfaces);
+    protected final ExtensionsManager extensions = new ExtensionsManager(this, interfaces);
     protected final ObjRegistry objRegistry = new ObjRegistry();
     protected final CommandManager commands = new CommandManager();//FIXME:must be merged into objRegistry
     protected final EventQueue eventQueue = new EventQueue();
@@ -234,37 +234,6 @@ abstract class Base implements EventConsumer
 	    throw new RuntimeException("Not in the main thread of LUWRAIN core (current thread is \'" + Thread.currentThread().getName() + "\'");
     }
 
-    String loadScript(ScriptFile scriptFile) throws ExtensionException
-    {
-	/*
-	NullCheck.notNull(scriptFile, "scriptFile");
-	mainCoreThreadOnly();
-	final ScriptExtension ext = new ScriptExtension(scriptFile.toString());
-	ext.init(interfaces.requestNew(ext));
-	final ScriptCore scriptCore = new ScriptCore(ext.getLuwrainObj());
-	ext.setScriptCore(scriptCore);
-	try {
-	    scriptCore.load(scriptFile);
-	}
-	catch(Throwable e)
-	{
-	    interfaces.release(ext.getLuwrainObj());
-	    throw new ExtensionException(e);
-	}
-
-	final LoadedExtension loadedExt = extensions.addDynamicExtension(ext, ext.getLuwrainObj());
-	if (loadedExt == null)
-	{
-	    interfaces.release(ext.getLuwrainObj());
-	    throw new ExtensionException("Trying to load twice the same extension");
-	}
-	objRegistry.takeObjects(loadedExt);
-	for(Command c: loadedExt.commands)
-	    commands.add(ext.getLuwrainObj(), c);
-	return loadedExt.id;
-	*/
-	return "";
-    }
 
     File[] getInstalledPacksDirs()
     {
@@ -323,6 +292,7 @@ abstract class Base implements EventConsumer
 
     static void error(String msg)
     {
+	System.err.println("ERROR: " + msg);
 	Log.error(LOG_COMPONENT, msg);
     }
 
@@ -330,9 +300,9 @@ abstract class Base implements EventConsumer
     {
 	Log.error(LOG_COMPONENT, "Exception " + e.getClass().getName());
 	if (e.getMessage() != null && !e.getMessage().isEmpty())
-	Log .error(LOG_COMPONENT, "Message: " + e.getMessage());
+	    Log .error(LOG_COMPONENT, "Message: " + e.getMessage());
 	if (comment != null && !comment.isEmpty())
-	Log.error(LOG_COMPONENT, "Comment: " + comment);
+	    Log.error(LOG_COMPONENT, "Comment: " + comment);
 	final StringWriter w = new StringWriter();
 	final PrintWriter p = new PrintWriter(w);
 	e.printStackTrace(p);
@@ -340,11 +310,18 @@ abstract class Base implements EventConsumer
 	p.flush();
 	for(String s: w.toString().split(System.lineSeparator(), -1))
 	    Log.error(LOG_COMPONENT, s);
-	System.err.println("An exception in LUWRAIN core of class " + e.getClass().getName());
-	if (e.getMessage() != null && !e.getMessage().isEmpty())
-	    System.err.println("Message: " + e.getMessage());
 	if (comment != null && !comment.isEmpty())
-	    System.err.println("Comment: " + comment);
+	{
+	    System.err.println("ERROR: " + comment);
+	    System.err.println("Exception: " + e.getClass().getName());
+	    if (e.getMessage() != null && !e.getMessage().isEmpty())
+		System.err.println("Message: " + e.getMessage());
+	} else
+	{
+	    System.err.println("Exception in the LUWRAIN core " + e.getClass().getName());
+	    if (e.getMessage() != null && !e.getMessage().isEmpty())
+		System.err.println("Message: " + e.getMessage());
+	}
     }
 
     static void error(Throwable e)

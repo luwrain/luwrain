@@ -767,15 +767,16 @@ final class LuwrainImpl implements Luwrain
 
     @Override public     ScriptFile[] getScriptFilesList(String componentName)
     {
-	NullCheck.notEmpty(componentName, "componentName");
-	return core.getScriptFilesList(componentName);
+	notEmpty(componentName, "componentName");
+	final List<ScriptFile> res = core.extensions.getScriptFiles(componentName);
+	return res.toArray(new ScriptFile[res.size()]);
     }
 
     @Override public String escapeString(String style, String text)
     {
-	NullCheck.notNull(style, "style");
-		NullCheck.notNull(text, "text");
-		return core.os.escapeString(style, text);
+	notNull(style, "style");
+	NullCheck.notNull(text, "text");
+	return core.os.escapeString(style, text);
     }
 
     private void sayHint(Hint hint)
