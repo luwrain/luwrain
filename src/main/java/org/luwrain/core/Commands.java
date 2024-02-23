@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -28,18 +28,21 @@ import org.luwrain.script.*;
 import org.luwrain.controls.DefaultControlContext;
 import org.luwrain.script.core.MapScriptObject;
 
+import static org.luwrain.core.Base.*;
+import static org.luwrain.core.NullCheck.*;
+
 final class Commands
 {
     static private final int
 	SPEECH_STEP = 5,
 	VOLUME_STEP = 5;
 
-    static private final Set<String> osCmdHistory = new HashSet<String>();
+    static private final Set<String> osCmdHistory = new HashSet<>();
 
     static Command[] getCommands(Core core, org.luwrain.core.shell.Conversations conversations)
     {
-	NullCheck.notNull(core, "core");
-	NullCheck.notNull(conversations, "conversations");
+	notNull(core, "core");
+	notNull(conversations, "conversations");
 	final org.luwrain.script.Hooks hooks = new org.luwrain.script.Hooks();
 	return new Command[]{
 
@@ -478,7 +481,7 @@ final class Commands
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
-		    final Area area = core.getValidActiveArea(true);
+		    final Area area = core.getActiveArea(true);
 		    if (area == null)
 			return;
 		    if (!area.onSystemEvent(new SystemEvent(SystemEvent.Code.PROPERTIES)))
@@ -493,7 +496,7 @@ final class Commands
 			if (cmd == null || cmd.trim().isEmpty())
 			    return;
 			final String dir;
-			final Area area = core.getValidActiveArea(false);
+			final Area area = core.tiles.getActiveArea();
 			if (area != null)
 			{
 			    final CurrentDirQuery query = new CurrentDirQuery();
@@ -532,8 +535,8 @@ final class Commands
 	private final Handler handler;
 	Cmd(String name, Handler handler)
 	{
-	    NullCheck.notEmpty(name, "name");
-	    NullCheck.notNull(handler, "handler");
+	    notEmpty(name, "name");
+	    notNull(handler, "handler");
 	    this.name = name;
 	    this.handler = handler;
 	}

@@ -102,14 +102,9 @@ final class Core extends EventDispatching
 	eventResponse.announce(getObjForEnvironment(), s);
     }
 
-    @Override Area getActiveArea(boolean speakMessages)
+    Area getActiveArea(boolean speakMessages)
     {
-	return getValidActiveArea(speakMessages);
-    }
-
-        Area getValidActiveArea(boolean speakMessages)
-    {
-	final Area activeArea = getActiveArea();
+	final Area activeArea = tiles.getActiveArea();
 	if (activeArea == null)
 	{
 	    if (speakMessages)
@@ -546,7 +541,7 @@ if (initResult.getType() != InitResult.Type.OK)
     void onSwitchNextAreaCommand()
     {
 	mainCoreThreadOnly();
-	screenContentManager.activateNextArea();
+	tiles.activateNextArea();
 	onNewAreasLayout();
 	announceActiveArea();
     }
@@ -561,7 +556,7 @@ if (initResult.getType() != InitResult.Type.OK)
 	    apps.onNewPopupOpening(app, area.getClass());
 	final PopupStopCondition popupStopCondition = new PopupStopCondition(mainStopCondition, stopCondition);
 	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies, isWeakPopup);
-	screenContentManager.setPopupActive();
+	tiles.setPopupActive();
 	onNewAreasLayout();
 	announceActiveArea();
 	eventLoop(popupStopCondition);
@@ -782,11 +777,10 @@ onNewAreasLayout();
 
     void activateAreaSearch()
     {
-	final Area activeArea = getValidActiveArea(true);
+	final Area activeArea = getActiveArea(true);
 	if (activeArea == null)
 	    return;
-	if (!apps.setAreaWrapper(activeArea,
-				  new AreaWrapperFactory() {
+	if (!apps.setAreaWrapper(activeArea, new AreaWrapperFactory() {
 				      @Override public Area createAreaWrapper(Area areaToWrap, Disabling disabling)
 				      {
 					  return new Search(areaToWrap, Core.this, disabling);
@@ -798,7 +792,7 @@ onNewAreasLayout();
 
     void showContextMenu()
     {
-	final Area activeArea = getValidActiveArea(true);
+	final Area activeArea = getActiveArea(true);
 	if (activeArea == null)
 	    return;
 	final AtomicReference<Object> res = new AtomicReference<>();
@@ -828,7 +822,7 @@ onNewAreasLayout();
 
     void startAreaListening()
     {
-	final Area activeArea = getValidActiveArea(true);
+	final Area activeArea = getActiveArea(true);
 	if (activeArea == null)
 	    return;
 	stopAreaListening();

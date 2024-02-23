@@ -129,7 +129,7 @@ return;
 	onBeforeEventProcessing();
 	if (systemHotKey(event))
 	    return;
-	final Area activeArea = getActiveArea();
+	final Area activeArea = tiles.getActiveArea();
 	if (activeArea == null)
 	{
 	    noAppsMessage();
@@ -213,7 +213,7 @@ return;
 
     private void onSystemEvent(SystemEvent event)
     {
-		final Area activeArea = getActiveArea();
+		final Area activeArea = tiles.getActiveArea();
 		if (activeArea == null)
 		{
 			    noAppsMessage();
@@ -261,7 +261,7 @@ return;
 
     void announceActiveArea()
     {
-	final Area activeArea = getActiveArea();
+	final Area activeArea = tiles.getActiveArea();
 	if (activeArea == null)
 	{
 	    noAppsMessage();

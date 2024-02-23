@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -25,6 +25,8 @@ import org.luwrain.util.*;
 //import org.luwrain.core.ExtensionsManager.LoadedExtension;
 import org.luwrain.script.core.ScriptCore;
 import org.luwrain.script.hooks.ChainOfResponsibilityHook;
+
+import static org.luwrain.core.NullCheck.*;
 
 abstract class Base implements EventConsumer
 {

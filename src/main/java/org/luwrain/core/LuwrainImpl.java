@@ -47,9 +47,9 @@ final class LuwrainImpl implements Luwrain
 
     @Override public String getActiveAreaText(AreaTextType type, boolean issueErrorMessages)
     {
-	NullCheck.notNull(type, "type");
+	notNull(type, "type");
 	core.mainCoreThreadOnly();
-	final Area activeArea = core.getValidActiveArea(issueErrorMessages);
+	final Area activeArea = core.getActiveArea(issueErrorMessages);
 	if (activeArea == null)
 	    return null;
 	return new AreaText(activeArea).get(type);
@@ -59,7 +59,7 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(attr, "attr");
 	core.mainCoreThreadOnly();
-	final Area area = core.getValidActiveArea(false);
+	final Area area = core.tiles.getActiveArea();
 	if (area == null)
 	    return attr == AreaAttr.DIRECTORY?getFileProperty("luwrain.dir.userhome").getAbsolutePath():null;
 	switch(attr)
@@ -256,7 +256,7 @@ final class LuwrainImpl implements Luwrain
 	final Area frontArea = core.getFrontAreaFor(this, area);
 	if (frontArea == null)//Area isn't known by the applications manager, generally admissible situation
 	    return;
-	if (frontArea == core.screenContentManager.getActiveArea())
+	if (frontArea == core.tiles.getActiveArea())
 	    core.windowManager.redrawArea(frontArea);
     }
 
@@ -518,7 +518,7 @@ final class LuwrainImpl implements Luwrain
 	if (app == null)
 	    throw new IllegalArgumentException("Trying to use an illegal Luwrain obj");
 	core.apps.setActiveAreaOfApp(app, area);
-	if (core.apps.isAppActive(app) && !core.screenContentManager.isPopupActive())
+	if (core.apps.isAppActive(app) && !core.tiles.isPopupActive())
 	    core.setAreaIntroduction();
 	core.onNewAreasLayout();
     }
