@@ -17,14 +17,8 @@
 package org.luwrain.core;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.*;//
 import java.io.*;
-import java.nio.file.*;
-
-import org.luwrain.util.*;
-//import org.luwrain.core.ExtensionsManager.LoadedExtension;
-import org.luwrain.script.core.ScriptCore;
-import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 
 import static org.luwrain.core.NullCheck.*;
 
@@ -34,35 +28,35 @@ abstract class Base implements EventConsumer
 	LOG_COMPONENT = "core",
 	PROP_ICONS_VOLUME = "luwrain.sounds.iconsvol";
 
+    enum AnnouncementType {AREA, APP};
+
     interface StopCondition
     {
 	boolean continueEventLoop();
     }
 
-    enum AnnouncementType {AREA, APP};
-
     protected final CmdLine cmdLine;
     protected final  Registry registry;
     final Luwrain luwrain;
-    final PropertiesRegistry props;
-    final HelpSections helpSects;
+    protected final PropertiesRegistry props;
+    protected final HelpSections helpSects;
     protected final String lang;
 
     private final Thread mainCoreThread;
     protected final InterfaceManager interfaces = new InterfaceManager(this);
-    final ExtensionsManager extensions = new ExtensionsManager(interfaces);
-         final ObjRegistry objRegistry = new ObjRegistry();
-    final CommandManager commands = new CommandManager();//FIXME:must be merged into objRegistry
+    protected final ExtensionsManager extensions = new ExtensionsManager(interfaces);
+    protected final ObjRegistry objRegistry = new ObjRegistry();
+    protected final CommandManager commands = new CommandManager();//FIXME:must be merged into objRegistry
     protected final EventQueue eventQueue = new EventQueue();
     protected final MainStopCondition mainStopCondition = new MainStopCondition();
     private EventResponse eventResponse = null;
 
     protected final WorkersTracking workers = new WorkersTracking();
-    final JobsManager jobs = new JobsManager(interfaces.systemObj, objRegistry);
+    protected final JobsManager jobs = new JobsManager(interfaces.systemObj, objRegistry);
     protected final I18nImpl i18n = new I18nImpl();
-    final Speech speech;
-    final org.luwrain.core.speech.SpeakingText speakingText = new org.luwrain.core.speech.SpeakingText(extensions);
-    final BrailleImpl braille = new BrailleImpl();
+    protected final Speech speech;
+    protected final org.luwrain.core.speech.SpeakingText speakingText = new org.luwrain.core.speech.SpeakingText(extensions);
+    protected final BrailleImpl braille = new BrailleImpl();
     protected final org.luwrain.core.sound.SoundIcons sounds;
     protected final org.luwrain.core.sound.Manager soundManager;
 
@@ -71,15 +65,14 @@ abstract class Base implements EventConsumer
     private final Clipboard clipboard = new Clipboard();
     protected AnnouncementType announcement = null;
 
-    protected Base(CmdLine cmdLine, Registry registry,
-			      PropertiesRegistry props, String lang)
+    protected Base(CmdLine cmdLine, Registry registry, PropertiesRegistry props, String lang)
     {
 	notNull(cmdLine, "cmdLine");
 	notNull(registry, "registry");
 	notNull(props, "props");
 	notEmpty(lang, "lang");
 	this.cmdLine = cmdLine;
-		this.luwrain = interfaces.systemObj;
+	this.luwrain = interfaces.systemObj;
 	this.registry = registry;
 	this.props = props;
 	this.props.setLuwrainObj(interfaces.systemObj);
@@ -89,19 +82,16 @@ abstract class Base implements EventConsumer
 	this.sounds = new org.luwrain.core.sound.SoundIcons(registry, props.getFileProperty(Luwrain.PROP_DIR_SOUNDS));
 	this.soundManager = new org.luwrain.core.sound.Manager(objRegistry, interfaces.systemObj);
 	this.mainCoreThread = Thread.currentThread();
-
     }
 
-    //True means the event is processed and there is no need to process it again;
     abstract protected void onEvent(Event event);
-        abstract protected void processEventResponse(EventResponse eventResponse);
-        abstract void message(String text, Luwrain.MessageType messageType);
+    abstract protected void processEventResponse(EventResponse eventResponse);
+    abstract void message(String text, Luwrain.MessageType messageType);
     abstract protected void announce(StopCondition stopCondition);
-
 
     protected void eventLoop(StopCondition stopCondition)
     {
-	NullCheck.notNull(stopCondition, "stopCondition");
+	notNull(stopCondition, "stopCondition");
 	while(stopCondition.continueEventLoop())
 	{
 	    try {
@@ -112,12 +102,12 @@ abstract class Base implements EventConsumer
 		    continue;
 		onEvent(event);
 		event.markAsProcessed();
-		    if (this.eventResponse != null)
-		    {
-			processEventResponse(eventResponse);
-			this.eventResponse = null;
-		    } else
-			announce(stopCondition);
+		if (this.eventResponse != null)
+		{
+		    processEventResponse(eventResponse);
+		    this.eventResponse = null;
+		} else
+		    announce(stopCondition);
 	    }
 	    catch(Throwable e)
 	    {
@@ -131,7 +121,7 @@ abstract class Base implements EventConsumer
 	eventQueue.putEvent(e);
     }
 
-    public final void playSound(Sounds sound)
+    final void playSound(Sounds sound)
     {
 	if (sound == null)
 	{
@@ -142,7 +132,7 @@ abstract class Base implements EventConsumer
 	int volume = 100;
 	try {
 	    if (!volumeStr.trim().isEmpty())
-	    volume = Integer.parseInt(volumeStr);
+		volume = Integer.parseInt(volumeStr);
 	}
 	catch(NumberFormatException e)
 	{
@@ -155,14 +145,14 @@ abstract class Base implements EventConsumer
 	sounds.play(sound, volume);
     }
 
-        public final void playSound(File file)
+    final void playSound(File file)
     {
-	NullCheck.notNull(file, "file");
+	notNull(file, "file");
 	final String volumeStr = props.getProperty(PROP_ICONS_VOLUME);
 	int volume = 100;
 	try {
 	    if (!volumeStr.trim().isEmpty())
-	    volume = Integer.parseInt(volumeStr);
+		volume = Integer.parseInt(volumeStr);
 	}
 	catch(NumberFormatException e)
 	{
@@ -174,7 +164,6 @@ abstract class Base implements EventConsumer
 	    volume = 100;
 	sounds.play(file, volume);
     }
-
 
     protected void noAppsMessage()
     {
@@ -190,12 +179,6 @@ abstract class Base implements EventConsumer
     }
 
     void eventNotProcessedMessage()
-    {
-	speech.silence();
-	playSound(Sounds.EVENT_NOT_PROCESSED);
-    }
-
-    protected void failureMessage()
     {
 	speech.silence();
 	playSound(Sounds.EVENT_NOT_PROCESSED);
