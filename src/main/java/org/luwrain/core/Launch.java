@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -21,9 +21,11 @@ import java.io.*;
 
 import org.luwrain.core.util.*;
 
+import static org.luwrain.core.Base.*;
+import static org.luwrain.core.NullCheck.*;
+
 public final class Launch implements Runnable
 {
-    static public final String LOG_COMPONENT = "init";
     static private final String
 	CMDARG_HELP = "--help",
 	CMDARG_PRINT_LANG = "--print-lang",
@@ -45,15 +47,15 @@ public final class Launch implements Runnable
 
     Launch(boolean standalone, String[] cmdLine, File dataDir, File userDataDir, File userHomeDir)
     {
-	NullCheck.notNullItems(cmdLine, "cmdLine");
-	NullCheck.notNull(dataDir, "dataDir");
-	NullCheck.notNull(userDataDir, "userDataDir");
-	NullCheck.notNull(userHomeDir, "userHomeDir");
+	notNullItems(cmdLine, "cmdLine");
+	notNull(dataDir, "dataDir");
+	notNull(userDataDir, "userDataDir");
+	notNull(userHomeDir, "userHomeDir");
 	org.luwrain.app.console.App.installListener();
-	    Log.info(LOG_COMPONENT, "starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
+	info("starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
 	initLog4j();
 	new JniLoader().autoload(this.getClass().getClassLoader());
-		this.standalone = standalone;
+	this.standalone = standalone;
 	this.cmdLine = new CmdLine(cmdLine);
 	this.dataDir = dataDir;
 	this.userDataDir = userDataDir;
@@ -61,7 +63,7 @@ public final class Launch implements Runnable
 	this.lang = Checks.detectLang(this.cmdLine);
 	if (lang.isEmpty())
 	{
-	    Log.fatal(LOG_COMPONENT, "unable to select a language to use");
+	    fatal("unable to select a language to use");
 	    System.exit(1);
 	}
 	final org.luwrain.core.properties.PropertiesFiles filesProps = new org.luwrain.core.properties.PropertiesFiles();
@@ -102,13 +104,13 @@ public final class Launch implements Runnable
 	    init();
 	    new Core(cmdLine, classLoader, registry, os, interaction, props, lang, this.standalone).run();
 	    interaction.close();
-	    Log.info(LOG_COMPONENT, "exiting LUWRAIN normally");
+	    info("exiting LUWRAIN normally");
 	    System.exit(0);
 	}
 	catch(Throwable e)
 	{
-	    Log.fatal(LOG_COMPONENT, "terminating LUWRAIN very abnormally due to the unexpected exception: " + e.getClass().getName() + ":" + e.getMessage());
-	    e.printStackTrace();
+	    error(e, "top level exception");
+	    fatal("terminating LUWRAIN abnormally");
 	    System.exit(1);
 	}
     }
@@ -126,31 +128,33 @@ public final class Launch implements Runnable
 		{
 		    TimeZone.setDefault(timeZone);
 		} else
-		    Log.warning(LOG_COMPONENT, "time zone " + value.trim() + " is unknown");
+		    warn("time zone " + value.trim() + " is unknown");
 	    }
 	}
 	initOs();
+
 	//Interaction
 	final InteractionParamsLoader interactionParams = new InteractionParamsLoader();
 	interactionParams.loadFromRegistry(registry);
 	final String interactionClass = props.getProperty("luwrain.class.interaction");
 	if (interactionClass.isEmpty())
 	{
-	    Log.fatal(LOG_COMPONENT, "unable to load the interaction:no luwrain.class.interaction property among loaded properties");
+	    fatal("unable to load the interaction:no luwrain.class.interaction property in loaded properties");
 	    System.exit(1);
 	}
 	interaction = (Interaction)org.luwrain.util.ClassUtils.newInstanceOf(this.classLoader, interactionClass, Interaction.class);
 	if (interaction == null)
 	{
-	    Log.fatal(LOG_COMPONENT, "Unable to create an instance of  the interaction class " + interactionClass);
+	    fatal("Unable to create an instance of  the interaction class " + interactionClass);
 	    System.exit(1);
 	}
 	if (!interaction.init(interactionParams,os))
 	{
-	    Log.fatal(LOG_COMPONENT, "interaction initialization failed");
+	    fatal("interaction initialization failed");
 	    System.exit(1);
 	}
-	//network
+
+	//Network
 	final Settings.Network network = Settings.createNetwork(registry);
 	//	System.getProperties().put("socksProxyHost", network.getSocksProxyHost(""));
 	//	System.getProperties().put("socksProxyPort", network.getSocksProxyPort(""));
@@ -159,17 +163,17 @@ public final class Launch implements Runnable
 	    System.setProperty("java.net.useSystemProxies", "true");
 	    System.setProperty("http.proxyHost", network.getHttpProxyHost(""));
 	    System.setProperty("https.proxyHost", network.getHttpProxyHost(""));
+	    debug("using system proxy: " + System.getProperty("java.net.useSystemProxies"));
+	    debug("HTTP proxy host is " + System.getProperty("http.proxyHost"));
+	    debug("HTTPS proxy host is " + System.getProperty("https.proxyHost"));
 	}
 	if (!network.getHttpProxyPort("").isEmpty())
 	{
 	    System.setProperty("http.proxyPort", network.getHttpProxyPort(""));
 	    System.setProperty("https.proxyPort", network.getHttpProxyPort(""));
+	    debug("HTTP proxy port is " + System.getProperty("http.proxyPort"));
+	    debug("HTTPS proxy port is " + System.getProperty("https.proxyPort"));
 	}
-	Log.debug(LOG_COMPONENT, "using system proxy: " + System.getProperty("java.net.useSystemProxies"));
-	Log.debug(LOG_COMPONENT, "HTTP proxy host is " + System.getProperty("http.proxyHost"));
-		Log.debug(LOG_COMPONENT, "HTTPS proxy host is " + System.getProperty("https.proxyHost"));
-			Log.debug(LOG_COMPONENT, "HTTP proxy port is " + System.getProperty("http.proxyPort"));
-		Log.debug(LOG_COMPONENT, "HTTPS proxy port is " + System.getProperty("https.proxyPort"));
 	System.getProperties().put("http.proxyUser", network.getHttpProxyUser(""));
 	System.getProperties().put("http.proxyPassword",network.getHttpProxyPassword("") );
     }
@@ -179,21 +183,21 @@ public final class Launch implements Runnable
 	final String osClass = props.getProperty("luwrain.class.os");
 	if (osClass.isEmpty())
 	{
-	    Log.fatal(LOG_COMPONENT, "unable to load the operating system interface:no luwrain.class.os property in loaded core properties");
+	    fatal("unable to load the operating system interface:no luwrain.class.os property in loaded core properties");
 	    System.exit(1);
 	}
 	os = (OperatingSystem)org.luwrain.util.ClassUtils.newInstanceOf(classLoader, osClass, OperatingSystem.class);
 	if (os == null)
 	{
-	    Log.fatal(LOG_COMPONENT, "unable to create a new instance of the operating system class " + osClass);
+	    fatal("unable to create a new instance of the operating system class " + osClass);
 	    System.exit(1);
 	}
 	final InitResult initRes = os.init(props);
 	if (initRes == null || !initRes.isOk())
 	{
 	    if (initRes != null)
-		Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName() + ":" + initRes.toString()); else
-		Log.fatal(LOG_COMPONENT, "unable to initialize operating system with " + os.getClass().getName());
+		fatal("unable to initialize operating system with " + os.getClass().getName() + ":" + initRes.toString()); else
+		fatal("unable to initialize operating system with " + os.getClass().getName());
 	    System.exit(1);
 	}
     }
@@ -279,7 +283,7 @@ public final class Launch implements Runnable
 	}
 	catch(IOException e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to init log4j: " + e.getClass().getName() + ": " + e.getMessage());
+	    error("e, unable to init log4j");
 	}
     }
 
@@ -293,9 +297,9 @@ public final class Launch implements Runnable
 
     private Registry loadMemRegistry(File dataDir, String lang)
     {
-	NullCheck.notNull(dataDir, "dataDir");
-	NullCheck.notEmpty(lang, "lang");
-	NullCheck.notNull(dataDir, "dataDir");
+	notNull(dataDir, "dataDir");
+	notEmpty(lang, "lang");
+	notNull(dataDir, "dataDir");
 	final org.luwrain.registry.mem.RegistryImpl reg = new org.luwrain.registry.mem.RegistryImpl();
 	try {
 	    reg.load(new File(dataDir, "registry.dat"));
@@ -304,7 +308,7 @@ public final class Launch implements Runnable
 	}
 	catch(IOException e)
 	{
-	    Log.fatal(LOG_COMPONENT, "unable to load initial registry data:" + e.getClass().getName() + ":" + e.getMessage());
+	    error(e, "unable to load initial registry data");
 	    System.exit(1);
 	    return null;
 	}

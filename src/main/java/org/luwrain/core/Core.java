@@ -160,7 +160,7 @@ final class Core extends EventDispatching
 	    }
 	    catch(ExtensionException e)
 	    {
-		error(e, "unable to load script " + scriptFile.toString());
+		error(e, "unable to load script " + f.toString());
 	    }
 	initI18n();
 	objRegistry.add(null, new StartingModeProperty());

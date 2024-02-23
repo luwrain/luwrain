@@ -290,6 +290,12 @@ abstract class Base implements EventConsumer
 	}
     }
 
+            static void fatal(String msg)
+    {
+	Log.debug(LOG_COMPONENT, msg);
+    }
+
+
     static void error(String msg)
     {
 	System.err.println("ERROR: " + msg);
@@ -332,6 +338,11 @@ abstract class Base implements EventConsumer
     static void warn(String msg)
     {
 	Log.warning(LOG_COMPONENT, msg);
+    }
+
+            static void info(String msg)
+    {
+	Log.info(LOG_COMPONENT, msg);
     }
 
         static void debug(String msg)
