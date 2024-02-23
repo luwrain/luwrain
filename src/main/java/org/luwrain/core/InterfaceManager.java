@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,46 +17,47 @@
 package org.luwrain.core;
 
 import java.util.*;
-import org.luwrain.util.*;
 
-public final class InterfaceManager
+import static org.luwrain.core.NullCheck.*;
+
+final class InterfaceManager
 {
-    private final Core core;
+        private final Core core;
     private final List<Entry> entries = new ArrayList<>();
-    final Luwrain objForEnvironment;
+    final Luwrain systemObj;
 
     InterfaceManager(Base base)
     {
-	NullCheck.notNull(base, "base");
-	this.core = (Core)base;
-	this.objForEnvironment = new LuwrainImpl((Core)base);
+	notNull(base, "base");
+		this.core = (Core)base;
+	this.systemObj = new LuwrainImpl(this.core);
     }
 
     Luwrain requestNew(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	final Luwrain existing = findFor(app);
 	if (existing != null)
 	    return existing;
 	final Luwrain luwrain = new LuwrainImpl(core);
-	entries.add(new Entry(Entry.APP, app, luwrain));
+	entries.add(new Entry(Entry.Type.APP, app, luwrain));
 	return luwrain;
     }
 
-    public Luwrain requestNew(Extension ext)
+    Luwrain requestNew(Extension ext)
     {
-	NullCheck.notNull(ext, "ext");
+	notNull(ext, "ext");
 	final Luwrain existing = findFor(ext);
 	if (existing != null)
 	    return existing;
 	final Luwrain luwrain = new LuwrainImpl(core);
-	entries.add(new Entry(Entry.EXTENSION, ext, luwrain));
+	entries.add(new Entry(Entry.Type.EXT, ext, luwrain));
 	return luwrain;
     }
 
     private Luwrain findFor(Object obj)
     {
-	NullCheck.notNull(obj, "obj");
+	notNull(obj, "obj");
 	for(Entry e:entries)
 	    if (e.obj == obj)
 		return e.luwrain;
@@ -65,10 +66,10 @@ public final class InterfaceManager
 
     Application findApp(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	notNull(luwrain, "luwrain");
 	for(Entry e: entries)
 	    if (e.luwrain == luwrain &&
-		e.type == Entry.APP &&
+		e.type == Entry.Type.APP &&
 		e.obj instanceof Application)
 		return (Application)e.obj;
 	return null;
@@ -79,15 +80,15 @@ public final class InterfaceManager
 	NullCheck.notNull(luwrain, "luwrain");
 	for(Entry e: entries)
 	    if (e.luwrain == luwrain &&
-		e.type == Entry.EXTENSION &&
+		e.type == Entry.Type.EXT &&
 		e.obj instanceof Extension)
 		return (Extension)e.obj;
 	return null;
     }
 
-public void release(Luwrain luwrain)
+void release(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	notNull(luwrain, "luwrain");
 	for(int i = 0;i < entries.size();i++)
 	    if (entries.get(i).luwrain == luwrain)
 	    {
@@ -96,26 +97,23 @@ public void release(Luwrain luwrain)
 	    }
     }
 
-    //returns true if it is object for the core or an extension instance
-    boolean isSuitsForEnvironmentPopup(Luwrain luwrain)
+    boolean forPopupsWithoutApp(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	return luwrain == objForEnvironment || findExt(luwrain) != null;
+	notNull(luwrain, "luwrain");
+	return luwrain == systemObj || findExt(luwrain) != null;
     }
 
-    static private class Entry
+    static private final class Entry
     {
-	static final int APP = 1;
-	static final int EXTENSION = 2;
-
-	final int type;
+	enum Type {APP, EXT};
+	final Type type;
 	final Object obj;
 	final Luwrain luwrain;
-
-	Entry(int type, Object obj, Luwrain luwrain)
+	Entry(Type type, Object obj, Luwrain luwrain)
 	{
-	    NullCheck.notNull(obj, "obj");
-	    NullCheck.notNull(luwrain, "luwrain");
+	    notNull(type, "type");
+	    notNull(obj, "obj");
+	    notNull(luwrain, "luwrain");
 	    this.type = type;
 	    this.obj = obj;
 	    this.luwrain = luwrain;

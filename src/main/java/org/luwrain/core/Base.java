@@ -43,7 +43,7 @@ abstract class Base implements EventConsumer
 
     protected final CmdLine cmdLine;
     protected final  Registry registry;
-    public final Luwrain luwrain;
+    final Luwrain luwrain;
     final PropertiesRegistry props;
     final HelpSections helpSects;
     protected final String lang;
@@ -58,7 +58,7 @@ abstract class Base implements EventConsumer
     private EventResponse eventResponse = null;
 
     protected final WorkersTracking workers = new WorkersTracking();
-    final JobsManager jobs = new JobsManager(getObjForEnvironment(), objRegistry);
+    final JobsManager jobs = new JobsManager(interfaces.systemObj, objRegistry);
     protected final I18nImpl i18n = new I18nImpl();
     final Speech speech;
     final org.luwrain.core.speech.SpeakingText speakingText = new org.luwrain.core.speech.SpeakingText(extensions);
@@ -74,21 +74,22 @@ abstract class Base implements EventConsumer
     protected Base(CmdLine cmdLine, Registry registry,
 			      PropertiesRegistry props, String lang)
     {
-	NullCheck.notNull(cmdLine, "cmdLine");
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(props, "props");
-	NullCheck.notEmpty(lang, "lang");
+	notNull(cmdLine, "cmdLine");
+	notNull(registry, "registry");
+	notNull(props, "props");
+	notEmpty(lang, "lang");
 	this.cmdLine = cmdLine;
+		this.luwrain = interfaces.systemObj;
 	this.registry = registry;
 	this.props = props;
-	this.props.setLuwrainObj(getObjForEnvironment());
+	this.props.setLuwrainObj(interfaces.systemObj);
 	this.lang = lang;
 	this.helpSects = new HelpSections(registry);
 	this.speech = new Speech(cmdLine, registry);
 	this.sounds = new org.luwrain.core.sound.SoundIcons(registry, props.getFileProperty(Luwrain.PROP_DIR_SOUNDS));
-	this.soundManager = new org.luwrain.core.sound.Manager(objRegistry, getObjForEnvironment());
+	this.soundManager = new org.luwrain.core.sound.Manager(objRegistry, interfaces.systemObj);
 	this.mainCoreThread = Thread.currentThread();
-	this.luwrain = getObjForEnvironment();
+
     }
 
     //True means the event is processed and there is no need to process it again;
@@ -179,7 +180,7 @@ abstract class Base implements EventConsumer
     {
 	speech.silence(); 
 	playSound(Sounds.NO_APPLICATIONS);
-	speech.speak(getObjForEnvironment().i18n().getStaticStr("NoLaunchedApps"), 0, 0);
+	speech.speak(i18n.getStaticStr("NoLaunchedApps"), 0, 0);
     }
 
     protected void areaInaccessibleMessage()
@@ -248,11 +249,6 @@ abstract class Base implements EventConsumer
     {
 	if (!isMainCoreThread())
 	    throw new RuntimeException("Not in the main thread of LUWRAIN core (current thread is \'" + Thread.currentThread().getName() + "\'");
-    }
-
-    public Luwrain getObjForEnvironment()
-    {
-	return interfaces.objForEnvironment;
     }
 
     String loadScript(ScriptFile scriptFile) throws ExtensionException
@@ -336,7 +332,7 @@ abstract class Base implements EventConsumer
 	    //	    if (e instanceof Exception)
 	    //		getObjForEnvironment().crash((Exception)e); else
 	    {
-		getObjForEnvironment().message(e.getClass().getName() + ":" + e.getMessage(), Luwrain.MessageType.ERROR);
+		luwrain.message(e.getClass().getName() + ":" + e.getMessage(), Luwrain.MessageType.ERROR);
 		error(e, "unexpected exception in apps");
 	    }
 	}

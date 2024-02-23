@@ -56,7 +56,7 @@ final class Commands
 	if (mainMenu.closing.cancelled())
 	    return;
 	final UniRefInfo result = mainMenu.result();
-	core.openUniRefIface(result.getValue());
+	core.uniRefProcs.open(result.getValue());
 		    }),
 
 	    new Cmd(
@@ -149,7 +149,7 @@ final class Commands
 			}
 			if (!line.trim().isEmpty())
 			    core.speech.speak(line, 0, 0); else
-			    core.getObjForEnvironment().setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
+			    core.luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
 			core.announcement = null;
 		    }),
 
@@ -530,7 +530,7 @@ final class Commands
 	    new Cmd(
 		    "run",
 		    (luwrain)->{
-			final String cmd = Popups.editWithHistory(core.getObjForEnvironment(), luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
+			final String cmd = Popups.editWithHistory(core.luwrain, luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
 			if (cmd == null || cmd.trim().isEmpty())
 			    return;
 			final String dir;
@@ -553,9 +553,14 @@ final class Commands
 	return new Command[]{
 
 	    new Cmd(
-		    "control-panel",
-		    (luwrain)->{
-			final Application app = new org.luwrain.app.cpanel.ControlPanelApp(core.getControlPanelFactories());
+		    "control-panel", luwrain->{
+
+	final List<org.luwrain.cpanel.Factory> res = new ArrayList<>();
+	for(final var e: core.extensions.extensions)
+	    for(final var f: e.ext.getControlPanelFactories(e.luwrain))//FIXME: unsafe wrapper
+		    if (f != null)
+			res.add(f);
+	final Application app = new org.luwrain.app.cpanel.ControlPanelApp(res.toArray(new org.luwrain.cpanel.Factory[res.size()]));
 			core.launchApp(app);
 		    }),
 

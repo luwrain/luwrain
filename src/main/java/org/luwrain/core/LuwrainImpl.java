@@ -171,7 +171,7 @@ final class LuwrainImpl implements Luwrain
 
     @Override public I18n i18n()
     {
-	return core.i18nIface();
+	return core.i18n;
     }
 
     @Override public void crash(org.luwrain.app.crash.App app)
@@ -390,9 +390,26 @@ final class LuwrainImpl implements Luwrain
 
     @Override public void popup(Popup popup)
     {
-	NullCheck.notNull(popup, "popup");
+	notNull(popup, "popup");
 	core.mainCoreThreadOnly();
-	core.popupIface(popup);
+	final Luwrain luwrainObj = popup.getLuwrainObject();
+	if (luwrainObj == null)
+	    throw new IllegalArgumentException("The popup doesn't contain any Luwrain object");
+	final StopCondition stopCondition = ()->popup.isPopupActive();
+		if (core.interfaces.forPopupsWithoutApp(luwrainObj))
+	{
+	    core.popup(null, popup, Popup.Position.BOTTOM, stopCondition,
+		      popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
+	    return;
+	}
+	final Application app = core.interfaces.findApp(luwrainObj);
+	if (app == null)
+	{
+	    warn("trying to open a popup with the Luwrain obj which isn't allowed to open popups");
+	    throw new IllegalArgumentException("the luwrain object provided by the popup isn't allowed to open popups");
+	}
+	core.popup(app, popup, Popup.Position.BOTTOM, stopCondition, 
+		  popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
     }
 
     @Override public boolean runCommand(String command)
@@ -538,9 +555,9 @@ final class LuwrainImpl implements Luwrain
 
     @Override public boolean openUniRef(String uniRef)
     {
-	NullCheck.notNull(uniRef, "uniRef");
+	notNull(uniRef, "uniRef");
 	core.mainCoreThreadOnly();
-	return core.openUniRefIface(uniRef);
+	return core.uniRefProcs.open(uniRef);
     }
 
     @Override public boolean openUniRef(UniRefInfo uniRefInfo)
@@ -708,7 +725,7 @@ final class LuwrainImpl implements Luwrain
     {
 	NullCheck.notNull(extObj, "extObj");
 	core.mainCoreThreadOnly();
-	if (this != core.getObjForEnvironment())
+	if (this != core.luwrain)
 	    throw new RuntimeException("registerExtObj() may be called only for privileged interfaces");
 	return core.objRegistry.add(null, extObj);
     }

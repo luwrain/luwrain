@@ -44,7 +44,7 @@ public class Search implements Area
 	    hotPointX = 0;
 	if (hotPointY < 0)
 	    hotPointY = 0;
-	core.message(core.i18nIface().getStaticStr("SearchMode"), Luwrain.MessageType.NONE);
+	core.message(core.i18n.getStaticStr("SearchMode"), Luwrain.MessageType.NONE);
 	core.playSound(Sounds.SEARCH);
     }
 

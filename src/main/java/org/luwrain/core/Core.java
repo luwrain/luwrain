@@ -21,8 +21,6 @@ import java.util.concurrent.atomic.*;
 import java.io.*;
 
 import org.luwrain.core.events.*;
-import org.luwrain.i18n.*;
-import org.luwrain.popups.*;
 import org.luwrain.core.listening.*;
 import org.luwrain.script.Hooks;
 
@@ -57,7 +55,7 @@ final class Core extends EventDispatching
 	this.classLoader = classLoader;
 	this.os = os;
 	this.interaction = interaction;
-	this.conversations = new org.luwrain.core.shell.Conversations(getObjForEnvironment());
+	this.conversations = new org.luwrain.core.shell.Conversations(luwrain);
 	this.standalone = standalone;
     }
 
@@ -99,7 +97,7 @@ final class Core extends EventDispatching
 	notNull(eventResponse, "eventResponse");
 	//FIXME:access level
 	final EventResponse.Speech s = new org.luwrain.core.speech.EventResponseSpeech(speech, i18n, speakingText);
-	eventResponse.announce(getObjForEnvironment(), s);
+	eventResponse.announce(luwrain, s);
     }
 
     Area getActiveArea(boolean speakMessages)
@@ -244,13 +242,13 @@ final class Core extends EventDispatching
     private void initObjects()
     {
 	for(Command sc: Commands.getCommands(this, conversations))
-	    commands.add(getObjForEnvironment(), sc);//FIXME:
+	    commands.add(luwrain, sc);//FIXME:
 	if (!standalone)
 	    for(Command sc: Commands.getNonStandaloneCommands(this, conversations))
-		commands.add(getObjForEnvironment(), sc);//FIXME:
-	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(getObjForEnvironment());
+		commands.add(luwrain, sc);//FIXME:
+	final UniRefProc[] standardUniRefProcs = UniRefProcs.createStandardUniRefProcs(luwrain);
 	for(UniRefProc proc: standardUniRefProcs)
-	    uniRefProcs.add(getObjForEnvironment(), proc);//FIXME:
+	    uniRefProcs.add(luwrain, proc);//FIXME:
 	for(final var e: extensions.extensions)
 	{
 	    objRegistry.takeObjects(e.ext, e.luwrain);
@@ -296,7 +294,7 @@ final class Core extends EventDispatching
 	final org.luwrain.player.Factory factory = (org.luwrain.player.Factory)o;
 	try {
 	    final org.luwrain.player.Factory.Params params = new org.luwrain.player.Factory.Params();
-	    params.luwrain = getObjForEnvironment();
+	    params.luwrain = luwrain;
 	    this.player = factory.newPlayer(params);
 	    if (this.player == null)
 	    {
@@ -334,7 +332,7 @@ final class Core extends EventDispatching
 	apps.setDefaultApp(desktop);
     }
 
-    public void quit()
+    void quit()
     {
 	    mainStopCondition.stop();
     }
@@ -490,7 +488,7 @@ if (initResult.getType() != InitResult.Type.OK)
     {
 	notNull(instance, "instance");
 	mainCoreThreadOnly();
-	if (instance == getObjForEnvironment())
+	if (instance == luwrain)
 	    throw new IllegalArgumentException("Trying to close an application through the special interface object");
 	final Application app = interfaces.findApp(instance);
 	if (app == null)
@@ -546,7 +544,7 @@ if (initResult.getType() != InitResult.Type.OK)
 	announceActiveArea();
     }
 
-    public void popup(Application app, Area area, Popup.Position pos, StopCondition stopCondition, boolean noMultipleCopies, boolean isWeakPopup)
+    void popup(Application app, Area area, Popup.Position pos, StopCondition stopCondition, boolean noMultipleCopies, boolean isWeakPopup)
     {
 	notNull(area, "area");
 	notNull(pos, "pos");
@@ -625,7 +623,7 @@ onNewAreasLayout();
 	return windowManager.getAreaVisibleWidth(effectiveArea);
     }
 
-    public void message(String text, Luwrain.MessageType messageType)
+    void message(String text, Luwrain.MessageType messageType)
     {
 	NullCheck.notNull(text, "text");
 	NullCheck.notNull(messageType, "messageType");
@@ -659,7 +657,7 @@ onNewAreasLayout();
 	}
     }
 
-    public void message(String text, Sounds sound)
+    void message(String text, Sounds sound)
     {
 	mainCoreThreadOnly();
 	if (text == null || text.trim().isEmpty())
@@ -708,74 +706,14 @@ onNewAreasLayout();
 	return registry;
     }
 
-    public void popupIface(Popup popup)
+            boolean runCommand(String command)
     {
-	NullCheck.notNull(popup, "popup");
-	mainCoreThreadOnly();
-	final Luwrain luwrainObject = popup.getLuwrainObject();
-	final StopCondition stopCondition = ()->popup.isPopupActive();
-	NullCheck.notNull(luwrainObject, "luwrainObject");
-	NullCheck.notNull(stopCondition, "stopCondition");
-	if (interfaces.isSuitsForEnvironmentPopup(luwrainObject))
-	{
-	    popup(null, popup, Popup.Position.BOTTOM, stopCondition,
-		      popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
-	    return;
-	}
-	final Application app = interfaces.findApp(luwrainObject);
-	if (app == null)
-	{
-	    Log.warning("core", "somebody is trying to get a popup with fake Luwrain object");
-	    throw new IllegalArgumentException("the luwrain object provided by a popup is fake");
-	}
-	popup(app, popup, Popup.Position.BOTTOM, stopCondition, 
-		  popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
-    }
-
-    //FIXME:
-    public I18n i18nIface()
-    {
-	return i18n;
-    }
-    /*
-    void mainMenu()
-    {
-	mainCoreThreadOnly();
-	final org.luwrain.core.shell.MainMenu mainMenu = org.luwrain.core.shell.MainMenu.newMainMenu(getObjForEnvironment());
-	if (mainMenu == null)
-	    return;
-	popup(null, mainMenu, Popup.Position.LEFT, ()->mainMenu.closing.continueEventLoop(), true, true);
-	if (mainMenu.closing.cancelled())
-	    return;
-	final UniRefInfo result = mainMenu.result();
-	openUniRefIface(result.getValue());
-    }
-    */
-
-    boolean runCommand(String command)
-    {
-	NullCheck.notNull(command, "command");
+	notNull(command, "command");
 	mainCoreThreadOnly();
 	if (command.trim().isEmpty())
 	    return false;
 	return commands.run(command.trim());
     }
-
-    boolean openUniRefIface(String uniRef)
-    {
-	return uniRefProcs.open(uniRef);
-    }
-
-    org.luwrain.cpanel.Factory[] getControlPanelFactories()
-    {
-	final List<org.luwrain.cpanel.Factory> res = new ArrayList<>();
-	for(final var e: extensions.extensions)
-	    for(org.luwrain.cpanel.Factory f: e.ext.getControlPanelFactories(e.luwrain))
-		    if (f != null)
-			res.add(f);
-	return res.toArray(new org.luwrain.cpanel.Factory[res.size()]);
-    }
-
 
     void startAreaListening()
     {
@@ -784,7 +722,7 @@ onNewAreasLayout();
 	    return;
 	stopAreaListening();
 	speech.silence();
-	this.listening = new Listening(getObjForEnvironment(), speech, activeArea, ()->listeningProp.setStatus(false));
+	this.listening = new Listening(luwrain, speech, activeArea, ()->listeningProp.setStatus(false));
 	final AtomicBoolean res = new AtomicBoolean();
 	unsafeAreaOperation(()->res.set(listening.start()));
 	if (res.get())
