@@ -47,15 +47,34 @@ final class Commands
 	return new Command[]{
 
 	    new Cmd(
-		    "main-menu",
-		    (luwrain)->{
-			core.mainMenu();
+		    "main-menu", luwrain->{
+	core.mainCoreThreadOnly();
+	final var mainMenu = org.luwrain.core.shell.MainMenu.newMainMenu(core.luwrain);
+	if (mainMenu == null)
+	    return;
+	core.popup(null, mainMenu, Popup.Position.LEFT, ()->mainMenu.closing.continueEventLoop(), true, true);
+	if (mainMenu.closing.cancelled())
+	    return;
+	final UniRefInfo result = mainMenu.result();
+	core.openUniRefIface(result.getValue());
 		    }),
 
 	    new Cmd(
 		    "search",
 		    (luwrain)->{
-			core.activateAreaSearch();
+			//			core.activateAreaSearch();
+
+				final Area activeArea = core.getActiveArea(true);
+	if (activeArea == null)
+	    return;
+	if (!core.apps.setAreaWrapper(activeArea, new AreaWrapperFactory() {
+				      @Override public Area createAreaWrapper(Area areaToWrap, Disabling disabling)
+				      {
+					  return new Search(areaToWrap, core, disabling);
+				      }
+				  }))
+	    core.playSound(Sounds.EVENT_NOT_PROCESSED);
+	core.onNewAreasLayout();
 		    }),
 
 	    new Cmd(
@@ -292,9 +311,28 @@ final class Commands
 		    }),
 
 	    new Cmd(
-		    "context-menu",
-		    (luwrain)->{
-			core.showContextMenu();
+		    "context-menu", luwrain->{
+	final Area activeArea = core.getActiveArea(true);
+	if (activeArea == null)
+	    return;
+	final var act = new AtomicReference<Action[]>();
+	core.unsafeAreaOperation(()->act.set(activeArea.getAreaActions()));
+	if (act.get() == null || act.get().length == 0)
+	{
+	    core.areaInaccessibleMessage();
+	    return;
+	}
+	final var menu = new org.luwrain.core.shell.ContextMenu(core.luwrain, act.get());
+	core.popup(null, menu, Popup.Position.RIGHT, ()->menu.isPopupActive(), true, true);
+	if (menu.wasCancelled())
+	    return;
+	final Object selected = menu.selected();
+	if (selected == null || !(selected instanceof Action))//Should never happen
+	    return;
+	final var r = new AtomicBoolean(false);
+	core.unsafeAreaOperation(()->r.set(activeArea.onSystemEvent(new ActionEvent((Action)selected))));
+	if (!r.get())
+	    core.areaInaccessibleMessage();
 		    }),
 
 	    //copy-uniref-area

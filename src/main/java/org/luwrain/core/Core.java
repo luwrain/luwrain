@@ -737,7 +737,7 @@ onNewAreasLayout();
     {
 	return i18n;
     }
-
+    /*
     void mainMenu()
     {
 	mainCoreThreadOnly();
@@ -750,6 +750,7 @@ onNewAreasLayout();
 	final UniRefInfo result = mainMenu.result();
 	openUniRefIface(result.getValue());
     }
+    */
 
     boolean runCommand(String command)
     {
@@ -775,50 +776,6 @@ onNewAreasLayout();
 	return res.toArray(new org.luwrain.cpanel.Factory[res.size()]);
     }
 
-    void activateAreaSearch()
-    {
-	final Area activeArea = getActiveArea(true);
-	if (activeArea == null)
-	    return;
-	if (!apps.setAreaWrapper(activeArea, new AreaWrapperFactory() {
-				      @Override public Area createAreaWrapper(Area areaToWrap, Disabling disabling)
-				      {
-					  return new Search(areaToWrap, Core.this, disabling);
-				      }
-				  }))
-	    playSound(Sounds.EVENT_NOT_PROCESSED);
-	onNewAreasLayout();
-    }
-
-    void showContextMenu()
-    {
-	final Area activeArea = getActiveArea(true);
-	if (activeArea == null)
-	    return;
-	final AtomicReference<Object> res = new AtomicReference<>();
-	unsafeAreaOperation(()->res.set(activeArea.getAreaActions()));
-	if (res.get() == null || !(res.get() instanceof Action[]))
-	{
-	    areaInaccessibleMessage();
-	    return;
-	}
-	final Action[] actions = (Action[])res.get();
-	if (actions.length == 0)
-	{
-	    areaInaccessibleMessage();
-	    return;
-	}
-	final org.luwrain.core.shell.ContextMenu menu = new org.luwrain.core.shell.ContextMenu(getObjForEnvironment(), actions);
-	popup(null, menu, Popup.Position.RIGHT, ()->menu.isPopupActive(), true, true);
-	if (menu.wasCancelled())
-	    return;
-	final Object selected = menu.selected();
-	if (selected == null || !(selected instanceof Action))//Should never happen
-	    return;
-	unsafeAreaOperation(()->res.set(Boolean.valueOf(activeArea.onSystemEvent(new ActionEvent((Action)selected)))));
-	if (res.get() == null || !(res.get() instanceof Boolean) || !((Boolean)res.get()).booleanValue())
-	    areaInaccessibleMessage();
-    }
 
     void startAreaListening()
     {
