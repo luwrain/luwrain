@@ -114,7 +114,7 @@ windows = constructLayoutOfApp(activeApp); else
 	    windows = new Tiles();
 	if (isPopupOpened())
 	{
-	    final Tile popupWindow = new Tile(apps.getAppOfLastPopup(), apps.getFrontAreaOfTopPopup(), apps.getPositionOfLastPopup());
+	    final Tile popupWindow = new Tile(apps.getAppOfLastPopup(), apps.getFrontAreaOfTopPopup(), apps.getPositionOfTopPopup());
 	    switch(popupWindow.popupPos)
 	    {
 	    case BOTTOM:

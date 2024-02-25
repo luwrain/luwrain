@@ -283,7 +283,7 @@ final class AppManager
 		final int appIndex = findApp(popup.app);
 		if (appIndex < 0)
 		{
-		    Log.warning(LOG_COMPONENT, "last popup is associated with the unknown application");
+		    warn("The top popup is associated with unknown app");
 		    return null;
 		}
 		launchedApp = apps.get(appIndex);
@@ -306,18 +306,18 @@ final class AppManager
 
     boolean isAppLaunched(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	if (isDesktopApp(app))
 	    return true;
 	return findApp(app) >= 0;
     }
 
-    //app may not be null, environment popups should be processed with getCorrespondingEffectiveArea(area);
+    //app can't be null, environment popups should be processed with getCorrespondingEffectiveArea(area);
     //Area may be an area of any kind, either natural or wrapping;
     Area getCorrespondingEffectiveArea(Application app, Area area)
     {
-	NullCheck.notNull(app, "app");
-	NullCheck.notNull(area, "area");
+	notNull(app, "app");
+	notNull(area, "area");
 	if (isDesktopApp(app))
 	    return this.desktopApp.getCorrespondingFrontArea(area);
 	final int index = findApp(app);
@@ -329,7 +329,7 @@ final class AppManager
     //Area may be an area of any kind, either natural or wrapping;
     Area getCorrespondingEffectiveArea(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	if (hasDesktopApp())
 	{
 	    final Area res = this.desktopApp.getCorrespondingFrontArea(area);
@@ -360,7 +360,7 @@ final class AppManager
      */
     OpenedArea getAreaWrapping(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	if (hasDesktopApp())
 	{
 	    final OpenedArea res = this.desktopApp.getAreaWrapping(area);
@@ -381,8 +381,8 @@ final class AppManager
 
     boolean setAreaWrapper(Area area, AreaWrapperFactory factory)
     {
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(factory, "factory");
+	notNull(area, "area");
+	notNull(factory, "factory");
 	final OpenedArea wrapping = getAreaWrapping(area);
 	if (wrapping == null || wrapping.wrapper != null)
 	    return false;
@@ -393,7 +393,7 @@ final class AppManager
 	return true;
     }
 
-    Popup.Position getPositionOfLastPopup()
+    Popup.Position getPositionOfTopPopup()
     {
 	if (popups.isEmpty())
 	    return null;
@@ -430,16 +430,9 @@ final class AppManager
 	}
     }
 
-    void cancelLastPopup()
-    {
-	if (popups.isEmpty())
-	    return;
-	popups.get(popups.size() - 1).stopCondition.cancel();
-    }
-
     void sendBroadcastEvent(org.luwrain.core.events.SystemEvent event)
     {
-	NullCheck.notNull(event, "event");
+	notNull(event, "event");
 	//	shell.sendBroadcastEvent(event);
 	for(LaunchedApp a: apps)
 	    a.sendBroadcastEvent(event);
