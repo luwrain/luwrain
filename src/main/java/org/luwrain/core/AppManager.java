@@ -297,11 +297,11 @@ final class AppManager
     {
 	notNull(app, "app");
 	if (isDesktopApp(app))
-	    return this.desktopApp.getEffectiveAreaLayout();
+	    return this.desktopApp.getFrontAreaLayout();
 	final int index = findApp(app);
 	if (index < 0)
 	    return null;
-	return apps.get(index).getEffectiveAreaLayout();
+	return apps.get(index).getFrontAreaLayout();
     }
 
     boolean isAppLaunched(Application app)

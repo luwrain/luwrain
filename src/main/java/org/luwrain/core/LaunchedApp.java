@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -23,7 +23,7 @@ final class LaunchedApp extends LaunchedAppPopups
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
-final Application app;
+    final Application app;
     AreaLayout.Type layoutType;
     Area[] areas;
     OpenedArea[] areaWrappings;
@@ -43,15 +43,15 @@ final Application app;
 	areas = layout.getAreas();
 	if (areas == null)
 	{
-	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has area layout without areas");
+	    error("application " + app.getClass().getName() + " has area layout without areas");
 	    return false;
 	}
-	areaWrappings = new OpenedArea[areas.length];
+	this.areaWrappings = new OpenedArea[areas.length];
 	for(int i = 0;i < areas.length;++i)
 	{
 	    if (areas[i] == null)
 	    {
-		Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has a null area");
+		error("application " + app.getClass().getName() + " has a null area");
 		return false;
 	    }
 	    areaWrappings[i] = new OpenedArea(areas[i]);
@@ -67,7 +67,7 @@ final Application app;
 	final Area[] newAreas = newLayout.getAreas();
 	if (newAreas == null)
 	{
-	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has area layout without areas");
+	    error("application " + app.getClass().getName() + " has area layout without areas");
 	    return false;
 	}
 	final OpenedArea[] newAreaWrappings = new OpenedArea[newAreas.length];
@@ -94,24 +94,23 @@ final Application app;
 
     private AreaLayout getValidAreaLayout()
     {
-	AreaLayout layout;
+	final AreaLayout layout;
 	try {
 	    layout = app.getAreaLayout();
 	}
 	catch (Throwable e)
 	{
-	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has thrown an exception on getAreaLayout():" + e.getMessage());
-	    e.printStackTrace();
+	    error(e, "application " + app.getClass().getName() + " has thrown an exception on getAreaLayout()");
 	    return null;
 	}
 	if (layout == null)
 	{
-	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has returned an empty area layout");
+	    error("application " + app.getClass().getName() + " has returned an empty area layout");
 	    return null;
 	}
 	if (!layout.isValid())
 	{
-	    Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has returned an invalid area layout");
+	    error("application " + app.getClass().getName() + " has returned an invalid area layout");
 	    return null;
 	}
 	return layout;
@@ -127,7 +126,7 @@ final Application app;
     //Takes the reference of any kind, either to original area  or to a wrapper
     boolean setActiveArea(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	if (areaWrappings == null)
 	    return false;
 	int index = 0;
@@ -164,7 +163,7 @@ final Application app;
 	return super.getAreaWrapping(area);
     }
 
-    AreaLayout getEffectiveAreaLayout()
+    AreaLayout getFrontAreaLayout()
     {
 	final Area[] a = new Area[areas.length];
 	for(int i = 0;i < areaWrappings.length;++i)
@@ -174,7 +173,7 @@ final Application app;
 
     void sendBroadcastEvent(org.luwrain.core.events.SystemEvent event)
     {
-	NullCheck.notNull(event, "event");
+	notNull(event, "event");
 	//	super.sendBroadcastEvent(event);
 	for(OpenedArea w: areaWrappings)
 	    w.getFrontArea().onSystemEvent(event);

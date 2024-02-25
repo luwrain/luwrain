@@ -37,7 +37,7 @@ public final class AreaLayout
     public AreaLayout(Area area)
     {
 	layoutType = SINGLE;
-		notNull(area, "area");
+	notNull(area, "area");
 	this.area1 = area;
 	this.area2 = null;
 	this.area3 = null;
@@ -46,7 +46,7 @@ public final class AreaLayout
     public AreaLayout(Type layoutType, Area area1, Area area2)
     {
 	notNull(layoutType, "layoutType");
-		notNull(area1, "area1");
+	notNull(area1, "area1");
 	notNull(area2, "area2");
 	if (layoutType != LEFT_RIGHT && layoutType != TOP_BOTTOM)
 	    throw new IllegalArgumentException("Illegal layoutType " + layoutType);
@@ -79,7 +79,7 @@ public final class AreaLayout
 	case SINGLE:
 	    if (areas.length < 1)
 		throw new IllegalArgumentException("areas array must have at least one element");
-	    	    notNull(areas[0], "areas[0]");
+	    notNull(areas[0], "areas[0]");
 	    this.area1 = areas[0];
 	    this.area2 = null;
 	    this.area3 = null;
@@ -88,7 +88,7 @@ public final class AreaLayout
 	case TOP_BOTTOM:
 	    if (areas.length < 2)
 		throw new IllegalArgumentException("areas array must have at least two elements");
-	    	    notNull(areas[0], "areas[0]");
+	    notNull(areas[0], "areas[0]");
 	    notNull(areas[1], "areas[1]");
 	    this.area1 = areas[0];
 	    this.area2 = areas[1];
@@ -98,7 +98,7 @@ public final class AreaLayout
 	case LEFT_RIGHT_BOTTOM:
 	    if (areas.length < 3)
 		throw new IllegalArgumentException("areas array must have at least three elements");
-	    	    notNull(areas[0], "areas[0]");
+	    notNull(areas[0], "areas[0]");
 	    notNull(areas[1], "areas[1]");
 	    notNull(areas[2], "areas[2]");
 	    this.area1 = areas[0];
@@ -106,31 +106,9 @@ public final class AreaLayout
 	    this.area3 = areas[2];
 	    return;
 	default:
-	    throw new IllegalArgumentException("Illegal layoutType " + layoutType);
+	    throw new IllegalArgumentException("Illegal layoutType " + layoutType.toString());
 	}
     }
-
-    /*
-    public int getLayoutType()
-    {
-	return layoutType;
-    }
-
-    public Area getArea1()
-    {
-	return area1;
-    }
-
-    public Area getArea2()
-    {
-	return area2;
-    }
-
-    public Area getArea3()
-    {
-	return area3;
-    }
-    */
 
     public boolean isValid()
     {
@@ -202,7 +180,7 @@ public final class AreaLayout
 	return null;
     }
 
-        public Area getPrevArea(Area area)
+    public Area getPrevArea(Area area)
     {
 	NullCheck.notNull(area, "area");
 	final Area[] areas = getAreas();
