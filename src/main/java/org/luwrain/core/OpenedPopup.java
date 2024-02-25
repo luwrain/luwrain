@@ -31,8 +31,7 @@ final class OpenedPopup
 		int index,
 		Popup.Position position,
 		Base.PopupStopCondition stopCondition,
-		boolean noMultipleCopies,
-		boolean isWeak)
+		boolean noMultipleCopies)
     {
 	//app can be null
 	notNull(position, "position");

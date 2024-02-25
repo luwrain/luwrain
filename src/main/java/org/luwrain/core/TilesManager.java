@@ -46,7 +46,7 @@ final class TilesManager
 		activePopup = false;
 	} else
 	{
-	    if (apps.noEffectiveActiveArea() && isPopupOpened())
+	    if (apps.getFrontActiveAreaForActiveApp() == null && isPopupOpened())
 		activePopup = true;
 	}
     }
@@ -54,14 +54,14 @@ final class TilesManager
     Area getActiveArea()
     {
 	    if (isPopupActive())
-		return apps.getEffectiveAreaOfLastPopup();
-	final Area activeArea = apps.getEffectiveActiveAreaOfActiveApp();
+		return apps.getFrontAreaOfTopPopup();
+	final Area activeArea = apps.getFrontActiveAreaForActiveApp();
 	if (activeArea != null)
 	    return activeArea;
 	if (isPopupOpened())
 	{
 	    activePopup = true;
-	    return apps.getEffectiveAreaOfLastPopup();
+	    return apps.getFrontAreaOfTopPopup();
 	}
 	return null;
     }
@@ -100,7 +100,7 @@ boolean isPopupActive()
 	activePopup = tiles[index].popup;
 	if (!activePopup)
 	{
-	    apps.setActiveAreaOfApp(tiles[index].app, tiles[index].area);
+	    apps.setActiveAreaForApp(tiles[index].app, tiles[index].area);
 	    apps.setActiveApp(tiles[index].app);
 	}
     }
@@ -114,7 +114,7 @@ windows = constructLayoutOfApp(activeApp); else
 	    windows = new Tiles();
 	if (isPopupOpened())
 	{
-	    final Tile popupWindow = new Tile(apps.getAppOfLastPopup(), apps.getEffectiveAreaOfLastPopup(), apps.getPositionOfLastPopup());
+	    final Tile popupWindow = new Tile(apps.getAppOfLastPopup(), apps.getFrontAreaOfTopPopup(), apps.getPositionOfLastPopup());
 	    switch(popupWindow.popupPos)
 	    {
 	    case BOTTOM:
@@ -141,7 +141,7 @@ windows = constructLayoutOfApp(activeApp); else
 	final Application app = apps.getAppOfLastPopup();
 	if (app == null)//it is an environment popup
 	    return true;
-	return apps.isAppActive(app);
+	return apps.isActiveApp(app);
     }
 
     private Tiles constructLayoutOfApp(Application app)

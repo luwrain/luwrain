@@ -18,6 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 
+import static org.luwrain.core.Base.*;
 import static org.luwrain.core.NullCheck.*;
 
 final class AppManager
@@ -25,37 +26,31 @@ final class AppManager
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
     private LaunchedApp desktopApp = null;
-    private final ArrayList<LaunchedApp> apps = new ArrayList<LaunchedApp>();
+    private final ArrayList<LaunchedApp> apps = new ArrayList<>();
     private int activeAppIndex = -1;
     private final LaunchedAppPopups shell = new LaunchedAppPopups();
     private final List<OpenedPopup> popups = new ArrayList<>();
 
-    void setDefaultApp(Application app)
+    void setDesktopApp(Application app)
     {
-	NullCheck.notNull(app, "app");
-	this.desktopApp = new LaunchedApp(app);
-	if (!this.desktopApp.init())
+	notNull(app, "app");
+	final var newApp = new LaunchedApp(app);
+	if (!newApp.init())
 	    throw new IllegalStateException("Unable to initialize the desktop app");
+	this.desktopApp = newApp;
     }
 
-    Application getDefaultApp()
-    {
-	if (!hasDesktopApp())
-	    return null;
-	return desktopApp.app;
-    }
-
-    Application[] getLaunchedApps()
+    List<Application> getLaunchedApps()
     {
 	final List<Application> res = new ArrayList<>();
 	for(LaunchedApp a: apps)
 	    res.add(a.app);
-	return res.toArray(new Application[res.size()]);
+	return res;
     }
 
     boolean setActiveApp(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	final int index = findApp(app);
 	if (index < 0)
 	    return false;
@@ -63,9 +58,9 @@ final class AppManager
 	return true;
     }
 
-    boolean isAppActive(Application app)
+    boolean isActiveApp(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	if (isDesktopApp(app) && activeAppIndex < 0)
 	    return true;
 	if (activeAppIndex < 0)
@@ -84,7 +79,7 @@ final class AppManager
 
     boolean newApp(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	final Application activeNow = activeAppIndex >= 0?apps.get(activeAppIndex).app:null;
 	final int index = findApp(app);
 	if (index >= 0)
@@ -102,12 +97,12 @@ final class AppManager
 	return true;
     }
 
-    void closeApp(Application app)
+    void removeApp(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	final int index = findApp(app);
 	if (index == -1)
-	    return;
+	    throw new IllegalArgumentException("Trying to remove an unknown app of class " + app.getClass().getName());
 	final LaunchedApp removedApp = apps.get(index);
 	apps.remove(index);
 	for(LaunchedApp a: apps)
@@ -123,7 +118,7 @@ final class AppManager
 	    activeAppIndex = apps.size() - 1;
 	    return;
 	}
-	//Trying to activate the application which was active before launch of the one being removed;
+	//Trying to activate the app which was active before the removed one has been launched
 	activeAppIndex = findApp(removedApp.activeAppBeforeLaunch);
 	if (activeAppIndex < 0)//We have a bug in this case
 	    activeAppIndex = apps.size() - 1;
@@ -151,7 +146,7 @@ final class AppManager
 
     boolean updateAppAreaLayout(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	if (isDesktopApp(app))
 	    return this.desktopApp.refreshAreaLayout();
 	final int index = findApp(app);
@@ -171,10 +166,10 @@ final class AppManager
      * @param area The reference to new active area (to the original area or to any wrapper)
      * @return True if new active area was set, false otherwise
      */
-    boolean setActiveAreaOfApp(Application app, Area area)
+    boolean setActiveAreaForApp(Application app, Area area)
     {
-	NullCheck.notNull(app, "app");
-	NullCheck.notNull(area, "area");
+	notNull(app, "app");
+	notNull(area, "area");
 	if (isDesktopApp(app))
 	    return this.desktopApp.setActiveArea(area);
 	final int index = findApp(app);
@@ -183,18 +178,7 @@ final class AppManager
 	return apps.get(index).setActiveArea(area);
     }
 
-    Area getEffectiveActiveAreaOfApp(Application app)
-    {
-	NullCheck.notNull(app, "app");
-	if (isDesktopApp(app))
-	    return this.desktopApp.getFrontActiveArea();
-	final int index = findApp(app);
-	if (index < 0)
-	    return null;
-	return apps.get(index).getFrontActiveArea();
-    }
-
-    Area getEffectiveActiveAreaOfActiveApp()
+    Area getFrontActiveAreaForActiveApp()
     {
 	if (activeAppIndex < 0 && hasDesktopApp())
 	    return this.desktopApp.getFrontActiveArea();
@@ -203,17 +187,12 @@ final class AppManager
 	return null;
     }
 
-    boolean noEffectiveActiveArea()
+    //The null app means system popup
+    void addNewPopup(Application app, Area area, Popup.Position position, Base.PopupStopCondition stopCondition, boolean noMultipleCopies)
     {
-	return getEffectiveActiveAreaOfActiveApp() == null;
-    }
-
-    //null app means system popup;
-    void addNewPopup(Application app, Area area, Popup.Position position, Base.PopupStopCondition stopCondition, boolean noMultipleCopies, boolean isWeak)
-    {
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(position, "position");
-	NullCheck.notNull(stopCondition, "stopCondition");
+	notNull(area, "area");
+	notNull(position, "position");
+	notNull(stopCondition, "stopCondition");
 	final LaunchedAppPopups launchedApp;
 	if (app != null)
 	{
@@ -228,14 +207,14 @@ final class AppManager
 	} else
 	    launchedApp = shell;
 	final int popupIndex = 	launchedApp.addPopup(area);
-	popups.add(new OpenedPopup(app, popupIndex, position, stopCondition, noMultipleCopies, isWeak));
+	popups.add(new OpenedPopup(app, popupIndex, position, stopCondition, noMultipleCopies));
     }
 
     void closeLastPopup()
     {
 	if (popups.isEmpty())
 	{
-	    Log.warning(LOG_COMPONENT, "trying to remove the last popup without any opened popups at all");
+	    warn("trying to remove the last popup without any opened popups at all");
 	    return;
 	}
 	final OpenedPopup removedPopup = popups.get(popups.size() - 1);
@@ -248,7 +227,7 @@ final class AppManager
 		final int appIndex = findApp(removedPopup.app);
 		if (appIndex >= 0)
 		    apps.get(appIndex).closeLastPopup(); else
-		    Log.warning("core", "the popup being closing is associated with the unknown application");
+		    warn("the popup being closed is associated with unknown application");
 	    }
 	} else
 	    shell.closeLastPopup();
@@ -290,7 +269,7 @@ final class AppManager
 	return !popups.isEmpty()?popups.get(popups.size() - 1).app:null;
     }
 
-    Area getEffectiveAreaOfLastPopup()
+    Area getFrontAreaOfTopPopup()
     {
 	if (popups.isEmpty())
 	    return null;

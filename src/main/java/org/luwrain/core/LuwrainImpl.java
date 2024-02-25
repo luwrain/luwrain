@@ -534,8 +534,8 @@ final class LuwrainImpl implements Luwrain
 	final Application app = core.interfaces.findApp(this);
 	if (app == null)
 	    throw new IllegalArgumentException("Trying to use an illegal Luwrain obj");
-	core.apps.setActiveAreaOfApp(app, area);
-	if (core.apps.isAppActive(app) && !core.tiles.isPopupActive())
+	core.apps.setActiveAreaForApp(app, area);
+	if (core.apps.isActiveApp(app) && !core.tiles.isPopupActive())
 	    core.setAreaIntroduction();
 	core.onNewAreasLayout();
     }

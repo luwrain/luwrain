@@ -286,7 +286,7 @@ final class Core extends EventDispatching
 	    throw new RuntimeException("unable to create a desktop");
 	desktop.onLaunchApp(interfaces.requestNew(desktop));
 	//	desktop.setConversations(conversations);
-	apps.setDefaultApp(desktop);
+	apps.setDesktopApp(desktop);
     }
 
     void quit()
@@ -337,8 +337,8 @@ final class Core extends EventDispatching
 	//Checking if it is a mono app
 	if (app instanceof MonoApp)
 	{
-	    final Application[] launchedApps = apps.getLaunchedApps();
-	    for(Application a: launchedApps)
+	    //	    final Application[] launchedApps = apps.getLaunchedApps();
+	    for(Application a: apps.getLaunchedApps())
 		if (a instanceof MonoApp && a.getClass().equals(app.getClass()))
 		{
 		    final MonoApp ma = (MonoApp)a;
@@ -460,7 +460,7 @@ if (initResult.getType() != InitResult.Type.OK)
 	    message(i18n.getStaticStr("AppCloseHasPopup"), Luwrain.MessageType.ERROR);
 	    return;
 	}
-	apps.closeApp(app);
+	apps.removeApp(app);
 	interfaces.release(instance);
 	onNewAreasLayout();
 	setAppIntroduction();
@@ -510,7 +510,7 @@ if (initResult.getType() != InitResult.Type.OK)
 	if (noMultipleCopies)
 	    apps.onNewPopupOpening(app, area.getClass());
 	final PopupStopCondition popupStopCondition = new PopupStopCondition(mainStopCondition, stopCondition);
-	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies, isWeakPopup);
+	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies);
 	tiles.setPopupActive();
 	onNewAreasLayout();
 	announceActiveArea();
