@@ -342,14 +342,14 @@ public interface ActionHandler
 	this.areaLayout = new AreaLayout(getWrappingArea(area, actions));
     }
 
-    protected void setAreaLayout(int type, Area area1, Actions actions1, Area area2, Actions actions2)
+    protected void setAreaLayout(AreaLayout.Type type, Area area1, Actions actions1, Area area2, Actions actions2)
     {
 	NullCheck.notNull(area1, "area1");
 	NullCheck.notNull(area2, "area2");
 	this.areaLayout = new AreaLayout(type, getWrappingArea(area1, actions1), getWrappingArea(area2, actions2));
     }
 
-    protected void setAreaLayout(int type, Area area1, Actions actions1, Area area2, Actions actions2, Area area3, Actions actions3)
+    protected void setAreaLayout(AreaLayout.Type type, Area area1, Actions actions1, Area area2, Actions actions2, Area area3, Actions actions3)
     {
 	NullCheck.notNull(area1, "area1");
 	NullCheck.notNull(area2, "area2");

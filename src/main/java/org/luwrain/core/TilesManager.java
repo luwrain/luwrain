@@ -154,28 +154,28 @@ windows = constructLayoutOfApp(activeApp); else
 	    return null;
 	}
 	final Tiles tiles = new Tiles();
-	switch(layout.getLayoutType())
+	switch(layout.layoutType)
 	{
-	case AreaLayout.SINGLE:
-	    tiles.createSingle(new Tile(app, layout.getArea1()));
+	case SINGLE:
+	    tiles.createSingle(new Tile(app, layout.area1));
 	    break;
-	case AreaLayout.LEFT_RIGHT:
-	    tiles.createLeftRight(new Tile(app, layout.getArea1()),
-				  new Tile(app, layout.getArea2()));
+	case LEFT_RIGHT:
+	    tiles.createLeftRight(new Tile(app, layout.area1),
+				  new Tile(app, layout.area2));
 	    break;
-	case AreaLayout.TOP_BOTTOM:
-	    tiles.createTopBottom(new Tile(app, layout.getArea1()),
-				  new Tile(app, layout.getArea2()));
+	case TOP_BOTTOM:
+	    tiles.createTopBottom(new Tile(app, layout.area1),
+				  new Tile(app, layout.area2));
 	    break;
-	case AreaLayout.LEFT_TOP_BOTTOM:
-	    tiles.createLeftTopBottom(new Tile(app, layout.getArea1()),
-				      new Tile(app, layout.getArea2()),
-				      new Tile(app, layout.getArea3()));
+	case LEFT_TOP_BOTTOM:
+	    tiles.createLeftTopBottom(new Tile(app, layout.area1),
+				      new Tile(app, layout.area2),
+				      new Tile(app, layout.area3));
 	    break;
-	case AreaLayout.LEFT_RIGHT_BOTTOM:
-	    tiles.createLeftRightBottom(new Tile(app, layout.getArea1()),
-					new Tile(app, layout.getArea2()),
-					new Tile(app, layout.getArea3()));
+	case LEFT_RIGHT_BOTTOM:
+	    tiles.createLeftRightBottom(new Tile(app, layout.area1),
+					new Tile(app, layout.area2),
+					new Tile(app, layout.area3));
 	    break;
 	}
 	return tiles;

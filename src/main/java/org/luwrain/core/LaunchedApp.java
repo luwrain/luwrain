@@ -24,7 +24,7 @@ final class LaunchedApp extends LaunchedAppPopups
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
 
 final Application app;
-    int layoutType;
+    AreaLayout.Type layoutType;
     Area[] areas;
     OpenedArea[] areaWrappings;
     int activeAreaIndex = 0;
@@ -32,14 +32,14 @@ final Application app;
 
     LaunchedApp(Application app)
     {
-	NullCheck.notNull(app, "app");
+	notNull(app, "app");
 	this.app = app;
     }
 
     boolean init()
     {
 	final AreaLayout layout = getValidAreaLayout();
-	layoutType = layout.getLayoutType();
+	layoutType = layout.layoutType;
 	areas = layout.getAreas();
 	if (areas == null)
 	{
@@ -63,7 +63,7 @@ final Application app;
     {
 	final Area previouslyActiveArea = areas[activeAreaIndex];
 	final AreaLayout newLayout = getValidAreaLayout();
-	final int newLayoutType = newLayout.getLayoutType();
+	final AreaLayout.Type newLayoutType = newLayout.layoutType;
 	final Area[] newAreas = newLayout.getAreas();
 	if (newAreas == null)
 	{
