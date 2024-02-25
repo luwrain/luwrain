@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import static org.luwrain.core.NullCheck.*;
 
-final class TileManager 
+final class Tiles 
 {
     enum Orientation {HORIZ, VERT};
 
@@ -181,7 +181,7 @@ node2 = new LeafNode(tiles[1]);
 	this.nodes = new CompositeNode(Orientation.HORIZ, new LeafNode(tile), nodes);
     }
 
-    void replace(Tile tile, TileManager replaceWith)
+    void replace(Tile tile, Tiles replaceWith)
     {
 	if (tile == null || replaceWith == null || replaceWith.nodes == null)
 	    return;

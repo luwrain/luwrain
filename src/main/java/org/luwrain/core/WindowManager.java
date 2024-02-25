@@ -39,7 +39,7 @@ final class WindowManager
 
     void redraw()
     {
-	final TileManager windows = screenContentManager.getWindows();
+	final Tiles windows = screenContentManager.getWindows();
 	if (windows == null)
 	    return;
 	interaction.startDrawSession();
@@ -114,13 +114,13 @@ final class WindowManager
 
     private void calculateGeom(int screenWidth,
 			       int screenHeight,
-			       TileManager windows)
+			       Tiles windows)
     {
 	windows.countLeaves();
 	calculateGeomImpl(windows, windows.getRoot(), 0, 1, screenWidth - 1, screenHeight - 2);//One line at top and one line at bottom are reserved for notifications and messages;
     }
 
-    private void calculateGeomImpl(TileManager windows, Object obj,
+    private void calculateGeomImpl(Tiles windows, Object obj,
 				   int left,
 				   int top,
 				   int right,
@@ -180,7 +180,7 @@ final class WindowManager
 	    calculateGeomImpl(windows, obj1, left, top, right, bottom);
 	    return;
 	}
-	if (windows.getOrientation(obj) == TileManager.Orientation.VERT)
+	if (windows.getOrientation(obj) == Tiles.Orientation.VERT)
 	{
 	    final int range = bottom - top;//One row is reserved for divider;
 	    if (range < MIN_RANGE_VERTICAL || range < leafCount1 + leafCount2)
@@ -198,7 +198,7 @@ final class WindowManager
 	    interaction.drawHorizontalLine(left, right, top + range1);
 	    return;
 	}
-	if (windows.getOrientation(obj) == TileManager.Orientation.HORIZ)
+	if (windows.getOrientation(obj) == Tiles.Orientation.HORIZ)
 	{
 	    int range = right - left;//One column is reserved for divider;
 	    if (range < MIN_RANGE_HORIZONTAL || range < leafCount1 + leafCount2)
@@ -218,7 +218,7 @@ final class WindowManager
 	}
     }
 
-    private void calculateGeomWithPopup(TileManager windows, Tile win,
+    private void calculateGeomWithPopup(Tiles windows, Tile win,
 					Object anotherNode,
 					int left, int top,
 					int right, int bottom)
@@ -327,7 +327,7 @@ win.area == null)
 	win.scrolledHoriz = (hotPointX / win.width) * win.width;
     }
 
-    private void markWindowsInvisible(TileManager windows, Object obj)
+    private void markWindowsInvisible(Tiles windows, Object obj)
     {
 	if (obj == null)
 	    return;
