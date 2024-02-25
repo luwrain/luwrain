@@ -26,15 +26,15 @@ final class WindowManager
 	MAX_TOP_BOTTOM_POPUP_HEIGHT = 7;
 
     private final Interaction interaction;
-    private final ScreenContentManager screenContentManager;
+    private final TilesManager screenContentManager;
     private Object[] visibleObjs = null;
 
-    WindowManager(Interaction interaction, ScreenContentManager screenContentManager)
+    WindowManager(Interaction interaction, TilesManager tilesManager)
     {
 	notNull(interaction, "interace");
-	notNull(screenContentManager, "screenContentManager");
+	notNull(tilesManager, "tilesManager");
 	this.interaction = interaction;
-	this.screenContentManager = screenContentManager;
+	this.screenContentManager = tilesManager;
     }
 
     void redraw()

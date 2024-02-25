@@ -24,7 +24,7 @@ import static org.luwrain.core.NullCheck.*;
 abstract class Areas extends Base
 {
         protected final AppManager apps;
-    protected final ScreenContentManager tiles;
+    protected final TilesManager tiles;
     protected final WindowManager windowManager;
 
     protected Areas(CmdLine cmdLine, Registry registry,
@@ -33,7 +33,7 @@ abstract class Areas extends Base
 	super(cmdLine, registry, props, lang);
 	notNull(interaction, "interaction");
 	this.apps = new AppManager();
-	this.tiles = new ScreenContentManager(apps);
+	this.tiles = new TilesManager(apps);
 	this.windowManager = new WindowManager(interaction, tiles);
     }
 
