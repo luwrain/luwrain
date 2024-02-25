@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,9 +14,9 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.core;
+
+import static org.luwrain.core.NullCheck.*;
 
 public class SimpleShortcutCommand implements Command
 {
@@ -25,17 +25,16 @@ public class SimpleShortcutCommand implements Command
 
     public SimpleShortcutCommand(String cmdName, String shortcutName)
     {
-	NullCheck.notEmpty(cmdName, "cmdName");
-	NullCheck.notNull(shortcutName, "shortcutName");
+	notEmpty(cmdName, "cmdName");
+	notNull(shortcutName, "shortcutName");
 	this.cmdName = cmdName;
 	this.shortcutName = shortcutName;
     }
 
-        public SimpleShortcutCommand(String name)
+    public SimpleShortcutCommand(String name)
     {
 	this(name, name);
     }
-
 
     @Override public String getName()
     {
@@ -44,7 +43,7 @@ public class SimpleShortcutCommand implements Command
 
     @Override public void onCommand(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	notNull(luwrain, "luwrain");
 	luwrain.launchApp(shortcutName);
     }
 }

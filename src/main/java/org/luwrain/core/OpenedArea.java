@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import static org.luwrain.core.NullCheck.*;
+
 final class OpenedArea implements AreaWrapperFactory.Disabling
 {
     final Area area;
@@ -23,17 +25,17 @@ final class OpenedArea implements AreaWrapperFactory.Disabling
 
     OpenedArea(Area area)
     {
-	NullCheck.notNull(area, "area");
+	 notNull(area, "area");
 	this.area = area;
     }
 
-    boolean containsArea(Area area)
+    boolean hasArea(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	return this.area == area || wrapper == area;
     }
 
-    Area getEffectiveArea()
+    Area getFrontArea()
     {
 	if (wrapper != null)
 	    return wrapper;

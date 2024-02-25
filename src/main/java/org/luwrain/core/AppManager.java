@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -187,19 +187,19 @@ final class AppManager
     {
 	NullCheck.notNull(app, "app");
 	if (isDesktopApp(app))
-	    return this.desktopApp.getEffectiveActiveArea();
+	    return this.desktopApp.getFrontActiveArea();
 	final int index = findApp(app);
 	if (index < 0)
 	    return null;
-	return apps.get(index).getEffectiveActiveArea();
+	return apps.get(index).getFrontActiveArea();
     }
 
     Area getEffectiveActiveAreaOfActiveApp()
     {
 	if (activeAppIndex < 0 && hasDesktopApp())
-	    return this.desktopApp.getEffectiveActiveArea();
+	    return this.desktopApp.getFrontActiveArea();
 	if (activeAppIndex >= 0)
-	    return apps.get(activeAppIndex).getEffectiveActiveArea();
+	    return apps.get(activeAppIndex).getFrontActiveArea();
 	return null;
     }
 
@@ -311,7 +311,7 @@ final class AppManager
 	    }
 	} else
 	    launchedApp = shell;
-	return launchedApp.getEffectiveAreaOfPopup(popup.index);
+	return launchedApp.getFrontAreaOfPopup(popup.index);
     }
 
     AreaLayout getFrontAreaLayout(Application app)
@@ -340,11 +340,11 @@ final class AppManager
 	NullCheck.notNull(app, "app");
 	NullCheck.notNull(area, "area");
 	if (isDesktopApp(app))
-	    return this.desktopApp.getCorrespondingEffectiveArea(area);
+	    return this.desktopApp.getCorrespondingFrontArea(area);
 	final int index = findApp(app);
 	if (index < 0)
 	    return null;
-	return apps.get(index).getCorrespondingEffectiveArea(area);
+	return apps.get(index).getCorrespondingFrontArea(area);
     }
 
     //Area may be an area of any kind, either natural or wrapping;
@@ -353,17 +353,17 @@ final class AppManager
 	NullCheck.notNull(area, "area");
 	if (hasDesktopApp())
 	{
-	    final Area res = this.desktopApp.getCorrespondingEffectiveArea(area);
+	    final Area res = this.desktopApp.getCorrespondingFrontArea(area);
 	    if (res != null)
 		return res;
 	}
 	for(LaunchedApp a: apps)
 	{
-	    final Area res = a.getCorrespondingEffectiveArea(area);
+	    final Area res = a.getCorrespondingFrontArea(area);
 	    if (res != null)
 		return res;
 	}
-	final Area res = shell.getCorrespondingEffectiveArea(area);
+	final Area res = shell.getCorrespondingFrontArea(area);
 	if (res != null)
 	    return res;
 	return null;
@@ -449,13 +449,6 @@ final class AppManager
 	    if (area.getClass().equals(newCopyClass))
 		p.stopCondition.cancel();
 	}
-    }
-
-    boolean isLastPopupWeak()
-    {
-	if (popups.isEmpty())
-	    return false;
-	return popups.get(popups.size() - 1).isWeak;
     }
 
     void cancelLastPopup()

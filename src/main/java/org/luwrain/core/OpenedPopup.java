@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,14 +16,16 @@
 
 package org.luwrain.core;
 
+import static org.luwrain.core.NullCheck.*;
+
 final class OpenedPopup
 {
     final Application app;
-    final int index;//Popup index in the corresponding application
+    final int index;//Popup index in the owning application
     final Popup.Position position;
     final Base.PopupStopCondition stopCondition;
     final boolean noMultipleCopies;
-    final boolean isWeak; 
+    //    final boolean isWeak; 
 
     OpenedPopup(Application app,
 		int index,
@@ -32,14 +34,14 @@ final class OpenedPopup
 		boolean noMultipleCopies,
 		boolean isWeak)
     {
-	//app may be null
-	NullCheck.notNull(position, "position");
-	NullCheck.notNull(stopCondition, "stopCondition");
+	//app can be null
+	notNull(position, "position");
+	notNull(stopCondition, "stopCondition");
 	this.app = app;
 	this.index = index;
 	this.position = position;
 	this.stopCondition = stopCondition;
 	this.noMultipleCopies = noMultipleCopies;
-	this.isWeak = isWeak;
+	//	this.isWeak = isWeak;
     }
 }

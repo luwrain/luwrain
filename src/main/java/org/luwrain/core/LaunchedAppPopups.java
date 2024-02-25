@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,6 +17,8 @@
 package org.luwrain.core;
 
 import java.util.*;
+
+import static org.luwrain.core.NullCheck.*;
 
 class LaunchedAppPopups
 {
@@ -45,11 +47,11 @@ class LaunchedAppPopups
 	return popupWrappings.get(index).area;
     }
 
-    Area getEffectiveAreaOfPopup(int index)
+    Area getFrontAreaOfPopup(int index)
     {
 		if (index < 0 || index >= popupWrappings.size())
 	    throw new IllegalArgumentException("index (" + index + ") must be non-negative and less than " + popupWrappings.size());
-			return popupWrappings.get(index).getEffectiveArea();
+			return popupWrappings.get(index).getFrontArea();
     }
 
     /**
@@ -63,12 +65,12 @@ class LaunchedAppPopups
      * @param area The area designating a cell in application layout by the natural area itself or by any of its wrappers
      * @return The effective area which corresponds to the requested cell in the application layout
     */
-    Area getCorrespondingEffectiveArea(Area area)
+    Area getCorrespondingFrontArea(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	for(OpenedArea w: popupWrappings)
-	    if (w.containsArea(area))
-		return w.getEffectiveArea();
+	    if (w.hasArea(area))
+		return w.getFrontArea();
 	return null;
     }
 
@@ -83,9 +85,9 @@ class LaunchedAppPopups
      */
     OpenedArea getAreaWrapping(Area area)
     {
-	NullCheck.notNull(area, "area");
+	notNull(area, "area");
 	for(OpenedArea w: popupWrappings)
-	    if (w.containsArea(area))
+	    if (w.hasArea(area))
 		return w;
 	return null;
     }

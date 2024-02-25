@@ -16,6 +16,9 @@
 
 package org.luwrain.core;
 
+import static org.luwrain.core.Base.*;
+import static org.luwrain.core.NullCheck.*;
+
 final class LaunchedApp extends LaunchedAppPopups
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
@@ -72,7 +75,7 @@ final Application app;
 	{
 	    if (newAreas[i] == null)
 	    {
-		Log.error(LOG_COMPONENT, "application " + app.getClass().getName() + " has a null area");
+		error("application " + app.getClass().getName() + " has a null area");
 		return false;
 	    }
 	    newAreaWrappings[i] = new OpenedArea(newAreas[i]);
@@ -128,7 +131,7 @@ final Application app;
 	if (areaWrappings == null)
 	    return false;
 	int index = 0;
-	while(index < areaWrappings.length && !areaWrappings[index].containsArea(area))
+	while(index < areaWrappings.length && !areaWrappings[index].hasArea(area))
 	    ++index;
 	if (index >= areaWrappings.length)
 	    return false;
@@ -136,27 +139,27 @@ final Application app;
 	return true;
     }
 
-    Area getEffectiveActiveArea()
+    Area getFrontActiveArea()
     {
 	if (activeAreaIndex < 0 || areaWrappings == null)
 	    return null;
-	return areaWrappings[activeAreaIndex].getEffectiveArea();
+	return areaWrappings[activeAreaIndex].getFrontArea();
     }
 
-    @Override public Area getCorrespondingEffectiveArea(Area area)
+    @Override public Area getCorrespondingFrontArea(Area area)
     {
 	NullCheck.notNull(area, "area");
 	for(OpenedArea w: areaWrappings)
-	    if (w.containsArea(area))
-		return w.getEffectiveArea();
-	return super.getCorrespondingEffectiveArea(area);
+	    if (w.hasArea(area))
+		return w.getFrontArea();
+	return super.getCorrespondingFrontArea(area);
     }
 
     @Override public OpenedArea getAreaWrapping(Area area)
     {
 	NullCheck.notNull(area, "area");
 	for(OpenedArea w: areaWrappings)
-	    if (w.containsArea(area))
+	    if (w.hasArea(area))
 		return w;
 	return super.getAreaWrapping(area);
     }
@@ -165,7 +168,7 @@ final Application app;
     {
 	final Area[] a = new Area[areas.length];
 	for(int i = 0;i < areaWrappings.length;++i)
-	    a[i] = areaWrappings[i].getEffectiveArea();
+	    a[i] = areaWrappings[i].getFrontArea();
 	return new AreaLayout(layoutType, a);
     }
 
@@ -174,6 +177,6 @@ final Application app;
 	NullCheck.notNull(event, "event");
 	//	super.sendBroadcastEvent(event);
 	for(OpenedArea w: areaWrappings)
-	    w.getEffectiveArea().onSystemEvent(event);
+	    w.getFrontArea().onSystemEvent(event);
     }
 }
