@@ -398,8 +398,7 @@ final class LuwrainImpl implements Luwrain
 	final StopCondition stopCondition = ()->popup.isPopupActive();
 		if (core.interfaces.forPopupsWithoutApp(luwrainObj))
 	{
-	    core.popup(null, popup, Popup.Position.BOTTOM, stopCondition,
-		      popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
+	    core.popup(null, popup, Popup.Position.BOTTOM, stopCondition, popup.getPopupFlags());
 	    return;
 	}
 	final Application app = core.interfaces.findApp(luwrainObj);
@@ -408,8 +407,7 @@ final class LuwrainImpl implements Luwrain
 	    warn("trying to open a popup with the Luwrain obj which isn't allowed to open popups");
 	    throw new IllegalArgumentException("the luwrain object provided by the popup isn't allowed to open popups");
 	}
-	core.popup(app, popup, Popup.Position.BOTTOM, stopCondition, 
-		  popup.getPopupFlags().contains(Popup.Flags.NO_MULTIPLE_COPIES), popup.getPopupFlags().contains(Popup.Flags.WEAK));
+	core.popup(app, popup, Popup.Position.BOTTOM, stopCondition, popup.getPopupFlags());
     }
 
     @Override public boolean runCommand(String command)

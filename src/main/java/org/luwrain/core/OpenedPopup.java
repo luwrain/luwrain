@@ -16,6 +16,8 @@
 
 package org.luwrain.core;
 
+import java.util.*;
+
 import static org.luwrain.core.NullCheck.*;
 
 final class OpenedPopup
@@ -24,23 +26,22 @@ final class OpenedPopup
     final int index;//Popup index in the owning application
     final Popup.Position position;
     final Base.PopupStopCondition stopCondition;
-    final boolean noMultipleCopies;
-    //    final boolean isWeak; 
+    final Set<Popup.Flags> flags;
 
     OpenedPopup(Application app,
 		int index,
 		Popup.Position position,
 		Base.PopupStopCondition stopCondition,
-		boolean noMultipleCopies)
+		Set<Popup.Flags> flags)
     {
 	//app can be null
 	notNull(position, "position");
 	notNull(stopCondition, "stopCondition");
+	notNull(flags, "flags");
 	this.app = app;
 	this.index = index;
 	this.position = position;
 	this.stopCondition = stopCondition;
-	this.noMultipleCopies = noMultipleCopies;
-	//	this.isWeak = isWeak;
+	this.flags = flags;
     }
 }

@@ -188,7 +188,7 @@ final class AppManager
     }
 
     //The null app means system popup
-    void addNewPopup(Application app, Area area, Popup.Position position, Base.PopupStopCondition stopCondition, boolean noMultipleCopies)
+    void addNewPopup(Application app, Area area, Popup.Position position, Base.PopupStopCondition stopCondition, Set<Popup.Flags> flags)
     {
 	notNull(area, "area");
 	notNull(position, "position");
@@ -207,7 +207,7 @@ final class AppManager
 	} else
 	    launchedApp = shell;
 	final int popupIndex = 	launchedApp.addPopup(area);
-	popups.add(new OpenedPopup(app, popupIndex, position, stopCondition, noMultipleCopies));
+	popups.add(new OpenedPopup(app, popupIndex, position, stopCondition, flags));
     }
 
     void closeLastPopup()
@@ -406,7 +406,7 @@ final class AppManager
 	    return;
 	for(OpenedPopup p: popups)
 	{
-	    if (p.app != app || !p.noMultipleCopies)
+	    if (p.app != app || !p.flags.contains(Popup.Flags.NO_MULTIPLE_COPIES))
 		continue;
 	    Area area;
 	    if (app != null)
@@ -414,7 +414,7 @@ final class AppManager
 		final int index = findApp(app);
 		if (index < 0)
 		{
-		    Log.error(LOG_COMPONENT, "popups contains a reference to the unregistered application " + app.getClass().getName());
+		    error("popups contains a reference to the unregistered application " + app.getClass().getName());
 		    continue;
 		}
 		area = apps.get(index).getNativeAreaOfPopup(p.index);
@@ -422,7 +422,7 @@ final class AppManager
 		area = shell.getNativeAreaOfPopup(p.index);
 	    if (area == null)
 	    {
-		Log.error("core", "unable to find a native area of the popup with index " + p.index + " of " + (app != null?" the application " + app.getClass().getName():" the environment"));
+		error("unable to find a native area of the popup with index " + p.index + " of " + (app != null?" the application " + app.getClass().getName():" the environment"));
 		continue;
 	    }
 	    if (area.getClass().equals(newCopyClass))

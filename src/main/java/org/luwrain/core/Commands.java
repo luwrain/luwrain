@@ -52,7 +52,7 @@ final class Commands
 	final var mainMenu = org.luwrain.core.shell.MainMenu.newMainMenu(core.luwrain);
 	if (mainMenu == null)
 	    return;
-	core.popup(null, mainMenu, Popup.Position.LEFT, ()->mainMenu.closing.continueEventLoop(), true, true);
+	core.popup(null, mainMenu, Popup.Position.LEFT, ()->mainMenu.closing.continueEventLoop(), EnumSet.of(Popup.Flags.NO_MULTIPLE_COPIES));
 	if (mainMenu.closing.cancelled())
 	    return;
 	final UniRefInfo result = mainMenu.result();
@@ -323,7 +323,7 @@ final class Commands
 	    return;
 	}
 	final var menu = new org.luwrain.core.shell.ContextMenu(core.luwrain, act.get());
-	core.popup(null, menu, Popup.Position.RIGHT, ()->menu.isPopupActive(), true, true);
+	core.popup(null, menu, Popup.Position.RIGHT, ()->menu.isPopupActive(), EnumSet.of(Popup.Flags.NO_MULTIPLE_COPIES));
 	if (menu.wasCancelled())
 	    return;
 	final Object selected = menu.selected();

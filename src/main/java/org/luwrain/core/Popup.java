@@ -33,17 +33,10 @@ import java.util.*;
  */
 public interface Popup extends Area
 {
-    public enum Flags {
-	NO_MULTIPLE_COPIES, WEAK, STRONG,
-    };
-
-    public enum Position{TOP, BOTTOM, LEFT, RIGHT};
-
-    static public final int NO_MULTIPLE_COPIES = 1;
-    static public final int WEAK = 2;
+    public enum Flags { NO_MULTIPLE_COPIES };
+    public enum Position{ TOP, BOTTOM, LEFT, RIGHT };
 
     boolean isPopupActive();
     Luwrain getLuwrainObject();
-    //    EventLoopStopCondition getStopCondition();
     Set<Flags> getPopupFlags();
 }

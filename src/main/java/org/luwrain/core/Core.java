@@ -501,16 +501,16 @@ if (initResult.getType() != InitResult.Type.OK)
 	announceActiveArea();
     }
 
-    void popup(Application app, Area area, Popup.Position pos, StopCondition stopCondition, boolean noMultipleCopies, boolean isWeakPopup)
+    void popup(Application app, Area area, Popup.Position pos, StopCondition stopCondition, Set<Popup.Flags> flags)
     {
 	notNull(area, "area");
 	notNull(pos, "pos");
 	notNull(stopCondition, "stopCondition");
 	mainCoreThreadOnly();
-	if (noMultipleCopies)
+	if (flags.contains(Popup.Flags.NO_MULTIPLE_COPIES))
 	    apps.onNewPopupOpening(app, area.getClass());
 	final PopupStopCondition popupStopCondition = new PopupStopCondition(mainStopCondition, stopCondition);
-	apps.addNewPopup(app, area, pos, popupStopCondition, noMultipleCopies);
+	apps.addNewPopup(app, area, pos, popupStopCondition, flags);
 	tiles.setPopupActive();
 	onNewAreasLayout();
 	announceActiveArea();
