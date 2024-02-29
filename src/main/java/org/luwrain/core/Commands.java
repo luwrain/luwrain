@@ -60,10 +60,7 @@ final class Commands
 		    }),
 
 	    new Cmd(
-		    "search",
-		    (luwrain)->{
-			//			core.activateAreaSearch();
-
+		    "search", luwrain->{
 				final Area activeArea = core.getActiveArea(true);
 	if (activeArea == null)
 	    return;
@@ -78,58 +75,41 @@ final class Commands
 		    }),
 
 	    new Cmd(
-		    "ok",
-		    (luwrain)->{
-			core.enqueueEvent(new SystemEvent(SystemEvent.Code.OK));
-		    }),
+		    "ok", luwrain->core.enqueueEvent(new SystemEvent(SystemEvent.Code.OK))),
 
 	    new Cmd(
-		    "cancel",
-		    (luwrain)->{
-			core.enqueueEvent(new SystemEvent(SystemEvent.Code.CANCEL));
-		    }),
+		    "cancel", luwrain->core.enqueueEvent(new SystemEvent(SystemEvent.Code.CANCEL))),
 
 	    new Cmd(
-		    "close",
-		    (luwrain)->{
-			core.enqueueEvent(new SystemEvent(SystemEvent.Code.CLOSE));
-		    }),
+		    "close", luwrain->core.enqueueEvent(new SystemEvent(SystemEvent.Code.CLOSE))),
 
 	    new Cmd(
-		    "gc",
-		    (luwrain)->{
-			System.gc();
-		    }),
+		    "gc", luwrain->System.gc()),
 
 	    new Cmd(
-		    "save",
-		    (luwrain)->{
+		    "save", luwrain->{
 			core.enqueueEvent(new SystemEvent(SystemEvent.Code.SAVE));
 		    }),
 
 	    new Cmd(
-		    "open",
-		    (luwrain)->{
+		    "open", luwrain->{
 			final File res = conversations.open();
 			if (res != null)
 			    core.openFiles(new String[]{res.getAbsolutePath()});
 		    }),
 
 	    new Cmd(
-		    "announce",
-		    (luwrain)->{
+		    "announce", luwrain->{
 			core.announceActiveArea();
 		    }),
 
 	    new Cmd(
-		    "refresh",
-		    (luwrain)->{
+		    "refresh", luwrain->{
 			core.enqueueEvent(new SystemEvent(SystemEvent.Code.REFRESH));
 		    }),
 
 	    new Cmd(
-		    "announce-line",
-		    (luwrain)->{
+		    "announce-line", luwrain->{
 			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
@@ -528,9 +508,10 @@ final class Commands
 	    },
 
 	    new Cmd(
-		    "run",
-		    (luwrain)->{
-			final String cmd = Popups.editWithHistory(core.luwrain, luwrain.i18n().getStaticStr("RunPopupName"), luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
+		    "run", luwrain->{
+			final String cmd = Popups.editWithHistory(core.luwrain,
+								  luwrain.i18n().getStaticStr("RunPopupName"),
+								  luwrain.i18n().getStaticStr("RunPopupPrefix"), "", osCmdHistory);
 			if (cmd == null || cmd.trim().isEmpty())
 			    return;
 			final String dir;
@@ -543,7 +524,15 @@ final class Commands
 				dir = "";
 			} else
 			    dir = "";
-			luwrain.newJob("sys", new String[]{ cmd.trim() }, "", EnumSet.noneOf(Luwrain.JobFlags.class), null);
+			luwrain.newJob("sys", new String[]{ cmd.trim() }, "", EnumSet.noneOf(Luwrain.JobFlags.class), new EmptyJobListener(){
+				@Override public void onStatusChange(Job.Instance instance)
+				{
+				    luwrain.runUiSafely(()->{
+					    Popups.text(luwrain, "проба", "проба:", "");
+					});
+				    
+				}
+			    });
 		    }),
 	};    
     }

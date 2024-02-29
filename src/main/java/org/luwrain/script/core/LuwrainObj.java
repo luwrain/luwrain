@@ -297,9 +297,6 @@ messageType = ConstObj.getMessageType(values[1].asString());
 			finishedFunc.execute(new Object[]{Boolean.valueOf(instance.isFinishedSuccessfully()), Integer.valueOf(instance.getExitCode())});
 		    }
 		}
-		@Override public void onSingleLineStateChange(Job.Instance instance) {}
-		@Override public void onMultilineStateChange(Job.Instance instance) {}
-		@Override public void onNativeStateChange(Job.Instance instance) {}
 	    });
 	return res != null?new JobInstanceObj(res):null;
     }

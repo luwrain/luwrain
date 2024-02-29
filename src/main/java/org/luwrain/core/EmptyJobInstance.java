@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -18,21 +18,24 @@
 
 package org.luwrain.core;
 
+import java.util.*;
+
 import org.luwrain.core.Job.*;
+
 import static org.luwrain.core.Job.*;
+import static org.luwrain.core.NullCheck.*;
 
 public class EmptyJobInstance implements Job.Instance
 {
     protected final Listener listener;
     protected final String name;
+    protected Map<String, List<String>> info = new HashMap<>();
     private Status status = Status.RUNNING;
     private int exitCode = EXIT_CODE_INVALID;
-    private String state = "";
-    private String[] multilineState = new String[0], nativeState = new String[0];
 
     public EmptyJobInstance(Listener listener, String name)
     {
-	NullCheck.notEmpty(name, "name");
+	notEmpty(name, "name");
 	this.listener = listener;
 	this.name = name;
     }
@@ -64,50 +67,23 @@ public class EmptyJobInstance implements Job.Instance
 	return this.status == Status.FINISHED && this.exitCode == EXIT_CODE_OK;
     }
 
-    public void setSingleLineState(String value)
+    public void setInfo(String infoType, List<String> value)
     {
-	NullCheck.notNull(value, "value");
+	notEmpty(infoType, "infoType");
+	notNull(value, "value");
 	if (this.status != Status.RUNNING)
 	    throw new IllegalStateException("The job '" + this.name + "' is not running");
-	this.state = value;
+	this.info.put(infoType, value);
 	if (this.listener != null)
-	    this.listener.onSingleLineStateChange(this);
+	    this.listener.onInfoChange(this, infoType, value);
     }
 
-		@Override public String getSingleLineState()
+		@Override public List<String> getInfo(String infoType)
     {
-	return this.state;
-    }
-
-    public void setMultilineState(String[] value)
-    {
-	NullCheck.notNullItems(value, "value");
-		if (this.status != Status.RUNNING)
-	    throw new IllegalStateException("The job '" + this.name + "' is not running");
-		this.multilineState = value.clone();
-		if (this.listener != null)
-		    this.listener.onMultilineStateChange(this);
-    }
-
-		@Override public String[] getMultilineState()
-    {
-		    return this.multilineState.clone();
-    }
-
-    public void setNativeState(String[] value)
-    {
-	NullCheck.notNullItems(value, "value");
-		if (this.status != Status.RUNNING)
-	    throw new IllegalStateException("The job '" + this.name + "' is not running");
-		this.nativeState = value.clone();
-		if (this.listener != null)
-		this.listener.onNativeStateChange(this);
-    }
-
-		@Override public String[] getNativeState()
-    {
-	return this.nativeState.clone();
-    }
+	notEmpty(infoType, "infoType");
+	final var res = this.info.get(infoType);
+	return res != null?res:Arrays.asList();
+	    }
 
     public void stop(int exitCode)
     {

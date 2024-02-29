@@ -36,10 +36,10 @@ final class JobImpl implements Job
 
     JobImpl(Luwrain luwrain, Object syncObj, String name, Value func)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(syncObj, "syncObj");
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notNull(func, "func");
+	notNull(luwrain, "luwrain");
+	notNull(syncObj, "syncObj");
+	notEmpty(name, "name");
+	notNull(func, "func");
 	this.luwrain = luwrain;
 	this.syncObj = syncObj;
 	this.name = name;
@@ -87,7 +87,7 @@ final class JobImpl implements Job
 	private String name = "";
 	Instance(Listener listener)
 	{
-	    NullCheck.notNull(listener, "listener");
+	    notNull(listener, "listener");
 	    this.listener = listener;
 	}
 	@Override public String getInstanceName() { return name; }
@@ -103,17 +103,9 @@ final class JobImpl implements Job
 	{
 	    return true;
 	}
-	@Override public String getSingleLineState()
+	@Override public List<String> getInfo(String infoType)
 	{
-	    return "";
-	}
-	@Override public String[] getMultilineState()
-	{
-	    return new String[0];
-	}
-	@Override public String[] getNativeState()
-	{
-	    return new String[0];
+	    return Arrays.asList();
 	}
 	@Override public void stop()
 	{

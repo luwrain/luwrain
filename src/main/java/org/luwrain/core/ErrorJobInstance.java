@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,19 +14,21 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.core;
 
-public final class ErrorJob implements Job.Instance
+import java.util.*;
+
+import static org.luwrain.core.NullCheck.*;
+
+public final class ErrorJobInstance implements Job.Instance
 {
     private final String name;
     private final String message;
 
-    public ErrorJob(String name, String message)
+    public ErrorJobInstance(String name, String message)
     {
-	NullCheck.notEmpty(name, "name");
-	NullCheck.notEmpty(message, "message");
+	notEmpty(name, "name");
+	notEmpty(message, "message");
 	this.name = name;
 	this.message = message;
     }
@@ -55,18 +57,11 @@ public final class ErrorJob implements Job.Instance
 	return false;
     }
 
-    @Override public String getSingleLineState()
+    @Override public List<String> getInfo(String infoType)
     {
-	return message;
-    }
-
-    @Override public String[] getMultilineState()
-    {
-	return new String[]{message};
-    }
-
-    @Override public String[] getNativeState()
-    {
-	return new String[]{message};
+	notEmpty(infoType, "infoType");
+	if (infoType.equals("main"))
+	    return Arrays.asList(message);
+	return Arrays.asList();
     }
 }

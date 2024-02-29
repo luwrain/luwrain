@@ -14,12 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.core.events;
 
-import java.util.*;
+import org.luwrain.core.*;
 
-public class EmptyJobListener implements Job.Listener
+public final class UpdateEvent extends Event
 {
-    @Override public void onStatusChange(Job.Instance instance) {}
-    @Override public void onInfoChange(Job.Instance instance, String infoType, List<String> value) {}
+    public UpdateEvent()
+    {
+    }
 }

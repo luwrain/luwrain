@@ -75,34 +75,22 @@ public final class JobsManager
 	    notNull(listener, "listener");
 	    this.listener = listener;
 	}
-
 	@Override public String getInstanceName() { return instance.getInstanceName(); }
 	@Override public Job.Status getStatus() { return instance.getStatus(); }
 	@Override public int getExitCode() { return instance.getExitCode(); }
 	@Override public boolean isFinishedSuccessfully() { return instance.isFinishedSuccessfully(); }
-	@Override public String getSingleLineState() { return instance.getSingleLineState(); }
-	@Override public String[] getMultilineState() { return instance.getMultilineState(); }
-	@Override public String[] getNativeState() { return instance.getNativeState(); }
+	@Override public List<String> getInfo(String infoType) { return instance.getInfo(infoType); }
 	@Override public void stop() { instance.stop(); }
 
-			@Override public void onInfoChange(Job.Instance instance, String type, List<String> value){}
+	@Override public void onInfoChange(Job.Instance instance, String type, List<String> value)
+	{
+	    listener.onInfoChange(instance, type, value);
+	}
 	@Override public void onStatusChange(Job.Instance instance)
 	{
 	    listener.onStatusChange(this);
 	    if (instance.getStatus() == Job.Status.FINISHED)
 		onFinish(this);
-	}
-	@Override public void onSingleLineStateChange(Job.Instance instance)
-	{
-	    listener.onSingleLineStateChange(this);
-	}
-	@Override public void onMultilineStateChange(Job.Instance instance)
-	{
-	    listener.onMultilineStateChange(this);	    
-	}
-	@Override public void onNativeStateChange(Job.Instance instance)
-	{
-	    listener.onNativeStateChange(this);
 	}
 	@Override public String toString()
 	{

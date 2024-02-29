@@ -32,9 +32,6 @@ public interface Job extends ExtensionObject
     {
 	void onStatusChange(Instance instance);
 	void onInfoChange(Instance instance, String infoType, List<String> value);
-	void onSingleLineStateChange(Instance instance);
-	void onMultilineStateChange(Instance instance);
-	void onNativeStateChange(Instance instance);
     }
 
     public interface Instance
@@ -43,9 +40,7 @@ public interface Job extends ExtensionObject
 	Status getStatus();
 	int getExitCode();
 	boolean isFinishedSuccessfully();
-	String getSingleLineState();
-	String[] getMultilineState();
-	String[] getNativeState();
+	List<String> getInfo(String infoType);
 	void stop();
     }
 
