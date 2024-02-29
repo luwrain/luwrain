@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -20,7 +20,6 @@ public interface Extension
 {
     String init(Luwrain luwrain);
     Command[] getCommands(Luwrain luwrain);
-    Shortcut[] getShortcuts(Luwrain luwrain);
     ExtensionObject[] getExtObjects(Luwrain luwrain);
     void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt);
     org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain);

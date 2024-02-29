@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,12 +14,7 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.core;
-
-//import org.luwrain.base.*;
-//import org.luwrain.core.*;
 
 public class EmptyExtension implements Extension
 {
@@ -31,11 +26,6 @@ public class EmptyExtension implements Extension
     @Override public Command[] getCommands(Luwrain luwrain)
     {
 	return new Command[0];
-    }
-
-    @Override public Shortcut[] getShortcuts(Luwrain luwrain)
-    {
-	return new Shortcut[0];
     }
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)

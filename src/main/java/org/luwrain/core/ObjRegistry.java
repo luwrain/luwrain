@@ -18,13 +18,11 @@ package org.luwrain.core;
 
 import java.util.*;
 
-//import org.luwrain.core.ExtensionsManager.LoadedExtension;
+import static org.luwrain.core.Base.*;
+import static org.luwrain.core.NullCheck.*;
 
 final class ObjRegistry implements ExtObjects
 {
-    static private final String
-	LOG_COMPONENT = Base.LOG_COMPONENT;
-
     static private final class Entry<E> 
     {
 	final Extension ext;
@@ -32,8 +30,8 @@ final class ObjRegistry implements ExtObjects
 	final E obj;
 	Entry(Extension ext, String name, E obj)
 	{
-	    NullCheck.notEmpty(name, "name");
-	    NullCheck.notNull(obj, "obj");
+	    notEmpty(name, "name");
+	    notNull(obj, "obj");
 	    this.ext = ext;
 	    this.name = name;
 	    this.obj = obj;
@@ -50,7 +48,8 @@ final class ObjRegistry implements ExtObjects
 
     boolean add(Extension ext, ExtensionObject obj)
     {
-	NullCheck.notNull(obj, "obj");
+	//ext can be null
+	notNull(obj, "obj");
 	final String name = obj.getExtObjName();
 	if (name == null || name.trim().isEmpty())
 	    return false;
@@ -126,13 +125,13 @@ final class ObjRegistry implements ExtObjects
 	}
 
 																if (!res)
-	    Log.warning(LOG_COMPONENT, "failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
+	    warn("failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
 	return res;
     }
 
     void deleteByExt(Extension ext)
     {
-	NullCheck.notNull(ext, "ext");
+	notNull(ext, "ext");
 	removeEntriesByExt(shortcuts, ext);
 		removeEntriesByExt(objFactories, ext);
 	removeEntriesByExt(jobs, ext);
@@ -263,13 +262,13 @@ final class ObjRegistry implements ExtObjects
 		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFailed"), Luwrain.MessageType.ERROR);
     }
 
-    void takeObjects(/*LoadedExtension loadedExt*/Extension ext, Luwrain luwrain)
+    void takeObjects(Extension ext, Luwrain luwrain)
     {
-	//	NullCheck.notNull(loadedExt, "loadedExt");
-	//	    final Extension ext = loadedExt.ext;
+	notNull(ext, "ext");
+	notNull(luwrain, "luwrain");
 	for(ExtensionObject s: ext.getExtObjects(luwrain))
 			if (!add(ext, s))
-			    Log.warning(LOG_COMPONENT, "the extension object \'" + s.getExtObjName() + "\' of the extension " + ext.getClass().getName() + " has been refused by  the object registry");
+			    warn("the extension object \'" + s.getExtObjName() + "\' of the extension " + ext.getClass().getName() + " has been refused by  the object registry");
     }
 
     static private <E> void removeEntriesByExt(Map<String, Entry<E>> map, Extension ext)
@@ -307,7 +306,7 @@ final class ObjRegistry implements ExtObjects
 
 	@Override public void onCommand(Luwrain luwrain)
 	{
-	    NullCheck.notNull(luwrain, "luwrain");
+	    notNull(luwrain, "luwrain");
 	}
     }
 
@@ -319,8 +318,8 @@ final class ObjRegistry implements ExtObjects
 
 	JobShortcut(String name, Job job, boolean showResultMessage)
 	{
-	    NullCheck.notEmpty(name, "name");
-	    NullCheck.notNull(job, "job");
+	    notEmpty(name, "name");
+	    notNull(job, "job");
 	    this.name = name;
 	    this.job = job;
 	    this.showResultMessage = showResultMessage;
@@ -333,7 +332,7 @@ final class ObjRegistry implements ExtObjects
 
 	@Override public Application[] prepareApp(String[] args)
 	{
-	    NullCheck.notNullItems(args, "args");
+	    notNullItems(args, "args");
 	    return null;
 	}
     }
