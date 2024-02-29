@@ -527,10 +527,21 @@ final class Commands
 			luwrain.newJob("sys", new String[]{ cmd.trim() }, "", EnumSet.noneOf(Luwrain.JobFlags.class), new EmptyJobListener(){
 				@Override public void onStatusChange(Job.Instance instance)
 				{
+				    if (instance.getStatus() != Job.Status.FINISHED)
+					return;
+				    final List<String> output = instance.getInfo("main");
+				    final String name = instance.getInstanceName();
 				    luwrain.runUiSafely(()->{
-					    Popups.text(luwrain, "проба", "проба:", "");
+					    //output can't be null
+					    if (output.size() >= 2)
+					    {
+						Popups.fixedList(luwrain, name, output.toArray(new String[output.size()]));
+						return;
+					    }
+					    if (output.isEmpty() || (output.size() == 1 && output.get(0).trim().isEmpty()))
+						luwrain.message(name, instance.isFinishedSuccessfully()?Luwrain.MessageType.DONE:Luwrain.MessageType.ERROR); else
+						luwrain.message(output.get(0).trim(), instance.isFinishedSuccessfully()?Luwrain.MessageType.DONE:Luwrain.MessageType.ERROR);
 					});
-				    
 				}
 			    });
 		    }),
@@ -543,13 +554,12 @@ final class Commands
 
 	    new Cmd(
 		    "control-panel", luwrain->{
-
-	final List<org.luwrain.cpanel.Factory> res = new ArrayList<>();
-	for(final var e: core.extensions.extensions)
-	    for(final var f: e.ext.getControlPanelFactories(e.luwrain))//FIXME: unsafe wrapper
-		    if (f != null)
-			res.add(f);
-	final Application app = new org.luwrain.app.cpanel.ControlPanelApp(res.toArray(new org.luwrain.cpanel.Factory[res.size()]));
+			final List<org.luwrain.cpanel.Factory> res = new ArrayList<>();
+			for(final var e: core.extensions.extensions)
+			    for(final var f: e.ext.getControlPanelFactories(e.luwrain))//FIXME: unsafe wrapper
+				if (f != null)
+				    res.add(f);
+			final Application app = new org.luwrain.app.cpanel.ControlPanelApp(res.toArray(new org.luwrain.cpanel.Factory[res.size()]));
 			core.launchApp(app);
 		    }),
 

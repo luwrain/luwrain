@@ -47,7 +47,6 @@ public final class JobsManager
 	final Job job = objRegistry.getJob(name);
 	if (job == null)
 	    throw new IllegalArgumentException("No such job: " + name);
-	Log.debug(LOG_COMPONENT, "starting the job '" + name + "' and arguments " + Arrays.toString(args));
 	final Entry entry = new Entry(listener);
 	final Job.Instance instance = job.launch(entry, args, dir.isEmpty()?null:dir);
 	if (instance == null)
@@ -60,9 +59,11 @@ public final class JobsManager
     private void onFinish(Entry entry)
     {
 	notNull(entry, "entry");
+	/*
 	luwrain.runUiSafely(()->{
 		luwrain.playSound(entry.isFinishedSuccessfully()?Sounds.DONE:Sounds.ERROR);
 	    });
+	*/
     }
 
     //Public for the control app
@@ -70,6 +71,7 @@ public final class JobsManager
     {
 	private final Job.Listener listener;
 	private Job.Instance instance = null;
+	private final Map<String, List<String>> info = new HashMap<>();
 	Entry(Job.Listener listener)
 	{
 	    notNull(listener, "listener");
@@ -79,12 +81,29 @@ public final class JobsManager
 	@Override public Job.Status getStatus() { return instance.getStatus(); }
 	@Override public int getExitCode() { return instance.getExitCode(); }
 	@Override public boolean isFinishedSuccessfully() { return instance.isFinishedSuccessfully(); }
-	@Override public List<String> getInfo(String infoType) { return instance.getInfo(infoType); }
+	@Override public List<String> getInfo(String infoType)
+	{
+	    notEmpty(infoType, "infoType");
+	    List<String> res = this.info.get(infoType);
+	    if (res != null)
+		return res;
+res = instance.getInfo(infoType);
+if (res == null)
+    return Arrays.asList();
+this.info.put(infoType, res);
+return res;
+	}
 	@Override public void stop() { instance.stop(); }
-
 	@Override public void onInfoChange(Job.Instance instance, String type, List<String> value)
 	{
-	    listener.onInfoChange(instance, type, value);
+	    notEmpty(type, "type");
+	    List<String> res = value;
+	    if (res == null)
+		res = instance.getInfo(type);
+	    if (res != null)
+		this.info.put(type, res); else
+		res = this.info.get(type);
+	    listener.onInfoChange(instance, type, res != null?res:Arrays.asList());
 	}
 	@Override public void onStatusChange(Job.Instance instance)
 	{
