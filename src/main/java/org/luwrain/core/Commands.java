@@ -282,12 +282,6 @@ final class Commands
 		    }),
 
 	    new Cmd(
-		    "registry",
-		    (luwrain)->{
-			core.launchApp(new org.luwrain.app.registry.RegistryApp());
-		    }),
-
-	    new Cmd(
 		    "context-menu", luwrain->{
 	final Area activeArea = core.getActiveArea(true);
 	if (activeArea == null)
