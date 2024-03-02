@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -27,7 +27,6 @@ public interface HookContainer
 
     public interface HookRunner
     {
-	    //Returns true if execution must be continued
 	HookResult runHook(Hook hook);
     }
 

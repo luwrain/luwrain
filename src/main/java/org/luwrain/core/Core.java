@@ -66,13 +66,7 @@ final class Core extends EventDispatching
 	windowManager.redraw();
 	//soundManager.startingMode();
 	workers.doWork(objRegistry.getWorkers());
-	try {
-	    Hooks.chainOfResponsibility(luwrain, Hooks.STARTUP, new Object[0]);
-	}
-	catch(Throwable e)
-	{
-	    error(e, "Unable to run the startup hook");
-	}
+	Hooks.chainOfResponsibilityNoExc(luwrain, Hooks.STARTUP, new Object[0]);
 	eventLoop(mainStopCondition);
 	workers.finish();
 	playSound(Sounds.SHUTDOWN);
@@ -459,6 +453,13 @@ if (initResult.getType() != InitResult.Type.OK)
 	{
 	    message(i18n.getStaticStr("AppCloseHasPopup"), Luwrain.MessageType.ERROR);
 	    return;
+	}
+	try {
+	    app.onAppClose();//FIXME: An ansafe operation
+	}
+	catch(Throwable e)
+	{
+	    error(e, "closing the app " + app.getClass().getName());
 	}
 	apps.removeApp(app);
 	interfaces.release(instance);

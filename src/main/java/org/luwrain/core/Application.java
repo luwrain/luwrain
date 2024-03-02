@@ -40,7 +40,7 @@ package org.luwrain.core;
  */
 public interface Application
 {
-    void closeApp();
+    void onAppClose();
     String getAppName();
     AreaLayout getAreaLayout();
     InitResult onLaunchApp(Luwrain luwrain);

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -23,20 +23,22 @@ import org.graalvm.polyglot.*;
 import org.luwrain.core.*;
 import org.luwrain.script.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 public class ChainOfResponsibilityHook
 {
     protected final HookContainer hookContainer;
 
     public ChainOfResponsibilityHook(HookContainer hookContainer)
     {
-	NullCheck.notNull(hookContainer, "hookContainer");
+	notNull(hookContainer, "hookContainer");
 	this.hookContainer = hookContainer;
     }
 
-    public boolean  run(String hookName, Object[] args)
+    public boolean  run(String hookName, Object[] args) throws HookException
     {
-	NullCheck.notEmpty(hookName, "hookName");
-	NullCheck.notNullItems(args, "args");
+	notEmpty(hookName, "hookName");
+	notNullItems(args, "args");
 	final AtomicBoolean execRes = new AtomicBoolean(false);
 	final AtomicReference<RuntimeException> error = new AtomicReference<>();
 	hookContainer.runHooks(hookName, (hook)->{
@@ -61,15 +63,15 @@ public class ChainOfResponsibilityHook
 		}
 	    });
 	if (error.get() != null)
-	    throw error.get();
+	    throw new HookException(error.get(), hookName);
 	return execRes.get();
     }
 
-    static public     boolean  run(HookContainer hookContainer, String hookName, Object[] args)
+    static public     boolean  run(HookContainer hookContainer, String hookName, Object[] args) throws HookException
     {
-	NullCheck.notNull(hookContainer, "hookContainer");
-	NullCheck.notEmpty(hookName, "hookName");
-	NullCheck.notNullItems(args, "args");
+	notNull(hookContainer, "hookContainer");
+	notEmpty(hookName, "hookName");
+	notNullItems(args, "args");
 	return new ChainOfResponsibilityHook(hookContainer).run(hookName, args);
     }
 }

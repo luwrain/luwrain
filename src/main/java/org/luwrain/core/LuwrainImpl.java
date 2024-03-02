@@ -18,21 +18,22 @@ package org.luwrain.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.io.*;
 import java.nio.file.*;
 
 import org.luwrain.core.events.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.i18n.*;
-import org.luwrain.script.Hooks;
+import org.luwrain.script.core.MapScriptObject;
 
 import static org.luwrain.core.Base.*;
 import static org.luwrain.core.NullCheck.*;
+import static org.luwrain.script.Hooks.*;
 
 final class LuwrainImpl implements Luwrain
 {
     private final Core core;
-
     LuwrainImpl(Core core)
     {
 	notNull(core, "core");
@@ -110,17 +111,21 @@ final class LuwrainImpl implements Luwrain
 	}
     }
 
-    @Override public void announcement(String text, String announcementClass, String announcementSubclass)
+    @Override public boolean announcement(String text, AnnouncementType type, String component, String category, Map<String, String> args)
     {
-	NullCheck.notNull(text, "text");
-	NullCheck.notNull(announcementClass, "announcementClass");
-	NullCheck.notNull(announcementSubclass, "announcementSubclass");
+	notNull(text, "text");
+	notNull(type, "type");
+	notEmpty(component, "component");
+	notEmpty(category, "category");
 	if (text.trim().isEmpty())
-	    return;
-	runUiSafely(()->{
-		new org.luwrain.script.hooks.NotificationHook(this).run("luwrain.announcement", new Object[]{text, announcementClass, announcementSubclass});
-	    });
-    }
+	    return true;
+	final var a = args != null?new HashMap<String, Object>(args):new HashMap<String, Object>();
+	final var res = new AtomicBoolean(false);
+	runUiSafely(()->res.set(chainOfResponsibilityNoExc(this, ANNOUNCEMENT, new Object[]{
+			new MapScriptObject().add("type", type.toString()).add("text", text).add("component", component).add("category", category).add("args", new MapScriptObject(a))
+		    })));
+	return res.get();
+	    }
 
     @Override public void sendBroadcastEvent(SystemEvent e)
     {
@@ -568,8 +573,9 @@ final class LuwrainImpl implements Luwrain
     @Override public boolean openUrl(String url)
     {
 	notEmpty(url, "url");
-	//FIXME: main thread only
-	return Hooks.chainOfResponsibility(this, Hooks.URL_OPEN, new Object[]{url});
+	final var res = new AtomicBoolean(false);
+	runUiSafely(()->res.set(chainOfResponsibilityNoExc(this, URL_OPEN, new Object[]{url})));
+	return res.get();
     }
 
     @Override public void runUiSafely(Runnable runnable)

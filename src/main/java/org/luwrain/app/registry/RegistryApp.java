@@ -205,8 +205,12 @@ return actions.insertDir();
 	return new AreaLayout(AreaLayout.LEFT_RIGHT, dirsArea, valuesArea);
     }
 
-    @Override public void closeApp()
+    public void closeApp()
     {
 	luwrain.closeApp();
     }
-}
+
+    @Override public void onAppClose()
+    {
+    }
+    }

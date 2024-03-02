@@ -456,7 +456,7 @@ public interface ActionHandler
 
     protected EditArea.InputEventListener createEditAreaInputEventHook()
     {
-	return (edit, event)->edit.update((lines, hotPoint)->chainOfResponsibility(getLuwrain(), EDIT_INPUT, new Object[]{
+	return (edit, event)->edit.update((lines, hotPoint)->chainOfResponsibilityNoExc(getLuwrain(), EDIT_INPUT, new Object[]{
 		    new EditAreaObj(edit, lines),
 		    new InputEventObj(event)
 		}));

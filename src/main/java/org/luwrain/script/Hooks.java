@@ -24,38 +24,54 @@ import org.luwrain.script.hooks.ProviderHook;
 import org.luwrain.script.hooks.TransformerHook;
 import org.luwrain.script.hooks.CollectorHook;
 
+import static org.luwrain.core.NullCheck.*;
 
 public final class Hooks
 {
     static public final String
+	ANNOUNCEMENT = "luwrain.announcement",
+		AREA_CLEAR = "luwrain.area.clear",
+	AREA_REGION_POINT_SET = "luwrain.area.region.point.set",
+	CLIPBOARD_COPY_ALL = "luwrain.clipboard.copy.all",
 	EDIT_INPUT = "luwrain.edit.input",
-	AREA_CLEAR = "luwrain.area.clear",
 	STARTUP = "luwrain.startup",
 URL_OPEN = "luwrain.url.open";
 
             static public Object[] collector(HookContainer container, String hookName, Object[] args)
     {
-	NullCheck.notNull(container, "container");
-	NullCheck.notEmpty(hookName, "hookName");
+	notNull(container, "container");
+	notEmpty(hookName, "hookName");
 	return new CollectorHook(container).run(hookName, args);
     }
 
                 static public Object[] collectorForArrays(HookContainer container, String hookName, Object[] args)
     {
-	NullCheck.notNull(container, "container");
-	NullCheck.notEmpty(hookName, "hookName");
+	notNull(container, "container");
+	notEmpty(hookName, "hookName");
 	return new CollectorHook(container).runForArrays(hookName, args);
     }
 
-
-
     //Throws RuntimeException
-    static public boolean chainOfResponsibility(HookContainer container, String hookName, Object[] args)
+    static public boolean chainOfResponsibility(HookContainer container, String hookName, Object[] args) throws HookException
     {
-	NullCheck.notNull(container, "container");
-	NullCheck.notEmpty(hookName, "hookName");
+	notNull(container, "container");
+	notEmpty(hookName, "hookName");
 	return new ChainOfResponsibilityHook(container).run(hookName, args);
     }
+
+        static public boolean chainOfResponsibilityNoExc(HookContainer container, String hookName, Object[] args)
+    {
+	notNull(container, "container");
+	notEmpty(hookName, "hookName");
+	try {
+	    return new ChainOfResponsibilityHook(container).run(hookName, args);
+	}
+	catch(Throwable e)
+	{
+	    return false;
+	}
+    }
+
 
     //Throws RuntimeException, returns true if all hooks returned true
         static public boolean permission(HookContainer container, String hookName, Object[] args)

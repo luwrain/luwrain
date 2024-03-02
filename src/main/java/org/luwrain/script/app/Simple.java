@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -253,8 +253,12 @@ private boolean theSameLines(String[] value)
 	return this.name;
     }
 
-            @Override public void closeApp()
+            public void closeApp()
     {
 	luwrain.closeApp();
+    }
+
+    @Override public void onAppClose()
+    {
     }
 }

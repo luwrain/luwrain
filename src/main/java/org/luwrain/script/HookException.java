@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,34 +14,21 @@
    General Public License for more details.
 */
 
-package org .luwrain.core;
+package org.luwrain.script;
 
-public class DummyApp implements Application
+public final class HookException extends Exception
 {
-    public Area area = new DummyArea();
-    public Luwrain luwrain;
+    protected final String hookName;
 
-    @Override public InitResult onLaunchApp(Luwrain luwrain)
+    public HookException(String hookName, String message)
     {
-	this.luwrain = luwrain;
-	return new InitResult();
+	super(hookName + ": " + message);
+	this.hookName = hookName;
     }
 
-    @Override public String getAppName()
+    public HookException(Throwable e, String hookName)
     {
-	return "#DummyApp#";
-    }
-
-    @Override public AreaLayout getAreaLayout()
-    {
-	return new AreaLayout(area);
-    }
-
-    public void closeApp()
-    {
-    }
-
-    @Override public void onAppClose()
-    {
+	super(e);
+	this.hookName = hookName;
     }
 }

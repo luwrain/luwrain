@@ -54,8 +54,7 @@ public final class Desktop implements Application
 	return new AreaLayout(desktopArea);
     }
 
-    @Override public void closeApp()
+    @Override public void onAppClose()
     {
-	//Never called
     }
 }

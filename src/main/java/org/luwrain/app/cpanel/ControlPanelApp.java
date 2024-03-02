@@ -183,10 +183,14 @@ public class ControlPanelApp implements Application, MonoApp, Actions
 	return MonoApp.Result.BRING_FOREGROUND;
     }
 
-    @Override public void closeApp()
+    public void closeApp()
     {
 	if (currentOptionsArea != null && !currentOptionsArea.saveSectionData())
 	    return;
 	luwrain.closeApp();
+    }
+
+    @Override public void onAppClose()
+    {
     }
 }

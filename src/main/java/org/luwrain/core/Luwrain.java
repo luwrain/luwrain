@@ -61,17 +61,8 @@ public interface Luwrain extends PropertiesBase, HookContainer
 	PROP_DIR_USERHOME = "luwrain.dir.userhome",
 	PROP_DIR_SOUNDS = "luwrain.dir.sounds";
 
-    public enum MessageType {
-	ALERT,
-	ANNOUNCEMENT,
-	DONE,
-	ERROR,
-	NONE,
-	OK,
-	REGULAR,
-	UNAVAILABLE,
-    };
-
+    public enum AnnouncementType { ALERT, CHAT, REGULAR};
+    public enum MessageType { 	ALERT, ANNOUNCEMENT, DONE, ERROR, NONE, OK, REGULAR, UNAVAILABLE };
     public enum AreaTextType { REGION, WORD, LINE, SENTENCE, URL };
     public enum SpeakableTextType { NONE, NATURAL, PROGRAMMING };
     public enum AreaAttr { DIRECTORY, UNIREF, URL, UNIREF_UNDER_HOT_POINT, URL_UNDER_HOT_POINT};
@@ -82,7 +73,7 @@ public interface Luwrain extends PropertiesBase, HookContainer
     void closeApp();
     void crash(org.luwrain.app.crash.App app);
     void crash(Throwable e);
-    void announcement(String text, String announcementClass, String announcementSubclass);
+    boolean announcement(String text, AnnouncementType type, String component, String category, Map<String, String> args);
 
 
     //Never returns null, returns user home dir if area doesn't speak about that

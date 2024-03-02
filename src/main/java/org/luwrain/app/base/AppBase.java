@@ -84,9 +84,13 @@ abstract public class AppBase<S> extends TaskCancelling implements Application
 	return new InitResult();
     }
 
-    @Override public void closeApp()
+    public void closeApp()
     {
 	luwrain.closeApp();
+    }
+
+    @Override public void onAppClose()
+    {
     }
 
     @Override public String getAppName()

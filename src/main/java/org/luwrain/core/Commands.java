@@ -134,8 +134,7 @@ final class Commands
 		    }),
 
 	    new Cmd(
-		    "region-point",
-		    (luwrain)->{
+		    "region-point", luwrain->{
 			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
@@ -148,7 +147,7 @@ final class Commands
 			arg.put("x", area.getHotPointX());
 			arg.put("y", area.getHotPointY());
 			final MapScriptObject argObj = new MapScriptObject(arg);
-			if (!hooks.chainOfResponsibility(core.luwrain, "luwrain.area.region.point.set", new Object[]{argObj}))
+			if (!hooks.chainOfResponsibilityNoExc(core.luwrain, Hooks.AREA_REGION_POINT_SET, new Object[]{argObj}))
 			    core.eventNotProcessedMessage();
 		    }),
 
@@ -164,8 +163,7 @@ final class Commands
 		    }),
 
 	    new Cmd(
-		    "copy-all",
-		    (luwrain)->{
+		    "copy-all", luwrain->{
 			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
@@ -177,7 +175,7 @@ final class Commands
 			final Map<String, Object> arg = new HashMap<>();
 			//FIXME:
 			final MapScriptObject argObj = new MapScriptObject(arg);
-			if (!hooks.chainOfResponsibility(core.luwrain, "luwrain.clipboard.copy.all", new Object[]{argObj}))
+			if (!hooks.chainOfResponsibilityNoExc(core.luwrain, Hooks.CLIPBOARD_COPY_ALL, new Object[]{argObj}))
 			    core.eventNotProcessedMessage();
 		    }),
 
@@ -220,8 +218,7 @@ final class Commands
 		    }),
 
 	    new Cmd(
-		    "clear",
-		    (luwrain)->{
+		    "clear", luwrain->{
 			final Area area = core.getActiveArea(true);
 			if (area == null)
 			    return;
@@ -232,7 +229,7 @@ final class Commands
 			}
 			final Map<String, Object> arg = new HashMap<>();
 			//FIXME:
-			if (!hooks.chainOfResponsibility(core.luwrain, Hooks.AREA_CLEAR, new Object[]{new MapScriptObject(arg)}))
+			if (!hooks.chainOfResponsibilityNoExc(core.luwrain, Hooks.AREA_CLEAR, new Object[]{new MapScriptObject(arg)}))
 			    core.eventNotProcessedMessage();
 		    }),
 
