@@ -418,6 +418,14 @@ messageType = ConstObj.getMessageType(values[1].asString());
 	    throw new ScriptException(e);
 	}
     }
+
+        @HostAccess.Export public final ProxyExecutable createWizardArea = this::createWizardAreaImpl;
+    private Object createWizardAreaImpl(Value[] args)
+    {
+	return new org.luwrain.script.controls.WizardAreaObj(new org.luwrain.controls.DefaultControlContext(luwrain), module);
+    }
+
+	
     /*
 
     @HostAccess.Export public final ProxyExecutable fetchUrl = AsyncFunction.create(null, syncObj, (args, res)->{

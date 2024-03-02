@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 
@@ -31,6 +32,7 @@ final class AppImpl implements Application
     final Module module;
     final  Value construct;
     private Value instance = null;
+    private AreaLayout layout = null;
 
     AppImpl(Module module, Value construct)
     {
@@ -46,17 +48,28 @@ final class AppImpl implements Application
 
     @Override public String getAppName()
     {
-	return "";
+	return "proba";
     }
 
     @Override public AreaLayout getAreaLayout()
     {
-	return null;
+	return this.layout;
     }
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
-	this.instance = module.execNewInstance(construct, new Object[0]);
-	return null;
+	this.instance = module.execNewInstance(construct, new Object[]{new ControlObj()});
+	return new InitResult();
+    }
+
+    public final class ControlObj
+    {
+	@HostAccess.Export public ProxyExecutable setLayout = this::setLayoutImpl;
+	private Object setLayoutImpl(Value[] args)
+	{
+	    final Area a = args[0].asHostObject();
+	    AppImpl.this.layout = new AreaLayout(a);
+	    return null;
+	}
     }
 }

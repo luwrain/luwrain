@@ -72,7 +72,7 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 	    b.append(line).append(lineSep);
 	    line = r.readLine();
 	}
-	final Module m = new Module(luwrain, bindings);
+	final Module m = new Module(luwrain, internalCoreFuncs, bindings);
 	m.eval(new String(b));
 	modules.add(m);
     }
