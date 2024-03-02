@@ -106,6 +106,7 @@ public interface Luwrain extends PropertiesBase, HookContainer
     MediaResourcePlayer[] getMediaResourcePlayers();
     org.luwrain.player.Player getPlayer();
     Registry getRegistry();
+    String loadScript(ScriptSource scriptSource) throws ExtensionException;
     int getScreenWidth();
     int getScreenHeight();
 

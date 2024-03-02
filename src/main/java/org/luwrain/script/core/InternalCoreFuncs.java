@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,17 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.core;
+package org.luwrain.script.core;
 
-public final class ExtensionException extends Exception
+import org.luwrain.core.*;
+
+interface InternalCoreFuncs
 {
-    public ExtensionException(Throwable ex)
-    {
-	super(ex);
-    }
-
-    public ExtensionException(String message)
-    {
-	super(message);
-    }
+    void launchApp(Application app);
 }

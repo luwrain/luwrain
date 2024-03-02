@@ -27,12 +27,14 @@ public final class Module implements AutoCloseable
     final Context context;
     final Object syncObj = new Object();
     private final Luwrain luwrain;
+    final InternalCoreFuncs internalCoreFuncs;
     final LuwrainObj luwrainObj;
 
-    public Module(Luwrain luwrain, Bindings bindings)
+    public Module(Luwrain luwrain, InternalCoreFuncs internalCoreFuncs, Bindings bindings)
     {
 	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	this.internalCoreFuncs = internalCoreFuncs;
 	this.luwrainObj = new LuwrainObj(luwrain, syncObj, this);
 	final Engine engine = Engine.newBuilder()
 	.option("engine.WarnInterpreterOnly", "false")
@@ -47,9 +49,14 @@ public final class Module implements AutoCloseable
 	    bindings.onBindings(context.getBindings("js"), luwrainObj.syncObj);
     }
 
+    public Module(Luwrain luwrain, Bindings bindings)
+    {
+	this(luwrain, null, bindings);
+    }
+
     public Module(Luwrain luwrain )
     {
-	this(luwrain, null);
+	this(luwrain, null, null);
     }
 
     public Object eval(String exp)
@@ -65,6 +72,14 @@ public final class Module implements AutoCloseable
 		    func.execute();
 	}
     }
+
+    public Value execNewInstance(Value construct, Object[] args)
+    {
+	synchronized(syncObj){
+	    return construct.newInstance(args);
+	}
+    }
+
 
     @Override public void close()
     {

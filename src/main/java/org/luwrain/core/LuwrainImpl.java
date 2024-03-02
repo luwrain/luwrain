@@ -776,6 +776,12 @@ final class LuwrainImpl implements Luwrain
 	return res.toArray(new ScriptFile[res.size()]);
     }
 
+        @Override public String loadScript(ScriptSource scriptSource) throws ExtensionException
+    {
+	notNull(scriptSource, "scriptSource");
+	return core.loadScript(scriptSource);
+    }
+
     @Override public String escapeString(String style, String text)
     {
 	notNull(style, "style");

@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.io.*;
 
-public final class ScriptFile
+public final class ScriptFile extends ScriptSource
 {
     private final String component, file, dataDir;
 

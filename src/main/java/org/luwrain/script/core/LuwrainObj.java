@@ -225,23 +225,39 @@ public final class LuwrainObj
     }
 
     @HostAccess.Export public final ProxyExecutable launchApp = this::launchAppImpl;
-            private Object launchAppImpl(Value[] values)
+    private Object launchAppImpl(Value[] values)
     {
 	if (notNullAndLen(values, 2))
 	{
-	if (!values[0].isString() || !values[1].hasArrayElements())
-	    return false;
-	final String[] args = asStringArray(values[1]);
-	if (args == null)
-	    return false;
-	luwrain.launchApp(values[0].asString(), args);
-	return true;
-    }
+	    if (!values[1].hasArrayElements())
+		return false;
+	    final String[] args = asStringArray(values[1]);
+	    if (args == null)
+		return false;
+	    if (values[0].isString())
+	    {
+		luwrain.launchApp(values[0].asString(), args);
+		return true;
+	    }
+	    if (!values[0].canExecute())
+		throw new IllegalArgumentException("The first argument to Luwrian.launchApp() must be a string or an executable object");
+	    if (module.internalCoreFuncs == null)
+		throw new IllegalArgumentException("This script core can launch apps by their names only");
+	    module.internalCoreFuncs.launchApp(new AppImpl(module, values[0]));
+	    return true;
+	}
 	if (!notNullAndLen(values, 1))
 	    return false;
-	if (!values[0].isString())
-	    return false;
-	luwrain.launchApp(values[0].asString());
+	if (values[0].isString())
+	{
+	    luwrain.launchApp(values[0].asString());
+	    return true;
+	}
+	if (!values[0].canExecute())
+	    throw new IllegalArgumentException("The first argument to Luwrian.launchApp() must be a string or an executable object");
+	if (module.internalCoreFuncs == null)
+	    throw new IllegalArgumentException("This script core can launch apps by their names only");
+	module.internalCoreFuncs.launchApp(new AppImpl(module, values[0]));
 	return true;
     }
 

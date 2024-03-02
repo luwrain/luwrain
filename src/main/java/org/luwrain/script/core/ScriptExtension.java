@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 
 import static org.luwrain.core.NullCheck.*;
 
-public final class ScriptExtension implements Extension, org.luwrain.core.HookContainer
+public abstract class ScriptExtension implements Extension, org.luwrain.core.HookContainer
 {
     public final String name;
     private ScriptCore scriptCore = null;
@@ -34,11 +34,15 @@ public final class ScriptExtension implements Extension, org.luwrain.core.HookCo
 	this.name = name;
     }
 
+    public abstract void launchApp(Application app);
+
     @Override public String init(Luwrain luwrain)
     {
 	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.scriptCore = new ScriptCore(luwrain);
+	this.scriptCore = new ScriptCore(luwrain, new InternalCoreFuncs(){
+		@Override public void launchApp(Application app) { ScriptExtension.this.launchApp(app); }
+	    }, null);
 	return null;
     }
 

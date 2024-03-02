@@ -168,14 +168,20 @@ final class Core extends EventDispatching
 	uiSettings = Settings.createUserInterface(registry);
     }
 
-    String loadScript(ScriptFile scriptFile) throws ExtensionException
+    String loadScript(ScriptSource script) throws ExtensionException
     {
-	notNull(scriptFile, "scriptFile");
+	notNull(script, "script");
 	mainCoreThreadOnly();
-	final var ext = new org.luwrain.script.core.ScriptExtension(scriptFile.toString());
+	final var ext = new org.luwrain.script.core.ScriptExtension(script.toString()){
+		@Override public void launchApp(Application app)
+		{
+		    notNull(app, "app");
+		    Core.this.launchApp(app);
+		}
+	    };
 	ext.init(interfaces.requestNew(ext));
 	try {
-	    ext.getScriptCore().load(scriptFile);
+	    ext.getScriptCore().load(script);
 	}
 	catch(Throwable e)
 	{

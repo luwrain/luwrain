@@ -33,18 +33,25 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 
     private final Bindings bindings;
     private final Luwrain luwrain;
+    private final InternalCoreFuncs internalCoreFuncs;
     private final List<Module> modules = new ArrayList<>();
 
-    public ScriptCore(Luwrain luwrain, Bindings bindings)
+    public ScriptCore(Luwrain luwrain, InternalCoreFuncs internalCoreFuncs, Bindings bindings)
     {
 	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	this.internalCoreFuncs = internalCoreFuncs;
 	this.bindings = bindings;
+    }
+
+    public ScriptCore(Luwrain luwrain, Bindings bindings)
+    {
+	this(luwrain, null, bindings);
     }
 
     public ScriptCore(Luwrain luwrain)
     {
-	this(luwrain, null);
+	this(luwrain, null, null);
     }
 
     @Override public void close()
@@ -53,7 +60,7 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 	    m.close();
     }
 
-    public void load (Reader reader) throws IOException
+    private void load (Reader reader) throws IOException
     {
 	notNull(reader, "reader");
 	final String lineSep = System.lineSeparator();
@@ -78,11 +85,20 @@ public final class ScriptCore implements HookContainer, AutoCloseable
 	modules.add(m);
     }
 
-    public void load (ScriptFile scriptFile) throws IOException
+    public void load (ScriptSource scriptSource) throws IOException
     {
-	notNull(scriptFile, "scriptFile");
-	Log.debug(LOG_COMPONENT, "loading " + scriptFile.toString());
-	load(scriptFile.asFile());
+	notNull(scriptSource, "scriptSource");
+	Log.debug(LOG_COMPONENT, "loading " + scriptSource.toString());
+	if (scriptSource instanceof ScriptFile f)
+	{
+	load(f.asFile());
+	return;
+	}
+	if (scriptSource instanceof ScriptText t)
+	{
+	    load(new StringReader(t.getText()));
+	    return;
+	}
     }
 
     @Override public boolean runHooks(String hookName, Luwrain.HookRunner runner)
