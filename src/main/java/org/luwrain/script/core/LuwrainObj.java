@@ -31,7 +31,7 @@ import org.luwrain.util.*;
 import static org.luwrain.script.ScriptUtils.*;
 import static org.luwrain.core.NullCheck.*;
 
-public final class LuwrainObj
+public final class LuwrainObj extends LuwrainObjBase
 {
     @HostAccess.Export public final LogObj log;
     @HostAccess.Export public final ConstObj constants = new ConstObj();
@@ -39,7 +39,7 @@ public final class LuwrainObj
 
     final Luwrain luwrain;
     final Object syncObj;
-    final Module module;
+    //    final Module module;
     final Map<String, List<Value> > hooks = new HashMap<>();
     final List<ExtensionObject> extObjs = new ArrayList<>();
     final I18nObj i18nObj;
@@ -47,12 +47,13 @@ public final class LuwrainObj
 
     LuwrainObj(Luwrain luwrain, Object syncObj, Module module)
     {
+	super(module);
 	notNull(luwrain, "luwrain");
 	notNull(syncObj, "syncObj");
 	notNull(module, "module");
 	this.luwrain = luwrain;
 	this.syncObj = syncObj;
-	this.module = module;
+	//	this.module = module;
 	this.log = new LogObj(luwrain);
 	this.i18nObj = new I18nObj(luwrain);
 	this.popups = new PopupsObj(luwrain);
@@ -435,9 +436,7 @@ messageType = ConstObj.getMessageType(values[1].asString());
 							     (onInput != null && !onInput.isNull())?onInput:null);
     }
 
-    /*
-
-    @HostAccess.Export public final ProxyExecutable fetchUrl = AsyncFunction.create(null, syncObj, (args, res)->{
+    @HostAccess.Export public final ProxyExecutable fetchUrl = AsyncFunction.create(module.context, module.syncObj, (args, res)->{
 	if (!notNullAndLen(args, 1))
 	    throw new IllegalArgumentException("Luwrain.fetchUrl takes exactly one argument");
 	if (!args[0].isString())
@@ -452,7 +451,7 @@ messageType = ConstObj.getMessageType(values[1].asString());
 		    b.append(line).append(System.lineSeparator());
 		    line = r.readLine();
 		}
-		return new String(b);
+		return;//new String(b);
 	    }
 	}
 	catch(Throwable e)
@@ -460,7 +459,6 @@ messageType = ConstObj.getMessageType(values[1].asString());
 	    throw new ScriptException(e);
 	}
 	});
-    */
 
     @HostAccess.Export public final ProxyExecutable speak = this::speakImpl;
     private Object speakImpl(Value[] values)
