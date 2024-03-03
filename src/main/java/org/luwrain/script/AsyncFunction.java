@@ -21,12 +21,18 @@ import java.util.concurrent.*;
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
+import org.luwrain.core.*;
+import static org.luwrain .core.NullCheck.*;
+
 public interface AsyncFunction
 {
     void run(Value[] args, CompletableFuture<Object> res);
 
     static public ProxyExecutable create(Context context, Object syncObj, AsyncFunction f)
     {
+	notNull(context, "context");
+	notNull(syncObj, "syncObj");
+	notNull(f, "f");
 	return (ProxyExecutable)(args)->{
 	    final CompletableFuture<Object> res = new CompletableFuture<>();
 	    f.run(args, res);
@@ -38,16 +44,15 @@ public interface AsyncFunction
     {
         final Value promiseConstructor = context.getBindings("js").getMember("Promise");
         return promiseConstructor.newInstance((ProxyExecutable) arguments -> {
-            final Value resolve = arguments[0], reject = arguments[1];
-            f.whenComplete((result, ex) -> {
-		    synchronized(syncObj){
-			if (result != null) 
-			    resolve.execute(result); else
-                    reject.execute(ex);
-		    }
-            });
-            return null;
-        });
+		final Value resolve = arguments[0], reject = arguments[1];
+		f.whenComplete((result, ex) -> {
+			synchronized(syncObj){
+			    if (result != null)
+				resolve.execute(result); else
+				reject.execute(ex);
+			}
+		    });
+		return null;
+	    });
     }
-
 }

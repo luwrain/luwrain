@@ -17,6 +17,7 @@
 package org.luwrain.script.core;
 
 import org.graalvm.polyglot.*;
+import com.oracle.truffle.js.runtime.JSContextOptions;
 
 import org.luwrain.core.*;
 
@@ -35,7 +36,6 @@ public final class Module implements AutoCloseable
 	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.internalCoreFuncs = internalCoreFuncs;
-	this.luwrainObj = new LuwrainObj(luwrain, syncObj, this);
 	final Engine engine = Engine.newBuilder()
 	.option("engine.WarnInterpreterOnly", "false")
 	.build();
@@ -43,10 +43,13 @@ public final class Module implements AutoCloseable
 	.engine(engine)
 	.allowExperimentalOptions(true)
 	.allowHostAccess(HostAccess.ALL) //FIXME: Better to use .EXPLICIT
+		.option(JSContextOptions.INTEROP_COMPLETE_PROMISES_NAME, "false")
 	.build();
+			this.luwrainObj = new LuwrainObj(luwrain, syncObj, this);
 	this.context.getBindings("js").putMember("Luwrain", this.luwrainObj);
 	if (bindings != null)
 	    bindings.onBindings(context.getBindings("js"), luwrainObj.syncObj);
+
     }
 
     public Module(Luwrain luwrain, Bindings bindings)
@@ -79,7 +82,6 @@ public final class Module implements AutoCloseable
 	    return construct.newInstance(args);
 	}
     }
-
 
     @Override public void close()
     {

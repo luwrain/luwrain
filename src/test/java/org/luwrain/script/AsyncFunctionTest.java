@@ -44,7 +44,9 @@ public class AsyncFunctionTest
 				"var foo = await f();" +
 				"finished(foo);" +
 				"})");
-	fn.execute();
+	System.out.println(fn.toString());
+	final var r = fn.execute();
+	System.out.println(r.toString());
 	assertNotNull(f.get());
 	assertNull(finishedValue.get());
 	f.get().complete("Testing value");

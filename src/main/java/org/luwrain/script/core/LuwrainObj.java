@@ -37,9 +37,7 @@ public final class LuwrainObj extends LuwrainObjBase
     @HostAccess.Export public final ConstObj constants = new ConstObj();
     @HostAccess.Export public final PopupsObj popups;
 
-    final Luwrain luwrain;
     final Object syncObj;
-    //    final Module module;
     final Map<String, List<Value> > hooks = new HashMap<>();
     final List<ExtensionObject> extObjs = new ArrayList<>();
     final I18nObj i18nObj;
@@ -47,11 +45,10 @@ public final class LuwrainObj extends LuwrainObjBase
 
     LuwrainObj(Luwrain luwrain, Object syncObj, Module module)
     {
-	super(module);
+	super(module, luwrain);
 	notNull(luwrain, "luwrain");
 	notNull(syncObj, "syncObj");
 	notNull(module, "module");
-	this.luwrain = luwrain;
 	this.syncObj = syncObj;
 	//	this.module = module;
 	this.log = new LogObj(luwrain);
@@ -437,27 +434,29 @@ messageType = ConstObj.getMessageType(values[1].asString());
     }
 
     @HostAccess.Export public final ProxyExecutable fetchUrl = AsyncFunction.create(module.context, module.syncObj, (args, res)->{
-	if (!notNullAndLen(args, 1))
-	    throw new IllegalArgumentException("Luwrain.fetchUrl takes exactly one argument");
-	if (!args[0].isString())
-	    throw new IllegalArgumentException("Luwrain.fetchUrl() takes a string as its first argument");
-
-	try {
-	    try (final BufferedReader r = new BufferedReader(new InputStreamReader(new URL(args[0].asString()).openStream()))) {
-		final StringBuilder b = new StringBuilder();
-		String line = r.readLine();
-		while (line != null)
-		{
-		    b.append(line).append(System.lineSeparator());
-		    line = r.readLine();
-		}
-		return;//new String(b);
-	    }
-	}
-	catch(Throwable e)
-	{
-	    throw new ScriptException(e);
-	}
+	    if (!notNullAndLen(args, 1))
+		throw new IllegalArgumentException("Luwrain.fetchUrl takes exactly one argument");
+	    if (!args[0].isString())
+		throw new IllegalArgumentException("Luwrain.fetchUrl() takes a string as its first argument");
+	    luwrain.executeBkg(()->{
+		    try {
+			try (final BufferedReader r = new BufferedReader(new InputStreamReader(new URL(args[0].asString()).openStream()))) {
+			    final StringBuilder b = new StringBuilder();
+			    String line = r.readLine();
+			    while (line != null)
+			    {
+				b.append(line).append(System.lineSeparator());
+				line = r.readLine();
+			    }
+			    luwrain.runUiSafely(()->res.complete(new String(b)));
+			}
+		    }
+		    catch(Throwable e)
+		    {
+			Log.error("proba", e.getMessage());
+			throw new ScriptException(e);
+		    }
+		});
 	});
 
     @HostAccess.Export public final ProxyExecutable speak = this::speakImpl;

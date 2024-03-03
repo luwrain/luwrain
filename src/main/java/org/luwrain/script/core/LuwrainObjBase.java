@@ -16,14 +16,19 @@
 
 package org.luwrain.script.core;
 
+import org.luwrain.core.*;
 import static org.luwrain.core.NullCheck.*;
 
 public class LuwrainObjBase
 {
     protected final Module module;
-    LuwrainObjBase(Module module)
+    protected final Luwrain luwrain;
+
+    LuwrainObjBase(Module module, Luwrain luwrain)
     {
 	notNull(module, "module");
+	notNull(luwrain, "luwrain");
 	this.module = module;
+	this.luwrain = luwrain;
     }
 }
