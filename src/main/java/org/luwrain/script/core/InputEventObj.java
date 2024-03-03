@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.script.core;
 
 import java.util.*;
@@ -23,15 +21,18 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 public class InputEventObj extends MapScriptObject
 {
     protected final InputEvent event;
 
     public InputEventObj(InputEvent event)
     {
-	NullCheck.notNull(event, "event");
+	notNull(event, "event");
 	this.event = event;
-	members.put("special", event.isSpecial()?event.getSpecial().toString():null);
+	members.put("special", event.isSpecial()?event.getSpecial().toString():null);//FIXME: To be deleted
+		members.put("code", event.isSpecial()?event.getSpecial().toString():null);
 	members.put("ch", event.isSpecial()?null:new String(new StringBuilder().append(event.getChar())));
 	members.put("withAlt", Boolean.valueOf(event.withAlt()));
 	members.put("withAltOnly", Boolean.valueOf(event.withAltOnly()));

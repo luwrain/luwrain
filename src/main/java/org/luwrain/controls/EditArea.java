@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.script.*;
+
+import static org.luwrain.core.NullCheck.*;
 
 public class EditArea extends NavigationArea
 {
@@ -57,7 +59,7 @@ public interface Appearance extends MultilineEdit.Appearance
 	public Params() {}
 	public Params(ControlContext context)
 	{
-	    NullCheck.notNull(context, "context");
+	    notNull(context, "context");
 	    this.context = context;
 	    this.appearance = new EditUtils.DefaultEditAreaAppearance(context);
 	}

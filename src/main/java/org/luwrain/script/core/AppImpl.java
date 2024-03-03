@@ -32,6 +32,7 @@ final class AppImpl implements Application
     final Module module;
     final  Value construct;
     private Value instance = null;
+    private Luwrain luwrain = null;
     private AreaLayout layout = null;
 
     AppImpl(Module module, Value construct)
@@ -58,6 +59,7 @@ final class AppImpl implements Application
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
+	this.luwrain = luwrain;
 	this.instance = module.execNewInstance(construct, new Object[]{new ControlObj()});
 	return new InitResult();
     }
@@ -71,5 +73,14 @@ final class AppImpl implements Application
 	    AppImpl.this.layout = new AreaLayout(a);
 	    return null;
 	}
+
+		@HostAccess.Export public ProxyExecutable close = this::closeImpl;
+	private Object closeImpl(Value[] args)
+	{
+	    AppImpl.this.luwrain.closeApp();
+	    return null;
+	}
+
+	
     }
 }

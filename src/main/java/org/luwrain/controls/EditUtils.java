@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -23,6 +23,8 @@ import java.util.function.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.MultilineEdit.ModificationResult;
+
+import static org.luwrain.core.NullCheck.*;
 
 public final class EditUtils
 {
@@ -76,7 +78,7 @@ public final class EditUtils
 	}
 	    @Override public void announceLine(int index, String line)
     {
-	NullCheck.notNull(line, "line");
+	notNull(line, "line");
 	if (speakableTextType != null)
 	    NavigationArea.defaultLineAnnouncement(context, index, context.getSpeakableText(line, speakableTextType
 											    )); else

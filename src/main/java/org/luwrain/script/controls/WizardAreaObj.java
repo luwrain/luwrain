@@ -35,12 +35,26 @@ import static org.luwrain.script.ScriptUtils.*;
 public class WizardAreaObj extends WizardArea
 {
     final org.luwrain.script.core.Module module;
+    final Value onInput;
 
-    public WizardAreaObj(ControlContext context, org.luwrain.script.core.Module module)
+    public WizardAreaObj(ControlContext context, org.luwrain.script.core.Module module, Value onInput)
     {
 	super(context);
 	notNull(module, "module");
 	this.module = module;
+	this.onInput = onInput;
+    }
+
+    @Override public boolean onInputEvent(InputEvent event)
+    {
+	notNull(event, "event");
+	if (onInput != null)
+	{
+	    final var res = onInput.execute(new InputEventObj(event));
+	    if (res != null && !res.isNull() && res.isBoolean() && res.asBoolean())
+		return true;
+	}
+	return super.onInputEvent(event);
     }
 
     @HostAccess.Export public ProxyExecutable createFrame = this::createFrameImpl;

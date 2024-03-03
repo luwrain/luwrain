@@ -239,7 +239,7 @@ public final class LuwrainObj
 		luwrain.launchApp(values[0].asString(), args);
 		return true;
 	    }
-	    if (!values[0].canExecute())
+	    if (!values[0].canInstantiate())
 		throw new IllegalArgumentException("The first argument to Luwrian.launchApp() must be a string or an executable object");
 	    if (module.internalCoreFuncs == null)
 		throw new IllegalArgumentException("This script core can launch apps by their names only");
@@ -253,7 +253,7 @@ public final class LuwrainObj
 	    luwrain.launchApp(values[0].asString());
 	    return true;
 	}
-	if (!values[0].canExecute())
+	if (!values[0].canInstantiate())
 	    throw new IllegalArgumentException("The first argument to Luwrian.launchApp() must be a string or an executable object");
 	if (module.internalCoreFuncs == null)
 	    throw new IllegalArgumentException("This script core can launch apps by their names only");
@@ -419,13 +419,22 @@ messageType = ConstObj.getMessageType(values[1].asString());
 	}
     }
 
-        @HostAccess.Export public final ProxyExecutable createWizardArea = this::createWizardAreaImpl;
+    @HostAccess.Export public final ProxyExecutable createWizardArea = this::createWizardAreaImpl;
     private Object createWizardAreaImpl(Value[] args)
     {
-	return new org.luwrain.script.controls.WizardAreaObj(new org.luwrain.controls.DefaultControlContext(luwrain), module);
+	final Value onInput;
+	if (args != null && args.length != 0 &&
+	    args[0] != null && !args[0].isNull())
+	{
+	    onInput = args[0].getMember("input");
+	    if (onInput != null && !onInput.isNull() && !onInput.canExecute())
+		throw new IllegalArgumentException("The input member of the first argument to Luwrain.createWizardArea() must be a function");
+	} else
+	    onInput = null;
+	return new org.luwrain.script.controls.WizardAreaObj(new org.luwrain.controls.DefaultControlContext(luwrain), module,
+							     (onInput != null && !onInput.isNull())?onInput:null);
     }
 
-	
     /*
 
     @HostAccess.Export public final ProxyExecutable fetchUrl = AsyncFunction.create(null, syncObj, (args, res)->{
