@@ -433,6 +433,23 @@ messageType = ConstObj.getMessageType(values[1].asString());
 							     (onInput != null && !onInput.isNull())?onInput:null);
     }
 
+    @HostAccess.Export public ProxyExecutable parseXml = this::parseXmlImpl;
+    private Object parseXmlImpl(Value[] args)
+    {
+	if (args == null || args.length < 1 || args.length > 2)
+	    throw new IllegalArgumentException("Luwrain.parseXml() takes one or two string arguments");
+	if (!args[0].isString())
+	    throw new IllegalArgumentException("Luwrain.parseXml() takes a string as the first argument");
+	if (args.length == 2 && !args[1].isString())
+	    throw new IllegalArgumentException("Luwrain.parseXml() takes a string as the second argument");
+	final var p = org.jsoup.parser.Parser.xmlParser();
+	final org.jsoup.nodes.Document doc;
+	if (args.length == 1)
+	    doc = p.parseInput(args[0].asString(), ""); else
+	    doc = p.parseInput(args[0].asString(), args[1].asString());
+	return doc != null?new org.luwrain.script.ml.JSoupDocObj(doc):null;
+    }
+
     @HostAccess.Export public final ProxyExecutable fetchUrl = AsyncFunction.create(module.context, module.syncObj, (args, res)->{
 	    if (!notNullAndLen(args, 1))
 		throw new IllegalArgumentException("Luwrain.fetchUrl takes exactly one argument");

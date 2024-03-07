@@ -26,6 +26,7 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 
 import static org.luwrain.core.NullCheck.*;
+import static org.luwrain.script.ScriptUtils.*;
 
 final class AppImpl implements Application
 {
@@ -33,6 +34,7 @@ final class AppImpl implements Application
     final  Value construct;
     private Value instance = null;
     private Luwrain luwrain = null;
+    private String name = "";
     private AreaLayout layout = null;
 
     AppImpl(Module module, Value construct)
@@ -49,7 +51,7 @@ final class AppImpl implements Application
 
     @Override public String getAppName()
     {
-	return "proba";
+	return name != null?name:"";
     }
 
     @Override public AreaLayout getAreaLayout()
@@ -73,6 +75,16 @@ final class AppImpl implements Application
 	    AppImpl.this.layout = new AreaLayout(a);
 	    return null;
 	}
+
+			@HostAccess.Export public ProxyExecutable setName = this::setNameImpl;
+	private Object setNameImpl(Value[] args)
+	{
+	    if (!notNullAndLen(args, 1) || !args[0].isString())
+		throw new IllegalArgumentException("App.setName() takes exactly one string argument");
+	    AppImpl.this.name = args[0].asString();
+	    return null;
+	}
+
 
 		@HostAccess.Export public ProxyExecutable close = this::closeImpl;
 	private Object closeImpl(Value[] args)
