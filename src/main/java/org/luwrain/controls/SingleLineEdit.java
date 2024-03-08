@@ -31,7 +31,7 @@ import org.luwrain.util.*;
  * conjunction with some navigation handler over the text (for example,
  * with {@link NavigationArea}).
  *
- * @see MultilineEdit
+ * @see org.luwrain.controls.edit.MultilineEdit
  */
 public class SingleLineEdit implements ClipboardTranslator.Provider, RegionTextQueryTranslator.Provider
 {

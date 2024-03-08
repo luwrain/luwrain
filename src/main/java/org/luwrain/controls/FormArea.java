@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -14,14 +14,13 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.controls;
 
 import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.edit.*;
 
 import static org.luwrain.core.DefaultEventResponse.*;
 

@@ -21,7 +21,7 @@ import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
-import org.luwrain.controls.*;
+import org.luwrain.controls.edit.*;
 import org.luwrain.script.core.*;
 
 public final class EditAreaObj implements ProxyObject

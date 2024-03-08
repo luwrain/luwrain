@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -20,6 +20,7 @@ import java.io.*;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.controls.edit.*;
 
 public class MessageArea extends FormArea
 {

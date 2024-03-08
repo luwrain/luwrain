@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.controls.edit.*;
 import org.luwrain.script.core.*;
 import org.luwrain.script.controls.*;
 

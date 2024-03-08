@@ -23,11 +23,11 @@ import java.util.concurrent.atomic.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.controls.*;
+import org.luwrain.controls.edit.*;
 import org.luwrain.script.*;
 import org.luwrain.script.core.*;
 import org.luwrain.util.*;
-import org.luwrain.controls.MultilineEdit.ModificationResult;
+import org.luwrain.controls.edit.MultilineEdit.ModificationResult;
 
 /**
  * A translator of text correcting operations to hooks actions. This

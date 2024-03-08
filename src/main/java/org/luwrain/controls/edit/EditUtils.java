@@ -14,15 +14,14 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
-package org.luwrain.controls;
+package org.luwrain.controls.edit;
 
 import java.util.*;
 import java.util.function.*;
 
 import org.luwrain.core.*;
-import org.luwrain.controls.MultilineEdit.ModificationResult;
+import org.luwrain.controls.*;
+import org.luwrain.controls.edit.MultilineEdit.ModificationResult;
 
 import static org.luwrain.core.NullCheck.*;
 

@@ -14,15 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls;
+package org.luwrain.controls.edit;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.luwrain.core.*;
-import org.luwrain.core.events.*;
-import org.luwrain.core.queries.*;
-import org.luwrain.controls.MultilineEdit.ModificationResult;
+import org.luwrain.controls.edit.MultilineEdit.ModificationResult;
+import org.luwrain.controls.*;
 
 public class MultilineEditTranslatorTest
 {
@@ -39,16 +38,16 @@ public class MultilineEditTranslatorTest
 	assertTrue(lines.getLine(0).equals("a"));
 	assertTrue(translator.getLineCount() == 1);
 	assertTrue(translator.getLine(0).equals("a"));
-	assertTrue(hotPoint.x == 1);
-	assertTrue(hotPoint.y == 0);
+	assertTrue(hotPoint.getHotPointX() == 1);
+	assertTrue(hotPoint.getHotPointY() == 0);
 	final ModificationResult res = translator.deleteChar(0, 0);
 	final char deleted = res.getCharArg();
 	assertTrue(deleted == 'a');
 	assertTrue(lines.getLineCount() == 0);
 	assertTrue(translator.getLineCount() == 1);
 	assertTrue(translator.getLine(0).equals(""));
-	assertTrue(hotPoint.x == 0);
-	assertTrue(hotPoint.y == 0);
+	assertTrue(hotPoint.getHotPointX() == 0);
+	assertTrue(hotPoint.getHotPointY() == 0);
     }
 
     @Disabled @Test public void emptyLinesSplitMerge()
@@ -61,13 +60,13 @@ public class MultilineEditTranslatorTest
 	assertTrue(translator.getLineCount() == 2);
 	assertTrue(translator.getLine(0).equals(""));
 	assertTrue(translator.getLine(1).equals(""));
-	assertTrue(hotPoint.x == 0);
-	assertTrue(hotPoint.y == 1);
+	assertTrue(hotPoint.getHotPointX() == 0);
+	assertTrue(hotPoint.getHotPointY() == 1);
 	translator.mergeLines(0);
 	assertTrue(lines.getLineCount() == 0);
 	assertTrue(translator.getLineCount() == 1);
-	assertTrue(hotPoint.x == 0);
-	assertTrue(hotPoint.y == 0);
+	assertTrue(hotPoint.getHotPointX() == 0);
+	assertTrue(hotPoint.getHotPointY() == 0);
     }
 
     @Disabled @Test public void deleteChar3x3()

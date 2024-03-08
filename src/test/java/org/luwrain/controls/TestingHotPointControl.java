@@ -20,8 +20,7 @@ import org.luwrain.core.*;
 
 public class TestingHotPointControl implements HotPointControl
 {
-    int x = 0;
-    int y = 0;
+    public int x = 0, y = 0;
 
     @Override public void beginHotPointTrans()
     {

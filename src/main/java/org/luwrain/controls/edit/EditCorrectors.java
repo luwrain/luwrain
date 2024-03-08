@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,11 +16,11 @@
 
 //LWR_API 1.0
 
-package org.luwrain.controls;
+package org.luwrain.controls.edit;
 
 import org.luwrain.core.*;
-import org.luwrain.controls.MultilineEdit.*;
-import org.luwrain.controls.EditUtils.*;
+import org.luwrain.controls.edit.MultilineEdit.*;
+import org.luwrain.controls.edit.EditUtils.*;
 
 public final class EditCorrectors
 {

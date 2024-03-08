@@ -16,13 +16,14 @@
 
 //LWR_API 1.0
 
-package org.luwrain.controls;
+package org.luwrain.controls.edit;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.controls.*;
 import org.luwrain.script.*;
 
 import static org.luwrain.core.NullCheck.*;
