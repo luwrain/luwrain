@@ -19,14 +19,25 @@
 package org.luwrain.controls.edit;
 
 import java.util.*;
-
+import org.luwrain.core.*;
 import static org.luwrain.core.NullCheck.*;
 
 public interface MultilineCorrector extends MultilineEdit.Model
 {
-    public enum ChangeType { DELETE_CHAR, DELETE_FRAGMENT , INSERT_CHARS, INSERT_FRAGMENT, MERGE_LINES, SPLIT_LINE};
+    public enum ChangeType {
+	DELETE_CHAR,
+	DELETE_FRAGMENT ,
+	INSERT_CHARS,
+	INSERT_FRAGMENT,
+	MERGE_LINES,
+	SPLIT_LINE};
 
-    void correct(Change change);
+    public interface Model extends MutableLines, HotPointControl
+    {
+	void change(Change c);
+    }
+
+    void change(Change c);
 
     static public class Change
     {
@@ -37,11 +48,11 @@ public interface MultilineCorrector extends MultilineEdit.Model
 	    notNull(type, "type");
 	    if (line < 0)
 		throw new IllegalArgumentException("line can't be negative (" + String.valueOf(line) + ")");
-	    	    if (pos < 0)
+	    if (pos < 0)
 		throw new IllegalArgumentException("pos can't be negative (" + String.valueOf(pos) + ")");
-		    this.type = type;
-		    this.line = line;
-		    this.pos = pos;
+	    this.type = type;
+	    this.line = line;
+	    this.pos = pos;
 	}
 	public ChangeType getType() { return type; }
 	public int getLine() { return line; }
@@ -64,7 +75,7 @@ public interface MultilineCorrector extends MultilineEdit.Model
 	}
     }
 
-        static public final class InsertFragmentChange extends Change
+    static public final class InsertFragmentChange extends Change
     {
 	protected final List<String> text;
 	public InsertFragmentChange(int line, int pos, List<String> text)
@@ -74,31 +85,26 @@ public interface MultilineCorrector extends MultilineEdit.Model
 	}
 	public List<String> getText() { return text; }
 
-	        static public final class InsertCharsChange extends Change
-    {
-	protected final String chars;
-	public InsertCharsChange(int line, int pos, String chars)
+	static public final class InsertCharsChange extends Change
 	{
-	    super(ChangeType.INSERT_CHARS, line, pos);
-	    notEmpty(chars, "chars");
-	    this.chars = chars;
+	    protected final String chars;
+	    public InsertCharsChange(int line, int pos, String chars)
+	    {
+		super(ChangeType.INSERT_CHARS, line, pos);
+		notEmpty(chars, "chars");
+		this.chars = chars;
+	    }
+	    public String getChars() { return chars; }
 	}
-	public String getChars() { return chars; }
     }
-}
 
-        static public final class MergeLinesChange extends Change
+    static public final class MergeLinesChange extends Change
     {
 	public MergeLinesChange(int line, int pos) { super(ChangeType.MERGE_LINES, line, pos); }
     }
 
-            static public final class SplitLineChange extends Change
+    static public final class SplitLineChange extends Change
     {
 	public SplitLineChange(int line, int pos) { super(ChangeType.SPLIT_LINE, line, pos); }
     }
-
-
-
-
-    
 }
