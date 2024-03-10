@@ -31,7 +31,7 @@ public class LegacyMultilineTranslator implements MultilineEditCorrector
     protected final HotPointControl hotPoint;
     protected String tabSeq = "\t";
 
-        public LegacyMultilineTranslator(MultilineTranslator translator)
+    public LegacyMultilineTranslator(MultilineTranslator translator)
     {
 	notNull(translator, "translator");
 	this.translator = translator;
