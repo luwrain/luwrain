@@ -22,7 +22,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import static org.luwrain.core.NullCheck.*;
 
-public interface MultilineCorrector extends MultilineEdit.Model
+public interface MultilineCorrector
 {
     public enum ChangeType {
 	DELETE_CHAR,
@@ -43,6 +43,7 @@ public interface MultilineCorrector extends MultilineEdit.Model
     {
 	protected final ChangeType type;
 	protected final int line, pos;
+	protected MultilineEdit.ModificationResult result = null;
 	public Change(ChangeType type, int line, int pos)
 	{
 	    notNull(type, "type");
@@ -57,6 +58,8 @@ public interface MultilineCorrector extends MultilineEdit.Model
 	public ChangeType getType() { return type; }
 	public int getLine() { return line; }
 	public int getPos() { return pos; }
+	public void setResult(MultilineEdit.ModificationResult result) { this.result = result; }
+	public MultilineEdit.ModificationResult getResult() { return this.result; }
     }
 
     static public final class DeleteCharChange extends Change
@@ -84,6 +87,7 @@ public interface MultilineCorrector extends MultilineEdit.Model
 	    this.text = text;
 	}
 	public List<String> getText() { return text; }
+    }
 
 	static public final class InsertCharsChange extends Change
 	{
@@ -96,11 +100,11 @@ public interface MultilineCorrector extends MultilineEdit.Model
 	    }
 	    public String getChars() { return chars; }
 	}
-    }
 
     static public final class MergeLinesChange extends Change
     {
-	public MergeLinesChange(int line, int pos) { super(ChangeType.MERGE_LINES, line, pos); }
+	public MergeLinesChange(int firstLine) { super(ChangeType.MERGE_LINES, firstLine, 0); }
+	@Override public int getPos() { throw new IllegalArgumentException("pos is meaningless for MergeLinesChange"); }
     }
 
     static public final class SplitLineChange extends Change

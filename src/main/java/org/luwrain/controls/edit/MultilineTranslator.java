@@ -20,11 +20,12 @@ import org.luwrain.core.*;
 import org.luwrain.controls.edit.MultilineEdit.ModificationResult;
 import org.luwrain.util.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 // Expects that hot point is not related to the content 
 // Hot point position may be adjusted to the content changes only on endEditTrans 
-
 //Keeps lines empty if it is possible providing a fake  first line to be consistent, as it is required by MultilineEdit.Model
-public class MultilineTranslator
+public class MultilineTranslator implements MultilineCorrector
 {
     protected final MutableLines lines;
     protected final HotPointControl hotPoint;
@@ -33,21 +34,24 @@ public class MultilineTranslator
 
     public MultilineTranslator(MutableLines lines, HotPointControl hotPoint)
     {
-	NullCheck.notNull(lines, "lines");
-	NullCheck.notNull(hotPoint, "hotPoint");
+	notNull(lines, "lines");
+	notNull(hotPoint, "hotPoint");
 	this.lines = lines;
 	this.hotPoint = hotPoint;
     }
 
-    public MultilineTranslator(MutableLines lines, HotPointControl hotPoint,
-					String tabSeq)
+    public MultilineTranslator(MutableLines lines, HotPointControl hotPoint, String tabSeq)
     {
-	NullCheck.notNull(lines, "lines");
-	NullCheck.notNull(hotPoint, "hotPoint");
-	NullCheck.notNull(tabSeq, "tabSeq");
+	notNull(lines, "lines");
+	notNull(hotPoint, "hotPoint");
+	notNull(tabSeq, "tabSeq");
 	this.lines = lines;
 	this.hotPoint = hotPoint;
 	this.tabSeq = tabSeq;
+    }
+
+        @Override public void change(MultilineCorrector.Change c)
+    {
     }
 
     ModificationResult deleteChar(int pos, int lineIndex)
