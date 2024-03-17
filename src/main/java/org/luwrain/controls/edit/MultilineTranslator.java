@@ -31,7 +31,6 @@ public class MultilineTranslator
     protected final MutableLines lines;
     protected final HotPointControl hotPoint;
     protected String tabSeq = "\t";
-    protected boolean hasChanges = false;
 
     public MultilineTranslator(MutableLines lines, HotPointControl hotPoint)
     {
@@ -64,8 +63,13 @@ public class MultilineTranslator
 	{
 	    ic.setResult(insertChars(ic.getLine(), ic.getPos(), ic.getChars()));
 	    return;
-	}
+	    	}
 
+	    	if (c instanceof MergeLinesChange ml)
+	{
+	    ml.setResult(mergeLines(ml.getLine()));
+	    return;
+	}
     }
 
     //Added
@@ -73,7 +77,6 @@ public class MultilineTranslator
     {
 	if (pos < 0 || line < 0)
 	    throw new IllegalArgumentException("pos (" + pos + ") and line (" + line + ") may not be negative");
-	hasChanges = true;
 	final int lineCount = lines.getLineCount();
 	if (line >= lineCount)
 	    throw new IllegalArgumentException("line (" + line + ") must be less than the number of lines (" + lineCount + ")");
@@ -93,7 +96,6 @@ public class MultilineTranslator
     ModificationResult deleteRegion(int fromX, int fromY,
 				    int toX, int toY)
     {
-	hasChanges = true;
 	if (lines.getLineCount() < 1 || fromY > toY ||
 	    (fromY == toY && fromX > toX) ||
 	    toY >= lines.getLineCount())
@@ -152,7 +154,6 @@ public class MultilineTranslator
     {
 	NullCheck.notNullItems(text, "text");
 	checkPos(x, y);
-	hasChanges = true;
 	if (text.length == 0)
 	    return new ModificationResult(true);
 	final String firstLine = text[0];
@@ -204,7 +205,6 @@ public class MultilineTranslator
     {
 	notNull(str, "str");
 	checkPos(pos, line);
-	hasChanges = true;
 	try (var op = operation(false)){
 	    if (pos == 0 && line == 0 && lines.getLineCount() == 0)
 		lines.addLine("");
@@ -230,26 +230,26 @@ public class MultilineTranslator
 	return new ModificationResult(true, str);
     }
 
-    ModificationResult mergeLines(int firstLineIndex)
+    //Edited
+    ModificationResult mergeLines(int firstLine)
     {
-	if (firstLineIndex < 0)
-	    throw new IllegalArgumentException("firstLineIndex (" + firstLineIndex + ") may not be negative");
-	hasChanges = true;
+	if (firstLine < 0)
+	    throw new IllegalArgumentException("firstLine (" + String.valueOf(firstLine) + ") can't be negative");
 	final int lineCount = lines.getLineCount();
-	if (firstLineIndex + 1 >= lineCount)
-	    throw new IllegalArgumentException("firstLineIndex (" + firstLineIndex + ") + 1 must be less than the number of lines (" + lineCount + ")");
+	if (firstLine + 1 >= lineCount)
+	    throw new IllegalArgumentException("firstLine (" + String.valueOf(firstLine) + ") + 1 must be less than the number of lines (" + String.valueOf(lineCount) + ")");
 	try (var op = operation(true)) {
-	    final String firstLine = lines.getLine(firstLineIndex);
-	    NullCheck.notNull(firstLine, "firstLine");
-	    final int origLineLen = firstLine.length();
-	    lines.setLine(firstLineIndex, firstLine + lines.getLine(firstLineIndex + 1));
-	    lines.removeLine(firstLineIndex + 1);
-	    if (hotPoint.getHotPointY() == firstLineIndex + 1)
+	    final String line = lines.getLine(firstLine);
+	    NullCheck.notNull(line, "line");
+	    final int origLineLen = line.length();
+	    lines.setLine(firstLine, line + lines.getLine(firstLine + 1));
+	    lines.removeLine(firstLine + 1);
+	    if (hotPoint.getHotPointY() == firstLine + 1)
 	    {
 		hotPoint.setHotPointY(hotPoint.getHotPointY() - 1);
 		hotPoint.setHotPointX(hotPoint.getHotPointX() + origLineLen);
 	    } else
-		if (hotPoint.getHotPointY() > firstLineIndex + 1)
+		if (hotPoint.getHotPointY() > firstLine + 1)
 		    hotPoint.setHotPointY(hotPoint.getHotPointY() - 1);
 	}
 	return new ModificationResult(true);
@@ -258,7 +258,6 @@ public class MultilineTranslator
     ModificationResult splitLine(int pos, int lineIndex)
     {
 	checkPos(pos, lineIndex);
-	hasChanges = true;
 	final String newLine;
 	try (var op = operation(false)){
 	    if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
@@ -282,14 +281,6 @@ public class MultilineTranslator
 		    hotPoint.setHotPointY(hotPoint.getHotPointY() + 1);
 	}
 	return new ModificationResult(true, newLine);
-    }
-
-    public boolean commit()
-    {
-	if (!hasChanges)
-	    return false;
-	hasChanges = false;
-	return true;
     }
 
     protected int getLineCount()

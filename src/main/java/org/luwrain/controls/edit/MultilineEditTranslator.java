@@ -279,7 +279,7 @@ public class MultilineEditTranslator implements MultilineEditCorrector
 	return new ModificationResult(true);
     }
 
-    public boolean commit()
+    boolean commit()
     {
 	if (!hasChanges)
 	    return false;
