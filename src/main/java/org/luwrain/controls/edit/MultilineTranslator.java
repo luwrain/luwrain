@@ -70,6 +70,12 @@ public class MultilineTranslator
 	    ml.setResult(mergeLines(ml.getLine()));
 	    return;
 	}
+
+			    	if (c instanceof SplitLineChange sl)
+	{
+	    sl.setResult(splitLine(sl.getLine(), sl.getPos()));
+	    return;
+	}
     }
 
     //Added
@@ -231,7 +237,7 @@ public class MultilineTranslator
     }
 
     //Edited
-    ModificationResult mergeLines(int firstLine)
+    private ModificationResult mergeLines(int firstLine)
     {
 	if (firstLine < 0)
 	    throw new IllegalArgumentException("firstLine (" + String.valueOf(firstLine) + ") can't be negative");
@@ -255,29 +261,31 @@ public class MultilineTranslator
 	return new ModificationResult(true);
     }
 
-    ModificationResult splitLine(int pos, int lineIndex)
+    ModificationResult splitLine(int line, int pos)
     {
-	checkPos(pos, lineIndex);
-	final String newLine;
+	checkPos(pos, line);
+		    	final String newLine;
 	try (var op = operation(false)){
-	    if (pos == 0 && lineIndex == 0 && lines.getLineCount() == 0)
+
+		//Adding the line to the empty lines list
+	    if (pos == 0 && line == 0 && lines.getLineCount() == 0)
 		lines.addLine("");
 	    final int lineCount = lines.getLineCount();
-	    if (lineIndex >= lineCount)
-		throw new IllegalArgumentException("lineIndex (" + lineIndex + ") must be less than the number of lines (" + lineCount + ")");
-	    final String line = lines.getLine(lineIndex);
-	    NullCheck.notNull(line, "line");
-	    if (pos > line.length())
-		throw new IllegalArgumentException("pos (" + pos + ") may not be negative than the length of the line (" + line.length() + ")");
-	    lines.setLine(lineIndex, line.substring(0, pos));
-	    newLine = line.substring(pos);
-	    lines.insertLine(lineIndex + 1, newLine);
-	    if (hotPoint.getHotPointY() == lineIndex && hotPoint.getHotPointX() >= pos)
+	    if (line >= lineCount)
+		throw new IllegalArgumentException("The index of the line to split (" + String.valueOf(line) + ") must be less than the number of lines (" + String.valueOf(lineCount) + ")");
+	    final String l = lines.getLine(line);
+	    NullCheck.notNull(l, "l");
+	    if (pos > l.length())
+		throw new IllegalArgumentException("pos (" + String.valueOf(pos) + ") can't be greater than the length of the line (" + String.valueOf(l.length()) + ")");
+	    lines.setLine(line, l.substring(0, pos));
+	    newLine = l.substring(pos);
+	    lines.insertLine(line + 1, newLine);
+	    if (hotPoint.getHotPointY() == line && hotPoint.getHotPointX() >= pos)
 	    {
-		hotPoint.setHotPointY(lineIndex + 1);
+		hotPoint.setHotPointY(line + 1);
 		hotPoint.setHotPointX(hotPoint.getHotPointX() - pos);
 	    } else
-		if (hotPoint.getHotPointY() > lineIndex)
+		if (hotPoint.getHotPointY() > line)
 		    hotPoint.setHotPointY(hotPoint.getHotPointY() + 1);
 	}
 	return new ModificationResult(true, newLine);

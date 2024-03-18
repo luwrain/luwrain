@@ -160,42 +160,45 @@ public class MultilineTranslatorTest
 		}
     }
 
-    @Disabled @Test public void linesSplitting3x3()
+    @Test public void linesSplitting3x3()
     {
-	final String[] initial = new String[]{"123", "456", "789"};
+	final var initial = new String[]{"123", "456", "789"};
 	for(int x = 0;x <= 3;++x)
 	    for(int y = 0;y <= 3;++y)
 		for(int lineIndex = 0;lineIndex < 3;++lineIndex)
 		    for(int pos = 0;pos <= 3;++pos)
 		    {
-			final MutableLinesImpl lines = new MutableLinesImpl(initial);
-			final TestingHotPointControl hotPoint = new TestingHotPointControl();
+			final var lines = new MutableLinesImpl(initial);
+			final var hotPoint = new TestingHotPointControl();
 			hotPoint.x = x;
 			hotPoint.y = y;
-			final MultilineEditTranslator translator = new MultilineEditTranslator(lines, hotPoint);
-			final String res = translator.splitLine(pos, lineIndex).getStringArg();
+			final var translator = new MultilineTranslator(lines, hotPoint);
+			final var c = new SplitLineChange(lineIndex, pos);
+			translator.change(c);
+			assertNotNull(c.getResult());
+			final String res = c.getResult().getStringArg();
 			assertNotNull(res);
-			assertTrue(lines.getLineCount() == 4);
-			assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex].substring(0, pos)));
-			assertTrue(lines.getLine(lineIndex + 1).equals(initial[lineIndex].substring(pos)));
-			assertTrue(lines.getLine(lineIndex + 1).equals(res));
+			assertEquals(4, lines.getLineCount());
+			assertEquals(initial[lineIndex].substring(0, pos), lines.getLine(lineIndex));
+			assertEquals(initial[lineIndex].substring(pos), lines.getLine(lineIndex + 1));
+			assertEquals(res, lines.getLine(lineIndex + 1));
 			if (y == lineIndex)
 			{
 			    if (x < pos)
 			    {
-				assertTrue(hotPoint.x == x);
-				assertTrue(hotPoint.y == y);
+				assertEquals(x, hotPoint.x);
+				assertEquals(y, hotPoint.y);
 			    }else
 			    {
-				assertTrue(hotPoint.x == x - pos);
-				assertTrue(hotPoint.y == y + 1);
+				assertEquals(x - pos, hotPoint.x);
+				assertEquals(y + 1, hotPoint.y);
 			    }
 			} else
 			{
-			    assertTrue(hotPoint.x == x);
+			    assertEquals(x, hotPoint.x);
 			    if (y > lineIndex)
-				assertTrue(hotPoint.y == y + 1); else
-				assertTrue(hotPoint.y == y);
+				assertEquals(y + 1, hotPoint.y); else
+				assertEquals(y, hotPoint.y);
 			}
 		    }
     }
