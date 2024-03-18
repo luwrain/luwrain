@@ -30,16 +30,24 @@ public class MultilineTranslator
 {
     protected final MutableLines lines;
     protected final HotPointControl hotPoint;
-    protected String tabSeq = "\t";
+    //    protected String tabSeq = "\t";
+    protected final boolean adjustHotPoint;
 
-    public MultilineTranslator(MutableLines lines, HotPointControl hotPoint)
+    MultilineTranslator(MutableLines lines, HotPointControl hotPoint, boolean adjustHotPoint)
     {
 	notNull(lines, "lines");
 	notNull(hotPoint, "hotPoint");
 	this.lines = lines;
 	this.hotPoint = hotPoint;
+	this.adjustHotPoint = adjustHotPoint;
     }
 
+    public MultilineTranslator(MutableLines lines, HotPointControl hotPoint)
+    {
+	this(lines, hotPoint, true);
+    }
+
+    /*
     public MultilineTranslator(MutableLines lines, HotPointControl hotPoint, String tabSeq)
     {
 	notNull(lines, "lines");
@@ -49,6 +57,7 @@ public class MultilineTranslator
 	this.hotPoint = hotPoint;
 	this.tabSeq = tabSeq;
     }
+    */
 
     public void change(MultilineCorrector.Change c)
     {
@@ -261,12 +270,10 @@ public class MultilineTranslator
 	return new ModificationResult(true);
     }
 
-    ModificationResult splitLine(int line, int pos)
+    private ModificationResult splitLine(int line, int pos)
     {
 	checkPos(pos, line);
-		    	final String newLine;
 	try (var op = operation(false)){
-
 		//Adding the line to the empty lines list
 	    if (pos == 0 && line == 0 && lines.getLineCount() == 0)
 		lines.addLine("");
@@ -278,7 +285,7 @@ public class MultilineTranslator
 	    if (pos > l.length())
 		throw new IllegalArgumentException("pos (" + String.valueOf(pos) + ") can't be greater than the length of the line (" + String.valueOf(l.length()) + ")");
 	    lines.setLine(line, l.substring(0, pos));
-	    newLine = l.substring(pos);
+	    final String newLine = l.substring(pos);
 	    lines.insertLine(line + 1, newLine);
 	    if (hotPoint.getHotPointY() == line && hotPoint.getHotPointX() >= pos)
 	    {
@@ -287,8 +294,8 @@ public class MultilineTranslator
 	    } else
 		if (hotPoint.getHotPointY() > line)
 		    hotPoint.setHotPointY(hotPoint.getHotPointY() + 1);
+	    	return new ModificationResult(true, newLine);
 	}
-	return new ModificationResult(true, newLine);
     }
 
     protected int getLineCount()
@@ -358,6 +365,32 @@ public class MultilineTranslator
 
     protected OperationFinishing operation(boolean cleanEmptyLine)
     {
+	if (adjustHotPoint)
+	{
+	//Validating the hot point
+	if (hotPoint.getHotPointX() < 0)
+	    hotPoint.setHotPointX(0);
+	if (hotPoint.getHotPointY() < 0)
+	    hotPoint.setHotPointY(0);
+	//Hot point is below the last line
+	if (hotPoint.getHotPointY() >= lines.getLineCount())
+	{
+	    if (lines.getLineCount() == 0)
+		hotPoint.setHotPointY(0); else
+		hotPoint.setHotPointY(lines.getLineCount() - 1);
+	}
+	//Checking the position on the line
+	    if (lines.getLineCount() > 0)
+	    {
+		final String line = lines.getLine(hotPoint.getHotPointY());
+		if (line == null)
+		    throw new NullPointerException("The line with the index " + String.valueOf(hotPoint.getHotPointY()) + " is null");
+		if (hotPoint.getHotPointX() > line.length())
+		    hotPoint.setHotPointX(line.length());
+	} else
+	    if (hotPoint.getHotPointX() != 0)
+		hotPoint.setHotPointX(0);
+	}
 	beginEditTrans();
 	return new OperationFinishing(cleanEmptyLine);
     }

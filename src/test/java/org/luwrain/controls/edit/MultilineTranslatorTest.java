@@ -52,23 +52,25 @@ public class MultilineTranslatorTest
 	assertTrue(hotPoint.getHotPointY() == 0);
     }
 
-    @Disabled @Test public void emptyLinesSplitMerge()
+    @Test public void emptyLinesSplitMerge()
     {
-	final MutableLinesImpl lines = new MutableLinesImpl(new String[0]);
-	final TestingHotPointControl hotPoint = new TestingHotPointControl();
-	final MultilineEditTranslator translator = new MultilineEditTranslator(lines, hotPoint);
-	assertTrue(translator.splitLine(0, 0).equals(""));
-	assertTrue(lines.getLineCount() == 2);
-	assertTrue(translator.getLineCount() == 2);
-	assertTrue(translator.getLine(0).equals(""));
-	assertTrue(translator.getLine(1).equals(""));
-	assertTrue(hotPoint.getHotPointX() == 0);
-	assertTrue(hotPoint.getHotPointY() == 1);
-	translator.mergeLines(0);
-	assertTrue(lines.getLineCount() == 0);
-	assertTrue(translator.getLineCount() == 1);
-	assertTrue(hotPoint.getHotPointX() == 0);
-	assertTrue(hotPoint.getHotPointY() == 0);
+	final var lines = new MutableLinesImpl(new String[0]);
+	final var hotPoint = new TestingHotPointControl();
+	final var translator = new MultilineTranslator(lines, hotPoint);
+	Change c = new SplitLineChange(0, 0);
+	translator.change(c);
+	assertNotNull(c.getResult());
+	assertEquals("", c.getResult().getStringArg());
+	assertEquals(2, lines.getLineCount());
+	assertTrue(lines.getLine(0).isEmpty());
+	assertTrue(translator.getLine(1).isEmpty());
+	assertEquals(0, hotPoint.getHotPointX());
+	assertEquals(1, hotPoint.getHotPointY());
+	c = new MergeLinesChange(0);
+	translator.change(c);
+	assertEquals(0, lines.getLineCount());
+	assertEquals(0, hotPoint.getHotPointX());
+	assertEquals(0, hotPoint.getHotPointY());
     }
 
     @Disabled @Test public void deleteChar3x3()
@@ -131,18 +133,19 @@ public class MultilineTranslatorTest
     @Test public void linesMerge3x3()
     {
 	final var initial = new String[]{"123", "456", "789"};
-	for(int x = 0;x <= 3;++x)
-	    for(int y = 0;y <= 3;++y)
+	for(int x = 0;x < 10;++x)
+	    for(int y = 0;y < 10;++y)
 		for(int lineIndex = 0;lineIndex < 2;++lineIndex)
 		{
 		    final var lines = new MutableLinesImpl(initial);
 		    final TestingHotPointControl hotPoint = new TestingHotPointControl();
 		    hotPoint.x = x;
 		    hotPoint.y = y;
-		    final var translator = new MultilineTranslator(lines, hotPoint);
+		    final var translator = new MultilineTranslator(lines, hotPoint, false);
 		    translator.change(new MergeLinesChange(lineIndex));
 		    assertEquals(2, lines.getLineCount());
 		    assertEquals(initial[lineIndex] + initial[lineIndex + 1], lines.getLine(lineIndex));
+		    //If hot point on the second of two merged lines
 		    if (y == lineIndex + 1)
 		    {
 			assertEquals(x + initial[lineIndex].length(), hotPoint.x);
@@ -150,6 +153,7 @@ public class MultilineTranslatorTest
 		    } else
 			if (y <= lineIndex)
 			{
+			    //Hot point left unchanged
 			    assertEquals(x, hotPoint.x);
 			    assertEquals(y, hotPoint.y);
 			} else
@@ -163,8 +167,8 @@ public class MultilineTranslatorTest
     @Test public void linesSplitting3x3()
     {
 	final var initial = new String[]{"123", "456", "789"};
-	for(int x = 0;x <= 3;++x)
-	    for(int y = 0;y <= 3;++y)
+	for(int x = 0;x < 10;++x)
+	    for(int y = 0;y < 10;++y)
 		for(int lineIndex = 0;lineIndex < 3;++lineIndex)
 		    for(int pos = 0;pos <= 3;++pos)
 		    {
@@ -172,7 +176,7 @@ public class MultilineTranslatorTest
 			final var hotPoint = new TestingHotPointControl();
 			hotPoint.x = x;
 			hotPoint.y = y;
-			final var translator = new MultilineTranslator(lines, hotPoint);
+			final var translator = new MultilineTranslator(lines, hotPoint, false);
 			final var c = new SplitLineChange(lineIndex, pos);
 			translator.change(c);
 			assertNotNull(c.getResult());
