@@ -73,31 +73,33 @@ public class MultilineTranslatorTest
 	assertEquals(0, hotPoint.getHotPointY());
     }
 
-    @Disabled @Test public void deleteChar3x3()
+    @Test public void deleteChar3x3()
     {
-	final String[] initial = new String[]{"123", "456", "789"};
+	final var initial = new String[]{"123", "456", "789"};
 	for(int x = 0;x < 3;++x)
 	    for(int y = 0;y < 3;++y)
 		for(int lineIndex = 0;lineIndex < 3;++lineIndex)
 		    for(int pos = 0;pos < 3;++pos)
 		    {
-			final MutableLinesImpl lines = new MutableLinesImpl(initial);
-			final TestingHotPointControl hotPoint = new TestingHotPointControl();
+			final var lines = new MutableLinesImpl(initial);
+			final var hotPoint = new TestingHotPointControl();
 			hotPoint.x = x;
 			hotPoint.y = y;
-			final MultilineEditTranslator translator = new MultilineEditTranslator(lines, hotPoint);
-			final char res = translator.deleteChar(pos, lineIndex).getCharArg();
-			assertTrue(res == initial[lineIndex].charAt(pos));
-			assertTrue(lines.getLine(lineIndex).equals(initial[lineIndex].substring(0, pos) + initial[lineIndex].substring(pos + 1)));
+			final var translator = new MultilineTranslator(lines, hotPoint, false);
+			final var c = new DeleteCharChange(lineIndex, pos);
+			translator.change(c);
+			assertNotNull(c.getResult());
+			assertEquals(initial[lineIndex].charAt(pos), c.getResult().getCharArg());
+				     assertEquals(initial[lineIndex].substring(0, pos) + initial[lineIndex].substring(pos + 1), lines.getLine(lineIndex));
 			if (y == lineIndex)
 			{
 			    if (x <= pos)
-				assertTrue(hotPoint.x == x); else
-				assertTrue(hotPoint.x == x - 1);
+				assertEquals(x, hotPoint.x); else
+				assertEquals(x - 1, hotPoint.x);
 			} else
 			{
-			    assertTrue(hotPoint.x == x);
-			    assertTrue(hotPoint.y == y);
+			    assertEquals(x, hotPoint.x);
+			    assertEquals(y, hotPoint.y);
 			}
 		    }
     }
