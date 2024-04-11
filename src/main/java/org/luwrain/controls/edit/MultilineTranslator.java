@@ -16,6 +16,8 @@
 
 package org.luwrain.controls.edit;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.controls.edit.MultilineEdit.ModificationResult;
 import org.luwrain.util.*;
@@ -87,8 +89,7 @@ public class MultilineTranslator
 	}
     }
 
-    //Added
-    protected ModificationResult deleteChar(int line, int pos)
+    private ModificationResult deleteChar(int line, int pos)
     {
 	if (pos < 0 || line < 0)
 	    throw new IllegalArgumentException("pos (" + pos + ") and line (" + line + ") may not be negative");
@@ -165,24 +166,26 @@ public class MultilineTranslator
 	return new ModificationResult(true);
     }
 
-    ModificationResult insertRegion(int x, int y, String[] text)
+    ModificationResult insertRegion(int line, int pos, List<String> text)
     {
-	NullCheck.notNullItems(text, "text");
-	checkPos(x, y);
-	if (text.length == 0)
+	/*
+	NullCheck.notNull(text, "text");
+	checkPos(pos, line);
+	if (text.isEmpty())
 	    return new ModificationResult(true);
-	final String firstLine = text[0];
-	final String lastLine = text[text.length - 1];
-	if (y == 0 && x == 0 && lines.getLineCount() == 0)
+	final String firstLine = text.get(0);
+	final String lastLine = text.get(text.size() - 1);
+	if (line == 0 && pos == 0 && lines.getLineCount() == 0)
 	{
 	    try (var op = operation(false)){
-		for(int i = 0;i < text.length;++i)
-		    lines.addLine(text[i]);
-		hotPoint.setHotPointX(text[text.length - 1].length());
+		for(final String s: text)
+		    lines.addLine(s);
+		hotPoint.setHotPointX(text.get(text.size() - 1).length());
 		hotPoint.setHotPointY(lines.getLineCount() - 1);
 	    }
 	    return new ModificationResult(true);
 	} //no previous content
+	//here to continue
 	//Checking if there is no need to split the line
 	if (text.length == 1)
 	{
@@ -212,11 +215,12 @@ public class MultilineTranslator
 	    }
 	endEditTrans(false);
 	return new ModificationResult(true);
+	*/
+	return null;
     }
 
-    //Added
     //??Adds empty line with pos=0 and line=0 if previously there were no lines at all
-    ModificationResult insertChars(int line , int pos, String str)
+    private ModificationResult insertChars(int line , int pos, String str)
     {
 	notNull(str, "str");
 	checkPos(pos, line);
@@ -245,7 +249,6 @@ public class MultilineTranslator
 	return new ModificationResult(true, str);
     }
 
-    //Edited
     private ModificationResult mergeLines(int firstLine)
     {
 	if (firstLine < 0)

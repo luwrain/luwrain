@@ -90,7 +90,7 @@ public class MultilineTranslatorTest
 			translator.change(c);
 			assertNotNull(c.getResult());
 			assertEquals(initial[lineIndex].charAt(pos), c.getResult().getCharArg());
-				     assertEquals(initial[lineIndex].substring(0, pos) + initial[lineIndex].substring(pos + 1), lines.getLine(lineIndex));
+			assertEquals(initial[lineIndex].substring(0, pos) + initial[lineIndex].substring(pos + 1), lines.getLine(lineIndex));
 			if (y == lineIndex)
 			{
 			    if (x <= pos)
