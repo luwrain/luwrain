@@ -17,10 +17,7 @@
 
     <Root level="trace">
       <AppenderRef ref="file" />
-      <AppenderRef ref="console" />
             <AppenderRef ref="LogAppender" />
     </Root>
-    <!--<logger name="general" ><AppenderRef ref="console"/></logger>-->
-    <!--<logger name="errors" level="ERROR"><AppenderRef ref="ConsoleErrors" /></logger>-->
     </Loggers>
 </Configuration>

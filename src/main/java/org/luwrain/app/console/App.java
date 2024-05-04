@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,6 +17,8 @@
 package org.luwrain.app.console;
 
 import java.util.*;
+import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.core.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -25,7 +27,7 @@ import org.luwrain.app.base.*;
 
 public final class App extends AppBase<Strings> implements MonoApp
 {
-    static final List<Object> messages = new ArrayList<>();
+    static final ArrayList<Entry> events = new ArrayList<>();
     private ConsoleCommand[] commands = new ConsoleCommand[0];
     private MainLayout mainLayout = null;
 
@@ -41,7 +43,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 	    new Commands.Prop(getLuwrain()),
 	};
 	setAppName(getStrings().appName());
-	return mainLayout.getLayout();
+	return mainLayout.getAreaLayout();
     }
 
     ConsoleCommand[] getCommands()
@@ -59,10 +61,5 @@ public final class App extends AppBase<Strings> implements MonoApp
     {
 	NullCheck.notNull(app, "app");
 	return MonoApp.Result.BRING_FOREGROUND;
-    }
-
-    static public void installListener()
-    {
-	Utils.installListener();
     }
 }

@@ -17,19 +17,14 @@
 package org.luwrain.app.console;
 
 import java.util.*;
+import org.apache.logging.log4j.core.*;
+import org.apache.logging.log4j.message.*;
 
-import org.luwrain.core.*;
-import org.luwrain.controls.*;
-import org.luwrain.controls.ConsoleArea.InputHandler;
-
-final class Utils
+final class Entry
 {
-    static String firstWord(String text)
+    final String message;
+    Entry(LogEvent event)
     {
-	NullCheck.notNull(text, "text");
-	final int pos = text.indexOf(" ");
-	if (pos < 0)
-	    return text.trim();
-	return text.substring(0, pos).trim();
+	this.message = event.getMessage().getFormattedMessage();
     }
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,6 +17,8 @@
 package org.luwrain.app.console;
 
 import java.util.*;
+import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.core.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -24,16 +26,27 @@ import org.luwrain.controls.*;
 import org.luwrain.app.base.*;
 import org.luwrain.controls.ConsoleUtils.*;
 
+import static org.luwrain.core.DefaultEventResponse.*;
+
 final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 {
+    static private final org.apache.logging.log4j.Logger LOG = LogManager.getLogger();
+
     private final App app;
-    private final ConsoleArea<Object> consoleArea;
+    private final ConsoleArea<Entry> consoleArea;
 
     MainLayout(App app)
     {
-	NullCheck.notNull(app, "app");
+	super(app);
 	this.app = app;
-	this.consoleArea = new ConsoleArea<Object>(createConsoleParams()){
+	this.consoleArea = new ConsoleArea<Entry>(consoleParams(params -> {
+	params.name = "LUWRAIN";
+	params.model = new ListModel<Entry>(App.events);
+	params.appearance = new Appearance();
+	params.inputHandler = this;
+	params.inputPos = ConsoleArea.InputPos.BOTTOM;
+	params.inputPrefix = "LUWRAIN>";
+		})){
 		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -60,63 +73,30 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 
     @Override public Result onConsoleInput(ConsoleArea area, String text)
     {
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(text, "text");
 	if (text.trim().isEmpty())
 	    return Result.REJECTED;
 	for(ConsoleCommand c: app.getCommands())
-	    if (c.onCommand(text, app.messages))
+	    if (c.onCommand(text, app))
 	    {
 		consoleArea.refresh();
 		app.getLuwrain().playSound(Sounds.OK);
 		return Result.CLEAR_INPUT;
 	    }
-	app.messages.add("Unknown command: " + Utils.firstWord(text));
+	LOG.trace("Unknown command: " + Utils.firstWord(text));
 	consoleArea.refresh();
 	app.getLuwrain().playSound(Sounds.ERROR);
 	return Result.CLEAR_INPUT;
     }
 
-    private ConsoleArea.Params<Object> createConsoleParams()
+    private final class Appearance implements ConsoleArea.Appearance<Entry>
     {
-	final ConsoleArea.Params<Object> params = new ConsoleArea.Params<Object>();
-	params.context = new DefaultControlContext(app.getLuwrain());
-	params.name = "LUWRAIN";
-	params.model = new ListModel<Object>(app.messages);
-	params.appearance = new Appearance();
-	//	params.clickHandler = clickHandler;
-	params.inputHandler = this;
-	params.inputPos = ConsoleArea.InputPos.BOTTOM;
-	params.inputPrefix = "LUWRAIN>";
-	return params;
-    }
-
-    AreaLayout getLayout()
-    {
-	return new AreaLayout(consoleArea);
-    }
-
-    private final class Appearance implements ConsoleArea.Appearance<Object>
-    {
-	@Override public void announceItem(Object item)
+	@Override public void announceItem(Entry entry)
 	{
-	    NullCheck.notNull(item, "item");
-	    if (!(item instanceof Log.Message))
-	    {
-		app.getLuwrain().setEventResponse(DefaultEventResponse.text(Sounds.LIST_ITEM, app.getLuwrain().getSpeakableText(item.toString(), Luwrain.SpeakableTextType.PROGRAMMING)));
-		return;
-	    }
-	    final Log.Message message = (Log.Message)item;
-	    app.getLuwrain().setEventResponse(DefaultEventResponse.text(Sounds.LIST_ITEM, app.getLuwrain().getSpeakableText(message.message, Luwrain.SpeakableTextType.PROGRAMMING)));
+	    app.setEventResponse(text(Sounds.LIST_ITEM, app.getLuwrain().getSpeakableText(entry.message, Luwrain.SpeakableTextType.PROGRAMMING)));
 	}
-	@Override public String getTextAppearance(Object item)
+    @Override public String getTextAppearance(Entry entry)
 	{
-	    NullCheck.notNull(item, "item");
-
-	    	    if (!(item instanceof Log.Message))
-			return item.toString();
-		    	    final Log.Message message = (Log.Message)item;
-			    return message.message;
-			    	}
-    };
+	    return entry.message;
+	}
+    }
 }

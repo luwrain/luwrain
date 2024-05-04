@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 
 public final class Checks
 {
-    static private final String LOG_COMPONENT = Init.LOG_COMPONENT;
+    static private final String LOG_COMPONENT = "Checks";
 
     static private final String DEFAULT_LANG = "en";
     static private final String ENV_LANG = "LUWRAIN_LANG";

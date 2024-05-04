@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,12 +17,13 @@
 package org.luwrain.core;
 
 import java.util.*;
+import org.apache.logging.log4j.*;
 
 import org.luwrain.speech.*;
 
 public final class Speech
 {
-    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
+    static private final Logger LOG = LogManager.getLogger();
     static final int PITCH_HINT = -25;
     static final int PITCH_MESSAGE = -25;
     static private final String SPEECH_PREFIX = "--speech=";
@@ -52,12 +53,12 @@ public final class Speech
 	    final String name = e.getExtObjName();
 	    if (name == null || name.isEmpty())
 	    {
-		Log.warning(LOG_COMPONENT, "the speech engine with empty name found, skipping it");
+		LOG.warn("The speech engine with empty name found, skipping it");
 		continue;
 	    }
 	    if (this.engines.containsKey(name))
 	    {
-		Log.warning(LOG_COMPONENT, "two speech engine with the same name \'" + name + "\'");
+		LOG.warn("Two speech engine with the same name \'" + name + "\'");
 		continue;
 	    }
 	    this.engines.put(name, e);
@@ -70,7 +71,7 @@ public final class Speech
 	    engineName = parseChannelLine(speechArg, params);
 	    if (engineName == null)
 	    {
-		Log.error(LOG_COMPONENT, "unable to parse speech channel loading line: \'" + speechArg + "\'");
+		LOG.error("Unable to parse speech channel loading line: \'" + speechArg + "\'");
 		defaultChannel = null;
 		return;
 	    }
@@ -79,22 +80,22 @@ public final class Speech
 	    engineName = sett.getMainEngineName("");
 	    if (engineName.isEmpty())
 	    {
-		Log.error(LOG_COMPONENT, "no engine name in the registry for the main speech channel");
+		LOG.error("No engine name in the registry for the main speech channel");
 		defaultChannel = null;
 		return;
 	    }
 	    final String paramsLine = sett.getMainEngineParams("");
 	    if (!parseParams(paramsLine, params))
 	    {
-		Log.error(LOG_COMPONENT, "unable to parse the params line for the engine \'" + engineName + "\':" + paramsLine);
+		LOG.error("Unable to parse the params line for the engine \'" + engineName + "\':" + paramsLine);
 		defaultChannel = null;
 		return;
 	    }
 	}
 	this.defaultChannel = loadChannel(engineName, params);
 	if (defaultChannel != null)
-	    Log.info(LOG_COMPONENT, "main speech engine is \'" + engineName + "\'"); else
-	    Log.error(LOG_COMPONENT, "unable to load the default channel of the engine \'" + engineName + "\'");
+	    LOG.debug("Main speech engine is \'" + engineName + "\'"); else
+	    LOG.error("Unable to load the default channel of the engine \'" + engineName + "\'");
     }
 
         public Channel loadChannel(String engineName, String paramsLine)
@@ -113,7 +114,7 @@ public final class Speech
 	NullCheck.notNull(params, "params");
 	if (!engines.containsKey(engineName))
 	{
-	    Log.error(LOG_COMPONENT, "no such speech engine: \'" + engineName + "\'");
+	    LOG.error("No such speech engine: \'" + engineName + "\'");
 	    return null;
 	}
 	return engines.get(engineName).newChannel(params);

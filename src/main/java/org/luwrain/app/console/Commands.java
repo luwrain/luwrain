@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -18,11 +18,15 @@ package org.luwrain.app.console;
 
 import java.util.*;
 import java.io.*;
+import org.apache.logging.log4j.*;
 
 import org.luwrain.core.*;
 
 final class Commands
 {
+    static private final Logger LOG = LogManager.getLogger();
+
+    
     static final class Prop implements ConsoleCommand
     {
 	private final Luwrain luwrain;
@@ -31,34 +35,32 @@ final class Commands
 	    NullCheck.notNull(luwrain, "luwrain");
 	    this.luwrain = luwrain;
 	}
-	@Override public boolean onCommand(String text, List<Object> messages)
+	@Override public boolean onCommand(String text, App app)
 	{
-	    NullCheck.notEmpty(text, "text");
-	    NullCheck.notNull(messages, "messages");
 	    if (!Utils.firstWord(text).equals("prop"))
 		return false;
 	    final int pos = text.indexOf(" ");
 	    if (pos < 0)
 	    {
-		messages.add("prop: no argument");
+		LOG.trace("prop: no argument");
 		return true;
 	    }
 	    final String arg = text.substring(pos).trim();
 	    if (arg.isEmpty())
 	    {
-				messages.add("prop: no argument");
+				LOG.trace("prop: no argument");
 				return true;
 	    }
 	    final File fileValue = luwrain.getFileProperty(arg);
 	    if (fileValue != null)
 	    {
-		messages.add("file: " + fileValue.toString() + " (" + fileValue.getAbsolutePath() + ")");
+		LOG.trace("file: " + fileValue.toString() + " (" + fileValue.getAbsolutePath() + ")");
 		return true;
 	    }
 	    final String value = luwrain.getProperty(arg);
 	    if (!value.isEmpty())
-		messages.add(value); else
-		messages.add("empty");
+		LOG.trace(value); else
+		LOG.trace("empty");
 	    return true;
 	}
     }

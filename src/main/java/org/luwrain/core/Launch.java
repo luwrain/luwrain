@@ -55,8 +55,7 @@ public final class Launch implements Runnable
 	notNull(dataDir, "dataDir");
 	notNull(userDataDir, "userDataDir");
 	notNull(userHomeDir, "userHomeDir");
-	org.luwrain.app.console.App.installListener();
-	info("starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
+	debug("starting LUWRAIN: Java " + System.getProperty("java.version") + " by " + System.getProperty("java.vendor") + " (installed in " + System.getProperty("java.home") + ")");
 	initLog4j();
 	new JniLoader().autoload(this.getClass().getClassLoader());
 	this.standalone = standalone;

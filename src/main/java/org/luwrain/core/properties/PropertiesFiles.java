@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 
 public final class PropertiesFiles implements PropertiesProvider
 {
-    static private final String LOG_COMPONENT = Init.LOG_COMPONENT;
+    static private final String LOG_COMPONENT = "properties";
 
     private final Properties props = new Properties();
     private PropertiesProvider.Listener listener = null;

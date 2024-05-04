@@ -20,10 +20,17 @@ import java.util.*;
 import java.util.concurrent.*;//
 import java.io.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 import static org.luwrain.core.NullCheck.*;
 
 abstract class Base implements EventConsumer
 {
+    static final Logger LOGGER =LogManager.getLogger();
+
+    
     static final String
 	LOG_COMPONENT = "core",
 	PROP_ICONS_VOLUME = "luwrain.sounds.iconsvol";
@@ -337,19 +344,18 @@ abstract class Base implements EventConsumer
 
     static void warn(String msg)
     {
-	Log.warning(LOG_COMPONENT, msg);
+	LOGGER.warn(msg);
     }
 
             static void info(String msg)
     {
-	Log.info(LOG_COMPONENT, msg);
+	LOGGER.info(msg);
     }
 
         static void debug(String msg)
     {
-	Log.debug(LOG_COMPONENT, msg);
+	LOGGER.debug(msg);
     }
-
 
     static protected final class MainStopCondition implements StopCondition
     {
