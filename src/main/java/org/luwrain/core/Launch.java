@@ -19,6 +19,10 @@ package org.luwrain.core;
 import java.util.*;
 import java.io.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 import org.luwrain.core.util.*;
 
 import static org.luwrain.core.Base.*;
@@ -274,6 +278,7 @@ public final class Launch implements Runnable
 
     private void initLog4j()
     {
+	/*
 	try {
 	    final Properties props = new Properties();
 	    try (final InputStream is = getClass().getResourceAsStream("log4j.properties")) {
@@ -285,6 +290,7 @@ public final class Launch implements Runnable
 	{
 	    error("e, unable to init log4j");
 	}
+	*/
     }
 
     private String getRegVersion()

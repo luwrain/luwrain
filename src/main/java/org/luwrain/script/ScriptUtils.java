@@ -149,6 +149,49 @@ public final class ScriptUtils
 	return res;
     }
 
+    static public List<Object> asList(Object o)
+    {
+	if (o == null || !(o instanceof Value))
+	    return null;
+	final Value v = (Value)o;
+		if (v.isNull() || !v.hasArrayElements())
+	    return null;
+		final var res = new ArrayList<Object>();
+		final long count = v.getArraySize();
+		res.ensureCapacity((int)count);
+		for(int i = 0;i < count;i++)
+		    res.add(v.getArrayElement(i));
+	return res;
+    }
+
+    static public List<Object> asListOfNativeObjects(Object value)
+    {
+	final var l = asList(value);
+	if (l == null)
+	    return null;
+	final var res = new ArrayList<Object>();
+	res.ensureCapacity(l.size());
+	l.forEach(o -> {
+		if (o instanceof Value v)
+		{
+		    if (v.isHostObject())
+			res.add(v.asHostObject()); else
+			if (v.isString())
+			    res.add(v.asString()); else
+			if (v.isBoolean())
+			    res.add(Boolean.valueOf(v.asBoolean())); else
+			    if (v.isNumber())
+			    {
+				final long num = v.asLong();
+				if (num <= Integer.MAX_VALUE && num >= Integer.MIN_VALUE)
+				    res.add(Integer.valueOf(Long.valueOf(num).intValue()));
+				res.add(Long.valueOf(num));
+			    }
+		}});
+	return res;
+    }
+
+
         static public String[] asStringArray(Object o)
     {
 		if (o == null || !(o instanceof Value))
