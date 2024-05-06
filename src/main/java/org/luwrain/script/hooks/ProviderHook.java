@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,24 +17,28 @@
 package org.luwrain.script.hooks;
 
 import java.util.concurrent.atomic.*;
+import org.apache.logging.log4j.*;
 
 import org.luwrain.core.*;
 import org.luwrain.script.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 public class ProviderHook
 {
+    static protected final Logger log = LogManager.getLogger();
     protected final HookContainer hookContainer;
 
     public ProviderHook(HookContainer hookContainer)
     {
-	NullCheck.notNull(hookContainer, "hookContainer");
+	notNull(hookContainer, "hookContainer");
 	this.hookContainer = hookContainer;
     }
 
     public Object run(String hookName, Object[] args)
     {
-	NullCheck.notEmpty(hookName, "hookName");
-	NullCheck.notNullItems(args, "args");
+	notEmpty(hookName, "hookName");
+	notNullItems(args, "args");
 	final AtomicReference<Object> res = new AtomicReference<>();
 	hookContainer.runHooks(hookName, (hook)->{
 		try {
@@ -44,16 +48,21 @@ public class ProviderHook
 		    res.set(obj);
 		    return Luwrain.HookResult.BREAK;
 		}
-		catch(RuntimeException e)
+		catch(Throwable ex)
 		{
-		    res.set(e);
+		    log.catching(ex);
+		    res.set(ex);
 		    return Luwrain.HookResult.BREAK;
 		}
 	    });
 	if (res.get() == null)
 	    return null;
-	if (res.get() instanceof RuntimeException)
-	    throw (RuntimeException)res.get();
+	if (res.get() instanceof Throwable t)
+	{
+	    if (res.get() instanceof RuntimeException r)
+		throw r;
+	    throw new RuntimeException(t);
+	}
 	return res.get();
     }
 }

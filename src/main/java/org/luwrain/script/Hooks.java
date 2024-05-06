@@ -16,6 +16,8 @@
 
 package org.luwrain.script;
 
+import org.apache.logging.log4j.*;
+
 import org.luwrain.core.*;
 import org.luwrain.script.hooks.ChainOfResponsibilityHook;
 import org.luwrain.script.hooks.PermissionHook;
@@ -28,6 +30,8 @@ import static org.luwrain.core.NullCheck.*;
 
 public final class Hooks
 {
+    static private final Logger log = LogManager.getLogger();
+
     static public final String
 	ANNOUNCEMENT = "luwrain.announcement",
 		AREA_CLEAR = "luwrain.area.clear",
@@ -66,8 +70,9 @@ URL_OPEN = "luwrain.url.open";
 	try {
 	    return new ChainOfResponsibilityHook(container).run(hookName, args);
 	}
-	catch(Throwable e)
+	catch(Throwable ex)
 	{
+	    log.error("The " + hookName + " thrown an exception", ex);
 	    return false;
 	}
     }

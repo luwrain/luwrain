@@ -69,6 +69,7 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 		    return super.onAreaQuery(query);
 		}
 	    };
+	setAreaLayout(consoleArea, null);
     }
 
     @Override public Result onConsoleInput(ConsoleArea area, String text)
@@ -92,11 +93,15 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
     {
 	@Override public void announceItem(Entry entry)
 	{
+	    if (entry.ex != null)
+		app.setEventResponse(text(Sounds.ATTENTION, app.getLuwrain().getSpeakableText(entry.message + ": " + entry.ex.getMessage() + " (" + entry.ex.getClass().getSimpleName() + ")", Luwrain.SpeakableTextType.PROGRAMMING))); else
 	    app.setEventResponse(text(Sounds.LIST_ITEM, app.getLuwrain().getSpeakableText(entry.message, Luwrain.SpeakableTextType.PROGRAMMING)));
 	}
-    @Override public String getTextAppearance(Entry entry)
+	@Override public String getTextAppearance(Entry entry)
 	{
-	    return entry.message;
+	    if (entry.ex != null)
+		return entry.message + ": " + entry.ex.getMessage() + " (" + entry.ex.getClass().getSimpleName() + ")"; else
+		return entry.message;
 	}
     }
 }
