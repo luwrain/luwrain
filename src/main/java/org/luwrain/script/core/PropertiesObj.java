@@ -31,7 +31,7 @@ public class PropertiesObj
 {
     protected Properties properties;
 
-    public PropertiesObj(Properties props)
+    public PropertiesObj(Properties properties)
     {
 	notNull(properties, "properties");
 	this.properties = properties;
@@ -52,7 +52,7 @@ public class PropertiesObj
     {
 	if (args == null || args.length != 2)
 	    throw new IllegalArgumentException("setProperty() takes two argument");
-	if (args[0] == null || args[0].isNull() || ! args[0].asString().trim().isEmpty())
+	if (args[0] == null || args[0].isNull() || args[0].asString().trim().isEmpty())
 	    throw new IllegalArgumentException("setProperty() takes a non-empty string as the first argument");
 	if (args[1] != null && !args[1].isNull() && !args[1].isString())
 	    throw new IllegalArgumentException("setProperty() takes null or a string as the second argument");

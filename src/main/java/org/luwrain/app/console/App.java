@@ -28,6 +28,7 @@ import org.luwrain.app.base.*;
 public final class App extends AppBase<Strings> implements MonoApp
 {
     static final ArrayList<Entry> events = new ArrayList<>();
+    final List<Entry> entries = new ArrayList<>();
     private ConsoleCommand[] commands = new ConsoleCommand[0];
     private MainLayout mainLayout = null;
 
@@ -38,6 +39,9 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override protected AreaLayout onAppInit()
     {
+	entries.addAll(events.parallelStream().filter(e->{
+		    return e.logger.startsWith("org.luwrain");
+		}).toList());
 	this.mainLayout = new MainLayout(this);
 	this.commands = new ConsoleCommand[]{
 	    new Commands.Prop(getLuwrain()),

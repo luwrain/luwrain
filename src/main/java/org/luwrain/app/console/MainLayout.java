@@ -41,7 +41,7 @@ final class MainLayout extends LayoutBase implements ConsoleArea.InputHandler
 	this.app = app;
 	this.consoleArea = new ConsoleArea<Entry>(consoleParams(params -> {
 	params.name = "LUWRAIN";
-	params.model = new ListModel<Entry>(App.events);
+	params.model = new ListModel<Entry>(app.entries);
 	params.appearance = new Appearance();
 	params.inputHandler = this;
 	params.inputPos = ConsoleArea.InputPos.BOTTOM;

@@ -22,10 +22,12 @@ import org.apache.logging.log4j.message.*;
 
 final class Entry
 {
+    final String logger;
     final String message;
     final Throwable ex;
     Entry(LogEvent event)
     {
+	this.logger = event.getLoggerName();
 	this.message = event.getMessage().getFormattedMessage();
 	this.ex = event.getMessage().getThrowable();
     }

@@ -72,7 +72,7 @@ URL_OPEN = "luwrain.url.open";
 	}
 	catch(Throwable ex)
 	{
-	    log.error("The " + hookName + " thrown an exception", ex);
+	    log.error("The " + hookName + " hook thrown an exception", ex);
 	    return false;
 	}
     }
