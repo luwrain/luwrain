@@ -53,6 +53,7 @@ abstract class Base implements EventConsumer
     protected final InterfaceManager interfaces = new InterfaceManager(this);
     protected final ExtensionsManager extensions = new ExtensionsManager(this, interfaces);
     protected final ObjRegistry objRegistry = new ObjRegistry();
+    final TempFiles tempFiles = new TempFiles();
     protected final CommandManager commands = new CommandManager();//FIXME:must be merged into objRegistry
     protected final EventQueue eventQueue = new EventQueue();
     protected final MainStopCondition mainStopCondition = new MainStopCondition();

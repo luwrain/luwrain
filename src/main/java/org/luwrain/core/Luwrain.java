@@ -96,6 +96,8 @@ public interface Luwrain extends PropertiesBase, HookContainer
      */
     Path getAppDataDir(String appName);
 
+    java.io.File createTempFile(String prefix);
+
     //May return -1 if area is not shown on the screen;
     int getAreaVisibleHeight(Area area);
 

@@ -789,6 +789,12 @@ final class LuwrainImpl implements Luwrain
 	return core.os.escapeString(style, text);
     }
 
+@Override public java.io.File createTempFile(String prefix)
+    {
+	notNull(prefix, "prefix");
+	return core.tempFiles.createTempFile(!prefix.trim().isEmpty()?prefix.trim():"unknown");
+    }
+
     private void sayHint(Hint hint)
     {
 	NullCheck.notNull(hint, "hint");
