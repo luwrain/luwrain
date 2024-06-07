@@ -20,6 +20,8 @@ import java.util.*;
 import java.util.jar.*;
 import java.io.*;
 
+import org.apache.logging.log4j.*;
+
 import static org.luwrain.core.Base.*;
 import static org.luwrain.core.NullCheck.*;
 
@@ -27,6 +29,8 @@ public final class ExtensionsManager implements AutoCloseable
 {
     static final String
 	EXTENSIONS_LIST_PREFIX = "--extensions=";
+
+    static private final Logger log = LogManager.getLogger();
 
         static final class Entry
     {
@@ -60,6 +64,32 @@ public final class ExtensionsManager implements AutoCloseable
 	notNull(interfaceRequest, "interfaceRequest");
 	notNull(cmdLine, "cmdLine");
 	notNull(classLoader, "classLoader");
+
+	for(final Extension ext: ServiceLoader.load(Extension.class))
+	{
+		    final Luwrain iface = interfaceRequest.getInterfaceObj(ext);
+	    final String message;
+	    try {
+		log.info("Initializing the " + ext.getClass().getName() + " extension");
+		message = ext.init(iface);
+	    }
+	    catch (Throwable ex)
+	    {
+		log.error("Loading of extension " + ext.getClass().getName() + " failed on extension init", ex);
+		interfaces.release(iface);
+		continue;
+	    }
+	    if (message != null)
+	    {
+		log.error("Loading of extension " + ext.getClass().getName() + " failed. Message: " + message);
+		interfaces.release(iface);
+		continue;
+	    }
+	    extensions.add(new Entry(ext, iface));
+	}
+
+
+	
 	final String[] extensionsList = getExtensionsList(cmdLine, classLoader);
 	if (extensionsList == null || extensionsList.length == 0)
 	    return;
