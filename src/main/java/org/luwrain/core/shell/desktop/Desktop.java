@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,10 +16,13 @@
 
 package org.luwrain.core.shell.desktop;
 
+import  com.google.auto.service.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.shell.*;
 
-public final class Desktop implements Application
+@AutoService(org.luwrain.core.Desktop.class)
+public final class Desktop implements org.luwrain.core.Desktop
 {
     private Luwrain luwrain = null;
     private String name = "";

@@ -28,10 +28,6 @@ import static org.luwrain.core.NullCheck.*;
 
 final class Core extends EventDispatching
 {
-    static private final String
-	DESKTOP_PROP_NAME = "luwrain.class.desktop",
-	PLAYER_FACTORY_PROP_NAME = "luwrain.player.factory";
-
     private final ClassLoader classLoader;
     final OperatingSystem os;
     final Interaction interaction;
@@ -240,25 +236,26 @@ final class Core extends EventDispatching
 
     private void loadPlayer()
     {
-	this.player =null;
-	if (props.getProperty(PLAYER_FACTORY_PROP_NAME).isEmpty())
+	final var factories = new ArrayList<org.luwrain.player.Factory>();
+	for(var f: ServiceLoader.load(org.luwrain.player.Factory.class))
+	    factories.add(f);
+	if (factories.isEmpty())
 	{
-	    warn("no player functionality, the property " + PLAYER_FACTORY_PROP_NAME + " is empty");
+	    LOGGER.warn("No loaded player factories, no player");
+	    player = null;
 	    return;
 	}
-	final String playerFactoryName = props.getProperty(PLAYER_FACTORY_PROP_NAME);
-	final Object o = org.luwrain.util.ClassUtils.newInstanceOf(classLoader, playerFactoryName, org.luwrain.player.Factory.class);
-	final org.luwrain.player.Factory factory = (org.luwrain.player.Factory)o;
+	LOGGER.trace("Loaded player factory class is " + factories.get(0).getClass().getName());
 	try {
-	    final org.luwrain.player.Factory.Params params = new org.luwrain.player.Factory.Params();
+	    final var params = new org.luwrain.player.Factory.Params();
 	    params.luwrain = luwrain;
-	    this.player = factory.newPlayer(params);
-	    if (this.player == null)
+	    player = factories.get(0).newPlayer(params);
+	    if (player == null)
 	    {
-		error("player factory of the class " + playerFactoryName + " returned null, no player");
+		LOGGER.error("Player factory of the class " + factories.get(0).getClass().getName() + " has returned null, no player");
 		return;
 	    }
-	    debug("loaded player instance of class " + this.player.getClass().getName());
+	    LOGGER.info("Loaded player class is " + player.getClass().getName());
 	    for (PropertiesProvider p: props.getBasicProviders())
 		if (p instanceof org.luwrain.core.properties.Player)
 		{
@@ -266,26 +263,27 @@ final class Core extends EventDispatching
 		    break;
 		}
 	}
-	catch(Throwable e)
+	catch(Throwable ex)
 	{
-	    error(e, "unable to load player class " + playerFactoryName);
-	    this.player = null;
+	    LOGGER.error("Unable to load the player implementation", ex);
+	    player = null;
 	    return;
 	}
     }
 
     private void loadDesktop()
     {
-	if (props.getProperty(DESKTOP_PROP_NAME).isEmpty())
+	final var desktops = new ArrayList<Desktop>();
+	for (var d: ServiceLoader.load(Desktop.class))
+	    desktops.add(d);
+	if (desktops.isEmpty())
 	{
-	    error("no property " + DESKTOP_PROP_NAME + ", unable to create a desktop");
-	    throw new RuntimeException("unable to create a desktop");
+	    LOGGER.fatal("No desktop service providers");
+	    throw new RuntimeException("No desktop providers");
 	}
-	this.desktop = (Application)org.luwrain.util.ClassUtils.newInstanceOf(this.getClass().getClassLoader(), props.getProperty(DESKTOP_PROP_NAME), Application.class);
-	if (this.desktop == null)
-	    throw new RuntimeException("unable to create a desktop");
+	desktop = desktops.get(0);
+	LOGGER.info("Loaded desktop class is " + desktop.getClass().getName());
 	desktop.onLaunchApp(interfaces.requestNew(desktop));
-	//	desktop.setConversations(conversations);
 	apps.setDesktopApp(desktop);
     }
 
