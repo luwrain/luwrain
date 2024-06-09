@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -20,36 +20,49 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 import javax.sound.sampled.*;
+import org.apache.logging.log4j.*;
 
+import static org.luwrain.core.NullCheck.*;
 
 public final class WavePlayers
 {
-    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
+    static private final Logger log = LogManager.getLogger();
 
     static public class Simple implements Runnable
     {
 	private final String fileName;
+	private final InputStream inputStream;
 	private final int volumePercent;
 	private volatile boolean interruptPlayback = false;
 	public boolean finished = false;
 	private SourceDataLine audioLine = null;
-
 	public Simple(String fileName, int volumePercent)
 	{
-	    NullCheck.notEmpty(fileName, "fileName");
+	    notEmpty(fileName, "fileName");
 	    this.fileName = fileName;
+	    this.inputStream = null;
 	    this.volumePercent = volumePercent;
 	}
-
+	public Simple(InputStream inputStream, int volumePercent)
+	{
+	    notNull(inputStream, "inputStream");
+	    this.inputStream = inputStream;
+	    this.fileName = null;
+	    this.volumePercent = volumePercent;
+	}
 	@Override public void run()
 	{
 	    AudioInputStream audioInputStream = null;
 	    try {
 		try {
+		    if (inputStream == null)
+		    {
 		    final File soundFile = new File(fileName);
 		    if (!soundFile.exists())
 			return;
 		    audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+		    } else
+					    audioInputStream = AudioSystem.getAudioInputStream(inputStream);
 		    final AudioFormat format = audioInputStream.getFormat();
 		    final DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 		    audioLine = (SourceDataLine) AudioSystem.getLine(info);
@@ -84,9 +97,9 @@ public final class WavePlayers
 		    finished = true;
 		}
 	    } //try
-	    catch(UnsupportedAudioFileException | IOException | LineUnavailableException e)
+	    catch(UnsupportedAudioFileException | IOException | LineUnavailableException ex)
 	    {
-		Log.error(LOG_COMPONENT, "unable to play audio file" + fileName + ":" + e.getClass().getName() + ":" + e.getMessage());
+		log.error("Unable to play audio file" + fileName, ex);
 	    }
 	}
 
@@ -126,9 +139,9 @@ public final class WavePlayers
 	    try {
 		audioInputStream = AudioSystem.getAudioInputStream(url.openStream());
 	    } 
-	    catch(UnsupportedAudioFileException | IOException e)
+	    catch(UnsupportedAudioFileException | IOException ex)
 	    {
-		Log.error(LOG_COMPONENT, "unable to play " + url.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
+		log.error("Unable to play " + url.toString(), ex);
 		return new MediaResourcePlayer.Result(MediaResourcePlayer.Result.Type.INACCESSIBLE_SOURCE);
 	    }
 	    final AudioFormat format=audioInputStream.getFormat();
@@ -139,7 +152,7 @@ public final class WavePlayers
 			    PlayerInstance.this.line = (SourceDataLine)AudioSystem.getLine(info);
 
 			    if (!org.luwrain.util.SoundUtils.setLineMasterGanePercent(line, params.volume))
-				Log.error(LOG_COMPONENT, "unable to set the initial volume to " + params.volume);
+				log.error("Unable to set the initial volume to " + params.volume);
 				line.open(format);
 				line.start();
 			    long totalBytes = 0;
@@ -178,10 +191,10 @@ public final class WavePlayers
 			    }
 			}
 		    }
-		    catch (Exception e)
+		    catch (Exception ex)
 		    {
-			Log.error(LOG_COMPONENT, "unable to continue playing of " + url.toString() + ":" + e.getClass().getName() + ":" + e.getMessage());
-			listener.onPlayerError(e);
+			log.error("Unable to continue playing of " + url.toString(), ex);
+			listener.onPlayerError(ex);
 		    }
 	    }).start();
 	    return new MediaResourcePlayer.Result();
@@ -203,7 +216,7 @@ public final class WavePlayers
 	    if (line == null)
 		return;
 	    	if (!org.luwrain.util.SoundUtils.setLineMasterGanePercent(line, value))
-		    Log.error(LOG_COMPONENT, "unable to change the volume to " + value);
+		    log.error("Unable to change the volume to " + value);
 	}
 
 	static private long mSecToBytes(AudioFormat format, float msec)
