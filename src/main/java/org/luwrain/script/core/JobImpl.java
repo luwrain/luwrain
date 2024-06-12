@@ -27,7 +27,7 @@ import org.luwrain.script.*;
 
 import static org.luwrain.core.NullCheck.*;
 
-final class JobImpl implements Job
+final class JobImpl implements JobLauncher
 {
     private final Luwrain luwrain;
     private final Object syncObj;
@@ -81,7 +81,7 @@ final class JobImpl implements Job
 	return EnumSet.noneOf(Flags.class);
     }
 
-    public final class Instance implements Job.Instance, ProxyObject
+    public final class Instance implements JobLauncher.Instance, ProxyObject
     {
 	private final Listener listener;
 	private String name = "";

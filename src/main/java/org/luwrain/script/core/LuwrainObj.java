@@ -300,12 +300,12 @@ messageType = ConstObj.getMessageType(values[1].asString());
 	if (values.length < 4 || values[3] == null || values[3].isNull() || !values[3].canExecute())
 	    finishedFunc = null; else
 	    finishedFunc = values[3];
-	final Job.Instance res = luwrain.newJob(name, args != null?args:new String[0], dir, EnumSet.noneOf(Luwrain.JobFlags.class), new Job.Listener(){
-		@Override public void onInfoChange(Job.Instance instance, String type, List<String> value){}
-		@Override public void onStatusChange(Job.Instance instance)
+	final JobLauncher.Instance res = luwrain.newJob(name, args != null?args:new String[0], dir, EnumSet.noneOf(Luwrain.JobFlags.class), new JobLauncher.Listener(){
+		@Override public void onInfoChange(JobLauncher.Instance instance, String type, List<String> value){}
+		@Override public void onStatusChange(JobLauncher.Instance instance)
 		{
 		    NullCheck.notNull(instance, "instance");
-		    if (finishedFunc == null || instance.getStatus() != Job.Status.FINISHED)
+		    if (finishedFunc == null || instance.getStatus() != JobLauncher.Status.FINISHED)
 			return;
 		    synchronized(syncObj) {
 			finishedFunc.execute(new Object[]{Boolean.valueOf(instance.isFinishedSuccessfully()), Integer.valueOf(instance.getExitCode())});

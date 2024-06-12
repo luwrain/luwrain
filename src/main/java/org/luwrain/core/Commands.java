@@ -516,9 +516,9 @@ final class Commands
 			} else
 			    dir = "";
 			luwrain.newJob("sys", new String[]{ cmd.trim() }, "", EnumSet.noneOf(Luwrain.JobFlags.class), new EmptyJobListener(){
-				@Override public void onStatusChange(Job.Instance instance)
+				@Override public void onStatusChange(JobLauncher.Instance instance)
 				{
-				    if (instance.getStatus() != Job.Status.FINISHED)
+				    if (instance.getStatus() != JobLauncher.Status.FINISHED)
 					return;
 				    final List<String> output = instance.getInfo("main");
 				    final String name = instance.getInstanceName();

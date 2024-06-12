@@ -60,7 +60,7 @@ abstract class Base implements EventConsumer
     private EventResponse eventResponse = null;
 
     protected final WorkersTracking workers = new WorkersTracking();
-    protected final JobsManager jobs = new JobsManager(interfaces.systemObj, objRegistry);
+    protected final JobsManager jobs = new JobsManager(interfaces.systemObj, extensions);
     protected final I18nImpl i18n = new I18nImpl();
     protected final Speech speech;
     protected final org.luwrain.core.speech.SpeakingText speakingText = new org.luwrain.core.speech.SpeakingText(extensions);

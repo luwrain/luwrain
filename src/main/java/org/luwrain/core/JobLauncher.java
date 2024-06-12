@@ -18,7 +18,7 @@ package org.luwrain.core;
 
 import java.util.*;
 
-public interface Job extends ExtensionObject
+public interface JobLauncher extends ExtensionObject
 {
     static public final int
 	EXIT_CODE_OK = 0,

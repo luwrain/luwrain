@@ -40,7 +40,6 @@ final class ObjRegistry implements ExtObjects
     }
 
     private Map<String, Entry<Shortcut>> shortcuts = new HashMap<>();
-    private Map<String, Entry<Job>> jobs = new HashMap<>();
     private Map<String, Entry<Worker>> workers = new HashMap<>();
     private Map<String, Entry<org.luwrain.speech.Engine>> speechEngines = new HashMap<>();
     private Map<String, Entry<MediaResourcePlayer>> players = new HashMap<>();
@@ -54,15 +53,6 @@ final class ObjRegistry implements ExtObjects
 	if (name == null || name.trim().isEmpty())
 	    return false;
 	boolean res = false;
-	if (obj instanceof Job)
-	{
-	    final Job job = (Job)obj;
-	    if (!jobs.containsKey(name))
-	    {
-		jobs.put(name, new Entry<>(ext, name, job));
-		res = true;
-	    }
-	}
 
 	if (obj instanceof Shortcut)
 	{
@@ -123,28 +113,9 @@ final class ObjRegistry implements ExtObjects
     {
 	notNull(ext, "ext");
 	removeEntriesByExt(shortcuts, ext);
-	removeEntriesByExt(jobs, ext);
 	removeEntriesByExt(workers, ext);
 	removeEntriesByExt(speechEngines, ext);
 	removeEntriesByExt(players, ext);
-    }
-
-    Job getJob(String name)
-    {
-	NullCheck.notEmpty(name, "name");
-	if (!jobs.containsKey(name))
-	    return null;
-	return jobs.get(name).obj;
-    }
-
-    String[] getJobNames()
-    {
-	final List<String> res = new ArrayList<>();
-	for(Map.Entry<String, Entry<Job>> e: jobs.entrySet())
-	    res.add(e.getKey());
-	final String[] str = res.toArray(new String[res.size()]);
-	Arrays.sort(str);
-	return str;
     }
 
     Shortcut getShortcut(String name)
@@ -258,10 +229,11 @@ final class ObjRegistry implements ExtObjects
 	map.remove(s);
     }
 
+    /*
     static private final class JobCommand implements Command
     {
 	private final String name;
-	private final Job job;
+	private final JobLauncher job;
 	private final boolean showResultMessage;
 
 	JobCommand(String name, Job job, boolean showResultMessage)
@@ -310,4 +282,5 @@ final class ObjRegistry implements ExtObjects
 	    return null;
 	}
     }
+    */
 }

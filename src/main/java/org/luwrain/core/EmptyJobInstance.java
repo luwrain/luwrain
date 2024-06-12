@@ -20,12 +20,12 @@ package org.luwrain.core;
 
 import java.util.*;
 
-import org.luwrain.core.Job.*;
+import org.luwrain.core.JobLauncher.*;
 
-import static org.luwrain.core.Job.*;
+import static org.luwrain.core.JobLauncher.*;
 import static org.luwrain.core.NullCheck.*;
 
-public class EmptyJobInstance implements Job.Instance
+public class EmptyJobInstance implements JobLauncher.Instance
 {
     protected final Listener listener;
     protected final String name;

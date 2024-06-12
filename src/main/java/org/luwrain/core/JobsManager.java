@@ -27,28 +27,29 @@ public final class JobsManager
     static private final String LOG_COMPONENT = Core.LOG_COMPONENT;
 
     private final Luwrain luwrain;
-    private final ObjRegistry objRegistry;
+    private final ExtensionsManager ext;
     public final List<Entry> entries = new ArrayList<>();
 
-    JobsManager(Luwrain luwrain, ObjRegistry objRegistry)
+    JobsManager(Luwrain luwrain, ExtensionsManager ext)
     {
 	notNull(luwrain, "luwrain");
-	notNull(objRegistry, "objRegistry");
+	notNull(ext, "ext");
 	this.luwrain = luwrain;
-	this.objRegistry = objRegistry;
+	this.ext = ext;
     }
 
-    Job.Instance run(String name, String[] args, String dir, Job.Listener listener)
+    JobLauncher.Instance run(String name, String[] args, String dir, JobLauncher.Listener listener)
     {
 	notEmpty(name, "name");
 	notNullItems(args, "args");
 	notNull(dir, "dir");
 	notNull(listener, "listener");
-	final Job job = objRegistry.getJob(name);
-	if (job == null)
-	    throw new IllegalArgumentException("No such job: " + name);
+	final var j = ext.getLoadedExtObjects(JobLauncher.class).stream().filter(o -> o.getExtObjName().equals(name)).findFirst();
+	if (!j.isPresent())
+	    	    throw new IllegalArgumentException("No such job: " + name);
+	final JobLauncher job = j.get();
 	final Entry entry = new Entry(listener);
-	final Job.Instance instance = job.launch(entry, args, dir.isEmpty()?null:dir);
+	final JobLauncher.Instance instance = job.launch(entry, args, dir.isEmpty()?null:dir);
 	if (instance == null)
 	    return null;
 	entry.setInstance(instance);
@@ -67,18 +68,18 @@ public final class JobsManager
     }
 
     //Public for the control app
-    public final class Entry implements Job.Listener, Job.Instance
+    public final class Entry implements JobLauncher.Listener, JobLauncher.Instance
     {
-	private final Job.Listener listener;
-	private Job.Instance instance = null;
+	private final JobLauncher.Listener listener;
+	private JobLauncher.Instance instance = null;
 	private final Map<String, List<String>> info = new HashMap<>();
-	Entry(Job.Listener listener)
+	Entry(JobLauncher.Listener listener)
 	{
 	    notNull(listener, "listener");
 	    this.listener = listener;
 	}
 	@Override public String getInstanceName() { return instance.getInstanceName(); }
-	@Override public Job.Status getStatus() { return instance.getStatus(); }
+	@Override public JobLauncher.Status getStatus() { return instance.getStatus(); }
 	@Override public int getExitCode() { return instance.getExitCode(); }
 	@Override public boolean isFinishedSuccessfully() { return instance.isFinishedSuccessfully(); }
 	@Override public List<String> getInfo(String infoType)
@@ -94,7 +95,7 @@ this.info.put(infoType, res);
 return res;
 	}
 	@Override public void stop() { instance.stop(); }
-	@Override public void onInfoChange(Job.Instance instance, String type, List<String> value)
+	@Override public void onInfoChange(JobLauncher.Instance instance, String type, List<String> value)
 	{
 	    notEmpty(type, "type");
 	    List<String> res = value;
@@ -105,17 +106,17 @@ return res;
 		res = this.info.get(type);
 	    listener.onInfoChange(instance, type, res != null?res:Arrays.asList());
 	}
-	@Override public void onStatusChange(Job.Instance instance)
+	@Override public void onStatusChange(JobLauncher.Instance instance)
 	{
 	    listener.onStatusChange(this);
-	    if (instance.getStatus() == Job.Status.FINISHED)
+	    if (instance.getStatus() == JobLauncher.Status.FINISHED)
 		onFinish(this);
 	}
 	@Override public String toString()
 	{
 	    return getInstanceName();
 	}
-	void setInstance(Job.Instance instance)
+	void setInstance(JobLauncher.Instance instance)
 	{
 	    notNull(instance, "instance");
 	    if (this.instance == null)
