@@ -135,7 +135,7 @@ public class SimpleEditPopup implements Popup, PopupClosingTranslator.Provider, 
 	switch(event.getCode())
 	{
 	case INTRODUCE:
-	    luwrain.speak(getSpeakableText(prefix, text), Sounds.INTRO_POPUP);
+	    luwrain.speak(getSpeakableText(prefix, text), Sounds.POPUP);
 	    return true;
 	}
 	if (edit.isPosCovered(pos, 0) && edit.onSystemEvent(event))

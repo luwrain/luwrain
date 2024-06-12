@@ -83,7 +83,7 @@ public class CommanderPopup extends CommanderArea<File> implements CommanderArea
 	switch(event.getCode())
 	{
 	case INTRODUCE:
-	    luwrain.speak(getAreaName(), Sounds.INTRO_POPUP);
+	    luwrain.speak(getAreaName(), Sounds.POPUP);
 	    return true;
 	    		    case ACTION:
 			if (ActionEvent.isAction(event, "mkdir"))

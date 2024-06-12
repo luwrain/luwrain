@@ -65,7 +65,7 @@ public class ListPopup2<E> extends ListArea<E> implements Popup, PopupClosingTra
 	{
 	case INTRODUCE:
 	    luwrain.silence();
-	    luwrain.playSound(Sounds.INTRO_POPUP);
+	    luwrain.playSound(Sounds.POPUP);
 	    luwrain.speak(getAreaName());
 	    return true;
 	default:

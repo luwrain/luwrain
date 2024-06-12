@@ -243,8 +243,8 @@ final class LuwrainImpl implements Luwrain
 
     @Override public Object newExtObject(String  name)
 						{
-						NullCheck.notEmpty(name, "name");
-						final ObjFactory[] factories = core.objRegistry.getAllObjFactories();
+						notEmpty(name, "name");
+						final var factories = core.extensions.getLoadedExtObjects(ObjFactory.class);
 						for(ObjFactory f: factories)
 						{
 						final Object res = f.newObject(name);
@@ -253,6 +253,14 @@ final class LuwrainImpl implements Luwrain
 						}
 						return null;
 						}
+
+        @Override public FileFetcher[] findFetchers(String url)
+    {
+	notEmpty(url, "url");
+	final var fetchers = new ArrayList<FileFetcher>(core.extensions.getLoadedExtObjects(FileFetcher.class));
+	fetchers.removeIf(f -> (!f.canHandleUrl(url)));
+	return fetchers.toArray(new FileFetcher[fetchers.size()]);
+    }
 
     @Override public void onAreaNewHotPoint(Area area)
     {

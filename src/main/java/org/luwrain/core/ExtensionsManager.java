@@ -37,6 +37,7 @@ public final class ExtensionsManager implements AutoCloseable
 	final Extension ext;
 	final Luwrain luwrain;
 	final String id;
+	final ExtensionObject[] extObjects;
 	Entry(Extension ext, Luwrain luwrain)
 	{
 	    notNull(ext, "ext");
@@ -44,6 +45,7 @@ public final class ExtensionsManager implements AutoCloseable
 	    this.ext = ext;
 	    this.luwrain = luwrain;
 	    this.id = java.util.UUID.randomUUID().toString();
+	    this.extObjects = ext.getExtObjects(luwrain);
 	}
     }
 
@@ -88,8 +90,6 @@ public final class ExtensionsManager implements AutoCloseable
 	    extensions.add(new Entry(ext, iface));
 	}
 
-
-	
 	final String[] extensionsList = getExtensionsList(cmdLine, classLoader);
 	if (extensionsList == null || extensionsList.length == 0)
 	    return;
@@ -148,6 +148,16 @@ public final class ExtensionsManager implements AutoCloseable
 	    interfaces.release(e.luwrain);
 	}
 	extensions = null;
+    }
+
+    public <E extends ExtensionObject> List<E> getLoadedExtObjects(Class<E> c)
+    {
+	final var res = new ArrayList<E>();
+	for(final var e: extensions)
+	    for(final var o: e.extObjects)
+		if (c.isInstance(o))
+		    res.add((E)o);
+	return res;
     }
 
     //From any thread

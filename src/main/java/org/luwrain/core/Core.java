@@ -186,7 +186,8 @@ final class Core extends EventDispatching
 	}
 	final var entry = new ExtensionsManager.Entry(ext, ext.getLuwrainObj());
 	extensions.extensions.add(entry);
-	objRegistry.takeObjects(ext, ext.getLuwrainObj());
+	//	objRegistry.takeObjects(ext, ext.getLuwrainObj());
+	objRegistry.takeObjects(ext, entry.extObjects);
 	for(Command c: ext.getCommands(ext.getLuwrainObj()))
 	    commands.add(ext.getLuwrainObj(), c);
 	return entry.id;
@@ -204,7 +205,8 @@ final class Core extends EventDispatching
 	    uniRefProcs.add(luwrain, proc);//FIXME:
 	for(final var e: extensions.extensions)
 	{
-	    objRegistry.takeObjects(e.ext, e.luwrain);
+	    //	    objRegistry.takeObjects(e.ext, e.luwrain);
+	    objRegistry.takeObjects(e.ext, e.extObjects);
 	    //	    final Extension ext = e.ext;
 	    //FIXME:
 	    for(UniRefProc p: e.ext.getUniRefProcs(e.luwrain))

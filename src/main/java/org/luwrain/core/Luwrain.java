@@ -123,6 +123,7 @@ public interface Luwrain extends PropertiesBase, HookContainer
     void message(String text, MessageType messageType);
     void message(String text, Sounds sound);
 Object newExtObject(String  name);
+    FileFetcher[] findFetchers(String url);
     void onAreaNewBackgroundSound(Area area);
 
     /**

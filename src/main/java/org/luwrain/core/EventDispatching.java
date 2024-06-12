@@ -240,23 +240,29 @@ return;
 	    noAppsMessage();
 	    return;
 	}
-	final AtomicReference<Object> res = new AtomicReference<>();
+	final var name = new AtomicReference<String>();
+	final var layout = new AtomicReference<AreaLayout>();
 	unsafeAreaOperation(()->{
-		final String value = app.getAppName();
-		if (value != null)
-		    res.set(value);
+		name.set(app.getAppName());
+		layout.set(app.getAreaLayout());
 	    });
-	final String name;
-	if (res.get() != null)
-	{
-	    final String value = res.get().toString();
-	    if (value != null && !value.trim().isEmpty())
-		name = value; else
-		name = app.getClass().getName();
-	} else
-	    name = app.getClass().getName();
-	playSound(Sounds.INTRO_APP);
-	speech.speak(name, 0, 0);
+	if (name.get() == null || name.get().isEmpty())
+	    name.set(app.getClass().getName());
+Sounds sound = Sounds.AREA_LAYOUT;
+if (layout.get() != null)
+    switch(layout.get().layoutType)
+    {
+    case LEFT_RIGHT:
+    case TOP_BOTTOM:
+	sound = Sounds.AREA_LAYOUT_DOUBLE;
+	break;
+    case LEFT_RIGHT_BOTTOM:
+    case LEFT_TOP_BOTTOM:
+	sound = Sounds.AREA_LAYOUT_TRIPLE;
+	break;
+    }
+	playSound(sound);
+	speech.speak(name.get(), 0, 0);
     }
 
     void announceActiveArea()
@@ -272,7 +278,7 @@ return;
 	if (res.get() != null && ((Boolean)res.get()).booleanValue())
 	    return;
 	speech.silence();
-	playSound(activeArea instanceof Popup?Sounds.INTRO_POPUP:Sounds.INTRO_REGULAR);
+	playSound(activeArea instanceof Popup?Sounds.POPUP:Sounds.INTRO_REGULAR);
 	unsafeAreaOperation(()->{
 		final String value = activeArea.getAreaName();
 		if (value != null)

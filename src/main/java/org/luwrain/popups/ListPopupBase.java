@@ -56,7 +56,7 @@ public class ListPopupBase<E> extends ListArea<E> implements Popup, PopupClosing
 	switch(event.getCode())
 	{
 	case INTRODUCE:
-	    luwrain.speak(getAreaName(), Sounds.INTRO_POPUP);
+	    luwrain.speak(getAreaName(), Sounds.POPUP);
 	    return true;
 	default:
 	return super.onSystemEvent(event);

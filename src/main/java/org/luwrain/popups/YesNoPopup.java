@@ -127,7 +127,7 @@ public class YesNoPopup implements Popup, PopupClosingTranslator.Provider
 	    luwrain.getClipboard().set(text);
 	    return true;
 	case INTRODUCE:
-	    luwrain.speak(getSpeakableText(text), Sounds.INTRO_POPUP);
+	    luwrain.speak(getSpeakableText(text), Sounds.POPUP);
 	    return true;
 	default:
 	return closing.onSystemEvent(event);

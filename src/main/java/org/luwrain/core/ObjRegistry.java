@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,12 +17,13 @@
 package org.luwrain.core;
 
 import java.util.*;
+import org.apache.logging.log4j.*;
 
-import static org.luwrain.core.Base.*;
 import static org.luwrain.core.NullCheck.*;
 
 final class ObjRegistry implements ExtObjects
 {
+    static private final Logger log = LogManager.getLogger();
     static private final class Entry<E> 
     {
 	final Extension ext;
@@ -39,7 +40,6 @@ final class ObjRegistry implements ExtObjects
     }
 
     private Map<String, Entry<Shortcut>> shortcuts = new HashMap<>();
-        private Map<String, Entry<ObjFactory>> objFactories = new HashMap<>();
     private Map<String, Entry<Job>> jobs = new HashMap<>();
     private Map<String, Entry<Worker>> workers = new HashMap<>();
     private Map<String, Entry<org.luwrain.speech.Engine>> speechEngines = new HashMap<>();
@@ -70,16 +70,6 @@ final class ObjRegistry implements ExtObjects
 	    if (!shortcuts.containsKey(name))
 	    {
 		shortcuts.put(name, new Entry<>(ext, name, shortcut));
-		res = true;
-	    }
-	}
-
-		if (obj instanceof ObjFactory)
-	{
-	    final ObjFactory factory = (ObjFactory)obj;
-	    if (!objFactories.containsKey(name))
-	    {
-		objFactories.put(name, new Entry<>(ext, name, factory));
 		res = true;
 	    }
 	}
@@ -125,7 +115,7 @@ final class ObjRegistry implements ExtObjects
 	}
 
 																if (!res)
-	    warn("failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
+	    log.warn("Failed to add an extension object of class " + obj.getClass().getName() + " with name \'" + name + "\'");
 	return res;
     }
 
@@ -133,7 +123,6 @@ final class ObjRegistry implements ExtObjects
     {
 	notNull(ext, "ext");
 	removeEntriesByExt(shortcuts, ext);
-		removeEntriesByExt(objFactories, ext);
 	removeEntriesByExt(jobs, ext);
 	removeEntriesByExt(workers, ext);
 	removeEntriesByExt(speechEngines, ext);
@@ -170,24 +159,6 @@ final class ObjRegistry implements ExtObjects
     {
 	final List<String> res = new ArrayList<>();
 	for(Map.Entry<String, Entry<Shortcut>> e: shortcuts.entrySet())
-	    res.add(e.getKey());
-	final String[] str = res.toArray(new String[res.size()]);
-	Arrays.sort(str);
-	return str;
-    }
-
-        ObjFactory[] getAllObjFactories()
-    {
-	final List<ObjFactory> res = new ArrayList<>();
-		for(Map.Entry<String, Entry<ObjFactory>> e: objFactories.entrySet())
-	    res.add(e.getValue().obj);
-		return res.toArray(new ObjFactory[res.size()]);
-    }
-
-    String[] getObjFactoryNames()
-    {
-	final List<String> res = new ArrayList<>();
-	for(Map.Entry<String, Entry<ObjFactory>> e: objFactories.entrySet())
 	    res.add(e.getKey());
 	final String[] str = res.toArray(new String[res.size()]);
 	Arrays.sort(str);
@@ -262,13 +233,16 @@ final class ObjRegistry implements ExtObjects
 		luwrain.message(luwrain.i18n().getStaticStr("OsCommandFailed"), Luwrain.MessageType.ERROR);
     }
 
-    void takeObjects(Extension ext, Luwrain luwrain)
+    //    void takeObjects(Extension ext, Luwrain luwrain)
+    void takeObjects(Extension ext, ExtensionObject[] extObjects)
     {
-	notNull(ext, "ext");
-	notNull(luwrain, "luwrain");
-	for(ExtensionObject s: ext.getExtObjects(luwrain))
-			if (!add(ext, s))
-			    warn("the extension object \'" + s.getExtObjName() + "\' of the extension " + ext.getClass().getName() + " has been refused by  the object registry");
+	//	notNull(ext, "ext");
+	//	notNull(luwrain, "luwrain");
+	notNullItems(extObjects, "extObjects");
+	//	for(ExtensionObject s: ext.getExtObjects(luwrain))
+	for(final ExtensionObject obj: extObjects)
+			if (!add(ext, obj))
+			    log.warn("The extension object \'" + obj.getExtObjName() + "\' of the extension " + ext.getClass().getName() + " has been refused by  the object registry");
     }
 
     static private <E> void removeEntriesByExt(Map<String, Entry<E>> map, Extension ext)

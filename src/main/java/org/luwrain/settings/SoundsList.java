@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -49,8 +49,8 @@ final class SoundsList extends ListArea<SoundsList.Item> implements SectionArea,
 	Sounds.EVENT_NOT_PROCESSED,
 	Sounds.FATAL,
 	Sounds.GENERAL_TIME,
-	Sounds.INTRO_APP,
-	Sounds.INTRO_POPUP,
+	Sounds.AREA_LAYOUT,
+	Sounds.POPUP,
 	Sounds.INTRO_REGULAR,
 	Sounds.LIST_ITEM,
 	Sounds.MAIN_MENU,

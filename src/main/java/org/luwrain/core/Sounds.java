@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -13,8 +13,6 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
 */
-
-//LWR_API 1.0
 
 package org.luwrain.core;
 
@@ -42,8 +40,8 @@ public enum Sounds
     EXPANDED,
     FATAL,
     GENERAL_TIME,
-    INTRO_APP,
-    INTRO_POPUP,
+    AREA_LAYOUT,     AREA_LAYOUT_DOUBLE,     AREA_LAYOUT_TRIPLE,
+    POPUP,
     INTRO_REGULAR,
     LIST_ITEM,
     MAIN_MENU,
