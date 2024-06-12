@@ -20,7 +20,8 @@ import java.util.*;
 
 public interface FileFetcher extends ExtensionObject
 {
-    public enum Flags {};
+    public enum Flags { RESUMABLE, SPECIFIC };
+    public enum Status { RUNNING, COMPLETED, CANCELLED };
 
     boolean canHandleUrl(String url);
     Set<Flags> getFlags();
@@ -32,5 +33,10 @@ public interface FileFetcher extends ExtensionObject
 	boolean isCompleted();
 	String getDestinationFile();
 	String getSourceUrl();
+    }
+
+    public interface Listener
+    {
+	void onFetchingStatus(Fetching fetching, Status status, float progress);
     }
 }
