@@ -196,7 +196,7 @@ Object newExtObject(String  name);
      */
     boolean registerExtObj(ExtensionObject extObj);
     boolean runCommand(String command);
-    JobLauncher.Instance newJob(String name, String[] args, String dir, Set<JobFlags> flags, JobLauncher.Listener listener);
+    Job newJob(String name, String[] args, String dir, Set<JobFlags> flags, Job.Listener listener);
     //    void runInMainThread(Runnable runnable);
     Object runLaterSync(java.util.concurrent.Callable callable);
     void runUiSafely(Runnable runnable);

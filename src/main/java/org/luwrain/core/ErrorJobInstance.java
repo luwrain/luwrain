@@ -20,7 +20,7 @@ import java.util.*;
 
 import static org.luwrain.core.NullCheck.*;
 
-public final class ErrorJobInstance implements JobLauncher.Instance
+public final class ErrorJobInstance implements Job
 {
     private final String name;
     private final String message;
@@ -42,9 +42,9 @@ public final class ErrorJobInstance implements JobLauncher.Instance
 	return name;
     }
 
-    @Override public JobLauncher.Status getStatus()
+    @Override public Job.Status getStatus()
     {
-	return JobLauncher.Status.FINISHED;
+	return Job.Status.FINISHED;
     }
 
     @Override public int getExitCode()

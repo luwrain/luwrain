@@ -38,7 +38,7 @@ public final class JobsManager
 	this.ext = ext;
     }
 
-    JobLauncher.Instance run(String name, String[] args, String dir, JobLauncher.Listener listener)
+    Job run(String name, String[] args, String dir, Job.Listener listener)
     {
 	notEmpty(name, "name");
 	notNullItems(args, "args");
@@ -49,7 +49,7 @@ public final class JobsManager
 	    	    throw new IllegalArgumentException("No such job: " + name);
 	final JobLauncher job = j.get();
 	final Entry entry = new Entry(listener);
-	final JobLauncher.Instance instance = job.launch(entry, args, dir.isEmpty()?null:dir);
+	final Job instance = job.launch(entry, args, dir.isEmpty()?null:dir);
 	if (instance == null)
 	    return null;
 	entry.setInstance(instance);
@@ -68,18 +68,18 @@ public final class JobsManager
     }
 
     //Public for the control app
-    public final class Entry implements JobLauncher.Listener, JobLauncher.Instance
+    public final class Entry implements Job, Job.Listener
     {
-	private final JobLauncher.Listener listener;
-	private JobLauncher.Instance instance = null;
+	private final Job.Listener listener;
+	private Job instance = null;
 	private final Map<String, List<String>> info = new HashMap<>();
-	Entry(JobLauncher.Listener listener)
+	Entry(Job.Listener listener)
 	{
 	    notNull(listener, "listener");
 	    this.listener = listener;
 	}
 	@Override public String getInstanceName() { return instance.getInstanceName(); }
-	@Override public JobLauncher.Status getStatus() { return instance.getStatus(); }
+	@Override public Job.Status getStatus() { return instance.getStatus(); }
 	@Override public int getExitCode() { return instance.getExitCode(); }
 	@Override public boolean isFinishedSuccessfully() { return instance.isFinishedSuccessfully(); }
 	@Override public List<String> getInfo(String infoType)
@@ -95,7 +95,7 @@ this.info.put(infoType, res);
 return res;
 	}
 	@Override public void stop() { instance.stop(); }
-	@Override public void onInfoChange(JobLauncher.Instance instance, String type, List<String> value)
+	@Override public void onInfoChange(Job instance, String type, List<String> value)
 	{
 	    notEmpty(type, "type");
 	    List<String> res = value;
@@ -106,17 +106,17 @@ return res;
 		res = this.info.get(type);
 	    listener.onInfoChange(instance, type, res != null?res:Arrays.asList());
 	}
-	@Override public void onStatusChange(JobLauncher.Instance instance)
+	@Override public void onStatusChange(Job instance)
 	{
 	    listener.onStatusChange(this);
-	    if (instance.getStatus() == JobLauncher.Status.FINISHED)
+	    if (instance.getStatus() == Job.Status.FINISHED)
 		onFinish(this);
 	}
 	@Override public String toString()
 	{
 	    return getInstanceName();
 	}
-	void setInstance(JobLauncher.Instance instance)
+	void setInstance(Job instance)
 	{
 	    notNull(instance, "instance");
 	    if (this.instance == null)

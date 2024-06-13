@@ -14,32 +14,29 @@
    General Public License for more details.
 */
 
-package org.luwrain.script.core;
+package org.luwrain.core;
 
-import java.io.*;
 import java.util.*;
 
-import org.graalvm.polyglot.*;
-import org.graalvm.polyglot.proxy.*;
-
-import org.luwrain.core.*;
-import org.luwrain.script.*;
-
-public final class JobInstanceObj
+public interface Job
 {
-    public final Job instance;
+    static public final int
+	EXIT_CODE_OK = 0,
+	EXIT_CODE_INVALID = -1,
+	EXIT_CODE_INTERRUPTED = -2;
 
-    public JobInstanceObj(Job instance )
-    {
-	NullCheck.notNull(instance, "instance");
-	this.instance = instance;
-    }
+    public enum Status {RUNNING, FINISHED};
 
-    @HostAccess.Export
-    public final ProxyExecutable stop = this::stopImpl;
-    private Object stopImpl(Value[] args)
+    	String getInstanceName();
+	Status getStatus();
+	int getExitCode();
+	boolean isFinishedSuccessfully();
+	List<String> getInfo(String infoType);
+	void stop();
+
+    public interface Listener
     {
-	instance.stop();
-	return true;
+	void onStatusChange(Job job);
+	void onInfoChange(Job job, String infoType, List<String> value);
     }
 }

@@ -25,7 +25,7 @@ import org.luwrain.core.JobLauncher.*;
 import static org.luwrain.core.JobLauncher.*;
 import static org.luwrain.core.NullCheck.*;
 
-public class EmptyJobInstance implements JobLauncher.Instance
+public class EmptyJob implements Job
 {
     protected final Listener listener;
     protected final String name;
@@ -33,14 +33,14 @@ public class EmptyJobInstance implements JobLauncher.Instance
     private Status status = Status.RUNNING;
     private int exitCode = EXIT_CODE_INVALID;
 
-    public EmptyJobInstance(Listener listener, String name)
+    public EmptyJob(Listener listener, String name)
     {
 	notEmpty(name, "name");
 	this.listener = listener;
 	this.name = name;
     }
 
-    public EmptyJobInstance(String name)
+    public EmptyJob(String name)
     {
 	this(null, name);
     }

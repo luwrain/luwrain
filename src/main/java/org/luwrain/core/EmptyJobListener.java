@@ -18,8 +18,8 @@ package org.luwrain.core;
 
 import java.util.*;
 
-public class EmptyJobListener implements JobLauncher.Listener
+public class EmptyJobListener implements Job.Listener
 {
-    @Override public void onStatusChange(JobLauncher.Instance instance) {}
-    @Override public void onInfoChange(JobLauncher.Instance instance, String infoType, List<String> value) {}
+    @Override public void onStatusChange(Job instance) {}
+    @Override public void onInfoChange(Job instance, String infoType, List<String> value) {}
 }

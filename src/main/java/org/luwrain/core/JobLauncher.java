@@ -20,30 +20,11 @@ import java.util.*;
 
 public interface JobLauncher extends ExtensionObject
 {
-    static public final int
-	EXIT_CODE_OK = 0,
-	EXIT_CODE_INVALID = -1,
-	EXIT_CODE_INTERRUPTED = -2;
-
     public enum Flags {WITH_SHORTCUT, INTERACTIVE_SHORTCUT};
+
+    
     public enum Status {RUNNING, FINISHED};
 
-    public interface Listener
-    {
-	void onStatusChange(Instance instance);
-	void onInfoChange(Instance instance, String infoType, List<String> value);
-    }
-
-    public interface Instance
-    {
-	String getInstanceName();
-	Status getStatus();
-	int getExitCode();
-	boolean isFinishedSuccessfully();
-	List<String> getInfo(String infoType);
-	void stop();
-    }
-
-    Instance launch(Listener listener, String[] args, String dir);
+        Job launch(Job.Listener listener, String[] args, String dir);
     Set<Flags> getJobFlags();
 }

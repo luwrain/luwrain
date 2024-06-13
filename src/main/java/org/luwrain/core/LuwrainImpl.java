@@ -430,7 +430,7 @@ final class LuwrainImpl implements Luwrain
 	return core.runCommand(command);
     }
 
-    @Override public JobLauncher.Instance newJob(String name, String[] args, String dir, Set<JobFlags> flags, JobLauncher.Listener listener)
+    @Override public Job newJob(String name, String[] args, String dir, Set<JobFlags> flags, Job.Listener listener)
     {
 	notNull(name, "name");
 	notNullItems(args, "args");

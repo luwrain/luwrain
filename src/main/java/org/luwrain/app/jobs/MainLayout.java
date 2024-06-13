@@ -51,7 +51,7 @@ final class MainLayout extends LayoutBase
 	if (o == null || !(o instanceof Entry))
 	    return false;
 	final Entry e = (Entry)o;
-	if (e.getStatus() == JobLauncher.Status.FINISHED)
+	if (e.getStatus() == Job.Status.FINISHED)
 	    return false;
 	e.stop();
 	app.getLuwrain().playSound(Sounds.OK);
@@ -66,7 +66,7 @@ final class MainLayout extends LayoutBase
 	    NullCheck.notNull(entry, "entry");
 	    NullCheck.notNull(flags, "flags");
 	    final Sounds sound;
-	    if (entry.getStatus() == JobLauncher.Status.FINISHED)
+	    if (entry.getStatus() == Job.Status.FINISHED)
 		sound = entry.isFinishedSuccessfully()?Sounds.SELECTED:Sounds.ATTENTION; else
 				sound = Sounds.LIST_ITEM;
 	    app.setEventResponse(DefaultEventResponse.listItem(sound, entry.getInstanceName(), null));

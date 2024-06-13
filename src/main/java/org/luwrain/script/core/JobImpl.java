@@ -51,7 +51,7 @@ final class JobImpl implements JobLauncher
 	return name;
     }
 
-    @Override public Instance launch(Listener listener, String[] args, String dir)
+    @Override public Job launch(Job.Listener listener, String[] args, String dir)
     {
 	NullCheck.notNull(listener, "listener");
 	NullCheck.notNullItems(args, "args");
@@ -81,7 +81,7 @@ final class JobImpl implements JobLauncher
 	return EnumSet.noneOf(Flags.class);
     }
 
-    public final class Instance implements JobLauncher.Instance, ProxyObject
+    public final class Instance implements Job, ProxyObject
     {
 	private final Listener listener;
 	private String name = "";
