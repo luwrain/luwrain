@@ -183,13 +183,13 @@ abstract class Base implements EventConsumer
     protected void areaInaccessibleMessage()
     {
 	speech.silence();
-	playSound(Sounds.EVENT_NOT_PROCESSED);
+	playSound(Sounds.INACCESSIBLE);
     }
 
     void eventNotProcessedMessage()
     {
 	speech.silence();
-	playSound(Sounds.EVENT_NOT_PROCESSED);
+	playSound(Sounds.INACCESSIBLE);
     }
 
     protected void printMemInfo()

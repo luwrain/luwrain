@@ -36,7 +36,7 @@ public enum Sounds
     EMPTY_LINE,
     END_OF_LINE,
     ERROR,
-    EVENT_NOT_PROCESSED,
+    INACCESSIBLE,
     EXPANDED,
     FATAL,
     GENERAL_TIME,

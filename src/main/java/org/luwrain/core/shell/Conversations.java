@@ -102,7 +102,7 @@ public final class Conversations
 		    final String t = text.trim();
 		    if (t.isEmpty())
 		    {
-			luwrain.playSound(Sounds.EVENT_NOT_PROCESSED);
+			luwrain.playSound(Sounds.INACCESSIBLE);
 			return false;
 		    }
 		    for(String c: allCommands)

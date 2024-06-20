@@ -148,7 +148,7 @@ return;
 			break;
 		    }
 		if (!activeArea.onInputEvent(event))
-		    playSound(Sounds.EVENT_NOT_PROCESSED);
+		    playSound(Sounds.INACCESSIBLE);
 		installIdleEvent();
 	    });
     }
@@ -224,7 +224,7 @@ return;
 	if (processed.get())
 	    return;
 	    if (event.getCode() != SystemEvent.Code.IDLE)
-		playSound(Sounds.EVENT_NOT_PROCESSED);
+		playSound(Sounds.INACCESSIBLE);
     }
 
     private void onBroadcastSystemEvent(SystemEvent event)

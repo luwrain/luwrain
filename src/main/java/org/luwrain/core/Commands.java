@@ -70,7 +70,7 @@ final class Commands
 					  return new Search(areaToWrap, core, disabling);
 				      }
 				  }))
-	    core.playSound(Sounds.EVENT_NOT_PROCESSED);
+	    core.playSound(Sounds.INACCESSIBLE);
 	core.onNewAreasLayout();
 		    }),
 
