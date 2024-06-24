@@ -31,13 +31,29 @@ import static org.luwrain.core.NullCheck.*;
 
 public class WizardGroovyController
 {
+    final Luwrain luwrain;
     final WizardArea area;
     final Map<String, Frame> frames = new HashMap<>();
 
-    public WizardGroovyController(WizardArea area)
+    public WizardGroovyController(Luwrain luwrain, WizardArea area)
     {
+	notNull(luwrain, "luwrain");
 	notNull(area, "area");
+	this.luwrain = luwrain;
 	this.area = area;
+    }
+
+    public void call(String title, String firstFrame, Closure frames)
+    {
+	notNull(title, "title");
+	notEmpty(firstFrame, "firstFrame");
+	notNull(frames, "frames");
+	frames.setDelegate(this);
+	frames.call();
+	final var frame = this.frames.get(firstFrame);
+	if (frame == null)
+	    throw new IllegalArgumentException("No first frame: " + firstFrame);
+	area.show(frame);
     }
 
     public void frame(String id, Closure closure)

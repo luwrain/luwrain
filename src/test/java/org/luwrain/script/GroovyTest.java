@@ -17,6 +17,7 @@
 package org.luwrain.script;
 
 import java.util.*;
+import java.util.concurrent.atomic.*;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,6 +67,20 @@ public class GroovyTest
 	assertEquals("London", res.toString());
 	assertNotNull(d.arg);
 	assertEquals("Tomsk", d.arg);
+    }
+
+        @Test public void binding()
+    {
+	final var res = new AtomicReference<String>();
+	final var func = new Object(){
+		public void call(String arg)
+		{
+		    res.set(arg);
+		}
+	    };
+Eval.me("func", func, "func 'proba'");
+assertNotNull(res.get());
+assertEquals("proba", res.get());
     }
 
     static public final class TestDelegate
