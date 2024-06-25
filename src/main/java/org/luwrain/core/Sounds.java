@@ -44,6 +44,7 @@ public enum Sounds
     POPUP,
     INTRO_REGULAR,
     LIST_ITEM,
+    MARKED_LIST_ITEM,
     MAIN_MENU,
     MAIN_MENU_ITEM,
     MESSAGE,

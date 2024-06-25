@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -25,6 +25,8 @@ import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 //import org.luwrain.util.*;
 import org.luwrain.io.json.*;
+
+import static org.luwrain.core.DefaultEventResponse.*;
 
 public final class MainMenu extends ListArea<MainMenuItem> implements PopupClosingTranslator.Provider
 {
@@ -175,7 +177,7 @@ public final class MainMenu extends ListArea<MainMenuItem> implements PopupClosi
 	@Override public void announceNonSection(MainMenuItem item)
 	{
 	    NullCheck.notNull(item, "item");
-	    context.setEventResponse(DefaultEventResponse.text(Sounds.DESKTOP_ITEM, context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));
+	    context.setEventResponse(text(Sounds.MAIN_MENU_ITEM, context.getSpeakableText(getNonSectionScreenAppearance(item), Luwrain.SpeakableTextType.NATURAL)));
 	}
 	public void announceSection(MainMenuItem item)
 	{

@@ -296,7 +296,7 @@ public interface WizardItem
 	    	    	super.announceLine(index, line);
 		return;
 	}
-	context.setEventResponse(DefaultEventResponse.text(Sounds.MAIN_MENU_ITEM, context.getSpeakableText(line, Luwrain.SpeakableTextType.NATURAL)));
+	context.setEventResponse(DefaultEventResponse.text(Sounds.MARKED_LIST_ITEM, context.getSpeakableText(line, Luwrain.SpeakableTextType.NATURAL)));
     }
 
     protected final class Values implements WizardValues
