@@ -1,0 +1,16 @@
+
+plugins {
+    id 'java'
+  id 'io.freefair.lombok' version '8.6'
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation libraries.base
+  implementation libraries.graalvm
+  implementation (project(':luwrain-base'))
+  testImplementation libraries.junit
+}

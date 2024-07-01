@@ -1,3 +1,6 @@
+build
+gradle*
+.gradle
 target
 *.java_
 *.jpg
